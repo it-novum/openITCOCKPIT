@@ -636,11 +636,12 @@ class ContactsTable extends Table {
         return $query->toArray();
     }
 
+
     /**
-     * @param \CakeRequest $Request
+     * @param array $dataToParse
      * @return array
      */
-    public function getExtDataForChangelog(\CakeRequest $Request) {
+    public function resolveDataForChangelog($dataToParse = []) {
         $extDataForChangelog = [
             'HostTimeperiod'    => [],
             'ServiceTimeperiod' => [],
@@ -653,7 +654,7 @@ class ContactsTable extends Table {
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
-        foreach ($Request->data('Contact.host_commands._ids') as $id) {
+        foreach ($dataToParse['Contact']['host_commands']['_ids'] as $id) {
             $command = $CommandsTable->getCommandById($id);
             if (!empty($command)) {
                 $extDataForChangelog['HostCommands'][] = [
@@ -663,7 +664,7 @@ class ContactsTable extends Table {
             }
         }
 
-        foreach ($Request->data('Contact.service_commands._ids') as $id) {
+        foreach ($dataToParse['Contact']['service_commands']['_ids'] as $id) {
             $command = $CommandsTable->getCommandById($id);
             if (!empty($command)) {
                 $extDataForChangelog['ServiceCommands'][] = [
@@ -673,7 +674,7 @@ class ContactsTable extends Table {
             }
         }
 
-        $timeperiod = $TimeperiodsTable->getTimeperiodById($Request->data('Contact.host_timeperiod_id'));
+        $timeperiod = $TimeperiodsTable->getTimeperiodById($dataToParse['Contact']['host_timeperiod_id']);
         if (!empty($timeperiod)) {
             $extDataForChangelog['HostTimeperiod'] = [
                 'id'   => $timeperiod['Timeperiod']['id'],
@@ -681,7 +682,7 @@ class ContactsTable extends Table {
             ];
         }
 
-        $timeperiod = $TimeperiodsTable->getTimeperiodById($Request->data('Contact.service_timeperiod_id'));
+        $timeperiod = $TimeperiodsTable->getTimeperiodById($dataToParse['Contact']['service_timeperiod_id']);
         if (!empty($timeperiod)) {
             $extDataForChangelog['ServiceTimeperiod'] = [
                 'id'   => $timeperiod['Timeperiod']['id'],

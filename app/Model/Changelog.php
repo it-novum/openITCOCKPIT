@@ -45,17 +45,17 @@ class Changelog extends AppModel {
                 'Timeperiod.timeperiod_timeranges' => '{n}.{(id|day|start|end)}',
             ],
             'contact'              => [
-                'Contact'           => '{(name|description|email|phone|notify_).*}',
-                'HostTimeperiod'    => '{(id|name)}',
-                'ServiceTimeperiod' => '{(id|name)}',
-                'HostCommands'      => '{n}.{(id|name)}',
-                'ServiceCommands'   => '{n}.{(id|name)}',
-                'Contact.customvariables'    => '{n}.{(id|name|value)}',
+                'Contact'                 => '{(name|description|email|phone|notify_).*}',
+                'HostTimeperiod'          => '{(id|name)}',
+                'ServiceTimeperiod'       => '{(id|name)}',
+                'HostCommands'            => '{n}.{(id|name)}',
+                'ServiceCommands'         => '{n}.{(id|name)}',
+                'Contact.customvariables' => '{n}.{(id|name|value)}',
             ],
             'contactgroup'         => [
-                'Contactgroup' => '{(description)}',
-                'Container'    => '{(name)}',
-                'Contact'      => '{n}.{(id|name)}',
+                'Contactgroup'           => '{(description)}',
+                'Contactgroup.container' => '{(name)}',
+                'Contact'                => '{n}.{(id|name)}',
             ],
             'hostgroup'            => [
                 'Hostgroup'    => '{(description|hostgroup_url)}',
@@ -284,7 +284,7 @@ class Changelog extends AppModel {
      * @return boolean
      */
     public static function filterNullValues($var) {
-        if ($var != null || $var === '0' || $var === '') {
+        if ($var != null || $var === '0' || $var === '' || $var === 0) {
             return true;
         }
 
