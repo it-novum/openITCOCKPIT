@@ -118,6 +118,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'registers', 'action' => 'index'],
+                    'state'             => 'RegistersIndex',
                     'title'             => 'Registration',
                     'icon'              => 'check-square-o ',
                 ],
