@@ -1129,17 +1129,14 @@ class HosttemplatesController extends AppController {
     }
 
     public function usedBy($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
 
-
         if (!$this->Hosttemplate->exists($id)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
-
 
         $hosttemplate = $this->Hosttemplate->find('first', [
             'recursive'  => -1,
