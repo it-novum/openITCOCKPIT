@@ -190,10 +190,10 @@ class ContactgroupsTable extends Table {
     }
 
     /**
-     * @param \CakeRequest $Request
+     * @param array $dataToParse
      * @return array
      */
-    public function getExtDataForChangelog(\CakeRequest $Request) {
+    public function resolveDataForChangelog($dataToParse = []) {
         $extDataForChangelog = [
             'Contact' => []
         ];
@@ -201,7 +201,7 @@ class ContactgroupsTable extends Table {
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
-        foreach ($ContactsTable->getContactsAsList($Request->data('Contactgroup.contacts._ids')) as $contactId => $contactName) {
+        foreach ($ContactsTable->getContactsAsList($dataToParse['Contactgroup']['contacts']['_ids']) as $contactId => $contactName) {
             $extDataForChangelog['Contact'][] = [
                 'id'   => $contactId,
                 'name' => $contactName

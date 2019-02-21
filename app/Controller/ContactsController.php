@@ -26,7 +26,6 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\SystemsettingsTable;
-use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
@@ -152,7 +151,7 @@ class ContactsController extends AppController {
             } else {
                 //No errors
 
-                $extDataForChangelog = $ContactsTable->getExtDataForChangelog($this->request);
+                $extDataForChangelog = $ContactsTable->resolveDataForChangelog($this->request->data);
 
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'add',
@@ -192,6 +191,7 @@ class ContactsController extends AppController {
         }
 
         $contact = $ContactsTable->getContactForEdit($id);
+        $contactForChangeLog = $contact;
 
         if (!$this->allowedByContainerId($contact['Contact']['containers']['_ids'])) {
             $this->render403();
@@ -214,10 +214,8 @@ class ContactsController extends AppController {
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update contact data
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-
             $contactEntity = $ContactsTable->get($id);
             $contactEntity = $ContactsTable->patchEntity($contactEntity, $this->request->data('Contact'));
-
             $ContactsTable->save($contactEntity);
             if ($contactEntity->hasErrors()) {
                 $this->response->statusCode(400);
@@ -227,8 +225,6 @@ class ContactsController extends AppController {
             } else {
                 //No errors
 
-                $extDataForChangelog = $ContactsTable->getExtDataForChangelog($this->request);
-
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'edit',
                     'contacts',
@@ -237,7 +233,8 @@ class ContactsController extends AppController {
                     $this->request->data('Contact.containers._ids'),
                     $User->getId(),
                     $contactEntity->name,
-                    array_merge($extDataForChangelog, $this->request->data)
+                    array_merge($ContactsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ContactsTable->resolveDataForChangelog($contactForChangeLog), $contactForChangeLog)
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
