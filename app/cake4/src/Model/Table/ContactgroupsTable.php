@@ -395,6 +395,32 @@ class ContactgroupsTable extends Table {
     }
 
     /**
+     * @param array $ids
+     * @return array
+     */
+    public function getContactgroupsForCopy($ids = []) {
+        if(!is_array($ids)){
+            $ids = [$ids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Containers.id',
+                'Containers.name',
+                'Contactgroups.id',
+                'Contactgroups.description',
+            ])
+            ->contain(['Containers'])
+            ->where([
+                'Contactgroups.id IN' => $ids,
+            ])
+            ->disableHydration()
+            ->all();
+
+        return $this->formatResultAsCake2($query->toArray(), false);
+    }
+
+    /**
      * @param int $id
      * @return bool
      */
