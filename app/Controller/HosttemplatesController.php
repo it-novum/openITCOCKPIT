@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
@@ -55,7 +56,9 @@ class HosttemplatesController extends AppController {
         'Hostgroup',
         'Documentation'
     ];
-    public $layout = 'Admin.default';
+
+    //public $layout = 'Admin.default';
+    public $layout = 'blank';
 
     public $components = [
         'ListFilter.ListFilter',

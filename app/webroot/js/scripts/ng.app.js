@@ -382,12 +382,6 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "HostchecksIndexController"
             })
 
-            .state('HosttemplatesUsedBy', {
-                url: '/hosttemplates/usedBy/:id',
-                templateUrl: "/hosttemplates/usedBy.html",
-                controller: "HosttemplatesUsedByController"
-            })
-
             .state('RegistersIndex', {
                 url: '/registers/index',
                 templateUrl: "/registers/index.html",
@@ -604,7 +598,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 templateUrl: "/contactgroups/usedBy.html",
                 controller: "ContactgroupsUsedByController"
             })
-            
+
             .state('HosttemplatesIndex', {
                 url: '/hosttemplates/index',
                 templateUrl: "/hosttemplates/index.html",
