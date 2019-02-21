@@ -442,6 +442,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "CommandsCopyController"
             })
 
+            .state('ProxyIndex', {
+                url: '/proxy/index',
+                templateUrl: "/proxy/index.html",
+                controller: "ProxyIndexController"
+            })
+
             .state('TenantsIndex', {
                 url: '/tenants/index',
                 templateUrl: "/tenants/index.html",

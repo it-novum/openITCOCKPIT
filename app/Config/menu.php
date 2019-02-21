@@ -64,6 +64,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'proxy', 'action' => 'index'],
+                    'state'             => 'ProxyIndex',
                     'title'             => 'Proxy Settings',
                     'icon'              => 'bolt',
                 ],

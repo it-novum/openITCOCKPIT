@@ -31,11 +31,14 @@ use Cake\ORM\Locator\LocatorAwareTrait;
  * Class ProxyController
  */
 class ProxyController extends AppController {
-    public $layout = 'angularjs';
+    public $layout = 'blank';
 
     use LocatorAwareTrait;
 
     function index() {
+        if (!$this->isApiRequest()) {
+            return;
+        }
         $TableLocator = $this->getTableLocator();
 
         /** @var $Proxy ProxiesTable */
