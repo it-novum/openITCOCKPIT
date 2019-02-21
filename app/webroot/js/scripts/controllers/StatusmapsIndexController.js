@@ -1,16 +1,19 @@
 angular.module('openITCOCKPIT')
     .controller('StatusmapsIndexController', function($scope, $q, $http, $timeout, QueryStringService){
+
         /*** Filter Settings ***/
-        $scope.filter = {
-            Host: {
-                name: QueryStringService.getValue('filter[Host.name]', ''),
-                address: QueryStringService.getValue('filter[Host.address]', ''),
-                satellite_id: '0'
-            },
-            showAll: false
+        $scope.clearFilter = function(){
+            $scope.filter = {
+                Host: {
+                    name: QueryStringService.getValue('filter[Host.name]', ''),
+                    address: QueryStringService.getValue('filter[Host.address]', ''),
+                    satellite_id: '0'
+                },
+                showAll: false
+            };
         };
         /*** Filter end ***/
-
+        $scope.clearFilter();
 
         $scope.init = true;
         $scope.mutex = false;
