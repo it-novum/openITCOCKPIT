@@ -2,9 +2,12 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
 /**
  * Hosttemplates Model
@@ -31,6 +34,9 @@ use Cake\Validation\Validator;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class HosttemplatesTable extends Table {
+
+    use Cake2ResultTableTrait;
+    use PaginationAndScrollIndexTrait;
 
     /**
      * Initialize method
@@ -309,5 +315,29 @@ class HosttemplatesTable extends Table {
         $rules->add($rules->isUnique(['uuid']));
 
         return $rules;
+    }
+
+    /**
+     * @param HosttemplateFilter $CommandsFilter
+     * @param null $PaginateOMat
+     * @return array
+     */
+    public function getHosttemplatesIndex(HosttemplateFilter $HosttemplateFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+        $query = $this->find('all')->disableHydration();
+        $query->where($HosttemplateFilter->indexFilter());
+        $query->order($HosttemplateFilter->getOrderForPaginator('Hosttemplates.name', 'asc'));
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
+
+        return $result;
     }
 }

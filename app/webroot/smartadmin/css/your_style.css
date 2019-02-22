@@ -2219,3 +2219,11 @@ iframe {
 .has-error-force .control-label{
     border-color: #b94a48;
 }
+
+@media (min-width:768px) {
+    .form-horizontal .control-label {
+        /*padding-top: 7px;*/
+        margin-bottom: 5px;
+        text-align: left;
+    }
+}

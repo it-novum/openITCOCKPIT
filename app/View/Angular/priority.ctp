@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2018>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,35 +22,10 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Filter;
-
-
-class HosttemplateFilter extends Filter {
-
-    /**
-     * @return array
-     */
-    public function indexFilter() {
-        $filters = [
-            'like' => [
-                'Hosttemplates.name',
-            ]
-        ];
-
-        return $this->getConditionsByFilters($filters);
-    }
-
-    /**
-     * @return array
-     */
-    public function ajaxFilter() {
-        $filters = [
-            'like' => [
-                'Hosttemplates.name',
-            ]
-        ];
-
-        return $this->getConditionsByFilters($filters);
-    }
-
-}
+for ($i = 1; $i <= 5; $i++): ?>
+    <i class="fa fa-fire fa-lg pointer"
+       ng-click="setPriority(<?php echo $i; ?>)"
+       ng-mouseenter="hoverPriority(<?php echo $i; ?>)"
+       ng-mouseleave="mouseleave()"
+       ng-class="priorityClass[<?php echo $i-1; ?>]"></i>
+<?php endfor; ?>
