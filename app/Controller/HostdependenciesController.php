@@ -139,6 +139,8 @@ class HostdependenciesController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTDEPENDENCY, [], $this->hasRootPrivileges);
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($hostdependency['Hostdependency']['container_id']);
@@ -146,14 +148,14 @@ class HostdependenciesController extends AppController {
         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
 
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
 
         if ($this->request->is('post') || $this->request->is('put')) {
             if (isset($this->request->data['Hostdependency']['container_id']) && $hostdependency['Hostdependency']['container_id'] != $this->request->data['Hostdependency']['container_id']) {
                 $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['Hostdependency']['container_id']);
                 $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
                 $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-                $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+                $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
             }
 
             $_hosts = (is_array($this->request->data['Hostdependency']['Host'])) ? $this->request->data['Hostdependency']['Host'] : [];
@@ -216,6 +218,9 @@ class HostdependenciesController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
         $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTDEPENDENCY, [], $this->hasRootPrivileges);
 
 
@@ -263,7 +268,7 @@ class HostdependenciesController extends AppController {
                     $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
                     $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
                     $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-                    $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+                    $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
                 }
                 $this->setFlash(__('Hostdependency could not be saved'), false);
             }
@@ -303,6 +308,8 @@ class HostdependenciesController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
@@ -318,7 +325,7 @@ class HostdependenciesController extends AppController {
         $hosts = Api::makeItJavaScriptAble($hosts);
         $hostsDependent = $hosts;
 
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
 
         $this->set(compact(['hosts', 'hostsDependent', 'hostgroups', 'hostgroupsDependent', 'timeperiods']));

@@ -64,7 +64,7 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
         </h2>
 
         <div class="widget-toolbar" role="menu">
-            <a href="/statusmaps/index" class="btn btn-default btn-xs">
+            <a ng-click="clearFilter();" class="btn btn-default btn-xs cursor-pointer">
                 <i class="fa fa-undo"></i>
                 <?php echo __('Reset'); ?>
             </a>

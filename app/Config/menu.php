@@ -273,11 +273,13 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'macros', 'action' => 'index'],
+                    'state'             => 'MacrosIndex',
                     'title'             => 'User Defined Macros',
                     'icon'              => 'usd',
                 ],
                 [
                     'url'               => ['controller' => 'hostescalations', 'action' => 'index'],
+                    'state'             => 'HostescalationsIndex',
                     'title'             => 'Host Escalations',
                     'icon'              => 'bomb',
                 ],

@@ -508,6 +508,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "DocumentationsViewController"
             })
 
+            .state('MacrosIndex', {
+                url: '/macros/index',
+                templateUrl: "/macros/index.html",
+                controller: "MacrosIndexController"
+            })
+
             .state('NotificationsHostNotification', {
                 url: '/notifications/hostNotification/:id',
                 templateUrl: "/notifications/hostNotification.html",
@@ -599,6 +605,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "ContactgroupsUsedByController"
             })
 
+            .state('HostescalationsIndex', {
+                url: '/hostescalations/index',
+                templateUrl: "/hostescalations/index.html",
+                controller: "HostescalationsIndexController"
+            })
+
             .state('HosttemplatesIndex', {
                 url: '/hosttemplates/index',
                 templateUrl: "/hosttemplates/index.html",
@@ -627,6 +639,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/hosttemplates/usedBy/:id',
                 templateUrl: "/hosttemplates/usedBy.html",
                 controller: "HosttemplatesUsedByController"
+            })
+
+            .state('UsersIndex', {
+                url: '/users/index',
+                templateUrl: "/users/index.html",
+                controller: "UsersIndexController"
             })
     })
 
