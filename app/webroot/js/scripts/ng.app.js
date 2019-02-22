@@ -628,6 +628,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 templateUrl: "/hosttemplates/usedBy.html",
                 controller: "HosttemplatesUsedByController"
             })
+
+            .state('UsersIndex', {
+                url: '/users/index',
+                templateUrl: "/users/index.html",
+                controller: "UsersIndexController"
+            })
     })
 
     /*
