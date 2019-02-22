@@ -109,15 +109,15 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.addMacro = function(){
-            $scope.post.Contact.customvariables.push({
-                objecttype_id: 32,
+            $scope.post.Hosttemplate.customvariables.push({
+                objecttype_id: 512,
                 name: '',
                 value: ''
             });
         };
 
         $scope.deleteMacroCallback = function(macro, index){
-            $scope.post.Contact.customvariables.splice(index, 1);
+            $scope.post.Hosttemplate.customvariables.splice(index, 1);
         };
 
         $scope.getMacroErrors = function(index){

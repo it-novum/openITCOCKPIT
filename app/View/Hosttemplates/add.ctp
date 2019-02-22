@@ -490,7 +490,7 @@
                                 <div>
                                     <div class="widget-body">
 
-                                        <div class="form-group required" ng-class="{'has-error': errors.host_url}">
+                                        <div class="form-group" ng-class="{'has-error': errors.host_url}">
                                             <label class="col-xs-12 col-lg-2 control-label">
                                                 <?php echo __('Host URL'); ?>
                                             </label>
@@ -509,7 +509,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group required" ng-class="{'has-error': errors.notes}">
+                                        <div class="form-group" ng-class="{'has-error': errors.notes}">
                                             <label class="col-xs-12 col-lg-2 control-label">
                                                 <?php echo __('Notes'); ?>
                                             </label>
@@ -523,6 +523,80 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <?php
+                                        $hostFalpOptions = [
+                                            [
+                                                'field' => 'flap_detection_on_up',
+                                                'class' => 'success',
+                                                'text'  => __('Recovery')
+                                            ],
+                                            [
+                                                'field' => 'flap_detection_on_down',
+                                                'class' => 'danger',
+                                                'text'  => __('Down')
+                                            ],
+                                            [
+                                                'field' => 'flap_detection_on_unreachable',
+                                                'class' => 'default',
+                                                'text'  => __('Unreachable')
+                                            ]
+                                        ];
+                                        ?>
+
+                                        <div class="form-group"
+                                             ng-class="{'has-error': errors.flap_detection_enabled}">
+                                            <label class="col-xs-12 col-lg-2 control-label" for="flapDetectionEnabled">
+                                                <?php echo __('Flap detection enabled'); ?>
+                                            </label>
+
+                                            <div class="col-xs-12 col-lg-10 smart-form">
+                                                <label class="checkbox small-checkbox-label no-required">
+                                                    <input type="checkbox" name="checkbox"
+                                                           id="flapDetectionEnabled"
+                                                           ng-true-value="1"
+                                                           ng-false-value="0"
+                                                           ng-model="post.Hosttemplate.flap_detection_enabled">
+                                                    <i class="checkbox-primary"></i>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <fieldset>
+                                            <legend class="font-sm"
+                                                    ng-class="{'has-error-no-form': errors.notify_on_recovery}">
+                                                <div class="required">
+                                                    <label>
+                                                        <?php echo __('Flap detection options'); ?>
+                                                    </label>
+
+                                                    <div ng-repeat="error in errors.notify_on_recovery">
+                                                        <div class="text-danger">{{ error }}</div>
+                                                    </div>
+                                                </div>
+                                            </legend>
+                                            <?php foreach ($hostFalpOptions as $hostFalpOption): ?>
+                                                <div class="form-group margin-bottom-0"
+                                                     ng-class="{'has-error': errors.<?php echo $hostFalpOption['field']; ?>}">
+
+                                                    <label for="<?php echo $hostFalpOption['field']; ?>"
+                                                           class="col col-md-4 control-label padding-top-0">
+                                                        <span class="label label-<?php echo $hostFalpOption['class']; ?> notify-label"><?php echo $hostFalpOption['text']; ?></span>
+                                                    </label>
+
+                                                    <div class="col-xs-8 smart-form">
+                                                        <label class="checkbox small-checkbox-label no-required">
+                                                            <input type="checkbox" name="checkbox"
+                                                                   ng-true-value="1"
+                                                                   ng-false-value="0"
+                                                                   id="<?php echo $hostFalpOption['field']; ?>"
+                                                                   ng-model="post.Hosttemplate.<?php echo $hostFalpOption['field']; ?>">
+                                                            <i class="checkbox-<?php echo $hostFalpOption['class']; ?>"></i>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </fieldset>
 
                                     </div>
                                 </div>
@@ -541,7 +615,25 @@
                                 </header>
                                 <div>
                                     <div class="widget-body">
-                                        macros und son zeugs
+
+                                        <div class="row" ng-repeat="customvariable in post.Hosttemplate.customvariables">
+                                            <macros-directive macro="customvariable"
+                                                              macro-name="'<?php echo __('HOST'); ?>'"
+                                                              index="$index"
+                                                              callback="deleteMacroCallback"
+                                                              errors="getMacroErrors($index)"
+                                            ></macros-directive>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-9 col-md-offset-2 padding-top-10 text-right">
+                                                <button type="button" class="btn btn-success btn-sm" ng-click="addMacro()">
+                                                    <i class="fa fa-plus"></i>
+                                                    <?php echo __('Add new macro'); ?>
+                                                </button>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
