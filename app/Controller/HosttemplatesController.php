@@ -76,6 +76,21 @@ class HosttemplatesController extends AppController {
 
 
     public function index() {
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        $query = $HosttemplatesTable->find('all')->disableHydration()->contain([
+            'CheckCommand',
+            'CheckPeriod',
+            'NotifyPeriod',
+            'Contactgroups',
+            'Contacts'
+        ]);
+
+
+        debug($query->toArray());
+
+        die();
+
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;

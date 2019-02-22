@@ -322,7 +322,7 @@ class HosttemplatesTable extends Table {
      * @param null $PaginateOMat
      * @return array
      */
-    public function getHosttemplatesIndex(HosttemplateFilter $HosttemplateFilter, $PaginateOMat = null) {
+    public function getHosttemplatesIndex(HosttemplateFilter $HosttemplateFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all')->disableHydration();
         $query->where($HosttemplateFilter->indexFilter());
         $query->order($HosttemplateFilter->getOrderForPaginator('Hosttemplates.name', 'asc'));
