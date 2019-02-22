@@ -175,6 +175,10 @@ class TimeperiodsTable extends Table {
         return $result;
     }
 
+    /**
+     * @param $id
+     * @return array
+     */
     public function getTimeperiodById($id) {
         $query = $this->find()
             ->where([
@@ -184,11 +188,39 @@ class TimeperiodsTable extends Table {
         return $this->formatFirstResultAsCake2($query->toArray(), false);
     }
 
+    /**
+     * @return array
+     */
+    public function getTimeperiodWithTimeranges() {
+        $query = $this->find()
+            ->contain('TimeperiodTimeranges')
+            ->disableHydration();
+        return $this->formatResultAsCake2($query->toArray(), false);
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
     public function getTimeperiodWithTimerangesById($id) {
         $query = $this->find()
             ->contain('TimeperiodTimeranges')
             ->where([
                 'Timeperiods.id' => $id
+            ])
+            ->first();
+        return $this->formatFirstResultAsCake2($query->toArray(), false);
+    }
+
+    /**
+     * @param $uuid
+     * @return array
+     */
+    public function getTimeperiodWithTimerangesByUuid($uuid) {
+        $query = $this->find()
+            ->contain('TimeperiodTimeranges')
+            ->where([
+                'Timeperiods.uuid' => $uuid
             ])
             ->first();
         return $this->formatFirstResultAsCake2($query->toArray(), false);
@@ -209,6 +241,26 @@ class TimeperiodsTable extends Table {
                 'Timeperiods.name'
             ])
             ->where(['Timeperiods.container_id IN' => $containerIds])
+            ->all();
+
+        return $this->formatListAsCake2($timeperiods->toArray());
+    }
+
+    /**
+     * @param array $calendarIds
+     * @return array
+     */
+    public function getTimeperiodByCalendarIdsAsList($calendarIds = []) {
+        if (!is_array($calendarIds)) {
+            $calendarIds = [$calendarIds];
+        }
+
+        $timeperiods = $this->find()
+            ->select([
+                'Timeperiods.id',
+                'Timeperiods.name'
+            ])
+            ->where(['Timeperiods.calendar_id IN' => $calendarIds])
             ->all();
 
         return $this->formatListAsCake2($timeperiods->toArray());

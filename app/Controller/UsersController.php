@@ -31,6 +31,8 @@ use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\UsersFilter;
 
 /**
  * Class UsersController
@@ -43,7 +45,7 @@ class UsersController extends AppController {
         'Systemsetting',
         'Tenant',
         'Usergroup',
-        'ContainerUserMembership',
+        //'ContainerUserMembership',
     ];
     public $components = [
         'ListFilter.ListFilter',
@@ -68,10 +70,30 @@ class UsersController extends AppController {
 
 
     public function index() {
+        $this->layout = 'blank';
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
 
+        $usersFilter = new UsersFilter($this->request);
+       // die();
+
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $usersFilter->getPage());
+        $all_users = $Users->getUsers($this->MY_RIGHTS, $PaginateOMat);
+
+        //$all_commands = $Commands->getCommandsIndex($CommandFilter, $PaginateOMat);
+
+        $this->set('all_users', $all_users);
+        $toJson = ['all_users', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_users', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
+
+        /*
         $this->loadModel('Container');
         $options = [
             'recursive'  => -1,
@@ -134,6 +156,7 @@ class UsersController extends AppController {
             $this->set('_serialize', ['all_users']);
         }
         $this->set('userContainerIds', $userContainerIds);
+        */
         $this->set('systemsettings', $systemsettings);
     }
 

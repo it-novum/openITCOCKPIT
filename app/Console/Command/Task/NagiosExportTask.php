@@ -2070,14 +2070,16 @@ class NagiosExportTask extends AppShell {
     }
 
     /**
-     * @param null|string $uuid
+     * @param null $uuid
+     * @throws Exception
      */
     public function exportTimeperiods($uuid = null) {
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         if ($uuid !== null) {
-            $timeperiods = [];
-            $timeperiods[] = $this->Timeperiod->findByUuid($uuid);
+            $timeperiods[] = $TimeperiodsTable->getTimeperiodWithTimerangesByUuid($uuid);
         } else {
-            $timeperiods = $this->Timeperiod->find('all');
+            $timeperiods = $TimeperiodsTable->getTimeperiodWithTimeranges();
         }
 
         if (!is_dir($this->conf['path'] . $this->conf['timeperiods'])) {
@@ -2118,7 +2120,7 @@ class NagiosExportTask extends AppShell {
                 $content .= $this->addContent('alias', 1, $timeperiod['Timeperiod']['uuid']);
             }
 
-            foreach ($timeperiod['Timerange'] as $timerange) {
+            foreach ($timeperiod['Timeperiod']['timeperiod_timeranges'] as $timerange) {
                 $timeranges[$timerange['day']][] = $timerange['start'] . '-' . $timerange['end'];
             }
 
@@ -2209,7 +2211,7 @@ class NagiosExportTask extends AppShell {
                 $content .= $this->addContent('alias', 1, $timeperiod['Timeperiod']['uuid']);
             }
             $timeRanges = [];
-            foreach ($timeperiod['Timerange'] as $timeRange) {
+            foreach ($timeperiod['Timeperiod']['timeperiod_timeranges'] as $timeRange) {
                 if (empty($satelite['Satellite']['timezone']) || ($timeRange['start'] == '00:00' && $timeRange['end'] == '24:00')) {
                     $timeRanges[$weekdays[$timeRange['day']]][] = $timeRange['start'] . '-' . $timeRange['end'];
                 } else {
