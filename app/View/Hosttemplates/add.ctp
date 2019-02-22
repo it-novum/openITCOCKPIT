@@ -438,28 +438,40 @@
                                         ],
                                     ];
                                     ?>
-
-                                    <?php foreach ($hostOptions as $hostOption): ?>
-                                        <div class="form-group margin-bottom-0"
-                                             ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
-
-                                            <label for="<?php echo $hostOption['field']; ?>"
-                                                   class="col col-md-4 control-label padding-top-0">
-                                                <span class="label label-<?php echo $hostOption['class']; ?> notify-label"><?php echo $hostOption['text']; ?></span>
-                                            </label>
-
-                                            <div class="col-xs-8 smart-form">
-                                                <label class="checkbox small-checkbox-label no-required">
-                                                    <input type="checkbox" name="checkbox"
-                                                           ng-true-value="1"
-                                                           ng-false-value="0"
-                                                           id="<?php echo $hostOption['field']; ?>"
-                                                           ng-model="post.Hosttemplate.<?php echo $hostOption['field']; ?>">
-                                                    <i class="checkbox-<?php echo $hostOption['class']; ?>"></i>
+                                    <fieldset>
+                                        <legend class="font-sm"
+                                                ng-class="{'has-error-no-form': errors.notify_on_recovery}">
+                                            <div class="required">
+                                                <label>
+                                                    <?php echo __('Host notification options'); ?>
                                                 </label>
+
+                                                <div ng-repeat="error in errors.notify_on_recovery">
+                                                    <div class="text-danger">{{ error }}</div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    <?php endforeach; ?>
+                                        </legend>
+                                        <?php foreach ($hostOptions as $hostOption): ?>
+                                            <div class="form-group margin-bottom-0"
+                                                 ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
+
+                                                <label for="<?php echo $hostOption['field']; ?>"
+                                                       class="col col-md-4 control-label padding-top-0">
+                                                    <span class="label label-<?php echo $hostOption['class']; ?> notify-label"><?php echo $hostOption['text']; ?></span>
+                                                </label>
+
+                                                <div class="col-xs-8 smart-form">
+                                                    <label class="checkbox small-checkbox-label no-required">
+                                                        <input type="checkbox" name="checkbox"
+                                                               ng-true-value="1"
+                                                               ng-false-value="0"
+                                                               id="<?php echo $hostOption['field']; ?>"
+                                                               ng-model="post.Hosttemplate.<?php echo $hostOption['field']; ?>">
+                                                        <i class="checkbox-<?php echo $hostOption['class']; ?>"></i>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
                                     </fieldset>
                                 </div>
                             </div>
@@ -477,7 +489,41 @@
                                 </header>
                                 <div>
                                     <div class="widget-body">
-                                        misc contacnt
+
+                                        <div class="form-group required" ng-class="{'has-error': errors.host_url}">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <?php echo __('Host URL'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <input
+                                                        class="form-control"
+                                                        placeholder="https://issues.example.org?host=$HOSTNAME$"
+                                                        type="text"
+                                                        ng-model="post.Hosttemplate.host_url">
+                                                <div ng-repeat="error in errors.host_url">
+                                                    <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
+                                                <div class="help-block">
+                                                    <?php echo __('The macros $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced'); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group required" ng-class="{'has-error': errors.notes}">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <?php echo __('Notes'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <input
+                                                        class="form-control"
+                                                        type="text"
+                                                        ng-model="post.Hosttemplate.notes">
+                                                <div ng-repeat="error in errors.notes">
+                                                    <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
