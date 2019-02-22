@@ -184,22 +184,18 @@ class CalendarsController extends AppController {
 
             return;
         }
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        $query = $TimeperiodsTable->query();
         if ($this->Calendar->delete($id)) {
-            $timeperiods = $this->Timeperiod->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Timeperiod.calendar_id' => $id
-                ],
-                'fields'     => [
-                    'Timeperiod.id'
-                ]
-            ]);
+            $timeperiods = $TimeperiodsTable->getTimeperiodByCalendarIdsAsList($id);
+            foreach ($timeperiods as $timeperiodId => $timeperiodName) {
+                $query->update()
+                    ->set(['calendar_id' => 0])
+                    ->where(['id' => $timeperiodId])
+                    ->execute();
 
-            foreach ($timeperiods as $timeperiod) {
-                $this->Timeperiod->id = $timeperiod['Timeperiod']['id'];
-                $this->Timeperiod->saveField('calendar_id', 0);
             }
-
             $this->setFlash(__('Calendar deleted'));
             $this->redirect(['action' => 'index']);
         }
@@ -225,24 +221,19 @@ class CalendarsController extends AppController {
                 $args_are_valid = false;
             }
         }
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        $query = $TimeperiodsTable->query();
         if ($args_are_valid) {
             $this->Calendar->deleteAll('Calendar.id IN (' . implode(',', $args) . ')');
+            $timeperiods = $TimeperiodsTable->getTimeperiodByCalendarIdsAsList($args);
+            foreach ($timeperiods as $timeperiodId => $timeperiodName) {
+                $query->update()
+                    ->set(['calendar_id' => 0])
+                    ->where(['id' => $timeperiodId])
+                    ->execute();
 
-            $timeperiods = $this->Timeperiod->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Timeperiod.calendar_id' => $args
-                ],
-                'fields'     => [
-                    'Timeperiod.id'
-                ]
-            ]);
-
-            foreach ($timeperiods as $timeperiod) {
-                $this->Timeperiod->id = $timeperiod['Timeperiod']['id'];
-                $this->Timeperiod->saveField('calendar_id', 0);
             }
-
             $this->setFlash(__('The calendars were successfully deleted.'));
         } else {
             $this->setFlash(__('Could not delete the calendars. The given arguments were invalid.'), false);

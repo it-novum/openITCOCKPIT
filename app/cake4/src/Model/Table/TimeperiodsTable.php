@@ -215,6 +215,26 @@ class TimeperiodsTable extends Table {
     }
 
     /**
+     * @param array $calendarIds
+     * @return array
+     */
+    public function getTimeperiodByCalendarIdsAsList($calendarIds = []) {
+        if (!is_array($calendarIds)) {
+            $calendarIds = [$calendarIds];
+        }
+
+        $timeperiods = $this->find()
+            ->select([
+                'Timeperiods.id',
+                'Timeperiods.name'
+            ])
+            ->where(['Timeperiods.calendar_id IN' => $calendarIds])
+            ->all();
+
+        return $this->formatListAsCake2($timeperiods->toArray());
+    }
+
+    /**
      * @param array $ids
      * @return array
      */
