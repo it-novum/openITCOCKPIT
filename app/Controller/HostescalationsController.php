@@ -28,7 +28,7 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-
+use itnovum\openITCOCKPIT\Database\ScrollIndex;
 
 /**
  * @property Hostescalation $Hostescalation
@@ -56,11 +56,13 @@ class HostescalationsController extends AppController {
     public $layout = 'Admin.default';
     public $components = [
         'ListFilter.ListFilter',
-        'RequestHandler',
+        'RequestHandler'
     ];
     public $helpers = ['ListFilter.ListFilter'];
 
     public function index() {
+        $this->layout = 'blank';
+
         $options = [
             'recursive'  => -1,
             'conditions' => [
@@ -107,19 +109,52 @@ class HostescalationsController extends AppController {
             ],
         ];
 
+        if(isset($this->request->query['page'])){
+            $this->Paginator->settings['page'] = $this->request->query['page'];
+        }
         $query = Hash::merge($this->Paginator->settings, $options);
 
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_hostescalations = $this->Hostescalation->find('all', $query);
-        } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+        if (!$this->isApiRequest()) {
+            /*$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $all_hostescalations = $this->Paginator->paginate();
+            $this->set('all_hostescalations', $all_hostescalations);
+            $this->set('_serialize', ['all_hostescalations']);*/
+            return;
+        }
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            if (isset($query['limit'])) {
+                unset($query['limit']);
+            }
+            $all_hostescalations = $this->Hostescalation->find('all', $query);
+            $this->set('all_hostescalations', $all_hostescalations);
+            $this->set('_serialize', ['all_hostescalations']);
+            return;
+        } else {
+            if ($this->isScrollRequest()) {
+                $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+                $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+                $all_hostescalations = $this->Hostescalation->find('all', array_merge($this->Paginator->settings, $query));
+                $ScrollIndex->determineHasNextPage($all_hostescalations);
+                $ScrollIndex->scroll();
+            } else {
+                $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+                $all_hostescalations = $this->Paginator->paginate("Hostescalation", []);
+            }
+            //debug($this->Host->getDataSource()->getLog(false, false));
+        }
+
+        foreach ($all_hostescalations as $key => $hostescalation){
+            $all_hostescalations[$key]['Hostescalation']['allowEdit'] = $this->isWritableContainer($hostescalation['Hostescalation']['container_id']);
         }
 
         $this->set('all_hostescalations', $all_hostescalations);
+        $toJson = ['all_hostescalations', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_hostescalations', 'scroll'];
+        }
 
-        $this->set('_serialize', ['all_hostescalations']);
+        $this->set('_serialize', $toJson);
     }
 
     public function view($id = null) {

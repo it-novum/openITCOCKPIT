@@ -278,6 +278,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'hostescalations', 'action' => 'index'],
+                    'state'             => 'HostescalationsIndex',
                     'title'             => 'Host Escalations',
                     'icon'              => 'bomb',
                 ],
