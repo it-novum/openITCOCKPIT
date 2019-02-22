@@ -272,6 +272,7 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'macros', 'action' => 'index'],
+                    'state'             => 'MacrosIndex',
                     'title'             => 'User Defined Macros',
                     'icon'              => 'usd',
                 ],

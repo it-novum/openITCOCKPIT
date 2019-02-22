@@ -508,6 +508,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "DocumentationsViewController"
             })
 
+            .state('MacrosIndex', {
+                url: '/macros/index',
+                templateUrl: "/macros/index.html",
+                controller: "MacrosIndexController"
+            })
+
             .state('NotificationsHostNotification', {
                 url: '/notifications/hostNotification/:id',
                 templateUrl: "/notifications/hostNotification.html",
