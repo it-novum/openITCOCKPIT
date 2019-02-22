@@ -1,12 +1,8 @@
 angular.module('openITCOCKPIT')
-    .controller('HostescalationsIndexController', function($scope, $http, $sce, $httpParamSerializer, SortService, QueryStringService, $stateParams, StatusHelperService, $interval){
+    .controller('HostescalationsIndexController', function($scope, $http, $sce){
 
         $scope.currentPage = 1;
-
         $scope.useScroll = true;
-
-        $scope.allowEdit = true;
-
         $scope.init = true;
 
         $scope.load = function(){
@@ -61,22 +57,5 @@ angular.module('openITCOCKPIT')
 
             return $sce.trustAsHtml(html);
         }
-
-        /*
-        transform to js:
-
-        function viewHostescalationOptions($hostescalation = []) {
-            $options = ['escalate_on_recovery' => 'txt-color-greenLight', 'escalate_on_down' => 'txt-color-redLight', 'escalate_on_unreachable' => 'txt-color-blueDark'];
-            $class = 'fa fa-square ';
-            $html = '';
-            foreach ($options as $option => $color) {
-                if (isset($hostescalation['Hostescalation'][$option]) && $hostescalation['Hostescalation'][$option] == 1) {
-                    $html .= '<i class="' . $class . $color . '"></i>&nbsp';
-                }
-            }
-
-            return $html;
-        }
-        */
 
     });
