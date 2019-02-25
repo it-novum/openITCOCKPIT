@@ -27,7 +27,7 @@ use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-
+use itnovum\openITCOCKPIT\Database\ScrollIndex;
 
 /**
  * @property Serviceescalation $Serviceescalation
@@ -63,6 +63,7 @@ class ServiceescalationsController extends AppController {
     public $helpers = ['ListFilter.ListFilter', 'CustomValidationErrors'];
 
     public function index() {
+        $this->layout = 'blank';
 
         $options = [
             'recursive'  => -1,
@@ -113,18 +114,51 @@ class ServiceescalationsController extends AppController {
             ],
         ];
 
+        if (isset($this->request->query['page'])) {
+            $this->Paginator->settings['page'] = $this->request->query['page'];
+        }
         $query = Hash::merge($this->Paginator->settings, $options);
 
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_serviceescalations = $this->Serviceescalation->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
+        if (!$this->isApiRequest()) {
+            /*$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $all_serviceescalations = $this->Paginator->paginate();
+            $this->set('all_serviceescalations', $all_serviceescalations);
+            $this->set('_serialize', ['all_serviceescalations']);*/
+            return;
+        }
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            if (isset($query['limit'])) {
+                unset($query['limit']);
+            }
+            $all_serviceescalations = $this->Serviceescalation->find('all', $query);
+            $this->set('all_serviceescalations', $all_serviceescalations);
+            $this->set('_serialize', ['all_serviceescalations']);
+            return;
+        } else {
+            if ($this->isScrollRequest()) {
+                $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+                $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+                $all_serviceescalations = $this->Serviceescalation->find('all', array_merge($this->Paginator->settings, $query));
+                $ScrollIndex->determineHasNextPage($all_serviceescalations);
+                $ScrollIndex->scroll();
+            } else {
+                $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+                $all_serviceescalations = $this->Paginator->paginate("Serviceescalation", []);
+            }
+        }
+
+        foreach ($all_serviceescalations as $key => $serviceescalation) {
+            $all_serviceescalations[$key]['Serviceescalation']['allowEdit'] = $this->isWritableContainer($serviceescalation['Serviceescalation']['container_id']);
         }
 
         $this->set('all_serviceescalations', $all_serviceescalations);
-        $this->set('_serialize', ['all_serviceescalations']);
+        $toJson = ['all_serviceescalations', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_serviceescalations', 'scroll'];
+        }
+
+        $this->set('_serialize', $toJson);
     }
 
     public function view($id = null) {
