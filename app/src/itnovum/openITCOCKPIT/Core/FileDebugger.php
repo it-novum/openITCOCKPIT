@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use Cake\Error\Debugger;
+
 class FileDebugger {
 
     /**
@@ -32,6 +34,26 @@ class FileDebugger {
      * @param string $filename
      */
     public static function dump($data, $filename = '/tmp/debug.log', $wipe = false) {
+
+        $trace = Debugger::trace();
+        $file = fopen($filename, 'a+');
+        fwrite($file, '************* ' . date('H:i:s - d.m.Y') . ' ************* ' . PHP_EOL);
+        fwrite($file, Debugger::exportVar($data, 25));
+        fwrite($file, PHP_EOL . 'Stack trace' . PHP_EOL);
+        fwrite($file, $trace);
+        fwrite($file, PHP_EOL . PHP_EOL . PHP_EOL);
+        fclose($file);
+    }
+
+    /**
+     * @param mixed $data
+     * @param string $filename
+     */
+    public static function varExport($data, $filename = '/tmp/debug.log', $wipe = false) {
+
+        $file = fopen($filename, 'a+');
+        fwrite($file, '************* ' . date('H:i:s - d.m.Y') . ' ************* ' . PHP_EOL);
+
         if ($data === null) {
             $data = 'NULL';
         }
@@ -51,7 +73,7 @@ class FileDebugger {
         fclose($file);
     }
 
-    public static function wipe($filename = '/tmp/debug.log'){
+    public static function wipe($filename = '/tmp/debug.log') {
         fclose(fopen($filename, 'w+'));
     }
 }

@@ -105,41 +105,9 @@ $interval = [
     <input
             class="form-control"
             type="text"
+            placeholder="<?php echo __('Interval in seconds'); ?>"
             ng-model="interval">
     <div class="help-block margin-bottom-0">
-        <span ng-show="humanInterval.hours > 0 && humanInterval.hours < 2">
-            {{humanInterval.hours}}
-            <?php echo __('hour'); ?>
-        </span>
-
-        <span ng-show="humanInterval.hours >= 2">
-            {{humanInterval.hours}}
-            <?php echo __('hours'); ?>
-        </span>
-
-        <span ng-show="humanInterval.minutes > 0 && humanInterval.minutes < 2">
-            <span ng-show="humanInterval.hours"><?php echo __('and'); ?></span>
-            {{humanInterval.minutes}}
-            <?php echo __('minute'); ?>
-        </span>
-
-        <span ng-show="humanInterval.minutes >= 2">
-            <span ng-show="humanInterval.hours"><?php echo __('and'); ?></span>
-            {{humanInterval.minutes}}
-            <?php echo __('minutes'); ?>
-        </span>
-
-        <span ng-show="humanInterval.seconds > 0 && humanInterval.seconds < 2">
-            <span ng-show="humanInterval.minutes"><?php echo __('and'); ?></span>
-            {{humanInterval.seconds}}
-            <?php echo __('second'); ?>
-        </span>
-
-        <span ng-show="humanInterval.seconds >= 2">
-            <span ng-show="humanInterval.minutes"><?php echo __('and'); ?></span>
-            {{humanInterval.seconds}}
-            <?php echo __('seconds'); ?>
-        </span>
-
+        <human-time-directive seconds="interval"></human-time-directive>
     </div>
 </div>

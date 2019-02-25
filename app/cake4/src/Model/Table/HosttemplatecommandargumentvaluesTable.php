@@ -1,7 +1,7 @@
 <?php
+
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -23,8 +23,7 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class HosttemplatecommandargumentvaluesTable extends Table
-{
+class HosttemplatecommandargumentvaluesTable extends Table {
 
     /**
      * Initialize method
@@ -32,8 +31,7 @@ class HosttemplatecommandargumentvaluesTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         parent::initialize($config);
 
         $this->setTable('hosttemplatecommandargumentvalues');
@@ -44,11 +42,11 @@ class HosttemplatecommandargumentvaluesTable extends Table
 
         $this->belongsTo('Commandarguments', [
             'foreignKey' => 'commandargument_id',
-            'joinType' => 'INNER'
+            'joinType'   => 'INNER'
         ]);
         $this->belongsTo('Hosttemplates', [
             'foreignKey' => 'hosttemplate_id',
-            'joinType' => 'INNER'
+            'joinType'   => 'INNER'
         ]);
     }
 
@@ -58,8 +56,7 @@ class HosttemplatecommandargumentvaluesTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
             ->allowEmptyString('id', 'create');
@@ -80,11 +77,32 @@ class HosttemplatecommandargumentvaluesTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules)
-    {
+    public function buildRules(RulesChecker $rules) {
         $rules->add($rules->existsIn(['commandargument_id'], 'Commandarguments'));
         $rules->add($rules->existsIn(['hosttemplate_id'], 'Hosttemplates'));
 
         return $rules;
+    }
+
+    /**
+     * @param int $hosttemplateId
+     * @param int $commandId
+     * @return array
+     */
+    public function getByHosttemplateIdAndCommandId($hosttemplateId, $commandId) {
+        $query = $this->find()
+            ->contain(['Commandarguments'])
+            ->where([
+                'Hosttemplatecommandargumentvalues.hosttemplate_id' => $hosttemplateId,
+                'Commandarguments.command_id'                       => $commandId
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        return $result;
     }
 }

@@ -6,6 +6,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
@@ -70,6 +71,7 @@ class HosttemplatesTable extends Table {
         ]);
 
         /*
+         * // @todo Fix me if Hostgroups are migrated
         $this->belongsToMany('Hostgroups', [
             'className'        => 'Hostgroups',
             'foreignKey'       => 'hosttemplate_id',
@@ -109,7 +111,7 @@ class HosttemplatesTable extends Table {
             'saveStrategy' => 'replace'
         ])->setDependent(true);
 
-        $this->hasMany('Hosttemplatecommandargumentvalue', [
+        $this->hasMany('Hosttemplatecommandargumentvalues', [
             'saveStrategy' => 'replace'
         ])->setDependent(true);
 
@@ -144,84 +146,103 @@ class HosttemplatesTable extends Table {
             ->allowEmptyString('name', false);
 
         $validator
-            ->scalar('description')
-            ->maxLength('description', 255)
-            ->requirePresence('description', 'create')
-            ->allowEmptyString('description', false);
+            ->allowEmptyString('description', true);
 
         $validator
-            ->scalar('check_command_args')
-            ->maxLength('check_command_args', 1000)
-            ->requirePresence('check_command_args', 'create')
-            ->allowEmptyString('check_command_args', false);
+            ->integer('priority')
+            ->requirePresence('priority', 'create')
+            ->range('priority', [1, 5], __('This value must be between 1 and 5'));
+
+        $validator
+            ->integer('container_id')
+            ->requirePresence('container_id', 'create')
+            ->allowEmptyString('container_id', false)
+            ->greaterThanOrEqual('container_id', 1);
+
+        $validator
+            ->integer('max_check_attempts')
+            ->requirePresence('max_check_attempts', 'create')
+            ->greaterThanOrEqual('max_check_attempts', 1, __('This value need to be at least 1'))
+            ->allowEmptyString('max_check_attempts', false);
+
+        $validator
+            ->numeric('notification_interval')
+            ->requirePresence('notification_interval', 'create')
+            ->greaterThanOrEqual('notification_interval', 0, __('This value need to be at least 0'))
+            ->allowEmptyString('notification_interval', false);
 
         $validator
             ->integer('check_interval')
             ->requirePresence('check_interval', 'create')
+            ->greaterThanOrEqual('check_interval', 1, __('This value need to be at least 1'))
             ->allowEmptyString('check_interval', false);
 
         $validator
             ->integer('retry_interval')
             ->requirePresence('retry_interval', 'create')
+            ->greaterThanOrEqual('retry_interval', 1, __('This value need to be at least 1'))
             ->allowEmptyString('retry_interval', false);
 
         $validator
-            ->integer('max_check_attempts')
-            ->requirePresence('max_check_attempts', 'create')
-            ->allowEmptyString('max_check_attempts', false);
+            ->integer('check_period_id')
+            ->requirePresence('check_period_id', 'create')
+            ->greaterThan('check_period_id', 0, __('Please select a check period'))
+            ->allowEmptyString('check_period_id', false);
 
         $validator
-            ->numeric('first_notification_delay')
-            ->requirePresence('first_notification_delay', 'create')
-            ->allowEmptyString('first_notification_delay', false);
+            ->integer('command_id')
+            ->requirePresence('command_id', 'create')
+            ->greaterThan('command_id', 0, __('Please select a check command'))
+            ->allowEmptyString('command_id', false);
 
         $validator
-            ->numeric('notification_interval')
-            ->requirePresence('notification_interval', 'create')
-            ->allowEmptyString('notification_interval', false);
+            ->integer('notify_period_id')
+            ->requirePresence('notify_period_id', 'create')
+            ->greaterThan('notify_period_id', 0, __('Please select a notify period'))
+            ->allowEmptyString('notify_period_id', false);
 
         $validator
-            ->integer('notify_on_down')
-            ->requirePresence('notify_on_down', 'create')
-            ->allowEmptyString('notify_on_down', false);
-
-        $validator
-            ->integer('notify_on_unreachable')
-            ->requirePresence('notify_on_unreachable', 'create')
-            ->allowEmptyString('notify_on_unreachable', false);
-
-        $validator
-            ->integer('notify_on_recovery')
+            ->boolean('notify_on_recovery')
             ->requirePresence('notify_on_recovery', 'create')
             ->allowEmptyString('notify_on_recovery', false);
 
         $validator
-            ->integer('notify_on_flapping')
+            ->boolean('notify_on_down')
+            ->requirePresence('notify_on_down', 'create')
+            ->allowEmptyString('notify_on_down', false);
+
+        $validator
+            ->boolean('notify_on_unreachable')
+            ->requirePresence('notify_on_unreachable', 'create')
+            ->allowEmptyString('notify_on_unreachable', false);
+
+        $validator
+            ->boolean('notify_on_flapping')
             ->requirePresence('notify_on_flapping', 'create')
             ->allowEmptyString('notify_on_flapping', false);
 
         $validator
-            ->integer('notify_on_downtime')
+            ->boolean('notify_on_downtime')
             ->requirePresence('notify_on_downtime', 'create')
             ->allowEmptyString('notify_on_downtime', false);
 
         $validator
-            ->integer('flap_detection_enabled')
+            ->boolean('flap_detection_enabled')
             ->requirePresence('flap_detection_enabled', 'create')
             ->allowEmptyString('flap_detection_enabled', false);
 
         $validator
-            ->integer('flap_detection_on_up')
+            ->boolean('flap_detection_on_up')
             ->requirePresence('flap_detection_on_up', 'create')
             ->allowEmptyString('flap_detection_on_up', false);
 
         $validator
-            ->integer('flap_detection_on_down')
+            ->boolean('flap_detection_on_down')
             ->requirePresence('flap_detection_on_down', 'create')
             ->allowEmptyString('flap_detection_on_down', false);
 
         $validator
-            ->integer('flap_detection_on_unreachable')
+            ->boolean('flap_detection_on_unreachable')
             ->requirePresence('flap_detection_on_unreachable', 'create')
             ->allowEmptyString('flap_detection_on_unreachable', false);
 
@@ -236,70 +257,71 @@ class HosttemplatesTable extends Table {
             ->allowEmptyString('high_flap_threshold', false);
 
         $validator
-            ->integer('process_performance_data')
-            ->requirePresence('process_performance_data', 'create')
-            ->allowEmptyString('process_performance_data', false);
+            ->boolean('process_performance_data')
+            ->requirePresence('process_performance_data', false)
+            ->allowEmptyString('process_performance_data', true);
 
         $validator
-            ->integer('freshness_checks_enabled')
-            ->requirePresence('freshness_checks_enabled', 'create')
-            ->allowEmptyString('freshness_checks_enabled', false);
+            ->boolean('freshness_checks_enabled')
+            ->requirePresence('freshness_checks_enabled', false)
+            ->allowEmptyString('freshness_checks_enabled', true);
 
         $validator
             ->integer('freshness_threshold')
             ->allowEmptyString('freshness_threshold');
 
         $validator
-            ->integer('passive_checks_enabled')
+            ->boolean('passive_checks_enabled')
             ->requirePresence('passive_checks_enabled', 'create')
             ->allowEmptyString('passive_checks_enabled', false);
 
         $validator
-            ->integer('event_handler_enabled')
+            ->boolean('event_handler_enabled')
             ->requirePresence('event_handler_enabled', 'create')
             ->allowEmptyString('event_handler_enabled', false);
 
         $validator
-            ->integer('active_checks_enabled')
+            ->boolean('active_checks_enabled')
             ->requirePresence('active_checks_enabled', 'create')
             ->allowEmptyString('active_checks_enabled', false);
 
         $validator
-            ->integer('retain_status_information')
-            ->requirePresence('retain_status_information', 'create')
-            ->allowEmptyString('retain_status_information', false);
-
-        $validator
-            ->integer('retain_nonstatus_information')
-            ->requirePresence('retain_nonstatus_information', 'create')
-            ->allowEmptyString('retain_nonstatus_information', false);
-
-        $validator
-            ->integer('notifications_enabled')
-            ->requirePresence('notifications_enabled', 'create')
-            ->allowEmptyString('notifications_enabled', false);
-
-        $validator
             ->scalar('notes')
-            ->maxLength('notes', 255)
-            ->requirePresence('notes', 'create')
-            ->allowEmptyString('notes', false);
-
-        $validator
-            ->integer('priority')
-            ->requirePresence('priority', 'create')
-            ->allowEmptyString('priority', false);
+            ->requirePresence('notes', false)
+            ->allowEmptyString('notes', true)
+            ->maxLength('notes', 255);
 
         $validator
             ->scalar('tags')
-            ->maxLength('tags', 255)
-            ->requirePresence('tags', 'create')
-            ->allowEmptyString('tags', false);
+            ->requirePresence('tags', false)
+            ->allowEmptyString('tags', true)
+            ->maxLength('tags', 255);
 
         $validator
             ->scalar('host_url')
-            ->maxLength('host_url', 255)
-            ->allowEmptyString('host_url');
+            ->requirePresence('host_url', false)
+            ->allowEmptyString('host_url', true)
+            ->maxLength('host_url', 255);
+
+        $validator
+            ->add('contacts', 'custom', [
+                'rule'    => [$this, 'atLeastOne'],
+                'message' => __('You must specify at least one contact or contact group.')
+            ]);
+
+        $validator
+            ->add('contactgroups', 'custom', [
+                'rule'    => [$this, 'atLeastOne'],
+                'message' => __('You must specify at least one contact or contact group.')
+            ]);
+
+        $validator
+            ->allowEmptyString('customvariables', true)
+            ->add('customvariables', 'custom', [
+                'rule'    => [$this, 'checkMacroNames'],
+                'message' => _('Macro name needs to be unique')
+            ]);
+
 
         return $validator;
     }
@@ -315,6 +337,38 @@ class HosttemplatesTable extends Table {
         $rules->add($rules->isUnique(['uuid']));
 
         return $rules;
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for contacts and or contact groups
+     */
+    public function atLeastOne($value, $context) {
+        return !empty($context['data']['contacts']['_ids']) || !empty($context['data']['contactgroups']['_ids']);
+    }
+
+    /**
+     * @param string $value
+     * @param array $context
+     * @return bool
+     */
+    public function checkMacroNames($value, $context) {
+        if (isset($context['data']['customvariables']) && is_array($context['data']['customvariables'])) {
+            $usedNames = [];
+
+            foreach ($context['data']['customvariables'] as $macro) {
+                if (in_array($macro['name'], $usedNames, true)) {
+                    //Macro name not unique
+                    return false;
+                }
+                $usedNames[] = $macro['name'];
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -345,5 +399,84 @@ class HosttemplatesTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $dataToParse
+     * @return array
+     */
+    public function resolveDataForChangelog($dataToParse = []) {
+        $extDataForChangelog = [
+            'Contact' => [],
+            'Contactgroup',
+            'CheckPeriod',
+            'NotifyPeriod',
+            'CheckCommand',
+
+        ];
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+        if (!empty($dataToParse['Hosttemplate']['contacts']['_ids'])) {
+            foreach ($ContactsTable->getContactsAsList($dataToParse['Hosttemplate']['contacts']['_ids']) as $contactId => $contactName) {
+                $extDataForChangelog['Contact'][] = [
+                    'id'   => $contactId,
+                    'name' => $contactName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Hosttemplate']['contactgroups']['_ids'])) {
+            foreach ($ContactgroupsTable->getContactgroupsAsList($dataToParse['Hosttemplate']['contactgroups']['_ids']) as $contactgroupId => $contactgroupName) {
+                $extDataForChangelog['Contactgroup'][] = [
+                    'id'   => $contactgroupId,
+                    'name' => $contactgroupName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Hosttemplate']['check_period_id'])) {
+            foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Hosttemplate']['check_period_id']) as $timeperiodId => $timeperiodName) {
+                $extDataForChangelog['CheckPeriod'][] = [
+                    'id'   => $timeperiodId,
+                    'name' => $timeperiodName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Hosttemplate']['notify_period_id'])) {
+            foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Hosttemplate']['notify_period_id']) as $timeperiodId => $timeperiodName) {
+                $extDataForChangelog['NotifyPeriod'][] = [
+                    'id'   => $timeperiodId,
+                    'name' => $timeperiodName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Hosttemplate']['command_id'])) {
+            foreach ($CommandsTable->getCommandByIdAsList($dataToParse['Hosttemplate']['command_id']) as $commandId => $commandName) {
+                $extDataForChangelog['CheckCommand'][] = [
+                    'id'   => $commandId,
+                    'name' => $commandName
+                ];
+            }
+        }
+
+        return $extDataForChangelog;
+    }
+
+    /**
+     * @param array $requestData
+     * @return array
+     */
+    public function getHosttemplatecommandargumentvaluesForSave($requestData){
+
     }
 }

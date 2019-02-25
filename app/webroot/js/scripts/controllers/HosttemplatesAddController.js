@@ -38,15 +38,6 @@ angular.module('openITCOCKPIT')
                 tags: '',
                 container_id: 0,
                 host_url: '',
-                check_command: {
-                    id: 0
-                },
-                check_period: {
-                    id: 0
-                },
-                notify_period: {
-                    id: 0
-                },
                 contacts: {
                     _ids: []
                 },
@@ -56,7 +47,8 @@ angular.module('openITCOCKPIT')
                 hostgroups: {
                     _ids: []
                 },
-                customvariables: []
+                customvariables: [],
+                Hosttemplatecommandargumentvalues: []
             }
         };
 
@@ -85,6 +77,20 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.commands = result.data.commands;
+                $scope.init = false;
+            });
+        };
+
+        $scope.loadCommandArguments = function(){
+            var params = {
+                'angular': true
+            };
+
+            var commandId = $scope.post.Hosttemplate.command_id;
+            $http.get("/hosttemplates/loadCommandArguments/"+commandId+".json", {
+                params: params
+            }).then(function(result){
+                $scope.post.Hosttemplate.Hosttemplatecommandargumentvalues = result.data.hosttemplatecommandargumentvalues;
                 $scope.init = false;
             });
         };
@@ -128,9 +134,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            console.log( $scope.post);
-            return;
-
             $http.post("/hosttemplates/add.json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -169,6 +172,13 @@ angular.module('openITCOCKPIT')
                 return;
             }
             $scope.loadElements();
+        }, true);
+
+        $scope.$watch('post.Hosttemplate.command_id', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.loadCommandArguments();
         }, true);
 
 

@@ -52,7 +52,9 @@ angular.module('openITCOCKPIT').directive('priorityDirective', function($http){
 
             $scope.mouseleave = function(){
                 setPriorityClasses($scope.priority);
-            }
+            };
+
+            setPriorityClasses($scope.priority);
 
         },
 

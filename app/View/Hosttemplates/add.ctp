@@ -114,7 +114,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group required"
+                                        <div class="form-group"
                                              ng-class="{'has-error': errors.hostgroups}">
                                             <label class="col-xs-12 col-lg-2 control-label">
                                                 <?php echo __('Host groups'); ?>
@@ -127,7 +127,7 @@
                                                         chosen="timeperiods"
                                                         multiple
                                                         ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
-                                                        ng-model="post.Hosttemplate.hostgroups._id">
+                                                        ng-model="post.Hosttemplate.hostgroups._ids">
                                                 </select>
                                                 <div ng-repeat="error in errors.hostgroups">
                                                     <div class="help-block text-danger">{{ error }}</div>
@@ -150,7 +150,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group" ng-class="{'has-error': errors.name}">
+                                        <div class="form-group" ng-class="{'has-error': errors.priority}">
                                             <label class="col-xs-12 col-lg-2 control-label">
                                                 <?php echo __('Priority'); ?>
                                             </label>
@@ -158,7 +158,6 @@
 
                                                 <priority-directive priority="post.Hosttemplate.priority"
                                                                     callback="setPriority"></priority-directive>
-
                                             </div>
                                         </div>
 
@@ -182,7 +181,7 @@
                                 <div class="widget-body">
 
                                     <div class="form-group required"
-                                         ng-class="{'has-error': errors.check_period}">
+                                         ng-class="{'has-error': errors.check_period_id}">
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <?php echo __('Check period'); ?>
                                         </label>
@@ -193,9 +192,9 @@
                                                     class="form-control"
                                                     chosen="timeperiods"
                                                     ng-options="checkperiod.key as checkperiod.value for checkperiod in checkperiods"
-                                                    ng-model="post.Hosttemplate.check_period.id">
+                                                    ng-model="post.Hosttemplate.check_period_id">
                                             </select>
-                                            <div ng-repeat="error in errors.check_period">
+                                            <div ng-repeat="error in errors.check_period_id">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
                                         </div>
@@ -216,11 +215,14 @@
                                                        ng-model="post.Hosttemplate.active_checks_enabled">
                                                 <i class="checkbox-primary"></i>
                                             </label>
+                                            <div class="help-block">
+                                                <?php echo __('If disabled the check command won\'t be executed. This is useful if an external program sends state data to openITCOCKPIT.'); ?>
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="form-group required"
-                                         ng-class="{'has-error': errors.check_command}">
+                                         ng-class="{'has-error': errors.command_id}">
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <?php echo __('Check command'); ?>
                                         </label>
@@ -231,11 +233,42 @@
                                                     class="form-control"
                                                     chosen="commands"
                                                     ng-options="command.key as command.value for command in commands"
-                                                    ng-model="post.Hosttemplate.check_command.id">
+                                                    ng-model="post.Hosttemplate.command_id">
                                             </select>
-                                            <div ng-repeat="error in errors.check_command">
+                                            <div class="help-block" ng-hide="post.Hosttemplate.active_checks_enabled">
+                                                <?php echo __('Due to active checking is disabled, this command will only be used as freshness check command.'); ?>
+                                            </div>
+                                            <div ng-repeat="error in errors.command_id">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group"
+                                         ng-class="{'has-error': errors.hosttemplatecommandargumentvalues}"
+                                         ng-repeat="hosttemplatecommandargumentvalue in post.Hosttemplate.Hosttemplatecommandargumentvalues">
+                                        <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-primary">
+                                            {{hosttemplatecommandargumentvalue.commandargument.human_name}}
+                                        </label>
+                                        <div class="col-xs-12 col-lg-8">
+                                            <input
+                                                    class="form-control"
+                                                    type="text"
+                                                    ng-model="hosttemplatecommandargumentvalue.value">
+                                            <div ng-repeat="error in errors.hosttemplatecommandargumentvalues">
+                                                <div class="help-block text-danger">{{ error }}</div>
+                                            </div>
+                                            <div class="help-block">
+                                                {{hosttemplatecommandargumentvalue.commandargument.name}}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group"
+                                         ng-show="post.Hosttemplate.command_id > 0 && post.Hosttemplate.Hosttemplatecommandargumentvalues.length == 0">
+                                        <div class="col-xs-12 col-lg-offset-2 text-info">
+                                            <i class="fa fa-info-circle"></i>
+                                            <?php echo __('This command does not have any parameters.'); ?>
                                         </div>
                                     </div>
 
@@ -265,19 +298,39 @@
                                         </div>
                                     </div>
 
-
                                     <div class="form-group required"
                                          ng-class="{'has-error': errors.max_check_attempts}">
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <?php echo __('Max. number of check attempts'); ?>
                                         </label>
-                                        <div class="col-xs-12 col-lg-10">
+                                        <div class="col-xs-12 col-lg-7">
+                                            <div class="btn-group">
+                                                <?php for ($i = 1; $i <= 10; $i++): ?>
+                                                    <button
+                                                            type="button"
+                                                            class="btn btn-default"
+                                                            ng-click="post.Hosttemplate.max_check_attempts = <?php echo h($i) ?>"
+                                                            ng-class="{'active': post.Hosttemplate.max_check_attempts == <?php echo h($i); ?>}">
+                                                        <?php echo h($i); ?>
+                                                    </button>
+                                                <?php endfor; ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-lg-3">
                                             <input
                                                     class="form-control"
                                                     type="number"
+                                                    min="0"
                                                     ng-model="post.Hosttemplate.max_check_attempts">
+                                        </div>
+                                        <div class="col-xs-12 col-lg-offset-2 col-lg-12">
                                             <div class="help-block">
-                                                <?php echo __('Number of attempts before the host will switch into a hard state.'); ?>
+                                                <?php echo __('Number of failed attempts before the host will switch into hard state.'); ?>
+                                            </div>
+                                            <div class="help-block">
+                                                <?php echo __('Worst case time delay until notification command gets executed after state hits a non ok state: '); ?>
+                                                <human-time-directive
+                                                        seconds="(post.Hosttemplate.check_interval + (post.Hosttemplate.max_check_attempts -1) * post.Hosttemplate.retry_interval)"></human-time-directive>
                                             </div>
                                             <div ng-repeat="error in errors.max_check_attempts">
                                                 <div class="help-block text-danger">{{ error }}</div>
@@ -303,7 +356,7 @@
                             <div>
                                 <div class="widget-body">
                                     <div class="form-group required"
-                                         ng-class="{'has-error': errors.notify_period}">
+                                         ng-class="{'has-error': errors.notify_period_id}">
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <?php echo __('Notification period'); ?>
                                         </label>
@@ -314,9 +367,9 @@
                                                     class="form-control"
                                                     chosen="timeperiods"
                                                     ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
-                                                    ng-model="post.Hosttemplate.notify_period.id">
+                                                    ng-model="post.Hosttemplate.notify_period_id">
                                             </select>
-                                            <div ng-repeat="error in errors.notify_period">
+                                            <div ng-repeat="error in errors.notify_period_id">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
                                         </div>
@@ -349,7 +402,7 @@
                                                     chosen="timeperiods"
                                                     multiple
                                                     ng-options="contact.key as contact.value for contact in contacts"
-                                                    ng-model="post.Hosttemplate.contacts._id">
+                                                    ng-model="post.Hosttemplate.contacts._ids">
                                             </select>
                                             <div ng-repeat="error in errors.contacts">
                                                 <div class="help-block text-danger">{{ error }}</div>
@@ -370,7 +423,7 @@
                                                     chosen="timeperiods"
                                                     multiple
                                                     ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
-                                                    ng-model="post.Hosttemplate.contactgroups._id">
+                                                    ng-model="post.Hosttemplate.contactgroups._ids">
                                             </select>
                                             <div ng-repeat="error in errors.contactgroups">
                                                 <div class="help-block text-danger">{{ error }}</div>
@@ -597,7 +650,14 @@
                                     <h2><?php echo __('Host macro configuration'); ?></h2>
                                 </header>
                                 <div>
-                                    <div class="widget-body">
+                                    <div class="widget-body"
+                                         ng-class="{'has-error-no-form': errors.customvariables_unique}">
+
+                                        <div class="row">
+                                            <div ng-repeat="error in errors.customvariables_unique">
+                                                <div class=" col-xs-12 text-danger">{{ error }}</div>
+                                            </div>
+                                        </div>
 
                                         <div class="row"
                                              ng-repeat="customvariable in post.Hosttemplate.customvariables">

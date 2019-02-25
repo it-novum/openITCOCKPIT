@@ -76,7 +76,8 @@ $config = [
                 'macros',
                 'ldap_configuration',
                 'priority',
-                'intervalInput'
+                'intervalInput',
+                'humanTime'
             ],
             'Automaps'         => [
                 'icon'
@@ -212,15 +213,15 @@ $config = [
                 'edit'  => ['getConsoleWelcome']
             ],
             'Timeperiods'           => [
-                'index'  => [
+                'index' => [
                     'view',
                     'loadTimeperiodsByContainerId'
                 ],
             ],
             'Contactgroups'         => [
-                'index'  => ['view'],
-                'add'    => ['loadContacts', 'loadContainers'],
-                'edit'   => ['loadContacts', 'loadContainers'],
+                'index' => ['view'],
+                'add'   => ['loadContacts', 'loadContainers'],
+                'edit'  => ['loadContacts', 'loadContainers'],
             ],
             'Contacts'              => [
                 'index' => ['view'],
@@ -263,8 +264,8 @@ $config = [
             ],
             'Hosttemplates'         => [
                 'index' => ['view'],
-                'add'   => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId', 'loadContainers', 'loadCommands'],
-                'edit'  => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId', 'loadContainers', 'loadCommands'],
+                'add'   => ['loadElementsByContainerId', 'loadContainers', 'loadCommands', 'loadCommandArguments'],
+                'edit'  => ['loadElementsByContainerId', 'loadContainers', 'loadCommands', 'loadCommandArguments'],
             ],
             'Instantreports'        => [
                 'index' => ['createPdfReport'],

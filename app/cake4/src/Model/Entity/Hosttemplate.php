@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -50,25 +51,16 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
- * @property \App\Model\Entity\Hosttemplatetype $hosttemplatetype
- * @property \App\Model\Entity\Command $command
  * @property \App\Model\Entity\EventhandlerCommand $eventhandler_command
- * @property \App\Model\Entity\Timeperiod $timeperiod
- * @property \App\Model\Entity\CheckPeriod $check_period
- * @property \App\Model\Entity\NotifyPeriod $notify_period
  * @property \App\Model\Entity\Container $container
- * @property \App\Model\Entity\ContactgroupsToHosttemplate[] $contactgroups_to_hosttemplates
- * @property \App\Model\Entity\ContactsToHosttemplate[] $contacts_to_hosttemplates
- * @property \App\Model\Entity\DeletedHost[] $deleted_hosts
+ * @property \App\Model\Entity\Contacts[] $contats
+ * @property \App\Model\Entity\Contactgroups[] $contactgroups
  * @property \App\Model\Entity\Host[] $hosts
  * @property \App\Model\Entity\Hosttemplatecommandargumentvalue[] $hosttemplatecommandargumentvalues
- * @property \App\Model\Entity\HosttemplatesToHostgroup[] $hosttemplates_to_hostgroups
- * @property \App\Model\Entity\IdoitObject[] $idoit_objects
- * @property \App\Model\Entity\IdoitObjecttype[] $idoit_objecttypes
- * @property \App\Model\Entity\NmapConfiguration[] $nmap_configurations
+ * @property \App\Model\Entity\Hostgroups[] $hostgroups
+ * @property \App\Model\Entity\Customvariables[] $customvariables
  */
-class Hosttemplate extends Entity
-{
+class Hosttemplate extends Entity {
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -80,63 +72,59 @@ class Hosttemplate extends Entity
      * @var array
      */
     protected $_accessible = [
-        'uuid' => true,
-        'name' => true,
-        'description' => true,
-        'hosttemplatetype_id' => true,
-        'command_id' => true,
-        'check_command_args' => true,
-        'eventhandler_command_id' => true,
-        'timeperiod_id' => true,
-        'check_interval' => true,
-        'retry_interval' => true,
-        'max_check_attempts' => true,
-        'first_notification_delay' => true,
-        'notification_interval' => true,
-        'notify_on_down' => true,
-        'notify_on_unreachable' => true,
-        'notify_on_recovery' => true,
-        'notify_on_flapping' => true,
-        'notify_on_downtime' => true,
-        'flap_detection_enabled' => true,
-        'flap_detection_on_up' => true,
-        'flap_detection_on_down' => true,
-        'flap_detection_on_unreachable' => true,
-        'low_flap_threshold' => true,
-        'high_flap_threshold' => true,
-        'process_performance_data' => true,
-        'freshness_checks_enabled' => true,
-        'freshness_threshold' => true,
-        'passive_checks_enabled' => true,
-        'event_handler_enabled' => true,
-        'active_checks_enabled' => true,
-        'retain_status_information' => true,
-        'retain_nonstatus_information' => true,
-        'notifications_enabled' => true,
-        'notes' => true,
-        'priority' => true,
-        'check_period_id' => true,
-        'notify_period_id' => true,
-        'tags' => true,
-        'container_id' => true,
-        'host_url' => true,
-        'created' => true,
-        'modified' => true,
-        'hosttemplatetype' => true,
-        'command' => true,
-        'eventhandler_command' => true,
-        'timeperiod' => true,
-        'check_period' => true,
-        'notify_period' => true,
-        'container' => true,
-        'contactgroups_to_hosttemplates' => true,
-        'contacts_to_hosttemplates' => true,
-        'deleted_hosts' => true,
-        'hosts' => true,
+        'uuid'                              => true,
+        'name'                              => true,
+        'description'                       => true,
+        'hosttemplatetype_id'               => true,
+        'command_id'                        => true,
+        'check_command_args'                => true,
+        'eventhandler_command_id'           => true,
+        'timeperiod_id'                     => true,
+        'check_interval'                    => true,
+        'retry_interval'                    => true,
+        'max_check_attempts'                => true,
+        'first_notification_delay'          => true,
+        'notification_interval'             => true,
+        'notify_on_down'                    => true,
+        'notify_on_unreachable'             => true,
+        'notify_on_recovery'                => true,
+        'notify_on_flapping'                => true,
+        'notify_on_downtime'                => true,
+        'flap_detection_enabled'            => true,
+        'flap_detection_on_up'              => true,
+        'flap_detection_on_down'            => true,
+        'flap_detection_on_unreachable'     => true,
+        'low_flap_threshold'                => true,
+        'high_flap_threshold'               => true,
+        'process_performance_data'          => true,
+        'freshness_checks_enabled'          => true,
+        'freshness_threshold'               => true,
+        'passive_checks_enabled'            => true,
+        'event_handler_enabled'             => true,
+        'active_checks_enabled'             => true,
+        'retain_status_information'         => true,
+        'retain_nonstatus_information'      => true,
+        'notifications_enabled'             => true,
+        'notes'                             => true,
+        'priority'                          => true,
+        'check_period_id'                   => true,
+        'notify_period_id'                  => true,
+        'tags'                              => true,
+        'container_id'                      => true,
+        'host_url'                          => true,
+        'created'                           => true,
+        'modified'                          => true,
+        'hosttemplatetype'                  => true,
+        'command'                           => true,
+        'eventhandler_command'              => true,
+        'timeperiod'                        => true,
+        'check_period'                      => true,
+        'notify_period'                     => true,
+        'container'                         => true,
         'hosttemplatecommandargumentvalues' => true,
-        'hosttemplates_to_hostgroups' => true,
-        'idoit_objects' => true,
-        'idoit_objecttypes' => true,
-        'nmap_configurations' => true
+        'customvariables'                   => true,
+        'contacts'                          => true,
+        'contactgroups'                     => true,
+        'hostgroups'                        => true
     ];
 }

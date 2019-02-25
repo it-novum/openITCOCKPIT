@@ -718,4 +718,9 @@ class AngularController extends AppController {
         //Only ship HTML template
         return;
     }
+
+    public function humanTime(){
+        //Only ship HTML template
+        return;
+    }
 }
