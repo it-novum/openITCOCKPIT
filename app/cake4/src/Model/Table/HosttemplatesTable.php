@@ -324,7 +324,13 @@ class HosttemplatesTable extends Table {
      */
     public function getHosttemplatesIndex(HosttemplateFilter $HosttemplateFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all')->disableHydration();
-        $query->where($HosttemplateFilter->indexFilter());
+        $where = $HosttemplateFilter->indexFilter();
+        $where['Hosttemplate.hosttemplatetype_id'] = GENERIC_HOSTTEMPLATE;
+        if (!empty($MY_RIGHTS)) {
+            $where['Hosttemplates.container_id IN'] = $MY_RIGHTS;
+        }
+
+        $query->where();
         $query->order($HosttemplateFilter->getOrderForPaginator('Hosttemplates.name', 'asc'));
 
         if ($PaginateOMat === null) {
