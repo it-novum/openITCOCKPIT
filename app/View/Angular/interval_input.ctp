@@ -104,7 +104,9 @@ $interval = [
 <div class="col-xs-12 col-lg-3">
     <input
             class="form-control"
-            type="text"
+            type="number"
+            min="<?php echo Configure::read('NagiosModule.SLIDER_MIN'); ?>"
+            max="<?php echo Configure::read('NagiosModule.SLIDER_MAX'); ?>"
             placeholder="<?php echo __('Interval in seconds'); ?>"
             ng-model="interval">
     <div class="help-block margin-bottom-0">
