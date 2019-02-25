@@ -308,7 +308,7 @@ class HostescalationsController extends AppController {
         $this->request->data = Hash::merge($hostescalation, $this->request->data);
 
         $this->set(compact(['hostescalation', 'containers', 'hosts', 'hostsExcluded', 'hostgroups', 'hostgroupsExcluded', 'timeperiods', 'contactgroups', 'contacts']));
-        $this->set('_serialize', ['hostescalation','containers', 'hosts', 'hostsExcluded', 'hostgroups', 'hostgroupsExcluded', 'timeperiods', 'contactgroups', 'contacts']);
+        $this->set('_serialize', ['hostescalation', 'containers', 'hosts', 'hostsExcluded', 'hostgroups', 'hostgroupsExcluded', 'timeperiods', 'contactgroups', 'contacts']);
     }
 
     public function add() {
@@ -394,11 +394,11 @@ class HostescalationsController extends AppController {
         }
 
         if ($this->Hostescalation->delete($id)) {
-            $this->setFlash(__('Hostescalation deleted'));
-            $this->redirect(['action' => 'index']);
+            $this->set('message', __('Hostescalation deleted'));
+            $this->set('_serialize', ['message']);
         }
-        $this->setFlash(__('Could not delete hostescalation'), false);
-        $this->redirect(['action' => 'index']);
+        $this->set('message', __('Could not delete hostescalation'));
+        $this->set('_serialize', ['message']);
     }
 
     public function loadElementsByContainerId($containerId = null) {

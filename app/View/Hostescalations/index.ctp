@@ -43,6 +43,10 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
                         <?php if ($this->Acl->hasPermission('add')): ?>
                             <a ui-sref="HostescalationsAdd" class="btn btn-xs btn-success" icon="fa fa-plus">
                                 <i class="fa fa-plus"></i> <?php echo __('New'); ?>

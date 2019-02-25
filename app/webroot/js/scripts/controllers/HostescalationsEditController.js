@@ -21,15 +21,8 @@ angular.module('openITCOCKPIT')
             Contactgroup: [],
         };
 
-
-        $scope.containers = {};
-        $scope.hosts = {};
-        $scope.hostsExcluded = {};
-        $scope.hostgroups = {};
-        $scope.hostgroupsExcluded = {};
-        $scope.timeperiods = {};
-        $scope.contacts = {};
-        $scope.contactgroups = {};
+        $scope.deleteUrl = "/hostescalations/delete/" + $scope.post.Hostescalation.id + ".json?angular=true";
+        $scope.successState = 'HostescalationsIndex';
 
         $scope.load = function() {
 

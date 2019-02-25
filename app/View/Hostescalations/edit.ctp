@@ -37,15 +37,18 @@
 </div>
 <div id="error_msg"></div>
 
+<confirm-delete></confirm-delete>
+
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-bomb"></i> </span>
         <h2><?php echo __('Edit Host Escalation'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                <a href="#" class="btn btn-danger btn-xs" icon="fa fa-trash-o"
-                   onclick="if (confirm(&quot;Really delete? &quot;)) { document.post_5c73c4abb2c31198510024.submit(); } event.returnValue = false; return false;"><i
-                            class="fa fa-trash-o"></i> Delete</a>
+                <button type="button" class="btn btn-danger btn-xs" ng-click="confirmDelete(post.Hostescalation)">
+                    <i class="fa fa-trash-o"></i>
+                    <?php echo __('Delete'); ?>
+                </button>
             <?php endif; ?>
             <a ui-sref="HostescalationsIndex" class="btn btn-default btn-xs" iconcolor="white">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
