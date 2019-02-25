@@ -108,6 +108,6 @@ class User extends Entity {
      * @return string
      */
     protected function _getFullName() {
-        return $this->fistname . ' ' . $this->lastname;
+        return $this->firstname . ' ' . $this->lastname;
     }
 }
