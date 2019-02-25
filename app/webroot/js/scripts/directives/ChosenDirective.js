@@ -21,9 +21,9 @@ angular.module('openITCOCKPIT').directive('chosen', function($http, $filter, $ro
                 element.trigger('chosen:updated');
             }, true);
 
-            var unwatchSource = $scope.$watchCollection(attrs.chosen, function(){
+            var unwatchSource = $scope.$watch(attrs.chosen, function(){
                 element.trigger('chosen:updated');
-            });
+            }, true);
 
             var defaultOptions = {
                 placeholder_text_single: 'Please choose',

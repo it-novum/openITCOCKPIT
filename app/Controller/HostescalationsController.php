@@ -295,6 +295,7 @@ class HostescalationsController extends AppController {
     }
 
     public function add() {
+        $this->layout = 'angularjs';
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $TimeperiodsTable TimeperiodsTable */
@@ -305,6 +306,7 @@ class HostescalationsController extends AppController {
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
         $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTESCALATION, [], $this->hasRootPrivileges);
+        $containers = Api::makeItJavaScriptAble($containers);
 
         $hosts = [];
         $hostgroups = [];
@@ -312,8 +314,8 @@ class HostescalationsController extends AppController {
         $contactgroups = [];
         $contacts = [];
 
-        $this->Frontend->set('data_placeholder', __('Please choose'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
+        //$this->Frontend->set('data_placeholder', __('Please choose'));
+        //$this->Frontend->set('data_placeholder_empty', __('No entries found'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
             App::uses('UUID', 'Lib');
@@ -375,6 +377,10 @@ class HostescalationsController extends AppController {
             }
         }
         $this->set(compact(['containers', 'hosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts']));
+        if($this->isAngularJsRequest()){
+            //$this->layout = 'blank';
+            $this->set('_serialize', ['containers', 'hosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts']);
+        }
     }
 
     public function delete($id = null) {
@@ -397,7 +403,11 @@ class HostescalationsController extends AppController {
     }
 
     public function loadElementsByContainerId($containerId = null) {
-        $this->allowOnlyAjaxRequests();
+        if(!$this->isApiRequest()){
+            throw new MethodNotAllowedException(__('This is only allowed via API.'));
+            return;
+        }
+
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $TimeperiodsTable TimeperiodsTable */

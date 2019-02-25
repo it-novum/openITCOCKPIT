@@ -27,3 +27,10 @@ div.required label:after {
 .dt-toolbar-footer {
 	background: #fff;
 }
+
+.chosen-container .chosen-results li.disabled-result {
+	display: list-item!important;
+	color: #ccc!important;
+	cursor: default;
+	background: inherit!important;
+}
