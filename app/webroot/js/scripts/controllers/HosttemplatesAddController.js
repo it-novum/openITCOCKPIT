@@ -65,7 +65,7 @@ angular.module('openITCOCKPIT')
                 'angular': true
             };
 
-            $http.get("/contacts/loadContainers.json", {
+            $http.get("/hosttemplates/loadContainers.json", {
                 params: params
             }).then(function(result){
                 $scope.containers = result.data.containers;
@@ -78,32 +78,17 @@ angular.module('openITCOCKPIT')
                 'angular': true
             };
 
-            $http.get("/contacts/loadCommands.json", {
+            $http.get("/hosttemplates/loadCommands.json", {
                 params: params
             }).then(function(result){
                 $scope.commands = result.data.notificationCommands;
-                $scope.hostPushComamndId = result.data.hostPushComamndId;
-                $scope.servicePushComamndId = result.data.servicePushComamndId;
                 $scope.init = false;
             });
         };
 
-        $scope.loadUsers = function(){
-            $http.post("/contacts/loadUsersByContainerId.json?angular=true",
-                {
-                    container_ids: $scope.post.Contact.containers._ids
-                }
-            ).then(function(result){
-                $scope.users = result.data.users;
-            });
-        };
-
-        $scope.loadTimeperiods = function(){
-            $http.post("/contacts/loadTimeperiods.json?angular=true",
-                {
-                    container_ids: $scope.post.Contact.containers._ids
-                }
-            ).then(function(result){
+        $scope.loadElements = function(){
+            var containerId = $scope.post.Host.container_id;
+            $http.post("/hosttemplates/loadElementsByContainerId/" + containerId + ".json?angular=true", {}).then(function(result){
                 $scope.timeperiods = result.data.timeperiods;
             });
         };
@@ -132,11 +117,11 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            $http.post("/contacts/add.json?angular=true",
+            $http.post("/hosttemplates/add.json?angular=true",
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('ContactsIndex');
+                $state.go('HosttemplatesIndex');
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){
@@ -158,32 +143,6 @@ angular.module('openITCOCKPIT')
 
         };
 
-        var addHostBrowserPushCommand = function(){
-            var addCommand = true;
-            for(var i in $scope.post.Contact.host_commands._ids){
-                if($scope.post.Contact.host_commands._ids[i] === $scope.hostPushComamndId){
-                    addCommand = false;
-                }
-            }
-
-            if(addCommand){
-                $scope.post.Contact.host_commands._ids.push($scope.hostPushComamndId);
-            }
-        };
-
-        var addServiceBrowserPushCommand = function(){
-            var addCommand = true;
-            for(var i in $scope.post.Contact.service_commands._ids){
-                if($scope.post.Contact.service_commands._ids[i] === $scope.servicePushComamndId){
-                    addCommand = false;
-                }
-            }
-
-            if(addCommand){
-                $scope.post.Contact.service_commands._ids.push($scope.servicePushComamndId);
-            }
-        };
-
         $scope.loadContainers();
         $scope.loadCommands();
 
@@ -191,93 +150,12 @@ angular.module('openITCOCKPIT')
             $('.tagsinput').tagsinput();
         });
 
-        $scope.$watch('post.Contact.containers._ids', function(){
+        $scope.$watch('post.Host.container_id', function(){
             if($scope.init){
                 return;
             }
-            $scope.loadUsers();
-            $scope.loadTimeperiods();
+            $scope.loadElements();
         }, true);
-
-        $scope.$watch('post.Contact.host_push_notifications_enabled', function(){
-            if($scope.init){
-                return;
-            }
-
-            if($scope.post.Contact.host_push_notifications_enabled === 1){
-                //Add browser push command
-                addHostBrowserPushCommand();
-            }
-
-            if($scope.post.Contact.host_push_notifications_enabled === 0){
-                //Remove browser push command
-                for(var i in $scope.post.Contact.host_commands._ids){
-                    if($scope.post.Contact.host_commands._ids[i] === $scope.hostPushComamndId){
-                        $scope.post.Contact.host_commands._ids.splice(i, 1);
-                        return;
-                    }
-                }
-            }
-        });
-
-        $scope.$watch('post.Contact.service_push_notifications_enabled', function(){
-            if($scope.init){
-                return;
-            }
-
-            if($scope.post.Contact.service_push_notifications_enabled === 1){
-                //Add browser push command
-                addServiceBrowserPushCommand();
-            }
-
-            if($scope.post.Contact.service_push_notifications_enabled === 0){
-                //Remove browser push command
-                for(var i in $scope.post.Contact.service_commands._ids){
-                    if($scope.post.Contact.service_commands._ids[i] === $scope.servicePushComamndId){
-                        $scope.post.Contact.service_commands._ids.splice(i, 1);
-                        return;
-                    }
-                }
-            }
-        });
-
-        $scope.$watch('post.Contact.host_commands._ids', function(){
-            if($scope.init){
-                return;
-            }
-
-            var pushCommandSelected = false;
-            for(var i in $scope.post.Contact.host_commands._ids){
-                if($scope.post.Contact.host_commands._ids[i] === $scope.hostPushComamndId){
-                    $scope.post.Contact.host_push_notifications_enabled = 1;
-                    pushCommandSelected = true;
-                }
-            }
-
-            if(pushCommandSelected === false){
-                $scope.post.Contact.host_push_notifications_enabled = 0;
-            }
-        });
-
-        $scope.$watch('post.Contact.service_commands._ids', function(){
-            if($scope.init){
-                return;
-            }
-
-            var pushCommandSelected = false;
-            for(var i in $scope.post.Contact.service_commands._ids){
-                if($scope.post.Contact.service_commands._ids[i] === $scope.servicePushComamndId){
-                    $scope.post.Contact.service_push_notifications_enabled = 1;
-                    pushCommandSelected = true;
-                    return;
-                }
-            }
-
-            if(pushCommandSelected === false){
-                $scope.post.Contact.service_push_notifications_enabled = 0;
-            }
-
-        });
 
 
     });

@@ -1236,8 +1236,12 @@ class HosttemplatesController extends AppController {
         $this->set('_serialize', ['all_hosts', 'hosttemplate']);
     }
 
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
     public function loadElementsByContainerId($container_id = null) {
-        if (!$this->request->is('ajax')) {
+        if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
@@ -1271,5 +1275,37 @@ class HosttemplatesController extends AppController {
 
         $this->set(compact(['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']));
         $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']);
+    }
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        }
+
+
+        $this->set('containers', Api::makeItJavaScriptAble($containers));
+        $this->set('_serialize', ['containers']);
+    }
+
+    public function loadCommands() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
+
+        $this->set('commands', Api::makeItJavaScriptAble($commands));
+        $this->set('_serialize', ['commands']);
     }
 }

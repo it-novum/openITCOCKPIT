@@ -262,8 +262,8 @@ $config = [
             ],
             'Hosttemplates'         => [
                 'index' => ['view'],
-                'add'   => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId'],
-                'edit'  => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId'],
+                'add'   => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId', 'loadContainers', 'loadCommands'],
+                'edit'  => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId', 'loadContainers', 'loadCommands'],
             ],
             'Instantreports'        => [
                 'index' => ['createPdfReport'],
