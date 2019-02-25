@@ -194,7 +194,12 @@ class HostescalationsController extends AppController {
     }
 
     public function edit($id = null) {
-        if (!$this->Hostescalation->exists($id)) {
+        $this->layout = 'blank';
+        if (!$this->isAngularJsRequest() && $id === null) {
+            return;
+        }
+
+        if (!$this->Hostescalation->exists($id) && $id !== null) {
             throw new NotFoundException(__('Invalid hostescalation'));
         }
         $hostescalation = $this->Hostescalation->findById($id);
@@ -204,6 +209,16 @@ class HostescalationsController extends AppController {
 
             return;
         }
+
+        $hostescalation['Hostescalation']['id'] = intval($hostescalation['Hostescalation']['id']);
+        $hostescalation['Hostescalation']['container_id'] = intval($hostescalation['Hostescalation']['container_id']);
+        $hostescalation['Hostescalation']['timeperiod_id'] = intval($hostescalation['Hostescalation']['timeperiod_id']);
+        $hostescalation['Hostescalation']['first_notification'] = intval($hostescalation['Hostescalation']['first_notification']);
+        $hostescalation['Hostescalation']['last_notification'] = intval($hostescalation['Hostescalation']['last_notification']);
+        $hostescalation['Hostescalation']['notification_interval'] = intval($hostescalation['Hostescalation']['notification_interval']);
+        $hostescalation['Hostescalation']['escalate_on_recovery'] = intval($hostescalation['Hostescalation']['escalate_on_recovery']);
+        $hostescalation['Hostescalation']['escalate_on_down'] = intval($hostescalation['Hostescalation']['escalate_on_down']);
+        $hostescalation['Hostescalation']['escalate_on_unreachable'] = intval($hostescalation['Hostescalation']['escalate_on_unreachable']);
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
@@ -215,17 +230,20 @@ class HostescalationsController extends AppController {
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
         $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTESCALATION, [], $this->hasRootPrivileges);
+        $containers = Api::makeItJavaScriptAble($containers);
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($hostescalation['Hostescalation']['container_id']);
-        $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
+        $hostgroups = Api::makeItJavaScriptAble($this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id'));
+        $hostgroupsExcluded = $hostgroups;
+        $hosts = Api::makeItJavaScriptAble($this->Host->hostsByContainerId($containerIds, 'list'));
+        $hostsExcluded = $hosts;
+        $timeperiods = Api::makeItJavaScriptAble($TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list'));
 
-        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
+        $contacts = Api::makeItJavaScriptAble($ContactsTable->contactsByContainerId($containerIds, 'list'));
+        $contactgroups = Api::makeItJavaScriptAble($ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id'));
 
-        $this->Frontend->set('data_placeholder', __('Please choose'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
+        //$this->Frontend->set('data_placeholder', __('Please choose'));
+        //$this->Frontend->set('data_placeholder_empty', __('No entries found'));
 
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -262,7 +280,6 @@ class HostescalationsController extends AppController {
                 /* Delete old host associations */
                 foreach ($old_membership_hosts as $old_membership_host) {
                     $this->HostescalationHostMembership->delete($old_membership_host['HostescalationHostMembership']['id']);
-
                 }
                 $old_membership_hostgroups = $this->HostescalationHostgroupMembership->find('all', [
                     'conditions' => [
@@ -272,26 +289,26 @@ class HostescalationsController extends AppController {
                 /* Delete old hostgroup associations */
                 foreach ($old_membership_hostgroups as $old_membership_hostgroup) {
                     $this->HostescalationHostgroupMembership->delete($old_membership_hostgroup['HostescalationHostgroupMembership']['id']);
-
                 }
             }
             if ($this->Hostescalation->saveAll($this->request->data)) {
-                $this->setFlash(__('Hostescalation successfully saved'));
-                $this->redirect(['action' => 'index']);
+                $this->serializeId();
             } else {
-                $this->setFlash(__('Hostescalation could not be saved'), false);
+                $this->serializeErrorMessage();
             }
+            return;
         } else {
-            $hostescalation['Hostescalation']['Host'] = Hash::combine($hostescalation['HostescalationHostMembership'], '{n}[excluded=0].host_id', '{n}[excluded=0].host_id');
-            $hostescalation['Hostescalation']['Host_excluded'] = Hash::combine($hostescalation['HostescalationHostMembership'], '{n}[excluded=1].host_id', '{n}[excluded=1].host_id');
-            $hostescalation['Hostescalation']['Hostgroup'] = Hash::combine($hostescalation['HostescalationHostgroupMembership'], '{n}[excluded=0].hostgroup_id', '{n}[excluded=0].hostgroup_id');
-            $hostescalation['Hostescalation']['Hostgroup_excluded'] = Hash::combine($hostescalation['HostescalationHostgroupMembership'], '{n}[excluded=1].hostgroup_id', '{n}[excluded=1].hostgroup_id');
-            $hostescalation['Hostescalation']['Contact'] = Hash::extract($hostescalation['Contact'], '{n}.id');
-            $hostescalation['Hostescalation']['Contactgroup'] = Hash::extract($hostescalation['Contactgroup'], '{n}.id');
+            $hostescalation['Hostescalation']['Host'] = array_map('intval', array_values(Hash::combine($hostescalation['HostescalationHostMembership'], '{n}[excluded=0].host_id', '{n}[excluded=0].host_id')));
+            $hostescalation['Hostescalation']['Host_excluded'] = array_map('intval', array_values(Hash::combine($hostescalation['HostescalationHostMembership'], '{n}[excluded=1].host_id', '{n}[excluded=1].host_id')));
+            $hostescalation['Hostescalation']['Hostgroup'] = array_map('intval', array_values(Hash::combine($hostescalation['HostescalationHostgroupMembership'], '{n}[excluded=0].hostgroup_id', '{n}[excluded=0].hostgroup_id')));
+            $hostescalation['Hostescalation']['Hostgroup_excluded'] = array_map('intval', array_values(Hash::combine($hostescalation['HostescalationHostgroupMembership'], '{n}[excluded=1].hostgroup_id', '{n}[excluded=1].hostgroup_id')));
+            $hostescalation['Hostescalation']['Contact'] = array_map('intval', array_values(Hash::extract($hostescalation['Contact'], '{n}.id')));
+            $hostescalation['Hostescalation']['Contactgroup'] = array_map('intval', array_values(Hash::extract($hostescalation['Contactgroup'], '{n}.id')));
         }
         $this->request->data = Hash::merge($hostescalation, $this->request->data);
 
-        $this->set(compact(['hostescalation', 'hosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts', 'containers']));
+        $this->set(compact(['hostescalation', 'containers', 'hosts', 'hostsExcluded', 'hostgroups', 'hostgroupsExcluded', 'timeperiods', 'contactgroups', 'contacts']));
+        $this->set('_serialize', ['hostescalation','containers', 'hosts', 'hostsExcluded', 'hostgroups', 'hostgroupsExcluded', 'timeperiods', 'contactgroups', 'contacts']);
     }
 
     public function add() {
