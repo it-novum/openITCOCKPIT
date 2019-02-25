@@ -6,12 +6,12 @@ angular.module('openITCOCKPIT')
                 description: '',
                 command_id: 0,
                 eventhandler_command_id: 0,
-                check_interval: 7200,
+                check_interval: 3600,
                 retry_interval: 60,
                 max_check_attempts: 3,
                 first_notification_delay: 0,
                 notification_interval: 7200,
-                notify_on_down: 0,
+                notify_on_down: 1,
                 notify_on_unreachable: 1,
                 notify_on_recovery: 1,
                 notify_on_flapping: 0,
@@ -25,7 +25,7 @@ angular.module('openITCOCKPIT')
                 process_performance_data: 0,
                 freshness_checks_enabled: 0,
                 freshness_threshold: 0,
-                passive_checks_enabled: 0,
+                passive_checks_enabled: 1,
                 event_handler_enabled: 0,
                 active_checks_enabled: 1,
                 retain_status_information: 0,
@@ -51,6 +51,9 @@ angular.module('openITCOCKPIT')
                     _ids: []
                 },
                 contactgroups: {
+                    _ids: []
+                },
+                hostgroups: {
                     _ids: []
                 },
                 customvariables: []
@@ -81,16 +84,24 @@ angular.module('openITCOCKPIT')
             $http.get("/hosttemplates/loadCommands.json", {
                 params: params
             }).then(function(result){
-                $scope.commands = result.data.notificationCommands;
+                $scope.commands = result.data.commands;
                 $scope.init = false;
             });
         };
 
         $scope.loadElements = function(){
-            var containerId = $scope.post.Host.container_id;
+            var containerId = $scope.post.Hosttemplate.container_id;
             $http.post("/hosttemplates/loadElementsByContainerId/" + containerId + ".json?angular=true", {}).then(function(result){
                 $scope.timeperiods = result.data.timeperiods;
+                $scope.checkperiods = result.data.checkperiods;
+                $scope.contacts = result.data.contacts;
+                $scope.contactgroups = result.data.contactgroups;
+                $scope.hostgroups = result.data.hostgroups;
             });
+        };
+
+        $scope.setPriority = function(priority){
+            $scope.post.Hosttemplate.priority = parseInt(priority, 10);
         };
 
         $scope.addMacro = function(){
@@ -117,6 +128,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
+            console.log( $scope.post);
+            return;
+
             $http.post("/hosttemplates/add.json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -150,7 +164,7 @@ angular.module('openITCOCKPIT')
             $('.tagsinput').tagsinput();
         });
 
-        $scope.$watch('post.Host.container_id', function(){
+        $scope.$watch('post.Hosttemplate.container_id', function(){
             if($scope.init){
                 return;
             }

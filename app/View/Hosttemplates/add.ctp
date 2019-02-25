@@ -78,7 +78,6 @@
                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                         class="form-control"
                                                         chosen="containers"
-                                                        multiple
                                                         ng-options="container.key as container.value for container in containers"
                                                         ng-model="post.Hosttemplate.container_id">
                                                 </select>
@@ -118,6 +117,27 @@
                                             </div>
                                         </div>
 
+                                        <div class="form-group required"
+                                             ng-class="{'has-error': errors.hostgroups}">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <?php echo __('Host groups'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <select
+                                                        id="HostgroupsSelect"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="timeperiods"
+                                                        multiple
+                                                        ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                                        ng-model="post.Hosttemplate.hostgroups._id">
+                                                </select>
+                                                <div ng-repeat="error in errors.hostgroups">
+                                                    <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="form-group" ng-class="{'has-error': errors.tags}">
                                             <label class="col-xs-12 col-lg-2 control-label">
                                                 <?php echo __('Tags'); ?>
@@ -140,7 +160,7 @@
                                             <div class="col-xs-12 col-lg-10">
 
                                                 <priority-directive priority="post.Hosttemplate.priority"
-                                                                    callback="2"></priority-directive>
+                                                                    callback="setPriority"></priority-directive>
 
                                             </div>
                                         </div>
@@ -177,7 +197,7 @@
                                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                                     class="form-control"
                                                     chosen="timeperiods"
-                                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                                    ng-options="checkperiod.key as checkperiod.value for checkperiod in checkperiods"
                                                     ng-model="post.Hosttemplate.check_period.id">
                                             </select>
                                             <div ng-repeat="error in errors.check_period">
@@ -214,8 +234,8 @@
                                                     id="HostCheckCommandSelect"
                                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                                     class="form-control"
-                                                    chosen="timeperiods"
-                                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                                    chosen="commands"
+                                                    ng-options="command.key as command.value for command in commands"
                                                     ng-model="post.Hosttemplate.check_command.id">
                                             </select>
                                             <div ng-repeat="error in errors.check_command">
@@ -228,23 +248,8 @@
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <?php echo __('Check interval'); ?>
                                         </label>
-                                        <div class="col-xs-12 col-lg-7">
-                                            <input type="range"
-                                                   min="0"
-                                                   max="<?php echo Configure::read('NagiosModule.SLIDER_MAX'); ?>"
-                                                   step="<?php echo Configure::read('NagiosModule.SLIDER_STEPSIZE'); ?>"
-                                                   class="form-control"
-                                                   ng-model="post.Hosttemplate.check_interval">
-                                        </div>
-                                        <div class="col-xs-12 col-lg-3">
-                                            <input
-                                                    class="form-control"
-                                                    type="text"
-                                                    ng-model="post.Hosttemplate.check_interval">
-                                            <div class="help-block margin-bottom-0">
-                                                119 minutes and 0 seconds
-                                            </div>
-                                        </div>
+                                        <interval-input-directive
+                                                interval="post.Hosttemplate.check_interval"></interval-input-directive>
                                         <div class="col-xs-12 col-lg-offset-2">
                                             <div ng-repeat="error in errors.check_interval">
                                                 <div class="help-block text-danger">{{ error }}</div>
@@ -256,23 +261,8 @@
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <?php echo __('Retry interval'); ?>
                                         </label>
-                                        <div class="col-xs-12 col-lg-7">
-                                            <input type="range"
-                                                   min="0"
-                                                   max="<?php echo Configure::read('NagiosModule.SLIDER_MAX'); ?>"
-                                                   step="<?php echo Configure::read('NagiosModule.SLIDER_STEPSIZE'); ?>"
-                                                   class="form-control"
-                                                   ng-model="post.Hosttemplate.retry_interval">
-                                        </div>
-                                        <div class="col-xs-12 col-lg-3">
-                                            <input
-                                                    class="form-control"
-                                                    type="text"
-                                                    ng-model="post.Hosttemplate.retry_interval">
-                                            <div class="help-block margin-bottom-0">
-                                                119 minutes and 0 seconds
-                                            </div>
-                                        </div>
+                                        <interval-input-directive
+                                                interval="post.Hosttemplate.retry_interval"></interval-input-directive>
                                         <div class="col-xs-12 col-lg-offset-2">
                                             <div ng-repeat="error in errors.retry_interval">
                                                 <div class="help-block text-danger">{{ error }}</div>
@@ -342,23 +332,8 @@
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <?php echo __('Notification interval'); ?>
                                         </label>
-                                        <div class="col-xs-12 col-lg-7">
-                                            <input type="range"
-                                                   min="0"
-                                                   max="<?php echo Configure::read('NagiosModule.SLIDER_MAX'); ?>"
-                                                   step="<?php echo Configure::read('NagiosModule.SLIDER_STEPSIZE'); ?>"
-                                                   class="form-control"
-                                                   ng-model="post.Hosttemplate.notification_interval">
-                                        </div>
-                                        <div class="col-xs-12 col-lg-3">
-                                            <input
-                                                    class="form-control"
-                                                    type="text"
-                                                    ng-model="post.Hosttemplate.notification_interval">
-                                            <div class="help-block margin-bottom-0">
-                                                119 minutes and 0 seconds
-                                            </div>
-                                        </div>
+                                        <interval-input-directive
+                                                interval="post.Hosttemplate.notification_interval"></interval-input-directive>
                                         <div class="col-xs-12 col-lg-offset-2">
                                             <div ng-repeat="error in errors.notification_interval">
                                                 <div class="help-block text-danger">{{ error }}</div>
@@ -378,7 +353,7 @@
                                                     class="form-control"
                                                     chosen="timeperiods"
                                                     multiple
-                                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                                    ng-options="contact.key as contact.value for contact in contacts"
                                                     ng-model="post.Hosttemplate.contacts._id">
                                             </select>
                                             <div ng-repeat="error in errors.contacts">
@@ -394,12 +369,12 @@
                                         </label>
                                         <div class="col-xs-12 col-lg-10">
                                             <select
-                                                    id="NotifyPeriodSelect"
+                                                    id="ContactgroupsSelect"
                                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                                     class="form-control"
                                                     chosen="timeperiods"
                                                     multiple
-                                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                                    ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
                                                     ng-model="post.Hosttemplate.contactgroups._id">
                                             </select>
                                             <div ng-repeat="error in errors.contactgroups">
@@ -589,6 +564,7 @@
                                                             <input type="checkbox" name="checkbox"
                                                                    ng-true-value="1"
                                                                    ng-false-value="0"
+                                                                   ng-disabled="!post.Hosttemplate.flap_detection_enabled"
                                                                    id="<?php echo $hostFalpOption['field']; ?>"
                                                                    ng-model="post.Hosttemplate.<?php echo $hostFalpOption['field']; ?>">
                                                             <i class="checkbox-<?php echo $hostFalpOption['class']; ?>"></i>
@@ -616,7 +592,8 @@
                                 <div>
                                     <div class="widget-body">
 
-                                        <div class="row" ng-repeat="customvariable in post.Hosttemplate.customvariables">
+                                        <div class="row"
+                                             ng-repeat="customvariable in post.Hosttemplate.customvariables">
                                             <macros-directive macro="customvariable"
                                                               macro-name="'<?php echo __('HOST'); ?>'"
                                                               index="$index"
@@ -627,7 +604,8 @@
 
                                         <div class="row">
                                             <div class="col-md-9 col-md-offset-2 padding-top-10 text-right">
-                                                <button type="button" class="btn btn-success btn-sm" ng-click="addMacro()">
+                                                <button type="button" class="btn btn-success btn-sm"
+                                                        ng-click="addMacro()">
                                                     <i class="fa fa-plus"></i>
                                                     <?php echo __('Add new macro'); ?>
                                                 </button>

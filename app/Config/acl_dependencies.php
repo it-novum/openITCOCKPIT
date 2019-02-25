@@ -75,7 +75,8 @@ $config = [
                 'getHostAndServiceStateSummaryIcon',
                 'macros',
                 'ldap_configuration',
-                'priority'
+                'priority',
+                'intervalInput'
             ],
             'Automaps'         => [
                 'icon'
