@@ -51,10 +51,7 @@
     </header>
     <div>
         <div class="widget-body">
-
             <form ng-submit="submit();" class="form-horizontal">
-
-
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
                         <div class="jarviswidget">
@@ -172,8 +169,6 @@
                         </div>
                     </div>
                 </div>
-
-
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
                         <div class="jarviswidget">
@@ -426,27 +421,33 @@
                                                 </div>
                                             </div>
                                         </legend>
-                                        <?php foreach ($hostOptions as $hostOption): ?>
-                                            <div class="form-group margin-bottom-0"
-                                                 ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
+                                        <ul class="notifications-flex-inner">
+                                            <?php foreach ($hostOptions as $hostOption): ?>
+                                                <li>
+                                                    <div class="form-group margin-bottom-0"
+                                                         ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
 
-                                                <label for="<?php echo $hostOption['field']; ?>"
-                                                       class="col col-md-4 control-label padding-top-0">
-                                                    <span class="label label-<?php echo $hostOption['class']; ?> notify-label"><?php echo $hostOption['text']; ?></span>
-                                                </label>
+                                                        <label for="<?php echo $hostOption['field']; ?>"
+                                                               class="col col-md-5 control-label padding-top-0">
+                                                        <span class="label label-<?php echo $hostOption['class']; ?> notify-label-small">
+                                                            <?php echo $hostOption['text']; ?>
+                                                        </span>
+                                                        </label>
 
-                                                <div class="col-xs-8 smart-form">
-                                                    <label class="checkbox small-checkbox-label no-required">
-                                                        <input type="checkbox" name="checkbox"
-                                                               ng-true-value="1"
-                                                               ng-false-value="0"
-                                                               id="<?php echo $hostOption['field']; ?>"
-                                                               ng-model="post.Hosttemplate.<?php echo $hostOption['field']; ?>">
-                                                        <i class="checkbox-<?php echo $hostOption['class']; ?>"></i>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        <?php endforeach; ?>
+                                                        <div class="col-md-2 smart-form">
+                                                            <label class="checkbox small-checkbox-label no-required">
+                                                                <input type="checkbox" name="checkbox"
+                                                                       ng-true-value="1"
+                                                                       ng-false-value="0"
+                                                                       id="<?php echo $hostOption['field']; ?>"
+                                                                       ng-model="post.Hosttemplate.<?php echo $hostOption['field']; ?>">
+                                                                <i class="checkbox-<?php echo $hostOption['class']; ?>"></i>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        </ul>
                                     </fieldset>
                                 </div>
                             </div>

@@ -2003,6 +2003,26 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     min-width: 150px;
 }
 
+.notify-label-small {
+    display: inline-block;
+    line-height: 1.6;
+    min-width: 90px;
+    margin-top: 2px;
+}
+
+.notifications-flex-inner {
+    display: flex;
+    flex-wrap: wrap;
+    padding-inline-start: 0px;
+
+}
+
+.notifications-flex-inner li {
+    flex: auto;
+    width: auto;
+    list-style-type: none;
+}
+
 #widget-container {
     background: #EEEEEF;
 }
