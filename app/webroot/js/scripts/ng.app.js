@@ -394,6 +394,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "ServiceescalationsIndexController"
             })
 
+            .state('ServiceescalationsEdit', {
+                url: '/serviceescalations/edit/:id',
+                templateUrl: "/serviceescalations/edit.html",
+                controller: "ServiceescalationsEditController"
+            })
+
             .state('ServicegroupsIndex', {
                 url: '/servicegroups/index',
                 templateUrl: "/servicegroups/index.html",

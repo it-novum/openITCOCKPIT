@@ -31,11 +31,13 @@
             <span>>
                 <?php echo __('Service Escalation'); ?>
 			</span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+            <div class="third_level"> <?php echo __('Edit'); ?></div>
         </h1>
     </div>
 </div>
 <div id="error_msg"></div>
+
+<confirm-delete></confirm-delete>
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
@@ -43,183 +45,317 @@
         <h2><?php echo __('Edit Service Escalation'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                <?php echo $this->Utils->deleteButton(null, $serviceescalation['Serviceescalation']['id']); ?>
+                <button type="button" class="btn btn-danger btn-xs" ng-click="confirmDelete(post.Serviceescalation)">
+                    <i class="fa fa-trash-o"></i>
+                    <?php echo __('Delete'); ?>
+                </button>
             <?php endif; ?>
-            <?php echo $this->Utils->backButton(); ?>
+            <a ui-sref="ServiceescalationsIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
         <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
-            <?php echo __('UUID: %s', h($serviceescalation['Serviceescalation']['uuid'])); ?>
+            <?php echo __('UUID: '); ?>{{ post.Serviceescalation.uuid }}
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Serviceescalation', [
-                'class' => 'form-horizontal clear',
-            ]);
+            <form class="form-horizontal">
+                <div class="row">
 
-            if ($hasRootPrivileges):
-                echo $this->Form->input('Serviceescalation.container_id', [
-                    'options'       => $this->Html->chosenPlaceholder($containers),
-                    'class'         => 'chosen',
-                    'style'         => 'width: 100%;',
-                    'label'         => __('Container'),
-                    'SelectionMode' => 'single',
-                    'selected'      => $this->request->data['Serviceescalation']['container_id'],
-                ]);
-            elseif (!$hasRootPrivileges && $serviceescalation['Serviceescalation']['container_id'] != ROOT_CONTAINER):
-                echo $this->Form->input('Serviceescalation.container_id', [
-                    'options'       => $this->Html->chosenPlaceholder($containers),
-                    'class'         => 'chosen',
-                    'style'         => 'width: 100%;',
-                    'label'         => __('Container'),
-                    'SelectionMode' => 'single',
-                    'selected'      => $this->request->data['Serviceescalation']['container_id'],
-                ]);
-            else:
-                ?>
-                <div class="form-group required">
-                    <label class="col col-md-2 control-label"><?php echo __('Container'); ?></label>
-                    <div class="col col-xs-10 required"><input type="text" value="/root" class="form-control" readonly>
+                    <div class="form-group required" ng-class="{'has-error': errors.container_id}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Container'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Serviceescalation.container_id">
+                            </select>
+                            <div ng-repeat="error in errors.container_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.Service}">
+                        <label class="col col-md-2 control-label">
+                            <i class="fa fa-plus-square text-success"></i> <?php echo __('Services'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select multiple
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="services"
+                                    ng-options="service.key as service.value group by service.group disable when service.disabled for service in services"
+                                    ng-model="post.Serviceescalation.Service">
+                            </select>
+                            <div ng-repeat="error in errors.Service">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.Service_excluded}">
+                        <label class="col col-md-2 control-label">
+                            <i class="fa fa-plus-square text-danger"></i> <?php echo __('Services (excluded)'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select multiple
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="servicesExcluded"
+                                    ng-options="service.key as service.value group by service.group disable when service.disabled for service in servicesExcluded"
+                                    ng-model="post.Serviceescalation.Service_excluded">
+                            </select>
+                            <div ng-repeat="error in errors.Service_excluded">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.Servicegroup}">
+                        <label class="col col-md-2 control-label">
+                            <i class="fa fa-plus-square text-success"></i> <?php echo __('Servicegroups'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select multiple
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="servicegroups"
+                                    callback="loadServicegroups"
+                                    ng-options="servicegroup.key as servicegroup.value disable when servicegroup.disabled for servicegroup in servicegroups"
+                                    ng-model="post.Serviceescalation.Servicegroup">
+                            </select>
+                            <div ng-repeat="error in errors.Servicegroup">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.Servicegroup_excluded}">
+                        <label class="col col-md-2 control-label">
+                            <i class="fa fa-plus-square text-danger"></i> <?php echo __('Servicegroups (excluded)'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select multiple
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="servicegroupsExcluded"
+                                    callback="loadServicegroups"
+                                    ng-options="servicegroup.key as servicegroup.value disable when servicegroup.disabled for servicegroup in servicegroupsExcluded"
+                                    ng-model="post.Serviceescalation.Servicegroup_excluded">
+                            </select>
+                            <div ng-repeat="error in errors.Servicegroup_excluded">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.first_notification}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('First escalation notice'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input  class="form-control"
+                                    type="number"
+                                    min="0"
+                                    placeholder="0"
+                                    ng-model="post.Serviceescalation.first_notification">
+                            <div ng-repeat="error in errors.first_notification">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.last_notification}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Last escalation notice'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input  class="form-control"
+                                    type="number"
+                                    min="0"
+                                    placeholder="0"
+                                    ng-model="post.Serviceescalation.last_notification">
+                            <div ng-repeat="error in errors.last_notification">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required"
+                         ng-class="{'has-error': errors.notification_interval}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Notification interval'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input  class="form-control"
+                                    type="number"
+                                    min="0"
+                                    placeholder="60"
+                                    ng-model="post.Serviceescalation.notification_interval">
+                            <div class="help-block"><?php echo __('Interval in minutes'); ?></div>
+                            <div ng-repeat="error in errors.notification_interval">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Timeperiod'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select data-placeholder="<?php echo __('Please choose a timeperiod'); ?>"
+                                    class="form-control"
+                                    chosen="timeperiods"
+                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                    ng-model="post.Serviceescalation.timeperiod_id">
+                            </select>
+                            <div ng-repeat="error in errors.timeperiod_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.Contact}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Contacts'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select multiple
+                                    data-placeholder="<?php echo __('Please choose a contact'); ?>"
+                                    class="form-control"
+                                    chosen="contacts"
+                                    callback="loadContacts"
+                                    ng-options="contact.key as contact.value for contact in contacts"
+                                    ng-model="post.Serviceescalation.Contact">
+                            </select>
+                            <div ng-repeat="error in errors.Contact">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.Contactgroup}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Contactgroups'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select multiple
+                                    data-placeholder="<?php echo __('Please choose a contactgroup'); ?>"
+                                    class="form-control"
+                                    chosen="contactgroups"
+                                    callback="loadContactgroups"
+                                    ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
+                                    ng-model="post.Serviceescalation.Contactgroup">
+                            </select>
+                            <div ng-repeat="error in errors.Contactgroup">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <fieldset>
+                        <legend class="font-sm">
+                            <label><?php echo __('Serviceescalation options'); ?></label>
+                        </legend>
+
+                        <div class="form-group" ng-class="{'has-error': errors.escalate_on_recovery}"
+                             style="margin-bottom: 0px;">
+                            <label class="col-xs-12 col-lg-2 control-label" for="escalate_on_recovery">
+                                <i class="fa fa-square txt-color-greenLight"></i>
+                                <?php echo __('Recovery'); ?>
+                            </label>
+
+                            <div class="col-xs-12 col-lg-10 smart-form">
+                                <label class="checkbox small-checkbox-label no-required">
+                                    <input type="checkbox" id="escalate_on_recovery" ng-true-value="1"
+                                           ng-false-value="0" ng-model="post.Serviceescalation.escalate_on_recovery"
+                                           class="ng-pristine ng-untouched ng-valid ng-not-empty">
+                                    <i class="checkbox-success"></i>
+                                </label>
+                                <div ng-repeat="error in errors.escalate_on_recovery">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.escalate_on_warning}"
+                             style="margin-bottom: 0px;">
+                            <label class="col-xs-12 col-lg-2 control-label" for="escalate_on_warning">
+                                <i class="fa fa-square txt-color-orange"></i>
+                                <?php echo __('Warning'); ?>
+                            </label>
+
+                            <div class="col-xs-12 col-lg-10 smart-form">
+                                <label class="checkbox small-checkbox-label no-required">
+                                    <input type="checkbox" id="escalate_on_warning" ng-true-value="1" ng-false-value="0"
+                                           ng-model="post.Serviceescalation.escalate_on_warning"
+                                           class="ng-pristine ng-untouched ng-valid ng-not-empty">
+                                    <i class="checkbox-danger"></i>
+                                </label>
+                                <div ng-repeat="error in errors.escalate_on_warning">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.escalate_on_critical}"
+                             style="margin-bottom: 0px;">
+                            <label class="col-xs-12 col-lg-2 control-label" for="escalate_on_critical">
+                                <i class="fa fa-square txt-color-redLight"></i>
+                                <?php echo __('Critical'); ?>
+                            </label>
+
+                            <div class="col-xs-12 col-lg-10 smart-form">
+                                <label class="checkbox small-checkbox-label no-required">
+                                    <input type="checkbox" id="escalate_on_critical" ng-true-value="1" ng-false-value="0"
+                                           ng-model="post.Serviceescalation.escalate_on_critical"
+                                           class="ng-pristine ng-untouched ng-valid ng-not-empty">
+                                    <i class="checkbox-danger"></i>
+                                </label>
+                                <div ng-repeat="error in errors.escalate_on_critical">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.escalate_on_unknown}"
+                             style="margin-bottom: 0px;">
+                            <label class="col-xs-12 col-lg-2 control-label" for="escalate_on_unknown">
+                                <i class="fa fa-square txt-color-blueDark"></i>
+                                <?php echo __('Unknown'); ?>
+                            </label>
+
+                            <div class="col-xs-12 col-lg-10 smart-form">
+                                <label class="checkbox small-checkbox-label no-required">
+                                    <input type="checkbox" id="escalate_on_unknown" ng-true-value="1"
+                                           ng-false-value="0" ng-model="post.Serviceescalation.escalate_on_unknown"
+                                           class="ng-pristine ng-untouched ng-valid ng-not-empty">
+                                    <i class="checkbox-unknown"></i>
+                                </label>
+                                <div ng-repeat="error in errors.escalate_on_unknown">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
                 </div>
-                <?php
-                echo $this->Form->input('Serviceescalation.container_id', [
-                        'value' => $serviceescalation['Serviceescalation']['container_id'],
-                        'type'  => 'hidden',
-                    ]
-                );
-            endif;
+            </form>
 
-            echo $this->Form->input('Serviceescalation.id', ['type' => 'hidden', 'value' => $serviceescalation['Serviceescalation']['id']]);
-
-            echo $this->Form->hostAndServiceSelectOptiongroup('Serviceescalation.Service', [
-                'label'    => __('<i class="fa fa-plus-square text-success"></i> Services'),
-                'options'  => $services,
-                'required' => true,
-                'escape'   => false,
-                'divClass' => 'col col-xs-10 success',
-                'selected' => $this->request->data('Serviceescalation.Service'),
-                'target'   => '#ServiceescalationServiceExcluded',
-            ]);
-
-            echo $this->Form->hostAndServiceSelectOptiongroup('Serviceescalation.Service_excluded', [
-                'label'    => __('<i class="fa fa-plus-square text-danger"></i> Services (excluded)'),
-                'options'  => $services,
-                'required' => true,
-                'escape'   => false,
-                'divClass' => 'col col-xs-10 danger',
-                'selected' => $this->request->data('Serviceescalation.Service_excluded'),
-                'target'   => '#ServiceescalationService'
-            ]);
-
-            echo $this->Form->input('Serviceescalation.Servicegroup', [
-                'options'          => $servicegroups,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => '<i class="fa fa-plus-square text-success"></i> ' . __('Servicegroups'),
-                'data-placeholder' => __('Please choose a servicegroup'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10 success',
-                ],
-                'target'           => '#ServiceescalationServicegroupExcluded',
-                'selected'         => $this->request->data['Serviceescalation']['Servicegroup'],
-            ]);
-
-            echo $this->Form->input('Serviceescalation.Servicegroup_excluded', [
-                'options'          => $servicegroups,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => '<i class="fa fa-minus-square text-danger"></i> ' . __('Servicegroups (excluded)'),
-                'data-placeholder' => __('Please choose a servicegroup'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10 danger',
-                ],
-                'target'           => '#ServiceescalationServicegroup',
-                'selected'         => $this->request->data['Serviceescalation']['Servicegroup_excluded'],
-            ]);
-
-            echo $this->Form->input('Serviceescalation.first_notification', [
-                'label'       => __('First escalation notice'),
-                'placeholder' => 0,
-                'value'       => $this->request->data['Serviceescalation']['first_notification'],
-            ]);
-
-            echo $this->Form->input('Serviceescalation.last_notification', [
-                'label'       => __('Last escalation notice'),
-                'placeholder' => 0,
-                'value'       => $this->request->data['Serviceescalation']['last_notification'],
-            ]);
-
-            echo $this->Form->input('Serviceescalation.notification_interval', [
-                'label'       => __('Notification interval'),
-                'placeholder' => 60,
-                'value'       => $this->request->data['Serviceescalation']['notification_interval'],
-                'help'        => __('Interval in minutes'),
-            ]);
-
-            echo $this->Form->input('Serviceescalation.timeperiod_id', [
-                'options'          => $timeperiods,
-                'class'            => 'chosen',
-                'multiple'         => false,
-                'style'            => 'width:100%;',
-                'label'            => __('Timeperiod'),
-                'data-placeholder' => __('Please choose a contact'),
-                'selected'         => $this->request->data['Timeperiod']['id'],
-            ]);
-
-            echo $this->Form->input('Serviceescalation.Contact', [
-                'options'          => $contacts,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => __('Contacts'),
-                'data-placeholder' => __('Please choose a contact'),
-                'selected'         => $this->request->data['Serviceescalation']['Contact'],
-            ]);
-
-            echo $this->Form->input('Serviceescalation.Contactgroup', [
-                'options'          => $contactgroups,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => __('Contactgroups'),
-                'data-placeholder' => __('Please choose a contactgroup'),
-                'selected'         => $this->request->data['Serviceescalation']['Contactgroup'],
-            ]);
-            ?>
-            <fieldset>
-                <legend class="font-sm">
-                    <label><?php echo __('Serviceescalation options'); ?></label>
-                    <?php if (isset($validation_service_notification)): ?>
-                        <span class="text-danger"><?php echo $validation_service_notification; ?></span>
-                    <?php endif; ?>
-                </legend>
-                <?php
-                $escalation_options = [
-                    'escalate_on_recovery' => 'fa-square txt-color-greenLight',
-                    'escalate_on_warning'  => 'fa-square txt-color-orange',
-                    'escalate_on_critical' => 'fa-square txt-color-redLight',
-                    'escalate_on_unknown'  => 'fa-square txt-color-blueDark',
-                ];
-                foreach ($escalation_options as $escalation_option => $icon):?>
-                    <div style="border-bottom:1px solid lightGray;">
-                        <?php echo $this->Form->fancyCheckbox($escalation_option, [
-                            'caption' => ucfirst(preg_replace('/escalate_on_/', '', $escalation_option)),
-                            'icon'    => '<i class="fa ' . $icon . '"></i> ',
-                            'checked' => (boolean)$this->request->data['Serviceescalation'][$escalation_option],
-                        ]); ?>
-                        <div class="clearfix"></div>
-                    </div>
-                <?php endforeach; ?>
-            </fieldset>
             <br/>
             <br/>
-            <?php echo $this->Form->formActions(); ?>
+            <div class="well formactions ">
+                <div class="pull-right">
+                    <a ng-click="submit()" class="btn btn-primary"><?php echo __('Save'); ?></a>&nbsp;
+                    <a ui-sref="ServiceescalationsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
