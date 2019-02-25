@@ -611,6 +611,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "HostescalationsIndexController"
             })
 
+            .state('HostescalationsAdd', {
+                url: '/hostescalations/add',
+                templateUrl: "/hostescalations/add.html",
+                controller: "HostescalationsAddController"
+            })
+
             .state('HosttemplatesIndex', {
                 url: '/hosttemplates/index',
                 templateUrl: "/hosttemplates/index.html",
