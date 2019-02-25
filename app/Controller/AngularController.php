@@ -708,4 +708,14 @@ class AngularController extends AppController {
         $this->set('ldapConfig', $ldapConfig);
         $this->set('_serialize', ['ldapConfig']);
     }
+
+    public function priority() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function intervalInput() {
+        //Only ship HTML template
+        return;
+    }
 }

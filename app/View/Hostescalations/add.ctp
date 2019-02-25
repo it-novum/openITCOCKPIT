@@ -31,7 +31,7 @@
             <span>>
                 <?php echo __('Hostescalation'); ?>
 			</span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+            <div class="third_level"> <?php echo __('Add'); ?></div>
         </h1>
     </div>
 </div>
@@ -42,150 +42,300 @@
         <span class="widget-icon"> <i class="fa fa-bomb"></i> </span>
         <h2><?php echo __('Add Hostescalation'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(); ?>
+            <a ui-sref="HostescalationsIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Hostescalation', [
-                'class' => 'form-horizontal clear',
-            ]);
-            echo $this->Form->input('Hostescalation.container_id', [
-                'options'       => $this->Html->chosenPlaceholder($containers),
-                'class'         => 'chosen',
-                'style'         => 'width: 100%;',
-                'label'         => __('Container'),
-                'SelectionMode' => 'single',
-            ]);
+            <form class="form-horizontal">
+                <div class="row">
 
-            echo $this->Form->input('Hostescalation.Host', [
-                'options'          => $hosts,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-plus-square text-success"></i> Hosts'),
-                'data-placeholder' => __('Please choose a host'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10 success'
-                ],
-                'target'           => '#HostescalationHostExcluded'
-            ]);
-
-            echo $this->Form->input('Hostescalation.Host_excluded', [
-                'options'          => $hosts,
-                'class'            => 'chosen test',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-minus-square text-danger"></i> Hosts (excluded)'),
-                'data-placeholder' => __('Please choose a host'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10 danger'
-                ],
-                'target'           => '#HostescalationHost'
-            ]);
-
-            echo $this->Form->input('Hostescalation.Hostgroup', [
-                'options'          => $hostgroups,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => '<i class="fa fa-plus-square text-success"></i> ' . __('Hostgroups'),
-                'data-placeholder' => __('Please choose a hostgroup'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10 success',
-                ],
-                'target'           => '#HostescalationHostgroupExcluded'
-            ]);
-            echo $this->Form->input('Hostescalation.Hostgroup_excluded', [
-                'options'          => $hostgroups,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => '<i class="fa fa-minus-square text-danger"></i> ' . __('Hostgroups (excluded)'),
-                'data-placeholder' => __('Please choose a hostgroup'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10 danger',
-                ],
-                'target'           => '#HostescalationHostgroup'
-            ]);
-
-            echo $this->Form->input('Hostescalation.first_notification', [
-                'label'       => __('First escalation notice'),
-                'placeholder' => 0,
-                'min'         => 0
-            ]);
-
-            echo $this->Form->input('Hostescalation.last_notification', [
-                'label'       => __('Last escalation notice'),
-                'placeholder' => 0,
-                'min'         => 0
-            ]);
-
-            echo $this->Form->input('Hostescalation.notification_interval', [
-                'label'       => __('Notification interval'),
-                'placeholder' => 60,
-                'min'         => 0,
-                'help'        => __('Interval in minutes'),
-            ]);
-
-            echo $this->Form->input('Hostescalation.timeperiod_id', [
-                'options'          => $timeperiods,
-                'class'            => 'chosen',
-                'multiple'         => false,
-                'style'            => 'width:100%;',
-                'label'            => __('Timeperiod'),
-                'data-placeholder' => __('Please choose a contact')
-            ]);
-
-            echo $this->Form->input('Hostescalation.Contact', [
-                'options'          => $contacts,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => __('Contacts'),
-                'data-placeholder' => __('Please choose a contact')
-            ]);
-
-            echo $this->Form->input('Hostescalation.Contactgroup', [
-                'options'          => $contactgroups,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => __('Contactgroups'),
-                'data-placeholder' => __('Please choose a contactgroup')
-            ]);
-            ?>
-            <fieldset>
-                <legend class="font-sm">
-                    <label><?php echo __('Hostescalation options'); ?></label>
-                    <?php if (isset($validation_host_notification)): ?>
-                        <span class="text-danger"><?php echo $validation_host_notification; ?></span>
-                    <?php endif; ?>
-                </legend>
-                <?php
-                $escalation_options = [
-                    'escalate_on_recovery'    => 'fa-square txt-color-greenLight',
-                    'escalate_on_down'        => 'fa-square txt-color-redLight',
-                    'escalate_on_unreachable' => 'fa-square txt-color-blueDark',
-                ];
-                foreach ($escalation_options as $escalation_option => $icon):?>
-                    <div style="border-bottom:1px solid lightGray;">
-                        <?php echo $this->Form->fancyCheckbox($escalation_option, [
-                            'caption' => ucfirst(preg_replace('/escalate_on_/', '', $escalation_option)),
-                            'icon'    => '<i class="fa ' . $icon . '"></i> ',
-                        ]); ?>
-                        <div class="clearfix"></div>
+                    <div class="form-group required" ng-class="{'has-error': errors.container_id}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Container'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Hostescalation.container_id">
+                            </select>
+                            <div ng-repeat="error in errors.container_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
                     </div>
-                <?php endforeach; ?>
-            </fieldset>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.Host}">
+                        <label class="col col-md-2 control-label">
+                            <i class="fa fa-plus-square text-success"></i> <?php echo __('Hosts'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select id="HostescalationHost"
+                                    multiple
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="hosts"
+                                    ng-options="host.key as host.value disable when host.disabled for host in hosts"
+                                    ng-model="post.Hostescalation.Host">
+                            </select>
+                            <div ng-repeat="error in errors.Host">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.Host_excluded}">
+                        <label class="col col-md-2 control-label">
+                            <i class="fa fa-plus-square text-danger"></i> <?php echo __('Hosts (excluded)'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select id="HostescalationHostExcluded"
+                                    multiple
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="hostsExcluded"
+                                    ng-options="host.key as host.value disable when host.disabled for host in hostsExcluded"
+                                    ng-model="post.Hostescalation.Host_excluded">
+                            </select>
+                            <div ng-repeat="error in errors.Host_excluded">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.Hostgroup}">
+                        <label class="col col-md-2 control-label">
+                            <i class="fa fa-plus-square text-success"></i> <?php echo __('Hostgroups'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select id="HostescalationHostgroup"
+                                    multiple
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="hostgroups"
+                                    callback="loadHostgroups"
+                                    ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups"
+                                    ng-model="post.Hostescalation.Hostgroup">
+                            </select>
+                            <div ng-repeat="error in errors.Hostgroup">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.Hostgroup_excluded}">
+                        <label class="col col-md-2 control-label">
+                            <i class="fa fa-plus-square text-danger"></i> <?php echo __('Hostgroups (excluded)'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select id="HostescalationHostgroupExcluded"
+                                    multiple
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="hostgroupsExcluded"
+                                    callback="loadHostgroups"
+                                    ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroupsExcluded"
+                                    ng-model="post.Hostescalation.Hostgroup_excluded">
+                            </select>
+                            <div ng-repeat="error in errors.Hostgroup_excluded">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.first_notification}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('First escalation notice'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="number"
+                                    min="0"
+                                    placeholder="0"
+                                    ng-model="post.Hostescalation.first_notification">
+                            <div ng-repeat="error in errors.first_notification">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.last_notification}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Last escalation notice'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="number"
+                                    min="0"
+                                    placeholder="0"
+                                    ng-model="post.Hostescalation.last_notification">
+                            <div ng-repeat="error in errors.last_notification">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required"
+                         ng-class="{'has-error': errors.notification_interval}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Notification interval'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="number"
+                                    min="0"
+                                    placeholder="60"
+                                    ng-model="post.Hostescalation.notification_interval">
+                            <div class="help-block"><?php echo __('Interval in minutes'); ?></div>
+                            <div ng-repeat="error in errors.notification_interval">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Timeperiod'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    data-placeholder="<?php echo __('Please choose a timeperiod'); ?>"
+                                    class="form-control"
+                                    chosen="timeperiods"
+                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                    ng-model="post.Hostescalation.timeperiod_id">
+                            </select>
+                            <div ng-repeat="error in errors.timeperiod_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.Contact}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Contacts'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    multiple
+                                    data-placeholder="<?php echo __('Please choose a contact'); ?>"
+                                    class="form-control"
+                                    chosen="contacts"
+                                    callback="loadContacts"
+                                    ng-options="contact.key as contact.value for contact in contacts"
+                                    ng-model="post.Hostescalation.Contact">
+                            </select>
+                            <div ng-repeat="error in errors.Contact">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.Contactgroup}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Contactgroups'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    multiple
+                                    data-placeholder="<?php echo __('Please choose a contactgroup'); ?>"
+                                    class="form-control"
+                                    chosen="contactgroups"
+                                    callback="loadContactgroups"
+                                    ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
+                                    ng-model="post.Hostescalation.Contactgroup">
+                            </select>
+                            <div ng-repeat="error in errors.Contactgroup">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <fieldset>
+                        <legend class="font-sm">
+                            <label><?php echo __('Hostescalation options'); ?></label>
+                        </legend>
+
+                        <div class="form-group" ng-class="{'has-error': errors.escalate_on_recovery}"
+                             style="margin-bottom: 0px;">
+                            <label class="col-xs-12 col-lg-2 control-label" for="escalate_on_recovery">
+                                <i class="fa fa-square txt-color-greenLight"></i>
+                                <?php echo __('Recovery'); ?>
+                            </label>
+
+                            <div class="col-xs-12 col-lg-10 smart-form">
+                                <label class="checkbox small-checkbox-label no-required">
+                                    <input type="checkbox" id="escalate_on_recovery" ng-true-value="1"
+                                           ng-false-value="0" ng-model="post.Hostescalation.escalate_on_recovery"
+                                           class="ng-pristine ng-untouched ng-valid ng-not-empty">
+                                    <i class="checkbox-success"></i>
+                                </label>
+                                <div ng-repeat="error in errors.escalate_on_recovery">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.escalate_on_down}"
+                             style="margin-bottom: 0px;">
+                            <label class="col-xs-12 col-lg-2 control-label" for="escalate_on_down">
+                                <i class="fa fa-square txt-color-redLight"></i>
+                                <?php echo __('Down'); ?>
+                            </label>
+
+                            <div class="col-xs-12 col-lg-10 smart-form">
+                                <label class="checkbox small-checkbox-label no-required">
+                                    <input type="checkbox" id="escalate_on_down" ng-true-value="1" ng-false-value="0"
+                                           ng-model="post.Hostescalation.escalate_on_down"
+                                           class="ng-pristine ng-untouched ng-valid ng-not-empty">
+                                    <i class="checkbox-danger"></i>
+                                </label>
+                                <div ng-repeat="error in errors.escalate_on_down">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.escalate_on_unreachable}"
+                             style="margin-bottom: 0px;">
+                            <label class="col-xs-12 col-lg-2 control-label" for="escalate_on_unreachable">
+                                <i class="fa fa-square txt-color-blueDark"></i>
+                                <?php echo __('Unreachable'); ?>
+                            </label>
+
+                            <div class="col-xs-12 col-lg-10 smart-form">
+                                <label class="checkbox small-checkbox-label no-required">
+                                    <input type="checkbox" id="escalate_on_unreachable" ng-true-value="1"
+                                           ng-false-value="0" ng-model="post.Hostescalation.escalate_on_unreachable"
+                                           class="ng-pristine ng-untouched ng-valid ng-not-empty">
+                                    <i class="checkbox-unknown"></i>
+                                </label>
+                                <div ng-repeat="error in errors.escalate_on_unreachable">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                </div>
+            </form>
+
             <br/>
             <br/>
-            <?php echo $this->Form->formActions(); ?>
+            <div class="well formactions ">
+                <div class="pull-right">
+                    <a ng-click="submit()" class="btn btn-primary"><?php echo __('Save'); ?></a>&nbsp;
+                    <a ui-sref="HostescalationsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -34,18 +34,20 @@ class MacrosController extends AppController {
     public $layout = 'angularjs';
 
     public function index() {
+        $this->layout = 'blank';
+
         $TableLocator = $this->getTableLocator();
         /** @var $Macros MacrosTable */
         $Macros = $TableLocator->get('Macros');
 
-        if (!$this->isAngularJsRequest()) {
-            if ($this->isJsonRequest()) {
-                //Legacy API
-                $this->set('all_macros', $Macros->getAllMacrosInCake2Format());
-                $this->set('_serialize', ['all_macros']);
-                return;
-            }
+        if ($this->isJsonRequest() && !$this->isAngularJsRequest()) {
+            //Legacy API
+            $this->set('all_macros', $Macros->getAllMacrosInCake2Format());
+            $this->set('_serialize', ['all_macros']);
+            return;
+        }
 
+        if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }

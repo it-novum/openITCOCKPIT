@@ -24,313 +24,199 @@
 //	confirmation.
 ?>
 <?php $this->Paginator->options(['url' => $this->params['named']]); ?>
-    <div class="row">
-        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-            <h1 class="page-title txt-color-blueDark">
-                <i class="fa fa-bomb fa-fw"></i>
-                <?php echo __('Monitoring'); ?>
-                <span>>
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-bomb fa-fw"></i>
+            <?php echo __('Monitoring'); ?>
+            <span>>
                     <?php echo __('Host Escalations'); ?>
                 </span>
-            </h1>
-        </div>
+        </h1>
     </div>
+</div>
 
 
-    <section id="widget-grid" class="">
-        <div class="row">
-            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                    <header>
-                        <div class="widget-toolbar" role="menu">
-                            <?php
-                            if ($this->Acl->hasPermission('add')):
-                                echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                                //echo " "; //Fix HTML if search is implemented
-                            endif;
-                            // TODO: search functionallity
-                            //echo $this->Html->link(__('Filter'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter'));
+<section id="widget-grid" class="">
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+                <header>
+                    <div class="widget-toolbar" role="menu">
+                        <?php if ($this->Acl->hasPermission('add')): ?>
+                            <a ui-sref="HostescalationsAdd" class="btn btn-xs btn-success" icon="fa fa-plus">
+                                <i class="fa fa-plus"></i> <?php echo __('New'); ?>
+                            </a>
+                        <?php endif;
+                        // TODO: search functionallity
+                        //echo $this->Html->link(__('Filter'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter'));
 
-                            if ($isFilter):
-                                echo " "; //Fix HTML
-                                echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                            endif;
-                            ?>
-                        </div>
+                        /*if ($isFilter):
+                            echo " "; //Fix HTML
+                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
+                        endif;*/
+                        ?>
+                    </div>
 
-                        <div class="jarviswidget-ctrls" role="menu">
-                        </div>
-                        <span class="widget-icon hidden-mobile"> <i class="fa fa-bomb"></i> </span>
-                        <h2 class="hidden-mobile"><?php echo __('Host Escalations'); ?> </h2>
+                    <div class="jarviswidget-ctrls" role="menu">
+                    </div>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-bomb"></i> </span>
+                    <h2 class="hidden-mobile"><?php echo __('Host Escalations'); ?> </h2>
 
-                    </header>
-                    <div>
+                </header>
+                <div>
 
-                        <!-- widget content -->
-                        <div class="widget-body no-padding">
-                            <div class="mobile_table">
-                                <table id="hostescalation_list"
-                                       class="table table-striped table-hover table-bordered smart-form"
-                                       style="">
-                                    <thead>
-                                    <tr>
-                                        <th><?php echo __('Hosts'); ?></th>
-                                        <th><?php echo __('Ext. hosts'); ?></th>
-                                        <th><?php echo __('Host groups'); ?></th>
-                                        <th><?php echo __('Ext. hosts groups'); ?></th>
-                                        <th><?php echo __('First'); ?></th>
-                                        <th><?php echo __('Last'); ?></th>
-                                        <th><?php echo __('Interval'); ?></th>
-                                        <th><?php echo __('Timeperiod'); ?></th>
-                                        <th><?php echo __('Contacts'); ?></th>
-                                        <th><?php echo __('Contact groups'); ?></th>
-                                        <th class="no-sort"><?php echo __('Options'); ?></th>
-                                        <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php
-                                    foreach ($all_hostescalations as $hostescalation):
-                                        $allowEdit = $this->Acl->isWritableContainer($hostescalation['Hostescalation']['container_id']);
-                                        ?>
-                                        <tr>
-                                            <td>
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    foreach (Hash::extract($hostescalation, 'HostescalationHostMembership.{n}[excluded=0]') as $host):
-                                                        echo '<li>';
-                                                        if ($this->Acl->hasPermission('edit', 'hosts')):
-                                                            echo $this->Html->link(
-                                                                h($host['Host']['name']),
-                                                                [
-                                                                    'controller' => 'hosts',
-                                                                    'action'     => 'edit',
-                                                                    $host['Host']['id'],
-                                                                ],
-                                                                [
-                                                                    'class'  => 'txt-color-green',
-                                                                    'escape' => false,
-                                                                ]
-                                                            );
-                                                        else:
-                                                            echo h($host['Host']['name']);
-                                                        endif;
-                                                        echo ($host['Host']['disabled']) ?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>' : '';
-                                                        echo '</li>';
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-                                            </td>
-                                            <td>
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    foreach (Hash::extract($hostescalation, 'HostescalationHostMembership.{n}[excluded=1]') as $host_excluded):
-                                                        echo '<li>';
-                                                        if ($this->Acl->hasPermission('edit', 'hosts')):
-                                                            echo $this->Html->link(
-                                                                h($host_excluded['Host']['name']),
-                                                                [
-                                                                    'controller' => 'hosts',
-                                                                    'action'     => 'edit',
-                                                                    $host_excluded['Host']['id'],
-                                                                ],
-                                                                [
-                                                                    'class'  => 'txt-color-red',
-                                                                    'escape' => true,
-                                                                ]
-                                                            );
-                                                        else:
-                                                            echo h($host_excluded['Host']['name']);
-                                                        endif;
-                                                        echo ($host_excluded['Host']['disabled']) ?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>' : '';
-                                                        echo '</li>';
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-                                            </td>
-                                            <td>
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    foreach (Hash::extract($hostescalation, 'HostescalationHostgroupMembership.{n}[excluded=0].Hostgroup') as $hostgroup):
-                                                        if (!empty($hostgroup)):
-                                                            echo '<li>';
-                                                            if ($this->Acl->hasPermission('edit', 'hostgroups')):
-                                                                echo $this->Html->link(
-                                                                    $hostgroup['Container']['name'],
-                                                                    [
-                                                                        'controller' => 'hostgroups',
-                                                                        'action'     => 'edit',
-                                                                        $hostgroup['id'],
-                                                                    ],
-                                                                    [
-                                                                        'class'  => 'txt-color-green',
-                                                                        'escape' => true,
-                                                                    ]
-                                                                );
-                                                            else:
-                                                                echo h($hostgroup['Container']['name']);
-                                                            endif;
-                                                            echo '</li>';
-                                                        endif;
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-                                            </td>
-                                            <td>
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    foreach (Hash::extract($hostescalation, 'HostescalationHostgroupMembership.{n}[excluded=1].Hostgroup') as $hostgroup):
-                                                        if (!empty($hostgroup)):
-                                                            echo '<li>';
-                                                            if ($this->Acl->hasPermission('edit', 'hostgroups')):
-                                                                echo $this->Html->link(
-                                                                    $hostgroup['Container']['name'],
-                                                                    [
-                                                                        'controller' => 'hostgroups',
-                                                                        'action'     => 'edit',
-                                                                        $hostgroup['id'],
-                                                                    ],
-                                                                    [
-                                                                        'class'  => 'txt-color-red',
-                                                                        'escape' => true,
-                                                                    ]
-                                                                );
-                                                            else:
-                                                                echo h($hostgroup['Container']['name']);
-                                                            endif;
-                                                            echo '</li>';
-                                                        endif;
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-                                            </td>
-                                            <td><?php echo $hostescalation['Hostescalation']['first_notification']; ?></td>
-                                            <td><?php echo $hostescalation['Hostescalation']['last_notification']; ?></td>
-                                            <td><?php echo $hostescalation['Hostescalation']['notification_interval']; ?></td>
-                                            <td>
-                                                <?php
-                                                if ($this->Acl->hasPermission('edit', 'timeperiods')):
-                                                    echo $this->Html->link(
-                                                        $hostescalation['Timeperiod']['name'],
-                                                        [
-                                                            'controller' => 'timeperiods',
-                                                            'action'     => 'edit',
-                                                            $hostescalation['Timeperiod']['id'],
-                                                        ]
-                                                    );
-                                                else:
-                                                    echo h($hostescalation['Timeperiod']['name']);
-                                                endif;
-                                                ?>
-                                            </td>
-                                            <td>
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    foreach ($hostescalation['Contact'] as $contact):
-                                                        echo '<li>';
-                                                        if ($this->Acl->hasPermission('edit', 'contacts')):
-                                                            echo $this->Html->link(
-                                                                $contact['name'],
-                                                                [
-                                                                    'controller' => 'contacts',
-                                                                    'action'     => 'edit',
-                                                                    $contact['id'],
-                                                                ]
-                                                            );
-                                                        else:
-                                                            echo h($contact['name']);
-                                                        endif;
-                                                        echo '</li>';
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-                                            </td>
-                                            <td>
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    foreach ($hostescalation['Contactgroup'] as $contactgroup):
-                                                        echo '<li>';
-                                                        if ($this->Acl->hasPermission('edit', 'contactgroups')):
-                                                            echo $this->Html->link(
-                                                                $contactgroup['Container']['name'],
-                                                                [
-                                                                    'controller' => 'contacts',
-                                                                    'action'     => 'edit',
-                                                                    $contactgroup['id'],
-                                                                ]
-                                                            );
-                                                        else:
-                                                            echo h($contactgroup['Container']['name']);
-                                                        endif;
-                                                        echo '</li>';
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-                                            </td>
-                                            <td><?php echo __viewHostescalationOptions($hostescalation); ?></td>
-                                            <td class="text-center">
-                                                <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                    <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $hostescalation['Hostescalation']['id']; ?>"
-                                                       data-original-title="<?php echo __('edit'); ?>"
-                                                       data-placement="left" rel="tooltip" data-container="body"><i
-                                                                id="list_edit"
-                                                                class="fa fa-gear fa-lg txt-color-teal"></i></a>
+                    <!-- widget content -->
+                    <div class="widget-body no-padding">
+                        <div class="mobile_table" ng-show="hostescalations.length > 0">
+                            <table id="hostescalation_list"
+                                   class="table table-striped table-hover table-bordered smart-form"
+                                   style="">
+                                <thead>
+                                <tr>
+                                    <th><?php echo __('Hosts'); ?></th>
+                                    <th><?php echo __('Ext. hosts'); ?></th>
+                                    <th><?php echo __('Host groups'); ?></th>
+                                    <th><?php echo __('Ext. hosts groups'); ?></th>
+                                    <th><?php echo __('First'); ?></th>
+                                    <th><?php echo __('Last'); ?></th>
+                                    <th><?php echo __('Interval'); ?></th>
+                                    <th><?php echo __('Timeperiod'); ?></th>
+                                    <th><?php echo __('Contacts'); ?></th>
+                                    <th><?php echo __('Contact groups'); ?></th>
+                                    <th class="no-sort"><?php echo __('Options'); ?></th>
+                                    <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="hostescalation in hostescalations">
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="host in hostescalation.HostescalationHostMembership"
+                                                ng-if="host.excluded == 0">
+                                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                                    <a class="txt-color-green" href="/hosts/edit/{{host.Host.id}}">{{host.Host.name}}</a>
+                                                <?php else: ?>
+                                                    {{host.Host.name}}
                                                 <?php endif; ?>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <?php if (empty($all_hostescalations)): ?>
-                                <div class="noMatch">
-                                    <center>
-                                        <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                    </center>
-                                </div>
-                            <?php endif; ?>
-
-                            <div style="padding: 5px 10px;">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
-                                    </div>
-                                    <div class="col-sm-6 text-right">
-                                        <div class="dataTables_paginate paging_bootstrap">
-                                            <?php echo $this->Paginator->pagination([
-                                                'ul' => 'pagination',
-                                            ]); ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                                <i ng-if="host.Host.disabled == 1" class="fa fa-power-off text-danger"
+                                                   title="disabled" aria-hidden="true"></i>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="host in hostescalation.HostescalationHostMembership"
+                                                ng-if="host.excluded == 1">
+                                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                                    <a class="txt-color-red" href="/hosts/edit/{{host.Host.id}}">{{host.Host.name}}</a>
+                                                <?php else: ?>
+                                                    {{host.Host.name}}
+                                                <?php endif; ?>
+                                                <i ng-if="host.Host.disabled == 1" class="fa fa-power-off text-danger"
+                                                   title="disabled" aria-hidden="true"></i>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="hostgroup in hostescalation.HostescalationHostgroupMembership"
+                                                ng-if="hostgroup.excluded == 0">
+                                                <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
+                                                    <a class="txt-color-green"
+                                                       ui-sref="HostgroupsEdit({id: hostgroup.Hostgroup.id})">
+                                                        {{hostgroup.Hostgroup.Container.name}}
+                                                    </a>
+                                                <?php else: ?>
+                                                    {{hostgroup.Hostgroup.Container.name}}
+                                                <?php endif; ?>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="hostgroup in hostescalation.HostescalationHostgroupMembership"
+                                                ng-if="hostgroup.excluded == 1">
+                                                <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
+                                                    <a class="txt-color-red"
+                                                       ui-sref="HostgroupsEdit({id: hostgroup.Hostgroup.id})">
+                                                        {{ hostgroup.Hostgroup.Container.name }}
+                                                    </a>
+                                                <?php else: ?>
+                                                    {{ hostgroup.Hostgroup.Container.name }}
+                                                <?php endif; ?>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        {{ hostescalation.Hostescalation.first_notification }}
+                                    </td>
+                                    <td>
+                                        {{ hostescalation.Hostescalation.last_notification }}
+                                    </td>
+                                    <td>
+                                        {{ hostescalation.Hostescalation.notification_interval }}
+                                    </td>
+                                    <td>
+                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                            <a ui-sref="TimeperiodsEdit({id: hostescalation.Timeperiod.id})">{{
+                                                hostescalation.Timeperiod.name }}</a>
+                                        <?php else: ?>
+                                            {{ hostescalation.Timeperiod.name }}
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="contact in hostescalation.Contact">
+                                                <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
+                                                    <a ui-sref="ContactsEdit({id: contact.id})">
+                                                        {{ contact.name }}
+                                                    </a>
+                                                <?php else: ?>
+                                                    {{ contact.name }}
+                                                <?php endif; ?>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="contactgroup in hostescalation.Contactgroup">
+                                                <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
+                                                    <a ui-sref="ContactgroupsEdit({id: contactgroup.id})">
+                                                        {{ contactgroup.Container.name }}
+                                                    </a>
+                                                <?php else: ?>
+                                                    {{ contactgroup.Container.name }}
+                                                <?php endif; ?>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td ng-bind-html="viewHostescalationOptions(hostescalation)"></td>
+                                    <td class="text-center">
+                                        <?php if ($this->Acl->hasPermission('edit')): ?>
+                                            <a ui-sref="HostescalationsEdit({id: hostescalation.Hostescalation.id})"
+                                               data-original-title="<?php echo __('edit'); ?>"
+                                               data-placement="left" rel="tooltip" data-container="body"
+                                               ng-if="hostescalation.Hostescalation.allowEdit">
+                                                <i id="list_edit" class="fa fa-gear fa-lg txt-color-teal"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
+                        <div class="noMatch" ng-hide="hostescalations.length > 0">
+                            <center>
+                                <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
+                            </center>
+                        </div>
+
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
-        </div>
-    </section>
-<?php
-/**
- * This is a view function and ONLY CALLED IN THIS VIEW!
- *
- * @param array $hostescalation from find('first')
- *
- * @return string `<i />` HTML object with icons for each options
- * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
- * @since  3.0
- */
-function __viewHostescalationOptions($hostescalation = []) {
-    $options = ['escalate_on_recovery' => 'txt-color-greenLight', 'escalate_on_down' => 'txt-color-redLight', 'escalate_on_unreachable' => 'txt-color-blueDark'];
-    $class = 'fa fa-square ';
-    $html = '';
-    foreach ($options as $option => $color) {
-        if (isset($hostescalation['Hostescalation'][$option]) && $hostescalation['Hostescalation'][$option] == 1) {
-            $html .= '<i class="' . $class . $color . '"></i>&nbsp';
-        }
-    }
-
-    return $html;
-}
+            </div>
+    </div>
+</section>

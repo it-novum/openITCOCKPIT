@@ -2003,6 +2003,26 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     min-width: 150px;
 }
 
+.notify-label-small {
+    display: inline-block;
+    line-height: 1.6;
+    min-width: 90px;
+    margin-top: 2px;
+}
+
+.config-flex-inner {
+    display: flex;
+    flex-wrap: wrap;
+    padding-inline-start: 0px;
+
+}
+
+.config-flex-inner li {
+    flex: auto;
+    max-width: 16%;
+    list-style-type: none;
+}
+
 #widget-container {
     background: #EEEEEF;
 }
@@ -2218,4 +2238,12 @@ iframe {
 
 .has-error-force .control-label{
     border-color: #b94a48;
+}
+
+@media (min-width:768px) {
+    .form-horizontal .control-label {
+        /*padding-top: 7px;*/
+        margin-bottom: 5px;
+        text-align: left;
+    }
 }
