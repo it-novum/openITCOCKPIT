@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostescalationsIndexController', function($scope, $http, $sce){
+    .controller('ServiceescalationsIndexController', function($scope, $http, $sce){
 
         $scope.currentPage = 1;
         $scope.useScroll = true;
@@ -7,14 +7,14 @@ angular.module('openITCOCKPIT')
 
         $scope.load = function(){
 
-            $http.get("/hostescalations/index.json", {
+            $http.get("/serviceescalations/index.json", {
                 params: {
                     'angular': true,
                     'scroll': $scope.useScroll,
                     'page': $scope.currentPage
                 }
             }).then(function(result){
-                $scope.hostescalations = result.data.all_hostescalations;
+                $scope.serviceescalations = result.data.all_serviceescalations;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
 
@@ -38,18 +38,19 @@ angular.module('openITCOCKPIT')
         //Fire on page load
         $scope.load();
 
-        $scope.viewHostescalationOptions = function(hostescalation){
+        $scope.viewServiceescalationOptions = function(serviceescalation){
             var options = {
                 'escalate_on_recovery': 'txt-color-greenLight',
-                'escalate_on_down': 'txt-color-redLight',
-                'escalate_on_unreachable': 'txt-color-blueDark'
+                'escalate_on_warning': 'txt-color-orange',
+                'escalate_on_critical': 'txt-color-redLight',
+                'escalate_on_unknown': 'txt-color-blueDark'
             };
             var esc_class = 'fa fa-square ';
             var html = '';
 
             for(var option in options){
                 var color = options[option];
-                if(hostescalation.Hostescalation[option] != null && hostescalation.Hostescalation[option] == 1){
+                if(serviceescalation.Serviceescalation[option] != null && serviceescalation.Serviceescalation[option] == 1){
                     html += '<i class="' + esc_class + color + '"></i>&nbsp';
                 }
             }

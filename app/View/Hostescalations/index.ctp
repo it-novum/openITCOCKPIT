@@ -43,6 +43,10 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
                         <?php if ($this->Acl->hasPermission('add')): ?>
                             <a ui-sref="HostescalationsAdd" class="btn btn-xs btn-success" icon="fa fa-plus">
                                 <i class="fa fa-plus"></i> <?php echo __('New'); ?>
@@ -124,7 +128,9 @@
                                                 ng-if="hostgroup.excluded == 0">
                                                 <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
                                                     <a class="txt-color-green"
-                                                       href="/hostgroups/edit/{{hostgroup.Hostgroup.id}}">{{hostgroup.Hostgroup.Container.name}}</a>
+                                                       ui-sref="HostgroupsEdit({id: hostgroup.Hostgroup.id})">
+                                                        {{hostgroup.Hostgroup.Container.name}}
+                                                    </a>
                                                 <?php else: ?>
                                                     {{hostgroup.Hostgroup.Container.name}}
                                                 <?php endif; ?>
@@ -137,7 +143,7 @@
                                                 ng-if="hostgroup.excluded == 1">
                                                 <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
                                                     <a class="txt-color-red"
-                                                       href="/hostgroups/edit/{{ hostgroup.Hostgroup.id }}">
+                                                       ui-sref="HostgroupsEdit({id: hostgroup.Hostgroup.id})">
                                                         {{ hostgroup.Hostgroup.Container.name }}
                                                     </a>
                                                 <?php else: ?>
@@ -157,7 +163,7 @@
                                     </td>
                                     <td>
                                         <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
-                                            <a href="/timeperiods/edit/{{ hostescalation.Timeperiod.id }}">{{
+                                            <a ui-sref="TimeperiodsEdit({id: hostescalation.Timeperiod.id})">{{
                                                 hostescalation.Timeperiod.name }}</a>
                                         <?php else: ?>
                                             {{ hostescalation.Timeperiod.name }}
@@ -167,7 +173,7 @@
                                         <ul class="list-unstyled">
                                             <li ng-repeat="contact in hostescalation.Contact">
                                                 <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
-                                                    <a href="/contacts/edit/{{ contact.id }}">
+                                                    <a ui-sref="ContactsEdit({id: contact.id})">
                                                         {{ contact.name }}
                                                     </a>
                                                 <?php else: ?>
@@ -180,7 +186,7 @@
                                         <ul class="list-unstyled">
                                             <li ng-repeat="contactgroup in hostescalation.Contactgroup">
                                                 <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
-                                                    <a href="/contactgroups/edit/{{ contactgroup.id }}">
+                                                    <a ui-sref="ContactgroupsEdit({id: contactgroup.id})">
                                                         {{ contactgroup.Container.name }}
                                                     </a>
                                                 <?php else: ?>
@@ -192,7 +198,7 @@
                                     <td ng-bind-html="viewHostescalationOptions(hostescalation)"></td>
                                     <td class="text-center">
                                         <?php if ($this->Acl->hasPermission('edit')): ?>
-                                            <a href="/hostescalations/edit/{{ hostescalation.Hostescalation.id }}"
+                                            <a ui-sref="HostescalationsEdit({id: hostescalation.Hostescalation.id})"
                                                data-original-title="<?php echo __('edit'); ?>"
                                                data-placement="left" rel="tooltip" data-container="body"
                                                ng-if="hostescalation.Hostescalation.allowEdit">

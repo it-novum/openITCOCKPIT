@@ -285,6 +285,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'serviceescalations', 'action' => 'index'],
+                    'state'             => 'ServiceescalationsIndex',
                     'title'             => 'Service Escalations',
                     'icon'              => 'bomb',
                 ],

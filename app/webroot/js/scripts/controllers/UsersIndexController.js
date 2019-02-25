@@ -11,6 +11,15 @@ angular.module('openITCOCKPIT')
             };
         };
 
+        $scope.triggerFilter = function(){
+            $scope.showFilter = !$scope.showFilter === true;
+        };
+
+        $scope.resetFilter = function(){
+            defaultFilter();
+            $scope.undoSelection();
+        };
+
         $scope.load = function(){
             var params = {
                 'angular': true,
@@ -26,7 +35,7 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 console.log(result.data);
-                $scope.users = result.data.all_users;
+                $scope.Users = result.data.all_users;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;

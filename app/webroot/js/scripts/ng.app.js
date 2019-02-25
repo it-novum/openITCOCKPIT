@@ -388,6 +388,18 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "RegistersIndexController"
             })
 
+            .state('ServiceescalationsIndex', {
+                url: '/serviceescalations/index',
+                templateUrl: "/serviceescalations/index.html",
+                controller: "ServiceescalationsIndexController"
+            })
+
+            .state('ServiceescalationsEdit', {
+                url: '/serviceescalations/edit/:id',
+                templateUrl: "/serviceescalations/edit.html",
+                controller: "ServiceescalationsEditController"
+            })
+
             .state('ServicegroupsIndex', {
                 url: '/servicegroups/index',
                 templateUrl: "/servicegroups/index.html",
@@ -615,6 +627,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/hostescalations/add',
                 templateUrl: "/hostescalations/add.html",
                 controller: "HostescalationsAddController"
+            })
+
+            .state('HostescalationsEdit', {
+                url: '/hostescalations/edit/:id',
+                templateUrl: "/hostescalations/edit.html",
+                controller: "HostescalationsEditController"
             })
 
             .state('HosttemplatesIndex', {

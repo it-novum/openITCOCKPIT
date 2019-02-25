@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -237,21 +238,39 @@ class UsersTable extends Table {
             ->disableHydration()
             ->contain('Containers')
             ->matching('Containers')
-            ->select([
-                'Users.id',
-                'Users.email',
-                'Users.company',
-                'Users.phone',
-                'Users.status',
-                'Users.samaccountname',
-                //  'Usergroups.id',
-                //  'Usergroups.name',
-                'ContainersUsersMemberships.container_id',
-            ])
-          //  ->order(['User.full_name' => 'asc'])
+            /* ->select([
+                 'Users.id',
+                 'Users.email',
+                 'Users.company',
+                 'Users.phone',
+                 'Users.status',
+                 'Users.samaccountname',
+                 //  'Usergroups.id',
+                 //  'Usergroups.name',
+                 'ContainersUsersMemberships.container_id',
+             ])*/
+            ->order(['full_name' => 'asc'])
             ->where([
                 'ContainersUsersMemberships.container_id IN' => $rights
             ])
+            ->select(function (Query $query) {
+                return [
+                    'Users.id',
+                    'Users.email',
+                    'Users.company',
+                    'Users.phone',
+                    'Users.status',
+                    'Users.samaccountname',
+                    //  'Usergroups.id',
+                    //  'Usergroups.name',
+                    'ContainersUsersMemberships.container_id',
+                    'full_name' => $query->func()->concat([
+                        'Users.firstname' => 'literal',
+                        ' ',
+                        'Users.lastname'  => 'literal'
+                    ])
+                ];
+            })
             /*  ->join([
                       [
                           'table'      => 'users_to_containers',
@@ -269,8 +288,6 @@ class UsersTable extends Table {
             ->group([
                 'Users.id'
             ]);
-
-        //$result = $query->all()->toArray();
 
         if ($PaginateOMat === null) {
             //Just execute query

@@ -19,7 +19,7 @@ angular.module('openITCOCKPIT')
         $scope.id = $stateParams.id;
 
         $scope.deleteUrl = "/hostgroups/delete/" + $scope.id + ".json?angular=true";
-        $scope.sucessUrl = '/hostgroups/index';
+        $scope.successState = 'HostgroupsIndex';
 
         $scope.init = true;
         $scope.load = function(){

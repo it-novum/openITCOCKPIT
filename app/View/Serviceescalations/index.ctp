@@ -23,318 +23,216 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php //debug($all_serviceescalations); ?>
 <?php $this->Paginator->options(['url' => $this->params['named']]); ?>
-    <div class="row">
-        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-            <h1 class="page-title txt-color-blueDark">
-                <i class="fa fa-bomb fa-fw"></i>
-                <?php echo __('Monitoring'); ?>
-                <span>>
-                    <?php echo __('Service Escalations'); ?>
-                </span>
-            </h1>
-        </div>
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-bomb fa-fw"></i>
+            <?php echo __('Monitoring'); ?>
+            <span>
+                <?php echo __('Service Escalations'); ?>
+            </span>
+        </h1>
     </div>
+</div>
 
 
-    <section id="widget-grid" class="">
-        <div class="row">
-            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                    <header>
-                        <div class="widget-toolbar" role="menu">
-                            <?php
-                            if ($this->Acl->hasPermission('add')):
-                                echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                                //echo " "; //Fix HTML if search is implemented
-                            endif;
+<section id="widget-grid" class="">
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+                <header>
+                    <div class="widget-toolbar" role="menu">
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+                        <?php
+                        if ($this->Acl->hasPermission('add')):
+                            echo $this->Html->link(__('New'), '/serviceescalations/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                            //echo " "; //Fix HTML if search is implemented
+                        endif;
 
-                            //TODO: search functionallity
-                            //echo $this->Html->link(__('Filter'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter'));
+                        //TODO: search functionallity
+                        //echo $this->Html->link(__('Filter'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter'));
 
-                            if ($isFilter):
-                                echo " ";
-                                echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                            endif;
-                            ?>
-                        </div>
+                        /*if ($isFilter):
+                            echo " ";
+                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
+                        endif;*/
+                        ?>
+                    </div>
 
-                        <div class="jarviswidget-ctrls" role="menu">
-                        </div>
-                        <span class="widget-icon hidden-mobile"> <i class="fa fa-bomb"></i> </span>
-                        <h2 class="hidden-mobile"><?php echo __('Service Escalations'); ?> </h2>
+                    <div class="jarviswidget-ctrls" role="menu">
+                    </div>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-bomb"></i> </span>
+                    <h2 class="hidden-mobile"><?php echo __('Service Escalations'); ?> </h2>
 
-                    </header>
-                    <div>
+                </header>
+                <div>
 
-                        <!-- widget content -->
-                        <div class="widget-body no-padding">
-                            <div class="mobile_table">
-                                <table id="serviceescalation_list"
-                                       class="table table-striped table-hover table-bordered smart-form"
-                                       style="">
-                                    <thead>
-                                    <tr>
-                                        <th><?php echo __('Services'); ?></th>
-                                        <th><?php echo __('Ext. services'); ?></th>
-                                        <th><?php echo __('Servicegroups'); ?></th>
-                                        <th><?php echo __('Ext. servicegroups'); ?></th>
-                                        <th><?php echo __('First'); ?></th>
-                                        <th><?php echo __('Last'); ?></th>
-                                        <th><?php echo __('Interval'); ?></th>
-                                        <th><?php echo __('Timeframe'); ?></th>
-                                        <th><?php echo __('Contacts'); ?></th>
-                                        <th><?php echo __('Contact groups'); ?></th>
-                                        <th class="no-sort"><?php echo __('Options'); ?></th>
-                                        <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php foreach ($all_serviceescalations as $serviceescalation): ?>
-                                        <?php $allowEdit = $this->Acl->isWritableContainer($serviceescalation['Serviceescalation']['container_id']); ?>
-                                        <tr>
-                                            <td class="txt-color-green">
-                                                <ul class="list-unstyled">
-                                                    <?php
+                    <!-- widget content -->
+                    <div class="widget-body no-padding">
+                        <div class="mobile_table">
+                            <table id="serviceescalation_list"
+                                   class="table table-striped table-hover table-bordered smart-form"
+                                   style="">
+                                <thead>
+                                <tr>
+                                    <th><?php echo __('Services'); ?></th>
+                                    <th><?php echo __('Ext. services'); ?></th>
+                                    <th><?php echo __('Servicegroups'); ?></th>
+                                    <th><?php echo __('Ext. servicegroups'); ?></th>
+                                    <th><?php echo __('First'); ?></th>
+                                    <th><?php echo __('Last'); ?></th>
+                                    <th><?php echo __('Interval'); ?></th>
+                                    <th><?php echo __('Timeperiod'); ?></th>
+                                    <th><?php echo __('Contacts'); ?></th>
+                                    <th><?php echo __('Contact groups'); ?></th>
+                                    <th class="no-sort"><?php echo __('Options'); ?></th>
+                                    <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
+                                </tr>
+                                </thead>
+                                <tbody>
 
-                                                    foreach (Hash::extract($serviceescalation, 'ServiceescalationServiceMembership.{n}[excluded=0]') as $service):
-                                                        echo '<li>';
-                                                        if ($this->Acl->hasPermission('edit', 'hosts')):
-                                                            echo $this->Html->link(
-                                                                $service['Service']['Host']['name'],
-                                                                [
-                                                                    'controller' => 'hosts',
-                                                                    'action'     => 'edit',
-                                                                    $service['Service']['Host']['id'],
-                                                                ],
-                                                                ['class' => 'txt-color-green', 'escape' => true]
-                                                            );
-                                                        else:
-                                                            echo h($service['Service']['Host']['name']);
-                                                        endif;
-                                                        echo ($service['Service']['Host']['disabled']) ?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i> ' : '';
-                                                        echo '/';
-                                                        if ($this->Acl->hasPermission('edit', 'services')):
-                                                            echo $this->Html->link(
-                                                                ($service['Service']['name']) ? $service['Service']['name'] : $service['Service']['Servicetemplate']['name'],
-                                                                [
-                                                                    'controller' => 'services',
-                                                                    'action'     => 'edit',
-                                                                    $service['Service']['id'],
-                                                                ],
-                                                                ['class' => 'txt-color-green', 'escape' => true]
-                                                            );
-                                                        else:
-                                                            echo h(($service['Service']['name']) ? $service['Service']['name'] : $service['Service']['Servicetemplate']['name']);
-                                                        endif;
-                                                        echo ($service['Service']['disabled']) ?
-                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i>' : '';
-                                                        echo '</li>';
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-                                            </td>
-                                            <td class="txt-color-red">
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    foreach (Hash::extract($serviceescalation, 'ServiceescalationServiceMembership.{n}[excluded=1]') as $service_exclude):
-                                                        echo '<li>';
-                                                        if ($this->Acl->hasPermission('edit', 'hosts')):
-                                                            echo $this->Html->link(
-                                                                $service_exclude['Service']['Host']['name'],
-                                                                [
-                                                                    'controller' => 'hosts',
-                                                                    'action'     => 'edit',
-                                                                    $service_exclude['Service']['Host']['id'],
-                                                                ],
-                                                                ['class' => 'txt-color-red', 'escape' => true]
-                                                            );
-                                                        else:
-                                                            echo h($service_exclude['Service']['Host']['name']);
-                                                        endif;
-                                                        echo ($service_exclude['Service']['Host']['disabled']) ?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i> ' : '';
-                                                        echo '/';
-                                                        if ($this->Acl->hasPermission('edit', 'services')):
-                                                            echo $this->Html->link(
-                                                                ($service_exclude['Service']['name']) ? $service_exclude['Service']['name'] : $service_exclude['Service']['Servicetemplate']['name'],
-                                                                [
-                                                                    'controller' => 'services',
-                                                                    'action'     => 'edit',
-                                                                    $service_exclude['Service']['id'],
-                                                                ],
-                                                                ['class' => 'txt-color-red', 'escape' => true]
-                                                            );
-                                                        else:
-                                                            echo h(($service_exclude['Service']['name']) ? $service_exclude['Service']['name'] : $service_exclude['Service']['Servicetemplate']['name']);
-                                                        endif;
-                                                        echo ($service_exclude['Service']['disabled']) ?
-                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i>' : '';
-                                                        echo '</li>';
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-
-                                            </td>
-                                            <td class="txt-color-green">
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    foreach (Hash::extract($serviceescalation, 'ServiceescalationServicegroupMembership.{n}[excluded=0]') as $servicegroup):
-                                                        echo '<li>';
-                                                        if ($this->Acl->hasPermission('edit', 'servicegroups')):
-                                                            echo $this->Html->link(
-                                                                $servicegroup['Servicegroup']['Container']['name'],
-                                                                [
-                                                                    'controller' => 'servicegroups',
-                                                                    'action'     => 'edit',
-                                                                    $servicegroup['Servicegroup']['id'],
-                                                                ],
-                                                                ['class' => 'txt-color-green', 'escape' => true]
-                                                            );
-                                                        else:
-                                                            echo h($servicegroup['Servicegroup']['Container']['name']);
-                                                        endif;
-                                                        echo '</li>';
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-                                            </td>
-                                            <td class="txt-color-red">
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    foreach (Hash::extract($serviceescalation, 'ServiceescalationServicegroupMembership.{n}[excluded=1]') as $servicegroup_exclude):
-                                                        echo '<li>';
-                                                        if ($this->Acl->hasPermission('edit', 'servicegroups')):
-                                                            echo $this->Html->link(
-                                                                $servicegroup_exclude['Servicegroup']['Container']['name'],
-                                                                [
-                                                                    'controller' => 'servicegroups',
-                                                                    'action'     => 'edit',
-                                                                    $servicegroup_exclude['Servicegroup']['id'],
-                                                                ],
-                                                                ['class' => 'txt-color-red', 'escape' => true]
-                                                            );
-                                                        else:
-                                                            echo h($servicegroup_exclude['Servicegroup']['Container']['name']);
-                                                        endif;
-                                                        echo '</li>';
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-                                            </td>
-                                            <td><?php echo $serviceescalation['Serviceescalation']['first_notification']; ?></td>
-                                            <td><?php echo $serviceescalation['Serviceescalation']['last_notification']; ?></td>
-                                            <td><?php echo $serviceescalation['Serviceescalation']['notification_interval']; ?></td>
-                                            <td><?php
-                                                if ($this->Acl->hasPermission('edit', 'timeperiods')):
-                                                    echo $this->Html->link($serviceescalation['Timeperiod']['name'],
-                                                        [
-                                                            'controller' => 'timeperiods',
-                                                            'action'     => 'edit',
-                                                            $serviceescalation['Timeperiod']['id'],
-                                                        ]
-                                                    );
-                                                else:
-                                                    echo h($serviceescalation['Timeperiod']['name']);
-                                                endif;
-                                                ?>
-                                            </td>
-                                            <td>
-                                                <?php
-                                                foreach (Hash::extract($serviceescalation, 'Contact.{n}') as $contact):
-                                                    if ($this->Acl->hasPermission('edit', 'contacts')):
-                                                        echo $this->Html->link($contact['name'], [
-                                                                'controller' => 'contacts',
-                                                                'action'     => 'edit',
-                                                                $contact['ContactsToServiceescalation']['contact_id'],
-                                                            ]
-                                                        );
-                                                    else:
-                                                        echo h($contact['name']);
-                                                    endif;
-                                                    echo '<br />';
-                                                endforeach;
-                                                ?></td>
-                                            <td><?php
-                                                foreach (Hash::extract($serviceescalation, 'Contactgroup.{n}') as $contactgroup):
-                                                    if ($this->Acl->hasPermission('edit', 'contactgroups')):
-                                                        echo $this->Html->link($contactgroup['Container']['name'], [
-                                                                'controller' => 'contactgroups',
-                                                                'action'     => 'edit',
-                                                                $contactgroup['ContactgroupsToServiceescalation']['contactgroup_id'],
-                                                            ]
-                                                        );
-                                                    else:
-                                                        echo h($contactgroup['Container']['name']);
-                                                    endif;
-                                                    echo '<br />';
-                                                endforeach;
-                                                ?>
-                                            </td>
-                                            <td><?php echo __viewServiceescalationOptions($serviceescalation); ?></td>
-                                            <td class="text-center">
-                                                <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                    <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $serviceescalation['Serviceescalation']['id']; ?>"
-                                                       data-original-title="<?php echo __('edit'); ?>"
-                                                       data-placement="left" rel="tooltip" data-container="body"><i
-                                                                id="list_edit"
-                                                                class="fa fa-gear fa-lg txt-color-teal"></i></a>
+                                <tr ng-repeat="serviceescalation in serviceescalations">
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="service in serviceescalation.ServiceescalationServiceMembership"
+                                                ng-if="service.excluded == 0">
+                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                                    <a class="txt-color-green"
+                                                       href="/services/edit/{{service.Service.id}}">{{(service.Service.name
+                                                        ? service.Service.name :
+                                                        service.Service.Servicetemplate.name)}}</a>
+                                                <?php else: ?>
+                                                    {{(service.Service.name ? service.Service.name : service.Service.Servicetemplate.name)}}
                                                 <?php endif; ?>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <?php if (empty($all_serviceescalations)): ?>
-                                <div class="noMatch">
-                                    <center>
-                                        <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                    </center>
-                                </div>
-                            <?php endif; ?>
+                                                <i ng-if="service.Service.disabled == 1"
+                                                   class="fa fa-power-off text-danger"
+                                                   title="disabled" aria-hidden="true"></i>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="service in serviceescalation.ServiceescalationServiceMembership"
+                                                ng-if="service.excluded == 1">
+                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                                    <a class="txt-color-red"
+                                                       href="/services/edit/{{service.Service.id}}">{{(service.Service.name
+                                                        ? service.Service.name :
+                                                        service.Service.Servicetemplate.name)}}</a>
+                                                <?php else: ?>
+                                                    {{(service.Service.name ? service.Service.name : service.Service.Servicetemplate.name)}}
+                                                <?php endif; ?>
+                                                <i ng-if="service.Service.disabled == 1"
+                                                   class="fa fa-power-off text-danger"
+                                                   title="disabled" aria-hidden="true"></i>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="servicegroup in serviceescalation.ServiceescalationServicegroupMembership"
+                                                ng-if="servicegroup.excluded == 0">
+                                                <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
+                                                    <a class="txt-color-green"
+                                                       ui-sref="ServicegroupsEdit({id: servicegroup.Servicegroup.id})">
+                                                        {{servicegroup.Servicegroup.Container.name}}
+                                                    </a>
+                                                <?php else: ?>
+                                                    {{servicegroup.Servicegroup.Container.name}}
+                                                <?php endif; ?>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="servicegroup in serviceescalation.ServiceescalationServicegroupMembership"
+                                                ng-if="servicegroup.excluded == 1">
+                                                <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
+                                                    <a class="txt-color-red"
+                                                       ui-sref="ServicegroupsEdit({id: servicegroup.Servicegroup.id})">
+                                                        {{servicegroup.Servicegroup.Container.name}}
+                                                    </a>
+                                                <?php else: ?>
+                                                    {{servicegroup.Servicegroup.Container.name}}
+                                                <?php endif; ?>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        {{ serviceescalation.Serviceescalation.first_notification }}
+                                    </td>
+                                    <td>
+                                        {{ serviceescalation.Serviceescalation.last_notification }}
+                                    </td>
+                                    <td>
+                                        {{ serviceescalation.Serviceescalation.notification_interval }}
+                                    </td>
+                                    <td>
+                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                            <a ui-sref="TimeperiodsEdit({id: serviceescalation.Timeperiod.id})">{{
+                                                serviceescalation.Timeperiod.name }}</a>
+                                        <?php else: ?>
+                                            {{ serviceescalation.Timeperiod.name }}
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="contact in serviceescalation.Contact">
+                                                <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
+                                                    <a ui-sref="ContactsEdit({id: contact.ContactsToServiceescalation.contact_id})">
+                                                        {{ contact.name }}
+                                                    </a>
+                                                <?php else: ?>
+                                                    {{ contact.name }}
+                                                <?php endif; ?>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="contactgroup in serviceescalation.Contactgroup">
+                                                <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
+                                                    <a ui-sref="ContactgroupsEdit({id: contactgroup.id})">
+                                                        {{ contactgroup.Container.name }}
+                                                    </a>
+                                                <?php else: ?>
+                                                    {{ contactgroup.Container.name }}
+                                                <?php endif; ?>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td ng-bind-html="viewServiceescalationOptions(serviceescalation)"></td>
+                                    <td class="text-center">
+                                        <?php if ($this->Acl->hasPermission('edit')): ?>
+                                            <a ui-sref="ServiceescalationsEdit({id: serviceescalation.Serviceescalation.id})"
+                                               data-original-title="<?php echo __('edit'); ?>"
+                                               data-placement="left" rel="tooltip" data-container="body"
+                                               ng-if="serviceescalation.Serviceescalation.allowEdit">
+                                                <i id="list_edit" class="fa fa-gear fa-lg txt-color-teal"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
 
-                            <div style="padding: 5px 10px;">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
-                                    </div>
-                                    <div class="col-sm-6 text-right">
-                                        <div class="dataTables_paginate paging_bootstrap">
-                                            <?php echo $this->Paginator->pagination([
-                                                'ul' => 'pagination',
-                                            ]); ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                </tbody>
+                            </table>
                         </div>
+                        <div class="noMatch" ng-hide="serviceescalations.length > 0">
+                            <center>
+                                <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
+                            </center>
+                        </div>
+
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
-        </div>
-    </section>
-<?php
-/**
- * This is a view function and ONLY CALLED IN THIS VIEW!
- *
- * @param array $serviceescalation from find('first')
- *
- * @return string `<i />` HTML object with icons for each options
- * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
- * @since  3.0
- */
-function __viewServiceescalationOptions($serviceescalation = []) {
-    $options = ['escalate_on_recovery' => 'txt-color-greenLight', 'escalate_on_warning' => 'txt-color-orange', 'escalate_on_critical' => 'txt-color-redLight', 'escalate_on_unknown' => 'txt-color-blueDark'];
-    $class = 'fa fa-square ';
-    $html = '';
-    foreach ($options as $option => $color) {
-        if (isset($serviceescalation['Serviceescalation'][$option]) && $serviceescalation['Serviceescalation'][$option] == 1) {
-            $html .= '<i class="' . $class . $color . '"></i>&nbsp';
-        }
-    }
-
-    return $html;
-}
+            </div>
+        </article>
+    </div>
+</section>

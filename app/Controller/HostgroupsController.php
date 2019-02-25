@@ -694,7 +694,6 @@ class HostgroupsController extends AppController {
                 CakeLog::write('log', serialize($changelog_data));
             }
 
-            $this->setFlash(__('Host group deleted successfully'));
             $this->set('message', __('Host group deleted successfully'));
             $this->set('_serialize', ['message']);
             return;

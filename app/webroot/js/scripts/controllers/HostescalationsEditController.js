@@ -1,41 +1,47 @@
 angular.module('openITCOCKPIT')
-    .controller('HostescalationsAddController', function($scope, $http, $state, NotyService) {
+    .controller('HostescalationsEditController', function($scope, $http, $state, $stateParams, NotyService) {
 
         $scope.post = {
             Hostescalation: {
+                id: $stateParams.id,
+                uuid: null,
                 container_id: null,
-            }
-        };
-
-        $scope.clearElementSelections = function() {
-            $scope.post.Hostescalation = {
-                container_id: $scope.post.Hostescalation.container_id,
+                timeperiod_id: null,
+                first_notification: null,
+                last_notification: null,
+                notification_interval: null,
+                escalate_on_recovery: 0,
+                escalate_on_down: 0,
+                escalate_on_unreachable: 0,
                 Host: [],
                 Host_excluded: [],
                 Hostgroup: [],
                 Hostgroup_excluded: [],
-                first_notification: null,
-                last_notification: null,
-                notification_interval: null,
-                timeperiod_id: null,
                 Contact: [],
                 Contactgroup: [],
-                escalate_on_recovery: 0,
-                escalate_on_down: 0,
-                escalate_on_unreachable: 0
             }
         };
-        $scope.clearElementSelections();
-        $scope.containers = {};
+
+        $scope.deleteUrl = "/hostescalations/delete/" + $scope.post.Hostescalation.id + ".json?angular=true";
+        $scope.successState = 'HostescalationsIndex';
 
         $scope.load = function() {
 
-            $http.get("/hostescalations/add.json", {
+            $http.get("/hostescalations/edit/" + $scope.post.Hostescalation.id + ".json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result) {
+                $scope.post.Hostescalation = result.data.hostescalation.Hostescalation;
+
                 $scope.containers = result.data.containers;
+                $scope.hosts = result.data.hosts;
+                $scope.hostsExcluded = result.data.hostsExcluded;
+                $scope.hostgroups = result.data.hostgroups;
+                $scope.hostgroupsExcluded = result.data.hostgroupsExcluded;
+                $scope.timeperiods = result.data.timeperiods;
+                $scope.contacts = result.data.contacts;
+                $scope.contactgroups = result.data.contactgroups;
             });
 
         };
@@ -46,7 +52,6 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result) {
-                $scope.clearElementSelections();
                 $scope.hosts = result.data.hosts;
                 $scope.hostsExcluded = result.data.hostsExcluded;
                 $scope.hostgroups = result.data.hostgroups;
@@ -54,11 +59,16 @@ angular.module('openITCOCKPIT')
                 $scope.timeperiods = result.data.timeperiods;
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
+
+                $scope.processChosenExcludedHosts();
+                $scope.processChosenHosts();
+                $scope.processChosenExcludedHostgroups();
+                $scope.processChosenHostgroups();
             });
         };
 
         $scope.submit = function() {
-            $http.post("/hostescalations/add.json?angular=true",
+            $http.post("/hostescalations/edit/" + $scope.post.Hostescalation.id + ".json?angular=true",
                 $scope.post
             ).then(function(result) {
                 NotyService.genericSuccess();
@@ -116,7 +126,7 @@ angular.module('openITCOCKPIT')
 
 
         $scope.$watch('post.Hostescalation.container_id', function() {
-            if ($scope.post.Hostescalation.container_id != null) {
+            if (typeof $scope.post.Hostescalation != "undefined" && $scope.post.Hostescalation.container_id != null) {
                 $scope.loadElementsByContainerId();
             }
         }, true);

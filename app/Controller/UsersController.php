@@ -86,12 +86,19 @@ class UsersController extends AppController {
 
         //$all_commands = $Commands->getCommandsIndex($CommandFilter, $PaginateOMat);
 
+        $isLdapAuth = false;
+        if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap'){
+            $isLdapAuth = true;
+        }
+
+        $this->set('isLdapAuth', $isLdapAuth);
+        $this->set('systemsettings', $systemsettings);
         $this->set('all_users', $all_users);
         $toJson = ['all_users', 'paging'];
         if ($this->isScrollRequest()) {
             $toJson = ['all_users', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->set('_serialize', ['toJson', 'all_users', 'systemsettings', 'isLdapAuth']);
 
         /*
         $this->loadModel('Container');
@@ -157,7 +164,7 @@ class UsersController extends AppController {
         }
         $this->set('userContainerIds', $userContainerIds);
         */
-        $this->set('systemsettings', $systemsettings);
+
     }
 
     public function view($id = null) {
