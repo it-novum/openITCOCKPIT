@@ -29,6 +29,7 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
@@ -124,43 +125,6 @@ class HosttemplatesController extends AppController {
         $this->set('_serialize', $toJson);
 
         return;
-
-
-        /************** OLD CODE **********************/
-
-
-        $query = [
-            'order'      => [
-                'Hosttemplate.name' => 'asc',
-            ],
-            'conditions' => [
-                'Container.id'                     => $this->MY_RIGHTS,
-                'Hosttemplate.hosttemplatetype_id' => GENERIC_HOSTTEMPLATE,
-            ],
-            'contain'    => [
-                'Container',
-            ],
-            'fields'     => [
-                'Hosttemplate.id',
-                'Hosttemplate.uuid',
-                'Hosttemplate.name',
-                'Hosttemplate.description',
-                'Hosttemplate.container_id',
-                'Container.id',
-                'Container.parent_id',
-            ],
-        ];
-        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_hosttemplates = $this->Hosttemplate->find('all', $query);
-        } else {
-            $all_hosttemplates = $this->Paginator->paginate();
-        }
-
-        $this->set(compact(['all_hosttemplates']));
-        $this->set('_serialize', ['all_hosttemplates']);
     }
 
     public function view($id = null) {
@@ -179,6 +143,246 @@ class HosttemplatesController extends AppController {
         }
         $this->set(compact(['hosttemplate']));
         $this->set('_serialize', ['hosttemplate']);
+    }
+
+    public function add($hosttemplatetype_id = null) {
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('MONITORING');
+        $active_checks_enabled = $systemsettings['MONITORING']['MONITORING.HOST_CHECK_ACTIVE_DEFAULT'];
+
+        //Empty variables, get fild if Model::save() fails for refill
+        $_timeperiods = [];
+        $_contacts = [];
+        $_contactgroups = [];
+        $_hostgroups = [];
+
+        $userId = $this->Auth->user('id');
+        // Checking if the user hit submit and a validation error happents, to refill input fields
+        $Customvariable = [];
+        $customFildsToRefill = [
+            'Hosttemplate' => [
+                'notification_interval',
+                'notify_on_recovery',
+                'notify_on_down',
+                'notify_on_unreachable',
+                'notify_on_flapping',
+                'notify_on_downtime',
+                'check_interval',
+                'retry_interval',
+                'flap_detection_enabled',
+                'flap_detection_on_up',
+                'flap_detection_on_down',
+                'flap_detection_on_unreachable',
+                'priority',
+                'active_checks_enabled',
+            ],
+
+        ];
+        $this->CustomValidationErrors->checkForRefill($customFildsToRefill);
+
+        //Fix that we dont lose any unsaved host macros, because of vaildation error
+        if (isset($this->request->data['Customvariable'])) {
+            $Customvariable = $this->request->data['Customvariable'];
+        }
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+        $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        }
+
+        $this->Frontend->set('data_placeholder', __('Please choose a contact'));
+        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
+        $this->Frontend->setJson('lang_minutes', __('minutes'));
+        $this->Frontend->setJson('lang_seconds', __('seconds'));
+        $this->Frontend->setJson('lang_and', __('and'));
+
+        $this->set('back_url', $this->referer());
+        $this->set(compact(['containers', 'commands', 'userContainerId', 'userValues', 'Customvariable', 'active_checks_enabled']));
+        if ($this->request->is('post') || $this->request->is('put')) {
+            //Fixing structure of $this->request->data for HATBM
+            $ext_data_for_changelog = [
+                'Contact'      => [],
+                'Contactgroup' => [],
+            ];
+            if ($this->request->data('Hosttemplate.Contact')) {
+                if ($contactsForChangelog = $ContactsTable->getContactsAsList($this->request->data['Hosttemplate']['Contact'])) {
+                    foreach ($contactsForChangelog as $contactId => $contactName) {
+                        $ext_data_for_changelog['Contact'][] = [
+                            'id'   => $contactId,
+                            'name' => $contactName,
+                        ];
+                    }
+                    unset($contactsForChangelog);
+                }
+            }
+            if ($this->request->data('Hosttemplate.Contactgroup')) {
+                if ($contactgroupsForChangelog = $ContactgroupsTable->getContactgroupsAsList($this->request->data['Hosttemplate']['Contactgroup'])) {
+                    foreach ($contactgroupsForChangelog as $contactgroupId => $contactgroupName) {
+                        $ext_data_for_changelog['Contactgroup'][] = [
+                            'id'   => $contactgroupId,
+                            'name' => $contactgroupName
+                        ];
+                    }
+                    unset($contactgroupsForChangelog);
+                }
+            }
+            if ($this->request->data('Hosttemplate.notify_period_id')) {
+                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Hosttemplate']['notify_period_id'])) {
+                    foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
+                        $ext_data_for_changelog['NotifyPeriod'] = [
+                            'id'   => $timeperiodId,
+                            'name' => $timeperiodName
+                        ];
+                    }
+                    unset($timeperiodsForChangelog);
+                }
+            }
+            if ($this->request->data('Hosttemplate.check_period_id')) {
+                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Hosttemplate']['check_period_id'])) {
+                    foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
+                        $ext_data_for_changelog['CheckPeriod'] = [
+                            'id'   => $timeperiodId,
+                            'name' => $timeperiodName
+                        ];
+                    }
+                    unset($timeperiodsForChangelog);
+                }
+            }
+            if ($this->request->data('Hosttemplate.command_id')) {
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+
+
+                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Hosttemplate']['command_id']);
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
+                }
+                unset($commandsForChangelog);
+            }
+
+            if ($this->request->data('Hosttemplate.Hostgroup')) {
+                if ($hostgroupsForChangelog = $this->Hostgroup->find('all', [
+                    'recursive'  => -1,
+                    'contain'    => [
+                        'Container' => [
+                            'fields' => [
+                                'Container.name',
+                            ],
+                        ],
+                    ],
+                    'fields'     => [
+                        'Hostgroup.id',
+                    ],
+                    'conditions' => [
+                        'Hostgroup.id' => $this->request->data['Hosttemplate']['Hostgroup'],
+                    ],
+                ])
+                ) {
+                    foreach ($hostgroupsForChangelog as $hostgroupData) {
+                        $ext_data_for_changelog['Hostgroup'][] = [
+                            'id'   => $hostgroupData['Hostgroup']['id'],
+                            'name' => $hostgroupData['Container']['name'],
+                        ];
+                    }
+                    unset($hostgroupsForChangelog);
+                }
+            }
+
+            $this->request->data['Contact'] = $this->request->data['Hosttemplate']['Contact'];
+            $this->request->data['Contactgroup'] = $this->request->data['Hosttemplate']['Contactgroup'];
+            $this->request->data['Hosttemplate']['uuid'] = $this->Hosttemplate->createUUID();
+
+            if (isset($this->request->data['Hosttemplate']['Hostgroup']) && is_array($this->request->data['Hosttemplate']['Hostgroup'])) {
+                $this->request->data['Hostgroup']['Hostgroup'] = $this->request->data['Hosttemplate']['Hostgroup'];
+            } else {
+                $this->request->data['Hostgroup']['Hostgroup'] = [];
+            }
+
+            if ($hosttemplatetype_id !== null && is_numeric($hosttemplatetype_id)) {
+                $this->request->data['Hosttemplate']['hosttemplatetype_id'] = $hosttemplatetype_id;
+            }
+
+            $this->Hosttemplate->set($this->request->data);
+            //Save everything including custom variables
+            $this->Hosttemplate->create();
+            if ($this->Hosttemplate->saveAll($this->request->data)) {
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    $this->params['action'],
+                    $this->params['controller'],
+                    $this->Hosttemplate->id,
+                    OBJECT_HOSTTEMPLATE,
+                    $this->request->data('Hosttemplate.container_id'),
+                    $userId,
+                    $this->request->data['Hosttemplate']['name'],
+                    array_merge($this->request->data, $ext_data_for_changelog)
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+                if ($this->request->ext == 'json') {
+                    $this->serializeId();
+
+                    return;
+                }
+                $flashHref = $this->Hosttemplate->flashRedirect($this->request->params, ['action' => 'edit']);
+                $flashHref[] = $this->Hosttemplate->id;
+                $flashHref[] = $hosttemplatetype_id;
+                $redirect = $this->Hosttemplate->redirect($this->request->params, ['action' => 'index']);
+                $this->setFlash(__('<a href="' . Router::url($flashHref) . '">Hosttemplate</a> successfully saved.'));
+                $this->redirect($redirect);
+            } else {
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeErrorMessage();
+                    return;
+                }
+                $this->setFlash(__('Could not save data'), false);
+                $this->CustomValidationErrors->loadModel($this->Hosttemplate);
+                $this->CustomValidationErrors->customFields(['notification_interval', 'check_interval', 'retry_interval', 'notify_on_recovery', 'flap_detection_on_up']);
+                $this->CustomValidationErrors->fetchErrors();
+
+                foreach ($this->Customvariable->validationErrors as $customVariableValidationError) {
+                    if (isset($customVariableValidationError['name'])) {
+                        $this->set('customVariableValidationError', current($customVariableValidationError['name']));
+                    }
+                }
+
+                foreach ($this->Customvariable->validationErrors as $customVariableValidationError) {
+                    if (isset($customVariableValidationError['value'])) {
+                        $this->set('customVariableValidationErrorValue', current($customVariableValidationError['value']));
+                    }
+                }
+
+                //Refill data that was loaded by ajax due to selected container id
+                if ($ContainersTable->existsById($this->request->data('Hosttemplate.container_id'))) {
+                    $container_id = $this->request->data('Hosttemplate.container_id');
+                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
+
+                    $_timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
+                    $_contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
+                    $_contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
+                    $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
+                }
+            }
+        }
+        $this->set(compact(['_timeperiods', '_contacts', '_contactgroups', '_hostgroups']));
     }
 
     public function edit($id = null, $hosttemplatetype_id = null) {
@@ -549,245 +753,6 @@ class HosttemplatesController extends AppController {
         $this->set(compact(['_timeperiods', '_contacts', '_contactgroups', '_hostgroups']));
     }
 
-    public function add($hosttemplatetype_id = null) {
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsettings = $Systemsettings->findAsArraySection('MONITORING');
-        $active_checks_enabled = $systemsettings['MONITORING']['MONITORING.HOST_CHECK_ACTIVE_DEFAULT'];
-
-        //Empty variables, get fild if Model::save() fails for refill
-        $_timeperiods = [];
-        $_contacts = [];
-        $_contactgroups = [];
-        $_hostgroups = [];
-
-        $userId = $this->Auth->user('id');
-        // Checking if the user hit submit and a validation error happents, to refill input fields
-        $Customvariable = [];
-        $customFildsToRefill = [
-            'Hosttemplate' => [
-                'notification_interval',
-                'notify_on_recovery',
-                'notify_on_down',
-                'notify_on_unreachable',
-                'notify_on_flapping',
-                'notify_on_downtime',
-                'check_interval',
-                'retry_interval',
-                'flap_detection_enabled',
-                'flap_detection_on_up',
-                'flap_detection_on_down',
-                'flap_detection_on_unreachable',
-                'priority',
-                'active_checks_enabled',
-            ],
-
-        ];
-        $this->CustomValidationErrors->checkForRefill($customFildsToRefill);
-
-        //Fix that we dont lose any unsaved host macros, because of vaildation error
-        if (isset($this->request->data['Customvariable'])) {
-            $Customvariable = $this->request->data['Customvariable'];
-        }
-        /** @var $CommandsTable CommandsTable */
-        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-        /** @var $ContactgroupsTable ContactgroupsTable */
-        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-
-        $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
-
-        if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
-        } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
-        }
-
-        $this->Frontend->set('data_placeholder', __('Please choose a contact'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
-        $this->Frontend->setJson('lang_minutes', __('minutes'));
-        $this->Frontend->setJson('lang_seconds', __('seconds'));
-        $this->Frontend->setJson('lang_and', __('and'));
-
-        $this->set('back_url', $this->referer());
-        $this->set(compact(['containers', 'commands', 'userContainerId', 'userValues', 'Customvariable', 'active_checks_enabled']));
-        if ($this->request->is('post') || $this->request->is('put')) {
-            //Fixing structure of $this->request->data for HATBM
-            $ext_data_for_changelog = [
-                'Contact'      => [],
-                'Contactgroup' => [],
-            ];
-            if ($this->request->data('Hosttemplate.Contact')) {
-                if ($contactsForChangelog = $ContactsTable->getContactsAsList($this->request->data['Hosttemplate']['Contact'])) {
-                    foreach ($contactsForChangelog as $contactId => $contactName) {
-                        $ext_data_for_changelog['Contact'][] = [
-                            'id'   => $contactId,
-                            'name' => $contactName,
-                        ];
-                    }
-                    unset($contactsForChangelog);
-                }
-            }
-            if ($this->request->data('Hosttemplate.Contactgroup')) {
-                if ($contactgroupsForChangelog = $ContactgroupsTable->getContactgroupsAsList($this->request->data['Hosttemplate']['Contactgroup'])) {
-                    foreach ($contactgroupsForChangelog as $contactgroupId => $contactgroupName) {
-                        $ext_data_for_changelog['Contactgroup'][] = [
-                            'id'   => $contactgroupId,
-                            'name' => $contactgroupName
-                        ];
-                    }
-                    unset($contactgroupsForChangelog);
-                }
-            }
-            if ($this->request->data('Hosttemplate.notify_period_id')) {
-                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Hosttemplate']['notify_period_id'])) {
-                    foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
-                        $ext_data_for_changelog['NotifyPeriod'] = [
-                            'id'   => $timeperiodId,
-                            'name' => $timeperiodName
-                        ];
-                    }
-                    unset($timeperiodsForChangelog);
-                }
-            }
-            if ($this->request->data('Hosttemplate.check_period_id')) {
-                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Hosttemplate']['check_period_id'])) {
-                    foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
-                        $ext_data_for_changelog['CheckPeriod'] = [
-                            'id'   => $timeperiodId,
-                            'name' => $timeperiodName
-                        ];
-                    }
-                    unset($timeperiodsForChangelog);
-                }
-            }
-            if ($this->request->data('Hosttemplate.command_id')) {
-                /** @var $Commands CommandsTable */
-                $Commands = TableRegistry::getTableLocator()->get('Commands');
-
-
-                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Hosttemplate']['command_id']);
-                foreach ($commandsForChangelog as $commandId => $commandName) {
-                    $ext_data_for_changelog['CheckCommand'] = [
-                        'id'   => $commandId,
-                        'name' => $commandName,
-                    ];
-                }
-                unset($commandsForChangelog);
-            }
-
-            if ($this->request->data('Hosttemplate.Hostgroup')) {
-                if ($hostgroupsForChangelog = $this->Hostgroup->find('all', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container' => [
-                            'fields' => [
-                                'Container.name',
-                            ],
-                        ],
-                    ],
-                    'fields'     => [
-                        'Hostgroup.id',
-                    ],
-                    'conditions' => [
-                        'Hostgroup.id' => $this->request->data['Hosttemplate']['Hostgroup'],
-                    ],
-                ])
-                ) {
-                    foreach ($hostgroupsForChangelog as $hostgroupData) {
-                        $ext_data_for_changelog['Hostgroup'][] = [
-                            'id'   => $hostgroupData['Hostgroup']['id'],
-                            'name' => $hostgroupData['Container']['name'],
-                        ];
-                    }
-                    unset($hostgroupsForChangelog);
-                }
-            }
-
-            $this->request->data['Contact'] = $this->request->data['Hosttemplate']['Contact'];
-            $this->request->data['Contactgroup'] = $this->request->data['Hosttemplate']['Contactgroup'];
-            $this->request->data['Hosttemplate']['uuid'] = $this->Hosttemplate->createUUID();
-
-            if (isset($this->request->data['Hosttemplate']['Hostgroup']) && is_array($this->request->data['Hosttemplate']['Hostgroup'])) {
-                $this->request->data['Hostgroup']['Hostgroup'] = $this->request->data['Hosttemplate']['Hostgroup'];
-            } else {
-                $this->request->data['Hostgroup']['Hostgroup'] = [];
-            }
-
-            if ($hosttemplatetype_id !== null && is_numeric($hosttemplatetype_id)) {
-                $this->request->data['Hosttemplate']['hosttemplatetype_id'] = $hosttemplatetype_id;
-            }
-
-            $this->Hosttemplate->set($this->request->data);
-            //Save everything including custom variables
-            $this->Hosttemplate->create();
-            if ($this->Hosttemplate->saveAll($this->request->data)) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $this->Hosttemplate->id,
-                    OBJECT_HOSTTEMPLATE,
-                    $this->request->data('Hosttemplate.container_id'),
-                    $userId,
-                    $this->request->data['Hosttemplate']['name'],
-                    array_merge($this->request->data, $ext_data_for_changelog)
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-                if ($this->request->ext == 'json') {
-                    $this->serializeId();
-
-                    return;
-                }
-                $flashHref = $this->Hosttemplate->flashRedirect($this->request->params, ['action' => 'edit']);
-                $flashHref[] = $this->Hosttemplate->id;
-                $flashHref[] = $hosttemplatetype_id;
-                $redirect = $this->Hosttemplate->redirect($this->request->params, ['action' => 'index']);
-                $this->setFlash(__('<a href="' . Router::url($flashHref) . '">Hosttemplate</a> successfully saved.'));
-                $this->redirect($redirect);
-            } else {
-
-                if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-                    return;
-                }
-                $this->setFlash(__('Could not save data'), false);
-                $this->CustomValidationErrors->loadModel($this->Hosttemplate);
-                $this->CustomValidationErrors->customFields(['notification_interval', 'check_interval', 'retry_interval', 'notify_on_recovery', 'flap_detection_on_up']);
-                $this->CustomValidationErrors->fetchErrors();
-
-                foreach ($this->Customvariable->validationErrors as $customVariableValidationError) {
-                    if (isset($customVariableValidationError['name'])) {
-                        $this->set('customVariableValidationError', current($customVariableValidationError['name']));
-                    }
-                }
-
-                foreach ($this->Customvariable->validationErrors as $customVariableValidationError) {
-                    if (isset($customVariableValidationError['value'])) {
-                        $this->set('customVariableValidationErrorValue', current($customVariableValidationError['value']));
-                    }
-                }
-
-                //Refill data that was loaded by ajax due to selected container id
-                if ($ContainersTable->existsById($this->request->data('Hosttemplate.container_id'))) {
-                    $container_id = $this->request->data('Hosttemplate.container_id');
-                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
-
-                    $_timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
-                    $_contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-                    $_contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
-                    $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-                }
-            }
-        }
-        $this->set(compact(['_timeperiods', '_contacts', '_contactgroups', '_hostgroups']));
-    }
 
     public function delete($id = null) {
         $userId = $this->Auth->user('id');
@@ -1236,8 +1201,12 @@ class HosttemplatesController extends AppController {
         $this->set('_serialize', ['all_hosts', 'hosttemplate']);
     }
 
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
     public function loadElementsByContainerId($container_id = null) {
-        if (!$this->request->is('ajax')) {
+        if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
@@ -1271,5 +1240,37 @@ class HosttemplatesController extends AppController {
 
         $this->set(compact(['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']));
         $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']);
+    }
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        }
+
+
+        $this->set('containers', Api::makeItJavaScriptAble($containers));
+        $this->set('_serialize', ['containers']);
+    }
+
+    public function loadCommands() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
+
+        $this->set('commands', Api::makeItJavaScriptAble($commands));
+        $this->set('_serialize', ['commands']);
     }
 }

@@ -713,4 +713,9 @@ class AngularController extends AppController {
         //Only ship HTML template
         return;
     }
+
+    public function intervalInput() {
+        //Only ship HTML template
+        return;
+    }
 }
