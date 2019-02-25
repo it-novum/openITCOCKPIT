@@ -43,18 +43,18 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php
-                        if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                            //echo " "; //Fix HTML if search is implemented
-                        endif;
+                        <?php if ($this->Acl->hasPermission('add')): ?>
+                            <a ui-sref="HostescalationsAdd" class="btn btn-xs btn-success" icon="fa fa-plus">
+                                <i class="fa fa-plus"></i> <?php echo __('New'); ?>
+                            </a>
+                        <?php endif;
                         // TODO: search functionallity
                         //echo $this->Html->link(__('Filter'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter'));
 
-                        if ($isFilter):
+                        /*if ($isFilter):
                             echo " "; //Fix HTML
                             echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                        endif;
+                        endif;*/
                         ?>
                     </div>
 

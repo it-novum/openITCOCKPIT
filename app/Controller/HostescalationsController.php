@@ -109,7 +109,7 @@ class HostescalationsController extends AppController {
             ],
         ];
 
-        if(isset($this->request->query['page'])){
+        if (isset($this->request->query['page'])) {
             $this->Paginator->settings['page'] = $this->request->query['page'];
         }
         $query = Hash::merge($this->Paginator->settings, $options);
@@ -144,7 +144,7 @@ class HostescalationsController extends AppController {
             //debug($this->Host->getDataSource()->getLog(false, false));
         }
 
-        foreach ($all_hostescalations as $key => $hostescalation){
+        foreach ($all_hostescalations as $key => $hostescalation) {
             $all_hostescalations[$key]['Hostescalation']['allowEdit'] = $this->isWritableContainer($hostescalation['Hostescalation']['container_id']);
         }
 
@@ -295,7 +295,11 @@ class HostescalationsController extends AppController {
     }
 
     public function add() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $TimeperiodsTable TimeperiodsTable */
@@ -349,38 +353,16 @@ class HostescalationsController extends AppController {
             $this->Hostescalation->set($this->request->data);
 
             if ($this->Hostescalation->saveAll($this->request->data)) {
-                if ($this->isJsonRequest()) {
-                    $this->serializeId();
-
-                    return;
-                } else {
-                    $this->setFlash(__('Hostescalation successfully saved'));
-                    $this->redirect(['action' => 'index']);
-                }
+                $this->serializeId();
+                return;
             } else {
-                if ($this->isJsonRequest()) {
-                    $this->serializeErrorMessage();
-
-                    return;
-                } else {
-                    $this->setFlash(__('Hostescalation could not be saved'), false);
-                    $containerIds = $this->request->data('Hostescalation.container_id');
-                    if ($containerIds > 0) {
-                        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
-                        $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-                        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-                        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
-                        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-                        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
-                    }
-                }
+                $this->serializeErrorMessage();
+                return;
             }
         }
+
         $this->set(compact(['containers', 'hosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts']));
-        if($this->isAngularJsRequest()){
-            //$this->layout = 'blank';
-            $this->set('_serialize', ['containers', 'hosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts']);
-        }
+        $this->set('_serialize', ['containers', 'hosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts']);
     }
 
     public function delete($id = null) {
@@ -403,7 +385,7 @@ class HostescalationsController extends AppController {
     }
 
     public function loadElementsByContainerId($containerId = null) {
-        if(!$this->isApiRequest()){
+        if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException(__('This is only allowed via API.'));
             return;
         }
