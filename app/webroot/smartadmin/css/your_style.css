@@ -2010,16 +2010,16 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     margin-top: 2px;
 }
 
-.notifications-flex-inner {
+.config-flex-inner {
     display: flex;
     flex-wrap: wrap;
     padding-inline-start: 0px;
 
 }
 
-.notifications-flex-inner li {
+.config-flex-inner li {
     flex: auto;
-    width: auto;
+    max-width: 16%;
     list-style-type: none;
 }
 

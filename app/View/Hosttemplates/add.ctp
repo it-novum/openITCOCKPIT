@@ -421,14 +421,14 @@
                                                 </div>
                                             </div>
                                         </legend>
-                                        <ul class="notifications-flex-inner">
+                                        <ul class="config-flex-inner">
                                             <?php foreach ($hostOptions as $hostOption): ?>
                                                 <li>
-                                                    <div class="form-group margin-bottom-0"
+                                                    <div class="margin-bottom-0"
                                                          ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
 
                                                         <label for="<?php echo $hostOption['field']; ?>"
-                                                               class="col col-md-5 control-label padding-top-0">
+                                                               class="col col-md-7 control-label padding-top-0">
                                                         <span class="label label-<?php echo $hostOption['class']; ?> notify-label-small">
                                                             <?php echo $hostOption['text']; ?>
                                                         </span>
@@ -551,28 +551,34 @@
                                                     </div>
                                                 </div>
                                             </legend>
-                                            <?php foreach ($hostFalpOptions as $hostFalpOption): ?>
-                                                <div class="form-group margin-bottom-0"
-                                                     ng-class="{'has-error': errors.<?php echo $hostFalpOption['field']; ?>}">
+                                            <ul class="config-flex-inner">
+                                                <?php foreach ($hostFalpOptions as $hostFalpOption): ?>
+                                                    <li>
+                                                        <div class="margin-bottom-0"
+                                                             ng-class="{'has-error': errors.<?php echo $hostFalpOption['field']; ?>}">
 
-                                                    <label for="<?php echo $hostFalpOption['field']; ?>"
-                                                           class="col col-md-4 control-label padding-top-0">
-                                                        <span class="label label-<?php echo $hostFalpOption['class']; ?> notify-label"><?php echo $hostFalpOption['text']; ?></span>
-                                                    </label>
+                                                            <label for="<?php echo $hostFalpOption['field']; ?>"
+                                                                   class="col col-md-7 control-label padding-top-0">
+                                                                <span class="label label-<?php echo $hostFalpOption['class']; ?> notify-label-small">
+                                                                    <?php echo $hostFalpOption['text']; ?>
+                                                                </span>
+                                                            </label>
 
-                                                    <div class="col-xs-8 smart-form">
-                                                        <label class="checkbox small-checkbox-label no-required">
-                                                            <input type="checkbox" name="checkbox"
-                                                                   ng-true-value="1"
-                                                                   ng-false-value="0"
-                                                                   ng-disabled="!post.Hosttemplate.flap_detection_enabled"
-                                                                   id="<?php echo $hostFalpOption['field']; ?>"
-                                                                   ng-model="post.Hosttemplate.<?php echo $hostFalpOption['field']; ?>">
-                                                            <i class="checkbox-<?php echo $hostFalpOption['class']; ?>"></i>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            <?php endforeach; ?>
+                                                            <div class="col-md-2 smart-form">
+                                                                <label class="checkbox small-checkbox-label no-required">
+                                                                    <input type="checkbox" name="checkbox"
+                                                                           ng-true-value="1"
+                                                                           ng-false-value="0"
+                                                                           ng-disabled="!post.Hosttemplate.flap_detection_enabled"
+                                                                           id="<?php echo $hostFalpOption['field']; ?>"
+                                                                           ng-model="post.Hosttemplate.<?php echo $hostFalpOption['field']; ?>">
+                                                                    <i class="checkbox-<?php echo $hostFalpOption['class']; ?>"></i>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                <?php endforeach; ?>
+                                            </ul>
                                         </fieldset>
 
                                     </div>
