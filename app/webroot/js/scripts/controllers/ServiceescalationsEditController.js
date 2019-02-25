@@ -1,25 +1,26 @@
 angular.module('openITCOCKPIT')
     .controller('ServiceescalationsEditController', function($scope, $http, $state, $stateParams, NotyService) {
 
-        $scope.post = {};
-        $scope.post.Serviceescalation = {
-            id: $stateParams.id,
-            uuid: null,
-            container_id: null,
-            timeperiod_id: null,
-            first_notification: null,
-            last_notification: null,
-            notification_interval: null,
-            escalate_on_recovery: 0,
-            escalate_on_warning: 0,
-            escalate_on_critical: 0,
-            escalate_on_unknown: 0,
-            Service: [],
-            Service_excluded: [],
-            Servicegroup: [],
-            Servicegroup_excluded: [],
-            Contact: [],
-            Contactgroup: [],
+        $scope.post = {
+            Serviceescalation: {
+                id: $stateParams.id,
+                uuid: null,
+                container_id: null,
+                timeperiod_id: null,
+                first_notification: null,
+                last_notification: null,
+                notification_interval: null,
+                escalate_on_recovery: 0,
+                escalate_on_warning: 0,
+                escalate_on_critical: 0,
+                escalate_on_unknown: 0,
+                Service: [],
+                Service_excluded: [],
+                Servicegroup: [],
+                Servicegroup_excluded: [],
+                Contact: [],
+                Contactgroup: [],
+            }
         };
 
         $scope.deleteUrl = "/serviceescalations/delete/" + $scope.post.Serviceescalation.id + ".json?angular=true";
@@ -84,7 +85,7 @@ angular.module('openITCOCKPIT')
         };
 
 
-        $scope.processChosenServices = function(){
+        $scope.processChosenServices = function() {
             for (var key in $scope.services) {
                 if (in_array($scope.services[key].key, $scope.post.Serviceescalation.Service_excluded)) {
                     $scope.services[key].disabled = true;
@@ -94,7 +95,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.processChosenExcludedServices = function(){
+        $scope.processChosenExcludedServices = function() {
             for (var key in $scope.servicesExcluded) {
                 if (in_array($scope.servicesExcluded[key].key, $scope.post.Serviceescalation.Service)) {
                     $scope.servicesExcluded[key].disabled = true;
@@ -104,7 +105,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.processChosenServicegroups = function(){
+        $scope.processChosenServicegroups = function() {
             for (var key in $scope.servicegroups) {
                 if (in_array($scope.servicegroups[key].key, $scope.post.Serviceescalation.Servicegroup_excluded)) {
                     $scope.servicegroups[key].disabled = true;
@@ -114,7 +115,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.processChosenExcludedServicegroups = function(){
+        $scope.processChosenExcludedServicegroups = function() {
             for (var key in $scope.servicegroupsExcluded) {
                 if (in_array($scope.servicegroupsExcluded[key].key, $scope.post.Serviceescalation.Servicegroup)) {
                     $scope.servicegroupsExcluded[key].disabled = true;
@@ -124,7 +125,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        
+
         $scope.$watch('post.Serviceescalation.container_id', function() {
             if (typeof $scope.post.Serviceescalation != "undefined" && $scope.post.Serviceescalation.container_id != null) {
                 $scope.loadElementsByContainerId();

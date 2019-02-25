@@ -1,24 +1,25 @@
 angular.module('openITCOCKPIT')
     .controller('HostescalationsEditController', function($scope, $http, $state, $stateParams, NotyService) {
 
-        $scope.post = {};
-        $scope.post.Hostescalation = {
-            id: $stateParams.id,
-            uuid: null,
-            container_id: null,
-            timeperiod_id: null,
-            first_notification: null,
-            last_notification: null,
-            notification_interval: null,
-            escalate_on_recovery: 0,
-            escalate_on_down: 0,
-            escalate_on_unreachable: 0,
-            Host: [],
-            Host_excluded: [],
-            Hostgroup: [],
-            Hostgroup_excluded: [],
-            Contact: [],
-            Contactgroup: [],
+        $scope.post = {
+            Hostescalation: {
+                id: $stateParams.id,
+                uuid: null,
+                container_id: null,
+                timeperiod_id: null,
+                first_notification: null,
+                last_notification: null,
+                notification_interval: null,
+                escalate_on_recovery: 0,
+                escalate_on_down: 0,
+                escalate_on_unreachable: 0,
+                Host: [],
+                Host_excluded: [],
+                Hostgroup: [],
+                Hostgroup_excluded: [],
+                Contact: [],
+                Contactgroup: [],
+            }
         };
 
         $scope.deleteUrl = "/hostescalations/delete/" + $scope.post.Hostescalation.id + ".json?angular=true";
@@ -58,6 +59,11 @@ angular.module('openITCOCKPIT')
                 $scope.timeperiods = result.data.timeperiods;
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
+
+                $scope.processChosenExcludedHosts();
+                $scope.processChosenHosts();
+                $scope.processChosenExcludedHostgroups();
+                $scope.processChosenHostgroups();
             });
         };
 
@@ -77,23 +83,8 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.$watch('post.Hostescalation.container_id', function() {
-            if (typeof $scope.post.Hostescalation != "undefined" && $scope.post.Hostescalation.container_id != null) {
-                $scope.loadElementsByContainerId();
-            }
-        }, true);
 
-        $scope.$watch('post.Hostescalation.Host', function() {
-            for (var key in $scope.hostsExcluded) {
-                if (in_array($scope.hostsExcluded[key].key, $scope.post.Hostescalation.Host)) {
-                    $scope.hostsExcluded[key].disabled = true;
-                } else {
-                    $scope.hostsExcluded[key].disabled = false;
-                }
-            }
-        }, true);
-
-        $scope.$watch('post.Hostescalation.Host_excluded', function() {
+        $scope.processChosenHosts = function(){
             for (var key in $scope.hosts) {
                 if (in_array($scope.hosts[key].key, $scope.post.Hostescalation.Host_excluded)) {
                     $scope.hosts[key].disabled = true;
@@ -101,19 +92,19 @@ angular.module('openITCOCKPIT')
                     $scope.hosts[key].disabled = false;
                 }
             }
-        }, true);
+        };
 
-        $scope.$watch('post.Hostescalation.Hostgroup', function() {
-            for (var key in $scope.hostgroupsExcluded) {
-                if (in_array($scope.hostgroupsExcluded[key].key, $scope.post.Hostescalation.Hostgroup)) {
-                    $scope.hostgroupsExcluded[key].disabled = true;
+        $scope.processChosenExcludedHosts = function(){
+            for (var key in $scope.hostsExcluded) {
+                if (in_array($scope.hostsExcluded[key].key, $scope.post.Hostescalation.Host)) {
+                    $scope.hostsExcluded[key].disabled = true;
                 } else {
-                    $scope.hostgroupsExcluded[key].disabled = false;
+                    $scope.hostsExcluded[key].disabled = false;
                 }
             }
-        }, true);
+        };
 
-        $scope.$watch('post.Hostescalation.Hostgroup_excluded', function() {
+        $scope.processChosenHostgroups = function(){
             for (var key in $scope.hostgroups) {
                 if (in_array($scope.hostgroups[key].key, $scope.post.Hostescalation.Hostgroup_excluded)) {
                     $scope.hostgroups[key].disabled = true;
@@ -121,6 +112,39 @@ angular.module('openITCOCKPIT')
                     $scope.hostgroups[key].disabled = false;
                 }
             }
+        };
+
+        $scope.processChosenExcludedHostgroups = function(){
+            for (var key in $scope.hostgroupsExcluded) {
+                if (in_array($scope.hostgroupsExcluded[key].key, $scope.post.Hostescalation.Hostgroup)) {
+                    $scope.hostgroupsExcluded[key].disabled = true;
+                } else {
+                    $scope.hostgroupsExcluded[key].disabled = false;
+                }
+            }
+        };
+
+
+        $scope.$watch('post.Hostescalation.container_id', function() {
+            if (typeof $scope.post.Hostescalation != "undefined" && $scope.post.Hostescalation.container_id != null) {
+                $scope.loadElementsByContainerId();
+            }
+        }, true);
+
+        $scope.$watch('post.Hostescalation.Host', function() {
+            $scope.processChosenExcludedHosts();
+        }, true);
+
+        $scope.$watch('post.Hostescalation.Host_excluded', function() {
+            $scope.processChosenHosts();
+        }, true);
+
+        $scope.$watch('post.Hostescalation.Hostgroup', function() {
+            $scope.processChosenExcludedHostgroups();
+        }, true);
+
+        $scope.$watch('post.Hostescalation.Hostgroup_excluded', function() {
+            $scope.processChosenHostgroups();
         }, true);
 
         //Fire on page load

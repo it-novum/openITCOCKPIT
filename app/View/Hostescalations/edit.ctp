@@ -85,7 +85,7 @@
                         <label class="col col-md-2 control-label">
                             <i class="fa fa-plus-square text-success"></i> <?php echo __('Hosts'); ?>
                         </label>
-                        <div class="col col-xs-10">
+                        <div class="col col-xs-10 success">
                             <select id="HostescalationHost"
                                     multiple
                                     data-placeholder="<?php echo __('Please choose'); ?>"
@@ -104,7 +104,7 @@
                         <label class="col col-md-2 control-label">
                             <i class="fa fa-plus-square text-danger"></i> <?php echo __('Hosts (excluded)'); ?>
                         </label>
-                        <div class="col col-xs-10">
+                        <div class="col col-xs-10 danger">
                             <select id="HostescalationHostExcluded"
                                     multiple
                                     data-placeholder="<?php echo __('Please choose'); ?>"
@@ -123,7 +123,7 @@
                         <label class="col col-md-2 control-label">
                             <i class="fa fa-plus-square text-success"></i> <?php echo __('Hostgroups'); ?>
                         </label>
-                        <div class="col col-xs-10">
+                        <div class="col col-xs-10 success">
                             <select id="HostescalationHostgroup"
                                     multiple
                                     data-placeholder="<?php echo __('Please choose'); ?>"
@@ -143,7 +143,7 @@
                         <label class="col col-md-2 control-label">
                             <i class="fa fa-plus-square text-danger"></i> <?php echo __('Hostgroups (excluded)'); ?>
                         </label>
-                        <div class="col col-xs-10">
+                        <div class="col col-xs-10 danger">
                             <select id="HostescalationHostgroupExcluded"
                                     multiple
                                     data-placeholder="<?php echo __('Please choose'); ?>"

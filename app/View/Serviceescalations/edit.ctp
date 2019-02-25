@@ -84,7 +84,7 @@
                         <label class="col col-md-2 control-label">
                             <i class="fa fa-plus-square text-success"></i> <?php echo __('Services'); ?>
                         </label>
-                        <div class="col col-xs-10">
+                        <div class="col col-xs-10 success">
                             <select multiple
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
@@ -102,7 +102,7 @@
                         <label class="col col-md-2 control-label">
                             <i class="fa fa-plus-square text-danger"></i> <?php echo __('Services (excluded)'); ?>
                         </label>
-                        <div class="col col-xs-10">
+                        <div class="col col-xs-10 danger">
                             <select multiple
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
@@ -120,7 +120,7 @@
                         <label class="col col-md-2 control-label">
                             <i class="fa fa-plus-square text-success"></i> <?php echo __('Servicegroups'); ?>
                         </label>
-                        <div class="col col-xs-10">
+                        <div class="col col-xs-10 success">
                             <select multiple
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
@@ -139,7 +139,7 @@
                         <label class="col col-md-2 control-label">
                             <i class="fa fa-plus-square text-danger"></i> <?php echo __('Servicegroups (excluded)'); ?>
                         </label>
-                        <div class="col col-xs-10">
+                        <div class="col col-xs-10 danger">
                             <select multiple
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
