@@ -516,12 +516,10 @@ class HosttemplatesTable extends Table {
                 'Contactgroups',
                 'Contacts',
                 'Hostgroups',
-                //'Containers',
-                //'CheckPeriod',
-                //'NotifyPeriod',
-                //'CheckCommand',
                 'Customvariables',
-                'Hosttemplatecommandargumentvalues'
+                'Hosttemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ]
             ])
             ->disableHydration()
             ->first();
@@ -540,6 +538,24 @@ class HosttemplatesTable extends Table {
         return [
             'Hosttemplate' => $hosttemplate
         ];
+    }
+
+    /**
+     * @param int $id
+     * @return int
+     */
+    public function getContainerIdById($id) {
+        $query = $this->find()
+            ->select([
+                'Hosttemplates.id',
+                'Hosttemplates.container_id'
+            ])
+            ->where([
+                'Hosttemplates.id' => $id
+            ])
+            ->firstOrFail();
+
+        return (int)$query->get('container_id');
     }
 
     /**

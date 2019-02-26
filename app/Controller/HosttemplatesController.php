@@ -28,6 +28,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatecommandargumentvaluesTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
@@ -66,25 +67,6 @@ class HosttemplatesController extends AppController {
 
     //public $layout = 'Admin.default';
     public $layout = 'blank';
-
-    /**
-     * @var array
-     * @deprecated
-     */
-    public $components = [
-        'ListFilter.ListFilter',
-        'CustomValidationErrors',
-    ];
-
-    /**
-     * @var array
-     * @deprecated
-     */
-    public $helpers = [
-        'CustomValidationErrors',
-        'CustomVariables',
-    ];
-
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -251,12 +233,12 @@ class HosttemplatesController extends AppController {
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update contact data
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-            $contactEntity = $ContactsTable->get($id);
-            $contactEntity = $ContactsTable->patchEntity($contactEntity, $this->request->data('Contact'));
-            $ContactsTable->save($contactEntity);
-            if ($contactEntity->hasErrors()) {
+            $hosttemplateEntity = $HosttemplatesTable->get($id);
+            $hosttemplateEntity = $HosttemplatesTable->patchEntity($hosttemplateEntity, $this->request->data('Hosttemplate'));
+            $HosttemplatesTable->save($hosttemplateEntity);
+            if ($hosttemplateEntity->hasErrors()) {
                 $this->response->statusCode(400);
-                $this->set('error', $contactEntity->getErrors());
+                $this->set('error', $hosttemplateEntity->getErrors());
                 $this->set('_serialize', ['error']);
                 return;
             } else {
@@ -264,397 +246,27 @@ class HosttemplatesController extends AppController {
 
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'edit',
-                    'contacts',
-                    $contactEntity->id,
-                    OBJECT_CONTACT,
-                    $this->request->data('Contact.containers._ids'),
+                    'hosttemplates',
+                    $hosttemplateEntity->id,
+                    OBJECT_HOSTTEMPLATE,
+                    $hosttemplateEntity->get('container_id'),
                     $User->getId(),
-                    $contactEntity->name,
-                    array_merge($ContactsTable->resolveDataForChangelog($this->request->data), $this->request->data),
-                    array_merge($ContactsTable->resolveDataForChangelog($hosttemplateForChangeLog), $hosttemplateForChangeLog)
+                    $hosttemplateEntity->name,
+                    array_merge($HosttemplatesTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($HosttemplatesTable->resolveDataForChangelog($hosttemplateForChangeLog), $hosttemplateForChangeLog)
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
                 if ($this->request->ext == 'json') {
-                    $this->serializeCake4Id($contactEntity); // REST API ID serialization
+                    $this->serializeCake4Id($hosttemplateEntity); // REST API ID serialization
                     return;
                 }
             }
-            $this->set('contact', $contactEntity);
-            $this->set('_serialize', ['contact']);
+            $this->set('hosttemplate', $hosttemplateEntity);
+            $this->set('_serialize', ['hosttemplate']);
         }
-
-
-        return;
-        /**************** OLD CODE **********************/
-
-        $userId = $this->Auth->user('id');
-        $customFildsToRefill = [
-            'Hosttemplate' => [
-                'notification_interval',
-                'notify_on_recovery',
-                'notify_on_down',
-                'notify_on_unreachable',
-                'notify_on_flapping',
-                'notify_on_downtime',
-                'check_interval',
-                'retry_interval',
-                'flap_detection_enabled',
-                'flap_detection_on_up',
-                'flap_detection_on_down',
-                'flap_detection_on_unreachable',
-                'priority',
-                'active_checks_enabled',
-            ],
-
-        ];
-        $this->CustomValidationErrors->checkForRefill($customFildsToRefill);
-
-        $this->Hosttemplate->id = $id;
-        if (!$this->Hosttemplate->exists()) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
-        }
-
-        $hosttemplate = $this->Hosttemplate->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Hosttemplate.id = ' => $id,
-            ],
-            'contain'    => [
-                'Contactgroup'                     => ['Container'],
-                'Hostgroup'                        => ['Container'],
-                'CheckCommand',
-                'Container',
-                'Customvariable',
-                'NotifyPeriod',
-                'CheckPeriod',
-                'Contact',
-                'Hosttemplatecommandargumentvalue' => ['Commandargument'],
-                'Host'
-            ],
-        ]);
-        $oldHosttemplateCheckCommandId = $hosttemplate['Hosttemplate']['command_id'];
-
-        if (!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'))) {
-            $this->render403();
-
-            return;
-        }
-
-        //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
-        /** @var $CommandsTable CommandsTable */
-        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
-        /** @var $CommandargumentsTable CommandargumentsTable */
-        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-        /** @var $ContactgroupsTable ContactgroupsTable */
-        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-
-        $commandarguments = $CommandargumentsTable->getByCommandId($hosttemplate['CheckCommand']['id']);
-
-        // Data required for changelog
-        $contacts = $ContactsTable->getContactsAsList();
-        $contactgroups = $ContactgroupsTable->getAllContactsAsList();
-        $timeperiods = $TimeperiodsTable->getTimeperiodsAsList();
-        $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
-        $hostgroups = $this->Hostgroup->find('list');
-        // End changelog
-
-        if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
-        } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
-        }
-
-        if (count($hosttemplate['Host']) > 0) {
-            $newContainers = [];
-            foreach ($containers as $containerId => $containerName) {
-                if (!in_array($containerId, [ROOT_CONTAINER, $hosttemplate['Hosttemplate']['container_id']]))
-                    continue;
-                $newContainers[$containerId] = $containerName;
-            }
-            $containers = $newContainers;
-        }
-
-        // Data to refill form
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $containerId = $this->request->data('Hosttemplate.container_id');
-        } else {
-            $containerId = $hosttemplate['Hosttemplate']['container_id'];
-        }
-
-        $containerId = array_unique([ROOT_CONTAINER, $containerId]);
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-
-        $_timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
-        $_contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-        $_contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
-        $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-
-
-        //Fix that we dont lose any unsaved host macros, because of vaildation error
-        if (isset($this->request->data['Customvariable'])) {
-            $hosttemplate['Customvariable'] = $this->request->data['Customvariable'];
-        }
-        $this->Frontend->set('data_placeholder', __('Please choose a contact'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
-        $this->Frontend->setJson('lang_minutes', __('minutes'));
-        $this->Frontend->setJson('lang_seconds', __('seconds'));
-        $this->Frontend->setJson('lang_and', __('and'));
-        $this->Frontend->setJson('hosttemplate_id', $hosttemplate['Hosttemplate']['id']);
-
-        $this->set('back_url', $this->referer());
-        $this->set(compact(['hosttemplate', 'containers', 'commands', 'commandarguments']));
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            //default structure for *.Contact/Contractgroup arrays
-            $ext_data_for_changelog = [
-                'Contact'      => [],
-                'Contactgroup' => [],
-                'Hostgroup'    => []
-            ];
-
-            if ($this->request->data('Hosttemplate.Contact')) {
-                if ($contactsForChangelog = $ContactsTable->getContactsAsList($this->request->data['Hosttemplate']['Contact'])) {
-                    foreach ($contactsForChangelog as $contactId => $contactName) {
-                        $ext_data_for_changelog['Contact'][] = [
-                            'id'   => $contactId,
-                            'name' => $contactName,
-                        ];
-                    }
-                    unset($contactsForChangelog);
-                }
-            }
-            if ($this->request->data('Hosttemplate.Contactgroup')) {
-                if ($contactgroupsForChangelog = $ContactgroupsTable->getContactgroupsAsList($this->request->data['Hosttemplate']['Contactgroup'])) {
-                    foreach ($contactgroupsForChangelog as $contactgroupId => $contactgroupName) {
-                        $ext_data_for_changelog['Contactgroup'][] = [
-                            'id'   => $contactgroupId,
-                            'name' => $contactgroupName
-                        ];
-                    }
-                    unset($contactgroupsForChangelog);
-                }
-            }
-            if ($this->request->data('Hosttemplate.notify_period_id')) {
-                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Hosttemplate']['notify_period_id'])) {
-                    foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
-                        $ext_data_for_changelog['NotifyPeriod'] = [
-                            'id'   => $timeperiodId,
-                            'name' => $timeperiodName,
-                        ];
-                    }
-                    unset($timeperiodsForChangelog);
-                }
-            }
-            if ($this->request->data('Hosttemplate.check_period_id')) {
-                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Hosttemplate']['check_period_id'])) {
-                    foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
-                        $ext_data_for_changelog['CheckPeriod'] = [
-                            'id'   => $timeperiodId,
-                            'name' => $timeperiodName,
-                        ];
-                    }
-                    unset($timeperiodsForChangelog);
-                }
-
-            }
-            if ($this->request->data('Hosttemplate.command_id')) {
-                /** @var $Commands CommandsTable */
-                $Commands = TableRegistry::getTableLocator()->get('Commands');
-                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Hosttemplate']['command_id']);
-                foreach ($commandsForChangelog as $commandId => $commandName) {
-                    $ext_data_for_changelog['CheckCommand'] = [
-                        'id'   => $commandId,
-                        'name' => $commandName,
-                    ];
-                }
-                unset($commandsForChangelog);
-            }
-
-            if ($this->request->data('Hosttemplate.Hostgroup')) {
-                if ($hostgroupsForChangelog = $this->Hostgroup->find('all', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container' => [
-                            'fields' => [
-                                'Container.name',
-                            ],
-                        ],
-                    ],
-                    'fields'     => [
-                        'Hostgroup.id',
-                    ],
-                    'conditions' => [
-                        'Hostgroup.id' => $this->request->data['Hosttemplate']['Hostgroup'],
-                    ],
-                ])
-                ) {
-                    foreach ($hostgroupsForChangelog as $hostgroupData) {
-                        $ext_data_for_changelog['Hostgroup'][] = [
-                            'id'   => $hostgroupData['Hostgroup']['id'],
-                            'name' => $hostgroupData['Container']['name'],
-                        ];
-                    }
-                    unset($hostgroupsForChangelog);
-                }
-            }
-
-            $this->request->data['Contact'] = ($this->request->data['Hosttemplate']['Contact']) ? $this->request->data['Hosttemplate']['Contact'] : [];
-            $this->request->data['Contactgroup'] = ($this->request->data['Hosttemplate']['Contactgroup']) ? $this->request->data['Hosttemplate']['Contactgroup'] : [];
-            $this->request->data['Hostgroup'] = ($this->request->data['Hosttemplate']['Hostgroup']) ? $this->request->data['Hosttemplate']['Hostgroup'] : [];
-
-            //Delete Command argument values
-            //Fetching all commandargument_id of the command arguments out of database:
-            $commandargumentIdsOfDatabase = Hash::extract($hosttemplate['Hosttemplatecommandargumentvalue'], '{n}.commandargument_id');
-
-            //Fetching all commandargument_id out of $this->request-data
-            $commandargumentIdsOfRequest = [];
-            if (isset($this->request->data['Hosttemplatecommandargumentvalue'])) {
-                $commandargumentIdsOfRequest = Hash::extract($this->request->data['Hosttemplatecommandargumentvalue'], '{n}.commandargument_id');
-            }
-
-            if (!isset($this->request->data['Hosttemplatecommandargumentvalue'])) {
-                $this->request->data['Hosttemplatecommandargumentvalue'] = [];
-            }
-
-            if ($hosttemplatetype_id !== null && is_numeric($hosttemplatetype_id)) {
-                $this->request->data['Hosttemplate']['hosttemplatetype_id'] = $hosttemplatetype_id;
-            }
-
-            $this->Hosttemplate->set($this->request->data);
-            if ($this->Hosttemplate->validates()) {
-                // Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
-                foreach ($commandargumentIdsOfDatabase as $commandargumentId) {
-                    if (!in_array($commandargumentId, $commandargumentIdsOfRequest)) {
-                        // Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-                        $this->Hosttemplatecommandargumentvalue->delete(
-                            $this->Hosttemplatecommandargumentvalue->find('first', [
-                                'conditions' => [
-                                    'hosttemplate_id'    => $hosttemplate['Hosttemplate']['id'],
-                                    'commandargument_id' => $commandargumentId,
-                                ],
-                            ])
-                            ['Hosttemplatecommandargumentvalue']
-                        );
-                    }
-                }
-
-                $this->Customvariable->deleteAll([
-                    'object_id'     => $hosttemplate['Hosttemplate']['id'],
-                    'objecttype_id' => OBJECT_HOSTTEMPLATE,
-                ], false);
-            }
-            //Save everything including custom variables
-            if ($this->Hosttemplate->saveAll($this->request->data)) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $id,
-                    OBJECT_HOSTTEMPLATE,
-                    $this->request->data('Hosttemplate.container_id'),
-                    $userId,
-                    $this->request->data['Hosttemplate']['name'],
-                    array_merge($this->request->data, $ext_data_for_changelog),
-                    $hosttemplate
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-
-                if ($oldHosttemplateCheckCommandId != $this->request->data['Hosttemplate']['command_id']) {
-                    //Check command of host template was changed
-                    //Delete all custom command arguments of hosts
-                    //if command_id from Host is NULL
-                    $HostCommandArgumentValuesToDelete = $this->Hosttemplate->find('first', [
-                        'recursive'  => -1,
-                        'contain'    => [
-                            'Host' => [
-                                'conditions' => [
-                                    'Host.command_id IS NULL'
-                                ],
-                                'fields'     => [
-                                    'Host.id'
-                                ],
-                            ]
-                        ],
-                        'conditions' => [
-                            'Hosttemplate.id' => $this->Hosttemplate->id
-                        ],
-                        'fields'     => [
-                            'Hosttemplate.id'
-                        ]
-                    ]);
-
-                    if (!empty($HostCommandArgumentValuesToDelete['Host'])) {
-                        $hostIds = Hash::extract($HostCommandArgumentValuesToDelete['Host'], '{n}.id');
-                        if (!empty($hostIds)) {
-                            $this->Hostcommandargumentvalue->deleteAll([
-                                'Hostcommandargumentvalue.host_id' => $hostIds
-                            ]);
-                        }
-                    }
-                }
-                $flashHref = $this->Hosttemplate->flashRedirect($this->request->params, ['action' => 'edit']);
-                $flashHref[] = $this->Hosttemplate->id;
-                $flashHref[] = $hosttemplatetype_id;
-
-                $this->setFlash(__('<a href="' . Router::url($flashHref) . '">Hosttemplate</a> successfully saved.'));
-
-                $redirect = $this->Hosttemplate->redirect($this->request->params, ['action' => 'index']);
-                $this->redirect($redirect);
-
-            } else {
-                $this->setFlash(__('Could not save data'), false);
-                $this->CustomValidationErrors->loadModel($this->Hosttemplate);
-                $this->CustomValidationErrors->customFields(['notification_interval', 'check_interval', 'retry_interval', 'notify_on_recovery', 'flap_detection_on_up']);
-                $this->CustomValidationErrors->fetchErrors();
-
-                foreach ($this->Customvariable->validationErrors as $customVariableValidationError) {
-                    if (isset($customVariableValidationError['name'])) {
-                        $this->set('customVariableValidationError', current($customVariableValidationError['name']));
-                    }
-                }
-
-                foreach ($this->Customvariable->validationErrors as $customVariableValidationError) {
-                    if (isset($customVariableValidationError['value'])) {
-                        $this->set('customVariableValidationErrorValue', current($customVariableValidationError['value']));
-                    }
-                }
-
-                //Refill data that was loaded by ajax due to selected container id
-                if ($ContainersTable->existsById($this->request->data('Hosttemplate.container_id'))) {
-                    $containerId = $this->request->data('Hosttemplate.container_id');
-                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-
-                    $_timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
-                    $_contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-                    $_contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
-                    $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-                }
-            }
-        }
-
-        //Restore contacts after submit
-        $hosttemplate['Contact'] = Hash::combine($hosttemplate['Contact'], '{n}.id', '{n}.id');
-        $hosttemplate['Contactgroup'] = Hash::combine($hosttemplate['Contactgroup'], '{n}.id', '{n}.id');
-        $hosttemplate['Hostgroup'] = Hash::combine($hosttemplate['Hostgroup'], '{n}.id', '{n}.id');
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $hosttemplate['Contact'] = $this->request->data['Hosttemplate']['Contact'];
-            $hosttemplate['Contactgroup'] = $this->request->data['Hosttemplate']['Contactgroup'];
-            $hosttemplate['Hostgroup'] = $this->request->data['Hosttemplate']['Hostgroup'];
-        }
-
-        $this->request->data = Hash::merge($hosttemplate, $this->request->data);
-        $this->set(compact(['_timeperiods', '_contacts', '_contactgroups', '_hostgroups']));
     }
 
     /**
@@ -1109,7 +721,10 @@ class HosttemplatesController extends AppController {
         $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']);
     }
 
-    public function loadContainers() {
+    /**
+     * @param null|int $hosttemplateId
+     */
+    public function loadContainers($hosttemplateId = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -1123,9 +738,38 @@ class HosttemplatesController extends AppController {
             $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
+        $areContainersRestricted = false;
+        if (is_numeric($hosttemplateId)) {
+            //Edit mode
+
+            /** @var $HosttemplatesTable HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+            $hosttemplatesContainerId = $HosttemplatesTable->getContainerIdById($hosttemplateId);
+            $usedContainerIds = $HostsTable->getHostPrimaryContainerIdsByHosttemplateId($hosttemplateId);
+
+            if (!empty($usedContainerIds)) {
+                //This host template is used by some hosts.
+                //Container options needs to be needs to be restricted if the hosts are using some sub containers...
+                $restrictedContainers = [];
+                foreach ($containers as $containerId => $path) {
+                    $containerId = (int)$containerId;
+                    if (in_array($containerId, [ROOT_CONTAINER, $hosttemplatesContainerId], true)) {
+                        $restrictedContainers[$containerId] = $path;
+                    } else {
+                        $areContainersRestricted = true;
+                    }
+                }
+                $containers = $restrictedContainers;
+            }
+        }
+
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
-        $this->set('_serialize', ['containers']);
+        $this->set('areContainersRestricted', $areContainersRestricted);
+        $this->set('_serialize', ['containers', 'areContainersRestricted']);
     }
 
     public function loadCommands() {

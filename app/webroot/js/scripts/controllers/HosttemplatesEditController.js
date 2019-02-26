@@ -34,10 +34,11 @@ angular.module('openITCOCKPIT')
                 'angular': true
             };
 
-            $http.get("/hosttemplates/loadContainers.json", {
+            $http.get("/hosttemplates/loadContainers/" + $scope.id + ".json", {
                 params: params
             }).then(function(result){
                 $scope.containers = result.data.containers;
+                $scope.areContainersRestricted = result.data.areContainersRestricted;
                 $scope.init = false;
             });
         };
@@ -94,7 +95,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            $http.post("/hosttemplates/add.json?angular=true",
+            $http.post("/hosttemplates/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();

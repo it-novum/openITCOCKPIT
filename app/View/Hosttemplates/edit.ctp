@@ -85,6 +85,9 @@
                                                 <div ng-repeat="error in errors.container_id">
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>
+                                                <div class="help-block" ng-show="areContainersRestricted">
+                                                    <?php echo __('There are Hosts using this Host Template. Therefore the number of Containers is decreased.'); ?>
+                                                </div>
                                             </div>
                                         </div>
 
