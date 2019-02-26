@@ -147,6 +147,9 @@
                                                 <div ng-repeat="error in errors.tags">
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>
+                                                <div class="help-block">
+                                                    <?php echo __('Press return to separate tags'); ?>
+                                                </div>
                                             </div>
                                         </div>
 

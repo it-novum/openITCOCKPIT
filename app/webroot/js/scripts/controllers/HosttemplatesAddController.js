@@ -137,7 +137,6 @@ angular.module('openITCOCKPIT')
             $http.post("/hosttemplates/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                return;
                 NotyService.genericSuccess();
                 $state.go('HosttemplatesIndex').then(function(){
                     NotyService.scrollTop();

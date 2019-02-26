@@ -486,6 +486,23 @@ class HosttemplatesTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @param array $contain
+     * @return array
+     */
+    public function getHosttemplateById($id, $contain = ['Containers']) {
+        $query = $this->find()
+            ->where([
+                'Hosttemplates.id' => $id
+            ])
+            ->contain($contain)
+            ->disableHydration()
+            ->first();
+
+        return $this->formatFirstResultAsCake2($query, true);
+    }
+
+    /**
      * @param array $dataToParse
      * @return array
      */
@@ -557,10 +574,11 @@ class HosttemplatesTable extends Table {
     }
 
     /**
-     * @param array $requestData
-     * @return array
+     * @param int $id
+     * @return bool
      */
-    public function getHosttemplatecommandargumentvaluesForSave($requestData) {
-
+    public function existsById($id) {
+        return $this->exists(['Hosttemplates.id' => $id]);
     }
+
 }

@@ -122,23 +122,31 @@ class HosttemplatesController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
      */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
+        }
 
-        }
-        if (!$this->Hosttemplate->exists($id)) {
-            throw new NotFoundException(__('Invalid host'));
-        }
-        $hosttemplate = $this->Hosttemplate->findById($id);
-        if (!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'))) {
-            $this->render403();
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
-            return;
+        if (!$HosttemplatesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid host template'));
         }
-        $this->set(compact(['hosttemplate']));
+
+        $hosttemplate = $HosttemplatesTable->getHosttemplateById($id, [
+            'Containers',
+            'Hosttemplatecommandargumentvalues',
+            'Customvariables'
+        ]);
+
+
+        if (!$this->allowedByContainerId($hosttemplate['Hosttemplate']['container']['id'])) {
+            throw new ForbiddenException('403 Forbidden');
+        }
+
+        $this->set('hosttemplate', $hosttemplate);
         $this->set('_serialize', ['hosttemplate']);
     }
 
