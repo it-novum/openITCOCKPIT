@@ -246,7 +246,7 @@
 
                                     <div class="form-group"
                                          ng-class="{'has-error': errors.hosttemplatecommandargumentvalues}"
-                                         ng-repeat="hosttemplatecommandargumentvalue in post.Hosttemplate.Hosttemplatecommandargumentvalues">
+                                         ng-repeat="hosttemplatecommandargumentvalue in post.Hosttemplate.hosttemplatecommandargumentvalues">
                                         <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-primary">
                                             {{hosttemplatecommandargumentvalue.commandargument.human_name}}
                                         </label>
@@ -265,7 +265,7 @@
                                     </div>
 
                                     <div class="form-group"
-                                         ng-show="post.Hosttemplate.command_id > 0 && post.Hosttemplate.Hosttemplatecommandargumentvalues.length == 0">
+                                         ng-show="post.Hosttemplate.command_id > 0 && post.Hosttemplate.hosttemplatecommandargumentvalues.length == 0">
                                         <div class="col-xs-12 col-lg-offset-2 text-info">
                                             <i class="fa fa-info-circle"></i>
                                             <?php echo __('This command does not have any parameters.'); ?>
@@ -593,13 +593,13 @@
 
                                         <fieldset>
                                             <legend class="font-sm"
-                                                    ng-class="{'has-error-no-form': errors.notify_on_recovery}">
+                                                    ng-class="{'has-error-no-form': errors.flap_detection_on_up}">
                                                 <div class="required">
                                                     <label>
                                                         <?php echo __('Flap detection options'); ?>
                                                     </label>
 
-                                                    <div ng-repeat="error in errors.notify_on_recovery">
+                                                    <div ng-repeat="error in errors.flap_detection_on_up">
                                                         <div class="text-danger">{{ error }}</div>
                                                     </div>
                                                 </div>

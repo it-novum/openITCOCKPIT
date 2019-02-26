@@ -204,27 +204,47 @@ class HosttemplatesTable extends Table {
         $validator
             ->boolean('notify_on_recovery')
             ->requirePresence('notify_on_recovery', 'create')
-            ->allowEmptyString('notify_on_recovery', false);
+            ->allowEmptyString('notify_on_recovery', false)
+            ->add('notify_on_recovery', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptions'],
+                'message' => __('You must specify at least one notification option.')
+            ]);
 
         $validator
             ->boolean('notify_on_down')
             ->requirePresence('notify_on_down', 'create')
-            ->allowEmptyString('notify_on_down', false);
+            ->allowEmptyString('notify_on_down', false)
+            ->add('notify_on_down', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptions'],
+                'message' => __('You must specify at least one notification option.')
+            ]);
 
         $validator
             ->boolean('notify_on_unreachable')
             ->requirePresence('notify_on_unreachable', 'create')
-            ->allowEmptyString('notify_on_unreachable', false);
+            ->allowEmptyString('notify_on_unreachable', false)
+            ->add('notify_on_unreachable', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptions'],
+                'message' => __('You must specify at least one notification option.')
+            ]);
 
         $validator
             ->boolean('notify_on_flapping')
             ->requirePresence('notify_on_flapping', 'create')
-            ->allowEmptyString('notify_on_flapping', false);
+            ->allowEmptyString('notify_on_flapping', false)
+            ->add('notify_on_flapping', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptions'],
+                'message' => __('You must specify at least one notification option.')
+            ]);
 
         $validator
             ->boolean('notify_on_downtime')
             ->requirePresence('notify_on_downtime', 'create')
-            ->allowEmptyString('notify_on_downtime', false);
+            ->allowEmptyString('notify_on_downtime', false)
+            ->add('notify_on_downtime', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptions'],
+                'message' => __('You must specify at least one notification option.')
+            ]);
 
         $validator
             ->boolean('flap_detection_enabled')
@@ -234,17 +254,29 @@ class HosttemplatesTable extends Table {
         $validator
             ->boolean('flap_detection_on_up')
             ->requirePresence('flap_detection_on_up', 'create')
-            ->allowEmptyString('flap_detection_on_up', false);
+            ->allowEmptyString('flap_detection_on_up', false)
+            ->add('flap_detection_on_up', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptions'],
+                'message' => __('You must specify at least one flap detection option.')
+            ]);
 
         $validator
             ->boolean('flap_detection_on_down')
             ->requirePresence('flap_detection_on_down', 'create')
-            ->allowEmptyString('flap_detection_on_down', false);
+            ->allowEmptyString('flap_detection_on_down', false)
+            ->add('flap_detection_on_down', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptions'],
+                'message' => __('You must specify at least one flap detection option.')
+            ]);
 
         $validator
             ->boolean('flap_detection_on_unreachable')
             ->requirePresence('flap_detection_on_unreachable', 'create')
-            ->allowEmptyString('flap_detection_on_unreachable', false);
+            ->allowEmptyString('flap_detection_on_unreachable', false)
+            ->add('flap_detection_on_unreachable', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptions'],
+                'message' => __('You must specify at least one flap detection option.')
+            ]);
 
         $validator
             ->numeric('low_flap_threshold')
@@ -348,6 +380,58 @@ class HosttemplatesTable extends Table {
      */
     public function atLeastOne($value, $context) {
         return !empty($context['data']['contacts']['_ids']) || !empty($context['data']['contactgroups']['_ids']);
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for contacts and or contact groups
+     */
+    public function checkNotificationOptions($value, $context) {
+        $notificationOptions = [
+            'notify_on_recovery',
+            'notify_on_down',
+            'notify_on_unreachable',
+            'notify_on_flapping',
+            'notify_on_downtime'
+        ];
+
+        foreach ($notificationOptions as $notificationOption) {
+            if (isset($context['data'][$notificationOption]) && $context['data'][$notificationOption] == 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for contacts and or contact groups
+     */
+    public function checkFlapDetectionOptions($value, $context) {
+        $flapDetectionOptions = [
+            'flap_detection_on_up',
+            'flap_detection_on_down',
+            'flap_detection_on_unreachable'
+        ];
+
+        if (!isset($context['data']['flap_detection_enabled']) || $context['data']['flap_detection_enabled'] == 0) {
+            return true;
+        }
+
+        foreach ($flapDetectionOptions as $flapDetectionOption) {
+            if (isset($context['data'][$flapDetectionOption]) && $context['data'][$flapDetectionOption] == 1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -476,7 +560,7 @@ class HosttemplatesTable extends Table {
      * @param array $requestData
      * @return array
      */
-    public function getHosttemplatecommandargumentvaluesForSave($requestData){
+    public function getHosttemplatecommandargumentvaluesForSave($requestData) {
 
     }
 }

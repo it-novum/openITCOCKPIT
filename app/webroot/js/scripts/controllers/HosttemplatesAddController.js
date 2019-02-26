@@ -48,7 +48,7 @@ angular.module('openITCOCKPIT')
                     _ids: []
                 },
                 customvariables: [],
-                Hosttemplatecommandargumentvalues: []
+                hosttemplatecommandargumentvalues: []
             }
         };
 
@@ -90,7 +90,7 @@ angular.module('openITCOCKPIT')
             $http.get("/hosttemplates/loadCommandArguments/" + commandId + ".json", {
                 params: params
             }).then(function(result){
-                $scope.post.Hosttemplate.Hosttemplatecommandargumentvalues = result.data.hosttemplatecommandargumentvalues;
+                $scope.post.Hosttemplate.hosttemplatecommandargumentvalues = result.data.hosttemplatecommandargumentvalues;
                 $scope.init = false;
             });
         };
@@ -137,6 +137,7 @@ angular.module('openITCOCKPIT')
             $http.post("/hosttemplates/add.json?angular=true",
                 $scope.post
             ).then(function(result){
+                return;
                 NotyService.genericSuccess();
                 $state.go('HosttemplatesIndex').then(function(){
                     NotyService.scrollTop();
