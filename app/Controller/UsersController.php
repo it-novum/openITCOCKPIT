@@ -187,16 +187,19 @@ class UsersController extends AppController {
     }
 
     public function add($type = 'local') {
-        $usergroups = $this->Usergroup->find('list');
-        // Activate "Show Stats in Menu" by default for New Users
-        $this->request->data['User']['showstatsinmenu'] = 0;
-        if (isset($this->request->params['named']['ldap']) && $this->request->params['named']['ldap'] == true) {
-            $type = 'ldap';
-            $samaccountname = '';
-            if (isset($this->request->params['named']['samaccountname'])) {
-                $samaccountname = $this->request->params['named']['samaccountname'];
-            }
-        }
+        $this->layout = 'blank';
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+        /** @var $Usergroups App\Model\Table\UsergroupsTable */
+        $Usergroups = TableRegistry::getTableLocator()->get('Usergroups');
+        $usergroups = $Usergroups->getUsergroupsList();
+
+
+
+
+
+
+
         if ($this->request->data('ContainerUserMembership')) {
             $this->Frontend->setJson('rights', $this->request->data('ContainerUserMembership'));
             $this->request->data['ContainerUserMembership'] = array_map(
@@ -210,102 +213,28 @@ class UsersController extends AppController {
                 $this->request->data['ContainerUserMembership']
             );
         }
-        if ($type == 'ldap') {
-
-            $PHPVersionChecker = new PHPVersionChecker();
-            if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
-                /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-                $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-                $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
-
-                $ldap = new \FreeDSx\Ldap\LdapClient([
-                    'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
-                    'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
-                    'ssl_allow_self_signed' => true,
-                    'ssl_validate_cert'     => false,
-                    'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
-                    'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
-                ]);
-                if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
-                    $ldap->startTls();
-                }
-                $ldap->bind(
-                    sprintf(
-                        '%s%s',
-                        $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
-                        $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
-                    ),
-                    $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
-                );
-
-                $filter = \FreeDSx\Ldap\Search\Filters::and(
-                    \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
-                    \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $samaccountname)
-                );
-                if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                    $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
-                    $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-                } else {
-                    $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
-                    $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-                }
-
-                /** @var \FreeDSx\Ldap\Entry\Entries $entries */
-                $entries = $ldap->search($search);
-                foreach ($entries as $entry) {
-                    $userDn = (string)$entry->getDn();
-                    $entry = $entry->toArray();
-                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
-
-                    if (isset($entry['uid'])) {
-                        $entry['samaccountname'] = $entry['uid'];
-                    }
-
-                    $ldapUser = [
-                        'mail'           => $entry['mail'][0],
-                        'givenname'      => $entry['givenname'][0],
-                        'sn'             => $entry['sn'][0],
-                        'samaccountname' => $entry['samaccountname'][0],
-                        'dn'             => $userDn
-                    ];
-                }
-
-            } else {
-                $ldapUser = $this->Ldap->userInfo($samaccountname);
-            }
-            if (!is_null($ldapUser)) {
-                // Overwrite request with LDAP data, that the user can not manipulate it with firebug ;)
-                $this->request->data['User']['email'] = $ldapUser['mail'];
-                $this->request->data['User']['firstname'] = $ldapUser['givenname'];
-                $this->request->data['User']['lastname'] = $ldapUser['sn'];
-                $this->request->data['User']['samaccountname'] = strtolower($ldapUser['samaccountname']);
-                $this->request->data['User']['ldap_dn'] = $ldapUser['dn'];
-            }
-        }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $this->User->create();
-            $isJsonRequest = $this->request->ext == 'json';
-            if ($this->User->saveAll($this->request->data)) {
-                if ($isJsonRequest) {
-                    $this->serializeId();
-                } else {
-                    $this->setFlash('User saved successfully');
-                    $this->redirect(['action' => 'index']);
-                }
-            } else {
-                if ($isJsonRequest) {
-                    $this->serializeErrorMessage();
-                } else {
-                    $this->setFlash(__('Could not save user'), false);
-                }
+            // Deactivate "Show Stats in Menu" by default for New Users
+            $this->request->data['User']['showstatsinmenu'] = 0;
+
+            $user = $Users->newEntity($this->request->data);
+            $Users->save($user);
+            if ($user->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $user->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
             }
+            $this->set('user', $user);
+            $this->set('_serialize', ['user']);
         }
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
-        $this->set(compact(['containers', 'usergroups']));
+        $this->set('containers', $containers);
+        $this->set('usergroups', $usergroups);
 
         $this->set('type', $type);
     }
@@ -410,6 +339,136 @@ class UsersController extends AppController {
 
     public function addFromLdap() {
         $this->layout = 'angularjs';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /**
+         * LDAP Start
+         */
+        if (isset($this->request->params['named']['ldap']) && $this->request->params['named']['ldap'] == true) {
+            $type = 'ldap';
+            $samaccountname = '';
+            if (isset($this->request->params['named']['samaccountname'])) {
+                $samaccountname = $this->request->params['named']['samaccountname'];
+            }
+        }
+        /**
+         * LDAP END
+         */
+
+        /**
+         * LDAP START
+         */
+        if ($type == 'ldap') {
+
+            $PHPVersionChecker = new PHPVersionChecker();
+            if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
+                /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+                $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+                $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
+
+                $ldap = new \FreeDSx\Ldap\LdapClient([
+                    'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
+                    'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
+                    'ssl_allow_self_signed' => true,
+                    'ssl_validate_cert'     => false,
+                    'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                    'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+                ]);
+                if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
+                    $ldap->startTls();
+                }
+                $ldap->bind(
+                    sprintf(
+                        '%s%s',
+                        $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
+                        $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
+                    ),
+                    $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
+                );
+
+                $filter = \FreeDSx\Ldap\Search\Filters::and(
+                    \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
+                    \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $samaccountname)
+                );
+                if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
+                    $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
+                    $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+                } else {
+                    $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
+                    $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+                }
+
+                /** @var \FreeDSx\Ldap\Entry\Entries $entries */
+                $entries = $ldap->search($search);
+                foreach ($entries as $entry) {
+                    $userDn = (string)$entry->getDn();
+                    $entry = $entry->toArray();
+                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
+
+                    if (isset($entry['uid'])) {
+                        $entry['samaccountname'] = $entry['uid'];
+                    }
+
+                    $ldapUser = [
+                        'mail'           => $entry['mail'][0],
+                        'givenname'      => $entry['givenname'][0],
+                        'sn'             => $entry['sn'][0],
+                        'samaccountname' => $entry['samaccountname'][0],
+                        'dn'             => $userDn
+                    ];
+                }
+
+            } else {
+                $ldapUser = $this->Ldap->userInfo($samaccountname);
+            }
+            if (!is_null($ldapUser)) {
+                // Overwrite request with LDAP data, that the user can not manipulate it with firebug ;)
+                $this->request->data['User']['email'] = $ldapUser['mail'];
+                $this->request->data['User']['firstname'] = $ldapUser['givenname'];
+                $this->request->data['User']['lastname'] = $ldapUser['sn'];
+                $this->request->data['User']['samaccountname'] = strtolower($ldapUser['samaccountname']);
+                $this->request->data['User']['ldap_dn'] = $ldapUser['dn'];
+            }
+        }
+        /**
+         * LDAP END
+         */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->redirect([
