@@ -87,7 +87,7 @@ angular.module('openITCOCKPIT')
             };
 
             var commandId = $scope.post.Hosttemplate.command_id;
-            $http.get("/hosttemplates/loadCommandArguments/"+commandId+".json", {
+            $http.get("/hosttemplates/loadCommandArguments/" + commandId + ".json", {
                 params: params
             }).then(function(result){
                 $scope.post.Hosttemplate.Hosttemplatecommandargumentvalues = result.data.hosttemplatecommandargumentvalues;
@@ -138,7 +138,9 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('HosttemplatesIndex');
+                $state.go('HosttemplatesIndex').then(function(){
+                    NotyService.scrollTop();
+                });
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){

@@ -13,6 +13,13 @@ angular.module('openITCOCKPIT')
         };
 
         return {
+            scrollTop: function(){
+                $('body,html').animate({
+                    scrollTop: 0
+                }, 800);
+                return false;
+            },
+
             genericSuccess: function(options){
                 options = options || {};
                 options.message = options.message || 'Data saved successfully';
