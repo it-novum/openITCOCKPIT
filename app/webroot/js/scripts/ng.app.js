@@ -670,6 +670,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 templateUrl: "/users/index.html",
                 controller: "UsersIndexController"
             })
+
+            .state('UsersAdd', {
+                url: '/users/add',
+                templateUrl: "/users/add.html",
+                controller: "UsersAddController"
+            })
     })
 
     /*
