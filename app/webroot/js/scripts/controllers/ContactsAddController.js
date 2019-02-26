@@ -101,7 +101,9 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('ContactsIndex');
+                $state.go('ContactsIndex').then(function(){
+                    NotyService.scrollTop();
+                });
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){

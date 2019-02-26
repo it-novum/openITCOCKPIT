@@ -141,7 +141,9 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message,
                     timeout: 10000
                 });
-                $state.go('TimeperiodsIndex');
+                $state.go('TimeperiodsIndex').then(function(){
+                    NotyService.scrollTop();
+                });
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();
