@@ -124,7 +124,7 @@
                                                         id="HostgroupsSelect"
                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                         class="form-control"
-                                                        chosen="timeperiods"
+                                                        chosen="hostgroups"
                                                         multiple
                                                         ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
                                                         ng-model="post.Hosttemplate.hostgroups._ids">
@@ -193,7 +193,7 @@
                                                     id="CheckPeriodSelect"
                                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                                     class="form-control"
-                                                    chosen="timeperiods"
+                                                    chosen="checkperiods"
                                                     ng-options="checkperiod.key as checkperiod.value for checkperiod in checkperiods"
                                                     ng-model="post.Hosttemplate.check_period_id">
                                             </select>
@@ -402,7 +402,7 @@
                                                     id="ContactsPeriodSelect"
                                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                                     class="form-control"
-                                                    chosen="timeperiods"
+                                                    chosen="contacts"
                                                     multiple
                                                     ng-options="contact.key as contact.value for contact in contacts"
                                                     ng-model="post.Hosttemplate.contacts._ids">
@@ -423,7 +423,7 @@
                                                     id="ContactgroupsSelect"
                                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                                     class="form-control"
-                                                    chosen="timeperiods"
+                                                    chosen="contactgroup"
                                                     multiple
                                                     ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
                                                     ng-model="post.Hosttemplate.contactgroups._ids">
@@ -693,7 +693,14 @@
                 <div class="col-xs-12 margin-top-10 margin-bottom-10">
                     <div class="well formactions ">
                         <div class="pull-right">
-                            <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">
+
+                            <label>
+                                <input type="checkbox" type="submit" ng-model="data.createAnother">
+                                <?php echo _('Create another'); ?>
+                            </label>
+
+                            <input class="btn btn-primary" type="submit"
+                                   value="<?php echo __('Create host template'); ?>">
                             <a ui-sref="HosttemplatesIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>

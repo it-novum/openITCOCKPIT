@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
@@ -70,15 +71,13 @@ class HosttemplatesTable extends Table {
             'saveStrategy'     => 'replace'
         ]);
 
-        /*
-         * // @todo Fix me if Hostgroups are migrated
         $this->belongsToMany('Hostgroups', [
             'className'        => 'Hostgroups',
             'foreignKey'       => 'hosttemplate_id',
             'targetForeignKey' => 'hostgroup_id',
             'joinTable'        => 'hosttemplates_to_hostgroups',
             'saveStrategy'     => 'replace'
-        ]);*/
+        ]);
 
         $this->belongsTo('Containers', [
             'foreignKey' => 'container_id',
@@ -438,6 +437,8 @@ class HosttemplatesTable extends Table {
      * @param string $value
      * @param array $context
      * @return bool
+     *
+     * Custom validation rule for contacts and or contact groups
      */
     public function checkMacroNames($value, $context) {
         if (isset($context['data']['customvariables']) && is_array($context['data']['customvariables'])) {
@@ -500,6 +501,45 @@ class HosttemplatesTable extends Table {
             ->first();
 
         return $this->formatFirstResultAsCake2($query, true);
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getHosttemplateForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Hosttemplates.id' => $id
+            ])
+            ->contain([
+                'Contactgroups',
+                'Contacts',
+                'Hostgroups',
+                //'Containers',
+                //'CheckPeriod',
+                //'NotifyPeriod',
+                //'CheckCommand',
+                'Customvariables',
+                'Hosttemplatecommandargumentvalues'
+            ])
+            ->disableHydration()
+            ->first();
+
+        $hosttemplate = $query;
+        $hosttemplate['hostgroups'] = [
+            '_ids' => Hash::extract($query, 'hostgroups.{n}.id')
+        ];
+        $hosttemplate['contacts'] = [
+            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+        ];
+        $hosttemplate['contactgroups'] = [
+            '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
+        ];
+
+        return [
+            'Hosttemplate' => $hosttemplate
+        ];
     }
 
     /**

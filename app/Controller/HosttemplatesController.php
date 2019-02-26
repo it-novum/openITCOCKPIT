@@ -217,6 +217,79 @@ class HosttemplatesController extends AppController {
      * @deprecated
      */
     public function edit($id = null, $hosttemplatetype_id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+
+        if (!$HosttemplatesTable->existsById($id)) {
+            throw new NotFoundException(__('Host template not found'));
+        }
+
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForEdit($id);
+        $hosttemplateForChangeLog = $hosttemplate;
+
+        if (!$this->allowedByContainerId($hosttemplate['Hosttemplate']['container_id'])) {
+            $this->render403();
+            return;
+        }
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return contact information
+            $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
+            $this->set('commands', Api::makeItJavaScriptAble($commands));
+            $this->set('hosttemplate', $hosttemplate);
+            $this->set('_serialize', ['hosttemplate', 'commands']);
+            return;
+        }
+
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            //Update contact data
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $contactEntity = $ContactsTable->get($id);
+            $contactEntity = $ContactsTable->patchEntity($contactEntity, $this->request->data('Contact'));
+            $ContactsTable->save($contactEntity);
+            if ($contactEntity->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $contactEntity->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'edit',
+                    'contacts',
+                    $contactEntity->id,
+                    OBJECT_CONTACT,
+                    $this->request->data('Contact.containers._ids'),
+                    $User->getId(),
+                    $contactEntity->name,
+                    array_merge($ContactsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ContactsTable->resolveDataForChangelog($hosttemplateForChangeLog), $hosttemplateForChangeLog)
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($contactEntity); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('contact', $contactEntity);
+            $this->set('_serialize', ['contact']);
+        }
+
+
+        return;
+        /**************** OLD CODE **********************/
+
         $userId = $this->Auth->user('id');
         $customFildsToRefill = [
             'Hosttemplate' => [
