@@ -71,4 +71,12 @@ class UsergroupsTable extends Table
 
         return $validator;
     }
+
+    /**
+     * @return array
+     */
+    public function getUsergroupsList(){
+        $query = $this->find('list');
+        return $query->toArray();
+    }
 }

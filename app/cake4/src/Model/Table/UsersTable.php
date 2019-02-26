@@ -185,7 +185,6 @@ class UsersTable extends Table {
     public function buildRules(RulesChecker $rules) {
         $rules->add($rules->isUnique(['email']));
         $rules->add($rules->existsIn(['usergroup_id'], 'Usergroups'));
-        $rules->add($rules->existsIn(['linkedin_id'], 'Linkedins'));
 
         return $rules;
     }
