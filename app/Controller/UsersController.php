@@ -48,24 +48,7 @@ class UsersController extends AppController {
         //'ContainerUserMembership',
     ];
     public $components = [
-        'ListFilter.ListFilter',
         'Ldap',
-    ];
-
-    public $helpers = [
-        'ListFilter.ListFilter',
-    ];
-
-
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'User.full_name' => ['label' => 'Name', 'searchType' => 'wildcard'],
-                'User.email'     => ['label' => 'Email', 'searchType' => 'wildcard'],
-                'User.company'   => ['label' => 'Company', 'searchType' => 'wildcard'],
-                'User.phone'     => ['label' => 'Phone', 'searchType' => 'wildcard'],
-            ]
-        ]
     ];
 
 
@@ -79,16 +62,26 @@ class UsersController extends AppController {
         $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
 
         $usersFilter = new UsersFilter($this->request);
-       // die();
 
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $usersFilter->getPage());
         $all_users = $Users->getUsers($this->MY_RIGHTS, $PaginateOMat);
 
-        //$all_commands = $Commands->getCommandsIndex($CommandFilter, $PaginateOMat);
-
         $isLdapAuth = false;
-        if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap'){
+        if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap') {
             $isLdapAuth = true;
+        }
+
+        foreach ($all_users as $index => $user) {
+            $all_users[$index]['User']['allow_edit'] = true;
+            if ($this->hasRootPrivileges === false) {
+                foreach ($user['Container'] as $key => $container){
+                    if($this->isWritableContainer($container['id'])){
+                        $all_users[$index]['User']['allow_edit'] = $this->isWritableContainer($container['id']);
+                        break;
+                    }
+                    $all_users[$index]['User']['allow_edit'] = false;
+                }
+            }
         }
 
         $this->set('isLdapAuth', $isLdapAuth);
@@ -99,72 +92,6 @@ class UsersController extends AppController {
             $toJson = ['all_users', 'scroll'];
         }
         $this->set('_serialize', ['toJson', 'all_users', 'systemsettings', 'isLdapAuth']);
-
-        /*
-        $this->loadModel('Container');
-        $options = [
-            'recursive'  => -1,
-            'order'      => [
-                'User.full_name' => 'asc',
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'users_to_containers',
-                    'type'       => 'LEFT',
-                    'alias'      => 'UsersToContainer',
-                    'conditions' => 'UsersToContainer.user_id = User.id',
-                ],
-                [
-                    'table'      => 'usergroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'Usergroup',
-                    'conditions' => 'Usergroup.id = User.usergroup_id',
-                ],
-            ],
-            'conditions' => [
-                'UsersToContainer.container_id' => $this->MY_RIGHTS,
-            ],
-            'fields'     => [
-                'User.id',
-                'User.email',
-                'User.company',
-                'User.phone',
-                'User.status',
-                'User.full_name',
-                'User.samaccountname',
-                'Usergroup.id',
-                'Usergroup.name',
-                'UsersToContainer.container_id',
-            ],
-            'group'      => [
-                'User.id',
-            ],
-        ];
-        $query = Hash::merge($options, $this->Paginator->settings);
-
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_users = $this->User->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $all_users = $this->Paginator->paginate();
-        }
-
-        //Get users container ids
-        $userContainerIds = [];
-        foreach ($all_users as $user) {
-            $_user = $this->User->findById($user['User']['id']);
-            $userContainerIds[$user['User']['id']]['Container'] = Hash::extract($_user['ContainerUserMembership'], '{n}.container_id');
-        }
-
-        $this->set('users', $all_users);
-        if ($this->isApiRequest()) {
-            $this->set('all_users', $all_users);
-            $this->set('_serialize', ['all_users']);
-        }
-        $this->set('userContainerIds', $userContainerIds);
-        */
-
     }
 
     public function view($id = null) {
