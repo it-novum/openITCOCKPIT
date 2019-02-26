@@ -28,7 +28,7 @@ angular.module('openITCOCKPIT')
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
                 'filter[Users.full_name]': $scope.filter.Users.full_name,
-                'filter[Timeperiods.email]': $scope.filter.Users.email
+                'filter[Users.email]': $scope.filter.Users.email
             };
 
             $http.get("/users/index.json", {
