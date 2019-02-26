@@ -121,7 +121,7 @@ class HosttemplatesController extends AppController {
     }
 
     /**
-     * @param null $id
+     * @param null|int $id
      */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
@@ -151,7 +151,7 @@ class HosttemplatesController extends AppController {
     }
 
     /**
-     * @param null $hosttemplatetype_id
+     * @param null|int $hosttemplatetype_id
      */
     public function add($hosttemplatetype_id = null) {
         if (!$this->isApiRequest()) {
@@ -212,8 +212,8 @@ class HosttemplatesController extends AppController {
     }
 
     /**
-     * @param null $id
-     * @param null $hosttemplatetype_id
+     * @param null|int $id
+     * @param null|int $hosttemplatetype_id
      * @deprecated
      */
     public function edit($id = null, $hosttemplatetype_id = null) {
