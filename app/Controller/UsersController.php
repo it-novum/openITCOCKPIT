@@ -210,6 +210,9 @@ class UsersController extends AppController {
                 $this->request->data['ContainerUserMembership']
             );
         }
+        /**
+         * LDAP START
+         */
         if ($type == 'ldap') {
 
             $PHPVersionChecker = new PHPVersionChecker();
@@ -282,6 +285,9 @@ class UsersController extends AppController {
                 $this->request->data['User']['ldap_dn'] = $ldapUser['dn'];
             }
         }
+        /**
+         * LDAP END
+         */
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->User->create();
