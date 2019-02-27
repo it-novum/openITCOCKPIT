@@ -46,107 +46,190 @@
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            $readonly = false;
-            $disabled = false;
-            $help = null;
-            if ($type == 'ldap') {
-                $readonly = true;
-                $disabled = true;
-                $help = __('This field is not required, due to LDAP');
-            }
+            <form ng-submit="submit();" class="form-horizontal">
 
-            echo $this->Form->create('User', [
-                'class' => 'form-horizontal clear',
-            ]);
-            if ($this->action == 'edit') {
-                echo $this->Form->input('id');
-            }
+                <div class="row">
+                    <div class="form-group required" ng-class="{'has-error': errors.containers}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Container'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="UserContainers"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    multiple
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.User.containers._ids">
+                            </select>
+                            <div ng-repeat="error in errors.containers">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
 
-            /*echo $this->Form->input('container_id', array(
-                'label' => 'Tenant',
-                'options' => $tenants,
-                'class' => 'select2 chosen',
-                'style' => 'width: 100%'
-            ));*/
+                    <div class="form-group" ng-class="{'has-error': errors.usergroup_id}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('User role'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="UserRole"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="usergroup_id"
+                                    ng-options="role.key as role.value for role in usergroup_id"
+                                    ng-model="post.User.usergroup_id">
+                            </select>
+                        </div>
+                    </div>
 
-            echo $this->Form->input('User.Container', [
-                'label'    => __('Container'),
-                'options'  => $containers,
-                'class'    => 'select2 chosen',
-                'style'    => 'width: 100%',
-                'multiple' => true,
-            ]); ?>
-            <div id="rightLevels" class="required col-lg-offset-2 padding-10 hidden">
-            </div>
-            <?php
-            echo $this->Form->input('usergroup_id', [
-                'label'   => 'User role',
-                'options' => $usergroups,
-                'class'   => 'select2 chosen',
-                'style'   => 'width: 100%',
-            ]);
-            echo $this->Form->input('status', [
-                'label'   => 'Status',
-                'options' => User::getStates(),
-                'class'   => 'select2 chosen',
-                'style'   => 'width: 100%',
-            ]);
+                    <div class="form-group" ng-class="{'has-error': errors.status}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Status'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="UserStatus"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="status"
+                                    ng-options="state.key as state.value for state in status"
+                                    ng-model="post.User.status">
+                            </select>
+                        </div>
+                    </div>
 
-            if ($type == 'ldap'):
-                echo $this->Form->input('samaccountname', [
-                    'label'    => 'Username',
-                    'readonly' => $readonly,
-                    'help'     => __('This is the username, you need to for the login!'),
-                ]);
-                echo $this->Form->input('ldap_dn', [
-                    'label'    => 'DN',
-                    'readonly' => $readonly
-                ]);
-            endif;
+                    <div class="form-group required" ng-class="{'has-error': errors.email}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Email Address'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.User.email">
+                            <div ng-repeat="error in errors.email">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
 
-            echo $this->Form->input('email', [
-                'label'    => 'Email Address',
-                'readonly' => $readonly,
-            ]);
-            echo $this->Form->input('firstname', [
-                'label'    => 'First name',
-                'readonly' => $readonly,
-            ]);
-            echo $this->Form->input('lastname', [
-                'label'    => 'Last name',
-                'readonly' => $readonly,
-            ]);
-            echo $this->Form->input('company', [
-                'label' => 'Company',
-            ]);
-            echo $this->Form->input('position', [
-                'label' => 'Company Position',
-            ]);
+                    <div class="form-group required" ng-class="{'has-error': errors.firstname}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('First name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.User.firstname">
+                            <div ng-repeat="error in errors.firstname">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
 
-            echo $this->Form->input('phone', [
-                'label' => 'Phone Number',
-            ]);
-            echo $this->Form->input('linkedin_id', [
-                'type'  => 'text',
-                'label' => 'LinkedIn ID',
-            ]);
-            echo $this->Form->input('new_password', [
-                'label'    => 'New Password',
-                'type'     => 'password',
-                'disabled' => $disabled,
-                'help'     => $help,
-            ]);
-            echo $this->Form->input('confirm_new_password', [
-                'label'    => 'Confirm new Password',
-                'type'     => 'password',
-                'disabled' => $disabled,
-                'help'     => $help,
-            ]);
-            echo $this->Form->formActions(null, [
-                'delete' => ($this->action == 'edit' ? $this->Form->value('User.id') : null),
-            ]);
-            ?>
+                    <div class="form-group required" ng-class="{'has-error': errors.lastname}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Last name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.User.lastname">
+                            <div ng-repeat="error in errors.lastname">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.company}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Company'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.User.company">
+                            <div ng-repeat="error in errors.company">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.position}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Company Position'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.User.position">
+                            <div ng-repeat="error in errors.position">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.phone}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Phone Number'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.User.phone">
+                            <div ng-repeat="error in errors.phone">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.password}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('New Password'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="password"
+                                    ng-model="post.User.password">
+                            <div ng-repeat="error in errors.password">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.confirm_password}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Confirm new Password'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="password"
+                                    ng-model="post.User.confirm_password">
+                            <div ng-repeat="error in errors.confirm_password">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                    <div class="well formactions ">
+                        <div class="pull-right">
+                            <input class="btn btn-primary" type="submit" value="<?php echo __('Create new local User'); ?>">
+                            <a ui-sref="UsersIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

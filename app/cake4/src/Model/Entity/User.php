@@ -64,7 +64,6 @@ class User extends Entity {
         'position'                => true,
         'company'                 => true,
         'phone'                   => true,
-        'linkedin_id'             => true,
         'timezone'                => true,
         'dateformat'              => true,
         'image'                   => true,
