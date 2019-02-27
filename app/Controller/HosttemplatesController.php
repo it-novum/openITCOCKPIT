@@ -28,6 +28,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatecommandargumentvaluesTable;
 use App\Model\Table\HosttemplatesTable;
@@ -274,79 +275,79 @@ class HosttemplatesController extends AppController {
      * @deprecated
      */
     public function delete($id = null) {
-        $userId = $this->Auth->user('id');
-        if (!$this->Hosttemplate->exists($id)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
-        }
-
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        $this->Hosttemplate->id = $id;
-        $hosttemplate = $this->Hosttemplate->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'conditions' => [
-                'Hosttemplate.id' => $id,
-            ]
-        ]);
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
-        if (!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'))) {
+        if (!$HosttemplatesTable->existsById($id)) {
+            throw new NotFoundException(__('Host template not found'));
+        }
+
+        $hosttemplate = $HosttemplatesTable->get($id);
+
+        if (!$this->allowedByContainerId($hosttemplate->get('container_id'))) {
             $this->render403();
             return;
         }
-        $redirect = $this->Hosttemplate->redirect($this->request->params, ['action' => 'index']);
-        $flashHref = $this->Hosttemplate->flashRedirect($this->request->params, ['action' => 'usedBy']);
-        $flashHref[] = $this->Hosttemplate->id;
-        $flashHref[] = $hosttemplate['Hosttemplate']['hosttemplatetype_id'];
 
-        if ($this->Hosttemplate->__allowDelete($id)) {
-            if ($this->Hosttemplate->delete()) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $id,
-                    OBJECT_HOSTTEMPLATE,
-                    $hosttemplate['Hosttemplate']['container_id'],
-                    $userId,
-                    $hosttemplate['Hosttemplate']['name'],
-                    $hosttemplate
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
+        if (!$HosttemplatesTable->allowDelete($id)) {
+            $usedBy = [
+                [
+                    'baseUrl' => '#',
+                    'state'   => 'HosttemplatesUsedBy',
+                    'message' => __('Used by other objects'),
+                    'module'  => 'Core'
+                ]
+            ];
 
-                //Delete Documentation record if exists
-                $documentation = $this->Documentation->findByUuid($hosttemplate['Hosttemplate']['uuid']);
-                if (isset($documentation['Documentation']['id'])) {
-                    $this->Documentation->delete($documentation['Documentation']['id']);
-                    unset($documentation);
-                }
-
-
-                //Hosttemplate deleted, now we need to delete all hosts + services that are using this template
-                $this->loadModel('Host');
-                $hosts = $this->Host->find('all', [
-                    'conditions' => [
-                        'Host.hosttemplate_id' => $id,
-                    ],
-                ]);
-                foreach ($hosts as $host) {
-                    $this->Host->__delete($host, $this->Auth->user('id'));
-                }
-
-                $this->setFlash(__('Hosttemplate deleted'));
-
-                $this->redirect($redirect);
-            }
-            $this->setFlash(__('Could not delete hosttemplate'), false);
-            $this->redirect($redirect);
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('message', __('Issue while deleting host template'));
+            $this->set('usedBy', $usedBy);
+            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
+            return;
         }
-        $this->setFlash(__('Could not delete hosttemplate: <a href="' . Router::url($flashHref) . '">') . $hosttemplate['Hosttemplate']['name'] . '</a>', false);
-        $this->redirect($redirect);
+
+
+        if ($HosttemplatesTable->delete($hosttemplate)) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                'delete',
+                'hosttemplates',
+                $id,
+                OBJECT_HOSTTEMPLATE,
+                $hosttemplate->get('container_id'),
+                $User->getId(),
+                $hosttemplate->get('name'),
+                [
+                    'Hosttemplate' => $hosttemplate->toArray()
+                ]
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+
+            //Delete Documentation record if exists
+            /** @var $DocumentationsTable DocumentationsTable */
+            $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
+            $documentation = $DocumentationsTable->getDocumentationByUuid($hosttemplate->get('uuid'));
+            if ($documentation) {
+                $DocumentationsTable->delete($documentation);
+            }
+
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
     }
 
     /**

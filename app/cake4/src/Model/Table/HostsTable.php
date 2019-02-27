@@ -95,85 +95,16 @@ class HostsTable extends Table {
         $this->belongsTo('NotifyPeriods', [
             'foreignKey' => 'notify_period_id'
         ]);
-        $this->belongsTo('Satellites', [
-            'foreignKey' => 'satellite_id'
-        ]);
-        $this->hasMany('ContactgroupsToHosts', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('ContactsToHosts', [
-            'foreignKey' => 'host_id'
-        ]);
         $this->hasMany('DeletedHosts', [
             'foreignKey' => 'host_id'
         ]);
         $this->hasMany('DeletedServices', [
             'foreignKey' => 'host_id'
         ]);
-        $this->hasMany('Eventcorrelations', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('GrafanaDashboards', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('GrafanaUserdashboardMetrics', [
-            'foreignKey' => 'host_id'
-        ]);
         $this->hasMany('Hostcommandargumentvalues', [
             'foreignKey' => 'host_id'
         ]);
-        $this->hasMany('HostsToAutoreports', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('HostsToContainers', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('HostsToHostdependencies', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('HostsToHostescalations', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('HostsToHostgroups', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('HostsToParenthosts', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('IdoitHosts', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('InstantreportsToHosts', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('LastUsedMkagents', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('Mkservicedata', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('Mksnmp', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('NagiosHostContactgroups', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('NagiosHostContacts', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('NagiosHostParenthosts', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('NagiosHosts', [
-            'foreignKey' => 'host_id'
-        ]);
         $this->hasMany('Services', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('ServicesToAutoreports', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('Widgets', [
             'foreignKey' => 'host_id'
         ]);
     }

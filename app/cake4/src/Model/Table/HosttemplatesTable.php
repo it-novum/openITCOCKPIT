@@ -116,7 +116,7 @@ class HosttemplatesTable extends Table {
 
         $this->hasMany('Host', [
             'saveStrategy' => 'replace'
-        ])->setDependent(true);
+        ]);
 
     }
 
@@ -627,6 +627,23 @@ class HosttemplatesTable extends Table {
         }
 
         return $extDataForChangelog;
+    }
+
+    /**
+     * @param int $hosttemplateId
+     * @return bool
+     */
+    public function allowDelete($hosttemplateId) {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $count = $HostsTable->find()
+            ->where([
+                'Hosts.hosttemplate_id' => $hosttemplateId
+            ])
+            ->count();
+
+        return $count === 0;
     }
 
     /**
