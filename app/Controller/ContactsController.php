@@ -441,7 +441,6 @@ class ContactsController extends AppController {
         }
         $this->set('result', $postData);
         $this->set('_serialize', ['result']);
-
     }
 
     /**

@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class GraphCollection
+ * @deprecated
+ */
 class GraphCollection extends AppModel {
 
     public $hasAndBelongsToMany = [
@@ -56,6 +60,8 @@ class GraphCollection extends AppModel {
      * Loads an Collection with it's corresponding host and service.
      *
      * @param $id
+     *
+     * @deprecated
      *
      * @return array
      */

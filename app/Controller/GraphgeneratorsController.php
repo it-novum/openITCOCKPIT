@@ -68,6 +68,7 @@ class GraphgeneratorsController extends AppController {
      * New/edit graph configuration.
      *
      * @param int $configuration_id
+     * @deprecated Only used by Graphgenerator - remove!
      */
     public function index($configuration_id = 0) {
         $this->__unbindAssociations('Host');
@@ -142,6 +143,10 @@ class GraphgeneratorsController extends AppController {
         ]);
     }
 
+    /**
+     * @param int $configuration_id
+     * @deprecated Only used by Graphgenerator - remove!
+     */
     public function view($configuration_id = 0) {
         $this->layout = 'Admin.fullscreen';
         $this->index($configuration_id);
@@ -149,6 +154,7 @@ class GraphgeneratorsController extends AppController {
 
     /**
      * Listing the existing configurations to load and edit them.
+     * @deprecated Only used by Graphgenerator - remove!
      */
     public function listing() {
 //		$graphgen_tmpls = $this->GraphgenTmpl->find('all');
@@ -224,6 +230,7 @@ class GraphgeneratorsController extends AppController {
 
     /**
      * This is the only public available delete function for the graph configurations yet.
+     * @deprecated Only used by Graphgenerator - remove!
      */
     public function mass_delete() {
         $args_are_valid = true;
@@ -245,6 +252,9 @@ class GraphgeneratorsController extends AppController {
         $this->redirect(['action' => 'listing']);
     }
 
+    /**
+     * @deprecated Only used by Graphgenerator - remove!
+     */
     public function saveGraphTemplate() {
         $this->allowOnlyAjaxRequests();
         $this->allowOnlyPostRequests();
@@ -266,6 +276,10 @@ class GraphgeneratorsController extends AppController {
     }
 
 
+    /**
+     * @param $id
+     * @deprecated Only used by Graphgenerator - remove!
+     */
     public function loadGraphTemplate($id) {
         $this->allowOnlyAjaxRequests();
 
@@ -280,6 +294,7 @@ class GraphgeneratorsController extends AppController {
      * Loads the services of a specific Host by its UUID.
      *
      * @param string $hostId
+     * @deprecated Only used by Graphgenerator - remove!
      */
     public function loadServicesByHostId($hostId) {
         $this->allowOnlyAjaxRequests();
@@ -318,8 +333,9 @@ class GraphgeneratorsController extends AppController {
         $this->set('_serialize', ['Services', 'sizeof']);
     }
 
-    /*
+    /**
      * XHR
+     * @deprecated Only used by Graphgenerator - remove!
      */
     public function loadPerfDataStructures() {
         $this->set('_serialize', ['perf_data']);
@@ -340,6 +356,7 @@ class GraphgeneratorsController extends AppController {
      *
      * @param string $host_uuid
      * @param string $service_uuid
+     * @deprecated Only used by Graphgenerator - remove!
      */
     public function loadServiceruleFromService($host_uuid, $service_uuid) {
         $this->allowOnlyAjaxRequests();
@@ -357,7 +374,7 @@ class GraphgeneratorsController extends AppController {
         $this->set('_serialize', ['perfdataStructure', 'sizeof']);
     }
 
-    /*
+    /**
      * This method is used for the GraphgeneratorController as well as the ServicesController in the 'browser' action.
      *
      * @param array $options An array with the following keys:
@@ -368,6 +385,7 @@ class GraphgeneratorsController extends AppController {
      * 						   hours till now.
      *
      * @return array
+     * @deprecated Only used by Graphgenerator - remove!
      */
     public function fetchGraphData() {
         $this->allowOnlyAjaxRequests();
@@ -508,6 +526,10 @@ class GraphgeneratorsController extends AppController {
         $this->set('rrd_data', $result);
     }
 
+    /**
+     * New method for AngularJS
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function getPerfdataByUuid() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

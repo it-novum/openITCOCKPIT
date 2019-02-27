@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class GraphgenTmpl
+ * @deprecated
+ */
 class GraphgenTmpl extends AppModel {
     public $hasMany = ['GraphgenTmplConf'];
 
@@ -35,6 +39,11 @@ class GraphgenTmpl extends AppModel {
         ],
     ];
 
+    /**
+     * @param int $id
+     * @return array|mixed|null
+     * @deprecated
+     */
     public function loadGraphConfiguration($id = 0) {
         if (!is_numeric($id) || $id < 1) {
             return [];
@@ -85,6 +94,8 @@ class GraphgenTmpl extends AppModel {
      * It can be used to render the hosts and services of the templates.
      *
      * @param array $templates
+     *
+     * @deprecated
      *
      * @return array
      */

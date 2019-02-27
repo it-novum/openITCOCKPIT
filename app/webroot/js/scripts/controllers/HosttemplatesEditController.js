@@ -1,90 +1,44 @@
 angular.module('openITCOCKPIT')
-    .controller('HosttemplatesAddController', function($scope, $http, SudoService, $state, NotyService){
+    .controller('HosttemplatesEditController', function($scope, $http, SudoService, $state, $stateParams, NotyService){
 
-        $scope.data = {
-            createAnother: false
-        };
+        $scope.id = $stateParams.id;
 
-        var clearForm = function(){
-            $scope.post = {
-                Hosttemplate: {
-                    name: '',
-                    description: '',
-                    command_id: 0,
-                    eventhandler_command_id: 0,
-                    check_interval: 3600,
-                    retry_interval: 60,
-                    max_check_attempts: 3,
-                    first_notification_delay: 0,
-                    notification_interval: 7200,
-                    notify_on_down: 1,
-                    notify_on_unreachable: 1,
-                    notify_on_recovery: 1,
-                    notify_on_flapping: 0,
-                    notify_on_downtime: 0,
-                    flap_detection_enabled: 0,
-                    flap_detection_on_up: 0,
-                    flap_detection_on_down: 0,
-                    flap_detection_on_unreachable: 0,
-                    low_flap_threshold: 0,
-                    high_flap_threshold: 0,
-                    process_performance_data: 0,
-                    freshness_checks_enabled: 0,
-                    freshness_threshold: 0,
-                    passive_checks_enabled: 1,
-                    event_handler_enabled: 0,
-                    active_checks_enabled: 1,
-                    retain_status_information: 0,
-                    retain_nonstatus_information: 0,
-                    notifications_enabled: 0,
-                    notes: '',
-                    priority: 1,
-                    check_period_id: 0,
-                    notify_period_id: 0,
-                    tags: '',
-                    container_id: 0,
-                    host_url: '',
-                    contacts: {
-                        _ids: []
-                    },
-                    contactgroups: {
-                        _ids: []
-                    },
-                    hostgroups: {
-                        _ids: []
-                    },
-                    customvariables: [],
-                    hosttemplatecommandargumentvalues: []
-                }
-            };
+        $scope.post = {
+            Hosttemplate: {}
         };
-        clearForm();
 
         $scope.init = true;
 
+        $scope.loadHosttemplate = function(){
+            var params = {
+                'angular': true
+            };
+
+            $http.get("/hosttemplates/edit/" + $scope.id + ".json", {
+                params: params
+            }).then(function(result){
+                $scope.post.Hosttemplate = result.data.hosttemplate.Hosttemplate;
+                $scope.commands = result.data.commands;
+
+                jQuery(function(){
+                    $('.tagsinput').tagsinput();
+                });
+
+                $scope.loadContainers();
+                $scope.loadElements();
+            });
+        };
 
         $scope.loadContainers = function(){
             var params = {
                 'angular': true
             };
 
-            $http.get("/hosttemplates/loadContainers.json", {
+            $http.get("/hosttemplates/loadContainers/" + $scope.id + ".json", {
                 params: params
             }).then(function(result){
                 $scope.containers = result.data.containers;
-                $scope.init = false;
-            });
-        };
-
-        $scope.loadCommands = function(){
-            var params = {
-                'angular': true
-            };
-
-            $http.get("/hosttemplates/loadCommands.json", {
-                params: params
-            }).then(function(result){
-                $scope.commands = result.data.commands;
+                $scope.areContainersRestricted = result.data.areContainersRestricted;
                 $scope.init = false;
             });
         };
@@ -95,11 +49,10 @@ angular.module('openITCOCKPIT')
             };
 
             var commandId = $scope.post.Hosttemplate.command_id;
-            $http.get("/hosttemplates/loadCommandArguments/" + commandId + ".json", {
+            $http.get("/hosttemplates/loadCommandArguments/" + commandId + "/" + $scope.id + ".json", {
                 params: params
             }).then(function(result){
                 $scope.post.Hosttemplate.hosttemplatecommandargumentvalues = result.data.hosttemplatecommandargumentvalues;
-                $scope.init = false;
             });
         };
 
@@ -142,21 +95,13 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            $http.post("/hosttemplates/add.json?angular=true",
+            $http.post("/hosttemplates/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-
-                if($scope.data.createAnother === false){
-                    $state.go('HosttemplatesIndex').then(function(){
-                        NotyService.scrollTop();
-                    });
-                }else{
-                    clearForm();
+                $state.go('HosttemplatesIndex').then(function(){
                     NotyService.scrollTop();
-                }
-
-
+                });
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){
@@ -178,12 +123,7 @@ angular.module('openITCOCKPIT')
 
         };
 
-        $scope.loadContainers();
-        $scope.loadCommands();
-
-        jQuery(function(){
-            $('.tagsinput').tagsinput();
-        });
+        $scope.loadHosttemplate();
 
         $scope.$watch('post.Hosttemplate.container_id', function(){
             if($scope.init){

@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('addNode', function($http, $interval){
+angular.module('openITCOCKPIT').directive('addNode', function($http, $state, NotyService){
     return {
         restrict: 'E',
         templateUrl: '/containers/add.html',
@@ -23,18 +23,19 @@ angular.module('openITCOCKPIT').directive('addNode', function($http, $interval){
             };
 
             $scope.save = function(){
-                //if($scope.post.Container.name){
                 $http.post("/containers/add.json?angular=true", $scope.post).then(
                     function(result){
-                        $scope.callback();
                         $('#angularAddNode-' + $scope.container.Container.id).modal('hide');
+                        $scope.post = {};
+                        NotyService.genericSuccess();
+                        $state.go('ContainersIndex', {'id': $scope.container.Container.parent_id});
                     }, function errorCallback(result){
                         if(result.data.hasOwnProperty('error')){
                             $scope.errors = result.data.error;
                         }
+                        NotyService.genericError();
                     }
                 );
-                //}
             };
 
         },

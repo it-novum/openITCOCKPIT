@@ -9,11 +9,9 @@ angular.module('openITCOCKPIT')
             id: null
         };
         $scope.errors = null;
-
         if($stateParams.id != null){
-            $scope.selectedContainer.id = $stateParams.id;
+            $scope.selectedContainer.id = parseInt($stateParams.id, 10);
         }
-
         $scope.post = {
             Container: {
                 parent_id: null,
