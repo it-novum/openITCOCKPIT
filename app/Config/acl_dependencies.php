@@ -86,7 +86,7 @@ $config = [
                 'loadCalendarsByContainerId'
             ],
             'Containers'       => [
-                'byTenantForSelect', 'byTenant', 'loadContainersForAngular'
+                'byTenantForSelect', 'byTenant', 'loadContainersForAngular', 'loadContainers', 'loadContainersByContainerId'
             ],
             'Downtimes'        => [
                 'validateDowntimeInputFromBrowser',

@@ -132,14 +132,13 @@ class ContainersController extends AppController {
     }
 
     /**
-     * Is called by AJAX to rander the nest list in Nodes
+     * Is called by AJAX to render the nest list in Nodes
      *
-     * @param int $id the id of the tenant
-     *
+     * @param int $id the id of the container
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function byTenant($id = null) {
+    public function loadContainersByContainerId($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -148,7 +147,7 @@ class ContainersController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if (!$ContainersTable->existsById($id)) {
-            throw new NotFoundException(__('Tenant not found'));
+            throw new NotFoundException(__('Container not found'));
         }
 
         $parent = [$ContainersTable->get($id)->toArray()];
@@ -199,6 +198,40 @@ class ContainersController extends AppController {
 
         $this->set('nest', $result);
         $this->set('_serialize', ['nest']);
+    }
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->find()
+                ->where(['Containers.containertype_id IN' => [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]])
+                ->disableHydration()
+                ->toArray();
+        }else{
+            $containers = $ContainersTable->find()
+                ->andWhere([
+                    'Containers.containertype_id IN' => [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE],
+                    'Containers.id IN ' => $this->MY_RIGHTS
+                ])
+                ->disableHydration()
+                ->toArray();
+        }
+
+        $paths = [];
+        foreach ($containers as $container) {
+            $paths[$container['id']] = '/' . $ContainersTable->treePath($container['id'], '/');
+        }
+        natcasesort($paths);
+        $containers = Api::makeItJavaScriptAble($paths);
+
+        $this->set('containers', $containers);
+        $this->set('_serialize', ['containers']);
     }
 
     /**
@@ -442,15 +475,14 @@ class ContainersController extends AppController {
         if ($allowDeleteRoot) {
             if ($this->Container->__delete($id)) {
                 Cache::clear(false, 'permissions');
-                $this->setFlash(__('Container deleted'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Could not delete container'), false);
-                $this->redirect(['action' => 'index']);
+                $this->set('success', true);
+                $this->set('_serialize', ['success']);
             }
         }
-        $this->setFlash(__('Could not delete container'), false);
-        $this->redirect(['action' => 'index']);
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
 
     }
 

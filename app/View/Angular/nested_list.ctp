@@ -25,19 +25,25 @@
         <?php endif; ?>
 
         <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
-            <add-node container="container" tenant="tenant" callback="callback"
+            <add-node container="container" subcontainer="subcontainer" callback="callback"
                       ng-if="container.Container.allow_edit === true"></add-node>
         <?php endif; ?>
 
-
-        <i class="note pull-right" ng-if="((container.Container.rght-container.Container.lft)/2-0.5) == 0">empty</i>
+        <span ng-if="container.Container.containertype_id == <?php echo CT_GLOBAL; ?> ||
+            container.Container.containertype_id == <?php echo CT_TENANT; ?> ||
+            container.Container.containertype_id == <?php echo CT_LOCATION; ?> ||
+            container.Container.containertype_id == <?php echo CT_NODE; ?>">
+            <i class="note pull-right" ng-if="(container.Container.rght-container.Container.lft) === 1">
+                <?php echo __('empty'); ?>
+            </i>
+        </span>
         <span class="badge bg-color-blue txt-color-white pull-right"
               ng-if="((container.Container.rght-container.Container.lft)/2-0.5) > 0">{{ (container.Container.rght-container.Container.lft)/2-0.5 }}</span>
 
     </div>
 
     <ol class="dd-list">
-        <nested-list container="container" tenant="tenant" ng-repeat="container in container.children"
+        <nested-list container="container" subcontainer="subcontainer" ng-repeat="container in container.children"
                      callback="callback"></nested-list>
     </ol>
 

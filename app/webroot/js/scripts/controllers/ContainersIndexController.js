@@ -4,39 +4,26 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
 
         //Objects gets passed as reference.
-        //So we use an object here, to make the $watch trigger, if the chosen directive change the value for selectedTenant.id
-        $scope.selectedTenant = {
+        //So we use an object here, to make the $watch trigger, if the chosen directive change the value for selectedContainer.id
+        $scope.selectedContainer = {
             id: null
         };
-        $scope.selectedTenantForNode = null;
         $scope.errors = null;
-
-        console.log($stateParams.id);
         if($stateParams.id != null){
-            $scope.selectedTenant.id = $stateParams.id;
+            $scope.selectedContainer.id = parseInt($stateParams.id, 10);
         }
-
         $scope.post = {
             Container: {
                 parent_id: null,
                 name: null,
-                containertype_id: '5'
+                containertype_id: null
             }
         };
 
-        $scope.load = function(){
-            $scope.loadContainers();
-            $scope.loadContainerlist();
-        };
 
         $scope.saveNewNode = function(){
             $http.post("/containers/add.json?angular=true", $scope.post).then(function(result){
-                $('#nodeCreatedFlashMessage').show();
-                $scope.post.Container.name = null;
                 $scope.load();
-                $timeout(function(){
-                    $('#nodeCreatedFlashMessage').hide();
-                }, 3000);
                 $scope.errors = null;
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
@@ -46,49 +33,34 @@ angular.module('openITCOCKPIT')
 
         };
 
-        $scope.loadTenants = function(){
-            $http.get("/tenants/index.json", {
+        $scope.load = function(){
+            $http.get("/containers/loadContainers.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
-                $scope.tenants = result.data.all_tenants;
+                $scope.containers = result.data.containers;
                 $scope.init = false;
             });
         };
-
         $scope.loadContainers = function(){
-            $http.get('/containers/byTenant/' + $scope.selectedTenant.id + '.json', {
+            $http.get('/containers/loadContainersByContainerId/' + $scope.selectedContainer.id + '.json', {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
-                $scope.containers = result.data.nest;
+                $scope.subcontainers = result.data.nest;
                 $('#nestable').nestable({
                     noDragClass: 'dd-nodrag'
                 });
             });
         };
 
-        $scope.loadContainerlist = function(){
-            $http.get('/containers/byTenantForSelect/' + $scope.selectedTenant.id + '.json').then(function(result){
-                $scope.containerlist = result.data.paths;
-            });
-        };
+        $scope.load();
 
-        $scope.loadTenants();
-
-        $scope.$watch('selectedTenant.id', function(){
-            if($scope.selectedTenant.id !== null){
-
-                for(var key in $scope.tenants){
-                    if($scope.tenants[key].Tenant.container_id == $scope.selectedTenant.id){
-                        $scope.tenant = $scope.tenants[key];
-                    }
-                }
-
-                $scope.load();
+        $scope.$watch('selectedContainer.id', function(){
+            if($scope.selectedContainer.id !== null){
+                $scope.loadContainers();
             }
         });
-
     });
