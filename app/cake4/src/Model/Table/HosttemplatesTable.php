@@ -464,12 +464,12 @@ class HosttemplatesTable extends Table {
     public function getHosttemplatesIndex(HosttemplateFilter $HosttemplateFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all')->disableHydration();
         $where = $HosttemplateFilter->indexFilter();
-        $where['Hosttemplate.hosttemplatetype_id'] = GENERIC_HOSTTEMPLATE;
+        $where['Hosttemplates.hosttemplatetype_id'] = GENERIC_HOSTTEMPLATE;
         if (!empty($MY_RIGHTS)) {
             $where['Hosttemplates.container_id IN'] = $MY_RIGHTS;
         }
 
-        $query->where();
+        $query->where($where);
         $query->order($HosttemplateFilter->getOrderForPaginator('Hosttemplates.name', 'asc'));
 
         if ($PaginateOMat === null) {
@@ -556,6 +556,39 @@ class HosttemplatesTable extends Table {
             ->firstOrFail();
 
         return (int)$query->get('container_id');
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getHosttemplatesForCopy($ids = []) {
+
+        $query = $this->find()
+            ->select([
+                'Hosttemplates.id',
+                'Hosttemplates.name',
+                'Hosttemplates.description',
+                'Hosttemplates.command_id',
+                'Hosttemplates.active_checks_enabled'
+            ])
+            ->contain([
+                'Hosttemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->where(['Hosttemplates.id IN' => $ids])
+            ->order(['Hosttemplates.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+
+        $query = $query->toArray();
+
+        if ($query === null) {
+            return [];
+        }
+
+        return $query;
     }
 
     /**

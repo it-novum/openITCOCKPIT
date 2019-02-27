@@ -423,7 +423,7 @@
                                                     id="ContactgroupsSelect"
                                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                                     class="form-control"
-                                                    chosen="contactgroup"
+                                                    chosen="contactgroups"
                                                     multiple
                                                     ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
                                                     ng-model="post.Hosttemplate.contactgroups._ids">
