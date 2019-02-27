@@ -475,15 +475,14 @@ class ContainersController extends AppController {
         if ($allowDeleteRoot) {
             if ($this->Container->__delete($id)) {
                 Cache::clear(false, 'permissions');
-                $this->setFlash(__('Container deleted'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Could not delete container'), false);
-                $this->redirect(['action' => 'index']);
+                $this->set('success', true);
+                $this->set('_serialize', ['success']);
             }
         }
-        $this->setFlash(__('Could not delete container'), false);
-        $this->redirect(['action' => 'index']);
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
 
     }
 

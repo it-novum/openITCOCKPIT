@@ -45,29 +45,22 @@
     </header>
     <div>
         <div class="widget-body">
-
-
             <div class="row">
-
                 <div class="form-group">
                     <label class="col col-md-1 control-label">
                         <?php echo __('Container'); ?>
                     </label>
                     <div class="col col-xs-11">
                         <select
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="containers"
-                                ng-model="selectedContainer.id"
-                                ng-options="container.key as container.value for container in containers">
+                            data-placeholder="<?php echo __('Please choose'); ?>"
+                            class="form-control"
+                            chosen="containers"
+                            ng-model="selectedContainer.id"
+                            ng-options="container.key as container.value for container in containers">
                         </select>
-
                     </div>
                 </div>
-
             </div>
-
-            <br/>
             <div>
                 <span class="ajax_loader text-center">
                     <h1>
@@ -76,7 +69,7 @@
                     <br/>
                 </span>
             </div>
-            <div class="row">
+            <div class="row padding-top-15">
                 <div class="col-sm-12 col-lg-12">
                     <div class="jarviswidget">
                         <header>
