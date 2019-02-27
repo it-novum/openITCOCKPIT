@@ -29,12 +29,14 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DocumentationsTable;
+use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatecommandargumentvaluesTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -273,7 +275,6 @@ class HosttemplatesController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
@@ -353,7 +354,6 @@ class HosttemplatesController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
      */
     public function copy($id = null) {
         if (!$this->isAngularJsRequest()) {
@@ -458,7 +458,10 @@ class HosttemplatesController extends AppController {
         $this->set('_serialize', ['result']);
     }
 
-
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function usedBy($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -554,6 +557,8 @@ class HosttemplatesController extends AppController {
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
         if (!$ContainersTable->existsById($container_id)) {
             throw new NotFoundException(__('Invalid Container'));
@@ -571,10 +576,14 @@ class HosttemplatesController extends AppController {
         $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
-        $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
+        $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);
 
-        $this->set(compact(['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']));
+        $this->set('timeperiods', $timeperiods);
+        $this->set('checkperiods', $checkperiods);
+        $this->set('contacts', $contacts);
+        $this->set('contactgroups', $contactgroups);
+        $this->set('hostgroups', $hostgroups);
         $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']);
     }
 

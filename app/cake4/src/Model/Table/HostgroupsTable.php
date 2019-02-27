@@ -2,8 +2,11 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -23,6 +26,9 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Hostgroup findOrCreate($search, callable $callback = null, $options = [])
  */
 class HostgroupsTable extends Table {
+
+    use PaginationAndScrollIndexTrait;
+    use Cake2ResultTableTrait;
 
     /**
      * Initialize method
@@ -101,5 +107,113 @@ class HostgroupsTable extends Table {
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
 
         return $rules;
+    }
+
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @param string $index
+     * @return array|\Cake\ORM\Query
+     * @deprecated Use self::getHostgroupsByContainerId()
+     */
+    public function hostgroupsByContainerId($containerIds = [], $type = 'all', $index = 'container_id') {
+        return $this->getHostgroupsByContainerId($containerIds, $type, $index);
+    }
+
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @param string $index
+     * @return array
+     */
+    public function getHostgroupsByContainerId($containerIds = [], $type = 'all', $index = 'container_id') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $tenantContainerIds = [];
+
+        foreach ($containerIds as $container_id) {
+            if ($container_id != ROOT_CONTAINER) {
+                // Get contaier id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'HostgroupHostgroupsByContainerId');
+
+                foreach ($path as $containers) {
+                    if ($containers['containertype_id'] == CT_HOSTGROUP) {
+                        $tenantContainerIds[] = $containers['parent_id'];
+                    }
+                }
+                $tenantContainerIds[] = $path[1]['id'];
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+
+        $hostgroupsAsList = [];
+
+        foreach ($tenantContainerIds as $tenantContainerId) {
+            $children = $ContainersTable->find('children', ['for' => $tenantContainerId])->disableHydration()->all()->toArray();
+            foreach ($children as $child) {
+                if ($child['containertype_id'] == CT_HOSTGROUP) {
+                    // containerId of hostgroup => hostgroup name
+                    $hostgroupsAsList[$child['id']] = $child['name'];
+                }
+            }
+        }
+
+        switch ($type) {
+            case 'all':
+                $query = $this->find()
+                    ->contain([
+                        'Containers'
+                    ])
+                    ->where([
+                        'Containers.id IN' => array_keys($hostgroupsAsList)
+                    ])
+                    ->order([
+                        'Containers.name' => 'ASC'
+                    ])
+                    ->disableHydration()
+                    ->all();
+
+                return $query->toArray();
+
+
+            default:
+                if ($index == 'id') {
+                    $query = $this->find()
+                        ->contain([
+                            'Containers'
+                        ])
+                        ->where([
+                            'Containers.id IN' => array_keys($hostgroupsAsList)
+                        ])
+                        ->order([
+                            'Containers.name' => 'ASC'
+                        ])
+                        ->disableHydration()
+                        ->all();
+
+                    $query = $query->toArray();
+                    if(empty($query)){
+                        $query = [];
+                    }
+
+
+                    $return = [];
+                    foreach ($query as $hostgroup) {
+                        $return[$hostgroup['id']] = $hostgroup['container']['name'];
+                    }
+
+                    return $return;
+                }
+                asort($hostgroupsAsList);
+
+                return $hostgroupsAsList;
+        }
     }
 }
