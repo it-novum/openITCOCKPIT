@@ -51,17 +51,15 @@
 
                 <div class="form-group">
                     <label class="col col-md-1 control-label">
-                        <?php echo __('Tenant'); ?>
+                        <?php echo __('Container'); ?>
                     </label>
                     <div class="col col-xs-11">
                         <select
-                                id="TenantSelect"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
-                                chosen="tenants"
-                                ng-model="selectedTenant.id"
-                                ng-options="tenant.Container.id as tenant.Container.name for tenant in tenants"
-                        >
+                                chosen="containers"
+                                ng-model="selectedContainer.id"
+                                ng-options="container.key as container.value for container in containers">
                         </select>
 
                     </div>
@@ -80,57 +78,41 @@
             </div>
             <div class="row">
                 <div class="col-sm-12 col-lg-12">
-                    <div class="jarviswidget" id="wid-id-0">
-
-                        <header>
-                            <span class="widget-icon"> <i class="fa fa-book"></i> </span>
-                            <h2><?php echo __('Legend'); ?>:</h2>
-                        </header>
-
-                        <div class="padding-bottom-10">
-                            <div class="col col-xs-12 col-md-2 col-lg-3">
-                                <i class="fa fa-globe"></i> <?php echo __('Global'); ?>
-                            </div>
-                            <div class="col col-xs-12 col-md-2 col-lg-3">
-                                <i class="fa fa-home"></i> <?php echo __('Tenant'); ?>
-                            </div>
-                            <div class="col col-xs-12 col-md-2 col-lg-3">
-                                <i class="fa fa-location-arrow"></i> <?php echo __('Location'); ?>
-                            </div>
-                            <div class="col col-xs-12 col-md-2 col-lg-3">
-                                <i class="fa fa-link"></i> <?php echo __('Node'); ?>
-                            </div>
-                            <div class="col col-xs-12 col-md-2 col-lg-3">
-                                <i class="fa fa-users"></i> <?php echo __('Contactgroup'); ?>
-                            </div>
-                            <div class="col col-xs-12 col-md-2 col-lg-3">
-                                <i class="fa fa-sitemap"></i> <?php echo __('Hostgroup'); ?>
-                            </div>
-                            <div class="col col-xs-12 col-md-2 col-lg-3">
-                                <i class="fa fa-cogs"></i> <?php echo __('Servicegroup'); ?>
-                            </div>
-                            <div class="col col-xs-12 col-md-2 col-lg-3">
-                                <i class="fa fa-pencil-square-o"></i> <?php echo __('Servicetemplategroup'); ?>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12 col-lg-12">
-                    <div class="jarviswidget" id="wid-id-0">
+                    <div class="jarviswidget">
                         <header>
                             <span class="widget-icon"> <i class="fa fa-link"></i> </span>
                             <h2><?php echo __('Tree'); ?></h2>
                         </header>
-
-                        <div class="widget-body">
-                            <div class="dd dd-nodrag containers-dd" id="nestable">
-                                <ol class="dd-list" ng-repeat="container in containers">
-                                    <nested-list container="container" tenant="selectedTenant.id" callback="load"></nested-list>
-                                </ol>
+                        <div class="col-md-12 no-border-bottom">
+                            <div class="col-md-3">
+                                <i class="fa fa-globe"></i> <?php echo __('Global'); ?>
                             </div>
+                            <div class="col-md-3">
+                                <i class="fa fa-home"></i> <?php echo __('Tenant'); ?>
+                            </div>
+                            <div class="col-md-3">
+                                <i class="fa fa-location-arrow"></i> <?php echo __('Location'); ?>
+                            </div>
+                            <div class="col-md-3">
+                                <i class="fa fa-link"></i> <?php echo __('Node'); ?>
+                            </div>
+                            <div class="col-md-3">
+                                <i class="fa fa-users"></i> <?php echo __('Contact group'); ?>
+                            </div>
+                            <div class="col-md-3">
+                                <i class="fa fa-sitemap"></i> <?php echo __('Host group'); ?>
+                            </div>
+                            <div class="col-md-3">
+                                <i class="fa fa-cogs"></i> <?php echo __('Service group'); ?>
+                            </div>
+                            <div class="col-md-3">
+                                <i class="fa fa-pencil-square-o"></i> <?php echo __('Service template group'); ?>
+                            </div>
+                        </div>
+                        <div class="dd dd-nodrag containers-dd" id="nestable">
+                            <ol class="dd-list" ng-repeat="container in subcontainers">
+                                <nested-list container="container"></nested-list>
+                            </ol>
                         </div>
                     </div>
                 </div>

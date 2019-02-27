@@ -4,7 +4,7 @@ angular.module('openITCOCKPIT').directive('nestedList', function($http, $interva
         templateUrl: '/angular/nested_list.html',
         scope: {
             'container': '=',
-            'tenant': '=',
+            'subcontainer': '=',
             'callback': '='
         },
 
