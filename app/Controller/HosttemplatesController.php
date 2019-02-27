@@ -200,7 +200,6 @@ class HosttemplatesController extends AppController {
     /**
      * @param null|int $id
      * @param null|int $hosttemplatetype_id
-     * @deprecated
      */
     public function edit($id = null, $hosttemplatetype_id = null) {
         if (!$this->isApiRequest()) {
