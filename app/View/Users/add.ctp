@@ -61,7 +61,7 @@
                                     chosen="containers"
                                     multiple
                                     ng-options="container.key as container.value for container in containers"
-                                    ng-model="post.User.containers._ids">
+                                    ng-model="post.Container._ids">
                             </select>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -69,18 +69,18 @@
                         </div>
                     </div>
 
-                    <div class="form-group" ng-class="{'has-error': errors.usergroup_id}">
+                    <div class="form-group" ng-class="{'has-error': errors.usergroups}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('User role'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <select
-                                    id="UserRole"
+                                    id="Usergroups"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
-                                    chosen="usergroup_id"
-                                    ng-options="role.key as role.value for role in usergroup_id"
-                                    ng-model="post.User.usergroup_id">
+                                    chosen="usergroups"
+                                    ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
+                                    ng-model="post.User.usergroup.id">
                             </select>
                         </div>
                     </div>

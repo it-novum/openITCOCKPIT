@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+
 class UsergroupsController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['Acl'];
@@ -286,6 +289,18 @@ class UsergroupsController extends AppController {
         }
         $this->setFlash(__('Could not delete user role'), false);
         $this->redirect(['action' => 'index']);
+    }
+
+    public function loadUsergroups(){
+        $this->layout = 'blank';
+        /** @var $Usergroups App\Model\Table\UsergroupsTable */
+        $Usergroups = TableRegistry::getTableLocator()->get('Usergroups');
+        $usergroups = $Usergroups->getUsergroupsList();
+
+        $usergroups = Api::makeItJavaScriptAble($usergroups);
+
+        $this->set('usergroups', $usergroups);
+        $this->set('_serialize', ['usergroups']);
     }
 
 }
