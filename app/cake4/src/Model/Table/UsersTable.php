@@ -235,19 +235,8 @@ class UsersTable extends Table {
 
         $query = $this->find()
             ->disableHydration()
-            ->contain('Containers')
+            ->contain(['Containers','Usergroups'])
             ->matching('Containers')
-            /* ->select([
-                 'Users.id',
-                 'Users.email',
-                 'Users.company',
-                 'Users.phone',
-                 'Users.status',
-                 'Users.samaccountname',
-                 //  'Usergroups.id',
-                 //  'Usergroups.name',
-                 'ContainersUsersMemberships.container_id',
-             ])*/
             ->order(['full_name' => 'asc'])
             ->where([
                 'ContainersUsersMemberships.container_id IN' => $rights
@@ -260,8 +249,8 @@ class UsersTable extends Table {
                     'Users.phone',
                     'Users.status',
                     'Users.samaccountname',
-                    //  'Usergroups.id',
-                    //  'Usergroups.name',
+                      'Usergroups.id',
+                      'Usergroups.name',
                     'ContainersUsersMemberships.container_id',
                     'full_name' => $query->func()->concat([
                         'Users.firstname' => 'literal',
@@ -270,20 +259,6 @@ class UsersTable extends Table {
                     ])
                 ];
             })
-            /*  ->join([
-                      [
-                          'table'      => 'users_to_containers',
-                          'type'       => 'LEFT',
-                          'alias'      => 'UsersToContainer',
-                          'conditions' => 'UsersToContainer.user_id = User.id',
-                      ],
-                  [
-                      'table'      => 'usergroups',
-                      'type'       => 'LEFT',
-                      'alias'      => 'Usergroup',
-                      'conditions' => 'Usergroup.id = User.usergroup_id',
-                  ],
-              ])*/
             ->group([
                 'Users.id'
             ]);
@@ -299,5 +274,21 @@ class UsersTable extends Table {
             }
         }
         return $result;
+    }
+
+
+    /**
+     * @param null $userId
+     * @return array|int
+     */
+    public function getUserStatus($userId = null){
+        if(!is_null($userId)){
+            //return state for the given user ID
+            return $this->get($userId)->status;
+
+        }else{
+            //no user ID so return all possible states
+            return [];
+        }
     }
 }

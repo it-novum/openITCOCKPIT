@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -15,16 +16,12 @@ use Cake\ORM\Entity;
  * @property string|null $description
  *
  * @property \App\Model\Entity\Commandargument[] $commandarguments
- * @property \App\Model\Entity\ContactsToHostcommand[] $contacts_to_hostcommands
- * @property \App\Model\Entity\ContactsToServicecommand[] $contacts_to_servicecommands
  * @property \App\Model\Entity\Host[] $hosts
  * @property \App\Model\Entity\Hosttemplate[] $hosttemplates
- * @property \App\Model\Entity\NagiosCommand[] $nagios_commands
  * @property \App\Model\Entity\Service[] $services
  * @property \App\Model\Entity\Servicetemplate[] $servicetemplates
  */
-class Command extends Entity
-{
+class Command extends Entity {
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -36,19 +33,16 @@ class Command extends Entity
      * @var array
      */
     protected $_accessible = [
-        'name' => true,
-        'command_line' => true,
-        'command_type' => true,
-        'human_args' => true,
-        'uuid' => true,
-        'description' => true,
+        'name'             => true,
+        'command_line'     => true,
+        'command_type'     => true,
+        'human_args'       => true,
+        'uuid'             => true,
+        'description'      => true,
         'commandarguments' => true,
-        'contacts_to_hostcommands' => true,
-        'contacts_to_servicecommands' => true,
-        'hosts' => true,
-        'hosttemplates' => true,
-        'nagios_commands' => true,
-        'services' => true,
+        'hosts'            => true,
+        'hosttemplates'    => true,
+        'services'         => true,
         'servicetemplates' => true
     ];
 }

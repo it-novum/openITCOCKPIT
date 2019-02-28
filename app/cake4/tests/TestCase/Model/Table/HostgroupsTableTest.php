@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\UsersTable;
+use App\Model\Table\HostgroupsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\UsersTable Test Case
+ * App\Model\Table\HostgroupsTable Test Case
  */
-class UsersTableTest extends TestCase
+class HostgroupsTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\UsersTable
+     * @var \App\Model\Table\HostgroupsTable
      */
-    public $Users;
+    public $Hostgroups;
 
     /**
      * Fixtures
@@ -24,17 +24,16 @@ class UsersTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.Users',
-        'app.Usergroups',
-        'app.Apikeys',
-        'app.Changelogs',
-        'app.Contacts',
-        'app.DashboardTabs',
-        'app.InstantreportsToUsers',
-        'app.MapUploads',
-        'app.Systemfailures',
-        'app.UsersToAutoreports',
-        'app.UsersToContainers'
+        'app.Hostgroups',
+        'app.Containers',
+        'app.HostgroupsToGrafanaconfigurations',
+        'app.HostgroupsToHostdependencies',
+        'app.HostgroupsToHostescalations',
+        'app.HostsToHostgroups',
+        'app.HosttemplatesToHostgroups',
+        'app.InstantreportsToHostgroups',
+        'app.NagiosHostgroupMembers',
+        'app.NagiosHostgroups'
     ];
 
     /**
@@ -45,8 +44,8 @@ class UsersTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('Users') ? [] : ['className' => UsersTable::class];
-        $this->Users = TableRegistry::getTableLocator()->get('Users', $config);
+        $config = TableRegistry::getTableLocator()->exists('Hostgroups') ? [] : ['className' => HostgroupsTable::class];
+        $this->Hostgroups = TableRegistry::getTableLocator()->get('Hostgroups', $config);
     }
 
     /**
@@ -56,7 +55,7 @@ class UsersTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->Users);
+        unset($this->Hostgroups);
 
         parent::tearDown();
     }

@@ -17,7 +17,6 @@ use Cake\ORM\Entity;
  * @property string|null $position
  * @property string|null $company
  * @property string|null $phone
- * @property string|null $linkedin_id
  * @property string|null $timezone
  * @property string|null $dateformat
  * @property string|null $image
@@ -32,7 +31,6 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime|null $modified
  *
  * @property \App\Model\Entity\Usergroup $usergroup
- * @property \App\Model\Entity\Linkedin $linkedin
  * @property \App\Model\Entity\Apikey[] $apikeys
  * @property \App\Model\Entity\Changelog[] $changelogs
  * @property \App\Model\Entity\Contact[] $contacts
@@ -77,7 +75,6 @@ class User extends Entity {
         'created'                 => true,
         'modified'                => true,
         'usergroup'               => true,
-        'linkedin'                => true,
         'apikeys'                 => true,
         'changelogs'              => true,
         'contacts'                => true,

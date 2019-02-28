@@ -179,12 +179,12 @@
                                         <i class="fa" ng-class="getSortClass('Users.company')"></i>
                                         <?php echo __('Company'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Usergroup.name')">
-                                        <i class="fa" ng-class="getSortClass('Usergroup.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('User.usergroup.name')">
+                                        <i class="fa" ng-class="getSortClass('User.usergroup.name')"></i>
                                         <?php echo __('User role'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Users.status')">
-                                        <i class="fa" ng-class="getSortClass('Users.status')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Users.usergroup.status')">
+                                        <i class="fa" ng-class="getSortClass('Users.usergroup.status')"></i>
                                         <?php echo __('Status'); ?>
                                     </th>
                                     <th class="no-sort text-center">
@@ -198,7 +198,8 @@
                                     <td>{{user.User.email}}</td>
                                     <td>{{user.User.phone}}</td>
                                     <td>{{user.User.company}}</td>
-                                    <td>{{usergroup.Usergroup.name}}</td>
+                                    <td>{{user.User.usergroup.name}}</td>
+                                    <!-- active, suspended, deleted -->
                                     <td>{{user.User.status}}</td>
                                     <td class="width-50">
                                         <div class="btn-group smart-form">

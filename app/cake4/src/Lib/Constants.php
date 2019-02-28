@@ -46,6 +46,8 @@ class Constants {
 
         $this->defineModules();
 
+        $this->defineUserstatus();
+
         $this->attachContainerpropertiesToContainers();
     }
 
@@ -178,6 +180,18 @@ class Constants {
             'MK_MODULE'               => 1 << 5,
             'MASSENVERSAND_MODULE'    => 1 << 6,
             'SAP_MODULE'              => 1 << 7,
+        ]);
+    }
+
+    private function defineUserstatus(){
+        $this->define([
+            'ACTIVE' => 1,
+            'INACTIVE' => 2,
+            'DELETED' => 3,
+            'SUSPENDED' => 4,
+            'ACTIVATION_PENDING' => 11,
+            'DONE' => 5,
+            'CANCELLED' => 6,
         ]);
     }
 

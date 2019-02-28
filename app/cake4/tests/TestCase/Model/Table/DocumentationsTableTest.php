@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\UsersTable;
+use App\Model\Table\DocumentationsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\UsersTable Test Case
+ * App\Model\Table\DocumentationsTable Test Case
  */
-class UsersTableTest extends TestCase
+class DocumentationsTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\UsersTable
+     * @var \App\Model\Table\DocumentationsTable
      */
-    public $Users;
+    public $Documentations;
 
     /**
      * Fixtures
@@ -24,17 +24,7 @@ class UsersTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.Users',
-        'app.Usergroups',
-        'app.Apikeys',
-        'app.Changelogs',
-        'app.Contacts',
-        'app.DashboardTabs',
-        'app.InstantreportsToUsers',
-        'app.MapUploads',
-        'app.Systemfailures',
-        'app.UsersToAutoreports',
-        'app.UsersToContainers'
+        'app.Documentations'
     ];
 
     /**
@@ -45,8 +35,8 @@ class UsersTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::getTableLocator()->exists('Users') ? [] : ['className' => UsersTable::class];
-        $this->Users = TableRegistry::getTableLocator()->get('Users', $config);
+        $config = TableRegistry::getTableLocator()->exists('Documentations') ? [] : ['className' => DocumentationsTable::class];
+        $this->Documentations = TableRegistry::getTableLocator()->get('Documentations', $config);
     }
 
     /**
@@ -56,7 +46,7 @@ class UsersTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->Users);
+        unset($this->Documentations);
 
         parent::tearDown();
     }
