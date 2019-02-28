@@ -1,8 +1,9 @@
 <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
-    <a ng-if="container.Container.containertype_id == <?php echo CT_NODE; ?>"
+    <a ng-if="container.Container.containertype_id == <?php echo CT_NODE; ?> ||
+        container.Container.containertype_id == <?php echo CT_TENANT; ?> ||
+        container.Container.containertype_id == <?php echo CT_LOCATION; ?>"
        class="txt-color-red padding-left-10 font-xs pointer"
-       ng-click="openModal()"
-    >
+       ng-click="openModal()">
         <i class="fa fa-pencil"></i>
         <?php echo __('Edit'); ?>
     </a>
@@ -30,8 +31,7 @@
                                    maxlength="255"
                                    required="required"
                                    placeholder="<?php echo __('Node name'); ?>"
-                                   ng-model="post.Container.name"
-                            >
+                                   ng-model="post.Container.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -39,7 +39,6 @@
 
                     </div>
                 </div>
-
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger pull-left" ng-click="delete()"
                             ng-class="{'has-error': errors.id}">
@@ -58,6 +57,5 @@
                 </div>
             </form>
         </div>
-
     </div>
 </div>

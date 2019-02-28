@@ -1,10 +1,10 @@
 <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
-    <a ng-if="container.Container.containertype_id == <?php echo CT_NODE; ?> ||
+    <a ng-if="container.Container.containertype_id == <?php echo CT_GLOBAL; ?> ||
+    container.Container.containertype_id == <?php echo CT_NODE; ?> ||
     container.Container.containertype_id == <?php echo CT_TENANT; ?> ||
     container.Container.containertype_id == <?php echo CT_LOCATION; ?>"
        class="txt-color-green padding-left-10 font-xs pointer"
-       ng-click="openModal()"
-    >
+       ng-click="openModal()">
         <i class="fa fa-plus"></i>
         <?php echo __('Add'); ?>
     </a>
@@ -15,8 +15,7 @@
         container.Container.containertype_id == <?php echo CT_TENANT; ?> ||
         container.Container.containertype_id == <?php echo CT_LOCATION; ?>"
        class="text-info padding-left-10 font-xs pointer"
-       ui-sref="ContainersShowDetails({id:container.Container.id, tenant:tenant})"
-    >
+       ui-sref="ContainersShowDetails({id:container.Container.id})">
         <i class="fa fa-info"></i>
         <?php echo __('Show details'); ?>
     </a>
@@ -28,13 +27,13 @@
             <form onsubmit="return false;">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title"><?php echo __('Add new Node'); ?></h4>
+                    <h4 class="modal-title"><?php echo __('Add new container'); ?></h4>
                 </div>
                 <div class="modal-body" ng-class="{'has-error': errors.name}">
                     <div class="row">
                         <div class="col-xs-2">
                             <label class="control-label">
-                                <?php echo __('New node name: '); ?>
+                                <?php echo __('New container name: '); ?>
                             </label>
                         </div>
                         <div class="col-xs-10">
@@ -43,8 +42,7 @@
                                    maxlength="255"
                                    required="required"
                                    placeholder="<?php echo __('Node name'); ?>"
-                                   ng-model="post.Container.name"
-                            >
+                                   ng-model="post.Container.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>

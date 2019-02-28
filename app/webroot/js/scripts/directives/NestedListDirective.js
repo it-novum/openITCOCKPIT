@@ -1,19 +1,14 @@
-angular.module('openITCOCKPIT').directive('nestedList', function($http, $interval){
+angular.module('openITCOCKPIT').directive('nestedList', function($http){
     return {
         restrict: 'E',
         templateUrl: '/angular/nested_list.html',
         scope: {
             'container': '=',
-            'subcontainer': '=',
-            'callback': '='
+            'loadContainersCallback': '='
         },
-
         controller: function($scope){
-
         },
-
         link: function($scope, element, attr){
-
         }
     };
 });
