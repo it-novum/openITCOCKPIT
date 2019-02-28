@@ -186,7 +186,8 @@ class UsersController extends AppController {
         }
     }
 
-    public function add($type = 'local') {
+
+    public function add() {
         $this->layout = 'blank';
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
@@ -194,31 +195,31 @@ class UsersController extends AppController {
         $Usergroups = TableRegistry::getTableLocator()->get('Usergroups');
         $usergroups = $Usergroups->getUsergroupsList();
 
-
-
-
-
-
-
-        if ($this->request->data('ContainerUserMembership')) {
-            $this->Frontend->setJson('rights', $this->request->data('ContainerUserMembership'));
-            $this->request->data['ContainerUserMembership'] = array_map(
-                function ($container_id, $permission_level) {
-                    return [
-                        'container_id'     => $container_id,
-                        'permission_level' => $permission_level,
-                    ];
-                },
-                array_keys($this->request->data['ContainerUserMembership']),
-                $this->request->data['ContainerUserMembership']
-            );
-        }
-
         if ($this->request->is('post') || $this->request->is('put')) {
+            // save additional data to containersUsersMemberships
+            if ($this->request->data('ContainerUserMembership')) {
+                $this->Frontend->setJson('rights', $this->request->data('ContainerUserMembership'));
+                $this->request->data['ContainerUserMembership'] = array_map(
+                    function ($container_id, $permission_level) {
+                        return [
+                            'container_id'     => $container_id,
+                            'permission_level' => $permission_level,
+                        ];
+                    },
+                    array_keys($this->request->data['ContainerUserMembership']),
+                    $this->request->data['ContainerUserMembership']
+                );
+            }
+
             // Deactivate "Show Stats in Menu" by default for New Users
             $this->request->data['User']['showstatsinmenu'] = 0;
 
             $user = $Users->newEntity($this->request->data);
+
+            debug($this->request->data);
+            debug($user);
+            die();
+
             $Users->save($user);
             if ($user->hasErrors()) {
                 $this->response->statusCode(400);
@@ -235,8 +236,6 @@ class UsersController extends AppController {
         $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
         $this->set('containers', $containers);
         $this->set('usergroups', $usergroups);
-
-        $this->set('type', $type);
     }
 
 
@@ -750,5 +749,19 @@ class UsersController extends AppController {
 
         $this->set(compact(['users']));
         $this->set('_serialize', ['users']);
+    }
+
+    /**
+     * get all possible states a user can have
+     */
+    public function loadStatus(){
+        $this->layout = 'blank';
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+        $status = $Users->getUserStatus();
+        $status = Api::makeItJavaScriptAble($status);
+
+        $this->set('status', $status);
+        $this->set('_serialize', ['status']);
     }
 }
