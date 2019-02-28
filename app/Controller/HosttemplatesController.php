@@ -458,7 +458,6 @@ class HosttemplatesController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
      */
     public function usedBy($id = null) {
         if (!$this->isApiRequest()) {
