@@ -680,6 +680,26 @@ class HosttemplatesTable extends Table {
     }
 
     /**
+     * @param int $timeperiodId
+     * @return bool
+     */
+    public function isTimeperiodUsedByHosttemplate($timeperiodId) {
+        $count = $this->find()
+            ->where([
+                'OR' => [
+                    'Hosttemplates.check_period_id'  => $timeperiodId,
+                    'Hosttemplates.notify_period_id' => $timeperiodId
+                ]
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * @param int $id
      * @return bool
      */

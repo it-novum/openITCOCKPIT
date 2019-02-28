@@ -73,28 +73,6 @@ class TestingShell extends AppShell {
         /*
          * Lof of space for your experimental code :)
          */
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        $containers = $ContainersTable->find()
-            ->where(['Containers.containertype_id IN' => [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]])
-            ->disableHydration()
-            ->toArray();
-        $paths = [];
-        foreach ($containers as $container) {
-            $containerTypeId = (int)$container['containertype_id'];
-            //if (in_array($containerTypeId, $options['valide_types'], true)) {
-                $paths[$container['id']] = '/' . $ContainersTable->treePath($container['id'], '/');
-            //}
-        }
-        natcasesort($paths);
-        debug($paths);
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-
-
-
-
     }
 
     public function getOptionParser() {
