@@ -104,7 +104,7 @@
                         </div>
                         <div class="dd dd-nodrag containers-dd" id="nestable">
                             <ol class="dd-list" ng-repeat="container in subcontainers">
-                                <nested-list container="container"></nested-list>
+                                <nested-list container="container" load-containers-callback="loadContainers"></nested-list>
                             </ol>
                         </div>
                     </div>
