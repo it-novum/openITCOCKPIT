@@ -125,6 +125,154 @@ class Hosttemplate extends Entity {
         'customvariables'                   => true,
         'contacts'                          => true,
         'contactgroups'                     => true,
-        'hostgroups'                        => true
+        'hostgroups'                        => true,
+        'check_command'                     => true
     ];
+
+    /**
+     * @return bool
+     */
+    public function hasCustomvariables() {
+        return !empty($this->customvariables);
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomvariablesForCfg() {
+        $cfgValues = [];
+        foreach ($this->customvariables as $Customvariable) {
+            /** @var Customvariable $Customvariable */
+            $key = sprintf('_%s', $Customvariable->get('name'));
+            $cfgValues[$key] = $Customvariable->get('value');
+        }
+        return $cfgValues;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasHosttemplatecommandargumentvalues() {
+        return !empty($this->hosttemplatecommandargumentvalues);
+    }
+
+    /**
+     * @return string
+     */
+    public function getHosttemplatecommandargumentvaluesForCfg() {
+        $arguments = [];
+        $humanNames = [];
+        foreach ($this->hosttemplatecommandargumentvalues as $hosttemplatecommandargumentvalue) {
+            $nagName = $hosttemplatecommandargumentvalue->commandargument->name;
+            $value = $hosttemplatecommandargumentvalue->value;
+            $humanName = $hosttemplatecommandargumentvalue->commandargument->human_name;
+
+            $arguments[$nagName] = $value;
+            $humanNames[$nagName] = $humanName;
+
+        }
+
+        ksort($arguments, SORT_NATURAL);
+        ksort($humanNames, SORT_NATURAL);
+
+        if (empty($arguments)) {
+            return '';
+        }
+
+        return sprintf(
+            '%s; %s',
+            implode('!', $arguments),
+            implode('!', $humanNames)
+        );
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasContacts() {
+        return !empty($this->contacts);
+    }
+
+    /**
+     * @return string
+     */
+    public function getContactsForCfg() {
+        $contacts = [];
+        foreach ($this->contacts as $contact) {
+            /** @var Contact $contact */
+            $contacts[] = $contact->get('uuid');
+        }
+
+        return implode(',', $contacts);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasContactgroups() {
+        return !empty($this->contactgroups);
+    }
+
+    /**
+     * @return string
+     */
+    public function getContactgroupsForCfg() {
+        $contactgroups = [];
+        foreach ($this->contactgroups as $contactgroup) {
+            /** @var Contactgroup $contactgroup */
+            $contactgroups[] = $contactgroup->get('uuid');
+        }
+
+        return implode(',', $contactgroups);
+    }
+
+    /**
+     * @return string
+     */
+    public function getHostNotificationOptionsForCfg() {
+        $cfgValues = [];
+        $fields = [
+            'notify_on_recovery'    => 'r',
+            'notify_on_down'        => 'd',
+            'notify_on_unreachable' => 'u',
+            'notify_on_flapping'    => 'f',
+            'notify_on_downtime'    => 's'
+        ];
+        foreach ($fields as $field => $cfgValue) {
+            if ($this->get($field) === 1) {
+                $cfgValues[] = $cfgValue;
+            }
+        }
+
+        if (empty($cfgValues)) {
+            //Config error!
+            $cfgValues = ['r'];
+        }
+        return implode(',', $cfgValues);
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getHostFlapDetectionOptionsForCfg() {
+        $cfgValues = [];
+        $fields = ['flap_detection_on_up' => 'o', 'flap_detection_on_down' => 'd', 'flap_detection_on_unreachable' => 'u'];
+
+
+        $fields = [
+            'flap_detection_on_up'          => 'o',
+            'flap_detection_on_down'        => 'd',
+            'flap_detection_on_unreachable' => 'u',
+        ];
+        foreach ($fields as $field => $cfgValue) {
+            if ($this->get($field) === 1) {
+                $cfgValues[] = $cfgValue;
+            }
+        }
+
+        if (empty($cfgValues)) {
+            return null;
+        }
+        return implode(',', $cfgValues);
+    }
 }

@@ -48,6 +48,8 @@ class Constants {
 
         $this->defineUserstatus();
 
+        $this->defineAjaxLimit();
+
         $this->attachContainerpropertiesToContainers();
     }
 
@@ -183,30 +185,30 @@ class Constants {
         ]);
     }
 
-    private function defineUserstatus(){
+    private function defineUserstatus() {
         $this->define([
-            'ACTIVE' => 1,
-            'INACTIVE' => 2,
-            'DELETED' => 3,
-            'SUSPENDED' => 4,
+            'ACTIVE'             => 1,
+            'INACTIVE'           => 2,
+            'DELETED'            => 3,
+            'SUSPENDED'          => 4,
             'ACTIVATION_PENDING' => 11,
-            'DONE' => 5,
-            'CANCELLED' => 6,
+            'DONE'               => 5,
+            'CANCELLED'          => 6,
         ]);
     }
 
 
     private function attachContainerpropertiesToContainers() {
         $this->containersWithProperties = [
-            'GLOBAL_CONTAINER'   => [
+            'GLOBAL_CONTAINER'               => [
                 'properties'     => OBJECT_TENANT ^ OBJECT_USER ^ OBJECT_NODE ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY,
                 'container_type' => CT_GLOBAL,
             ],
-            'TENANT_CONTAINER'   => [
+            'TENANT_CONTAINER'               => [
                 'properties'     => OBJECT_USER ^ OBJECT_NODE ^ OBJECT_LOCATION ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY,
                 'container_type' => CT_TENANT,
             ],
-            'LOCATION_CONTAINER' => [
+            'LOCATION_CONTAINER'             => [
                 'properties'     => OBJECT_USER ^ OBJECT_NODE ^ OBJECT_LOCATION ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_HOSTTEMPLATE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICETEMPLATEGROUP,
                 'container_type' => CT_LOCATION,
             ],
@@ -231,6 +233,12 @@ class Constants {
                 'container_type' => CT_SERVICETEMPLATEGROUP,
             ],
         ];
+    }
+
+    public function defineAjaxLimit() {
+        $this->define([
+            'ITN_AJAX_LIMIT' => 50
+        ]);
     }
 
     /**
