@@ -2,6 +2,7 @@
 
 namespace App\Model\Table;
 
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -20,29 +21,7 @@ use Cake\Validation\Validator;
  * @property \App\Model\Table\ContactgroupsToHostsTable|\Cake\ORM\Association\HasMany $ContactgroupsToHosts
  * @property \App\Model\Table\ContactsToHostsTable|\Cake\ORM\Association\HasMany $ContactsToHosts
  * @property \App\Model\Table\DeletedHostsTable|\Cake\ORM\Association\HasMany $DeletedHosts
- * @property \App\Model\Table\DeletedServicesTable|\Cake\ORM\Association\HasMany $DeletedServices
- * @property \App\Model\Table\EventcorrelationsTable|\Cake\ORM\Association\HasMany $Eventcorrelations
- * @property \App\Model\Table\GrafanaDashboardsTable|\Cake\ORM\Association\HasMany $GrafanaDashboards
- * @property \App\Model\Table\GrafanaUserdashboardMetricsTable|\Cake\ORM\Association\HasMany $GrafanaUserdashboardMetrics
- * @property \App\Model\Table\HostcommandargumentvaluesTable|\Cake\ORM\Association\HasMany $Hostcommandargumentvalues
- * @property \App\Model\Table\HostsToAutoreportsTable|\Cake\ORM\Association\HasMany $HostsToAutoreports
- * @property \App\Model\Table\HostsToContainersTable|\Cake\ORM\Association\HasMany $HostsToContainers
- * @property \App\Model\Table\HostsToHostdependenciesTable|\Cake\ORM\Association\HasMany $HostsToHostdependencies
- * @property \App\Model\Table\HostsToHostescalationsTable|\Cake\ORM\Association\HasMany $HostsToHostescalations
- * @property \App\Model\Table\HostsToHostgroupsTable|\Cake\ORM\Association\HasMany $HostsToHostgroups
- * @property \App\Model\Table\HostsToParenthostsTable|\Cake\ORM\Association\HasMany $HostsToParenthosts
- * @property \App\Model\Table\IdoitHostsTable|\Cake\ORM\Association\HasMany $IdoitHosts
- * @property \App\Model\Table\InstantreportsToHostsTable|\Cake\ORM\Association\HasMany $InstantreportsToHosts
- * @property \App\Model\Table\LastUsedMkagentsTable|\Cake\ORM\Association\HasMany $LastUsedMkagents
- * @property \App\Model\Table\MkservicedataTable|\Cake\ORM\Association\HasMany $Mkservicedata
- * @property \App\Model\Table\MksnmpTable|\Cake\ORM\Association\HasMany $Mksnmp
- * @property \App\Model\Table\NagiosHostContactgroupsTable|\Cake\ORM\Association\HasMany $NagiosHostContactgroups
- * @property \App\Model\Table\NagiosHostContactsTable|\Cake\ORM\Association\HasMany $NagiosHostContacts
- * @property \App\Model\Table\NagiosHostParenthostsTable|\Cake\ORM\Association\HasMany $NagiosHostParenthosts
- * @property \App\Model\Table\NagiosHostsTable|\Cake\ORM\Association\HasMany $NagiosHosts
  * @property \App\Model\Table\ServicesTable|\Cake\ORM\Association\HasMany $Services
- * @property \App\Model\Table\ServicesToAutoreportsTable|\Cake\ORM\Association\HasMany $ServicesToAutoreports
- * @property \App\Model\Table\WidgetsTable|\Cake\ORM\Association\HasMany $Widgets
  *
  * @method \App\Model\Entity\Host get($primaryKey, $options = [])
  * @method \App\Model\Entity\Host newEntity($data = null, array $options = [])
@@ -76,37 +55,20 @@ class HostsTable extends Table {
             'foreignKey' => 'container_id',
             'joinType'   => 'INNER'
         ]);
+
+        $this->belongsToMany('HostsToContainersSharing', [
+            'className'        => 'Containers',
+            'joinTable'        => 'hosts_to_containers',
+            'foreignKey'       => 'host_id',
+            'targetForeignKey' => 'container_id'
+        ]);
+
         $this->belongsTo('Hosttemplates', [
             'foreignKey' => 'hosttemplate_id',
             'joinType'   => 'INNER'
         ]);
-        $this->belongsTo('Commands', [
-            'foreignKey' => 'command_id'
-        ]);
-        $this->belongsTo('EventhandlerCommands', [
-            'foreignKey' => 'eventhandler_command_id'
-        ]);
-        $this->belongsTo('Timeperiods', [
-            'foreignKey' => 'timeperiod_id'
-        ]);
-        $this->belongsTo('CheckPeriods', [
-            'foreignKey' => 'check_period_id'
-        ]);
-        $this->belongsTo('NotifyPeriods', [
-            'foreignKey' => 'notify_period_id'
-        ]);
-        $this->hasMany('DeletedHosts', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('DeletedServices', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('Hostcommandargumentvalues', [
-            'foreignKey' => 'host_id'
-        ]);
-        $this->hasMany('Services', [
-            'foreignKey' => 'host_id'
-        ]);
+
+
     }
 
     /**
@@ -342,6 +304,45 @@ class HostsTable extends Table {
         $result = [];
         foreach ($query as $row) {
             $result[$row['id']] = (int)$row['container_id'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int $hosttemplateId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getHostsForHosttemplateUsedBy($hosttemplateId, $MY_RIGHTS = []) {
+        $query = $this->find('all');
+        $query->select([
+            'Hosts.id',
+            'Hosts.container_id',
+            'Hosts.uuid',
+            'Hosts.name',
+            'Hosts.address',
+        ]);
+
+        $query->where([
+            'Hosts.hosttemplate_id' => $hosttemplateId
+        ]);
+        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+        $query->contain('HostsToContainersSharing');
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
+        $query->order([
+            'Hosts.name' => 'asc'
+        ]);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
         }
 
         return $result;

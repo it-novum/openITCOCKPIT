@@ -36,7 +36,6 @@ use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -467,60 +466,33 @@ class HosttemplatesController extends AppController {
             return;
         }
 
-        if (!$this->Hosttemplate->exists($id)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HosttemplatesTable->existsById($id)) {
+            throw new NotFoundException(__('Host template not found'));
         }
 
-        $hosttemplate = $this->Hosttemplate->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Hosttemplate.name'
-            ],
-            'conditions' => [
-                'Hosttemplate.id' => $id
-            ]
-        ]);
+        $hosttemplate = $HosttemplatesTable->get($id);
 
-        if (!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'), false)) {
+        if (!$this->allowedByContainerId($hosttemplate->get('container_id'))) {
             $this->render403();
             return;
         }
 
-        $this->loadModel('Host');
-        $hosts = $this->Host->find('all', [
-            'recursive'  => -1,
-            'order'      => [
-                'Host.name' => 'ASC',
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'hosts_to_containers',
-                    'alias'      => 'HostsToContainers',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'HostsToContainers.host_id = Host.id',
-                    ],
-                ],
-            ],
-            'conditions' => [
-                'HostsToContainers.container_id' => $this->MY_RIGHTS,
-                'Host.hosttemplate_id'           => $id,
-            ],
-            'contain'    => [
-                'Container'
-            ],
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.address',
-            ],
-            'group'      => 'Host.id'
-        ]);
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+
+        $hosts = $HostsTable->getHostsForHosttemplateUsedBy($id, $MY_RIGHTS);
 
         $all_hosts = [];
         foreach ($hosts as $host) {
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {

@@ -48,7 +48,7 @@ angular.module('openITCOCKPIT')
             for(var key in $scope.allHosts){
                 for(var id in selectedObjects){
                     if(id == $scope.allHosts[key].Host.id){
-                        objects[id] = $scope.allHosts[key].Host.name;
+                        objects[id] = $scope.allHosts[key].Host.hostname;
                     }
 
                 }
