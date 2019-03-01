@@ -22,7 +22,7 @@
                     <div class="row">
                         <div class="col-xs-2">
                             <label class="control-label">
-                                <?php echo __('Edit node name: '); ?>
+                                <?php echo __('Edit node name '); ?>
                             </label>
                         </div>
                         <div class="col-xs-10">
