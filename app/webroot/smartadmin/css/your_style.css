@@ -153,6 +153,10 @@
     margin: 0;
 }
 
+.no-padding-top {
+    padding-top: 0!important;
+}
+
 .hintmark:after {
     color: #4759FF;
     content: " *";
@@ -2261,5 +2265,5 @@ iframe {
 }
 
 .no-border-bottom {
-    border-bottom: none!important;
+    border-bottom: none !important;
 }
