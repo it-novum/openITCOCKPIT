@@ -82,11 +82,12 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  * @property StatehistoryHost $StatehistoryHost
  * @property DateRange $DateRange
  * @property NotificationHost $NotificationHost
+ *
+ * @property AppPaginatorComponent $Paginator
  */
 class HostsController extends AppController {
     public $layout = 'Admin.default';
     public $components = [
-        'ListFilter.ListFilter',
         'RequestHandler',
         'CustomValidationErrors',
         'Bbcode',
@@ -94,7 +95,6 @@ class HostsController extends AppController {
         'Flash'
     ];
     public $helpers = [
-        'ListFilter.ListFilter',
         'Status',
         'Monitoring',
         'CustomValidationErrors',
@@ -128,6 +128,9 @@ class HostsController extends AppController {
         MONITORING_NOTIFICATION_HOST
     ];
 
+    /**
+     * @deprecated
+     */
     public function index() {
         $this->layout = 'blank';
         $User = new User($this->Auth);
@@ -321,6 +324,9 @@ class HostsController extends AppController {
         return;
     }
 
+    /**
+     * @deprecated
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -352,6 +358,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['host']);
     }
 
+    /**
+     * @deprecated
+     */
     public function notMonitored() {
         $this->layout = 'blank';
 
@@ -460,6 +469,9 @@ class HostsController extends AppController {
 
     }
 
+    /**
+     * @deprecated
+     */
     public function edit($id = null) {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->set('MY_WRITABLE_CONTAINERS', $this->getWriteContainers());
@@ -887,7 +899,9 @@ class HostsController extends AppController {
         }
     }
 
-
+    /**
+     * @deprecated
+     */
     public function sharing($id = null) {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $userId = $this->Auth->user('id');
@@ -937,6 +951,9 @@ class HostsController extends AppController {
         $this->set(compact(['host', 'containers', 'sharingContainers']));
     }
 
+    /**
+     * @deprecated
+     */
     public function edit_details($host_id = null) {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->set('back_url', $this->referer());
@@ -1096,6 +1113,9 @@ class HostsController extends AppController {
         $this->set(compact(['contacts', 'contactgroups', 'sharingContainers']));
     }
 
+    /**
+     * @deprecated
+     */
     public function add() {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         //Empty variables, get field if Model::save() fails for refill
@@ -1421,6 +1441,9 @@ class HostsController extends AppController {
         $this->set(compact(['_hosttemplates', '_hostgroups', '_timeperiods', '_contacts', '_contactgroups', 'commands', 'containers', 'masterInstance', 'Customvariable', 'sharingContainers']));
     }
 
+    /**
+     * @deprecated
+     */
     public function getSharingContainers($containerId = null, $jsonOutput = true) {
         if ($jsonOutput) {
             $this->autoRender = false;
@@ -1438,6 +1461,9 @@ class HostsController extends AppController {
         }
     }
 
+    /**
+     * @deprecated
+     */
     public function disabled() {
         $this->layout = 'blank';
 
@@ -1526,6 +1552,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['all_hosts', 'paging']);
     }
 
+    /**
+     * @deprecated
+     */
     public function deactivate($id = null) {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
@@ -1551,7 +1580,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['success', 'id', 'message']);
     }
 
-
+    /**
+     * @deprecated
+     */
     public function enable($id = null) {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
@@ -1577,6 +1608,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['success', 'id', 'message']);
     }
 
+    /**
+     * @deprecated
+     */
     public function delete($id = null) {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
@@ -1621,6 +1655,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
     }
 
+    /**
+     * @deprecated
+     */
     public function copy($id = null) {
         $userId = $this->Auth->user('id');
         $validationErrors = [];
@@ -2283,7 +2320,9 @@ class HostsController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
-
+    /**
+     * @deprecated
+     */
     public function browser($idOrUuid = null) {
         $this->layout = 'blank';
 
@@ -2545,6 +2584,7 @@ class HostsController extends AppController {
      * @param bool $nl2br If you want to replace \n with <br>
      *
      * @return string
+     * @deprecated
      */
     public function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true) {
         $this->autoRender = false;
@@ -2578,7 +2618,9 @@ class HostsController extends AppController {
         return '';
     }
 
-
+    /**
+     * @deprecated
+     */
     public function gethostbyname() {
         $this->autoRender = false;
         if ($this->request->is('ajax') && isset($this->request->data['hostname']) && $this->request->data['hostname'] != '') {
@@ -2592,6 +2634,9 @@ class HostsController extends AppController {
         echo '';
     }
 
+    /**
+     * @deprecated
+     */
     public function gethostbyaddr() {
         $this->autoRender = false;
         if ($this->request->is('ajax') && isset($this->request->data['address']) && filter_var($this->request->data['address'], FILTER_VALIDATE_IP)) {
@@ -2605,6 +2650,9 @@ class HostsController extends AppController {
         echo '';
     }
 
+    /**
+     * @deprecated
+     */
     public function loadHosttemplate($hosttemplate_id = null) {
         $this->allowOnlyAjaxRequests();
 
@@ -2636,6 +2684,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosttemplate']);
     }
 
+    /**
+     * @deprecated
+     */
     public function addCustomMacro($counter) {
         $this->allowOnlyAjaxRequests();
 
@@ -2643,6 +2694,9 @@ class HostsController extends AppController {
         $this->set('counter', $counter);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadTemplateMacros($hosttemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -2676,6 +2730,9 @@ class HostsController extends AppController {
         $this->set('hosttemplate', $hosttemplate);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadParametersByCommandId($command_id = null, $hosttemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -2706,6 +2763,9 @@ class HostsController extends AppController {
         $this->set(compact('commandarguments'));
     }
 
+    /**
+     * @deprecated
+     */
     public function loadArguments($command_id = null, $hosttemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -2734,6 +2794,9 @@ class HostsController extends AppController {
         $this->set('commandarguments', $commandarguments);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadArgumentsAdd($command_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -2748,6 +2811,9 @@ class HostsController extends AppController {
         $this->render('load_arguments');
     }
 
+    /**
+     * @deprecated
+     */
     public function loadHosttemplatesArguments($hosttemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -2781,6 +2847,9 @@ class HostsController extends AppController {
         $this->render('load_arguments');
     }
 
+    /**
+     * @deprecated
+     */
     private function _diffWithTemplate($host, $hosttemplate) {
         $diff_array = [];
         //Host-/Hosttemplate fields
@@ -2848,6 +2917,9 @@ class HostsController extends AppController {
         return $diff_array;
     }
 
+    /**
+     * @deprecated
+     */
     public function getHostByAjax($id = null) {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
@@ -2862,6 +2934,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['host']);
     }
 
+    /**
+     * @deprecated
+     */
     public function listToPdf() {
         $HostFilter = new HostFilter($this->request);
 
@@ -2927,9 +3002,10 @@ class HostsController extends AppController {
     }
 
 
-    /*
+    /**
      * $host is from prepareForView() but ther are no names in the service contact, only ids
      * $_host is from $this->Host->findById, because of contact names
+     * @deprecated
      */
     protected function __inheritContactsAndContactgroups($host, $_host = []) {
         $diffExists = 0;
@@ -3021,6 +3097,9 @@ class HostsController extends AppController {
         ];
     }
 
+    /**
+     * @deprecated
+     */
     public function ping() {
         //$this->allowOnlyAjaxRequests();
         $output = [];
@@ -3035,6 +3114,7 @@ class HostsController extends AppController {
      * Renders the ID of the host as JSON.
      *    Works if $this->request->data = array(
      *        'Host' => array(
+     * @deprecated
      */
     public function addParentHosts() {
         $this->allowOnlyPostRequests();
@@ -3062,6 +3142,9 @@ class HostsController extends AppController {
     }
 
 
+    /**
+     * @deprecated
+     */
     public function loadElementsByContainerId($container_id = null, $host_id = 0) {
         $hosttemplate_type = GENERIC_HOST;
         if (!$this->request->is('ajax')) {
@@ -3135,6 +3218,9 @@ class HostsController extends AppController {
         return null;
     }
 
+    /**
+     * @deprecated
+     */
     public function allocateServiceTemplateGroup($host_id = 0) {
 
         //Form got submitted
@@ -3218,6 +3304,9 @@ class HostsController extends AppController {
 
     }
 
+    /**
+     * @deprecated
+     */
     public function getServiceTemplatesfromGroup($stg_id = 0) {
         if (!$this->Servicetemplategroup->exists($stg_id)) {
             throw new NotFoundException(__('Invalid Servicetemplategroup'));
@@ -3232,6 +3321,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['servicetemplategroup', 'host']);
     }
 
+    /**
+     * @deprecated
+     */
     public function ajaxList() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3251,6 +3343,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosts']);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadHostsByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3284,6 +3379,7 @@ class HostsController extends AppController {
 
     /**
      * @param bool $onlyHostsWithWritePermission
+     * @deprecated
      */
     public function loadHostsByString($onlyHostsWithWritePermission = false) {
         if (!$this->isAngularJsRequest()) {
@@ -3318,7 +3414,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosts']);
     }
 
-
+    /**
+     * @deprecated
+     */
     public function loadParentHostsByString() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3352,6 +3450,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosts']);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadParentHostsById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3377,6 +3478,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['parenthost']);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadHostById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3430,6 +3534,7 @@ class HostsController extends AppController {
 
     /**
      * @param string | null $uuid
+     * @deprecated
      */
     public function hoststatus($uuid = null) {
         if (!$this->isApiRequest()) {
@@ -3454,6 +3559,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hoststatus']);
     }
 
+    /**
+     * @deprecated
+     */
     public function timeline($id = null) {
         session_write_close();
         if (!$this->isApiRequest()) {
@@ -3649,6 +3757,9 @@ class HostsController extends AppController {
         ]);
     }
 
+    /**
+     * @deprecated
+     */
     public function getGrafanaIframeUrlForDatepicker() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3693,6 +3804,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['GrafanaDashboardExists', 'iframeUrl']);
     }
 
+    /**
+     * @deprecated
+     */
     public function hostBrowserMenu($id) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
