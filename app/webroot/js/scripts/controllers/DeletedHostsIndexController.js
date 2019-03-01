@@ -1,9 +1,9 @@
 angular.module('openITCOCKPIT')
     .controller('DeletedHostsIndexController', function($scope, $http, $httpParamSerializer, SortService, QueryStringService){
-        SortService.setSort(QueryStringService.getValue('sort', 'DeletedHost.created'));
+        SortService.setSort(QueryStringService.getValue('sort', 'DeletedHosts.created'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
-
+        $scope.useScroll = true;
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -23,10 +23,11 @@ angular.module('openITCOCKPIT')
         $scope.load = function(){
             var params = {
                 'angular': true,
+                'scroll': $scope.useScroll,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[DeletedHost.name]': $scope.filter.DeletedHost.name
+                'filter[DeletedHosts.name]': $scope.filter.DeletedHost.name
             };
 
             $http.get("/deletedHosts/index.json", {
@@ -34,6 +35,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.hosts = result.data.deletedHosts;
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -51,6 +53,11 @@ angular.module('openITCOCKPIT')
                 $scope.currentPage = page;
                 $scope.load();
             }
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
         };
 
         //Fire on page load
