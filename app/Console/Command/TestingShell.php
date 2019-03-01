@@ -26,6 +26,8 @@
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\DeletedHostsTable;
+use App\Model\Table\DeletedServicesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 
@@ -73,28 +75,6 @@ class TestingShell extends AppShell {
         /*
          * Lof of space for your experimental code :)
          */
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        $containers = $ContainersTable->find()
-            ->where(['Containers.containertype_id IN' => [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]])
-            ->disableHydration()
-            ->toArray();
-        $paths = [];
-        foreach ($containers as $container) {
-            $containerTypeId = (int)$container['containertype_id'];
-            //if (in_array($containerTypeId, $options['valide_types'], true)) {
-                $paths[$container['id']] = '/' . $ContainersTable->treePath($container['id'], '/');
-            //}
-        }
-        natcasesort($paths);
-        debug($paths);
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-
-
-
-
     }
 
     public function getOptionParser() {

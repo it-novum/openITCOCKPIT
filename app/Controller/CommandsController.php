@@ -25,6 +25,7 @@
 
 
 use App\Model\Table\CommandsTable;
+use App\Model\Table\HosttemplatesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -275,13 +276,9 @@ class CommandsController extends AppController {
         }
 
         $this->loadModel('Hosttemplate');
-        $hostCount = $this->Hosttemplate->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Hosttemplate.command_id' => $command['Command']['id'],
-            ],
-        ]);
-        if ($hostCount > 0) {
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        if ($HosttemplatesTable->isCommandUsedByHosttemplate($command['Command']['id'])) {
             return false;
         }
 
@@ -320,7 +317,6 @@ class CommandsController extends AppController {
 
         return true;
     }
-
 
 
     public function getConsoleWelcome() {

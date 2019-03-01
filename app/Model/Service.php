@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\DeletedServicesTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 
@@ -1206,20 +1208,18 @@ class Service extends AppModel {
                 $_serviceName = $service['Servicetemplate']['name'];
             }
             //Add host to deleted objects table
-            $DeletedService = ClassRegistry::init('DeletedService');
-            $DeletedService->create();
-            $data = [
-                'DeletedService' => [
-                    'uuid'               => $service['Service']['uuid'],
-                    'host_uuid'          => $service['Host']['uuid'],
-                    'servicetemplate_id' => $service['Service']['servicetemplate_id'],
-                    'host_id'            => $service['Service']['host_id'],
-                    'name'               => $_serviceName,
-                    'description'        => $service['Service']['description'],
-                    'deleted_perfdata'   => 0,
-                ],
-            ];
-            $DeletedService->save($data);
+            /** @var $DeletedServicesTable DeletedServicesTable */
+            $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
+            $data = $DeletedServicesTable->newEntity([
+                'uuid'               => $service['Service']['uuid'],
+                'host_uuid'          => $service['Host']['uuid'],
+                'servicetemplate_id' => $service['Service']['servicetemplate_id'],
+                'host_id'            => $service['Service']['host_id'],
+                'name'               => $_serviceName,
+                'description'        => $service['Service']['description'],
+                'deleted_perfdata'   => 0
+            ]);
+            $DeletedServicesTable->save($data);
 
             /*
              * Check if the service was part of an servicegroup, serviceescalation or servicedependency

@@ -1,56 +1,64 @@
 angular.module('openITCOCKPIT')
     .controller('HosttemplatesAddController', function($scope, $http, SudoService, $state, NotyService){
-        $scope.post = {
-            Hosttemplate: {
-                name: '',
-                description: '',
-                command_id: 0,
-                eventhandler_command_id: 0,
-                check_interval: 3600,
-                retry_interval: 60,
-                max_check_attempts: 3,
-                first_notification_delay: 0,
-                notification_interval: 7200,
-                notify_on_down: 1,
-                notify_on_unreachable: 1,
-                notify_on_recovery: 1,
-                notify_on_flapping: 0,
-                notify_on_downtime: 0,
-                flap_detection_enabled: 0,
-                flap_detection_on_up: 0,
-                flap_detection_on_down: 0,
-                flap_detection_on_unreachable: 0,
-                low_flap_threshold: 0,
-                high_flap_threshold: 0,
-                process_performance_data: 0,
-                freshness_checks_enabled: 0,
-                freshness_threshold: 0,
-                passive_checks_enabled: 1,
-                event_handler_enabled: 0,
-                active_checks_enabled: 1,
-                retain_status_information: 0,
-                retain_nonstatus_information: 0,
-                notifications_enabled: 0,
-                notes: '',
-                priority: 1,
-                check_period_id: 0,
-                notify_period_id: 0,
-                tags: '',
-                container_id: 0,
-                host_url: '',
-                contacts: {
-                    _ids: []
-                },
-                contactgroups: {
-                    _ids: []
-                },
-                hostgroups: {
-                    _ids: []
-                },
-                customvariables: [],
-                hosttemplatecommandargumentvalues: []
-            }
+
+        $scope.data = {
+            createAnother: false
         };
+
+        var clearForm = function(){
+            $scope.post = {
+                Hosttemplate: {
+                    name: '',
+                    description: '',
+                    command_id: 0,
+                    eventhandler_command_id: 0,
+                    check_interval: 3600,
+                    retry_interval: 60,
+                    max_check_attempts: 3,
+                    first_notification_delay: 0,
+                    notification_interval: 7200,
+                    notify_on_down: 1,
+                    notify_on_unreachable: 1,
+                    notify_on_recovery: 1,
+                    notify_on_flapping: 0,
+                    notify_on_downtime: 0,
+                    flap_detection_enabled: 0,
+                    flap_detection_on_up: 0,
+                    flap_detection_on_down: 0,
+                    flap_detection_on_unreachable: 0,
+                    low_flap_threshold: 0,
+                    high_flap_threshold: 0,
+                    process_performance_data: 0,
+                    freshness_checks_enabled: 0,
+                    freshness_threshold: 0,
+                    passive_checks_enabled: 1,
+                    event_handler_enabled: 0,
+                    active_checks_enabled: 1,
+                    retain_status_information: 0,
+                    retain_nonstatus_information: 0,
+                    notifications_enabled: 0,
+                    notes: '',
+                    priority: 1,
+                    check_period_id: 0,
+                    notify_period_id: 0,
+                    tags: '',
+                    container_id: 0,
+                    host_url: '',
+                    contacts: {
+                        _ids: []
+                    },
+                    contactgroups: {
+                        _ids: []
+                    },
+                    hostgroups: {
+                        _ids: []
+                    },
+                    customvariables: [],
+                    hosttemplatecommandargumentvalues: []
+                }
+            };
+        };
+        clearForm();
 
         $scope.init = true;
 
@@ -138,9 +146,17 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('HosttemplatesIndex').then(function(){
+
+                if($scope.data.createAnother === false){
+                    $state.go('HosttemplatesIndex').then(function(){
+                        NotyService.scrollTop();
+                    });
+                }else{
+                    clearForm();
                     NotyService.scrollTop();
-                });
+                }
+
+
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){

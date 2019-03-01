@@ -29,6 +29,8 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostsTable;
+use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
@@ -58,6 +60,7 @@ use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\HostPerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
@@ -81,11 +84,12 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  * @property StatehistoryHost $StatehistoryHost
  * @property DateRange $DateRange
  * @property NotificationHost $NotificationHost
+ *
+ * @property AppPaginatorComponent $Paginator
  */
 class HostsController extends AppController {
     public $layout = 'Admin.default';
     public $components = [
-        'ListFilter.ListFilter',
         'RequestHandler',
         'CustomValidationErrors',
         'Bbcode',
@@ -93,7 +97,6 @@ class HostsController extends AppController {
         'Flash'
     ];
     public $helpers = [
-        'ListFilter.ListFilter',
         'Status',
         'Monitoring',
         'CustomValidationErrors',
@@ -127,6 +130,9 @@ class HostsController extends AppController {
         MONITORING_NOTIFICATION_HOST
     ];
 
+    /**
+     * @deprecated
+     */
     public function index() {
         $this->layout = 'blank';
         $User = new User($this->Auth);
@@ -320,6 +326,9 @@ class HostsController extends AppController {
         return;
     }
 
+    /**
+     * @deprecated
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -351,6 +360,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['host']);
     }
 
+    /**
+     * @deprecated
+     */
     public function notMonitored() {
         $this->layout = 'blank';
 
@@ -459,6 +471,9 @@ class HostsController extends AppController {
 
     }
 
+    /**
+     * @deprecated
+     */
     public function edit($id = null) {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->set('MY_WRITABLE_CONTAINERS', $this->getWriteContainers());
@@ -561,6 +576,8 @@ class HostsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
         // Data required for changelog
         $contacts = $ContactsTable->getContactsAsList();
@@ -589,7 +606,7 @@ class HostsController extends AppController {
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
-        $_hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list', $host['Host']['host_type']);
+        $_hosttemplates = $HosttemplatesTable->getHosttemplatesByContainerId($containerIds, 'list', $host['Host']['host_type']);
         $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         $_parenthosts = $this->Host->hostsByContainerIdExcludeHostId($containerIds, 'list', $id);
         $_timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
@@ -884,7 +901,9 @@ class HostsController extends AppController {
         }
     }
 
-
+    /**
+     * @deprecated
+     */
     public function sharing($id = null) {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $userId = $this->Auth->user('id');
@@ -934,6 +953,9 @@ class HostsController extends AppController {
         $this->set(compact(['host', 'containers', 'sharingContainers']));
     }
 
+    /**
+     * @deprecated
+     */
     public function edit_details($host_id = null) {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->set('back_url', $this->referer());
@@ -1093,6 +1115,9 @@ class HostsController extends AppController {
         $this->set(compact(['contacts', 'contactgroups', 'sharingContainers']));
     }
 
+    /**
+     * @deprecated
+     */
     public function add() {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         //Empty variables, get field if Model::save() fails for refill
@@ -1174,6 +1199,8 @@ class HostsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
         $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
 
@@ -1400,7 +1427,7 @@ class HostsController extends AppController {
                     $container_id = $this->request->data('Host.container_id');
 
                     $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
-                    $_hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
+                    $_hosttemplates = $HosttemplatesTable->getHosttemplatesByContainerId($containerIds, 'list');
                     $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                     //$_parenthosts = $this->Host->hostsByContainerId($containerIds, 'list');
                     $_timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
@@ -1416,6 +1443,9 @@ class HostsController extends AppController {
         $this->set(compact(['_hosttemplates', '_hostgroups', '_timeperiods', '_contacts', '_contactgroups', 'commands', 'containers', 'masterInstance', 'Customvariable', 'sharingContainers']));
     }
 
+    /**
+     * @deprecated
+     */
     public function getSharingContainers($containerId = null, $jsonOutput = true) {
         if ($jsonOutput) {
             $this->autoRender = false;
@@ -1433,8 +1463,92 @@ class HostsController extends AppController {
         }
     }
 
+
     public function disabled() {
         $this->layout = 'blank';
+
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $Systemsettings->getMasterInstanceName();
+        $SatelliteNames = [];
+        $ModuleManager = new ModuleManager('DistributeModule');
+        if ($ModuleManager->moduleExists()) {
+            $SatelliteModel = $ModuleManager->loadModel('Satellite');
+            $SatelliteNames = $SatelliteModel->find('list');
+            $SatelliteNames[0] = $masterInstanceName;
+        }
+
+        if (!$this->isApiRequest()) {
+            $this->set('satellites', $SatelliteNames);
+            //Only ship HTML template
+            return;
+        }
+
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $HostFilter = new HostFilter($this->request);
+        $HostCondition = new HostConditions();
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostFilter->getPage());
+
+        $HostCondition->setIncludeDisabled(true);
+        if ($this->hasRootPrivileges === false) {
+            $HostCondition->setContainerIds($this->MY_RIGHTS);
+        }
+
+        $hosts = $HostsTable->getHostsDisabled($HostFilter, $HostCondition, $PaginateOMat);
+
+
+        $all_hosts = [];
+        foreach ($hosts as $host) {
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+            $Hosttemplate = new \itnovum\openITCOCKPIT\Core\Views\Hosttemplate($host);
+
+            $hostSharingPermissions = new HostSharingPermissions(
+                $Host->getContainerId(), $this->hasRootPrivileges, $Host->getContainerIds(), $this->MY_RIGHTS
+            );
+            $allowSharing = $hostSharingPermissions->allowSharing();
+
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $Host->getContainerIds());
+                $allowEdit = $ContainerPermissions->hasPermission();
+            }
+
+            $satelliteName = $masterInstanceName;
+            $satellite_id = 0;
+            if ($Host->isSatelliteHost()) {
+                $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
+                $satellite_id = $Host->getSatelliteId();
+            }
+
+            $tmpRecord = [
+                'Host'         => $Host->toArray(),
+                'Hosttemplate' => $Hosttemplate->toArray(),
+                'Hoststatus'   => [
+                    'isInMonitoring' => false,
+                    'currentState'   => -1
+                ]
+            ];
+            $tmpRecord['Host']['allow_sharing'] = $allowSharing;
+            $tmpRecord['Host']['satelliteName'] = $satelliteName;
+            $tmpRecord['Host']['satelliteId'] = $satellite_id;
+            $tmpRecord['Host']['allow_edit'] = $allowEdit;
+            $all_hosts[] = $tmpRecord;
+        }
+
+        $this->set('all_hosts', $all_hosts);
+        $toJson = ['all_hosts', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_hosts', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
+
+
+        return;
+        /***************** OLD CODE *************/
 
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
@@ -1521,6 +1635,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['all_hosts', 'paging']);
     }
 
+    /**
+     * @deprecated
+     */
     public function deactivate($id = null) {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
@@ -1546,7 +1663,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['success', 'id', 'message']);
     }
 
-
+    /**
+     * @deprecated
+     */
     public function enable($id = null) {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
@@ -1572,6 +1691,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['success', 'id', 'message']);
     }
 
+    /**
+     * @deprecated
+     */
     public function delete($id = null) {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
@@ -1616,6 +1738,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
     }
 
+    /**
+     * @deprecated
+     */
     public function copy($id = null) {
         $userId = $this->Auth->user('id');
         $validationErrors = [];
@@ -2278,7 +2403,9 @@ class HostsController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
-
+    /**
+     * @deprecated
+     */
     public function browser($idOrUuid = null) {
         $this->layout = 'blank';
 
@@ -2540,6 +2667,7 @@ class HostsController extends AppController {
      * @param bool $nl2br If you want to replace \n with <br>
      *
      * @return string
+     * @deprecated
      */
     public function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true) {
         $this->autoRender = false;
@@ -2573,7 +2701,9 @@ class HostsController extends AppController {
         return '';
     }
 
-
+    /**
+     * @deprecated
+     */
     public function gethostbyname() {
         $this->autoRender = false;
         if ($this->request->is('ajax') && isset($this->request->data['hostname']) && $this->request->data['hostname'] != '') {
@@ -2587,6 +2717,9 @@ class HostsController extends AppController {
         echo '';
     }
 
+    /**
+     * @deprecated
+     */
     public function gethostbyaddr() {
         $this->autoRender = false;
         if ($this->request->is('ajax') && isset($this->request->data['address']) && filter_var($this->request->data['address'], FILTER_VALIDATE_IP)) {
@@ -2600,6 +2733,9 @@ class HostsController extends AppController {
         echo '';
     }
 
+    /**
+     * @deprecated
+     */
     public function loadHosttemplate($hosttemplate_id = null) {
         $this->allowOnlyAjaxRequests();
 
@@ -2631,6 +2767,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosttemplate']);
     }
 
+    /**
+     * @deprecated
+     */
     public function addCustomMacro($counter) {
         $this->allowOnlyAjaxRequests();
 
@@ -2638,6 +2777,9 @@ class HostsController extends AppController {
         $this->set('counter', $counter);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadTemplateMacros($hosttemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -2671,6 +2813,9 @@ class HostsController extends AppController {
         $this->set('hosttemplate', $hosttemplate);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadParametersByCommandId($command_id = null, $hosttemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -2701,6 +2846,9 @@ class HostsController extends AppController {
         $this->set(compact('commandarguments'));
     }
 
+    /**
+     * @deprecated
+     */
     public function loadArguments($command_id = null, $hosttemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -2729,6 +2877,9 @@ class HostsController extends AppController {
         $this->set('commandarguments', $commandarguments);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadArgumentsAdd($command_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -2743,6 +2894,9 @@ class HostsController extends AppController {
         $this->render('load_arguments');
     }
 
+    /**
+     * @deprecated
+     */
     public function loadHosttemplatesArguments($hosttemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -2776,6 +2930,9 @@ class HostsController extends AppController {
         $this->render('load_arguments');
     }
 
+    /**
+     * @deprecated
+     */
     private function _diffWithTemplate($host, $hosttemplate) {
         $diff_array = [];
         //Host-/Hosttemplate fields
@@ -2843,6 +3000,9 @@ class HostsController extends AppController {
         return $diff_array;
     }
 
+    /**
+     * @deprecated
+     */
     public function getHostByAjax($id = null) {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
@@ -2857,6 +3017,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['host']);
     }
 
+    /**
+     * @deprecated
+     */
     public function listToPdf() {
         $HostFilter = new HostFilter($this->request);
 
@@ -2922,9 +3085,10 @@ class HostsController extends AppController {
     }
 
 
-    /*
+    /**
      * $host is from prepareForView() but ther are no names in the service contact, only ids
      * $_host is from $this->Host->findById, because of contact names
+     * @deprecated
      */
     protected function __inheritContactsAndContactgroups($host, $_host = []) {
         $diffExists = 0;
@@ -3016,6 +3180,9 @@ class HostsController extends AppController {
         ];
     }
 
+    /**
+     * @deprecated
+     */
     public function ping() {
         //$this->allowOnlyAjaxRequests();
         $output = [];
@@ -3030,6 +3197,7 @@ class HostsController extends AppController {
      * Renders the ID of the host as JSON.
      *    Works if $this->request->data = array(
      *        'Host' => array(
+     * @deprecated
      */
     public function addParentHosts() {
         $this->allowOnlyPostRequests();
@@ -3057,6 +3225,9 @@ class HostsController extends AppController {
     }
 
 
+    /**
+     * @deprecated
+     */
     public function loadElementsByContainerId($container_id = null, $host_id = 0) {
         $hosttemplate_type = GENERIC_HOST;
         if (!$this->request->is('ajax')) {
@@ -3071,6 +3242,8 @@ class HostsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
         if (!$ContainersTable->existsById($container_id)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
@@ -3090,8 +3263,8 @@ class HostsController extends AppController {
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
 
-        $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list', $hosttemplate_type);
-        $hosttemplates = $this->Hosttemplate->chosenPlaceholder($hosttemplates);
+        $hosttemplates = $HosttemplatesTable->getHosttemplatesByContainerId($containerIds, 'list', $hosttemplate_type);
+        $hosttemplates = $this->Host->chosenPlaceholder($hosttemplates);
         $hosttemplates = Api::makeItJavaScriptAble($hosttemplates);
 
         $hostgroups = Api::makeItJavaScriptAble(
@@ -3128,6 +3301,9 @@ class HostsController extends AppController {
         return null;
     }
 
+    /**
+     * @deprecated
+     */
     public function allocateServiceTemplateGroup($host_id = 0) {
 
         //Form got submitted
@@ -3211,6 +3387,9 @@ class HostsController extends AppController {
 
     }
 
+    /**
+     * @deprecated
+     */
     public function getServiceTemplatesfromGroup($stg_id = 0) {
         if (!$this->Servicetemplategroup->exists($stg_id)) {
             throw new NotFoundException(__('Invalid Servicetemplategroup'));
@@ -3225,6 +3404,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['servicetemplategroup', 'host']);
     }
 
+    /**
+     * @deprecated
+     */
     public function ajaxList() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3244,6 +3426,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosts']);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadHostsByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3277,6 +3462,7 @@ class HostsController extends AppController {
 
     /**
      * @param bool $onlyHostsWithWritePermission
+     * @deprecated
      */
     public function loadHostsByString($onlyHostsWithWritePermission = false) {
         if (!$this->isAngularJsRequest()) {
@@ -3311,7 +3497,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosts']);
     }
 
-
+    /**
+     * @deprecated
+     */
     public function loadParentHostsByString() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3345,6 +3533,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosts']);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadParentHostsById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3370,6 +3561,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['parenthost']);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadHostById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3423,6 +3617,7 @@ class HostsController extends AppController {
 
     /**
      * @param string | null $uuid
+     * @deprecated
      */
     public function hoststatus($uuid = null) {
         if (!$this->isApiRequest()) {
@@ -3447,6 +3642,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hoststatus']);
     }
 
+    /**
+     * @deprecated
+     */
     public function timeline($id = null) {
         session_write_close();
         if (!$this->isApiRequest()) {
@@ -3642,6 +3840,9 @@ class HostsController extends AppController {
         ]);
     }
 
+    /**
+     * @deprecated
+     */
     public function getGrafanaIframeUrlForDatepicker() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3686,6 +3887,9 @@ class HostsController extends AppController {
         $this->set('_serialize', ['GrafanaDashboardExists', 'iframeUrl']);
     }
 
+    /**
+     * @deprecated
+     */
     public function hostBrowserMenu($id) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

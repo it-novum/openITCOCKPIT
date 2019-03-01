@@ -44,7 +44,7 @@ class HostFilter extends Filter {
             'rlike'    => [
                 'Host.keywords'
             ],
-            'notrlike'    => [
+            'notrlike' => [
                 'Host.not_keywords'
             ],
             'equals'   => [
@@ -88,7 +88,7 @@ class HostFilter extends Filter {
     public function deletedFilter() {
         $filters = [
             'like' => [
-                'DeletedHost.name'
+                'DeletedHosts.name'
             ]
         ];
 
@@ -99,7 +99,18 @@ class HostFilter extends Filter {
      * @return array
      */
     public function disabledFilter() {
-        return $this->notMonitoredFilter();
+        $filters = [
+            'like'   => [
+                'Hosts.name',
+                'Hosts.address'
+            ],
+            'equals' => [
+                'Hosts.id',
+                'Hosts.satellite_id'
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
     }
 
 

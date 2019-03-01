@@ -25,6 +25,9 @@
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
+use App\Model\Table\DeletedHostsTable;
+use App\Model\Table\DeletedServicesTable;
+use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
 use Cake\ORM\TableRegistry;
 
@@ -345,25 +348,9 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportHosttemplates($uuid = null) {
-        if ($uuid !== null) {
-            $hosttemplates = [];
-            $hosttemplates[] = $this->Hosttemplate->findByUuid($uuid);
-        } else {
-            $hosttemplates = $this->Hosttemplate->find('all', [
-                'recursive' => -1,
-                'contain'   => [
-                    'CheckPeriod',
-                    'NotifyPeriod',
-                    'CheckCommand',
-                    'Customvariable',
-                    'Hosttemplatecommandargumentvalue' => [
-                        'Commandargument',
-                    ],
-                    'Contactgroup',
-                    'Contact',
-                ],
-            ]);
-        }
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        $hosttemplates = $HosttemplatesTable->getHosttemplatesForExport();
 
         if (!is_dir($this->conf['path'] . $this->conf['hosttemplates'])) {
             mkdir($this->conf['path'] . $this->conf['hosttemplates']);
@@ -378,50 +365,43 @@ class NagiosExportTask extends AppShell {
         }
 
         foreach ($hosttemplates as $hosttemplate) {
+            /** @var \App\Model\Entity\Hosttemplate $hosttemplate */
             if (!$this->conf['minified']) {
-                $file = new File($this->conf['path'] . $this->conf['hosttemplates'] . $hosttemplate['Hosttemplate']['uuid'] . $this->conf['suffix']);
+                $file = new File($this->conf['path'] . $this->conf['hosttemplates'] . $hosttemplate->get('uuid') . $this->conf['suffix']);
                 $content = $this->fileHeader();
                 if (!$file->exists()) {
                     $file->create();
                 }
             }
 
-            $commandarguments = [];
-            if (!empty($hosttemplate['Hosttemplatecommandargumentvalue'])) {
-                //Select command arguments + command, because we have arguments!
-                $commandarguments = Hash::sort($hosttemplate['Hosttemplatecommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
-            }
-
             $content .= $this->addContent('define host{', 0);
             $content .= $this->addContent('register', 1, 0);
             $content .= $this->addContent('use', 1, '8147201e91c4dcf7c016ba2ddeac3fd7e72edacc');
-            $content .= $this->addContent('host_name', 1, $hosttemplate['Hosttemplate']['uuid']);
-            $content .= $this->addContent('name', 1, $hosttemplate['Hosttemplate']['uuid']);
+            $content .= $this->addContent('host_name', 1, $hosttemplate->get('uuid'));
+            $content .= $this->addContent('name', 1, $hosttemplate->get('uuid'));
             $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
-                $hosttemplate['Hosttemplate']['name']
+                $hosttemplate->get('name')
             ));
             $content .= $this->addContent('alias', 1, $this->escapeLastBackslash(
-                $hosttemplate['Hosttemplate']['description']
+                $hosttemplate->get('description')
             ));
 
             $content .= $this->nl();
             $content .= $this->addContent(';Check settings:', 1);
-            if (isset($commandarguments) && !empty($commandarguments)) {
-                $content .= $this->addContent('check_command', 1, $hosttemplate['CheckCommand']['uuid'] . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+
+            if ($hosttemplate->hasHosttemplatecommandargumentvalues()) {
+                $content .= $this->addContent('check_command', 1, $hosttemplate->get('check_command')->get('uuid') . '!' . $hosttemplate->getHosttemplatecommandargumentvaluesForCfg());
             } else {
-                $content .= $this->addContent('check_command', 1, $hosttemplate['CheckCommand']['uuid']);
+                $content .= $this->addContent('check_command', 1, $hosttemplate->get('check_command')->get('uuid'));
             }
 
-            if (isset($commandarguments)) {
-                unset($commandarguments);
-            }
 
             $content .= $this->addContent('initial_state', 1, $this->_systemsettings['MONITORING']['MONITORING.HOST.INITSTATE']);
-            $content .= $this->addContent('check_period', 1, $hosttemplate['CheckPeriod']['uuid']);
-            $content .= $this->addContent('check_interval', 1, $hosttemplate['Hosttemplate']['check_interval']);
-            $content .= $this->addContent('retry_interval', 1, $hosttemplate['Hosttemplate']['retry_interval']);
-            $content .= $this->addContent('max_check_attempts', 1, $hosttemplate['Hosttemplate']['max_check_attempts']);
-            $content .= $this->addContent('active_checks_enabled', 1, $hosttemplate['Hosttemplate']['active_checks_enabled']);
+            $content .= $this->addContent('check_period', 1, $hosttemplate->get('check_period')->get('uuid'));
+            $content .= $this->addContent('check_interval', 1, $hosttemplate->get('check_interval'));
+            $content .= $this->addContent('retry_interval', 1, $hosttemplate->get('retry_interval'));
+            $content .= $this->addContent('max_check_attempts', 1, $hosttemplate->get('max_check_attempts'));
+            $content .= $this->addContent('active_checks_enabled', 1, $hosttemplate->get('active_checks_enabled'));
             $content .= $this->addContent('passive_checks_enabled', 1, 1);
 
 
@@ -429,44 +409,42 @@ class NagiosExportTask extends AppShell {
             $content .= $this->addContent(';Notification settings:', 1);
             $content .= $this->addContent('notifications_enabled', 1, 1);
 
-            if (!empty($hosttemplate['Contact'])) {
-                $content .= $this->addContent('contacts', 1, implode(',', Hash::extract($hosttemplate['Contact'], '{n}.uuid')));
+            if ($hosttemplate->hasContacts()) {
+                $content .= $this->addContent('contacts', 1, $hosttemplate->getContactsForCfg());
             }
 
 
-            if (!empty($hosttemplate['Contactgroup'])) {
-                $content .= $this->addContent('contact_groups', 1, implode(',', Hash::extract($hosttemplate['Contactgroup'], '{n}.uuid')));
+            if ($hosttemplate->hasContactgroups()) {
+                $content .= $this->addContent('contact_groups', 1, $hosttemplate->getContactgroupsForCfg());
             }
 
-            $content .= $this->addContent('notification_interval', 1, $hosttemplate['Hosttemplate']['notification_interval']);
-            $content .= $this->addContent('notification_period', 1, $hosttemplate['NotifyPeriod']['uuid']);
+            $content .= $this->addContent('notification_interval', 1, $hosttemplate->get('notification_interval'));
+            $content .= $this->addContent('notification_period', 1, $hosttemplate->get('notify_period')->get('uuid'));
 
-            $hostNotificationString = $this->hostNotificationString($hosttemplate['Hosttemplate']);
-            if (!empty($hostNotificationString)) {
-                $content .= $this->addContent('notification_options', 1, $hostNotificationString);
-            }
+            $content .= $this->addContent('notification_options', 1, $hosttemplate->getHostNotificationOptionsForCfg());
 
             $content .= $this->nl();
             $content .= $this->addContent(';Flap detection settings:', 1);
-            $content .= $this->addContent('flap_detection_enabled', 1, $hosttemplate['Hosttemplate']['flap_detection_enabled']);
-            if ($hosttemplate['Hosttemplate']['flap_detection_enabled'] == 1) {
-                $content .= $this->addContent('flap_detection_options', 1, $this->hostFlapdetectionString($hosttemplate['Hosttemplate']));
+            $content .= $this->addContent('flap_detection_enabled', 1, $hosttemplate->get('flap_detection_enabled'));
+            if ($hosttemplate->get('flap_detection_enabled') === 1) {
+                if ($hosttemplate->getHostFlapDetectionOptionsForCfg()) {
+                    $content .= $this->addContent('flap_detection_options', 1, $hosttemplate->getHostFlapDetectionOptionsForCfg());
+                }
             }
 
             $content .= $this->nl();
             $content .= $this->addContent(';Everything else:', 1);
-            if (isset($hosttemplate['Hosttemplate']['process_performance_data'])) {
-                $content .= $this->addContent('process_perf_data', 1, $hosttemplate['Hosttemplate']['process_performance_data']);
-            }
-            if (!empty($hosttemplate['Hosttemplate']['notes']))
-                $content .= $this->addContent('notes', 1, $hosttemplate['Hosttemplate']['notes']);
+            $content .= $this->addContent('process_perf_data', 1, $hosttemplate->get('process_performance_data'));
+
+            if (!empty($hosttemplate->get('notes')))
+                $content .= $this->addContent('notes', 1, $this->escapeLastBackslash($hosttemplate->get('notes')));
 
 
-            if (!empty($hosttemplate['Customvariable'])) {
+            if ($hosttemplate->hasCustomvariables()) {
                 $content .= $this->nl();
                 $content .= $this->addContent(';Custom  variables:', 1);
-                foreach ($hosttemplate['Customvariable'] as $customvariable) {
-                    $content .= $this->addContent('_' . $customvariable['name'], 1, $customvariable['value']);
+                foreach ($hosttemplate->getCustomvariablesForCfg() as $varName => $varValue) {
+                    $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
                 }
             }
             $content .= $this->addContent('}', 0);
@@ -2635,6 +2613,7 @@ class NagiosExportTask extends AppShell {
      * @param array $hostOrHosttemplate
      *
      * @return string
+     * @deprecated Move to Entity
      */
     public function hostNotificationString($hostOrHosttemplate = []) {
         $fields = ['notify_on_down' => 'd', 'notify_on_unreachable' => 'u', 'notify_on_recovery' => 'r', 'notify_on_flapping' => 'f', 'notify_on_downtime' => 's'];
@@ -2646,6 +2625,7 @@ class NagiosExportTask extends AppShell {
      * @param array $serviceOrServicetemplate
      *
      * @return string
+     * @deprecated Move to Entity
      */
     public function serviceNotificationString($serviceOrServicetemplate = []) {
         $fields = ['notify_on_warning' => 'w', 'notify_on_unknown' => 'u', 'notify_on_critical' => 'c', 'notify_on_recovery' => 'r', 'notify_on_flapping' => 'f', 'notify_on_downtime' => 's'];
@@ -2657,6 +2637,7 @@ class NagiosExportTask extends AppShell {
      * @param array $hostOrHosttemplate
      *
      * @return string
+     * @deprecated Move to Entity
      */
     public function hostFlapdetectionString($hostOrHosttemplate = []) {
         $fields = ['flap_detection_on_up' => 'o', 'flap_detection_on_down' => 'd', 'flap_detection_on_unreachable' => 'u'];
@@ -2668,6 +2649,7 @@ class NagiosExportTask extends AppShell {
      * @param array $serviceOrServicetemplate
      *
      * @return string
+     * @deprecated Move to Entity
      */
     public function serviceFlapdetectionString($serviceOrServicetemplate = []) {
         $fields = ['flap_detection_on_ok' => 'o', 'flap_detection_on_warning' => 'w', 'flap_detection_on_unknown' => 'u', 'flap_detection_on_critical' => 'c'];
@@ -2679,6 +2661,7 @@ class NagiosExportTask extends AppShell {
      * @param array $contact
      *
      * @return string
+     * @deprecated Move to Entity
      */
     public function contactHostNotificationOptions($contact = []) {
         $fields = ['notify_host_recovery' => 'r', 'notify_host_down' => 'd', 'notify_host_unreachable' => 'u', 'notify_host_flapping' => 'f', 'notify_host_downtime' => 's'];
@@ -2690,6 +2673,7 @@ class NagiosExportTask extends AppShell {
      * @param array $contact
      *
      * @return string
+     * @deprecated Move to Entity
      */
     public function contactServiceNotificationOptions($contact = []) {
         $fields = ['notify_service_downtime' => 's', 'notify_service_flapping' => 'f', 'notify_service_critical' => 'c', 'notify_service_unknown' => 'u', 'notify_service_warning' => 'w', 'notify_service_recovery' => 'r'];
@@ -2701,6 +2685,7 @@ class NagiosExportTask extends AppShell {
      * @param array $hostescalation
      *
      * @return string
+     * @deprecated Move to Entity
      */
     public function hostEscalationString($hostescalation = []) {
         $fields = ['escalate_on_recovery' => 'r', 'escalate_on_down' => 'd', 'escalate_on_unreachable' => 'u'];
@@ -2712,6 +2697,7 @@ class NagiosExportTask extends AppShell {
      * @param array $hostescalation
      *
      * @return string
+     * @deprecated Move to Entity
      */
     public function serviceEscalationString($hostescalation = []) {
         $fields = ['escalate_on_recovery' => 'r', 'escalate_on_warning' => 'w', 'escalate_on_unknown' => 'u', 'escalate_on_critical' => 'c'];
@@ -2723,6 +2709,7 @@ class NagiosExportTask extends AppShell {
      * @param array $hostdependency
      *
      * @return string
+     * @deprecated Move to Entity
      */
     public function hostDependencyExecutionString($hostdependency = []) {
         $fields = ['execution_fail_on_up' => 'o', 'execution_fail_on_down' => 'd', 'execution_fail_on_unreachable' => 'u', 'execution_fail_on_pending' => 'p', 'execution_none' => 'n'];
@@ -2734,6 +2721,7 @@ class NagiosExportTask extends AppShell {
      * @param array $hostdependency
      *
      * @return string
+     * @deprecated Move to Entity
      */
     public function hostDependencyNotificationString($hostdependency = []) {
         $fields = ['notification_fail_on_up' => 'o', 'notification_fail_on_down' => 'd', 'notification_fail_on_unreachable' => 'u', 'notification_fail_on_pending' => 'p', 'notification_none' => 'n'];
@@ -2745,6 +2733,7 @@ class NagiosExportTask extends AppShell {
      * @param array $servicedependeny
      *
      * @return string
+     * @deprecated Move to Entity
      */
     public function serviceDependencyExecutionString($servicedependeny = []) {
         $fields = ['execution_fail_on_ok' => 'o', 'execution_fail_on_warning' => 'w', 'execution_fail_on_unknown' => 'u', 'execution_fail_on_critical' => 'c', 'execution_fail_on_pending' => 'p', 'execution_none' => 'n'];
@@ -2756,6 +2745,7 @@ class NagiosExportTask extends AppShell {
      * @param array $servicedependeny
      *
      * @return string
+     * @deprecated Move to Entity
      */
     public function serviceDependencyNotificationString($servicedependeny = []) {
         $fields = ['notification_fail_on_ok' => 'o', 'notification_fail_on_warning' => 'w', 'notification_fail_on_unknown' => 'u', 'notification_fail_on_critical' => 'c', 'notification_fail_on_pending' => 'p', 'notification_none' => 'n'];
@@ -2768,6 +2758,7 @@ class NagiosExportTask extends AppShell {
      * @param $fields
      *
      * @return string
+     * @deprecated
      */
     private function _implode($object, $fields) {
         $nagios = [];
@@ -2817,31 +2808,41 @@ class NagiosExportTask extends AppShell {
 
     public function deleteHostPerfdata() {
         App::uses('Folder', 'Utility');
-        $deletedHosts = $this->DeletedHost->findAllByDeletedPerfdata(0);
-        foreach ($deletedHosts as $deletedHost) {
-            if (is_dir(Configure::read('rrd.path') . $deletedHost['DeletedHost']['uuid'])) {
-                $folder = new Folder(Configure::read('rrd.path') . $deletedHost['DeletedHost']['uuid']);
+        $basePath = Configure::read('rrd.path');
+
+        /** @var $DeletedHostsTable DeletedHostsTable */
+        $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
+
+        foreach ($DeletedHostsTable->getDeletedHostsWherePerfdataWasNotDeletedYet() as $deletedHost) {
+            /** @var \App\Model\Entity\DeletedHost $deletedHost */
+            if (is_dir($basePath . $deletedHost->get('uuid'))) {
+                $folder = new Folder($basePath . $deletedHost->get('uuid'));
                 $folder->delete();
                 unset($folder);
             }
 
-            $deletedHost['DeletedHost']['deleted_perfdata'] = 1;
-            $this->DeletedHost->save($deletedHost);
+            $deletedHost->set('deleted_perfdata', 1);
+            $DeletedHostsTable->save($deletedHost);
         }
     }
 
     public function deleteServicePerfdata() {
-        $deletedServices = $this->DeletedService->findAllByDeletedPerfdata(0);
-        foreach ($deletedServices as $deletedService) {
-            //Check if perfdata files still exists and if we need to delete them
-            foreach (Configure::read('rrd.allowedExtensions') as $extension) {
-                if (file_exists(Configure::read('rrd.path') . $deletedService['DeletedService']['host_uuid'] . '/' . $deletedService['DeletedService']['uuid'] . '.' . $extension)) {
-                    unlink(Configure::read('rrd.path') . $deletedService['DeletedService']['host_uuid'] . '/' . $deletedService['DeletedService']['uuid'] . '.' . $extension);
+        $basePath = Configure::read('rrd.path');
+
+        /** @var $DeletedServicesTable DeletedServicesTable */
+        $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
+
+        foreach ($DeletedServicesTable->getDeletedServicesWherePerfdataWasNotDeletedYet() as $deletedService) {
+            /** @var \App\Model\Entity\DeletedService $deletedService */
+            foreach (['rrd', 'xml'] as $extension) {
+                //Check if perfdata files still exists and if we need to delete them
+                $file = $basePath . $deletedService['DeletedService']['host_uuid'] . '/' . $deletedService['DeletedService']['uuid'] . '.' . $extension;
+                if (file_exists($file)) {
+                    unlink($file);
                 }
             }
-
-            $deletedService['DeletedService']['deleted_perfdata'] = 1;
-            $this->DeletedService->save($deletedService);
+            $deletedService->set('deleted_perfdata', 1);
+            $DeletedServicesTable->save($deletedService);
         }
     }
 

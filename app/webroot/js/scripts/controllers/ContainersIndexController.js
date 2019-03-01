@@ -9,31 +9,9 @@ angular.module('openITCOCKPIT')
             id: null
         };
         $scope.errors = null;
-
         if($stateParams.id != null){
-            $scope.selectedContainer.id = $stateParams.id;
+            $scope.selectedContainer.id = parseInt($stateParams.id, 10);
         }
-
-        $scope.post = {
-            Container: {
-                parent_id: null,
-                name: null,
-                containertype_id: null
-            }
-        };
-
-
-        $scope.saveNewNode = function(){
-            $http.post("/containers/add.json?angular=true", $scope.post).then(function(result){
-                $scope.load();
-                $scope.errors = null;
-            }, function errorCallback(result){
-                if(result.data.hasOwnProperty('error')){
-                    $scope.errors = result.data.error;
-                }
-            });
-
-        };
 
         $scope.load = function(){
             $http.get("/containers/loadContainers.json", {

@@ -24,6 +24,7 @@
 //	confirmation.
 
 use App\Model\Table\ContactsTable;
+use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -125,7 +126,7 @@ class TimeperiodsController extends AppController {
 
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        if (!$TimeperiodsTable->existsById( $id)) {
+        if (!$TimeperiodsTable->existsById($id)) {
             throw new NotFoundException('Time period not found');
         }
         $timeperiod = $TimeperiodsTable->get($id, [
@@ -234,7 +235,7 @@ class TimeperiodsController extends AppController {
         //Check contacts
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-        if($ContactsTable->isTimeperiodUsedByContacts($timeperiodId)){
+        if ($ContactsTable->isTimeperiodUsedByContacts($timeperiodId)) {
             return false;
         }
 
@@ -269,17 +270,9 @@ class TimeperiodsController extends AppController {
         }
 
         //Check host templates
-        $this->loadModel('Hosttemplate');
-        $hosttemplateCount = $this->Hosttemplate->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'or' => [
-                    'check_period_id'  => $timeperiodId,
-                    'notify_period_id' => $timeperiodId,
-                ],
-            ],
-        ]);
-        if ($hosttemplateCount > 0) {
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        if ($HosttemplatesTable->isTimeperiodUsedByHosttemplate($timeperiodId)) {
             return false;
         }
 

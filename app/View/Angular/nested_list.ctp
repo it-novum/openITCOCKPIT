@@ -1,9 +1,12 @@
 <li class="dd-item" data-id="{{ container.Container.id }}">
-    <button data-action="collapse" type="button" ng-if="container.children.length">Collapse</button>
-    <button data-action="expand" type="button" style="display: none;" ng-if="container.children.length">Expand</button>
+    <button data-action="collapse" type="button" ng-if="container.children.length">
+        <?php echo __('Collapse'); ?>
+    </button>
+    <button data-action="expand" type="button" style="display: none;" ng-if="container.children.length">
+        <?php echo __('Expand'); ?>
+    </button>
 
-    <div class="dd-handle" parent-id="{{ container.Container.parent_id }}"
-         containertype-id="{{ container.Container.id }}">
+    <div class="dd-handle" parent-id="{{ container.Container.parent_id }}">
 
         <i class="fa fa-globe" ng-if="container.Container.containertype_id == <?php echo CT_GLOBAL; ?>"></i>
         <i class="fa fa-home" ng-if="container.Container.containertype_id == <?php echo CT_TENANT; ?>"></i>
@@ -20,12 +23,12 @@
         </div>
 
         <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
-            <edit-node container="container" callback="callback"
+            <edit-node container="container" callback="loadContainersCallback"
                        ng-if="container.Container.allow_edit === true"></edit-node>
         <?php endif; ?>
 
         <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
-            <add-node container="container" subcontainer="subcontainer" callback="callback"
+            <add-node container="container" callback="loadContainersCallback"
                       ng-if="container.Container.allow_edit === true"></add-node>
         <?php endif; ?>
 
@@ -39,12 +42,8 @@
         </span>
         <span class="badge bg-color-blue txt-color-white pull-right"
               ng-if="((container.Container.rght-container.Container.lft)/2-0.5) > 0">{{ (container.Container.rght-container.Container.lft)/2-0.5 }}</span>
-
     </div>
-
     <ol class="dd-list">
-        <nested-list container="container" subcontainer="subcontainer" ng-repeat="container in container.children"
-                     callback="callback"></nested-list>
+        <nested-list container="container" load-containers-callback="loadContainersCallback" ng-repeat="container in container.children"></nested-list>
     </ol>
-
 </li>

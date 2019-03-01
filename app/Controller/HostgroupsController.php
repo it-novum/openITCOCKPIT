@@ -24,6 +24,7 @@
 //	confirmation.
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HosttemplatesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HostConditions;
@@ -573,6 +574,8 @@ class HostgroupsController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
@@ -580,10 +583,10 @@ class HostgroupsController extends AppController {
         }
 
         $hosttemplates = Api::makeItJavaScriptAble(
-            $this->Hosttemplate->getHosttemplatesForAngular($containerIds, $HosttemplateFilter, $selected)
+            $HosttemplatesTable->getHosttemplatesForAngular($containerIds, $HosttemplateFilter, $selected)
         );
 
-        $this->set(compact(['hosttemplates']));
+        $this->set('hosttemplates', $hosttemplates);
         $this->set('_serialize', ['hosttemplates']);
     }
 

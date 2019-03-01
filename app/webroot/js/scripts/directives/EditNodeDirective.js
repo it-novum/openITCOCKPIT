@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('editNode', function($http, $interval){
+angular.module('openITCOCKPIT').directive('editNode', function($http, NotyService){
     return {
         restrict: 'E',
         templateUrl: '/containers/edit.html',
@@ -8,53 +8,47 @@ angular.module('openITCOCKPIT').directive('editNode', function($http, $interval)
         },
 
         controller: function($scope){
-
             $scope.post = {
                 Container: {
                     id: $scope.container.Container.id,
-                    containertype_id: 5,
-                    name: $scope.container.Container.name,
-                    parent_id: $scope.container.Container.parent_id
+                    name: $scope.container.Container.name
                 }
             };
             $scope.openModal = function(){
                 $('#angularEditNode-' + $scope.container.Container.id).modal('show');
             };
-
             $scope.save = function(){
-                //if($scope.post.Container.name){
+                console.log($scope.post);
                 $http.post("/containers/edit.json?angular=true", $scope.post).then(
                     function(result){
-                        $scope.callback();
                         $('#angularEditNode-' + $scope.container.Container.id).modal('hide');
+                        NotyService.genericSuccess();
+                        $scope.callback();
                     }, function errorCallback(result){
                         if(result.data.hasOwnProperty('error')){
                             $scope.errors = result.data.error;
                         }
+                        NotyService.genericError();
                     }
                 );
-                //}
             };
-
             $scope.delete = function(){
                 $scope.isDeleting = true;
-
-                $http.post('/containers/delete/' + $scope.container.Container.id).then(
+                $http.post('/containers/delete/' + $scope.container.Container.id + '.json?angular=true').then(
                     function(result){
-                        $scope.callback();
                         $('#angularEditNode-' + $scope.container.Container.id).modal('hide');
+                        NotyService.genericSuccess();
+                        $scope.callback();
                     }, function errorCallback(result){
                         if(result.data.hasOwnProperty('error')){
                             $scope.errors = result.data.error;
                         }
+                        NotyService.genericError();
                     }
                 );
             };
-
         },
-
         link: function($scope, element, attr){
-
         }
     };
 });

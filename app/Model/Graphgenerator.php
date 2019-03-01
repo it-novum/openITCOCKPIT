@@ -23,13 +23,26 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Graphgenerator
+ * @deprecated
+ */
 class Graphgenerator extends AppModel {
     var $useTable = false;
 
+    /**
+     * @param $hostUuid
+     * @param $serviceUuid
+     * @deprecated
+     */
     public function serviceGraph($hostUuid, $serviceUuid) {
         $this->_basePath();
     }
 
+    /**
+     * @return mixed
+     * @deprecated
+     */
     private function _basePath() {
         if (!isset($this->rrd_path)) {
             $this->rrd_path = Configure::read('rrd.path');

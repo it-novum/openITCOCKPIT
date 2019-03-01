@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core\Views;
 
 
+use Cake\Utility\Hash;
+
 class Host {
 
     /**
@@ -95,6 +97,13 @@ class Host {
     public function __construct($host, $allowEdit = false) {
         $this->allow_edit = $allowEdit;
 
+        if (isset($host['id']) && isset($host['uuid'])) {
+            //Cake4 result...
+            $host = [
+                'Host' => $host
+            ];
+        }
+
         if (isset($host['Host']['id'])) {
             $this->id = $host['Host']['id'];
         }
@@ -148,6 +157,11 @@ class Host {
         if (isset($host['Host']['container_ids'])) {
             //CrateDB
             $this->containerIds = $host['Host']['container_ids'];
+        }
+
+        if (isset($host['Host']['hosts_to_containers_sharing'])) {
+            //MySQL and Cake4
+            $this->containerIds = Hash::extract($host['Host']['hosts_to_containers_sharing'], '{n}.id');
         }
 
         if (isset($host['Host']['tags'])) {

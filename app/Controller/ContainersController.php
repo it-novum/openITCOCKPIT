@@ -24,7 +24,6 @@
 //	confirmation.
 
 use App\Model\Table\ContactgroupsTable;
-use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -110,14 +109,12 @@ class ContainersController extends AppController {
             /** @var $ContainersTable ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
             $containerId = (int)$this->request->data['Container']['id'];
-            $containerTypeId = (int)$this->request->data['Container']['containertype_id'];
 
-            if (!$ContainersTable->existsById($containerId) || $containerTypeId !== CT_NODE) {
+            if (!$ContainersTable->existsById($containerId)) {
                 throw new NotFoundException(__('Invalid container'));
             }
             $container = $ContainersTable->get($containerId);
             $container = $ContainersTable->patchEntity($container, $this->request->data('Container'));
-
 
             $ContainersTable->save($container);
             if ($container->hasErrors()) {
@@ -190,9 +187,9 @@ class ContainersController extends AppController {
         //Gormat result like CakePHP2 for Frontend
         $result = [
             0 => [
-            'Container' => $parent[0],
-            'children' => $parent['children']
-                ]
+                'Container' => $parent[0],
+                'children'  => $parent['children']
+            ]
         ];
 
 
@@ -213,11 +210,11 @@ class ContainersController extends AppController {
                 ->where(['Containers.containertype_id IN' => [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]])
                 ->disableHydration()
                 ->toArray();
-        }else{
+        } else {
             $containers = $ContainersTable->find()
                 ->andWhere([
                     'Containers.containertype_id IN' => [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE],
-                    'Containers.id IN ' => $this->MY_RIGHTS
+                    'Containers.id IN '              => $this->MY_RIGHTS
                 ])
                 ->disableHydration()
                 ->toArray();
@@ -475,16 +472,19 @@ class ContainersController extends AppController {
         if ($allowDeleteRoot) {
             if ($this->Container->__delete($id)) {
                 Cache::clear(false, 'permissions');
-                $this->setFlash(__('Container deleted'));
-                $this->redirect(['action' => 'index']);
+                $this->set('success', true);
+                $this->set('_serialize', ['success']);
+                return;
             } else {
-                $this->setFlash(__('Could not delete container'), false);
-                $this->redirect(['action' => 'index']);
+                $this->response->statusCode(500);
+                $this->set('success', false);
+                $this->set('_serialize', ['success']);
+                return;
             }
         }
-        $this->setFlash(__('Could not delete container'), false);
-        $this->redirect(['action' => 'index']);
-
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
     }
 
     public function loadContainersForAngular() {

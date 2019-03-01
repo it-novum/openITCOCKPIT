@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
@@ -70,15 +71,13 @@ class HosttemplatesTable extends Table {
             'saveStrategy'     => 'replace'
         ]);
 
-        /*
-         * // @todo Fix me if Hostgroups are migrated
         $this->belongsToMany('Hostgroups', [
             'className'        => 'Hostgroups',
             'foreignKey'       => 'hosttemplate_id',
             'targetForeignKey' => 'hostgroup_id',
             'joinTable'        => 'hosttemplates_to_hostgroups',
             'saveStrategy'     => 'replace'
-        ]);*/
+        ]);
 
         $this->belongsTo('Containers', [
             'foreignKey' => 'container_id',
@@ -117,7 +116,7 @@ class HosttemplatesTable extends Table {
 
         $this->hasMany('Host', [
             'saveStrategy' => 'replace'
-        ])->setDependent(true);
+        ]);
 
     }
 
@@ -438,6 +437,8 @@ class HosttemplatesTable extends Table {
      * @param string $value
      * @param array $context
      * @return bool
+     *
+     * Custom validation rule for contacts and or contact groups
      */
     public function checkMacroNames($value, $context) {
         if (isset($context['data']['customvariables']) && is_array($context['data']['customvariables'])) {
@@ -463,12 +464,12 @@ class HosttemplatesTable extends Table {
     public function getHosttemplatesIndex(HosttemplateFilter $HosttemplateFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all')->disableHydration();
         $where = $HosttemplateFilter->indexFilter();
-        $where['Hosttemplate.hosttemplatetype_id'] = GENERIC_HOSTTEMPLATE;
+        $where['Hosttemplates.hosttemplatetype_id'] = GENERIC_HOSTTEMPLATE;
         if (!empty($MY_RIGHTS)) {
             $where['Hosttemplates.container_id IN'] = $MY_RIGHTS;
         }
 
-        $query->where();
+        $query->where($where);
         $query->order($HosttemplateFilter->getOrderForPaginator('Hosttemplates.name', 'asc'));
 
         if ($PaginateOMat === null) {
@@ -500,6 +501,254 @@ class HosttemplatesTable extends Table {
             ->first();
 
         return $this->formatFirstResultAsCake2($query, true);
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getHosttemplateForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Hosttemplates.id' => $id
+            ])
+            ->contain([
+                'Contactgroups',
+                'Contacts',
+                'Hostgroups',
+                'Customvariables',
+                'Hosttemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+        $hosttemplate = $query;
+        $hosttemplate['hostgroups'] = [
+            '_ids' => Hash::extract($query, 'hostgroups.{n}.id')
+        ];
+        $hosttemplate['contacts'] = [
+            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+        ];
+        $hosttemplate['contactgroups'] = [
+            '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
+        ];
+
+        return [
+            'Hosttemplate' => $hosttemplate
+        ];
+    }
+
+    /**
+     * @param int $id
+     * @return int
+     */
+    public function getContainerIdById($id) {
+        $query = $this->find()
+            ->select([
+                'Hosttemplates.id',
+                'Hosttemplates.container_id'
+            ])
+            ->where([
+                'Hosttemplates.id' => $id
+            ])
+            ->firstOrFail();
+
+        return (int)$query->get('container_id');
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getHosttemplatesForCopy($ids = []) {
+
+        $query = $this->find()
+            ->select([
+                'Hosttemplates.id',
+                'Hosttemplates.name',
+                'Hosttemplates.description',
+                'Hosttemplates.command_id',
+                'Hosttemplates.active_checks_enabled'
+            ])
+            ->contain([
+                'Hosttemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->where(['Hosttemplates.id IN' => $ids])
+            ->order(['Hosttemplates.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+
+        $query = $query->toArray();
+
+        if ($query === null) {
+            return [];
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param array $containerIds
+     * @param HosttemplateFilter $HosttemplateFilter
+     * @param array $selected
+     * @return array|\Cake\ORM\Query
+     */
+    public function getHosttemplatesForAngular($containerIds, HosttemplateFilter $HosttemplateFilter, $selected = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        if (!is_array($selected)) {
+            $selected = [$selected];
+        }
+
+        $where = $HosttemplateFilter->ajaxFilter();
+        $where['Hosttemplates.container_id IN'] = $containerIds;
+        $query = $this->find('list')
+            ->select([
+                'Hosttemplates.id',
+                'Hosttemplates.name'
+            ])
+            ->where($where)
+            ->order([
+                'Hosttemplates.name' => 'asc'
+            ])
+            ->limit(ITN_AJAX_LIMIT)
+            ->disableHydration();
+
+        $hosttemplatesWithLimit = $query->toArray();
+        if (empty($hosttemplatesWithLimit)) {
+            $hosttemplatesWithLimit = [];
+        }
+
+        $selectedHosttemplates = [];
+        if (!empty($selected)) {
+            $query = $this->find('list')
+                ->where([
+                    'Hosttemplates.id IN'           => $selected,
+                    'Hosttemplates.container_id IN' => $containerIds
+                ])
+                ->order([
+                    'Hosttemplates.name' => 'asc'
+                ]);
+
+            $selectedHosttemplates = $query->toArray();
+            if (empty($selectedHosttemplates)) {
+                $selectedHosttemplates = [];
+            }
+        }
+
+        $hosttemplates = $hosttemplatesWithLimit + $selectedHosttemplates;
+        asort($hosttemplates, SORT_FLAG_CASE | SORT_NATURAL);
+        return $hosttemplates;
+    }
+
+    /**
+     * @param int|array $containerIds
+     * @param string $type
+     * @param int|array $hosttemplateTypes
+     * @param bool $ignoreType
+     * @return array
+     */
+    public function getHosttemplatesByContainerId($containerIds = [], $type = 'all', $hosttemplateTypes = GENERIC_HOST, $ignoreType = false) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        if (!is_array($hosttemplateTypes)) {
+            $hosttemplateTypes = [$hosttemplateTypes];
+        }
+
+        $where = [
+            'Hosttemplates.container_id IN' => $containerIds,
+        ];
+        if (!$ignoreType) {
+            $where['Hosttemplates.hosttemplatetype_id IN'] = $hosttemplateTypes;
+        }
+
+        $query = $this->find($type)
+            ->where(
+                $where
+            )
+            ->order([
+                'Hosttemplates.name' => 'asc',
+            ])
+            ->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $this->formatResultAsCake2($result, false);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int|array $hosttemplateTypeIds
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getHosttemplatesAsListByTypeId($hosttemplateTypeIds, $MY_RIGHTS = []) {
+        if (!is_array($hosttemplateTypeIds)) {
+            $hosttemplateTypeIds = [$hosttemplateTypeIds];
+        }
+
+        $where = [
+            'Hosttemplates.hosttemplatetype_id IN' => $hosttemplateTypeIds
+        ];
+        if (!empty($MY_RIGHTS)) {
+            $where['Hosttemplates.container_id IN'] = $MY_RIGHTS;
+        }
+
+        $query = $this->find('list')
+            ->select([
+                'Hosttemplates.id',
+                'Hosttemplates.name',
+                'Hosttemplates.container_id'
+            ])
+            ->where($where);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        return $result;
+    }
+
+    /**
+     * @param null $uuid
+     * @return array|\Cake\ORM\Query
+     */
+    public function getHosttemplatesForExport($uuid = null) {
+        $query = $this->find()
+            ->contain([
+                'Contactgroups',
+                'Contacts',
+                'Hostgroups',
+                'Customvariables',
+                'CheckPeriod',
+                'NotifyPeriod',
+                'CheckCommand',
+                'Hosttemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ]);
+        if (!empty($uuid)) {
+            if (!is_array($uuid)) {
+                $uuid = [$uuid];
+            }
+            $query->where([
+                'Hosttemplates.uuid IN' => $uuid
+            ]);
+        }
+        $query->all();
+        return $query;
     }
 
     /**
@@ -571,6 +820,60 @@ class HosttemplatesTable extends Table {
         }
 
         return $extDataForChangelog;
+    }
+
+    /**
+     * @param int $hosttemplateId
+     * @return bool
+     */
+    public function allowDelete($hosttemplateId) {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $count = $HostsTable->find()
+            ->where([
+                'Hosts.hosttemplate_id' => $hosttemplateId
+            ])
+            ->count();
+
+        return $count === 0;
+    }
+
+    /**
+     * @param int $timeperiodId
+     * @return bool
+     */
+    public function isTimeperiodUsedByHosttemplate($timeperiodId) {
+        $count = $this->find()
+            ->where([
+                'OR' => [
+                    'Hosttemplates.check_period_id'  => $timeperiodId,
+                    'Hosttemplates.notify_period_id' => $timeperiodId
+                ]
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $commandId
+     * @return bool
+     */
+    public function isCommandUsedByHosttemplate($commandId) {
+        $count = $this->find()
+            ->where([
+                'Hosttemplates.command_id' => $commandId,
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
