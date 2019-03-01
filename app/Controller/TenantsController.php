@@ -137,9 +137,12 @@ class TenantsController extends AppController {
 
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Container']['containertype_id'] = CT_TENANT;
-            $this->request->data['Container']['parent_id'] = CT_GLOBAL;
-
+            if(!isset($this->request->data['Container']['containertype_id'])){
+                $this->request->data['Container']['containertype_id'] = CT_TENANT;
+            }
+            if(!isset($this->request->data['Container']['containertype_id'])){
+                $this->request->data['Container']['parent_id'] = CT_GLOBAL;
+            }
             $isJsonRequest = $this->request->ext === 'json';
             if ($this->Tenant->saveAll($this->request->data)) {
                 Cache::clear(false, 'permissions');

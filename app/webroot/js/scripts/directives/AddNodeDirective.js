@@ -11,7 +11,7 @@ angular.module('openITCOCKPIT').directive('addNode', function($http, NotyService
                 Container: {
                     parent_id: $scope.container.Container.id,
                     name: null,
-                    containertype_id: '5'
+                    containertype_id: null
                 }
             };
             $scope.openModal = function(){
