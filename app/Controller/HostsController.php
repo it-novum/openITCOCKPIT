@@ -29,6 +29,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
@@ -59,6 +60,7 @@ use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\HostPerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
@@ -1461,11 +1463,92 @@ class HostsController extends AppController {
         }
     }
 
-    /**
-     * @deprecated
-     */
+
     public function disabled() {
         $this->layout = 'blank';
+
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $Systemsettings->getMasterInstanceName();
+        $SatelliteNames = [];
+        $ModuleManager = new ModuleManager('DistributeModule');
+        if ($ModuleManager->moduleExists()) {
+            $SatelliteModel = $ModuleManager->loadModel('Satellite');
+            $SatelliteNames = $SatelliteModel->find('list');
+            $SatelliteNames[0] = $masterInstanceName;
+        }
+
+        if (!$this->isApiRequest()) {
+            $this->set('satellites', $SatelliteNames);
+            //Only ship HTML template
+            return;
+        }
+
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $HostFilter = new HostFilter($this->request);
+        $HostCondition = new HostConditions();
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostFilter->getPage());
+
+        $HostCondition->setIncludeDisabled(true);
+        if ($this->hasRootPrivileges === false) {
+            $HostCondition->setContainerIds($this->MY_RIGHTS);
+        }
+
+        $hosts = $HostsTable->getHostsDisabled($HostFilter, $HostCondition, $PaginateOMat);
+
+
+        $all_hosts = [];
+        foreach ($hosts as $host) {
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+            $Hosttemplate = new \itnovum\openITCOCKPIT\Core\Views\Hosttemplate($host);
+
+            $hostSharingPermissions = new HostSharingPermissions(
+                $Host->getContainerId(), $this->hasRootPrivileges, $Host->getContainerIds(), $this->MY_RIGHTS
+            );
+            $allowSharing = $hostSharingPermissions->allowSharing();
+
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $Host->getContainerIds());
+                $allowEdit = $ContainerPermissions->hasPermission();
+            }
+
+            $satelliteName = $masterInstanceName;
+            $satellite_id = 0;
+            if ($Host->isSatelliteHost()) {
+                $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
+                $satellite_id = $Host->getSatelliteId();
+            }
+
+            $tmpRecord = [
+                'Host'         => $Host->toArray(),
+                'Hosttemplate' => $Hosttemplate->toArray(),
+                'Hoststatus'   => [
+                    'isInMonitoring' => false,
+                    'currentState'   => -1
+                ]
+            ];
+            $tmpRecord['Host']['allow_sharing'] = $allowSharing;
+            $tmpRecord['Host']['satelliteName'] = $satelliteName;
+            $tmpRecord['Host']['satelliteId'] = $satellite_id;
+            $tmpRecord['Host']['allow_edit'] = $allowEdit;
+            $all_hosts[] = $tmpRecord;
+        }
+
+        $this->set('all_hosts', $all_hosts);
+        $toJson = ['all_hosts', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_hosts', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
+
+
+        return;
+        /***************** OLD CODE *************/
 
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
