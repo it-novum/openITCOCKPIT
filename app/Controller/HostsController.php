@@ -386,7 +386,7 @@ class HostsController extends AppController {
             //Only ship HTML template
             return;
         }
-
+        
         $HostFilter = new HostFilter($this->request);
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
