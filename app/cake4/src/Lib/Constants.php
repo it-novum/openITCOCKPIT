@@ -48,6 +48,8 @@ class Constants {
 
         $this->defineUserstatus();
 
+        $this->defineAjaxLimit();
+
         $this->attachContainerpropertiesToContainers();
     }
 
@@ -183,15 +185,15 @@ class Constants {
         ]);
     }
 
-    private function defineUserstatus(){
+    private function defineUserstatus() {
         $this->define([
-            'ACTIVE' => 1,
-            'INACTIVE' => 2,
-            'DELETED' => 3,
-            'SUSPENDED' => 4,
+            'ACTIVE'             => 1,
+            'INACTIVE'           => 2,
+            'DELETED'            => 3,
+            'SUSPENDED'          => 4,
             'ACTIVATION_PENDING' => 11,
-            'DONE' => 5,
-            'CANCELLED' => 6,
+            'DONE'               => 5,
+            'CANCELLED'          => 6,
         ]);
     }
 
@@ -231,6 +233,12 @@ class Constants {
                 'container_type' => CT_SERVICETEMPLATEGROUP,
             ],
         ];
+    }
+
+    public function defineAjaxLimit() {
+        $this->define([
+            'ITN_AJAX_LIMIT' => 50
+        ]);
     }
 
     /**

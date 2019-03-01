@@ -38,7 +38,7 @@ angular.module('openITCOCKPIT')
                 $scope.currentPage = 1;
 
                 if($scope.activeTab === 'deleted'){
-                    SortService.setSort('DeletedService.name');
+                    SortService.setSort('DeletedServices.name');
                 }
 
                 $scope.load();
@@ -152,7 +152,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[DeletedService.host_id]': $scope.data.hostId
+                'filter[DeletedServices.host_id]': $scope.data.hostId
             };
 
             $http.get("/services/deleted.json", {

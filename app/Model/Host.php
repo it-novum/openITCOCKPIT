@@ -25,6 +25,9 @@
 
 App::uses('ValidationCollection', 'Lib');
 
+use App\Model\Table\DeletedHostsTable;
+use App\Model\Table\DeletedServicesTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
@@ -1039,27 +1042,27 @@ class Host extends AppModel {
                 CakeLog::write('log', serialize($changelog_data));
             }
 
+            /** @var $DeletedHostsTable DeletedHostsTable */
+            $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
+            /** @var $DeletedServicesTable DeletedServicesTable */
+            $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
 
-            //Add host to deleted objects table
-            $DeletedHost = ClassRegistry::init('DeletedHost');
-            $DeletedService = ClassRegistry::init('DeletedService');
-            $DeletedHost->create();
-            $data = [
-                'DeletedHost' => [
-                    'host_id'          => $host['Host']['id'],
-                    'uuid'             => $host['Host']['uuid'],
-                    'hosttemplate_id'  => $host['Host']['hosttemplate_id'],
-                    'name'             => $host['Host']['name'],
-                    'description'      => $host['Host']['description'],
-                    'deleted_perfdata' => 0,
-                ],
-            ];
-            if ($DeletedHost->save($data)) {
-                // The host is history now, so we can delete all deleted services of this host, we dont need this data anymore
-                $DeletedService->deleteAll([
-                    'DeletedService.host_id' => $id,
-                ]);
-            }
+            $deletedHost = $DeletedHostsTable->newEntity([
+                'host_id'          => $host['Host']['id'],
+                'uuid'             => $host['Host']['uuid'],
+                'hosttemplate_id'  => $host['Host']['hosttemplate_id'],
+                'name'             => $host['Host']['name'],
+                'description'      => $host['Host']['description'],
+                'deleted_perfdata' => 0
+            ]);
+
+
+            $DeletedHostsTable->save($deletedHost);
+
+            // The host is history now, so we can delete all deleted services of this host, we dont need this data anymore
+            $DeletedServicesTable->deleteAll([
+                'DeletedServices.host_id ' => $id
+            ]);
 
 
             /*
@@ -1121,6 +1124,12 @@ class Host extends AppModel {
     }
 
     public function __deleteBySatellite($satelliteId, $userId) { // performance optimization
+
+        /** @var $DeletedHostsTable DeletedHostsTable */
+        $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
+        /** @var $DeletedServicesTable DeletedServicesTable */
+        $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
+
         $hostsInSatellite = $this->find('all', [
             'recursive'  => -1,
             'contain'    => [],
@@ -1196,27 +1205,32 @@ class Host extends AppModel {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                $DeletedHost->create();
-                $data = [
-                    'DeletedHost' => [
-                        'host_id'          => $hostArr['Host']['id'],
-                        'uuid'             => $hostArr['Host']['uuid'],
-                        'hosttemplate_id'  => $hostArr['Host']['hosttemplate_id'],
-                        'name'             => $hostArr['Host']['name'],
-                        'description'      => $hostArr['Host']['description'],
-                        'deleted_perfdata' => 0,
-                    ],
-                ];
-                if (!$DeletedHost->save($data)) {
-                    throw new Exception(__('Cannot modify Host deletion data.'));
-                }
+                $deletedHost = $DeletedHostsTable->newEntity([
+                    'host_id'          => $hostArr['Host']['id'],
+                    'uuid'             => $hostArr['Host']['uuid'],
+                    'hosttemplate_id'  => $hostArr['Host']['hosttemplate_id'],
+                    'name'             => $hostArr['Host']['name'],
+                    'description'      => $hostArr['Host']['description'],
+                    'deleted_perfdata' => 0
+                ]);
+
+
+                $DeletedHostsTable->save($deletedHost);
+
                 $this->_cleanupHostEscalationDependency($hostArr);
                 $documentation = $Documentation->findByUuid($hostArr['Host']['uuid']);
                 if (isset($documentation['Documentation']['id'])) {
                     $Documentation->delete($documentation['Documentation']['id']);
                 }
             }
-            $DeletedService->deleteAll(['DeletedService.host_id' => $serviceIds, true]);
+
+            if (!is_array($serviceIds)) {
+                $serviceIds = [$serviceIds];
+            }
+            $DeletedServicesTable->deleteAll([
+                'DeletedServices.host_id IN ' => $serviceIds
+            ]);
+
             $this->deleteAll(['Host.id' => $hostIds], true);
             $datasource->commit();
 

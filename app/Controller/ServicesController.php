@@ -28,6 +28,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\DeletedServicesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -58,6 +59,7 @@ use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
@@ -82,6 +84,7 @@ use Statusengine\PerfdataParser;
  * @property DowntimeService $DowntimeService
  * @property BbcodeComponent $Bbcode
  * @property DbBackend $DbBackend
+ * @property AppPaginatorComponent $Paginator
  */
 class ServicesController extends AppController {
     public $layout = 'Admin.default';
@@ -544,43 +547,22 @@ class ServicesController extends AppController {
     }
 
     public function deleted() {
-        $this->layout = 'angularjs';
-
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
         }
 
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-
+        /** @var $DeletedServicesTable DeletedServicesTable */
+        $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
         $ServiceFilter = new ServiceFilter($this->request);
 
-        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
-        $ServiceConditions = new ServiceConditions();
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+        $result = $DeletedServicesTable->getDeletedServicesIndex($ServiceFilter, $PaginateOMat);
 
-
-        //Default order
-        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('DeletedService.name', 'asc'));
-
-        $query = $this->Service->getServiceDeletedQuery($ServiceConditions, $ServiceFilter->deletedFilter());
-
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            if (isset($query['limit'])) {
-                unset($query['limit']);
-            }
-            $all_services = $this->DeletedService->find('all', $query);
-            $this->set('all_services', $all_services);
-            $this->set('_serialize', ['all_services']);
-            return;
-        } else {
-            $this->Paginator->settings['page'] = $ServiceFilter->getPage();
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $services = $this->Paginator->paginate('DeletedService', [], [key($this->Paginator->settings['order'])]);
-            //debug($this->Service->getDataSource()->getLog(false, false));
-        }
-
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
         $all_services = [];
-        foreach ($services as $deletedService) {
+        foreach ($result as $deletedService) {
             $DeletedService = new \itnovum\openITCOCKPIT\Core\Views\DeletedService($deletedService, $UserTime);
             $all_services[] = [
                 'DeletedService' => $DeletedService->toArray()
@@ -588,7 +570,11 @@ class ServicesController extends AppController {
         }
 
         $this->set('all_services', $all_services);
-        $this->set('_serialize', ['all_services', 'paging']);
+        $toJson = ['all_services', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_services', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function add() {

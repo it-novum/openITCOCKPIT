@@ -88,7 +88,7 @@ class HostFilter extends Filter {
     public function deletedFilter() {
         $filters = [
             'like' => [
-                'DeletedHost.name'
+                'DeletedHosts.name'
             ]
         ];
 

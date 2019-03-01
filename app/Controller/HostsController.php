@@ -29,6 +29,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
@@ -561,6 +562,8 @@ class HostsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
         // Data required for changelog
         $contacts = $ContactsTable->getContactsAsList();
@@ -589,7 +592,7 @@ class HostsController extends AppController {
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
-        $_hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list', $host['Host']['host_type']);
+        $_hosttemplates = $HosttemplatesTable->getHosttemplatesByContainerId($containerIds, 'list', $host['Host']['host_type']);
         $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         $_parenthosts = $this->Host->hostsByContainerIdExcludeHostId($containerIds, 'list', $id);
         $_timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
@@ -1174,6 +1177,8 @@ class HostsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
         $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
 
@@ -1400,7 +1405,7 @@ class HostsController extends AppController {
                     $container_id = $this->request->data('Host.container_id');
 
                     $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
-                    $_hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
+                    $_hosttemplates = $HosttemplatesTable->getHosttemplatesByContainerId($containerIds, 'list');
                     $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                     //$_parenthosts = $this->Host->hostsByContainerId($containerIds, 'list');
                     $_timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
@@ -3071,6 +3076,8 @@ class HostsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
         if (!$ContainersTable->existsById($container_id)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
@@ -3090,8 +3097,8 @@ class HostsController extends AppController {
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
 
-        $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list', $hosttemplate_type);
-        $hosttemplates = $this->Hosttemplate->chosenPlaceholder($hosttemplates);
+        $hosttemplates = $HosttemplatesTable->getHosttemplatesByContainerId($containerIds, 'list', $hosttemplate_type);
+        $hosttemplates = $this->Host->chosenPlaceholder($hosttemplates);
         $hosttemplates = Api::makeItJavaScriptAble($hosttemplates);
 
         $hostgroups = Api::makeItJavaScriptAble(
