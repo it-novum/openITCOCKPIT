@@ -26,6 +26,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\DeletedHostsTable;
+use App\Model\Table\DeletedServicesTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
 use Cake\ORM\TableRegistry;
@@ -2826,17 +2827,22 @@ class NagiosExportTask extends AppShell {
     }
 
     public function deleteServicePerfdata() {
-        $deletedServices = $this->DeletedService->findAllByDeletedPerfdata(0);
-        foreach ($deletedServices as $deletedService) {
-            //Check if perfdata files still exists and if we need to delete them
+        $basePath = Configure::read('rrd.path');
+
+        /** @var $DeletedServicesTable DeletedServicesTable */
+        $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
+
+        foreach ($DeletedServicesTable->getDeletedServicesWherePerfdataWasNotDeletedYet() as $deletedService) {
+            /** @var \App\Model\Entity\DeletedService $deletedService */
             foreach (['rrd', 'xml'] as $extension) {
-                if (file_exists(Configure::read('rrd.path') . $deletedService['DeletedService']['host_uuid'] . '/' . $deletedService['DeletedService']['uuid'] . '.' . $extension)) {
-                    unlink(Configure::read('rrd.path') . $deletedService['DeletedService']['host_uuid'] . '/' . $deletedService['DeletedService']['uuid'] . '.' . $extension);
+                //Check if perfdata files still exists and if we need to delete them
+                $file = $basePath . $deletedService['DeletedService']['host_uuid'] . '/' . $deletedService['DeletedService']['uuid'] . '.' . $extension;
+                if (file_exists($file)) {
+                    unlink($file);
                 }
             }
-
-            $deletedService['DeletedService']['deleted_perfdata'] = 1;
-            $this->DeletedService->save($deletedService);
+            $deletedService->set('deleted_perfdata', 1);
+            $DeletedServicesTable->save($deletedService);
         }
     }
 

@@ -95,7 +95,7 @@ class ServiceFilter extends Filter {
     public function deletedFilter() {
         $filters = [
             'equals' => [
-                'DeletedService.host_id',
+                'DeletedServices.host_id',
             ]
         ];
 

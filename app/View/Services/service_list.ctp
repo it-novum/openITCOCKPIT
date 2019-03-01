@@ -42,6 +42,7 @@
 <massdeactivate></massdeactivate>
 <massactivate></massactivate>
 
+
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -133,7 +134,8 @@
                             <?php endif; ?>
 
                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                <a href="/ng/#!/hosts/browser/{{host.Host.id}}" class="btn btn-xs btn-primary hidden-mobile">
+                                <a href="/ng/#!/hosts/browser/{{host.Host.id}}"
+                                   class="btn btn-xs btn-primary hidden-mobile">
                                     <i class="fa fa-desktop"></i>
                                     <?php echo __('Open host in browser'); ?>
                                 </a>
@@ -181,11 +183,10 @@
                         <div class="widget-body no-padding">
                             <div class="tab-content">
 
-                                <div class="tab-pane fade active in">
+                                <div ng-if="activeTab === 'active'">
                                     <div class="mobile_table">
                                         <table id="host_list"
-                                               class="table table-striped table-hover table-bordered smart-form"
-                                               ng-if="activeTab === 'active'">
+                                               class="table table-striped table-hover table-bordered smart-form">
                                             <thead>
                                             <tr>
 
@@ -508,10 +509,9 @@
 
                                 </div> <!-- close tab1 -->
 
-                                <div class="tab-pane fade">
+                                <div ng-if="activeTab === 'notMonitored'">
 
-                                    <table class="table table-striped table-hover table-bordered smart-form"
-                                           ng-if="activeTab === 'notMonitored'">
+                                    <table class="table table-striped table-hover table-bordered smart-form">
                                         <thead>
                                         <tr>
                                             <th class="no-sort text-center">
@@ -644,11 +644,10 @@
 
                                 </div> <!-- cloase tab2 -->
 
-                                <div class="tab-pane fade">
+                                <div ng-if="activeTab === 'disabled'">
 
                                     <div class="mobile_table">
-                                        <table class="table table-striped table-hover table-bordered smart-form"
-                                               ng-if="activeTab === 'disabled'">
+                                        <table class="table table-striped table-hover table-bordered smart-form">
                                             <thead>
                                             <tr>
                                                 <th class="no-sort text-center">
@@ -781,11 +780,10 @@
 
                                 </div> <!-- cloase tab4 -->
 
-                                <div class="tab-pane fade">
+                                <div ng-if="activeTab === 'deleted'">
 
                                     <div class="mobile_table">
-                                        <table class="table table-striped table-hover table-bordered smart-form"
-                                               ng-if="activeTab === 'deleted'">
+                                        <table class="table table-striped table-hover table-bordered smart-form">
                                             <thead>
                                             <tr>
                                                 <th class="no-sort"><?php echo __('Service name'); ?></th>

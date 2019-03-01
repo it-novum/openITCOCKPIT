@@ -1280,7 +1280,7 @@ class AppSchema extends CakeSchema {
         'uuid'               => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'host_uuid'          => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'servicetemplate_id' => ['type' => 'integer', 'null' => false, 'default' => null], 'host_id' => ['type' => 'integer', 'null' => false, 'default' => null],
-        'name'               => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'name'               => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'description'        => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'deleted_perfdata'   => ['type' => 'integer', 'null' => true, 'default' => 0, 'length' => 1],
         'created'            => ['type' => 'datetime', 'null' => false, 'default' => null],

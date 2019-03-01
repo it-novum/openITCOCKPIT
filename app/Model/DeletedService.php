@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class DeletedService
+ * @deprecated
+ */
 class DeletedService extends AppModel {
 
 }

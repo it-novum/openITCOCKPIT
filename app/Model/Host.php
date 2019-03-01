@@ -26,6 +26,7 @@
 App::uses('ValidationCollection', 'Lib');
 
 use App\Model\Table\DeletedHostsTable;
+use App\Model\Table\DeletedServicesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
@@ -1041,12 +1042,11 @@ class Host extends AppModel {
                 CakeLog::write('log', serialize($changelog_data));
             }
 
-
-            //Add host to deleted objects table
-            $DeletedService = ClassRegistry::init('DeletedService');
-
             /** @var $DeletedHostsTable DeletedHostsTable */
             $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
+            /** @var $DeletedServicesTable DeletedServicesTable */
+            $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
+
             $deletedHost = $DeletedHostsTable->newEntity([
                 'host_id'          => $host['Host']['id'],
                 'uuid'             => $host['Host']['uuid'],
@@ -1060,8 +1060,8 @@ class Host extends AppModel {
             $DeletedHostsTable->save($deletedHost);
 
             // The host is history now, so we can delete all deleted services of this host, we dont need this data anymore
-            $DeletedService->deleteAll([
-                'DeletedService.host_id' => $id
+            $DeletedServicesTable->deleteAll([
+                'DeletedServices.host_id ' => $id
             ]);
 
 
@@ -1127,6 +1127,8 @@ class Host extends AppModel {
 
         /** @var $DeletedHostsTable DeletedHostsTable */
         $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
+        /** @var $DeletedServicesTable DeletedServicesTable */
+        $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
 
         $hostsInSatellite = $this->find('all', [
             'recursive'  => -1,
@@ -1221,7 +1223,14 @@ class Host extends AppModel {
                     $Documentation->delete($documentation['Documentation']['id']);
                 }
             }
-            $DeletedService->deleteAll(['DeletedService.host_id' => $serviceIds, true]);
+
+            if (!is_array($serviceIds)) {
+                $serviceIds = [$serviceIds];
+            }
+            $DeletedServicesTable->deleteAll([
+                'DeletedServices.host_id IN ' => $serviceIds
+            ]);
+
             $this->deleteAll(['Host.id' => $hostIds], true);
             $datasource->commit();
 

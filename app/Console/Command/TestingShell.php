@@ -27,6 +27,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedHostsTable;
+use App\Model\Table\DeletedServicesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 
@@ -74,13 +75,6 @@ class TestingShell extends AppShell {
         /*
          * Lof of space for your experimental code :)
          */
-
-        /** @var $DeletedHostsTable DeletedHostsTable */
-        $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
-
-        foreach($DeletedHostsTable->getDeletedHostsWherePerfdataWasNotDeletedYet() as $host){
-            debug($host->get('name'));
-        }
     }
 
     public function getOptionParser() {
