@@ -225,7 +225,7 @@ $config = [
                 [
                     'url'               => ['controller' => 'containers', 'action' => 'index'],
                     'state'             => 'ContainersIndex',
-                    'title'             => 'Nodes',
+                    'title'             => 'Containers',
                     'icon'              => 'link',
                 ],
                 [
