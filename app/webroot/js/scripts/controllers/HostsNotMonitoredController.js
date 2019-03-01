@@ -1,6 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('HostsNotMonitoredController', function($scope, $http, $httpParamSerializer, SortService, MassChangeService, QueryStringService){
-        SortService.setSort(QueryStringService.getValue('sort', 'Host.name'));
+        SortService.setSort(QueryStringService.getValue('sort', 'Hosts.name'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
         $scope.currentPage = 1;
 
@@ -31,9 +31,9 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.name]': $scope.filter.Host.name,
-                'filter[Host.address]': $scope.filter.Host.address,
-                'filter[Host.satellite_id][]': $scope.filter.Host.satellite_id
+                'filter[Hosts.name]': $scope.filter.Host.name,
+                'filter[Hosts.address]': $scope.filter.Host.address,
+                'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id
             };
 
             $http.get("/hosts/notMonitored.json", {

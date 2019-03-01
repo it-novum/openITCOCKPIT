@@ -64,6 +64,13 @@ class Hosttemplate {
 
 
     public function __construct($hosttemplate) {
+        if(isset($hosttemplate['Host']['hosttemplate'])){
+            //Cake4 contain
+            $hosttemplate = [
+                'Hosttemplate' => $hosttemplate['Host']['hosttemplate']
+            ];
+        }
+
         if (isset($hosttemplate['Hosttemplate']['id'])) {
             $this->id = $hosttemplate['Hosttemplate']['id'];
         }

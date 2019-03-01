@@ -217,5 +217,5 @@ Type::build('timestamp')
 //Inflector::rules('uninflected', ['dontinflectme']);
 //Inflector::rules('transliteration', ['/å/' => 'aa']);
 
-
+//Plugins will be loaded by \App\Lib\PluginManager::addAllPlugins()
 //Plugin::load('NewModule', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);

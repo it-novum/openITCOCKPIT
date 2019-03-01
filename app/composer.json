@@ -16,15 +16,20 @@
             "Statusengine\\": "src/Statusengine/",
             "Adldap\\": "Vendor/adldap/adldap/src/",
             "App\\": "cake4/src/",
-            "MkModule\\": "cake4/plugins/MkModule/src/"
+            "MkModule\\": "cake4/plugins/MkModule/src/",
+            "Statusengine2Module\\": "cake4/plugins/Statusengine2Module/src/"
         },
-        "files": ["Vendor/imageSmoothArc.php"]
+        "files": [
+            "Vendor/imageSmoothArc.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
             "App\\Test\\": "cake4/tests/"
         },
-        "files": ["Vendor/imageSmoothArc.php"]
+        "files": [
+            "Vendor/imageSmoothArc.php"
+        ]
     },
     "config": {
         "vendor-dir": "Vendor"

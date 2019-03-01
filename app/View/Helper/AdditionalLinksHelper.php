@@ -150,16 +150,17 @@ class AdditionalLinksHelper extends AppHelper {
     public function renderTabLinks($additionalElements, $ngClick = null, $spa = false) {
         $htmlLink = [];
         foreach ($additionalElements as $element) {
+            $ngClickHtml = '';
             if (!is_null($ngClick)) {
                 if($spa){
-                    $ngClick = ' ng-click="selectedTab = \'tab'.$element['uuid'].'\'; ' . $ngClick . '"';
+                    $ngClickHtml = ' ng-click="selectedTab = \'tab'.$element['uuid'].'\'; ' . $ngClick . '"';
                 } else {
-                    $ngClick = ' ng-click="' . $ngClick . '"';
+                    $ngClickHtml = ' ng-click="' . $ngClick . '"';
                 }
             }
-            $html = '<li class=""><a href="#tab' . $element['uuid'] . '" data-toggle="tab" ' . $ngClick . '>';
+            $html = '<li class=""><a href="#tab' . $element['uuid'] . '" data-toggle="tab" ' . $ngClickHtml . '>';
             if($spa){
-                $html = '<li class="cursor-pointer"><a data-toggle="tab" ' . $ngClick . '>';
+                $html = '<li class="cursor-pointer"><a data-toggle="tab" ' . $ngClickHtml . '>';
             }
             $html .= '<span class="hidden-mobile hidden-tablet">' . __($element['title']) . '</span></a>';
             $html .= '</li>';
