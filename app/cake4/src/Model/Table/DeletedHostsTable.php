@@ -93,9 +93,9 @@ class DeletedHostsTable extends Table {
      */
     public function getDeletedHostsIndex(HostFilter $HostFilter, $PaginateOMat = null) {
         $query = $this->find('all')
-        ->where($HostFilter->deletedFilter())
-        ->disableHydration()
-        ->order($HostFilter->getOrderForPaginator('DeletedHosts.created', 'desc'));
+            ->where($HostFilter->deletedFilter())
+            ->disableHydration()
+            ->order($HostFilter->getOrderForPaginator('DeletedHosts.created', 'desc'));
 
 
         if ($PaginateOMat === null) {
@@ -110,5 +110,15 @@ class DeletedHostsTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDeletedHostsWherePerfdataWasNotDeletedYet() {
+        $query = $this->find('all')
+            ->where(['deleted_perfdata' => 0]);
+
+        return $query->toArray();
     }
 }

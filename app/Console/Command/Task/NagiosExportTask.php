@@ -25,6 +25,7 @@
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
+use App\Model\Table\DeletedHostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
 use Cake\ORM\TableRegistry;
@@ -2806,16 +2807,21 @@ class NagiosExportTask extends AppShell {
 
     public function deleteHostPerfdata() {
         App::uses('Folder', 'Utility');
-        $deletedHosts = $this->DeletedHost->findAllByDeletedPerfdata(0);
-        foreach ($deletedHosts as $deletedHost) {
-            if (is_dir(Configure::read('rrd.path') . $deletedHost['DeletedHost']['uuid'])) {
-                $folder = new Folder(Configure::read('rrd.path') . $deletedHost['DeletedHost']['uuid']);
+        $basePath = Configure::read('rrd.path');
+
+        /** @var $DeletedHostsTable DeletedHostsTable */
+        $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
+
+        foreach ($DeletedHostsTable->getDeletedHostsWherePerfdataWasNotDeletedYet() as $deletedHost) {
+            /** @var \App\Model\Entity\DeletedHost $deletedHost */
+            if (is_dir($basePath . $deletedHost->get('uuid'))) {
+                $folder = new Folder($basePath . $deletedHost->get('uuid'));
                 $folder->delete();
                 unset($folder);
             }
 
-            $deletedHost['DeletedHost']['deleted_perfdata'] = 1;
-            $this->DeletedHost->save($deletedHost);
+            $deletedHost->set('deleted_perfdata', 1);
+            $DeletedHostsTable->save($deletedHost);
         }
     }
 
@@ -2823,7 +2829,7 @@ class NagiosExportTask extends AppShell {
         $deletedServices = $this->DeletedService->findAllByDeletedPerfdata(0);
         foreach ($deletedServices as $deletedService) {
             //Check if perfdata files still exists and if we need to delete them
-            foreach (Configure::read('rrd.allowedExtensions') as $extension) {
+            foreach (['rrd', 'xml'] as $extension) {
                 if (file_exists(Configure::read('rrd.path') . $deletedService['DeletedService']['host_uuid'] . '/' . $deletedService['DeletedService']['uuid'] . '.' . $extension)) {
                     unlink(Configure::read('rrd.path') . $deletedService['DeletedService']['host_uuid'] . '/' . $deletedService['DeletedService']['uuid'] . '.' . $extension);
                 }
