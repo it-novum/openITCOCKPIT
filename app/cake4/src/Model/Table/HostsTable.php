@@ -287,6 +287,20 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getHostById($id) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain('HostsToContainersSharing')
+            ->first();
+        return $query;
+    }
+
+    /**
      * @param int $hosttemplateId
      * @return array
      */
@@ -483,5 +497,13 @@ class HostsTable extends Table {
             }
         }
         return $result;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Hosts.id' => $id]);
     }
 }

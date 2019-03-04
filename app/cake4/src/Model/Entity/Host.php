@@ -189,4 +189,20 @@ class Host extends Entity
         'services_to_autoreports' => true,
         'widgets' => true
     ];
+
+    /**
+     * @return array
+     */
+    public function getContainerIds(){
+        $containerIds = [
+            $this->container_id
+        ];
+
+        foreach($this->hosts_to_containers_sharing as $container){
+            /** @var Container $container */
+            $containerIds[] = $container->get('id');
+        }
+
+        return array_unique($containerIds);
+    }
 }

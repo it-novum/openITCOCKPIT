@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use App\Lib\Exceptions\MissingDbBackendException;
+use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
@@ -327,37 +329,57 @@ class HostsController extends AppController {
     }
 
     /**
-     * @deprecated
+     * @param null $id
+     * @throws MissingDbBackendException
      */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
         }
-        if (!$this->Host->exists($id)) {
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HostsTable->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
-        $host = $this->Host->findById($id);
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck)) {
-            $this->render403();
 
+        /** @var \App\Model\Entity\Host $host */
+        $host = $HostsTable->getHostById($id);
+
+        if (!$this->allowedByContainerId($host->getContainerIds())) {
+            $this->render403();
             return;
         }
 
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->wildcard();
-        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
+
+        if ($this->DbBackend->isNdoUtils()) {
+            /** @var $HoststatusTable HoststatusTableInterface */
+            $HoststatusTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Hoststatus');
+            $hoststatus = $HoststatusTable->byUuid($host->get('uuid'), $HoststatusFields);
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
         if (empty($hoststatus)) {
             $hoststatus = [
                 'Hoststatus' => []
             ];
         }
-        $host = Hash::merge($host, $hoststatus);
+        $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
 
         $this->set('host', $host);
-        $this->set('_serialize', ['host']);
+        $this->set('hoststatus', $Hoststatus->toArray());
+        $this->set('_serialize', ['host', 'hoststatus']);
     }
 
     public function notMonitored() {
@@ -403,7 +425,7 @@ class HostsController extends AppController {
         }
 
         if ($this->DbBackend->isCrateDb()) {
-            throw new NotImplementedException('NotImplementedException');
+            throw new MissingDbBackendException('MissingDbBackendException');
             //$this->loadModel('CrateModule.CrateHost');
             //$query = $this->CrateHost->getHostNotMonitoredQuery($HostCondition, $HostFilter->notMonitoredFilter());
             //$this->CrateHost->alias = 'Host';
@@ -411,7 +433,7 @@ class HostsController extends AppController {
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            throw new NotImplementedException('NotImplementedException');
+            throw new MissingDbBackendException('MissingDbBackendException');
             //$query = $this->Host->getHostNotMonitoredQuery($HostCondition, $HostFilter->notMonitoredFilter());
             //$modelName = 'Host';
         }
