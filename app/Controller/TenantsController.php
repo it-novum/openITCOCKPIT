@@ -139,6 +139,8 @@ class TenantsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
 
             $this->request->data['Container']['parent_id'] = ROOT_CONTAINER;
+            $this->request->data['Container']['containertype_id'] = CT_TENANT;
+
 
             $isJsonRequest = $this->request->ext === 'json';
             if ($this->Tenant->saveAll($this->request->data)) {
