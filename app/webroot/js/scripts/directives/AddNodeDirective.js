@@ -14,10 +14,20 @@ angular.module('openITCOCKPIT').directive('addNode', function($http, NotyService
                     containertype_id: null
                 },
                 Location: {
-                    description: null
+                    description: null,
+                    latitude: null,
+                    longitude: null,
+                    timezone: null
                 },
                 Tenant: {
-                    description: null
+                    description: null,
+                    firstname: null,
+                    lastname: null,
+                    street: null,
+                    zipcode: null,
+                    city: null,
+                    is_active: 1,
+                    max_users: 0
                 }
             };
             $scope.openModal = function(){

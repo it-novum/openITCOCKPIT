@@ -40,13 +40,20 @@ $timezones = CakeTime::listTimezones();
                                 <select class="form-control" ng-init="post.Container.containertype_id='5'"
                                         ng-model="post.Container.containertype_id">
                                     <?php if ($this->Acl->hasPermission('add', 'tenants')): ?>
-                                        <option value="<?php echo CT_TENANT; ?>"><?php echo __('Tenant'); ?></option>
+                                        <option value="<?php echo CT_TENANT; ?>"
+                                                ng-show="container.Container.containertype_id == 1">
+                                            <?php echo __('Tenant'); ?>
+                                        </option>
                                     <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('add', 'locations')): ?>
-                                        <option value="<?php echo CT_LOCATION; ?>"><?php echo __('Location'); ?></option>
+                                        <option value="<?php echo CT_LOCATION; ?>">
+                                            <?php echo __('Location'); ?>
+                                        </option>
                                     <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
-                                        <option value="<?php echo CT_NODE; ?>"><?php echo __('Node'); ?></option>
+                                        <option value="<?php echo CT_NODE; ?>">
+                                            <?php echo __('Node'); ?>
+                                        </option>
                                     <?php endif; ?>
                                 </select>
                             </div>
@@ -149,6 +156,23 @@ $timezones = CakeTime::listTimezones();
                     </fieldset>
                     <fieldset class="margin-top-10" ng-show="post.Container.containertype_id==2">
                         <legend><?php echo __('Optional fields for tenant'); ?></legend>
+                        <div class="row padding-bottom-10">
+                            <div class="form-group">
+                                <label class="col col-xs-2 control-label" for="isActive">
+                                    <?php echo __('Is active'); ?>
+                                </label>
+                                <div class="col-xs-10 smart-form">
+                                    <label class="checkbox small-checkbox-label no-required">
+                                        <input type="checkbox" name="checkbox"
+                                               id="isActive"
+                                               ng-true-value="1"
+                                               ng-false-value="0"
+                                               ng-model="post.Tenant.is_active">
+                                        <i class="checkbox-primary"></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <label class="col-xs-12 control-label">
                                 <?php echo __('Description'); ?>
@@ -230,6 +254,26 @@ $timezones = CakeTime::listTimezones();
                                                placeholder="<?php echo __('Any city'); ?>"
                                                ng-model="post.Tenant.city">
                                     </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" ng-class="{'has-error': errors.max_users}">
+                            <label class="col-xs-12 control-label">
+                                <?php echo __('Max Users'); ?>
+                                <span class="text-info font-xs">
+                                    <?php echo __('(enter 0 for infinity)'); ?>
+                                </span>
+                            </label>
+                            <div class="col-xs-12">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-users"></i>
+                                        <input type="number" class="input-sm" min="0"
+                                               placeholder="<?php echo __('Maximum allowed number of users'); ?>"
+                                               ng-model="post.Tenant.max_users">
+                                    </label>
+                                </div>
+                                <div ng-repeat="error in errors.max_users">
+                                    <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
                         </div>
