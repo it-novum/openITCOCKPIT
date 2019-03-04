@@ -52,7 +52,7 @@ $timezones = CakeTime::listTimezones();
                             </div>
                         </div>
                     </div>
-                    <div class="row" ng-class="{'has-error': errors.name}">
+                    <div class="row" ng-class="{'has-error': errors.Container.name || errors.name}">
                         <label class="col-xs-12 control-label">
                             <?php echo __('Name'); ?>
                         </label>
@@ -63,14 +63,34 @@ $timezones = CakeTime::listTimezones();
                                            placeholder="<?php echo __('Container name'); ?>"
                                            ng-model="post.Container.name">
                                 </label>
+                                <div ng-repeat="error in errors.Container.name">
+                                    <div class="help-block font-xs text-danger">{{ error }}</div>
+                                </div>
                                 <div ng-repeat="error in errors.name">
                                     <div class="help-block font-xs text-danger">{{ error }}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <fieldset class="margin-top-10" ng-show="post.Container.containertype_id='3'">
+                    <fieldset class="margin-top-10" ng-show="post.Container.containertype_id==3">
                         <legend><?php echo __('Optional fields for location'); ?></legend>
+                        <div class="row">
+                            <label class="col-xs-12 control-label">
+                                <?php echo __('Description'); ?>
+                            </label>
+                            <div class="col-xs-12">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-info"></i>
+                                        <input type="text" class="input-sm"
+                                               placeholder="<?php echo __('Description'); ?>"
+                                               ng-model="post.Location.description">
+                                    </label>
+                                    <div ng-repeat="error in errors.name">
+                                        <div class="help-block font-xs text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <label class="col-xs-12 control-label">
                                 <?php echo __('Timezone'); ?>
@@ -79,7 +99,7 @@ $timezones = CakeTime::listTimezones();
                                 <select class="form-control"
                                         chosen="{}"
                                         ng-init="post.Location.timezone = post.Location.timezone || 'Europe/Berlin'"
-                                        ng-model="post.string.timezone">
+                                        ng-model="post.Location.timezone">
                                     <?php foreach ($timezones as $continent => $continentTimezons): ?>
                                         <optgroup label="<?php echo h($continent); ?>">
                                             <?php foreach ($continentTimezons as $timezoneKey => $timezoneName): ?>
@@ -88,42 +108,128 @@ $timezones = CakeTime::listTimezones();
                                         </optgroup>
                                     <?php endforeach;; ?>
                                 </select>
-                                <div ng-repeat="error in errors.Configfile.timezone">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
                             </div>
                         </div>
                         <div>
-                            <div class="row" ng-class="{'has-error': errors.name}">
+                            <div class="row" ng-class="{'has-error': errors.latitude}">
                                 <label class="col-xs-12 control-label">
                                     <?php echo __('Latitude'); ?>
                                 </label>
                                 <div class="col-xs-12">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-location-arrow"></i>
+                                        <label class="input"> <i class="icon-prepend fa fa-map-marker"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo '50.5558095'; ?>"
-                                                   ng-model="post.Container.name">
+                                                   ng-model="post.Location.latitude">
                                         </label>
-                                        <div ng-repeat="error in errors.name">
+                                        <div ng-repeat="error in errors.latitude">
                                             <div class="help-block font-xs text-danger">{{ error }}</div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row" ng-class="{'has-error': errors.longitude}">
                                 <label class="col-xs-12 control-label">
                                     <?php echo __('Longitude'); ?>
                                 </label>
                                 <div class="col-xs-12">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-location-arrow"></i>
+                                        <label class="input"> <i class="icon-prepend fa fa-map-marker"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo '9.6808449'; ?>"
-                                                   ng-model="post.Container.name">
+                                                   ng-model="post.Location.longitude">
                                         </label>
-                                        <div ng-repeat="error in errors.name">
+                                        <div ng-repeat="error in errors.longitude">
                                             <div class="help-block font-xs text-danger">{{ error }}</div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="margin-top-10" ng-show="post.Container.containertype_id==2">
+                        <legend><?php echo __('Optional fields for tenant'); ?></legend>
+                        <div class="row">
+                            <label class="col-xs-12 control-label">
+                                <?php echo __('Description'); ?>
+                            </label>
+                            <div class="col-xs-12">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-info"></i>
+                                        <input type="text" class="input-sm"
+                                               placeholder="<?php echo __('Info text ...'); ?>"
+                                               ng-model="post.Tenant.description">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-xs-12 control-label">
+                                <?php echo __('First name'); ?>
+                            </label>
+                            <div class="col-xs-12">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-user"></i>
+                                        <input type="text" class="input-sm"
+                                               placeholder="<?php echo __('John'); ?>"
+                                               ng-model="post.Tenant.firstname">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-xs-12 control-label">
+                                <?php echo __('Last name'); ?>
+                            </label>
+                            <div class="col-xs-12">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-user"></i>
+                                        <input type="text" class="input-sm"
+                                               placeholder="<?php echo __('Doe'); ?>"
+                                               ng-model="post.Tenant.lastname">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-xs-12 control-label">
+                                <?php echo __('Street'); ?>
+                            </label>
+                            <div class="col-xs-12">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-road"></i>
+                                        <input type="text" class="input-sm"
+                                               placeholder="<?php echo __('Any street'); ?>"
+                                               ng-model="post.Tenant.street">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-xs-12 control-label">
+                                <?php echo __('Zip code'); ?>
+                            </label>
+                            <div class="col-xs-12">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-building-o"></i>
+                                        <input type="text" class="input-sm"
+                                               placeholder="<?php echo __('12345'); ?>"
+                                               ng-model="post.Tenant.zipcode">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-xs-12 control-label">
+                                <?php echo __('City'); ?>
+                            </label>
+                            <div class="col-xs-12">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-building-o"></i>
+                                        <input type="text" class="input-sm"
+                                               placeholder="<?php echo __('Any city'); ?>"
+                                               ng-model="post.Tenant.city">
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -133,8 +239,17 @@ $timezones = CakeTime::listTimezones();
                     <div class="pull-left" ng-repeat="error in errors.id">
                         <div class="help-block text-danger">{{ error }}</div>
                     </div>
-                    <button type="submit" class="btn btn-primary" ng-click="save()">
-                        <?php echo __('Save'); ?>
+                    <button type="submit" class="btn btn-primary" ng-click="saveNode()"
+                            ng-show="post.Container.containertype_id==5">
+                        <?php echo __('Create new node'); ?>
+                    </button>
+                    <button type="submit" class="btn btn-primary" ng-click="saveTenant()"
+                            ng-show="post.Container.containertype_id==2">
+                        <?php echo __('Create new node'); ?>
+                    </button>
+                    <button type="submit" class="btn btn-primary" ng-click="saveLocation()"
+                            ng-show="post.Container.containertype_id==3">
+                        <?php echo __('Create new node'); ?>
                     </button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">
                         <?php echo __('Cancel'); ?>

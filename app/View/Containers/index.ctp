@@ -29,7 +29,7 @@
             <i class="fa fa-link fa-fw "></i>
             <?php echo __('System'); ?>
             <span>>
-                <?php echo __('Nodes'); ?>
+                <?php echo __('Containers'); ?>
             </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
