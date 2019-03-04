@@ -376,10 +376,15 @@ class HostsTable extends Table {
             'Hosts.container_id'
         ]);
 
-        $where = $HostFilter->disabledFilter();
-        $where['Hosts.disabled'] = (int)$HostConditions->includeDisabled();
+        $query->join([
+            'a' => [
+                'table'      => 'nagios_objects',
+                'type'       => 'LEFT OUTER',
+                'alias'      => 'HostObject',
+                'conditions' => 'Hosts.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
+            ]
+        ]);
 
-        $query->where($where);
         $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
                 return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
@@ -391,11 +396,20 @@ class HostsTable extends Table {
             'Hosttemplates' => [
                 'fields' => [
                     'Hosttemplates.id',
-                    'Hosttemplates.name'
+                    'Hosttemplates.uuid',
+                    'Hosttemplates.name',
+                    'Hosttemplates.description',
+                    'Hosttemplates.active_checks_enabled',
                 ]
             ]
 
         ]);
+
+        $where = $HostFilter->disabledFilter();
+        $where['Hosts.disabled'] = (int)$HostConditions->includeDisabled();
+        $where[] = 'HostObject.name1 IS NULL';
+        $query->where($where);
+
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order($HostFilter->getOrderForPaginator('Hosts.name', 'asc'));
@@ -411,61 +425,6 @@ class HostsTable extends Table {
             }
         }
         return $result;
-
-
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Hosttemplate' => [
-                    'fields' => [
-                        'Hosttemplate.id',
-                        'Hosttemplate.uuid',
-                        'Hosttemplate.name',
-                        'Hosttemplate.description',
-                        'Hosttemplate.active_checks_enabled',
-                    ]
-                ],
-                'Container'
-            ],
-            'conditions' => $conditions,
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.description',
-                'Host.active_checks_enabled',
-                'Host.address',
-                'Host.satellite_id',
-                'Host.container_id',
-
-            ],
-            'order'      => $HostConditions->getOrder(),
-            'joins'      => [
-                [
-                    'table'      => 'nagios_objects',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'HostObject',
-                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
-                ],
-                [
-                    'table'      => 'hosts_to_containers',
-                    'alias'      => 'HostsToContainers',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'HostsToContainers.host_id = Host.id',
-                    ],
-                ],
-            ],
-            'group'      => [
-                'Host.id',
-            ],
-        ];
-
-        $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
-        $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
-        $query['conditions'][] = 'HostObject.name1 IS NULL';
-
-        return $query;
     }
 
 
