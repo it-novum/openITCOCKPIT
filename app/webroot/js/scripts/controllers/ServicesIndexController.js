@@ -426,6 +426,10 @@ angular.module('openITCOCKPIT')
         $scope.loadTimezone();
         SortService.setCallback($scope.load);
 
+        jQuery(function(){
+            $("input[data-role=tagsinput]").tagsinput();
+        });
+
         $scope.$watch('filter', function(){
             $scope.currentPage = 1;
             $scope.undoSelection();
