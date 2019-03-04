@@ -293,6 +293,10 @@ class Hoststatus {
     }
 
     public function currentState() {
+        //Check for random exit codes like 255...
+        if ($this->currentState > 2) {
+            return 2;
+        }
         return $this->currentState;
     }
 

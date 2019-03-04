@@ -2056,6 +2056,7 @@ class Service extends AppModel {
      * @param $servicestatus
      * @param bool $extended show details ('acknowledged', 'in downtime', ...)
      * @return array
+     * @deprecated use ServiceStateSummary::getServiceStateSummary()
      */
     public function getServiceStateSummary($servicestatus, $extended = true) {
         $serviceStateSummary = [

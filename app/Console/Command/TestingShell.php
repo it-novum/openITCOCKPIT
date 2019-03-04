@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
@@ -30,8 +31,11 @@ use App\Model\Table\DeletedHostsTable;
 use App\Model\Table\DeletedServicesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use Statusengine2Module\Model\Table\HoststatusTable;
 use Statusengine2Module\Model\Table\ObjectsTable;
+use Statusengine2Module\Model\Table\ServicestatusTable;
 
 class TestingShell extends AppShell {
     /*

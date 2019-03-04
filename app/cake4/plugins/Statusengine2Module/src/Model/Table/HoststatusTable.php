@@ -110,6 +110,7 @@ class HoststatusTable extends Table implements HoststatusTableInterface {
             $findType = 'first';
         }
 
+        $query->where($where);
         $query->disableHydration();
 
         if ($findType === 'all') {

@@ -36,12 +36,21 @@ class ServicestatusFields {
     /**
      * @var DbBackend
      */
+    private $DbBackend;
+
+    /**
+     * @var bool
+     */
+    private $selectedWildcard = false;
 
     public function __construct(DbBackend $DbBackend) {
         $this->DbBackend = $DbBackend;
     }
 
     private function addField($field) {
+        if ($this->selectedWildcard) {
+            return [];
+        }
         $this->fields[] = $field;
     }
 
@@ -50,7 +59,7 @@ class ServicestatusFields {
     }
 
     public function wildcard() {
-        $this->addField('Servicestatus.*');
+        $this->selectedWildcard = true;
         return $this;
     }
 

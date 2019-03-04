@@ -26,6 +26,7 @@
 
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HoststatusTableInterface;
+use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
@@ -61,9 +62,9 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\HostPerfdataChecker;
+use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
@@ -86,6 +87,7 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  * @property StatehistoryHost $StatehistoryHost
  * @property DateRange $DateRange
  * @property NotificationHost $NotificationHost
+ * @property Service $Service
  *
  * @property AppPaginatorComponent $Paginator
  */
@@ -161,11 +163,10 @@ class HostsController extends AppController {
             return;
         }
 
-
-        $HostFilter = new HostFilter($this->request);
-
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $HostFilter = new HostFilter($this->request);
 
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
@@ -203,48 +204,30 @@ class HostsController extends AppController {
             }
         }
 
-        //Default order
-        $HostCondition->setOrder($HostControllerRequest->getOrder('Hoststatus.current_state', 'desc'));
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostFilter->getPage());
 
         if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Host->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
-            $this->Host->virtualFieldsForIndex();
-            $modelName = 'Host';
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+            /** @var $ServicestatusTable ServicestatusTableInterface */
+            $ServicestatusTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Servicestatus');
+            $hosts = $HostsTable->getHostsIndex($HostFilter, $HostCondition, $PaginateOMat);
         }
 
         if ($this->DbBackend->isCrateDb()) {
-            $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
-            $modelName = 'Hoststatus';
+            throw new MissingDbBackendException('MissingDbBackendException');
+            //$query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
+            //$modelName = 'Hoststatus';
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            $query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
-            $this->Host->virtualFieldsForIndex();
-            $modelName = 'Host';
+            throw new MissingDbBackendException('MissingDbBackendException');
+            //$query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
+            //$this->Host->virtualFieldsForIndex();
+            //$modelName = 'Host';
         }
 
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            if (isset($query['limit'])) {
-                unset($query['limit']);
-            }
-            $all_hosts = $this->{$modelName}->find('all', $query);
-            $this->set('all_hosts', $all_hosts);
-            $this->set('_serialize', ['all_hosts']);
-            return;
-        } else {
-            if ($this->isScrollRequest()) {
-                $this->Paginator->settings['page'] = $HostFilter->getPage();
-                $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-                $hosts = $this->{$modelName}->find('all', array_merge($this->Paginator->settings, $query));
-                $ScrollIndex->determineHasNextPage($hosts);
-                $ScrollIndex->scroll();
-            } else {
-                $this->Paginator->settings['page'] = $HostFilter->getPage();
-                $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-                $hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
-            }
-            //debug($this->Host->getDataSource()->getLog(false, false));
-        }
 
         $all_hosts = [];
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
@@ -260,18 +243,22 @@ class HostsController extends AppController {
                     'Service.host_id' => $host['Host']['id']
                 ]
             ]);
-            $servicestatus = $this->Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
-            $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus, false);
+            $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
+            $ServicestatusObjects = \itnovum\openITCOCKPIT\Core\Servicestatus::fromServicestatusByUuid($servicestatus);
+            $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
 
-            $serviceStateSummary['state'] = array_combine([
-                __('ok'),
-                __('warning'),
-                __('critical'),
-                __('unknown')
-            ], $serviceStateSummary['state']
+            $serviceStateSummary['state'] = array_combine(
+                [
+                    __('ok'),
+                    __('warning'),
+                    __('critical'),
+                    __('unknown')
+                ],
+                $serviceStateSummary['state']
             );
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
-            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Hoststatus'], $UserTime);
+
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host['Host']);
+            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Host']['Hoststatus'], $UserTime);
             $PerfdataChecker = new HostPerfdataChecker($Host, $this->PerfdataBackend);
 
             $hostSharingPermissions = new HostSharingPermissions(
@@ -416,7 +403,6 @@ class HostsController extends AppController {
         $HostCondition->setContainerIds($this->MY_RIGHTS);
 
 
-        $HostCondition->setOrder($HostControllerRequest->getOrder('Host.name', 'asc'));
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostFilter->getPage());
 
 

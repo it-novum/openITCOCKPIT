@@ -170,6 +170,31 @@ class Servicestatus {
     }
 
     /**
+     * @param $result
+     * @return array with Servicestatus objects
+     */
+    public static function fromServicestatusByUuid($result) {
+        if (empty($result)) {
+            return [];
+        }
+
+        if (isset($result['Servicestatus'])) {
+            //find()->first() result
+            return [
+                new self($result['Servicestatus'])
+            ];
+        }
+
+        //Result is from find()->all();
+        $ServicestatusObjects = [];
+        foreach ($result as $record) {
+            $ServicestatusObjects[] = new self($record['Servicestatus']);
+        }
+
+        return $ServicestatusObjects;
+    }
+
+    /**
      * @return bool
      */
     public function isHardState() {
@@ -312,6 +337,10 @@ class Servicestatus {
     }
 
     public function currentState() {
+        //Check for random exit codes like 255...
+        if ($this->currentState > 3) {
+            return 3;
+        }
         return $this->currentState;
     }
 

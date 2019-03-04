@@ -341,13 +341,13 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <strong title="<?php echo __('Passively transferred host'); ?>">P</strong>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Host.name')">
-                                        <i class="fa" ng-class="getSortClass('Host.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Hosts.name')">
+                                        <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                         <?php echo __('Host name'); ?>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Host.address')">
-                                        <i class="fa" ng-class="getSortClass('Host.address')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Hosts.address')">
+                                        <i class="fa" ng-class="getSortClass('Hosts.address')"></i>
                                         <?php echo __('IP address'); ?>
                                     </th>
 
@@ -367,8 +367,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <?php echo __('Host output'); ?>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Host.satellite_id')">
-                                        <i class="fa" ng-class="getSortClass('Host.satellite_id')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Hosts.satellite_id')">
+                                        <i class="fa" ng-class="getSortClass('Hosts.satellite_id')"></i>
                                         <?php echo __('Instance'); ?>
                                     </th>
                                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>

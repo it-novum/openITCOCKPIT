@@ -21,11 +21,11 @@ angular.module('openITCOCKPIT')
                     output: ''
                 },
                 Host: {
-                    id: QueryStringService.getIds('filter[Host.id][]', []),
-                    name: QueryStringService.getValue('filter[Host.name]', ''),
+                    id: QueryStringService.getIds('filter[Hosts.id][]', []),
+                    name: QueryStringService.getValue('filter[Hosts.name]', ''),
                     keywords: '',
                     not_keywords: '',
-                    address: QueryStringService.getValue('filter[Host.address]', ''),
+                    address: QueryStringService.getValue('filter[Hosts.address]', ''),
                     satellite_id: []
                 }
             };
@@ -58,16 +58,16 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.id][]': $scope.filter.Host.id,
-                'filter[Host.name]': $scope.filter.Host.name,
+                'filter[Hosts.id][]': $scope.filter.Host.id,
+                'filter[Hosts.name]': $scope.filter.Host.name,
                 'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
                 'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
-                'filter[Host.keywords][]': $scope.filter.Host.keywords.split(','),
-                'filter[Host.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
+                'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
+                'filter[Hosts.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
                 'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
-                'filter[Host.address]': $scope.filter.Host.address,
-                'filter[Host.satellite_id][]': $scope.filter.Host.satellite_id
+                'filter[Hosts.address]': $scope.filter.Host.address,
+                'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id
             };
             if(QueryStringService.hasValue('BrowserContainerId')){
                 params['BrowserContainerId'] = QueryStringService.getValue('BrowserContainerId');
@@ -182,15 +182,15 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.name]': $scope.filter.Host.name,
+                'filter[Hosts.name]': $scope.filter.Host.name,
                 'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
                 'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
-                'filter[Host.keywords][]': $scope.filter.Host.keywords.split(','),
-                'filter[Host.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
+                'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
+                'filter[Hosts.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
                 'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
-                'filter[Host.address]': $scope.filter.Host.address,
-                'filter[Host.satellite_id][]': $scope.filter.Host.satellite_id
+                'filter[Hosts.address]': $scope.filter.Host.address,
+                'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id
 
             });
 
@@ -225,6 +225,10 @@ angular.module('openITCOCKPIT')
         //Fire on page load
         defaultFilter();
         SortService.setCallback($scope.load);
+
+        jQuery(function(){
+            $("input[data-role=tagsinput]").tagsinput();
+        });
 
         $scope.$watch('filter', function(){
             $scope.currentPage = 1;

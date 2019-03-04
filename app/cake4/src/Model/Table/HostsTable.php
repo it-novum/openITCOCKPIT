@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -367,6 +368,125 @@ class HostsTable extends Table {
             return [];
         }
 
+        return $result;
+    }
+
+    /**
+     * @param HostFilter $HostFilter
+     * @param HostConditions $HostConditions
+     * @param null|PaginateOMat $PaginateOMat
+     * @return array
+     */
+    public function getHostsIndex(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null) {
+        $MY_RIGHTS = $HostConditions->getContainerIds();
+
+        $query = $this->find('all');
+        $query->select([
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.name',
+            'Hosts.description',
+            'Hosts.active_checks_enabled',
+            'Hosts.address',
+            'Hosts.satellite_id',
+            'Hosts.container_id',
+            'Hosts.tags',
+
+            //'keywords'     => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+            //'not_keywords' => 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+
+            'Hoststatus.current_state',
+            'Hoststatus.last_check',
+            'Hoststatus.next_check',
+            'Hoststatus.last_hard_state_change',
+            'Hoststatus.last_state_change',
+            'Hoststatus.output',
+            'Hoststatus.scheduled_downtime_depth',
+            'Hoststatus.active_checks_enabled',
+            'Hoststatus.state_type',
+            'Hoststatus.problem_has_been_acknowledged',
+            'Hoststatus.acknowledgement_type'
+        ]);
+
+        $query->join([
+            'a' => [
+                'table'      => 'nagios_objects',
+                'type'       => 'INNER',
+                'alias'      => 'HostObject',
+                'conditions' => 'Hosts.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
+            ],
+            'b' => [
+                'table'      => 'nagios_hoststatus',
+                'type'       => 'LEFT OUTER',
+                'alias'      => 'Hoststatus',
+                'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+            ]
+        ]);
+
+        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+        $query->contain([
+            'HostsToContainersSharing',
+            'Hosttemplates' => [
+                'fields' => [
+                    'Hosttemplates.id',
+                    'Hosttemplates.uuid',
+                    'Hosttemplates.name',
+                    'Hosttemplates.description',
+                    'Hosttemplates.active_checks_enabled',
+                    'Hosttemplates.tags'
+                ]
+            ]
+
+        ]);
+
+        $where = $HostFilter->indexFilter();
+        $where['Hosts.disabled'] = (int)$HostConditions->includeDisabled();
+        if ($HostConditions->getHostIds()) {
+            $where['Hosts.id'] = $HostConditions->getHostIds();
+        }
+
+        if(isset($where['Hosts.keywords rlike'])){
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $where['Hosts.keywords rlike'],
+                'string',
+                'RLIKE'
+            );
+            unset($where['Hosts.keywords rlike']);
+        }
+
+        if(isset($where['Hosts.not_keywords not rlike'])){
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $where['Hosts.not_keywords not rlike'],
+                'string',
+                'NOT RLIKE'
+            );
+            unset($where['Hosts.not_keywords not rlike']);
+        }
+
+
+        $query->where($where);
+
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
+        $query->order($HostFilter->getOrderForPaginator('Hoststatus.current_state', 'desc'));
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
         return $result;
     }
 

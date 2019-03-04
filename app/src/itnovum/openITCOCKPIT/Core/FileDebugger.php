@@ -86,7 +86,7 @@ class FileDebugger {
         $result = \SqlFormatter::format($sql, false);
 
         $file = fopen($filename, 'a+');
-        fwrite($file, '************* ' . date('H:i:s - d.m.Y') . ' ************* ' . PHP_EOL);
+        fwrite($file, '************* SQL query' . date('H:i:s - d.m.Y') . ' ************* ' . PHP_EOL);
         fwrite($file, $result);
         fwrite($file, PHP_EOL . PHP_EOL . PHP_EOL);
         fclose($file);

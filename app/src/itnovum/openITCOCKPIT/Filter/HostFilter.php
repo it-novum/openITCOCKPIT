@@ -37,21 +37,21 @@ class HostFilter extends Filter {
                 'Hoststatus.active_checks_enabled'
             ],
             'like'     => [
-                'Host.name',
+                'Hosts.name',
                 'Hoststatus.output',
-                'Host.address'
+                'Hosts.address'
             ],
             'rlike'    => [
-                'Host.keywords'
+                'Hosts.keywords'
             ],
             'notrlike' => [
-                'Host.not_keywords'
+                'Hosts.not_keywords'
             ],
             'equals'   => [
-                'Host.id',
-                'Host.uuid',
-                'Host.disabled',
-                'Host.satellite_id'
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.disabled',
+                'Hosts.satellite_id'
             ],
             'downtime' => [
                 'Hoststatus.scheduled_downtime_depth',
