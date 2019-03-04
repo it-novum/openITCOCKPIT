@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ContainersIndexController', function($scope, $http, $timeout, $stateParams){
+    .controller('ContainersIndexController', function($scope, $http, $timeout, $stateParams, $filter){
 
         $scope.init = true;
 
@@ -21,29 +21,45 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.containers = result.data.containers;
                 $scope.init = false;
+                console.log($scope.containers);
+                console.info($scope.selectedContainer.id);
+                if($scope.selectedContainer.id !== null){
+                    var objectExist = _.isObject(_.find($scope.containers, function(obj){
+                        return obj.key === $scope.selectedContainer.id;
+                    }));
+                    if(objectExist){ // check after delete if selected container exists
+                        $scope.loadContainers();
+                    }else{
+                        $scope.selectedContainer.id = null;
+                        $scope.subcontainers = {};
+                    }
+
+                }
             });
-            if($scope.selectedContainer.id !== null){
-                $scope.loadContainers();
-            }
         };
         $scope.loadContainers = function(){
-            $http.get('/containers/loadContainersByContainerId/' + $scope.selectedContainer.id + '.json', {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.subcontainers = result.data.nest;
-                $('#nestable').nestable({
-                    noDragClass: 'dd-nodrag'
+            if($scope.selectedContainer.id !== null){
+                $http.get('/containers/loadContainersByContainerId/' + $scope.selectedContainer.id + '.json', {
+                    params: {
+                        'angular': true
+                    }
+                }).then(function(result){
+                    $scope.subcontainers = result.data.nest;
+                    $('#nestable').nestable({
+                        noDragClass: 'dd-nodrag'
+                    });
                 });
-            });
+            }
         };
 
         $scope.load();
 
         $scope.$watch('selectedContainer.id', function(){
+            if($scope.init){
+                return;
+            }
             if($scope.selectedContainer.id !== null){
                 $scope.loadContainers();
             }
-        });
+        }, true);
     });
