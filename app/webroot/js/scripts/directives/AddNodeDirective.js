@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT').directive('addNode', function($http, NotyService
                     containertype_id: null
                 },
                 Location: {
-                    description: null,
+                    description: '',
                     latitude: null,
                     longitude: null,
                     timezone: null

@@ -22,6 +22,9 @@ angular.module('openITCOCKPIT')
                 $scope.containers = result.data.containers;
                 $scope.init = false;
             });
+            if($scope.selectedContainer.id !== null){
+                $scope.loadContainers();
+            }
         };
         $scope.loadContainers = function(){
             $http.get('/containers/loadContainersByContainerId/' + $scope.selectedContainer.id + '.json', {
