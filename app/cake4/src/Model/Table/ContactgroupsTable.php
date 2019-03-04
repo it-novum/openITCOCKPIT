@@ -232,6 +232,9 @@ class ContactgroupsTable extends Table {
             }
         }
         $tenantContainerIds = array_unique($tenantContainerIds);
+        if (empty($tenantContainerIds)) {
+            return [];
+        }
 
         $query = $this->find()
             ->contain(['Containers'])
@@ -399,7 +402,7 @@ class ContactgroupsTable extends Table {
      * @return array
      */
     public function getContactgroupsForCopy($ids = []) {
-        if(!is_array($ids)){
+        if (!is_array($ids)) {
             $ids = [$ids];
         }
 

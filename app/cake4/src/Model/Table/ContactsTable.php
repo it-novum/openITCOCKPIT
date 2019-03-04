@@ -550,6 +550,9 @@ class ContactsTable extends Table {
         $tenantContainerIds = array_unique($tenantContainerIds);
 
         $containerIds = array_unique(array_merge($tenantContainerIds, $container_ids));
+        if (empty($containerIds)) {
+            return [];
+        }
 
         $query = $this->find('all');
         $query->contain(['Containers']);
@@ -595,14 +598,14 @@ class ContactsTable extends Table {
      * @param $userId
      * @return bool
      */
-    public function hasUserAPushContact($userId){
+    public function hasUserAPushContact($userId) {
         $query = $this->find()
             ->select(['Contacts.id'])
             ->where([
                 [
                     'AND' => [
                         'Contacts.user_id' => $userId,
-                        'OR'              => [
+                        'OR'               => [
                             'Contacts.host_push_notifications_enabled'    => 1,
                             'Contacts.service_push_notifications_enabled' => 1
                         ]
@@ -616,7 +619,7 @@ class ContactsTable extends Table {
         return $query !== null;
     }
 
-    public function getAllInfoContacts(){
+    public function getAllInfoContacts() {
         $query = $this->find()
             ->select([
                 'Contacts.id',
@@ -629,7 +632,7 @@ class ContactsTable extends Table {
             ->disableHydration()
             ->all();
 
-        if($query === null){
+        if ($query === null) {
             return [];
         }
 

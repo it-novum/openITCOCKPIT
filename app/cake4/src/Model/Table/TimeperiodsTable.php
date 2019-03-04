@@ -56,7 +56,7 @@ class TimeperiodsTable extends Table {
         ]);
 
         $this->hasMany('TimeperiodTimeranges', [
-            'foreignKey' => 'timeperiod_id',
+            'foreignKey'   => 'timeperiod_id',
             'saveStrategy' => 'replace'
         ])->setDependent(true);
     }
@@ -387,6 +387,9 @@ class TimeperiodsTable extends Table {
         $tenantContainerIds = array_unique($tenantContainerIds);
 
         $containerIds = array_unique(array_merge($tenantContainerIds, $container_ids));
+        if (empty($containerIds)) {
+            return [];
+        }
 
         $query = $this->find('all');
         $query->contain(['Containers']);

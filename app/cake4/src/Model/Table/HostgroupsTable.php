@@ -164,7 +164,9 @@ class HostgroupsTable extends Table {
                 }
             }
         }
-
+        if (empty($hostgroupsAsList)) {
+            return [];
+        }
         switch ($type) {
             case 'all':
                 $query = $this->find()
@@ -199,7 +201,7 @@ class HostgroupsTable extends Table {
                         ->all();
 
                     $query = $query->toArray();
-                    if(empty($query)){
+                    if (empty($query)) {
                         $query = [];
                     }
 
