@@ -70,7 +70,6 @@ class Changelog extends AppModel {
                 'CheckCommand'                     => '{(id|name)}',
                 'Customvariable'                   => '{n}.{(id|name|value)}',
                 'Hosttemplatecommandargumentvalue' => '{n}.{(id|value)}',
-                //			'Hosttemplatecommandargumentvalue' => ['prepareFields' => ['{n}.{(id|name|value)}', 'Commandargument.{(human_name)}'], 'fields' => '{n}.{(id|name|human_name)}'],
                 'Contact'                          => '{n}.{(id|name)}',
                 'Contactgroup'                     => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
                 'Hostgroup'                        => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
