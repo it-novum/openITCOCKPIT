@@ -30,6 +30,7 @@ use App\Model\Table\DeletedHostsTable;
 use App\Model\Table\DeletedServicesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
+use Statusengine2Module\Model\Table\HoststatusTable;
 use Statusengine2Module\Model\Table\ObjectsTable;
 
 class TestingShell extends AppShell {
@@ -76,11 +77,6 @@ class TestingShell extends AppShell {
         /*
          * Lof of space for your experimental code :)
          */
-
-        /** @var $ObjectsTable ObjectsTable */
-        $ObjectsTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Objects');
-
-        debug($ObjectsTable->find()->limit(5)->all()->toArray());
     }
 
     public function getOptionParser() {

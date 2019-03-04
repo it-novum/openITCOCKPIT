@@ -360,14 +360,14 @@ class HostsController extends AppController {
         $this->set('_serialize', ['host']);
     }
 
-    /**
-     * @deprecated
-     */
     public function notMonitored() {
         $this->layout = 'blank';
 
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
         $masterInstanceName = $Systemsettings->getMasterInstanceName();
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
@@ -386,47 +386,36 @@ class HostsController extends AppController {
             //Only ship HTML template
             return;
         }
-        
+
         $HostFilter = new HostFilter($this->request);
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
         $HostCondition->setIncludeDisabled(false);
         $HostCondition->setContainerIds($this->MY_RIGHTS);
 
+
         $HostCondition->setOrder($HostControllerRequest->getOrder('Host.name', 'asc'));
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostFilter->getPage());
 
 
         if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Host->getHostNotMonitoredQuery($HostCondition, $HostFilter->notMonitoredFilter());
-            $modelName = 'Host';
+            $hosts = $HostsTable->getHostsNotMonitored($HostFilter, $HostCondition, $PaginateOMat);
         }
 
         if ($this->DbBackend->isCrateDb()) {
-            $this->loadModel('CrateModule.CrateHost');
-            $query = $this->CrateHost->getHostNotMonitoredQuery($HostCondition, $HostFilter->notMonitoredFilter());
-            $this->CrateHost->alias = 'Host';
-            $modelName = 'CrateHost';
+            throw new NotImplementedException('NotImplementedException');
+            //$this->loadModel('CrateModule.CrateHost');
+            //$query = $this->CrateHost->getHostNotMonitoredQuery($HostCondition, $HostFilter->notMonitoredFilter());
+            //$this->CrateHost->alias = 'Host';
+            //$modelName = 'CrateHost';
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            $query = $this->Host->getHostNotMonitoredQuery($HostCondition, $HostFilter->notMonitoredFilter());
-            $modelName = 'Host';
+            throw new NotImplementedException('NotImplementedException');
+            //$query = $this->Host->getHostNotMonitoredQuery($HostCondition, $HostFilter->notMonitoredFilter());
+            //$modelName = 'Host';
         }
 
-
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            if (isset($query['limit'])) {
-                unset($query['limit']);
-            }
-            $all_hosts = $this->{$modelName}->find('all', $query);
-            $this->set('all_hosts', $all_hosts);
-            $this->set('_serialize', ['all_hosts']);
-            return;
-        } else {
-            $this->Paginator->settings['page'] = $HostFilter->getPage();
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
-        }
 
         $all_hosts = [];
         foreach ($hosts as $host) {
@@ -467,8 +456,11 @@ class HostsController extends AppController {
 
 
         $this->set('all_hosts', $all_hosts);
-        $this->set('_serialize', ['all_hosts', 'paging']);
-
+        $toJson = ['all_hosts', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_hosts', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     /**

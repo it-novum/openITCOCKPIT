@@ -26,6 +26,7 @@ namespace itnovum\openITCOCKPIT\Core;
 
 
 use Cake\Error\Debugger;
+use Cake\ORM\Query;
 
 class FileDebugger {
 
@@ -75,5 +76,23 @@ class FileDebugger {
 
     public static function wipe($filename = '/tmp/debug.log') {
         fclose(fopen($filename, 'w+'));
+    }
+
+    public static function query(Query $query, $die = false, $filename = '/tmp/debug.log') {
+        \App::uses('SqlFormatter', 'Lib');
+
+        $sql = (string)$query;
+
+        $result = \SqlFormatter::format($sql, false);
+
+        $file = fopen($filename, 'a+');
+        fwrite($file, '************* ' . date('H:i:s - d.m.Y') . ' ************* ' . PHP_EOL);
+        fwrite($file, $result);
+        fwrite($file, PHP_EOL . PHP_EOL . PHP_EOL);
+        fclose($file);
+
+        if ($die) {
+            die('die() in ' . __CLASS__ . ' on line: ' . __LINE__);
+        }
     }
 }
