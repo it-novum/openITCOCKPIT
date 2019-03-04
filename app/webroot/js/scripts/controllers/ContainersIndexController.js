@@ -21,8 +21,6 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.containers = result.data.containers;
                 $scope.init = false;
-                console.log($scope.containers);
-                console.info($scope.selectedContainer.id);
                 if($scope.selectedContainer.id !== null){
                     var objectExist = _.isObject(_.find($scope.containers, function(obj){
                         return obj.key === $scope.selectedContainer.id;
