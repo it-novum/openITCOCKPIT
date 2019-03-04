@@ -224,7 +224,7 @@ class TenantsController extends AppController {
         $this->set('_serialize', ['tenant']);
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Container']['containertype_id'] = CT_TENANT;
-            $this->request->data['Container']['parent_id'] = CT_GLOBAL;
+            $this->request->data['Container']['parent_id'] = ROOT_CONTAINER;
             $this->request->data['Container']['id'] = $tenant['Container']['id'];
             $this->request->data['Tenant']['id'] = $tenant['Tenant']['id'];
             if ($this->Tenant->saveAll($this->request->data)) {
