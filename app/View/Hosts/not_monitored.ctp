@@ -54,7 +54,7 @@
                         </button>
 
                         <?php if ($this->Acl->hasPermission('add')): ?>
-                            <a href="/hosts/add" class="btn btn-xs btn-success">
+                            <a ui-sref="HostsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>

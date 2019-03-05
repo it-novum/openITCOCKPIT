@@ -1115,10 +1115,23 @@ class HostsController extends AppController {
         $this->set(compact(['contacts', 'contactgroups', 'sharingContainers']));
     }
 
-    /**
-     * @deprecated
-     */
     public function add() {
+        $this->layout = 'blank';
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        if ($this->request->is('post')) {
+
+        }
+
+        return;
+
+
+        /********* OLD CODE ******/
+
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         //Empty variables, get field if Model::save() fails for refill
         $_hosttemplates = [];
@@ -3866,4 +3879,11 @@ class HostsController extends AppController {
         $this->set('docuExists', $docuExists);
         $this->set('_serialize', ['host', 'hoststatus', 'docuExists']);
     }
+
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+
 }
