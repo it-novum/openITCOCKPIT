@@ -34,13 +34,16 @@
         </h1>
     </div>
 </div>
+
 <div id="error_msg"></div>
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-pencil-square-o"></i> </span>
-        <?php echo __('Edit host template:'); ?>
-        {{post.Hosttemplate.name}}
+        <h2>
+            <?php echo __('Edit host template:'); ?>
+            {{post.Hosttemplate.name}}
+        </h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
                 <a class="btn btn-default" ui-sref="HosttemplatesIndex">
