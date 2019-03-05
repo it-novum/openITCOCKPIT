@@ -73,7 +73,7 @@ angular.module('openITCOCKPIT')
 
         $scope.addMacro = function(){
             $scope.post.Hosttemplate.customvariables.push({
-                objecttype_id: 512,
+                objecttype_id: 512, //OBJECT_HOSTTEMPLATE
                 name: '',
                 value: ''
             });

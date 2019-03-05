@@ -75,7 +75,7 @@ angular.module('openITCOCKPIT')
 
         $scope.addMacro = function(){
             $scope.post.Contact.customvariables.push({
-                objecttype_id: 32,
+                objecttype_id: 32, //OBJECT_CONTACT
                 name: '',
                 value: ''
             });
