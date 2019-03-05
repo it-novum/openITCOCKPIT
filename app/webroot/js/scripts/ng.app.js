@@ -178,30 +178,6 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "DowntimesServiceController"
             })
 
-            .state('HostsIndex', {
-                url: '/hosts/index',
-                templateUrl: "/hosts/index.html",
-                controller: "HostsIndexController"
-            })
-
-            .state('HostsNotMonitored', {
-                url: '/hosts/notMonitored',
-                templateUrl: "/hosts/notMonitored.html",
-                controller: "HostsNotMonitoredController"
-            })
-
-            .state('HostsDisabled', {
-                url: '/hosts/disabled',
-                templateUrl: "/hosts/disabled.html",
-                controller: "HostsDisabledController"
-            })
-
-            .state('HostsBrowser', {
-                url: '/hosts/browser/:id',
-                templateUrl: "/hosts/browser.html",
-                controller: "HostsBrowserController"
-            })
-
             .state('InstantreportsIndex', {
                 url: '/instantreports/index',
                 templateUrl: "/instantreports/index.html",
@@ -676,6 +652,49 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 templateUrl: "/users/add.html",
                 controller: "UsersAddController"
             })
+
+            .state('HostsIndex', {
+                url: '/hosts/index',
+                templateUrl: "/hosts/index.html",
+                controller: "HostsIndexController"
+            })
+
+            .state('HostsNotMonitored', {
+                url: '/hosts/notMonitored',
+                templateUrl: "/hosts/notMonitored.html",
+                controller: "HostsNotMonitoredController"
+            })
+
+            .state('HostsDisabled', {
+                url: '/hosts/disabled',
+                templateUrl: "/hosts/disabled.html",
+                controller: "HostsDisabledController"
+            })
+
+            .state('HostsBrowser', {
+                url: '/hosts/browser/:id',
+                templateUrl: "/hosts/browser.html",
+                controller: "HostsBrowserController"
+            })
+
+            .state('HostsAdd', {
+                url: '/hosts/add',
+                templateUrl: "/hosts/add.html",
+                controller: "HostsAddController"
+            })
+
+            .state('HostsEdit', {
+                url: '/hosts/edit/:id',
+                templateUrl: "/hosts/edit.html",
+                controller: "HostsEditController"
+            })
+
+            .state('HostsSharing', {
+                url: '/hosts/sharing/:id',
+                templateUrl: "/hosts/sharing.html",
+                controller: "HostsSharingController"
+            })
+
     })
 
     /*
@@ -764,8 +783,8 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
         return function(title, searchString){
             searchString = searchString.replace(/\s/g, "");
             let newSearchString = "";
-            for (var i = 0; i < searchString.length; i++) {
-                newSearchString += searchString.charAt(i)+"\\s*";
+            for(var i = 0; i < searchString.length; i++){
+                newSearchString += searchString.charAt(i) + "\\s*";
             }
             if(searchString) title = title.replace(new RegExp('(' + newSearchString + ')', 'gi'),
                 '<span class="search-highlight">$1</span>');
