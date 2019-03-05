@@ -2,12 +2,13 @@ angular.module('openITCOCKPIT')
     .controller('HostsAddController', function($scope, $http, SudoService, $state, NotyService){
 
         $scope.data = {
-            createAnother: false
+            createAnother: false,
+            dnsLookUp: true
         };
 
         var clearForm = function(){
             $scope.post = {
-                Hosttemplate: {
+                Host: {
                     name: '',
                     description: '',
                     command_id: 0,
@@ -68,7 +69,7 @@ angular.module('openITCOCKPIT')
                 'angular': true
             };
 
-            $http.get("/hosttemplates/loadContainers.json", {
+            $http.get("/hosts/loadContainers.json", {
                 params: params
             }).then(function(result){
                 $scope.containers = result.data.containers;
@@ -81,7 +82,7 @@ angular.module('openITCOCKPIT')
                 'angular': true
             };
 
-            $http.get("/hosttemplates/loadCommands.json", {
+            $http.get("/hosts/loadCommands.json", {
                 params: params
             }).then(function(result){
                 $scope.commands = result.data.commands;

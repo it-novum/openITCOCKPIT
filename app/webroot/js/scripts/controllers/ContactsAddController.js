@@ -1,26 +1,29 @@
 angular.module('openITCOCKPIT')
     .controller('ContactsAddController', function($scope, $http, SudoService, $state, NotyService){
-        $scope.post = {
-            Contact: {
-                name: '',
-                description: '',
-                email: '',
-                notify_host_recovery: 0,
-                notify_service_recovery: 0,
-                host_push_notifications_enabled: 0,
-                service_push_notifications_enabled: 0,
-                containers: {
-                    _ids: []
-                },
-                host_commands: {
-                    _ids: []
-                },
-                service_commands: {
-                    _ids: []
-                },
-                customvariables: []
-            }
+        var clearForm = function(){
+            $scope.post = {
+                Contact: {
+                    name: '',
+                    description: '',
+                    email: '',
+                    notify_host_recovery: 0,
+                    notify_service_recovery: 0,
+                    host_push_notifications_enabled: 0,
+                    service_push_notifications_enabled: 0,
+                    containers: {
+                        _ids: []
+                    },
+                    host_commands: {
+                        _ids: []
+                    },
+                    service_commands: {
+                        _ids: []
+                    },
+                    customvariables: []
+                }
+            };
         };
+        clearForm();
 
         $scope.init = true;
 
@@ -101,9 +104,16 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('ContactsIndex').then(function(){
+
+
+                if($scope.data.createAnother === false){
+                    $state.go('ContactsIndex').then(function(){
+                        NotyService.scrollTop();
+                    });
+                }else{
+                    clearForm();
                     NotyService.scrollTop();
-                });
+                }
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){

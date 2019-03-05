@@ -695,7 +695,7 @@
                         <div class="pull-right">
 
                             <label>
-                                <input type="checkbox" type="submit" ng-model="data.createAnother">
+                                <input type="checkbox" ng-model="data.createAnother">
                                 <?php echo _('Create another'); ?>
                             </label>
 
