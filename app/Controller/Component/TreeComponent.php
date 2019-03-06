@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\ContainerNestedSet;
 
 
 /**
@@ -41,6 +42,7 @@ class TreeComponent extends Component {
         $this->Container = ClassRegistry::init('Container');
         App::import('Component', 'Constants');
         $this->Constants = new ConstantsComponent();
+        $this->containerCache = null;
     }
 
     /**
@@ -148,6 +150,12 @@ class TreeComponent extends Component {
      * @return array with all path [$id] => $path
      */
     public function easyPath($id = null, $ObjectsByConstancName = [], $options = [], $hasRootPrivileges = false, $exclude = []) {
+        if ($this->containerCache === null) {
+            $this->containerCache = $this->Container->find('all', [
+                'recursive' => -1
+            ]);
+        }
+
         if ($hasRootPrivileges == false) {
             if (is_array($id)) {
                 // User has no root privileges so we need to delete the root container if it $id array
@@ -161,7 +169,9 @@ class TreeComponent extends Component {
             }
         }
         if (!empty($ObjectsByConstancName)) {
-            return $this->path($id, $options, $this->Constants->containerProperties($ObjectsByConstancName, $exclude));
+            //return $this->path($id, $options, $this->Constants->containerProperties($ObjectsByConstancName, $exclude));
+            $ContainerNestedSet = ContainerNestedSet::fromCake2($this->containerCache, $hasRootPrivileges);
+            return $ContainerNestedSet->easyPath($id, $ObjectsByConstancName, $exclude);
         }
 
         return [];
