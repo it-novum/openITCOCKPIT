@@ -74,7 +74,7 @@ class TreeComponent extends Component {
         ];
         $options = Hash::merge($_options, $options);
 
-
+        //Query runtime is ~2 seconds... for large systems >2.5k containers
         $this->Container->virtualFields['path'] = 'SELECT CONCAT(\'/\', GROUP_CONCAT(alias.name ORDER BY alias.lft SEPARATOR \'/\'))
             FROM containers AS alias
             LEFT JOIN containers AS child
