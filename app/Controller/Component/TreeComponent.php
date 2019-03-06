@@ -73,38 +73,40 @@ class TreeComponent extends Component {
             'order'        => 'asc',
         ];
         $options = Hash::merge($_options, $options);
-        if ($this->Container->hasAny()) {
-            $parent = $this->Container->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'id' => $id,
-                ],
-            ]);
 
-            //Merging parent and childs into one array
-            /*foreach($this->Container->children($id) as $child){
-                $parent[] = $child;
-            }*/
 
-            $paths = [];
-            foreach ($parent as $container) {
-                if (in_array($container['Container']['containertype_id'], $options['valide_types'])) {
-                    $paths[$container['Container']['id']] = '/' . $this->treePath($container['Container']['id'], $options);
-                }
-            }
+        $this->Container->virtualFields['path'] = 'SELECT CONCAT(\'/\', GROUP_CONCAT(alias.name ORDER BY alias.lft SEPARATOR \'/\'))
+            FROM containers AS alias
+            LEFT JOIN containers AS child
+                ON (alias.lft <= child.lft AND alias.rght >= child.rght)
+            WHERE child.id = Container.id';
 
-            // some basic php sort functions, because Hash::sort will drop the key => value association
-            if ($options['order'] === 'asc') {
-                asort($paths);
-            }
+        $paths = $this->Container->find('list', [
+            'recursive'  => -1,
+            'fields'     => [
+                'Container.id',
+                'Container.path'
+            ],
+            'conditions' => [
+                'AND' => [
+                    'Container.containertype_id' => $options['valide_types'],
+                    'Container.id'               => $id
+                ]
 
-            if ($options['order'] === 'desc') {
-                arsort($paths);
-            }
+            ]
+        ]);
 
-            return $paths;
+        unset($this->Container->virtualFields['path']);
+
+        // some basic php sort functions, because Hash::sort will drop the key => value association
+        if ($options['order'] === 'asc') {
+            asort($paths);
         }
-        throw new NotFoundException(__('tenant.notfound'));
+
+        if ($options['order'] === 'desc') {
+            arsort($paths);
+        }
+        return $paths;
     }
 
     /**
@@ -158,8 +160,6 @@ class TreeComponent extends Component {
                 }
             }
         }
-
-        //debug($this->Constants->containerProperties($ObjectsByConstancName));
         if (!empty($ObjectsByConstancName)) {
             return $this->path($id, $options, $this->Constants->containerProperties($ObjectsByConstancName, $exclude));
         }
