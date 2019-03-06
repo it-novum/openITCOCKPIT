@@ -189,53 +189,15 @@ class UsersTable extends Table {
         return $rules;
     }
 
+    /**
+     * @param $rights
+     * @param null $PaginateOMat
+     * @return array
+     */
     public function getUsers($rights, $PaginateOMat = null) {
-        //$this->loadModel('Container');
-        /*$options = [
-            'recursive'  => -1,
-            'order'      => [
-                'User.full_name' => 'asc',
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'users_to_containers',
-                    'type'       => 'LEFT',
-                    'alias'      => 'UsersToContainer',
-                    'conditions' => 'UsersToContainer.user_id = User.id',
-                ],
-                [
-                    'table'      => 'usergroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'Usergroup',
-                    'conditions' => 'Usergroup.id = User.usergroup_id',
-                ],
-            ],
-            'conditions' => [
-                'UsersToContainer.container_id' => $rights,
-            ],
-            'fields'     => [
-                'User.id',
-                'User.email',
-                'User.company',
-                'User.phone',
-                'User.status',
-                'User.full_name',
-                'User.samaccountname',
-                'Usergroup.id',
-                'Usergroup.name',
-                'UsersToContainer.container_id',
-            ],
-            'group'      => [
-                'User.id',
-            ],
-        ];*/
-//debug($rights);
-        /*debug($this->find('all')->disableHydration()->toArray());
-        die();*/
-
         $query = $this->find()
             ->disableHydration()
-            ->contain(['Containers','Usergroups'])
+            ->contain(['Containers', 'Usergroups'])
             ->matching('Containers')
             ->order(['full_name' => 'asc'])
             ->where([
@@ -249,8 +211,8 @@ class UsersTable extends Table {
                     'Users.phone',
                     'Users.status',
                     'Users.samaccountname',
-                      'Usergroups.id',
-                      'Usergroups.name',
+                    'Usergroups.id',
+                    'Usergroups.name',
                     'ContainersUsersMemberships.container_id',
                     'full_name' => $query->func()->concat([
                         'Users.firstname' => 'literal',
@@ -262,7 +224,6 @@ class UsersTable extends Table {
             ->group([
                 'Users.id'
             ]);
-
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->formatResultAsCake2($query->toArray(), false);
@@ -281,14 +242,60 @@ class UsersTable extends Table {
      * @param null $userId
      * @return array|int
      */
-    public function getUserStatus($userId = null){
-        if(!is_null($userId)){
+    public function getUserStatus($userId = null) {
+        if (!is_null($userId)) {
             //return state for the given user ID
             return $this->get($userId)->status;
 
-        }else{
+        } else {
             //no user ID so return all possible states
             return [];
         }
+    }
+
+    /**
+     * Saving additional data to through table
+     * table key is the main table which is associated with this model, not the 'through' table
+     * ie:
+     * users is associated with containers through ContainersUsersMemberships
+     * in save method: $this->request->data['containers'] = containerPermissionsForSave($myKeyValueData)
+     * @param array $containerPermissions
+     * @return array
+     */
+    public function containerPermissionsForSave($containerPermissions = []) {
+        //ContainersUsersMemberships
+        return array_map(function ($containerId, $permissionLevel) {
+            return [
+                'id'        => $containerId,
+                '_joinData' => [
+                    'permission_level' => $permissionLevel
+                ]
+            ];
+        },
+            array_keys($containerPermissions),
+            $containerPermissions
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getDateformats() {
+        return [
+            1 => '%B %e, %Y %H:%M:%S',
+            2 => '%m-%d-%Y  %H:%M:%S',
+            3 => '%m-%d-%Y  %H:%M',
+            4 => '%m-%d-%Y  %l:%M:%S %p',
+            5 => '%H:%M:%S  %m-%d-%Y',
+
+            6  => '%e %B %Y, %H:%M:%S',
+            7  => '%d.%m.%Y - %H:%M:%S',
+            9  => '%d.%m.%Y - %l:%M:%S %p',
+            10 => '%H:%M:%S - %d.%m.%Y', //Default date format
+            11 => '%H:%M - %d.%m.%Y',
+
+            12 => '%Y-%m-%d %H:%M',
+            13 => '%Y-%m-%d %H:%M:%S'
+        ];
     }
 }

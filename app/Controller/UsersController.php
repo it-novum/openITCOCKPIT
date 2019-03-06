@@ -31,6 +31,7 @@ use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
 
@@ -65,7 +66,6 @@ class UsersController extends AppController {
 
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $usersFilter->getPage());
         $all_users = $Users->getUsers($this->MY_RIGHTS, $PaginateOMat);
-
         $isLdapAuth = false;
         if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap') {
             $isLdapAuth = true;
@@ -74,8 +74,8 @@ class UsersController extends AppController {
         foreach ($all_users as $index => $user) {
             $all_users[$index]['User']['allow_edit'] = true;
             if ($this->hasRootPrivileges === false) {
-                foreach ($user['Container'] as $key => $container){
-                    if($this->isWritableContainer($container['id'])){
+                foreach ($user['Container'] as $key => $container) {
+                    if ($this->isWritableContainer($container['id'])) {
                         $all_users[$index]['User']['allow_edit'] = $this->isWritableContainer($container['id']);
                         break;
                     }
@@ -138,13 +138,6 @@ class UsersController extends AppController {
         $this->set('_serialize', ['user']);
     }
 
-//	public function view($id = null){
-//		if (!$this->User->exists($id)){
-//			throw new NotFoundException(__('Invalide user'));
-//		}
-//		$options = array('conditions' => array('User.' . $this->User->primaryKey => $id));
-//		$this->set('user', $this->User->get($id));
-//	}
 
     /**
      * delete method
@@ -196,29 +189,22 @@ class UsersController extends AppController {
         $usergroups = $Usergroups->getUsergroupsList();
 
         if ($this->request->is('post') || $this->request->is('put')) {
+
             // save additional data to containersUsersMemberships
-            if ($this->request->data('ContainerUserMembership')) {
-                $this->Frontend->setJson('rights', $this->request->data('ContainerUserMembership'));
-                $this->request->data['ContainerUserMembership'] = array_map(
-                    function ($container_id, $permission_level) {
-                        return [
-                            'container_id'     => $container_id,
-                            'permission_level' => $permission_level,
-                        ];
-                    },
-                    array_keys($this->request->data['ContainerUserMembership']),
-                    $this->request->data['ContainerUserMembership']
-                );
+            if (isset($this->request->data['User']['ContainersUsersMemberships'])) {
+                $containerPermissions = $Users->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
+                $this->request->data['User']['containers'] = $containerPermissions;
             }
 
-            // Deactivate "Show Stats in Menu" by default for New Users
-            $this->request->data['User']['showstatsinmenu'] = 0;
+            //@TODO remove this line as status is implemented in users add
+            $this->request->data['User']['status'] = 1;
 
-            $user = $Users->newEntity($this->request->data);
+            $this->request->data['User']['dashboard_tab_rotation'] = 123;
 
-            debug($this->request->data);
-            debug($user);
-            die();
+            $this->request->data = $this->request->data('User');
+
+            $user = $Users->newEntity();
+            $user = $Users->patchEntity($user, $this->request->data);
 
             $Users->save($user);
             if ($user->hasErrors()) {
@@ -234,8 +220,28 @@ class UsersController extends AppController {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
+
+
         $this->set('containers', $containers);
         $this->set('usergroups', $usergroups);
+    }
+
+    public function loadDateformats() {
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+        $dateformats = $Users->getDateformats();
+        $options = [];
+        foreach ($dateformats as $dateformat) {
+            $ut = new UserTime($this->Auth->user('timezone'), $dateformat);
+            $options[$dateformat] = $ut->format(time());
+        }
+        //$dateformats['default'] = "10"; //default dateformat key
+        $dateformats = Api::makeItJavaScriptAble($options);
+        $defaultDateFormat = '%H:%M:%S - %d.%m.%Y'; // key 10
+
+        $this->set('dateformats', $dateformats);
+        $this->set('defaultDateFormat', $defaultDateFormat);
+        $this->set('_serialize', ['dateformats', 'defaultDateFormat']);
     }
 
 
@@ -340,21 +346,6 @@ class UsersController extends AppController {
         $this->layout = 'angularjs';
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         /**
          * LDAP Start
          */
@@ -447,26 +438,6 @@ class UsersController extends AppController {
         /**
          * LDAP END
          */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -754,7 +725,7 @@ class UsersController extends AppController {
     /**
      * get all possible states a user can have
      */
-    public function loadStatus(){
+    public function loadStatus() {
         $this->layout = 'blank';
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');

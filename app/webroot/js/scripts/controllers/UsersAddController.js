@@ -3,22 +3,37 @@ angular.module('openITCOCKPIT')
 
         $scope.post = {
             'User': {
-                'status':'',
-                'email':'',
-                'firstname':'',
-                'lastname':'',
-                'company':'',
-                'position':'',
-                'phone':'',
-                'password':'',
-                'usergroup':{
-
+                'status': '',
+                'email': '',
+                'firstname': '',
+                'lastname': '',
+                'company': '',
+                'position': '',
+                'phone': '',
+                'password': '',
+                'usergroup_id': '',
+                'showstatsinmenu':'',
+                'paginatorlength':'',
+                'dashboard_tab_rotation':'',
+                'recursive_browser':'',
+                'dateformat':'',
+                'containers': {
+                    /* example data CURRENTLY NOT USED!
+                    0: {
+                        'id': null, //container ID
+                        '_joinData':{ //saving additional data to "through" table
+                            'permission_level':null //radio button value
+                        }
+                    }
+                    */
                 },
-            },
-            'Containers':{
+                'ContainersUsersMemberships':{
 
-            },
+                }
+            }
         };
+
+
 
         $scope.loadContainer = function(){
             $http.get("/containers/loadContainersForAngular.json", {
@@ -53,26 +68,51 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadDateformats = function(){
+            $http.get("/users/loadDateformats.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.dateformats = result.data.dateformats;
+                $scope.post.User.dateformat = result.data.defaultDateFormat;
 
-        $scope.submit = function() {
-            $http.post("/users/add/.json?angular=true",
+                $scope.init = false;
+            });
+        };
+
+
+
+        $scope.submit = function(){
+            console.log($scope.post);
+            $http.post("/users/add.json?angular=true",
                 $scope.post
-            ).then(function(result) {
+            ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('UsersIndex');
+                //$state.go('UsersIndex');
 
-            }, function errorCallback (result) {
+            }, function errorCallback(result){
                 NotyService.genericError();
 
-                if (result.data.hasOwnProperty('error')) {
+                if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
             });
+        };
+
+        $scope.getContainerName = function(id){
+            for(var c in $scope.containers){
+                if($scope.containers[c].key == id){
+                    return $scope.containers[c].value;
+                }
+            }
+            return null;
         };
 
 
         $scope.loadContainer();
         $scope.loadUsergroups();
         $scope.loadStatus();
+        $scope.loadDateformats();
     });
 

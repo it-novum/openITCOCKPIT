@@ -36,6 +36,7 @@ class ContainersUsersMembershipsTable extends Table {
     public function initialize(array $config) {
         parent::initialize($config);
 
+        $this->setEntityClass('ContainerUserMembership');
         $this->setTable('users_to_containers');
 
         $this->belongsTo('Users');
