@@ -98,7 +98,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                         </li>
                     <?php endif; ?>
 
-                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()'); ?>
+                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'service', 'tabLink', 'hideTimeline()', true); ?>
                 </ul>
 
                 <div class="widget-toolbar" role="menu">
