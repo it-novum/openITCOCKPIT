@@ -639,21 +639,53 @@ class ServicesController extends AppController {
         $this->loadModel('Customvariable');
 
         $userContainerId = $this->Auth->user('container_id');
+
+
         $myContainerId = $this->MY_RIGHTS;
         $myRights = $myContainerId;
         if (!$this->hasRootPrivileges && ($rootKey = array_search(ROOT_CONTAINER, $myRights)) !== false) {
             unset($myRights[$rootKey]);
         }
 
+        $containerIds = [];
+        $selectedHostId = 0;
+        //Only load required elements by host container id
+        if ($this->request->is('post') && isset($this->request->data['Service']['host_id'])) {
+            $host = $this->Host->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Host.id' => $this->request->data['Service']['host_id']
+                ],
+                'fields'     => [
+                    'Host.container_id'
+                ]
+            ]);
+
+            if (!empty($host)) {
+                $selectedHostId = (int)$this->request->data['Service']['host_id'];
+                $containerIds = array_unique([ROOT_CONTAINER, $host['Host']['container_id']]);
+            }
+        }
+
+        $this->Frontend->setJson('selectedHostId', $selectedHostId);
 
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
-        $timeperiods = $this->Timeperiod->find('list');
-        $containerIds = $this->MY_RIGHTS;
-        $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
-        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
         $commands = $this->Command->serviceCommands('list');
-        $eventhandlers = $this->Command->eventhandlerCommands('list');
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
+
+        $timeperiods = [];
+        $contacts = [];
+        $contactgroups = [];
+        $eventhandlers = [];
+        $servicegroups = [];
+
+        if (!empty($containerIds)) {
+            //Reload data for validation errors refill
+            $timeperiods = $this->Timeperiod->find('list');
+            $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
+            $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
+            $eventhandlers = $this->Command->eventhandlerCommands('list');
+            $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
+        }
 
         $this->Frontend->set('data_placeholder', __('Please choose a contact'));
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
@@ -887,7 +919,6 @@ class ServicesController extends AppController {
                 'Commandargument.command_id' => $service['Service']['eventhandler_command_id'],
             ],
         ]);
-
 
 
         $contacts_for_changelog = [];
@@ -3041,7 +3072,7 @@ class ServicesController extends AppController {
             if (!empty($hoststatus)) {
                 $record['StatehistoryHost']['state_time'] = $hoststatus['Hoststatus']['last_state_change'];
                 $record['StatehistoryHost']['state'] = $hoststatus['Hoststatus']['current_state'];
-                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type'])?true:false;
+                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type']) ? true : false;
                 $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
                 $statehistoryRecords[] = $StatehistoryHost;
             }
@@ -3179,6 +3210,58 @@ class ServicesController extends AppController {
             'notifications',
             'acknowledgements',
             'timeranges'
+        ]);
+    }
+
+    public function loadElementsByHostId($hostId) {
+        $host = $this->Host->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Host.id' => $hostId
+            ],
+            'fields'     => [
+                'Host.container_id'
+            ]
+        ]);
+
+        if (empty($host)) {
+            throw new NotFoundException();
+        }
+
+        $containerIds = array_unique([ROOT_CONTAINER, $host['Host']['container_id']]);
+        $timeperiods = $this->Timeperiod->find('list');
+        $timeperiods = $this->Service->makeItJavaScriptAble($timeperiods);
+
+        $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
+        $contacts = $this->Service->makeItJavaScriptAble($contacts);
+
+
+        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
+        $contactgroups = $this->Service->makeItJavaScriptAble($contactgroups);
+
+        $eventhandlers = $this->Command->eventhandlerCommands('list');
+        $eventhandlers = $this->Service->makeItJavaScriptAble($eventhandlers);
+
+        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
+        $servicegroups = $this->Service->makeItJavaScriptAble($servicegroups);
+
+
+        $this->set(compact([
+            'servicegroups',
+            'timeperiods',
+            'contacts',
+            'contactgroups',
+            'eventhandlers',
+            'Customvariable',
+        ]));
+
+        $this->set('_serialize', [
+            'servicegroups',
+            'timeperiods',
+            'contacts',
+            'contactgroups',
+            'eventhandlers',
+            'Customvariable',
         ]);
     }
 }
