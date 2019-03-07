@@ -862,11 +862,17 @@ class ServicesController extends AppController {
 
         //container_id = 1 => ROOT
         $containerIds = $this->MY_RIGHTS;
-        $contacts = $this->Contact->contactsByContainerId($hostContainerId, 'list', 'id');
-        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($hostContainerId, 'list', 'id');
+
+        $loadElementContainerIds = [
+            $hostContainerId,
+            ROOT_CONTAINER
+        ];
+
+        $contacts = $this->Contact->contactsByContainerId($loadElementContainerIds, 'list', 'id');
+        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($loadElementContainerIds, 'list', 'id');
         $commands = $this->Command->serviceCommands('list');
         $eventhandlers = $this->Command->eventhandlerCommands('list');
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
+        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($loadElementContainerIds, 'list', 'id');
 
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
         $commandarguments = $this->Commandargument->find('all', [
