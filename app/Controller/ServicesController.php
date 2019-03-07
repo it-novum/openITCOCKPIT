@@ -639,7 +639,7 @@ class ServicesController extends AppController {
         $this->loadModel('Customvariable');
 
         $userContainerId = $this->Auth->user('container_id');
-        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $myContainerId = $this->MY_RIGHTS;
         $myRights = $myContainerId;
         if (!$this->hasRootPrivileges && ($rootKey = array_search(ROOT_CONTAINER, $myRights)) !== false) {
             unset($myRights[$rootKey]);
@@ -648,7 +648,7 @@ class ServicesController extends AppController {
 
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         $timeperiods = $this->Timeperiod->find('list');
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $containerIds = $this->MY_RIGHTS;
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
         $commands = $this->Command->serviceCommands('list');
@@ -1643,7 +1643,7 @@ class ServicesController extends AppController {
 
             //Find hosts to copy on this host.
             if (!empty($servicesToCopy)) {
-                $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+                $containerIds = $this->MY_RIGHTS;
                 $hosts = $this->Host->hostsByContainerId($containerIds, 'list', ['Host.host_type' => GENERIC_HOST]);
             }
         }

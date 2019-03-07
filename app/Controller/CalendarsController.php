@@ -49,7 +49,7 @@ class CalendarsController extends AppController {
      * Lists the existing configurations to load and edit them.
      */
     public function index() {
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $containerIds = $this->MY_RIGHTS;
         $query = [
             'recursive'  => -1,
             'contain'    => [
@@ -76,7 +76,7 @@ class CalendarsController extends AppController {
 
     public function add() {
         if ($this->hasRootPrivileges === true) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $containerIds = $this->MY_RIGHTS;
             $tenants = $this->Tenant->tenantsByContainerId($containerIds, 'list', 'container_id');
         } else {
             $tenants = $this->Tenant->tenantsByContainerId($this->getWriteContainers(), 'list', 'container_id');
@@ -114,7 +114,7 @@ class CalendarsController extends AppController {
         }
 
         if ($this->hasRootPrivileges === true) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $containerIds = $this->MY_RIGHTS;
             $tenants = $this->Tenant->tenantsByContainerId($containerIds, 'list', 'container_id');
         } else {
             $tenants = $this->Tenant->tenantsByContainerId($this->getWriteContainers(), 'list', 'container_id');

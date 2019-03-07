@@ -777,7 +777,7 @@ class AppController extends Controller {
             return false;
         }
 
-        $rights = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $rights = $this->MY_RIGHTS;
 
         if (is_array($containerIds)) {
             $result = array_intersect($containerIds, $rights);
