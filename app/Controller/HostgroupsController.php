@@ -788,19 +788,28 @@ class HostgroupsController extends AppController {
         }
 
         $hostsToAppend = [];
-        foreach (func_get_args() as $host_id) {
-            $host = $this->Host->findById($host_id);
-            $hostsToAppend[] = $host;
-        }
+        $hostIds = func_get_args();
+
+        $hostsToAppend = $this->Host->find('all', [
+            'recursive' => -1,
+            'fields' => [
+                'Host.id',
+                'Host.name'
+            ],
+            'conditions' => [
+                'Host.id' => $hostIds
+            ]
+        ]);
+
 
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-            $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
+            $containerIds = $this->MY_RIGHTS;
+            $hostgroups = $this->Hostgroup->hostgroupsByContainerIdNoTenantLookup($containerIds, 'list', 'id');
         } else {
             $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->getWriteContainers());
             $containers = $this->Tree->easyPath($containerIds, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-            $hostgroups = $this->Hostgroup->hostgroupsByContainerId($this->getWriteContainers(), 'list', 'id');
+            $hostgroups = $this->Hostgroup->hostgroupsByContainerIdNoTenantLookup($this->getWriteContainers(), 'list', 'id');
         }
         $userContainerId = (isset($this->request->data['Container']['parent_id'])) ? $this->request->data['Container']['parent_id'] : $this->Auth->user('container_id');
 
