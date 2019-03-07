@@ -233,7 +233,6 @@ class UsersController extends AppController {
             $ut = new UserTime($this->Auth->user('timezone'), $dateformat);
             $options[$dateformat] = $ut->format(time());
         }
-        //$dateformats['default'] = "10"; //default dateformat key
         $dateformats = Api::makeItJavaScriptAble($options);
         $defaultDateFormat = '%H:%M:%S - %d.%m.%Y'; // key 10
 
@@ -247,6 +246,14 @@ class UsersController extends AppController {
         if (!$this->User->exists($id)) {
             throw new NotFoundException(__('Invalide user'));
         }
+
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+        $permissionsUser = $Users->getUser($id, $this->MY_RIGHTS);
+
+       // debug($permissionsUser);
+
+        /*
         $permissionsUser = $this->User->find('first', [
             'joins'      => [
                 [
@@ -272,6 +279,7 @@ class UsersController extends AppController {
                 'User.id',
             ],
         ]);
+        */
 
         if (isset($permissionsUser['ContainerUserMembership'])) {
             $this->Frontend->setJson('rights',

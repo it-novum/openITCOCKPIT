@@ -4,7 +4,6 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use AuthComponent;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -191,7 +190,7 @@ class UsersTable extends Table {
         return $rules;
     }
 
-    public function beforeSave($event, $entity, $options){
+    public function beforeSave($event, $entity, $options) {
         if (!empty($entity->password)) {
             $entity->password = Security::hash($entity->password, null, true);
         }
@@ -244,6 +243,45 @@ class UsersTable extends Table {
             }
         }
         return $result;
+    }
+
+    /**
+     * @param $userId
+     * @param $rights
+     * @return array
+     */
+    public function getUser($userId, $rights) {
+        $query = $this->find('first')
+            ->disableHydration()
+            ->contain(['Containers', 'Usergroups'])
+            ->matching('Containers')
+            ->where([
+                'User.id'                                    => $userId,
+                'ContainersUsersMemberships.container_id IN' => $rights
+            ])
+            ->select(function (Query $query) {
+                return [
+                    'User.id',
+                    'User.email',
+                    'User.company',
+                    'User.status',
+                    'User.samaccountname',
+                    'ContainersUsersMemberships.container_id',
+                    'full_name' => $query->func()->concat([
+                        'Users.firstname' => 'literal',
+                        ' ',
+                        'Users.lastname'  => 'literal'
+                    ])
+                ];
+            })
+            ->group([
+                'Users.id'
+            ]);
+        if (!is_null($query)) {
+            return $query->toArray();
+        }
+        return [];
+
     }
 
 
