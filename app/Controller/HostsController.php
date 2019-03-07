@@ -942,7 +942,7 @@ class HostsController extends AppController {
     public function edit_details($host_id = null) {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->set('back_url', $this->referer());
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $containerIds = $this->MY_RIGHTS;
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
 
