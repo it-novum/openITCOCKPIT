@@ -34,7 +34,7 @@ $timezones = CakeTime::listTimezones();
             <span>>
                 <?php echo __('Manage Users'); ?>
 			</span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+            <div class="third_level"> <?php echo __('Add'); ?></div>
         </h1>
     </div>
 </div>
@@ -221,7 +221,6 @@ $timezones = CakeTime::listTimezones();
                         <div class="col col-xs-10">
                             <input class="form-control"
                                    type="number"
-                                   value="25"
                                    ng-model="post.User.paginatorlength">
                             <div ng-repeat="error in errors.paginatorlength">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -229,12 +228,11 @@ $timezones = CakeTime::listTimezones();
                         </div>
                     </div>
 
-                    <div class="form-group"
-                         ng-class="{'has-error': errors.showstatsinmenu}">
-                        <label class="col col-md-4 control-label" for="userShowstatsinmenu">
+                    <div class="form-group" ng-class="{'has-error': errors.showstatsinmenu}">
+                        <label class="col col-md-2 control-label" for="userShowstatsinmenu">
                             <?php echo __('Show status stats in menu'); ?>
                         </label>
-                        <div class="col-xs-8 smart-form">
+                        <div class="col-xs-10 smart-form">
                             <label class="checkbox small-checkbox-label no-required">
                                 <input type="checkbox" name="checkbox"
                                        id="userShowstatsinmenu"
@@ -246,12 +244,11 @@ $timezones = CakeTime::listTimezones();
                         </div>
                     </div>
 
-                    <div class="form-group"
-                         ng-class="{'has-error': errors.recursive_browser}">
-                        <label class="col col-md-4 control-label" for="userRecursiveBrowser">
+                    <div class="form-group" ng-class="{'has-error': errors.recursive_browser}">
+                        <label class="col col-md-2 control-label" for="userRecursiveBrowser">
                             <?php echo __('Recursive Browser'); ?>
                         </label>
-                        <div class="col-xs-8 smart-form">
+                        <div class="col-xs-10 smart-form">
                             <label class="checkbox small-checkbox-label no-required">
                                 <input type="checkbox" name="checkbox"
                                        id="userRecursiveBrowser"
@@ -263,6 +260,18 @@ $timezones = CakeTime::listTimezones();
                         </div>
                     </div>
 
+                    <div class="form-group" ng-class="{'has-error': errors.dashboard_tab_rotation}">
+                        <label class="col col-md-2 control-label" for="userDashboardTabRotation">
+                            <?php echo __('Set tab rotation interval'); ?>
+                        </label>
+                        <div class="col-xs-10 smart-form slidecontainer">
+                            <input type="range" step="10" min="0" max="900" class="slider"
+                                   ng-model="post.User.dashboard_tab_rotation">
+                            <div>
+                                <div class="help-block text-muted">{{ intervalText }}</div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="form-group required" ng-class="{'has-error': errors.dateformat}">
                         <label class="col col-md-2 control-label">

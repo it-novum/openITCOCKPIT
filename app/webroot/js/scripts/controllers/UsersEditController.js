@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('UsersAddController', function($scope, $http, $rootScope, $state, NotyService){
+    .controller('UsersEditController', function($scope, $http, $rootScope, $state, NotyService){
 
         $scope.intervalText = 'disabled';
 
@@ -103,11 +103,11 @@ angular.module('openITCOCKPIT')
 
         $scope.submit = function(){
             console.log($scope.post);
-            $http.post("/users/add.json?angular=true",
+            $http.post("/users/edit.json?angular=true",
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('UsersIndex');
+                //$state.go('UsersIndex');
 
             }, function errorCallback(result){
                 NotyService.genericError();

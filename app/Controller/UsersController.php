@@ -196,10 +196,8 @@ class UsersController extends AppController {
                 $this->request->data['User']['containers'] = $containerPermissions;
             }
 
-            //@TODO remove this line as status is implemented in users add
+            //@TODO remove these lines as they are implemented in users add
             $this->request->data['User']['status'] = 1;
-
-            $this->request->data['User']['dashboard_tab_rotation'] = 123;
 
             $this->request->data = $this->request->data('User');
 

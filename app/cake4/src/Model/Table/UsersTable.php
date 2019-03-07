@@ -4,9 +4,11 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use AuthComponent;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Security;
 use Cake\Validation\Validator;
 
 /**
@@ -187,6 +189,13 @@ class UsersTable extends Table {
         $rules->add($rules->existsIn(['usergroup_id'], 'Usergroups'));
 
         return $rules;
+    }
+
+    public function beforeSave($event, $entity, $options){
+        if (!empty($entity->password)) {
+            $entity->password = Security::hash($entity->password, null, true);
+        }
+        return true;
     }
 
     /**
