@@ -792,6 +792,9 @@ class ServicesController extends AppController {
 
             ],
         ]);
+
+        $hostContainerId = $__service['Host']['container_id'];
+
         if (!$this->allowedByContainerId(Hash::extract($__service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
             $this->render403();
 
@@ -853,16 +856,18 @@ class ServicesController extends AppController {
 
         $userContainerId = $this->Auth->user('container_id');
         $hosts = $this->Host->find('list');
-        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list', $service['Service']['service_type']);
+        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($this->MY_RIGHTS, 'list', $service['Service']['service_type']);
+
         $timeperiods = $this->Timeperiod->find('list');
+
         //container_id = 1 => ROOT
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
-        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
+        $containerIds = $this->MY_RIGHTS;
+        $contacts = $this->Contact->contactsByContainerId($hostContainerId, 'list', 'id');
+        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($hostContainerId, 'list', 'id');
         $commands = $this->Command->serviceCommands('list');
         $eventhandlers = $this->Command->eventhandlerCommands('list');
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
+
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
         $commandarguments = $this->Commandargument->find('all', [
             'recursive'  => -1,
@@ -876,6 +881,9 @@ class ServicesController extends AppController {
                 'Commandargument.command_id' => $service['Service']['eventhandler_command_id'],
             ],
         ]);
+
+
+
         $contacts_for_changelog = [];
         foreach ($service['Contact'] as $contact_id) {
             if (isset($contacts[$contact_id])) {
