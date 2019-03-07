@@ -123,6 +123,16 @@
                                         </label>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by description'); ?>"
+                                                   ng-model="filter.Host.description"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="row">
