@@ -78,6 +78,9 @@
                                                         ng-options="container.key as container.value for container in containers"
                                                         ng-model="post.Host.container_id">
                                                 </select>
+                                                <div ng-show="post.Host.container_id < 1" class="warning-glow">
+                                                    <?php echo __('Please select a container.'); ?>
+                                                </div>
                                                 <div ng-repeat="error in errors.container_id">
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>
@@ -408,10 +411,15 @@
                                             {{hostcommandargumentvalue.commandargument.human_name}}
                                         </label>
                                         <div class="col-xs-12 col-lg-8">
-                                            <input
-                                                    class="form-control"
-                                                    type="text"
-                                                    ng-model="hostcommandargumentvalue.value">
+                                            <div class="input-group">
+                                                <input
+                                                        class="form-control"
+                                                        type="text"
+                                                        ng-model="hostcommandargumentvalue.value">
+                                                <template-diff
+                                                        value="hostcommandargumentvalue.value"
+                                                        template-value="hosttemplate.Hosttemplate.hosttemplatecommandargumentvalues[$index].value"></template-diff>
+                                            </div>
                                             <div ng-repeat="error in errors.hostcommandargumentvalues">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
@@ -887,23 +895,53 @@
                     </div>
                 </div>
 
-        </div>
 
-        <div class="col-xs-12 margin-top-10 margin-bottom-10">
-            <div class="well formactions ">
-                <div class="pull-right">
+                <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                    <div class="well formactions ">
+                        <div class="pull-right">
 
-                    <label>
-                        <input type="checkbox" ng-model="data.createAnother">
-                        <?php echo _('Create another'); ?>
-                    </label>
+                            <label>
+                                <input type="checkbox" ng-model="data.createAnother">
+                                <?php echo _('Create another'); ?>
+                            </label>
 
-                    <input class="btn btn-primary" type="submit"
-                           value="<?php echo __('Create host'); ?>">
-                    <a ui-sref="HostsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <?php echo __('Create host'); ?>
+                                </button>
+                                <button type="button"
+                                        class="btn btn-primary dropdown-toggle"
+                                        data-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu pull-right" id="menuHack-sdhf98j23jr">
+                                    <?php if ($this->Acl->hasPermission('add', 'services')): ?>
+                                        <li>
+                                            <a ui-sref="ServicesAdd">
+                                                <i class="fa fa fa-gear"></i>
+                                                <?php echo __('Save and create service'); ?>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                    <li>
+                                        <a ui-sref="MkModuleMkdiscovery">
+                                            <i class="fa fa fa-share-alt"></i>
+                                            <?php echo __('Save and run Check_MK discovery'); ?>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <a ui-sref="HostsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>
+
 
