@@ -23,13 +23,12 @@
 //  confirmation.
 ?>
 
-
 <span class="input-group-addon input-group-addon-no-focus cursor-pointer" ng-click="restoreDefault()"
       title="<?php echo __('Click to restore the template default value:'); ?> {{templateValue}}"
-      ng-class="{ 'label-success': currentItem.hasDiff , 'label-danger': !currentItem.hasDiff}">
+      ng-class="{ 'label-success': !hasDiff , 'label-danger': hasDiff}">
 
     <i class="fa txt-color-white"
-       ng-class="{ 'fa-link': currentItem.hasDiff , 'fa-chain-broken': !currentItem.hasDiff}"></i>
+       ng-class="{ 'fa-link': !hasDiff , 'fa-chain-broken': hasDiff}"></i>
 </span>
 
 

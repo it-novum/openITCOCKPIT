@@ -5,9 +5,7 @@ angular.module('openITCOCKPIT').directive('templateDiff', function($http, $inter
         replace: true,
         scope: {
             'value': '=',
-            'templateValue': '=',
-            'callback': '=',
-            'field': '=',
+            'templateValue': '='
         },
 
         controller: function($scope){
@@ -15,11 +13,13 @@ angular.module('openITCOCKPIT').directive('templateDiff', function($http, $inter
             $scope.hasDiff = false;
 
             $scope.restoreDefault = function(){
-                $scope.callback($scope.field);
+                $scope.value = $scope.templateValue;
             };
 
             $scope.$watch('value', function(){
-                $scope.hasDiff = $scope.value != $scope.templateValue;
+                if(typeof $scope.templateValue !== "undefined"){
+                    $scope.hasDiff = $scope.value != $scope.templateValue;
+                }
             });
 
         },

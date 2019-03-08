@@ -192,7 +192,7 @@
                                                             ng-model="post.Host.description">
 
                                                     <template-diff value="post.Host.description"
-                                                                   template-value="$scope.hosttemplate.Hosttemplate.description"></template-diff>
+                                                                   template-value="hosttemplate.Hosttemplate.description"></template-diff>
 
                                                 </div>
                                                 <div ng-repeat="error in errors.description">
