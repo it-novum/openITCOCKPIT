@@ -208,9 +208,22 @@ angular.module('openITCOCKPIT')
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
                 $scope.hostgroups = result.data.hostgroups;
-                $scope.parenthosts = result.data.parenthosts;
                 $scope.satellites = result.data.satellites;
                 $scope.sharingContainers = result.data.sharingContainers;
+            });
+        };
+
+        $scope.loadParentHosts = function(searchString){
+            var containerId = $scope.post.Host.container_id;
+            $http.get("/hosts/loadParentHostsByString.json", {
+                params: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': $scope.post.Host.parenthosts._ids,
+                    'containerId': containerId
+                }
+            }).then(function(result){
+                $scope.parenthosts = result.data.hosts;
             });
         };
 
@@ -349,6 +362,7 @@ angular.module('openITCOCKPIT')
                 return;
             }
             $scope.loadElements();
+            $scope.loadParentHosts('');
         }, true);
 
         $scope.$watch('post.Host.hosttemplate_id', function(){

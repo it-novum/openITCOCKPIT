@@ -3296,42 +3296,6 @@ class HostsController extends AppController {
     /**
      * @deprecated
      */
-    public function loadParentHostsByString() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        $selected = $this->request->query('selected');
-        $hostId = $this->request->query('hostId');
-        $containerId = $this->request->query('containerId');
-        $containerIds = [ROOT_CONTAINER, $containerId];
-        if ($containerId == ROOT_CONTAINER) {
-            /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-            //Don't panic! Only root users can edit /root objects ;)
-            //So no loss of selected hosts/host templates
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-        }
-        $HostFilter = new HostFilter($this->request);
-        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
-
-        $HostCondition->setContainerIds($containerIds);
-        if ($hostId) {
-            $HostCondition->setNotConditions([
-                'Host.id' => $hostId
-            ]);
-        }
-        $hosts = Api::makeItJavaScriptAble(
-            $this->Host->getHostsForAngular($HostCondition, $selected)
-        );
-
-        $this->set(compact(['hosts']));
-        $this->set('_serialize', ['hosts']);
-    }
-
-    /**
-     * @deprecated
-     */
     public function loadParentHostsById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3842,12 +3806,6 @@ class HostsController extends AppController {
         $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);
 
-        $parenthosts = $HostsTable->getHostsByContainerId($containerIds, 'list');
-        if ($hostId !== 0 && isset($parenthosts[$hostId])) {
-            unset($parenthosts[$hostId]);
-        }
-        $parenthosts = Api::makeItJavaScriptAble($parenthosts);
-
         $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
         $checkperiods = $timeperiods;
@@ -3874,7 +3832,6 @@ class HostsController extends AppController {
 
         $this->set('hosttemplates', $hosttemplates);
         $this->set('hostgroups', $hostgroups);
-        $this->set('parenthosts', $parenthosts);
         $this->set('timeperiods', $timeperiods);
         $this->set('checkperiods', $checkperiods);
         $this->set('contacts', $contacts);
@@ -3885,7 +3842,6 @@ class HostsController extends AppController {
         $this->set('_serialize', [
             'hosttemplates',
             'hostgroups',
-            'parenthosts',
             'timeperiods',
             'checkperiods',
             'contacts',
@@ -3950,6 +3906,43 @@ class HostsController extends AppController {
 
         $this->set('result', $result);
         $this->set('_serialize', ['result']);
+    }
+
+
+    /**
+     * @deprecated
+     */
+    public function loadParentHostsByString() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $selected = $this->request->query('selected');
+        $hostId = $this->request->query('hostId');
+        $containerId = $this->request->query('containerId');
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+        $HostFilter = new HostFilter($this->request);
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+
+        $HostCondition->setContainerIds($containerIds);
+        if ($hostId) {
+            $HostCondition->setNotConditions([
+                'Host.id' => $hostId
+            ]);
+        }
+        $hosts = Api::makeItJavaScriptAble(
+            $this->Host->getHostsForAngular($HostCondition, $selected)
+        );
+
+        $this->set(compact(['hosts']));
+        $this->set('_serialize', ['hosts']);
     }
 
 }

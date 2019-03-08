@@ -77,7 +77,8 @@ $config = [
                 'ldap_configuration',
                 'priority',
                 'intervalInput',
-                'humanTime'
+                'humanTime',
+                'template_diff'
             ],
             'Automaps'         => [
                 'icon'

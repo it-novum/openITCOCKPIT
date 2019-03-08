@@ -186,30 +186,14 @@
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control">
+                                                    <input
+                                                            class="form-control"
+                                                            type="text"
+                                                            ng-model="post.Host.description">
                                                     <span class="input-group-addon input-group-addon-no-focus">
                                                         <i class="fa fa-chain fa-chain-default txt-color-green"></i>
                                                     </span>
                                                 </div>
-                                                <div ng-repeat="error in errors.description">
-                                                    <div class="help-block text-danger">{{ error }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group" ng-class="{'has-error': errors.description}">
-                                            <label class="col-xs-12 col-lg-2 control-label">
-                                                <?php echo __('Description'); ?>
-                                            </label>
-                                            <div class="col-xs-12 col-lg-10">
-                                                <input
-                                                        class="form-control"
-                                                        type="text"
-                                                        ng-model="post.Host.description">
-                                                <span>
-                                                    <i class="fa fa-chain fa-chain-default txt-color-green"
-                                                       title="Default value"></i>
-                                                </span>
                                                 <div ng-repeat="error in errors.description">
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>
@@ -247,9 +231,10 @@
                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                         class="form-control"
                                                         chosen="parenthosts"
+                                                        callback="loadParentHosts"
                                                         multiple
                                                         ng-options="parenthost.key as parenthost.value for parenthost in parenthosts"
-                                                        ng-model="post.parenthosts._ids">
+                                                        ng-model="post.Host.parenthosts._ids">
                                                 </select>
                                                 <div ng-repeat="error in errors.container_id">
                                                     <div class="help-block text-danger">{{ error }}</div>
