@@ -259,7 +259,7 @@ $config = [
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid', 'getGrafanaIframeUrlForDatepicker'],
-                'add'        => ['loadContainers', 'loadCommands'],
+                'add'        => ['loadContainers', 'loadCommands', 'loadElementsByContainerId', 'loadHosttemplate', 'runDnsLoopup'],
                 'edit'       => ['gethostbyname', 'gethostbyaddr', 'loadHosttemplate', 'addCustomMacro', 'loadTemplateMacros', 'loadParametersByCommandId', 'loadArguments', 'loadArgumentsAdd', 'loadHosttemplatesArguments', 'addParentHosts', 'loadElementsByContainerId', 'getSharingContainers'],
             ],
             'Hosttemplates'         => [

@@ -29,6 +29,8 @@ use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedHostsTable;
 use App\Model\Table\DeletedServicesTable;
+use App\Model\Table\HostsTable;
+use App\Model\Table\ProxiesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
@@ -75,6 +77,7 @@ class TestingShell extends AppShell {
         //debug($this->Aco->find('all', ['recursive' => -1]));
 
         //Load CakePHP4 Models
+        /** @var $Proxy ProxiesTable */
         //$Proxy = TableRegistry::getTableLocator()->get('Proxies');
         //print_r($Proxy->getSettings());
 

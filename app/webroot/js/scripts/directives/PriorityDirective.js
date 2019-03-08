@@ -26,7 +26,7 @@ angular.module('openITCOCKPIT').directive('priorityDirective', function($http){
             ];
 
             var setPriorityClasses = function(value){
-                var index = value-1;
+                var index = value - 1;
                 var color = colors[index];
                 for(var i = 0; i <= index; i++){
                     $scope.priorityClass[i] = color;
@@ -54,7 +54,10 @@ angular.module('openITCOCKPIT').directive('priorityDirective', function($http){
                 setPriorityClasses($scope.priority);
             };
 
-            setPriorityClasses($scope.priority);
+
+            $scope.$watch('priority', function(){
+                setPriorityClasses($scope.priority);
+            });
 
         },
 

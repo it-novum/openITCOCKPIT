@@ -71,7 +71,7 @@
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
                                                 <select
-                                                        id="ContactContainers"
+                                                        id="HostContainers"
                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                         class="form-control"
                                                         chosen="containers"
@@ -90,13 +90,13 @@
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
                                                 <select
-                                                        id="ContactContainers"
+                                                        id="HostSharedContainers"
                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                         class="form-control"
-                                                        chosen="containers"
+                                                        chosen="sharingContainers"
                                                         multiple
-                                                        ng-options="container.key as container.value for container in containers"
-                                                        ng-model="post.Host.container_id">
+                                                        ng-options="container.key as container.value for container in sharingContainers"
+                                                        ng-model="post.containers._ids">
                                                 </select>
                                                 <div ng-repeat="error in errors.container_id">
                                                     <div class="help-block text-danger">{{ error }}</div>
@@ -111,10 +111,10 @@
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
                                                 <select
-                                                        id="ContactContainers"
+                                                        id="HostHosttemplateSelect"
                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                         class="form-control"
-                                                        chosen="containers"
+                                                        chosen="hosttemplates"
                                                         ng-options="hosttemplate.key as hosttemplate.value for hosttemplate in hosttemplates"
                                                         ng-model="post.Host.hosttemplate_id">
                                                 </select>
@@ -130,11 +130,18 @@
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
                                                 <input
+                                                        id="HostName"
                                                         class="form-control"
                                                         type="text"
-                                                        ng-model="post.Host.name">
+                                                        ng-model="post.Host.name"
+                                                        ng-blur="runDnsLoopup(true)">
                                                 <div ng-repeat="error in errors.name">
                                                     <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
+
+                                                <div class="text-warning" ng-show="data.dnsHostnameNotFound">
+                                                    <i class="fa fa-exclamation-triangle"></i>
+                                                    <?php echo __('Could not resolve hostname.'); ?>
                                                 </div>
 
                                                 <div class="smart-form">
@@ -155,11 +162,36 @@
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
                                                 <input
+                                                        id="HostAddress"
                                                         class="form-control"
                                                         type="text"
                                                         placeholder="<?php echo __('IPv4/IPv6 address or FQDN'); ?>"
-                                                        ng-model="post.Host.address">
+                                                        ng-model="post.Host.address"
+                                                        ng-blur="runDnsLoopup(false)">
                                                 <div ng-repeat="error in errors.address">
+                                                    <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
+
+                                                <div class="text-warning" ng-show="data.dnsAddressNotFound">
+                                                    <i class="fa fa-exclamation-triangle"></i>
+                                                    <?php echo __('Could not resolve address.'); ?>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" ng-class="{'has-error': errors.description}">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <?php echo __('Description'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control">
+                                                    <span class="input-group-addon input-group-addon-no-focus">
+                                                        <i class="fa fa-chain fa-chain-default txt-color-green"></i>
+                                                    </span>
+                                                </div>
+                                                <div ng-repeat="error in errors.description">
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>
                                             </div>
@@ -174,6 +206,10 @@
                                                         class="form-control"
                                                         type="text"
                                                         ng-model="post.Host.description">
+                                                <span>
+                                                    <i class="fa fa-chain fa-chain-default txt-color-green"
+                                                       title="Default value"></i>
+                                                </span>
                                                 <div ng-repeat="error in errors.description">
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>
@@ -207,13 +243,13 @@
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
                                                 <select
-                                                        id="ContactContainers"
+                                                        id="ParentHostsSelect"
                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                         class="form-control"
-                                                        chosen="containers"
+                                                        chosen="parenthosts"
                                                         multiple
-                                                        ng-options="container.key as container.value for container in containers"
-                                                        ng-model="post.Host.container_id">
+                                                        ng-options="parenthost.key as parenthost.value for parenthost in parenthosts"
+                                                        ng-model="post.parenthosts._ids">
                                                 </select>
                                                 <div ng-repeat="error in errors.container_id">
                                                     <div class="help-block text-danger">{{ error }}</div>
@@ -227,6 +263,7 @@
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
                                                 <input
+                                                        id="HostTagsInput"
                                                         class="form-control tagsinput"
                                                         type="text"
                                                         ng-model="post.Host.tags">
@@ -256,11 +293,10 @@
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
                                                 <select
-                                                        id="ContactContainers"
+                                                        id="SatellitesSelect"
                                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                                         class="form-control"
-                                                        chosen="containers"
-                                                        multiple
+                                                        chosen="satellites"
                                                         ng-options="satellite.key as satellite.value for satellite in satellites"
                                                         ng-model="post.Host.satellite_id">
                                                 </select>
@@ -498,7 +534,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group required"
+                                    <div class="form-group"
                                          ng-class="{'has-error': errors.contacts}">
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <?php echo __('Contacts'); ?>
@@ -519,7 +555,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group required"
+                                    <div class="form-group"
                                          ng-class="{'has-error': errors.contactgroups}">
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <?php echo __('Contact groups'); ?>
@@ -785,6 +821,12 @@
                                                     <i class="fa fa-plus"></i>
                                                     <?php echo __('Add new macro'); ?>
                                                 </button>
+                                            </div>
+
+                                            <div class="col-xs-12 padding-top-10 text-info"
+                                                 ng-show="post.Host.customvariables.length > 0">
+                                                <i class="fa fa-info-circle"></i>
+                                                <?php echo __('Macros in green color are inherited from the host template.'); ?>
                                             </div>
                                         </div>
 
