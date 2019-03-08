@@ -195,6 +195,17 @@ class Constants {
             'DONE'               => 5,
             'CANCELLED'          => 6,
         ]);
+
+
+/*
+        self::ACTIVE             => 'active',
+        self::INACTIVE           => 'inactive',
+        self::DELETED            => 'deleted',
+        self::SUSPENDED          => 'suspended',
+        self::ACTIVATION_PENDING => 'activation pending',
+        self::DONE               => 'done',
+        self::CANCELLED          => 'cancelled',
+ */
     }
 
 

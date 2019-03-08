@@ -83,7 +83,8 @@ class User extends Entity {
         'map_uploads'             => true,
         'systemfailures'          => true,
         'users_to_autoreports'    => true,
-        'users_to_containers'     => true
+        'users_to_containers'     => true,
+        'containers'              => true
     ];
 
     /**

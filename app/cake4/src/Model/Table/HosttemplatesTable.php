@@ -794,7 +794,7 @@ class HosttemplatesTable extends Table {
 
         if (!empty($dataToParse['Hosttemplate']['check_period_id'])) {
             foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Hosttemplate']['check_period_id']) as $timeperiodId => $timeperiodName) {
-                $extDataForChangelog['CheckPeriod'][] = [
+                $extDataForChangelog['CheckPeriod'] = [
                     'id'   => $timeperiodId,
                     'name' => $timeperiodName
                 ];
@@ -803,7 +803,7 @@ class HosttemplatesTable extends Table {
 
         if (!empty($dataToParse['Hosttemplate']['notify_period_id'])) {
             foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Hosttemplate']['notify_period_id']) as $timeperiodId => $timeperiodName) {
-                $extDataForChangelog['NotifyPeriod'][] = [
+                $extDataForChangelog['NotifyPeriod'] = [
                     'id'   => $timeperiodId,
                     'name' => $timeperiodName
                 ];
@@ -812,7 +812,7 @@ class HosttemplatesTable extends Table {
 
         if (!empty($dataToParse['Hosttemplate']['command_id'])) {
             foreach ($CommandsTable->getCommandByIdAsList($dataToParse['Hosttemplate']['command_id']) as $commandId => $commandName) {
-                $extDataForChangelog['CheckCommand'][] = [
+                $extDataForChangelog['CheckCommand'] = [
                     'id'   => $commandId,
                     'name' => $commandName
                 ];

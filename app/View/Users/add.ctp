@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<?php
+$timezones = CakeTime::listTimezones();
+?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <h1 class="page-title txt-color-blueDark">
@@ -31,7 +34,7 @@
             <span>>
                 <?php echo __('Manage Users'); ?>
 			</span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+            <div class="third_level"> <?php echo __('Add'); ?></div>
         </h1>
     </div>
 </div>
@@ -41,7 +44,9 @@
         <span class="widget-icon"> <i class="fa fa-user"></i> </span>
         <h2><?php echo $this->action == 'edit' ? __('Edit') : __('Add') ?><?php echo __('User'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton() ?>
+            <a ui-sref="UsersIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
@@ -61,11 +66,30 @@
                                     chosen="containers"
                                     multiple
                                     ng-options="container.key as container.value for container in containers"
-                                    ng-model="post.Container._ids">
+                                    ng-model="post.User.containers._ids">
                             </select>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Container permissions read/write -->
+                    <div class="row" ng-repeat="(key, containerId) in post.User.containers._ids">
+                        <div class="col col-md-2"></div>
+                        <div class="col col-md-10">
+                            <legend class="no-padding font-sm text-primary">{{getContainerName(containerId)}}
+                            </legend>
+                            <input type="radio" value="1" ng-value="1" id="{{'read_'+containerId}}"
+                                   name="{{'containerPermissions1_'+containerId}}"
+                                   ng-model="post.User.ContainersUsersMemberships[containerId]">
+                            <label for="userPermissionButton"
+                                   class="padding-10 font-sm"><?php echo __('read'); ?></label>
+                            <input type="radio" value="2" ng-value="2" id="{{'write_'+containerId}}"
+                                   name="{{'containerPermissions2_'+containerId}}"
+                                   ng-model="post.User.ContainersUsersMemberships[containerId]">
+                            <label for="userPermissionButton"
+                                   class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
                         </div>
                     </div>
 
@@ -74,13 +98,12 @@
                             <?php echo __('User role'); ?>
                         </label>
                         <div class="col col-xs-10">
-                            <select
-                                    id="Usergroups"
+                            <select id="Usergroups"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="usergroups"
                                     ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
-                                    ng-model="post.User.usergroup.id">
+                                    ng-model="post.User.usergroup_id">
                             </select>
                         </div>
                     </div>
@@ -191,6 +214,123 @@
                         </div>
                     </div>
 
+                    <div class="form-group required" ng-class="{'has-error': errors.paginatorlength}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Listelement Length'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input class="form-control"
+                                   type="number"
+                                   ng-model="post.User.paginatorlength">
+                            <div ng-repeat="error in errors.paginatorlength">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.showstatsinmenu}">
+                        <label class="col col-md-2 control-label" for="userShowstatsinmenu">
+                            <?php echo __('Show status stats in menu'); ?>
+                        </label>
+                        <div class="col-xs-10 smart-form">
+                            <label class="checkbox small-checkbox-label no-required">
+                                <input type="checkbox" name="checkbox"
+                                       id="userShowstatsinmenu"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       ng-model="post.User.showstatsinmenu">
+                                <i class="checkbox-primary"></i>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.recursive_browser}">
+                        <label class="col col-md-2 control-label" for="userRecursiveBrowser">
+                            <?php echo __('Recursive Browser'); ?>
+                        </label>
+                        <div class="col-xs-10 smart-form">
+                            <label class="checkbox small-checkbox-label no-required">
+                                <input type="checkbox" name="checkbox"
+                                       id="userRecursiveBrowser"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       ng-model="post.User.recursive_browser">
+                                <i class="checkbox-primary"></i>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.dashboard_tab_rotation}">
+                        <label class="col col-md-2 control-label" for="userDashboardTabRotation">
+                            <?php echo __('Set tab rotation interval'); ?>
+                        </label>
+                        <div class="col-xs-10 smart-form slidecontainer">
+                            <input type="range" step="10" min="0" max="900" class="slider"
+                                   ng-model="post.User.dashboard_tab_rotation">
+                            <div>
+                                <div class="help-block text-muted">{{ intervalText }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.dateformat}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Date Format'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+
+                            <select
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="dateformats"
+                                    ng-options="dateformat.key as dateformat.value for dateformat in dateformats"
+                                    ng-model="post.User.dateformat">
+                            </select>
+                            <div ng-repeat="error in errors.User.dateformat">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group required" ng-class="{'has-error': errors.timezone}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Timezone'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+
+                            <select
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="{}"
+                                    ng-init="post.User.timezone = post.User.timezone || 'Europe/Berlin'"
+                                    ng-model="post.User.timezone">
+                                <?php foreach ($timezones as $continent => $continentTimezones): ?>
+                                    <optgroup label="<?php echo h($continent); ?>">
+                                        <?php foreach ($continentTimezones as $timezoneKey => $timezoneName): ?>
+                                            <option value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
+                                <?php endforeach;; ?>
+                            </select>
+                            <div ng-repeat="error in errors.User.timezone">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                        <div class="helpText text-muted col-md-offset-2 col-md-6">
+                            <?php //echo h($GraphingDocker->getHelpText('timezone')); ?>
+                            <br/>
+                            <?php echo __('Server timezone is:'); ?>
+                            <strong>
+                                <?php echo h(date_default_timezone_get()); ?>
+                            </strong>
+                            <?php echo __('Current server time:'); ?>
+                            <strong>
+                                <?php echo date('d.m.Y H:i:s'); ?>
+                            </strong>
+                        </div>
+                    </div>
+
                     <div class="form-group required" ng-class="{'has-error': errors.password}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('New Password'); ?>
@@ -220,11 +360,13 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
                 <div class="col-xs-12 margin-top-10 margin-bottom-10">
                     <div class="well formactions ">
                         <div class="pull-right">
-                            <input class="btn btn-primary" type="submit" value="<?php echo __('Create new local User'); ?>">
+                            <input class="btn btn-primary" type="submit"
+                                   value="<?php echo __('Create new local User'); ?>">
                             <a ui-sref="UsersIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>
