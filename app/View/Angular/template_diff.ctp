@@ -25,7 +25,7 @@
 
 <span class="input-group-addon input-group-addon-no-focus cursor-pointer" ng-click="restoreDefault()"
       title="<?php echo __('Click to restore the template default value:'); ?> {{templateValue}}"
-      ng-class="{ 'label-success': !hasDiff , 'label-danger': hasDiff}">
+      ng-class="{ 'input-group-addon-no-focus-label-success': !hasDiff , 'input-group-addon-no-focus-label-danger': hasDiff}">
 
     <i class="fa txt-color-white"
        ng-class="{ 'fa-link': !hasDiff , 'fa-chain-broken': hasDiff}"></i>
