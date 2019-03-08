@@ -49,7 +49,8 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
                 checkperiods: '#ServiceCheckPeriodId',
                 contacts: '#ServiceContact',
                 contactgroups: '#ServiceContactgroup',
-                servicegroups: '#ServiceServicegroup'
+                servicegroups: '#ServiceServicegroup',
+                servicetemplates: '#ServiceServicetemplateId'
             },
             dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
             dataPlaceholder: self.getVar('data_placeholder')

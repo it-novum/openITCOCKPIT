@@ -669,7 +669,7 @@ class ServicesController extends AppController {
 
         $this->Frontend->setJson('selectedHostId', $selectedHostId);
 
-        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
+
         $commands = $this->Command->serviceCommands('list');
 
         $timeperiods = [];
@@ -677,6 +677,7 @@ class ServicesController extends AppController {
         $contactgroups = [];
         $eventhandlers = [];
         $servicegroups = [];
+        $servicetemplates = [];
 
         if (!empty($containerIds)) {
             //Reload data for validation errors refill
@@ -685,6 +686,7 @@ class ServicesController extends AppController {
             $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
             $eventhandlers = $this->Command->eventhandlerCommands('list');
             $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
+            $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         }
 
         $this->Frontend->set('data_placeholder', __('Please choose a contact'));
@@ -3245,6 +3247,11 @@ class ServicesController extends AppController {
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
         $servicegroups = $this->Service->makeItJavaScriptAble($servicegroups);
 
+        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list', [
+            GENERIC_SERVICE,
+            EVK_SERVICE
+        ]);
+        $servicetemplates = $this->Service->makeItJavaScriptAble($servicetemplates);
 
         $this->set(compact([
             'servicegroups',
@@ -3253,6 +3260,7 @@ class ServicesController extends AppController {
             'contactgroups',
             'eventhandlers',
             'Customvariable',
+            'servicetemplates'
         ]));
 
         $this->set('_serialize', [
@@ -3262,6 +3270,7 @@ class ServicesController extends AppController {
             'contactgroups',
             'eventhandlers',
             'Customvariable',
+            'servicetemplates'
         ]);
     }
 }
