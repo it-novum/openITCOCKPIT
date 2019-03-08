@@ -689,9 +689,10 @@
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <span class="btn btn-success btn-xs margin-left-10">
-                                                    <i class="fa fa-chain"></i>
-                                                </span>
+                                                <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                       value="post.Host.<?php echo $hostOption['field']; ?>"
+                                                       template-value="hosttemplate.Hosttemplate.<?php echo $hostOption['field']; ?>">
+                                                </template-diff-button>
                                             </li>
                                         <?php endforeach; ?>
                                     </ul>
@@ -833,6 +834,10 @@
                                                             </label>
                                                         </div>
                                                     </div>
+                                                    <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                                          value="post.Host.<?php echo $hostFalpOption['field']; ?>"
+                                                                          template-value="hosttemplate.Hosttemplate.<?php echo $hostFalpOption['field']; ?>">
+                                                    </template-diff-button>
                                                 </li>
                                             <?php endforeach; ?>
                                         </ul>
