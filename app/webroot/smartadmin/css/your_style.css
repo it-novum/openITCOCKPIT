@@ -2268,9 +2268,16 @@ iframe {
     border-bottom: none !important;
 }
 
-.input-group-addon-no-focus:focus{
+.input-group-addon-no-focus:focus,
+.input-group-addon-no-focus:active,
+.input-group-addon-no-focus:hover{
     border-color: #ccc;
     background-color: #eee;
     color: #555;
 }
 
+input[type=text]:focus+.input-group-addon-no-focus {
+    border-color: #ccc;
+    background-color: #eee;
+    color: #555;
+}
