@@ -11,6 +11,16 @@ angular.module('openITCOCKPIT').directive('templateDiff', function($http, $inter
 
         controller: function($scope){
 
+            $scope.hasDiff = false;
+
+            $scope.restoreDefault = function(){
+                $scope.callback($scope.field);
+            };
+
+            $scope.$watch('value', function(){
+                $scope.hasDiff = $scope.value != $scope.templateValue;
+            });
+
         },
 
         link: function(scope, element, attr){

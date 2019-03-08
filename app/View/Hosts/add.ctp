@@ -190,9 +190,11 @@
                                                             class="form-control"
                                                             type="text"
                                                             ng-model="post.Host.description">
-                                                    <span class="input-group-addon input-group-addon-no-focus">
-                                                        <i class="fa fa-chain fa-chain-default txt-color-green"></i>
-                                                    </span>
+
+                                                    <template-diff
+                                                            value="post.Host.description"
+                                                            template-value="$scope.hosttemplate.Hosttemplate.description">
+                                                    </template-diff>
                                                 </div>
                                                 <div ng-repeat="error in errors.description">
                                                     <div class="help-block text-danger">{{ error }}</div>
