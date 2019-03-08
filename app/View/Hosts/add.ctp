@@ -664,14 +664,12 @@
                                             <li>
                                                 <div class="margin-bottom-0"
                                                      ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
-
                                                     <label for="<?php echo $hostOption['field']; ?>"
                                                            class="col col-md-7 control-label padding-top-0">
                                                         <span class="label label-<?php echo $hostOption['class']; ?> notify-label-small">
                                                             <?php echo $hostOption['text']; ?>
                                                         </span>
                                                     </label>
-
                                                     <div class="col-md-2 smart-form">
                                                         <label class="checkbox small-checkbox-label no-required">
                                                             <input type="checkbox" name="checkbox"
@@ -683,6 +681,9 @@
                                                         </label>
                                                     </div>
                                                 </div>
+                                                <span class="btn btn-success btn-xs margin-left-10">
+                                                    <i class="fa fa-chain"></i>
+                                                </span>
                                             </li>
                                         <?php endforeach; ?>
                                     </ul>
