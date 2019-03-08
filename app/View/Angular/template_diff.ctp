@@ -24,7 +24,7 @@
 ?>
 
 
-<span class="cursor-pointer" ng-click="restoreDefault()"
+<span class="input-group-addon input-group-addon-no-focus cursor-pointer" ng-click="restoreDefault()"
       title="<?php echo __('Click to restore the template default value:'); ?> {{templateValue}}"
       ng-class="{ 'label-success': currentItem.hasDiff , 'label-danger': !currentItem.hasDiff}">
 

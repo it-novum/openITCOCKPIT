@@ -1,7 +1,8 @@
 angular.module('openITCOCKPIT').directive('templateDiff', function($http, $interval){
     return {
-        restrict: 'A',
+        restrict: 'E',
         templateUrl: '/angular/template_diff.html',
+        replace: true,
         scope: {
             'value': '=',
             'templateValue': '=',

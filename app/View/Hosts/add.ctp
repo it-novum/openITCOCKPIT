@@ -191,11 +191,9 @@
                                                             type="text"
                                                             ng-model="post.Host.description">
 
-                                                    <span class="input-group-addon input-group-addon-no-focus cursor-pointer"
-                                                          template-diff
-                                                          value="post.Host.description"
-                                                          template-value="$scope.hosttemplate.Hosttemplate.description">
-                                                    </span>
+                                                    <template-diff value="post.Host.description"
+                                                                   template-value="$scope.hosttemplate.Hosttemplate.description"></template-diff>
+
                                                 </div>
                                                 <div ng-repeat="error in errors.description">
                                                     <div class="help-block text-danger">{{ error }}</div>
