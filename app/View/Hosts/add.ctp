@@ -540,15 +540,20 @@
                                             <?php echo __('Contacts'); ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10">
-                                            <select
-                                                    id="ContactsPeriodSelect"
-                                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                                    class="form-control"
-                                                    chosen="contacts"
-                                                    multiple
-                                                    ng-options="contact.key as contact.value for contact in contacts"
-                                                    ng-model="post.Host.contacts._ids">
-                                            </select>
+                                            <div class="input-group">
+                                                <select
+                                                        id="ContactsPeriodSelect"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="contacts"
+                                                        multiple
+                                                        ng-options="contact.key as contact.value for contact in contacts"
+                                                        ng-model="post.Host.contacts._ids">
+                                                </select>
+                                                <span class="input-group-addon input-group-addon-no-focus">
+                                                    <i class="fa fa-chain fa-chain-default txt-color-green"></i>
+                                                </span>
+                                            </div>
                                             <div ng-repeat="error in errors.contacts">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
