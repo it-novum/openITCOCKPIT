@@ -13,7 +13,7 @@ angular.module('openITCOCKPIT')
                 Host: {
                     name: '',
                     description: '',
-                    hosttemplate_id: '',
+                    hosttemplate_id: 0,
                     address: '',
                     command_id: 0,
                     eventhandler_command_id: 0,

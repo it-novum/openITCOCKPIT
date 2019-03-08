@@ -118,6 +118,9 @@
                                                         ng-options="hosttemplate.key as hosttemplate.value for hosttemplate in hosttemplates"
                                                         ng-model="post.Host.hosttemplate_id">
                                                 </select>
+                                                <div ng-show="post.Host.hosttemplate_id < 1" class="warning-glow">
+                                                    <?php echo __('Please select a host template.'); ?>
+                                                </div>
                                                 <div ng-repeat="error in errors.hosttemplate_id">
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>
