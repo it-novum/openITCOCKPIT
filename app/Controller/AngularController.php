@@ -719,6 +719,11 @@ class AngularController extends AppController {
         return;
     }
 
+    public function intervalInputWithDiffer(){
+        //Only ship HTML template
+        return;
+    }
+
     public function humanTime() {
         //Only ship HTML template
         return;

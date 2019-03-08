@@ -433,8 +433,10 @@
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <?php echo __('Check interval'); ?>
                                         </label>
-                                        <interval-input-directive
-                                                interval="post.Host.check_interval"></interval-input-directive>
+                                        <interval-input-with-differ-directive
+                                                template-id="post.Host.hosttemplate_id"
+                                                interval="post.Host.check_interval"
+                                                template-value="hosttemplate.Hosttemplate.check_interval"></interval-input-with-differ-directive>
                                         <div class="col-xs-12 col-lg-offset-2">
                                             <div ng-repeat="error in errors.check_interval">
                                                 <div class="help-block text-danger">{{ error }}</div>
@@ -446,8 +448,11 @@
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <?php echo __('Retry interval'); ?>
                                         </label>
-                                        <interval-input-directive
-                                                interval="post.Host.retry_interval"></interval-input-directive>
+                                        <interval-input-with-differ-directive
+                                                template-id="post.Host.hosttemplate_id"
+                                                interval="post.Host.retry_interval"
+                                                template-value="hosttemplate.Hosttemplate.retry_interval"></interval-input-with-differ-directive>
+
                                         <div class="col-xs-12 col-lg-offset-2">
                                             <div ng-repeat="error in errors.retry_interval">
                                                 <div class="help-block text-danger">{{ error }}</div>
@@ -547,8 +552,10 @@
                                         <label class="col-xs-12 col-lg-2 control-label">
                                             <?php echo __('Notification interval'); ?>
                                         </label>
-                                        <interval-input-directive
-                                                interval="post.Host.notification_interval"></interval-input-directive>
+                                        <interval-input-with-differ-directive
+                                                template-id="post.Host.hosttemplate_id"
+                                                interval="post.Host.notification_interval"
+                                                template-value="hosttemplate.Hosttemplate.notification_interval"></interval-input-with-differ-directive>
                                         <div class="col-xs-12 col-lg-offset-2">
                                             <div ng-repeat="error in errors.notification_interval">
                                                 <div class="help-block text-danger">{{ error }}</div>

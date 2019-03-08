@@ -77,6 +77,7 @@ $config = [
                 'ldap_configuration',
                 'priority',
                 'intervalInput',
+                'intervalInputWithDiffer',
                 'humanTime',
                 'template_diff'
             ],
