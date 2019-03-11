@@ -218,4 +218,40 @@ class HostgroupsTable extends Table {
                 return $hostgroupsAsList;
         }
     }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getHostgroupsAsList($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Hostgroups.id',
+                'Containers.name'
+            ])
+            ->contain(['Containers'])
+            ->disableHydration();
+        if (!empty($ids)) {
+            $query->where([
+                'Hostgroups.id IN'            => $ids,
+                'Containers.containertype_id' => CT_HOSTGROUP
+            ]);
+        }
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row['id']] = $row['container']['name'];
+        }
+
+        return $list;
+    }
 }

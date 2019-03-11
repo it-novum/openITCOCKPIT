@@ -41,9 +41,12 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\Comparison\HostComparison;
+use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
@@ -1118,6 +1121,10 @@ class HostsController extends AppController {
         $this->set(compact(['contacts', 'contactgroups', 'sharingContainers']));
     }
 
+    /**
+     * @throws NotFoundException
+     * @throws Exception
+     */
     public function add() {
         $this->layout = 'blank';
 
@@ -1127,8 +1134,67 @@ class HostsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            print_r($this->request->data);
+            FileDebugger::dump($this->request->data);
+
+            $hosttemplateId = $this->request->data('Host.hosttemplate_id');
+            if ($hosttemplateId === null) {
+                throw new Exception('Host.hosttemplate_id needs to set.');
+            }
+
+            /** @var $HosttemplatesTable HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+            if (!$HosttemplatesTable->existsById($hosttemplateId)) {
+                throw new NotFoundException(__('Invalid host template'));
+            }
+
+            $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
+            $HostComparisonForSave = new HostComparisonForSave($this->request->data('Host'), $hosttemplate);
+            $hostData = $HostComparisonForSave->getDataForSaveForAllFields();
+            $hostData['uuid'] = UUID::v4();
+            $hostData['host_type'] = GENERIC_HOST;
+            $host = $HostsTable->newEntity($hostData);
+
+            $HostsTable->save($host);
+            if ($host->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $host->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+
+                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+                $extDataForChangelog = $HostsTable->resolveDataForChangelog($this->request->data);
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'add',
+                    'hosts',
+                    $host->get('id'),
+                    OBJECT_HOST,
+                    $host->get('container_id'),
+                    $User->getId(),
+                    $host->get('name'),
+                    array_merge($this->request->data, $extDataForChangelog)
+                );
+
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($host); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('host', $host);
+            $this->set('_serialize', ['host']);
         }
+
+
 
         return;
 

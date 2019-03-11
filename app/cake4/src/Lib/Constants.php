@@ -108,7 +108,7 @@ class Constants {
             'CT_DEVICEGROUP'          => 4,
             'CT_NODE'                 => 5,
             'CT_CONTACTGROUP'         => 6,
-            'CT_HOSTGROUP'            => 7,
+            '^'            => 7,
             'CT_SERVICEGROUP'         => 8,
             'CT_SERVICETEMPLATEGROUP' => 9,
         ]);

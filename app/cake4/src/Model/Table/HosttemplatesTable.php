@@ -541,6 +541,14 @@ class HosttemplatesTable extends Table {
     }
 
     /**
+     * @param $id
+     * @return array
+     */
+    public function getHosttemplateForDiff($id) {
+        return $this->getHosttemplateForEdit($id);
+    }
+
+    /**
      * @param int $id
      * @return int
      */
@@ -719,6 +727,30 @@ class HosttemplatesTable extends Table {
             return [];
         }
         return $result;
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getHosttemplatesAsList($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Hosttemplates.id',
+                'Hosttemplates.name'
+            ])
+            ->disableHydration();
+        if (!empty($ids)) {
+            $query->where([
+                'Hosttemplates.id IN' => $ids
+            ]);
+        }
+
+        return $this->formatListAsCake2($query->toArray());
     }
 
     /**

@@ -8,6 +8,7 @@ use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\HostConditions;
@@ -674,6 +675,135 @@ class HostsTable extends Table {
         }
 
         return $list;
+    }
+
+    /**
+     * @param array $dataToParse
+     * @return array
+     */
+    public function resolveDataForChangelog($dataToParse = []) {
+        $extDataForChangelog = [
+            'Contact'      => [],
+            'Contactgroup' => [],
+            'CheckPeriod'  => [],
+            'NotifyPeriod' => [],
+            'CheckCommand' => [],
+            'Hostgroup'    => [],
+            'Hosttemplate' => [],
+            'Parenthost'   => []
+        ];
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+
+        if (!empty($dataToParse['Host']['contacts']['_ids'])) {
+            foreach ($ContactsTable->getContactsAsList($dataToParse['Host']['contacts']['_ids']) as $contactId => $contactName) {
+                $extDataForChangelog['Contact'][] = [
+                    'id'   => $contactId,
+                    'name' => $contactName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Host']['contactgroups']['_ids'])) {
+            foreach ($ContactgroupsTable->getContactgroupsAsList($dataToParse['Host']['contactgroups']['_ids']) as $contactgroupId => $contactgroupName) {
+                $extDataForChangelog['Contactgroup'][] = [
+                    'id'   => $contactgroupId,
+                    'name' => $contactgroupName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Host']['check_period_id'])) {
+            foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['check_period_id']) as $timeperiodId => $timeperiodName) {
+                $extDataForChangelog['CheckPeriod'] = [
+                    'id'   => $timeperiodId,
+                    'name' => $timeperiodName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Host']['notify_period_id'])) {
+            foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['notify_period_id']) as $timeperiodId => $timeperiodName) {
+                $extDataForChangelog['NotifyPeriod'] = [
+                    'id'   => $timeperiodId,
+                    'name' => $timeperiodName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Host']['command_id'])) {
+            foreach ($CommandsTable->getCommandByIdAsList($dataToParse['Host']['command_id']) as $commandId => $commandName) {
+                $extDataForChangelog['CheckCommand'] = [
+                    'id'   => $commandId,
+                    'name' => $commandName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Host']['hostgroups']['_ids'])) {
+            foreach ($HostgroupsTable->getHostgroupsAsList($dataToParse['Host']['hostgroups']['_ids']) as $hostgroupId => $hostgroupName) {
+                $extDataForChangelog['Hostgroup'] = [
+                    'id'   => $hostgroupId,
+                    'name' => $hostgroupName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Host']['parenthosts']['_ids'])) {
+            foreach ($this->getHostsAsList($dataToParse['Host']['parenthosts']['_ids']) as $parentHostId => $parentHostName) {
+                $extDataForChangelog['Parenthost'] = [
+                    'id'   => $parentHostId,
+                    'name' => $parentHostName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Host']['hosttemplate_id'])) {
+            foreach ($HosttemplatesTable->getHosttemplatesAsList($dataToParse['Host']['hosttemplate_id']) as $hosttemplateId => $hosttemplateName) {
+                $extDataForChangelog['Hosttemplate'] = [
+                    'id'   => $hosttemplateId,
+                    'name' => $hosttemplateName
+                ];
+            }
+        }
+
+        return $extDataForChangelog;
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getHostsAsList($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.name'
+            ])
+            ->disableHydration();
+        if (!empty($ids)) {
+            $query->where([
+                'Hosts.id IN' => $ids
+            ]);
+        }
+
+        return $this->formatListAsCake2($query->toArray());
     }
 
 

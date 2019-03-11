@@ -337,6 +337,8 @@ angular.module('openITCOCKPIT')
             $http.post("/hosts/add.json?angular=true",
                 $scope.post
             ).then(function(result){
+                return;
+
                 NotyService.genericSuccess();
 
                 if($scope.data.createAnother === false){
