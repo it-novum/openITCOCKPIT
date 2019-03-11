@@ -42,7 +42,7 @@ $timezones = CakeTime::listTimezones();
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-user"></i> </span>
-        <h2><?php echo $this->action == 'edit' ? __('Edit') : __('Add') ?><?php echo __('User'); ?></h2>
+        <h2><?php echo __('Edit User'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <a ui-sref="UsersIndex" class="btn btn-default btn-xs" iconcolor="white">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
@@ -236,8 +236,6 @@ $timezones = CakeTime::listTimezones();
                             <label class="checkbox small-checkbox-label no-required">
                                 <input type="checkbox" name="checkbox"
                                        id="userShowstatsinmenu"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
                                        ng-model="post.User.showstatsinmenu">
                                 <i class="checkbox-primary"></i>
                             </label>
@@ -252,8 +250,6 @@ $timezones = CakeTime::listTimezones();
                             <label class="checkbox small-checkbox-label no-required">
                                 <input type="checkbox" name="checkbox"
                                        id="userRecursiveBrowser"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
                                        ng-model="post.User.recursive_browser">
                                 <i class="checkbox-primary"></i>
                             </label>
@@ -318,7 +314,6 @@ $timezones = CakeTime::listTimezones();
                             </div>
                         </div>
                         <div class="helpText text-muted col-md-offset-2 col-md-6">
-                            <?php //echo h($GraphingDocker->getHelpText('timezone')); ?>
                             <br/>
                             <?php echo __('Server timezone is:'); ?>
                             <strong>
@@ -366,7 +361,7 @@ $timezones = CakeTime::listTimezones();
                     <div class="well formactions ">
                         <div class="pull-right">
                             <input class="btn btn-primary" type="submit"
-                                   value="<?php echo __('Create new local User'); ?>">
+                                   value="<?php echo __('Modify local User'); ?>">
                             <a ui-sref="UsersIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>

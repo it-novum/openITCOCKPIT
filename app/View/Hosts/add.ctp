@@ -60,7 +60,6 @@
                             </header>
                             <div>
                                 <div class="widget-body">
-
                                     <div class="row">
                                         <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                                             <label class="col-xs-12 col-lg-2 control-label">
@@ -267,7 +266,7 @@
                                                         <template-diff ng-show="post.Host.hosttemplate_id"
                                                                        value="post.Host.tags"
                                                                        template-value="hosttemplate.Hosttemplate.tags"
-                                                                        callback="restoreTemplateTags"></template-diff>
+                                                                       callback="restoreTemplateTags"></template-diff>
                                                     </div>
                                                     <div ng-repeat="error in errors.tags">
                                                         <div class="help-block text-danger">{{ error }}</div>
@@ -282,9 +281,13 @@
                                                 <label class="col-xs-12 col-lg-2 control-label">
                                                     <?php echo __('Priority'); ?>
                                                 </label>
-                                                <div class="col-xs-12 col-lg-10">
+                                                <div class="col-xs-12 col-lg-2">
                                                     <priority-directive priority="post.Host.priority"
                                                                         callback="setPriority"></priority-directive>
+                                                    <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                                          value="post.Host.priority"
+                                                                          template-value="hosttemplate.Hosttemplate.priority">
+                                                    </template-diff-button>
                                                 </div>
                                             </div>
 
@@ -352,15 +355,14 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="form-group"
                                          ng-class="{'has-error': errors.active_checks_enabled}">
                                         <label class="col-xs-12 col-lg-2 control-label" for="activeChecksEnabled">
                                             <?php echo __('Enable active checks'); ?>
                                         </label>
 
-                                        <div class="col-xs-12 col-lg-10 smart-form">
-                                            <label class="checkbox small-checkbox-label no-required">
+                                        <div class="col-xs-12 col-lg-1 smart-form">
+                                            <label class="checkbox no-required no-padding no-margin label-default-off">
                                                 <input type="checkbox" name="checkbox"
                                                        id="activeChecksEnabled"
                                                        ng-true-value="1"
@@ -368,9 +370,15 @@
                                                        ng-model="post.Host.active_checks_enabled">
                                                 <i class="checkbox-primary"></i>
                                             </label>
-                                            <div class="help-block">
-                                                <?php echo __('If disabled the check command won\'t be executed. This is useful if an external program sends state data to openITCOCKPIT.'); ?>
+                                            <div class="padding-left-20">
+                                                <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                                      value="post.Host.active_checks_enabled"
+                                                                      template-value="hosttemplate.Hosttemplate.active_checks_enabled">
+                                                </template-diff-button>
                                             </div>
+                                        </div>
+                                        <div class="col col-xs-12 col-md-offset-2 help-block">
+                                            <?php echo __('If disabled the check command won\'t be executed. This is useful if an external program sends state data to openITCOCKPIT.'); ?>
                                         </div>
                                     </div>
 
@@ -782,8 +790,8 @@
                                             <?php echo __('Flap detection enabled'); ?>
                                         </label>
 
-                                        <div class="col-xs-12 col-lg-10 smart-form">
-                                            <label class="checkbox small-checkbox-label no-required">
+                                        <div class="col-xs-12 col-lg-1 smart-form">
+                                            <label class="checkbox no-required no-padding no-margin label-default-off">
                                                 <input type="checkbox" name="checkbox"
                                                        id="flapDetectionEnabled"
                                                        ng-true-value="1"
@@ -791,15 +799,14 @@
                                                        ng-model="post.Host.flap_detection_enabled">
                                                 <i class="checkbox-primary"></i>
                                             </label>
-
-                                            <template-diff-button ng-show="post.Host.hosttemplate_id"
-                                                                  value="post.Host.flap_detection_enabled"
-                                                                  template-value="hosttemplate.Hosttemplate.flap_detection_enabled">
-                                            </template-diff-button>
-
+                                            <div class="padding-left-20">
+                                                <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                                      value="post.Host.flap_detection_enabled"
+                                                                      template-value="hosttemplate.Hosttemplate.flap_detection_enabled">
+                                                </template-diff-button>
+                                            </div>
                                         </div>
                                     </div>
-
                                     <fieldset ng-show="post.Host.flap_detection_enabled">
                                         <legend class="font-sm"
                                                 ng-class="{'has-error-no-form': errors.flap_detection_on_up}">

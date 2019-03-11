@@ -236,8 +236,6 @@ $timezones = CakeTime::listTimezones();
                             <label class="checkbox small-checkbox-label no-required">
                                 <input type="checkbox" name="checkbox"
                                        id="userShowstatsinmenu"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
                                        ng-model="post.User.showstatsinmenu">
                                 <i class="checkbox-primary"></i>
                             </label>
@@ -252,8 +250,6 @@ $timezones = CakeTime::listTimezones();
                             <label class="checkbox small-checkbox-label no-required">
                                 <input type="checkbox" name="checkbox"
                                        id="userRecursiveBrowser"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
                                        ng-model="post.User.recursive_browser">
                                 <i class="checkbox-primary"></i>
                             </label>
@@ -318,7 +314,6 @@ $timezones = CakeTime::listTimezones();
                             </div>
                         </div>
                         <div class="helpText text-muted col-md-offset-2 col-md-6">
-                            <?php //echo h($GraphingDocker->getHelpText('timezone')); ?>
                             <br/>
                             <?php echo __('Server timezone is:'); ?>
                             <strong>
