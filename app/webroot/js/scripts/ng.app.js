@@ -654,7 +654,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
             })
 
             .state('UsersEdit', {
-                url: '/users/edit',
+                url: '/users/edit/:id',
                 templateUrl: "/users/edit.html",
                 controller: "UsersEditController"
             })

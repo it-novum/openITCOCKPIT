@@ -1,7 +1,9 @@
 angular.module('openITCOCKPIT')
-    .controller('UsersEditController', function($scope, $http, $rootScope, $state, NotyService){
+    .controller('UsersEditController', function($scope, $http, $state, $stateParams, NotyService){
 
         $scope.intervalText = 'disabled';
+
+        $scope.id = $stateParams.id;
 
         $scope.post = {
             'User': {
@@ -33,7 +35,16 @@ angular.module('openITCOCKPIT')
             }
         };
 
-
+        $scope.load = function(){
+            $http.get("/users/edit/" + $scope.id + ".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.post.User = result.data.user;
+                console.log(result.data.user);
+            });
+        };
 
         $scope.loadContainer = function(){
             $http.get("/containers/loadContainersForAngular.json", {
@@ -103,11 +114,11 @@ angular.module('openITCOCKPIT')
 
         $scope.submit = function(){
             console.log($scope.post);
-            $http.post("/users/edit.json?angular=true",
+            $http.post("/users/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                //$state.go('UsersIndex');
+                $state.go('UsersIndex');
 
             }, function errorCallback(result){
                 NotyService.genericError();
@@ -123,5 +134,6 @@ angular.module('openITCOCKPIT')
         $scope.loadUsergroups();
         $scope.loadStatus();
         $scope.loadDateformats();
+        $scope.load();
     });
 
