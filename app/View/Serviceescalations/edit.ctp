@@ -28,9 +28,9 @@
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-bomb fa-fw "></i>
             <?php echo __('Monitoring'); ?>
-            <span>>
+            <span>
                 <?php echo __('Service Escalation'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo __('Edit'); ?></div>
         </h1>
     </div>
@@ -50,9 +50,7 @@
                     <?php echo __('Delete'); ?>
                 </button>
             <?php endif; ?>
-            <a ui-sref="ServiceescalationsIndex" class="btn btn-default btn-xs" iconcolor="white">
-                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
-            </a>
+            <back-button fallback-state="ServiceescalationsIndex"></back-button>
         </div>
         <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
             <?php echo __('UUID: '); ?>{{ post.Serviceescalation.uuid }}
@@ -296,7 +294,7 @@
                                     <input type="checkbox" id="escalate_on_warning" ng-true-value="1" ng-false-value="0"
                                            ng-model="post.Serviceescalation.escalate_on_warning"
                                            class="ng-pristine ng-untouched ng-valid ng-not-empty">
-                                    <i class="checkbox-danger"></i>
+                                    <i class="checkbox-warning"></i>
                                 </label>
                                 <div ng-repeat="error in errors.escalate_on_warning">
                                     <div class="help-block text-danger">{{ error }}</div>

@@ -347,27 +347,15 @@ class ServiceescalationsController extends AppController {
     }
 
     public function add() {
-        $services = [];
-        $servicegroups = [];
-        $contacts = [];
-        $contactgroups = [];
-        $timeperiods = [];
+        $this->layout = 'blank';
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
-
-        $customFieldsToRefill = [
-            'Serviceescalation' => [
-                'escalate_on_recovery',
-                'escalate_on_warning',
-                'escalate_on_critical',
-                'escalate_on_unknown',
-            ],
-        ];
-        $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
-        $this->Frontend->set('data_placeholder', __('Please choose service'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
+        $containers = Api::makeItJavaScriptAble($containers);
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $necessaryKeys = [
@@ -396,38 +384,16 @@ class ServiceescalationsController extends AppController {
             $this->Serviceescalation->set($this->request->data);
             $isJsonRequest = $this->request->ext === 'json';
             if ($this->Serviceescalation->saveAll($this->request->data)) {
-                if ($isJsonRequest) {
-                    $this->serializeId();
-
-                    return;
-                } else {
-                    $this->setFlash(__('Serviceescalation successfully saved'));
-                    $this->redirect(['action' => 'index']);
-                }
+                $this->serializeId();
+                return;
             } else {
-                if ($isJsonRequest) {
-                    $this->serializeErrorMessage();
-
-                    return;
-                } else {
-                    $this->setFlash(__('Serviceescalation could not be saved'), false);
-
-                    $containerId = $this->request->data('Serviceescalation.container_id');
-                    if ($containerId > 0) {
-                        list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) =
-                            $this->getAvailableDataByContainerId($containerId);
-                    }
-                }
+                $this->serializeErrorMessage();
+                return;
             }
         }
-        $this->set([
-            'services'      => $services,
-            'servicegroups' => $servicegroups,
-            'timeperiods'   => $timeperiods,
-            'contactgroups' => $contactgroups,
-            'contacts'      => $contacts,
-            'containers'    => $containers,
-        ]);
+
+        $this->set(compact(['containers', 'services', 'servicegroups', 'timeperiods', 'contactgroups', 'contacts']));
+        $this->set('_serialize', ['containers', 'services', 'servicegroups', 'timeperiods', 'contactgroups', 'contacts']);
     }
 
     public function delete($id = null) {
@@ -486,7 +452,7 @@ class ServiceescalationsController extends AppController {
         $servicegroupsExcluded = $servicegroups;
         $servicesExcluded = $services;
 
-        $data = [
+        $this->set([
             'services'              => $services,
             'servicesExcluded'      => $servicesExcluded,
             'servicegroups'         => $servicegroups,
@@ -494,9 +460,8 @@ class ServiceescalationsController extends AppController {
             'timeperiods'           => $timeperiods,
             'contacts'              => $contacts,
             'contactgroups'         => $contactgroups,
-        ];
-        $this->set($data);
-        $this->set('_serialize', array_keys($data));
+        ]);
+        $this->set('_serialize', ['services', 'servicesExcluded', 'servicegroups', 'servicegroupsExcluded', 'timeperiods', 'contacts', 'contactgroups']);
     }
 
     /**

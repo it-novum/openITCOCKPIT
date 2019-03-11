@@ -42,9 +42,7 @@
         <span class="widget-icon"> <i class="fa fa-sitemap"></i> </span>
         <h2><?php echo __('Add Host Group'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <a ui-sref="HostgroupsIndex" class="btn btn-default btn-xs" iconcolor="white">
-                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
-            </a>
+            <back-button fallback-state='HostgroupsIndex'></back-button>
         </div>
     </header>
     <div>

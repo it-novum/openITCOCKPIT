@@ -48,10 +48,11 @@
                             <?php echo __('Refresh'); ?>
                         </button>
                         <?php
-                        if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('New'), '/serviceescalations/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                            //echo " "; //Fix HTML if search is implemented
-                        endif;
+                        if ($this->Acl->hasPermission('add')): ?>
+                            <a ui-sref="ServiceescalationsAdd" class="btn btn-xs btn-success" icon="fa fa-plus">
+                                <i class="fa fa-plus"></i> <?php echo __('New'); ?>
+                            </a>
+                        <?php endif;
 
                         //TODO: search functionallity
                         //echo $this->Html->link(__('Filter'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter'));

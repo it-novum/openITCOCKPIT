@@ -54,10 +54,7 @@
             </button>
 
             <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
-                <a class="btn btn-default" ui-sref="HosttemplatesIndex">
-                    <i class="fa fa-arrow-left"></i>
-                    <?php echo __('Back to list'); ?>
-                </a>
+                <back-button fallback-state='HosttemplatesIndex'></back-button>
             <?php endif; ?>
         </div>
     </header>

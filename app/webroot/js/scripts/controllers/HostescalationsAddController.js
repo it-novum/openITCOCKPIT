@@ -63,7 +63,7 @@ angular.module('openITCOCKPIT')
             ).then(function(result) {
                 NotyService.genericSuccess();
                 $state.go('HostescalationsIndex');
-
+                NotyService.scrollTop();
             }, function errorCallback (result) {
                 NotyService.genericError();
 
