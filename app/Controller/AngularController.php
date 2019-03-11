@@ -728,4 +728,9 @@ class AngularController extends AppController {
         //Only ship HTML template
         return;
     }
+
+    public function back_button() {
+        //Only ship HTML template
+        return;
+    }
 }

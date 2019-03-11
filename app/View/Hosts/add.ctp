@@ -42,10 +42,7 @@
         <h2><?php echo __('Create new host'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                <a class="btn btn-default" ui-sref="HostsIndex">
-                    <i class="fa fa-arrow-left"></i>
-                    <?php echo __('Back to list'); ?>
-                </a>
+                <back-button fallback-state='HostsIndex'></back-button>
             <?php endif; ?>
         </div>
     </header>

@@ -44,10 +44,7 @@
         </h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'contacts')): ?>
-                <a class="btn btn-default" ui-sref="ContactsIndex">
-                    <i class="fa fa-arrow-left"></i>
-                    <?php echo __('Back to list'); ?>
-                </a>
+                <back-button fallback-state='ContactsIndex'></back-button>
             <?php endif; ?>
         </div>
     </header>
