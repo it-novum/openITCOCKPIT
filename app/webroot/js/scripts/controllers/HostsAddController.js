@@ -334,9 +334,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            console.log($scope.post);
-            return;
-
             $http.post("/hosts/add.json?angular=true",
                 $scope.post
             ).then(function(result){
