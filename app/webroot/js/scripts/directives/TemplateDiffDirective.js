@@ -5,7 +5,8 @@ angular.module('openITCOCKPIT').directive('templateDiff', function($http, $inter
         replace: true,
         scope: {
             'value': '=',
-            'templateValue': '='
+            'templateValue': '=',
+            'callback': '=?' //Optional callback method
         },
 
         controller: function($scope){
@@ -14,6 +15,10 @@ angular.module('openITCOCKPIT').directive('templateDiff', function($http, $inter
 
             $scope.restoreDefault = function(){
                 $scope.value = $scope.templateValue;
+
+                if(typeof $scope.callback === "function"){
+                    $scope.callback();
+                }
             };
 
             $scope.$watch('value', function(){

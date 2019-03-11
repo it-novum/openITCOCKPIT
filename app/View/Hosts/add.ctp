@@ -266,7 +266,8 @@
                                                                 ng-model="post.Host.tags">
                                                         <template-diff ng-show="post.Host.hosttemplate_id"
                                                                        value="post.Host.tags"
-                                                                       template-value="hosttemplate.Hosttemplate.tags"></template-diff>
+                                                                       template-value="hosttemplate.Hosttemplate.tags"
+                                                                        callback="restoreTemplateTags"></template-diff>
                                                     </div>
                                                     <div ng-repeat="error in errors.tags">
                                                         <div class="help-block text-danger">{{ error }}</div>
