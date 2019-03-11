@@ -605,7 +605,7 @@
                                             </div>
                                         </div>
 
-                                        <fieldset>
+                                        <fieldset ng-show="post.Hosttemplate.flap_detection_enabled">
                                             <legend class="font-sm"
                                                     ng-class="{'has-error-no-form': errors.flap_detection_on_up}">
                                                 <div class="required">

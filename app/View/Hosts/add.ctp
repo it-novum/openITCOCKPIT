@@ -690,8 +690,8 @@
                                                     </div>
                                                 </div>
                                                 <template-diff-button ng-show="post.Host.hosttemplate_id"
-                                                       value="post.Host.<?php echo $hostOption['field']; ?>"
-                                                       template-value="hosttemplate.Hosttemplate.<?php echo $hostOption['field']; ?>">
+                                                                      value="post.Host.<?php echo $hostOption['field']; ?>"
+                                                                      template-value="hosttemplate.Hosttemplate.<?php echo $hostOption['field']; ?>">
                                                 </template-diff-button>
                                             </li>
                                         <?php endforeach; ?>
@@ -793,13 +793,19 @@
                                                        ng-model="post.Host.flap_detection_enabled">
                                                 <i class="checkbox-primary"></i>
                                             </label>
+
+                                            <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                                  value="post.Host.flap_detection_enabled"
+                                                                  template-value="hosttemplate.Hosttemplate.flap_detection_enabled">
+                                            </template-diff-button>
+
                                         </div>
                                     </div>
 
-                                    <fieldset>
+                                    <fieldset ng-show="post.Host.flap_detection_enabled">
                                         <legend class="font-sm"
                                                 ng-class="{'has-error-no-form': errors.flap_detection_on_up}">
-                                            <div class="required">
+                                            <div ng-class="{'required':post.Host.flap_detection_enabled}">
                                                 <label>
                                                     <?php echo __('Flap detection options'); ?>
                                                 </label>

@@ -194,7 +194,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadCommandArguments = function(){
-            return;
             var params = {
                 'angular': true
             };
@@ -242,6 +241,11 @@ angular.module('openITCOCKPIT')
                 $scope.hosttemplate = result.data.hosttemplate;
                 setValuesFromHosttemplate();
             });
+
+            setTimeout(function(){
+                //Enable post.Host.command_id $watch
+                $scope.init = false;
+            }, 500);
         };
 
         $scope.setPriority = function(priority){
@@ -324,7 +328,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            console.log( $scope.post);
+            console.log($scope.post);
             return;
 
             $http.post("/hosts/add.json?angular=true",
@@ -381,6 +385,8 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
+
+            $scope.init = true; //Disable post.Host.command_id $watch
             $scope.loadHosttemplate();
         }, true);
 
@@ -390,6 +396,7 @@ angular.module('openITCOCKPIT')
             }
             $scope.loadCommandArguments();
         }, true);
+
 
         $scope.$watch('data.dnsLookUp', function(){
             if($scope.init){

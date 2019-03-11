@@ -32,6 +32,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostcommandargumentvaluesTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
@@ -1126,7 +1127,7 @@ class HostsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-
+            print_r($this->request->data);
         }
 
         return;
@@ -3906,6 +3907,72 @@ class HostsController extends AppController {
 
         $this->set('result', $result);
         $this->set('_serialize', ['result']);
+    }
+
+    /**
+     * @param int|null $commandId
+     * @param int|null $hostId
+     */
+    public function loadCommandArguments($commandId = null, $hostId = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+
+        if (!$CommandsTable->existsById($commandId)) {
+            throw new NotFoundException(__('Invalid command'));
+        }
+
+        $hostcommandargumentvalues = [];
+
+        if ($hostId != null) {
+            //User passed an hostId, so we are in a non add mode!
+            //Check if the host has defined command arguments
+
+            /** @var $HostcommandargumentvaluesTable HostcommandargumentvaluesTable */
+            $HostcommandargumentvaluesTable = TableRegistry::getTableLocator()->get('Hostcommandargumentvalues');
+
+            $hostCommandArgumentValues = $HostcommandargumentvaluesTable->getByHostIdAndCommandId($hostId, $commandId);
+
+            foreach ($hostCommandArgumentValues as $hostCommandArgumentValue) {
+                $hostcommandargumentvalues[] = [
+                    'commandargument_id' => $hostCommandArgumentValue['commandargument_id'],
+                    'host_id'            => $hostCommandArgumentValue['host_id'],
+                    'value'              => $hostCommandArgumentValue['value'],
+                    'commandargument'    => [
+                        'name'       => $hostCommandArgumentValue['commandargument']['name'],
+                        'human_name' => $hostCommandArgumentValue['commandargument']['human_name'],
+                        'command_id' => $hostCommandArgumentValue['commandargument']['command_id'],
+                    ]
+                ];
+            }
+        }
+
+        //Get command arguments
+        if (empty($hostcommandargumentvalues)) {
+            //Host has no command arguments defined
+            //Or we are in /hosts/add ?
+
+            //Load command arguments of the check command
+            foreach ($CommandargumentsTable->getByCommandId($commandId) as $commandargument) {
+                $hostcommandargumentvalues[] = [
+                    'commandargument_id' => $commandargument['Commandargument']['id'],
+                    'value'              => '',
+                    'commandargument'    => [
+                        'name'       => $commandargument['Commandargument']['name'],
+                        'human_name' => $commandargument['Commandargument']['human_name'],
+                        'command_id' => $commandargument['Commandargument']['command_id'],
+                    ]
+                ];
+            }
+        };
+
+        $this->set('hostcommandargumentvalues', $hostcommandargumentvalues);
+        $this->set('_serialize', ['hostcommandargumentvalues']);
     }
 
 
