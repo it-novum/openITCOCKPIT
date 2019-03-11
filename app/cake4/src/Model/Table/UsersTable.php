@@ -169,7 +169,7 @@ class UsersTable extends Table {
             ->allowEmptyString('paginatorlength', false);
 
         $validator
-            ->integer('recursive_browser')
+            ->boolean('recursive_browser')
             ->requirePresence('recursive_browser', 'create')
             ->allowEmptyString('recursive_browser', false);
 
@@ -251,21 +251,33 @@ class UsersTable extends Table {
      * @return array
      */
     public function getUser($userId, $rights) {
-        $query = $this->find('first')
+        $query = $this->find()
             ->disableHydration()
-            ->contain(['Containers', 'Usergroups'])
+            ->contain(['Containers'])
             ->matching('Containers')
             ->where([
-                'User.id'                                    => $userId,
+                'Users.id'                                   => $userId,
                 'ContainersUsersMemberships.container_id IN' => $rights
             ])
             ->select(function (Query $query) {
                 return [
-                    'User.id',
-                    'User.email',
-                    'User.company',
-                    'User.status',
-                    'User.samaccountname',
+                    'Users.id',
+                    'Users.email',
+                    'Users.company',
+                    'Users.status',
+                    'Users.samaccountname',
+                    'Users.usergroup_id',
+                    //'Users.password',
+                    'Users.firstname',
+                    'Users.lastname',
+                    'Users.position',
+                    'Users.phone',
+                    'Users.timezone',
+                    'Users.dateformat',
+                    'Users.showstatsinmenu',
+                    'Users.dashboard_tab_rotation',
+                    'Users.paginatorlength',
+                    'Users.recursive_browser',
                     'ContainersUsersMemberships.container_id',
                     'full_name' => $query->func()->concat([
                         'Users.firstname' => 'literal',
@@ -278,7 +290,7 @@ class UsersTable extends Table {
                 'Users.id'
             ]);
         if (!is_null($query)) {
-            return $query->toArray();
+            return $query->first();
         }
         return [];
 
@@ -322,6 +334,32 @@ class UsersTable extends Table {
             array_keys($containerPermissions),
             $containerPermissions
         );
+    }
+
+    /**
+     * @param $containers
+     * @return array
+     */
+    public function containerPermissionsForAngular($containers) {
+        if(empty($containers)){
+            return [];
+        }
+        $ret = [];
+        foreach ($containers as $container){
+            $ret['ContainersUsersMemberships'][$container['id']] = $container['_joinData']['permission_level'];
+            $ret['containers']['_ids'][] = $container['id'];
+        }
+        return $ret;
+    }
+
+    public function getUserWithContainerPermission($userId = null, $rights){
+        $user = $this->getUser($userId, $rights);
+        $containerPermissions = [];
+        if(!empty($user['containers'])){
+            $containerPermissions = $this->containerPermissionsForAngular($user['containers']);
+            $user = array_merge($user, $containerPermissions);
+        }
+        return $user;
     }
 
     /**

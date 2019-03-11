@@ -21,7 +21,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
+/*
 App.Controllers.UsersEditController = Frontend.AppController.extend({
     _initialize: function(){
         var self = this;
@@ -91,3 +91,4 @@ App.Controllers.UsersEditController = Frontend.AppController.extend({
         $('#' + deSelectedOptionValue).remove();
     }
 });
+*/

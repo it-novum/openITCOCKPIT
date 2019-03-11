@@ -222,6 +222,7 @@ class UsersController extends AppController {
 
         $this->set('containers', $containers);
         $this->set('usergroups', $usergroups);
+        $this->set('_serialize', ['containers', 'usergroups']);
     }
 
     public function loadDateformats() {
@@ -243,110 +244,42 @@ class UsersController extends AppController {
 
 
     public function edit($id = null) {
-        if (!$this->User->exists($id)) {
-            throw new NotFoundException(__('Invalide user'));
-        }
-
+        $this->layout = 'blank';
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
-        $permissionsUser = $Users->getUser($id, $this->MY_RIGHTS);
+        $user = $Users->getUserWithContainerPermission($id, $this->MY_RIGHTS);
 
-       // debug($permissionsUser);
-
-        /*
-        $permissionsUser = $this->User->find('first', [
-            'joins'      => [
-                [
-                    'table'      => 'users_to_containers',
-                    'type'       => 'LEFT',
-                    'alias'      => 'UsersToContainer',
-                    'conditions' => 'UsersToContainer.user_id = User.id',
-                ],
-            ],
-            'conditions' => [
-                'User.id'                       => $id,
-                'UsersToContainer.container_id' => $this->MY_RIGHTS,
-            ],
-            'fields'     => [
-                'User.id',
-                'User.email',
-                'User.company',
-                'User.status',
-                'User.full_name',
-                'User.samaccountname',
-            ],
-            'group'      => [
-                'User.id',
-            ],
-        ]);
-        */
-
-        if (isset($permissionsUser['ContainerUserMembership'])) {
-            $this->Frontend->setJson('rights',
-                Hash::combine(
-                    $permissionsUser['ContainerUserMembership'],
-                    '{n}.container_id',
-                    '{n}.permission_level'
-                )
-            );
-        }
-
-        if (empty($permissionsUser)) {
-            $this->render403();
-
-            return;
-        }
+        $this->set('user', $user);
+        $this->set('_serialize', ['user']);
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->request->data('ContainerUserMembership')) {
-                $this->Frontend->setJson('rights', $this->request->data('ContainerUserMembership'));
-                $this->request->data['ContainerUserMembership'] = array_map(
-                    function ($container_id, $permission_level) {
-                        return [
-                            'container_id'     => $container_id,
-                            'permission_level' => $permission_level,
-                        ];
-                    },
-                    array_keys($this->request->data['ContainerUserMembership']),
-                    $this->request->data['ContainerUserMembership']
-                );
+
+            // save additional data to containersUsersMemberships
+            if (isset($this->request->data['User']['ContainersUsersMemberships'])) {
+                $containerPermissions = $Users->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
+                $this->request->data['User']['containers'] = $containerPermissions;
             }
-            $this->User->set($this->request->data);
-            if ($this->User->validates()) {
-                $this->ContainerUserMembership->deleteAll(
-                    [
-                        'user_id' => $id,
-                    ]
-                );
-                if ($this->User->saveAll($this->request->data)) {
-                    $this->setFlash(__('User saved successfully'));
-                    Cache::clear(false, 'permissions');
-                    $this->redirect(['action' => 'index']);
 
-                    return;
-                }
-            } else {
-                $this->setFlash(__('Could not save user'), false);
+            //@TODO remove these lines as they are implemented in users edit
+            $this->request->data['User']['status'] = 1;
+
+            $this->request->data = $this->request->data('User');
+
+            $user = $Users->get($id);
+            $user = $Users->patchEntity($user, $this->request->data);
+
+            $Users->save($user);
+            if ($user->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $user->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
             }
+            $this->set('user', $user);
+            $this->set('_serialize', ['user']);
         }
-        $usergroups = $this->Usergroup->find('list');
-        $options = ['conditions' => ['User.' . $this->User->primaryKey => $id]];
-        $this->request->data = $this->User->find('first', $options);
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
-        $selectedContainers = ($this->request->data('Container')) ? Hash::extract($this->request->data['Container'], '{n}.id') : Hash::extract($permissionsUser['ContainerUserMembership'], '{n}.container_id');
-        $this->set(compact(['containers', 'selectedContainers', 'permissionsUser']));
-        $this->request->data['User']['password'] = '';
-
-        $type = 'local';
-        if (strlen($this->request->data['User']['samaccountname']) > 0) {
-            $type = 'ldap';
-        }
-        $this->set(compact(['type', 'usergroups']));
     }
+
 
     public function addFromLdap() {
         $this->layout = 'angularjs';

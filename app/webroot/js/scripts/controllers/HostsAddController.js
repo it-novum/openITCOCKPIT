@@ -327,10 +327,13 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.submit = function(){
-            console.log($scope.post);
-            return;
+        $scope.restoreTemplateTags = function(){
+            $scope.post.Host.tags = $scope.hosttemplate.Hosttemplate.tags;
+            $('#HostTagsInput').tagsinput('removeAll');
+            $('#HostTagsInput').tagsinput('add', $scope.hosttemplate.Hosttemplate.tags);
+        };
 
+        $scope.submit = function(){
             $http.post("/hosts/add.json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -368,6 +371,7 @@ angular.module('openITCOCKPIT')
 
         $scope.loadContainers();
         $scope.loadCommands();
+
 
         jQuery(function(){
             $('.tagsinput').tagsinput();
