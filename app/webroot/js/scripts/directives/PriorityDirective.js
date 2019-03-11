@@ -20,8 +20,8 @@ angular.module('openITCOCKPIT').directive('priorityDirective', function($http){
             var colors = [
                 'txt-color-greenLight',
                 'txt-color-green',
-                'text-primary',
-                'txt-color-orange',
+                'txt-color-yellow',
+                'txt-color-orangeDark',
                 'txt-color-red'
             ];
 

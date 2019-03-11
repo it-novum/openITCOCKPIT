@@ -79,7 +79,8 @@ $config = [
                 'intervalInput',
                 'intervalInputWithDiffer',
                 'humanTime',
-                'template_diff'
+                'template_diff',
+                'template_diff_button'
             ],
             'Automaps'         => [
                 'icon'

@@ -672,14 +672,12 @@
                                             <li>
                                                 <div class="margin-bottom-0"
                                                      ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
-
                                                     <label for="<?php echo $hostOption['field']; ?>"
                                                            class="col col-md-7 control-label padding-top-0">
                                                         <span class="label label-<?php echo $hostOption['class']; ?> notify-label-small">
                                                             <?php echo $hostOption['text']; ?>
                                                         </span>
                                                     </label>
-
                                                     <div class="col-md-2 smart-form">
                                                         <label class="checkbox small-checkbox-label no-required">
                                                             <input type="checkbox" name="checkbox"
@@ -691,6 +689,10 @@
                                                         </label>
                                                     </div>
                                                 </div>
+                                                <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                       value="post.Host.<?php echo $hostOption['field']; ?>"
+                                                       template-value="hosttemplate.Hosttemplate.<?php echo $hostOption['field']; ?>">
+                                                </template-diff-button>
                                             </li>
                                         <?php endforeach; ?>
                                     </ul>
@@ -832,6 +834,10 @@
                                                             </label>
                                                         </div>
                                                     </div>
+                                                    <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                                          value="post.Host.<?php echo $hostFalpOption['field']; ?>"
+                                                                          template-value="hosttemplate.Hosttemplate.<?php echo $hostFalpOption['field']; ?>">
+                                                    </template-diff-button>
                                                 </li>
                                             <?php endforeach; ?>
                                         </ul>
