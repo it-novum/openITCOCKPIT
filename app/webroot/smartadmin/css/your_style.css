@@ -154,7 +154,7 @@
 }
 
 .no-padding-top {
-    padding-top: 0!important;
+    padding-top: 0 !important;
 }
 
 .hintmark:after {
@@ -2266,4 +2266,25 @@ iframe {
 
 .no-border-bottom {
     border-bottom: none !important;
+}
+
+input[type=text]:focus + .input-group-addon-no-focus {
+    border-color: #ccc;
+    background-color: #eee;
+    color: #555;
+}
+
+.input-group-addon-no-focus-label-success {
+    background-color: #5cb85c !important;
+    border-color: #ccc;
+}
+
+.input-group-addon-no-focus-label-danger {
+    background-color: #d9534f !important;
+    border-color: #ccc;
+}
+
+.warning-glow {
+    color: #FCAB20;
+    text-shadow: 0px 0px 9px rgba(252, 137, 23, 0.6);
 }

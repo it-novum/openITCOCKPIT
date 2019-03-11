@@ -82,7 +82,7 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                 data: {
                     'angular': true,
                     'filter[Host.name]': searchString,
-                    'selected[]': selected,
+                    'selected[]': post.Host.parenthosts._ids,
                     'containerId': containerId
                 },
                 success: function(response){

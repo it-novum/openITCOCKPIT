@@ -1,9 +1,8 @@
 angular.module('openITCOCKPIT')
-    .controller('ServiceescalationsEditController', function($scope, $http, $state, $stateParams, NotyService) {
+    .controller('ServiceescalationsAddController', function($scope, $http, $state, NotyService) {
 
         $scope.post = {
             Serviceescalation: {
-                id: $stateParams.id,
                 uuid: null,
                 container_id: null,
                 timeperiod_id: null,
@@ -28,21 +27,12 @@ angular.module('openITCOCKPIT')
 
         $scope.load = function() {
 
-            $http.get("/serviceescalations/edit/" + $scope.post.Serviceescalation.id + ".json", {
+            $http.get("/serviceescalations/add.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result) {
-                $scope.post.Serviceescalation = result.data.serviceescalation.Serviceescalation;
-
                 $scope.containers = result.data.containers;
-                $scope.services = result.data.services;
-                $scope.servicesExcluded = result.data.servicesExcluded;
-                $scope.servicegroups = result.data.servicegroups;
-                $scope.servicegroupsExcluded = result.data.servicegroupsExcluded;
-                $scope.timeperiods = result.data.timeperiods;
-                $scope.contacts = result.data.contacts;
-                $scope.contactgroups = result.data.contactgroups;
             });
 
         };
@@ -69,7 +59,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function() {
-            $http.post("/serviceescalations/edit/" + $scope.post.Serviceescalation.id + ".json?angular=true",
+            $http.post("/serviceescalations/add/.json?angular=true",
                 $scope.post
             ).then(function(result) {
                 NotyService.genericSuccess();

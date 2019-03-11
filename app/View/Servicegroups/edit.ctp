@@ -50,9 +50,7 @@
                     <?php echo __('Delete'); ?>
                 </button>
             <?php endif; ?>
-            <a ui-sref="ServicegroupsIndex" class="btn btn-default btn-xs" iconcolor="white">
-                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
-            </a>
+            <back-button fallback-state='ServicegroupsIndex'></back-button>
         </div>
         <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
             <?php echo __('UUID:'); ?> {{ servicegroup.Servicegroup.uuid }}

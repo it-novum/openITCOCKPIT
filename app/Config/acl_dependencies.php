@@ -77,7 +77,10 @@ $config = [
                 'ldap_configuration',
                 'priority',
                 'intervalInput',
-                'humanTime'
+                'intervalInputWithDiffer',
+                'humanTime',
+                'template_diff',
+                'template_diff_button'
             ],
             'Automaps'         => [
                 'icon'
@@ -259,7 +262,7 @@ $config = [
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid', 'getGrafanaIframeUrlForDatepicker'],
-                'add'        => ['gethostbyname', 'gethostbyaddr', 'loadHosttemplate', 'addCustomMacro', 'loadTemplateMacros', 'loadParametersByCommandId', 'loadArguments', 'loadArgumentsAdd', 'loadHosttemplatesArguments', 'addParentHosts', 'loadElementsByContainerId', 'getSharingContainers'],
+                'add'        => ['loadContainers', 'loadCommands', 'loadElementsByContainerId', 'loadHosttemplate', 'runDnsLoopup', 'loadCommandArguments'],
                 'edit'       => ['gethostbyname', 'gethostbyaddr', 'loadHosttemplate', 'addCustomMacro', 'loadTemplateMacros', 'loadParametersByCommandId', 'loadArguments', 'loadArgumentsAdd', 'loadHosttemplatesArguments', 'addParentHosts', 'loadElementsByContainerId', 'getSharingContainers'],
             ],
             'Hosttemplates'         => [

@@ -34,19 +34,19 @@
         </h1>
     </div>
 </div>
+
 <div id="error_msg"></div>
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-pencil-square-o"></i> </span>
-        <?php echo __('Edit host template:'); ?>
-        {{post.Hosttemplate.name}}
+        <h2>
+            <?php echo __('Edit host template:'); ?>
+            {{post.Hosttemplate.name}}
+        </h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
-                <a class="btn btn-default" ui-sref="HosttemplatesIndex">
-                    <i class="fa fa-arrow-left"></i>
-                    <?php echo __('Back to list'); ?>
-                </a>
+                <back-button fallback-state='HosttemplatesIndex'></back-button>
             <?php endif; ?>
         </div>
         <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
@@ -602,7 +602,7 @@
                                             </div>
                                         </div>
 
-                                        <fieldset>
+                                        <fieldset ng-show="post.Hosttemplate.flap_detection_enabled">
                                             <legend class="font-sm"
                                                     ng-class="{'has-error-no-form': errors.flap_detection_on_up}">
                                                 <div class="required">
@@ -701,7 +701,7 @@
                 <div class="col-xs-12 margin-top-10 margin-bottom-10">
                     <div class="well formactions ">
                         <div class="pull-right">
-                            <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">
+                            <input class="btn btn-primary" type="submit" value="<?php echo __('Update host template'); ?>">
                             <a ui-sref="HosttemplatesIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>

@@ -32,9 +32,12 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostcommandargumentvaluesTable;
+use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -148,8 +151,8 @@ class HostsController extends AppController {
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
-            $SatelliteModel = $ModuleManager->loadModel('Satellite');
-            $SatelliteNames = $SatelliteModel->find('list');
+            $Satellite = $ModuleManager->loadModel('Satellite');
+            $SatelliteNames = $Satellite->find('list');
             $SatelliteNames[0] = $masterInstanceName;
         }
 
@@ -381,8 +384,8 @@ class HostsController extends AppController {
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
-            $SatelliteModel = $ModuleManager->loadModel('Satellite');
-            $SatelliteNames = $SatelliteModel->find('list');
+            $Satellite = $ModuleManager->loadModel('Satellite');
+            $SatelliteNames = $Satellite->find('list');
             $SatelliteNames[0] = $masterInstanceName;
         }
 
@@ -1115,10 +1118,23 @@ class HostsController extends AppController {
         $this->set(compact(['contacts', 'contactgroups', 'sharingContainers']));
     }
 
-    /**
-     * @deprecated
-     */
     public function add() {
+        $this->layout = 'blank';
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            print_r($this->request->data);
+        }
+
+        return;
+
+
+        /********* OLD CODE ******/
+
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         //Empty variables, get field if Model::save() fails for refill
         $_hosttemplates = [];
@@ -1473,8 +1489,8 @@ class HostsController extends AppController {
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
-            $SatelliteModel = $ModuleManager->loadModel('Satellite');
-            $SatelliteNames = $SatelliteModel->find('list');
+            $Satellite = $ModuleManager->loadModel('Satellite');
+            $SatelliteNames = $Satellite->find('list');
             $SatelliteNames[0] = $masterInstanceName;
         }
 
@@ -2613,71 +2629,6 @@ class HostsController extends AppController {
         return '';
     }
 
-    /**
-     * @deprecated
-     */
-    public function gethostbyname() {
-        $this->autoRender = false;
-        if ($this->request->is('ajax') && isset($this->request->data['hostname']) && $this->request->data['hostname'] != '') {
-            $ip = gethostbyname($this->request->data['hostname']);
-            if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                echo $ip;
-
-                return;
-            }
-        }
-        echo '';
-    }
-
-    /**
-     * @deprecated
-     */
-    public function gethostbyaddr() {
-        $this->autoRender = false;
-        if ($this->request->is('ajax') && isset($this->request->data['address']) && filter_var($this->request->data['address'], FILTER_VALIDATE_IP)) {
-            $fqdn = gethostbyaddr($this->request->data['address']);
-            if (strlen($fqdn) > 0 && $fqdn != $this->request->data['address']) {
-                echo $fqdn;
-
-                return;
-            }
-        }
-        echo '';
-    }
-
-    /**
-     * @deprecated
-     */
-    public function loadHosttemplate($hosttemplate_id = null) {
-        $this->allowOnlyAjaxRequests();
-
-        $this->loadModel('Hosttemplate');
-        if (!$this->Hosttemplate->exists($hosttemplate_id)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
-        }
-
-        $hosttemplate = $this->Hosttemplate->find(
-            'first', [
-                'conditions' => [
-                    'Hosttemplate.id' => $hosttemplate_id,
-                ],
-                'contain'    => [
-                    'Contactgroup' => 'Container',
-                    'CheckCommand',
-                    'Container',
-                    'Customvariable',
-                    'NotifyPeriod',
-                    'Contact',
-                    'Hosttemplatecommandargumentvalue',
-                    'CheckPeriod',
-                    'Hostgroup'    => 'Container'
-                ],
-            ]
-        );
-
-        $this->set(compact(['hosttemplate']));
-        $this->set('_serialize', ['hosttemplate']);
-    }
 
     /**
      * @deprecated
@@ -3137,72 +3088,6 @@ class HostsController extends AppController {
     }
 
 
-    /**
-     * @deprecated
-     */
-    public function loadElementsByContainerId($container_id = null, $host_id = 0) {
-        $hosttemplate_type = GENERIC_HOST;
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        /** @var $ContactgroupsTable ContactgroupsTable */
-        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-        /** @var $HosttemplatesTable HosttemplatesTable */
-        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-
-        if (!$ContainersTable->existsById($container_id)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
-        }
-
-        if ($host_id != 0) {
-            $host = $this->Host->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Host.id' => $host_id
-                ]
-            ]);
-            if (!empty($host)) {
-                $hosttemplate_type = $host['Host']['host_type'];
-            }
-        }
-
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
-
-        $hosttemplates = $HosttemplatesTable->getHosttemplatesByContainerId($containerIds, 'list', $hosttemplate_type);
-        $hosttemplates = $this->Host->chosenPlaceholder($hosttemplates);
-        $hosttemplates = Api::makeItJavaScriptAble($hosttemplates);
-
-        $hostgroups = Api::makeItJavaScriptAble(
-            $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id')
-        );
-
-        $parenthosts = $this->Host->hostsByContainerId($containerIds, 'list');
-        if ($host_id != 0 && isset($parenthosts[$host_id])) {
-            unset($parenthosts[$host_id]);
-        }
-        $parenthosts = Api::makeItJavaScriptAble($parenthosts);
-
-        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
-        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
-        $checkperiods = $timeperiods;
-
-        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-        $contacts = Api::makeItJavaScriptAble($contacts);
-
-        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
-        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
-
-        $this->set(compact(['hosttemplates', 'hostgroups', 'parenthosts', 'timeperiods', 'checkperiods', 'contacts', 'contactgroups']));
-        $this->set('_serialize', ['hosttemplates', 'hostgroups', 'parenthosts', 'timeperiods', 'checkperiods', 'contacts', 'contactgroups']);
-    }
-
     //Only for ACLs
     public function checkcommand() {
         return null;
@@ -3401,42 +3286,6 @@ class HostsController extends AppController {
             $HostCondition->setContainerIds(array_keys($writeContainers));
         }
 
-        $hosts = Api::makeItJavaScriptAble(
-            $this->Host->getHostsForAngular($HostCondition, $selected)
-        );
-
-        $this->set(compact(['hosts']));
-        $this->set('_serialize', ['hosts']);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function loadParentHostsByString() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        $selected = $this->request->query('selected');
-        $hostId = $this->request->query('hostId');
-        $containerId = $this->request->query('containerId');
-        $containerIds = [ROOT_CONTAINER, $containerId];
-        if ($containerId == ROOT_CONTAINER) {
-            /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-            //Don't panic! Only root users can edit /root objects ;)
-            //So no loss of selected hosts/host templates
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-        }
-        $HostFilter = new HostFilter($this->request);
-        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
-
-        $HostCondition->setContainerIds($containerIds);
-        if ($hostId) {
-            $HostCondition->setNotConditions([
-                'Host.id' => $hostId
-            ]);
-        }
         $hosts = Api::makeItJavaScriptAble(
             $this->Host->getHostsForAngular($HostCondition, $selected)
         );
@@ -3866,4 +3715,301 @@ class HostsController extends AppController {
         $this->set('docuExists', $docuExists);
         $this->set('_serialize', ['host', 'hoststatus', 'docuExists']);
     }
+
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        }
+
+        $this->set('containers', Api::makeItJavaScriptAble($containers));
+        $this->set('_serialize', ['containers']);
+    }
+
+    public function loadCommands() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
+
+        $this->set('commands', Api::makeItJavaScriptAble($commands));
+        $this->set('_serialize', ['commands']);
+    }
+
+    /**
+     * @param int $containerId
+     * @param int $hostId
+     */
+    public function loadElementsByContainerId($containerId, $hostId = 0) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $hostId = (int)$hostId;
+        $hosttemplateType = GENERIC_HOST;
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid container'));
+        }
+
+        if ($hostId != 0) {
+            try {
+                $host = $HostsTable->get($hostId);
+                $hosttemplateType = $host->get('host_type');
+            } catch (RecordNotFoundException $e) {
+                //Ignore error
+            }
+        }
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        $sharingContainers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        if (isset($sharingContainers[$containerId])) {
+            //Remove primary container from result
+            unset($sharingContainers[$containerId]);
+        }
+        $sharingContainers = Api::makeItJavaScriptAble($sharingContainers);
+
+        $hosttemplates = $HosttemplatesTable->getHosttemplatesByContainerId($containerIds, 'list', $hosttemplateType);
+        $hosttemplates = Api::makeItJavaScriptAble($hosttemplates);
+
+        $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
+        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
+        $checkperiods = $timeperiods;
+
+        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
+        $contacts = Api::makeItJavaScriptAble($contacts);
+
+        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
+        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
+
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $Systemsettings->getMasterInstanceName();
+
+        $satellites = [];
+        $ModuleManager = new ModuleManager('DistributeModule');
+        if ($ModuleManager->moduleExists()) {
+            $Satellite = $ModuleManager->loadModel('Satellite');
+            $satellites = $Satellite->find('list');
+            $satellites[0] = $masterInstanceName;
+        }
+
+        $satellites = Api::makeItJavaScriptAble($satellites);
+
+        $this->set('hosttemplates', $hosttemplates);
+        $this->set('hostgroups', $hostgroups);
+        $this->set('timeperiods', $timeperiods);
+        $this->set('checkperiods', $checkperiods);
+        $this->set('contacts', $contacts);
+        $this->set('contactgroups', $contactgroups);
+        $this->set('satellites', $satellites);
+        $this->set('sharingContainers', $sharingContainers);
+
+        $this->set('_serialize', [
+            'hosttemplates',
+            'hostgroups',
+            'timeperiods',
+            'checkperiods',
+            'contacts',
+            'contactgroups',
+            'satellites',
+            'sharingContainers'
+        ]);
+    }
+
+    /**
+     * @param int $hosttemplateId
+     */
+    public function loadHosttemplate($hosttemplateId) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        if (!$HosttemplatesTable->existsById($hosttemplateId)) {
+            throw new NotFoundException(__('Invalid host template'));
+        }
+
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForEdit($hosttemplateId);
+
+
+        $this->set('hosttemplate', $hosttemplate);
+        $this->set('_serialize', ['hosttemplate']);
+    }
+
+    public function runDnsLoopup() {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $hostname = (string)$this->request->data('hostname');
+        $ipAddress = (string)$this->request->data('address');
+
+        $result = [
+            'hostname' => null,
+            'address'  => null
+        ];
+
+        if ($hostname !== '') {
+            $ip = gethostbyname($hostname);
+            if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                $result['address'] = $ip;
+                $result['hostname'] = $hostname;
+            }
+        }
+
+        if ($ipAddress !== '') {
+            if (filter_var($ipAddress, FILTER_VALIDATE_IP)) {
+                $fqdn = gethostbyaddr($ipAddress);
+                if (strlen($fqdn) > 0 && $fqdn !== $ipAddress) {
+                    $result['hostname'] = $fqdn;
+                    $result['address'] = $ipAddress;
+                }
+            }
+        }
+
+        $this->set('result', $result);
+        $this->set('_serialize', ['result']);
+    }
+
+    /**
+     * @param int|null $commandId
+     * @param int|null $hostId
+     */
+    public function loadCommandArguments($commandId = null, $hostId = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+
+        if (!$CommandsTable->existsById($commandId)) {
+            throw new NotFoundException(__('Invalid command'));
+        }
+
+        $hostcommandargumentvalues = [];
+
+        if ($hostId != null) {
+            //User passed an hostId, so we are in a non add mode!
+            //Check if the host has defined command arguments
+
+            /** @var $HostcommandargumentvaluesTable HostcommandargumentvaluesTable */
+            $HostcommandargumentvaluesTable = TableRegistry::getTableLocator()->get('Hostcommandargumentvalues');
+
+            $hostCommandArgumentValues = $HostcommandargumentvaluesTable->getByHostIdAndCommandId($hostId, $commandId);
+
+            foreach ($hostCommandArgumentValues as $hostCommandArgumentValue) {
+                $hostcommandargumentvalues[] = [
+                    'commandargument_id' => $hostCommandArgumentValue['commandargument_id'],
+                    'host_id'            => $hostCommandArgumentValue['host_id'],
+                    'value'              => $hostCommandArgumentValue['value'],
+                    'commandargument'    => [
+                        'name'       => $hostCommandArgumentValue['commandargument']['name'],
+                        'human_name' => $hostCommandArgumentValue['commandargument']['human_name'],
+                        'command_id' => $hostCommandArgumentValue['commandargument']['command_id'],
+                    ]
+                ];
+            }
+        }
+
+        //Get command arguments
+        if (empty($hostcommandargumentvalues)) {
+            //Host has no command arguments defined
+            //Or we are in /hosts/add ?
+
+            //Load command arguments of the check command
+            foreach ($CommandargumentsTable->getByCommandId($commandId) as $commandargument) {
+                $hostcommandargumentvalues[] = [
+                    'commandargument_id' => $commandargument['Commandargument']['id'],
+                    'value'              => '',
+                    'commandargument'    => [
+                        'name'       => $commandargument['Commandargument']['name'],
+                        'human_name' => $commandargument['Commandargument']['human_name'],
+                        'command_id' => $commandargument['Commandargument']['command_id'],
+                    ]
+                ];
+            }
+        };
+
+        $this->set('hostcommandargumentvalues', $hostcommandargumentvalues);
+        $this->set('_serialize', ['hostcommandargumentvalues']);
+    }
+
+
+    /**
+     * @deprecated
+     */
+    public function loadParentHostsByString() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $selected = $this->request->query('selected');
+        $hostId = $this->request->query('hostId');
+        $containerId = $this->request->query('containerId');
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+        $HostFilter = new HostFilter($this->request);
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+
+        $HostCondition->setContainerIds($containerIds);
+        if ($hostId) {
+            $HostCondition->setNotConditions([
+                'Host.id' => $hostId
+            ]);
+        }
+        $hosts = Api::makeItJavaScriptAble(
+            $this->Host->getHostsForAngular($HostCondition, $selected)
+        );
+
+        $this->set(compact(['hosts']));
+        $this->set('_serialize', ['hosts']);
+    }
+
 }

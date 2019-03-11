@@ -42,9 +42,7 @@
         <span class="widget-icon"> <i class="fa fa-cogs"></i> </span>
         <h2><?php echo __('Add Service Group'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <a ui-sref="ServicegroupsIndex" class="btn btn-default btn-xs" iconcolor="white">
-                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
-            </a>
+            <back-button fallback-state='ServicegroupsIndex'></back-button>
         </div>
     </header>
     <div>

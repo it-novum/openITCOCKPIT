@@ -42,10 +42,7 @@
         <h2><?php echo __('Create new contact'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'contacts')): ?>
-                <a class="btn btn-default" ui-sref="ContactsIndex">
-                    <i class="fa fa-arrow-left"></i>
-                    <?php echo __('Back to list'); ?>
-                </a>
+                <back-button fallback-state='ContactsIndex'></back-button>
             <?php endif; ?>
         </div>
     </header>
@@ -551,7 +548,14 @@
                 <div class="col-xs-12 margin-top-10 margin-bottom-10">
                     <div class="well formactions ">
                         <div class="pull-right">
-                            <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">
+                            <label>
+                                <input type="checkbox" ng-model="data.createAnother">
+                                <?php echo _('Create another'); ?>
+                            </label>
+
+                            <input class="btn btn-primary" type="submit"
+                                   value="<?php echo __('Create contact'); ?>">
+
                             <a ui-sref="ContactsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>

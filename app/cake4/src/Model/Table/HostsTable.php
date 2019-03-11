@@ -8,6 +8,7 @@ use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -450,7 +451,7 @@ class HostsTable extends Table {
             $where['Hosts.id'] = $HostConditions->getHostIds();
         }
 
-        if(isset($where['Hosts.keywords rlike'])){
+        if (isset($where['Hosts.keywords rlike'])) {
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
                 $where['Hosts.keywords rlike'],
@@ -460,7 +461,7 @@ class HostsTable extends Table {
             unset($where['Hosts.keywords rlike']);
         }
 
-        if(isset($where['Hosts.not_keywords not rlike'])){
+        if (isset($where['Hosts.not_keywords not rlike'])) {
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
                 $where['Hosts.not_keywords not rlike'],
@@ -618,6 +619,63 @@ class HostsTable extends Table {
         }
         return $result;
     }
+
+
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @param string $index
+     * @param array $where
+     * @return array
+     */
+    public function getHostsByContainerId($containerIds = [], $type = 'all', $index = 'id', $where = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $containerIds = array_unique($containerIds);
+
+        $_where = [
+            'Hosts.disabled' => 0
+        ];
+
+        $where = Hash::merge($_where, $where);
+
+        $query = $this->find();
+        $query->select([
+            'Hosts.' . $index,
+            'Hosts.name'
+        ]);
+
+        $query->where($where);
+        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($containerIds) {
+            if (!empty($containerIds)) {
+                return $q->where(['HostsToContainersSharing.id IN' => $containerIds]);
+            }
+            return $q;
+        });
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
+        $query->order([
+            'Hosts.name' => 'asc'
+        ]);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = $row['name'];
+        }
+
+        return $list;
+    }
+
 
     /**
      * @param int $id

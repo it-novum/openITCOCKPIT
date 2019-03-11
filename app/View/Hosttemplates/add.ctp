@@ -42,10 +42,7 @@
         <h2><?php echo __('Create new host template'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
-                <a class="btn btn-default" ui-sref="HosttemplatesIndex">
-                    <i class="fa fa-arrow-left"></i>
-                    <?php echo __('Back to list'); ?>
-                </a>
+                <back-button fallback-state='HosttemplatesIndex'></back-button>
             <?php endif; ?>
         </div>
     </header>
@@ -594,7 +591,7 @@
                                             </div>
                                         </div>
 
-                                        <fieldset>
+                                        <fieldset ng-show="post.Hosttemplate.flap_detection_enabled">
                                             <legend class="font-sm"
                                                     ng-class="{'has-error-no-form': errors.flap_detection_on_up}">
                                                 <div class="required">
@@ -695,7 +692,7 @@
                         <div class="pull-right">
 
                             <label>
-                                <input type="checkbox" type="submit" ng-model="data.createAnother">
+                                <input type="checkbox" ng-model="data.createAnother">
                                 <?php echo _('Create another'); ?>
                             </label>
 
