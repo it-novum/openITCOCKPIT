@@ -13,7 +13,7 @@ angular.module('openITCOCKPIT')
                 Host: {
                     name: '',
                     description: '',
-                    hosttemplate_id: '',
+                    hosttemplate_id: 0,
                     address: '',
                     command_id: 0,
                     eventhandler_command_id: 0,
@@ -134,9 +134,18 @@ angular.module('openITCOCKPIT')
             $scope.post.Host.customvariables = [];
             for(index in $scope.hosttemplate.Hosttemplate.customvariables){
                 $scope.post.Host.customvariables.push({
-                    objecttype_id: 512, //OBJECT_HOSTTEMPLATE baecause value from host template
+                    objecttype_id: 512, //OBJECT_HOSTTEMPLATE because value from host template
                     name: $scope.hosttemplate.Hosttemplate.customvariables[index].name,
                     value: $scope.hosttemplate.Hosttemplate.customvariables[index].value
+                });
+            }
+
+            $scope.post.Host.hostcommandargumentvalues = [];
+            for(index in $scope.hosttemplate.Hosttemplate.hosttemplatecommandargumentvalues){
+                $scope.post.Host.hostcommandargumentvalues.push({
+                    commandargument_id: $scope.hosttemplate.Hosttemplate.hosttemplatecommandargumentvalues[index].commandargument_id,
+                    value: $scope.hosttemplate.Hosttemplate.hosttemplatecommandargumentvalues[index].value,
+                    commandargument: $scope.hosttemplate.Hosttemplate.hosttemplatecommandargumentvalues[index].commandargument
                 });
             }
 
@@ -307,7 +316,7 @@ angular.module('openITCOCKPIT')
                         highlight($('#HostName'));
                     }
                 }
-                }, function errorCallback(result){
+            }, function errorCallback(result){
                 NotyService.genericError({
                     message: 'Error while running DNS lookup'
                 });
@@ -315,6 +324,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
+            console.log( $scope.post);
+            return;
+
             $http.post("/hosts/add.json?angular=true",
                 $scope.post
             ).then(function(result){
