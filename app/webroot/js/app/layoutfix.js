@@ -18,8 +18,7 @@ $(document).ready(function(){
         }
     });
 
-    //$('table .dropdown-toggle').click(function (){
-    $(document).on('click', 'table .dropdown-toggle', function(){
+    uglyMenuHackClickCallback = function($this){
         //This is hacky shit and need to get frefactored ASAP!!
 
         if($('#uglyDropdownMenuHack').html() != ''){
@@ -27,13 +26,14 @@ $(document).ready(function(){
             return false;
         }
 
-        var $ul = $(this).next('ul');
+        var $ul = $this.next('ul');
 
         //$ul.hide();
-        var offset = $(this).offset(),
+        var offset = $this.offset(),
             right = $('body').width() - 26 - parseInt(offset.left);
         $('#uglyDropdownMenuHack').attr('sourceId', $ul.attr('id'));
         $('#uglyDropdownMenuHack').html($ul.clone(true, true).attr('id', 'foobarclonezilla'));
+        $ul.css('display', 'none');
 
         //Remove orginal element for postLinks (duplicate form is bad)
         $ul.html('');
@@ -62,8 +62,16 @@ $(document).ready(function(){
                     'animation-duration': '0.4s'
                 });
         }
+    };
+
+    //$('table .dropdown-toggle').click(function (){
+    $(document).on('click', 'table .dropdown-toggle', function(){
+        uglyMenuHackClickCallback($(this));
     });
 
+    $(document).on('click', 'div.well.formactions .dropdown-toggle', function(){
+        uglyMenuHackClickCallback($(this));
+    });
 
     $(document).on('hidden.bs.dropdown', function(){
         //Restore orginal menu content
