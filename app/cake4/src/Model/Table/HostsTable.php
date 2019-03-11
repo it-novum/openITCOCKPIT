@@ -23,8 +23,8 @@ use itnovum\openITCOCKPIT\Filter\HostFilter;
  * @property \App\Model\Table\CommandsTable|\Cake\ORM\Association\BelongsTo $Commands
  * @property \App\Model\Table\EventhandlerCommandsTable|\Cake\ORM\Association\BelongsTo $EventhandlerCommands
  * @property \App\Model\Table\TimeperiodsTable|\Cake\ORM\Association\BelongsTo $Timeperiods
- * @property \App\Model\Table\CheckPeriodsTable|\Cake\ORM\Association\BelongsTo $CheckPeriods
- * @property \App\Model\Table\NotifyPeriodsTable|\Cake\ORM\Association\BelongsTo $NotifyPeriods
+ * @property \App\Model\Table\TimeperiodsTable|\Cake\ORM\Association\BelongsTo $CheckPeriods
+ * @property \App\Model\Table\TimeperiodsTable|\Cake\ORM\Association\BelongsTo $NotifyPeriods
  * @property \App\Model\Table\SatellitesTable|\Cake\ORM\Association\BelongsTo $Satellites
  * @property \App\Model\Table\ContactgroupsToHostsTable|\Cake\ORM\Association\HasMany $ContactgroupsToHosts
  * @property \App\Model\Table\ContactsToHostsTable|\Cake\ORM\Association\HasMany $ContactsToHosts
@@ -277,14 +277,6 @@ class HostsTable extends Table {
      */
     public function buildRules(RulesChecker $rules) {
         $rules->add($rules->isUnique(['uuid']));
-        $rules->add($rules->existsIn(['container_id'], 'Containers'));
-        $rules->add($rules->existsIn(['hosttemplate_id'], 'Hosttemplates'));
-        $rules->add($rules->existsIn(['command_id'], 'Commands'));
-        $rules->add($rules->existsIn(['eventhandler_command_id'], 'EventhandlerCommands'));
-        $rules->add($rules->existsIn(['timeperiod_id'], 'Timeperiods'));
-        $rules->add($rules->existsIn(['check_period_id'], 'CheckPeriods'));
-        $rules->add($rules->existsIn(['notify_period_id'], 'NotifyPeriods'));
-        $rules->add($rules->existsIn(['satellite_id'], 'Satellites'));
 
         return $rules;
     }

@@ -108,7 +108,7 @@ class Constants {
             'CT_DEVICEGROUP'          => 4,
             'CT_NODE'                 => 5,
             'CT_CONTACTGROUP'         => 6,
-            '^'            => 7,
+            'CT_HOSTGROUP'            => 7,
             'CT_SERVICEGROUP'         => 8,
             'CT_SERVICETEMPLATEGROUP' => 9,
         ]);
@@ -195,17 +195,6 @@ class Constants {
             'DONE'               => 5,
             'CANCELLED'          => 6,
         ]);
-
-
-/*
-        self::ACTIVE             => 'active',
-        self::INACTIVE           => 'inactive',
-        self::DELETED            => 'deleted',
-        self::SUSPENDED          => 'suspended',
-        self::ACTIVATION_PENDING => 'activation pending',
-        self::DONE               => 'done',
-        self::CANCELLED          => 'cancelled',
- */
     }
 
 

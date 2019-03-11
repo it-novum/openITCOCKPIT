@@ -78,6 +78,14 @@ class HostComparisonForSave {
         $data += $this->getDataForCommandarguments();
         $data += $this->getDataForCustomvariables();
 
+        //Add host default data
+        $data['host_type'] = GENERIC_HOST;
+        $data['usage_flag'] = 0;
+        $data['own_contacts'] = (int)$this->hasOwnContacts;
+        $data['own_contactgroups'] = (int)$this->hasOwnContacts;
+        $data['own_customvariables'] = (int)$this->hasOwnCustomvariables;
+        $data['name'] = $this->host['name'];
+        $data['address'] = $this->host['address'];
         return $data;
     }
 

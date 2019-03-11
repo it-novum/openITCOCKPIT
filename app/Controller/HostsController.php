@@ -1134,8 +1134,6 @@ class HostsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            FileDebugger::dump($this->request->data);
-
             $hosttemplateId = $this->request->data('Host.hosttemplate_id');
             if ($hosttemplateId === null) {
                 throw new Exception('Host.hosttemplate_id needs to set.');
@@ -1151,10 +1149,10 @@ class HostsController extends AppController {
             }
 
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
-            $HostComparisonForSave = new HostComparisonForSave($this->request->data('Host'), $hosttemplate);
+            $HostComparisonForSave = new HostComparisonForSave($this->request->data, $hosttemplate);
             $hostData = $HostComparisonForSave->getDataForSaveForAllFields();
             $hostData['uuid'] = UUID::v4();
-            $hostData['host_type'] = GENERIC_HOST;
+
             $host = $HostsTable->newEntity($hostData);
 
             $HostsTable->save($host);
