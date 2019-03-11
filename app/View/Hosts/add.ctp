@@ -266,7 +266,7 @@
                                                         <template-diff ng-show="post.Host.hosttemplate_id"
                                                                        value="post.Host.tags"
                                                                        template-value="hosttemplate.Hosttemplate.tags"
-                                                                        callback="restoreTemplateTags"></template-diff>
+                                                                       callback="restoreTemplateTags"></template-diff>
                                                     </div>
                                                     <div ng-repeat="error in errors.tags">
                                                         <div class="help-block text-danger">{{ error }}</div>
@@ -281,9 +281,13 @@
                                                 <label class="col-xs-12 col-lg-2 control-label">
                                                     <?php echo __('Priority'); ?>
                                                 </label>
-                                                <div class="col-xs-12 col-lg-10">
+                                                <div class="col-xs-12 col-lg-2">
                                                     <priority-directive priority="post.Host.priority"
                                                                         callback="setPriority"></priority-directive>
+                                                    <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                                          value="post.Host.priority"
+                                                                          template-value="hosttemplate.Hosttemplate.priority">
+                                                    </template-diff-button>
                                                 </div>
                                             </div>
 
@@ -797,8 +801,8 @@
                                             </label>
                                             <div class="padding-left-20">
                                                 <template-diff-button ng-show="post.Host.hosttemplate_id"
-                                                        value="post.Host.flap_detection_enabled"
-                                                        template-value="hosttemplate.Hosttemplate.flap_detection_enabled">
+                                                                      value="post.Host.flap_detection_enabled"
+                                                                      template-value="hosttemplate.Hosttemplate.flap_detection_enabled">
                                                 </template-diff-button>
                                             </div>
                                         </div>
