@@ -115,7 +115,7 @@
                                                 ng-if="host.excluded == 1">
                                                 <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
                                                     <label class="label label-danger label-xs">
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                        <i class="fa fa-minus" aria-hidden="true"></i>
                                                     </label>
                                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                         <a href="/hosts/edit/{{host.Host.id}}"
@@ -158,7 +158,7 @@
                                                 ng-if="hostgroup.excluded == 1">
                                                 <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
                                                     <label class="label label-danger label-xs">
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                        <i class="fa fa-minus" aria-hidden="true"></i>
                                                     </label>
                                                     <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
                                                         <a ui-sref="HostgroupsEdit({id: hostgroup.Hostgroup.id})"
