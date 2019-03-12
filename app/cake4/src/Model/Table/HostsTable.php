@@ -62,11 +62,6 @@ class HostsTable extends Table {
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Containers', [
-            'foreignKey' => 'container_id',
-            'joinType'   => 'INNER'
-        ]);
-
         $this->belongsToMany('HostsToContainersSharing', [
             'className'        => 'Containers',
             'joinTable'        => 'hosts_to_containers',
@@ -74,11 +69,78 @@ class HostsTable extends Table {
             'targetForeignKey' => 'container_id'
         ]);
 
+        $this->belongsTo('Containers', [
+            'foreignKey' => 'container_id',
+            'joinType'   => 'INNER'
+        ]);
+
+        $this->belongsToMany('Contactgroups', [
+            'className'        => 'Contactgroups',
+            'foreignKey'       => 'host_id',
+            'targetForeignKey' => 'contactgroup_id',
+            'joinTable'        => 'contactgroups_to_hosts',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
+
+        $this->belongsToMany('Contacts', [
+            'className'        => 'Contacts',
+            'foreignKey'       => 'host_id',
+            'targetForeignKey' => 'contact_id',
+            'joinTable'        => 'contacts_to_hosts',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
+
+        $this->belongsToMany('Hostgroups', [
+            'className'        => 'Hostgroups',
+            'foreignKey'       => 'host_id',
+            'targetForeignKey' => 'hostgroup_id',
+            'joinTable'        => 'hosts_to_hostgroups',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
+
+
+        $this->belongsToMany('Parenthosts', [
+            'className'        => 'Hostgroups',
+            'foreignKey'       => 'host_id',
+            'targetForeignKey' => 'parenthost_id',
+            'joinTable'        => 'hosts_to_parenthosts',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
+
         $this->belongsTo('Hosttemplates', [
             'foreignKey' => 'hosttemplate_id',
             'joinType'   => 'INNER'
         ]);
 
+        $this->belongsTo('CheckPeriod', [
+            'className'  => 'Timeperiods',
+            'foreignKey' => 'check_period_id',
+            'joinType'   => 'INNER'
+        ]);
+
+        $this->belongsTo('NotifyPeriod', [
+            'className'  => 'Timeperiods',
+            'foreignKey' => 'notify_period_id',
+            'joinType'   => 'INNER'
+        ]);
+
+        $this->belongsTo('CheckCommand', [
+            'className'  => 'Commands',
+            'foreignKey' => 'command_id',
+            'joinType'   => 'INNER'
+        ]);
+
+        $this->hasMany('Customvariables', [
+            'conditions'   => [
+                'objecttype_id' => OBJECT_HOST
+            ],
+            'foreignKey'   => 'object_id',
+            'saveStrategy' => 'replace'
+        ])->setDependent(true);
+
+        $this->hasMany('Hostcommandargumentvalues', [
+            'saveStrategy' => 'replace'
+        ])->setDependent(true);
 
     }
 
