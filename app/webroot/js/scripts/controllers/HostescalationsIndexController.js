@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostescalationsIndexController', function($scope, $http, $sce){
+    .controller('HostescalationsIndexController', function($scope, $http){
 
         $scope.currentPage = 1;
         $scope.useScroll = true;
@@ -35,26 +35,21 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
-        //Fire on page load
-        $scope.load();
-
-        $scope.viewHostescalationOptions = function(hostescalation){
-            var options = {
-                'escalate_on_recovery': 'txt-color-greenLight',
-                'escalate_on_down': 'txt-color-redLight',
-                'escalate_on_unreachable': 'txt-color-blueDark'
-            };
-            var esc_class = 'fa fa-square ';
-            var html = '';
-
-            for(var option in options){
-                var color = options[option];
-                if(hostescalation.Hostescalation[option] != null && hostescalation.Hostescalation[option] == 1){
-                    html += '<i class="' + esc_class + color + '"></i>&nbsp';
+        $scope.getObjectsForDelete = function(){
+            var objects = {};
+            var selectedObjects = MassChangeService.getSelected();
+            for(var key in $scope.hostescalations){
+                for(var id in selectedObjects){
+                    if(id == $scope.hostescalations[key].Hostescalation.id){
+                        if($scope.hostescalations[key].Hostescalation.allow_edit === true){
+                            objects[id] = $scope.hostescalations[key].Hostescalation.id;
+                        }
+                    }
                 }
             }
+            return objects;
+        };
 
-            return $sce.trustAsHtml(html);
-        }
-
+        //Fire on page load
+        $scope.load();
     });
