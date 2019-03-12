@@ -1,4 +1,5 @@
 <?php
+
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -23,6 +24,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+
+/**
+ * @Deprecated use cake4 model
+ */
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 
@@ -389,15 +394,5 @@ class User extends AppModel {
         }
 
         return $tenants;
-    }
-
-    public function __delete($user, $userId) {
-        //@todo remove me plz!
-        //$user is unused
-        if ($this->delete($userId)) {
-            return true;
-        }
-
-        return false;
     }
 }

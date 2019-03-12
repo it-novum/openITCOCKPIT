@@ -140,48 +140,40 @@ class UsersController extends AppController {
 
 
     /**
-     * delete method
-     * @throws MethodNotAllowedException
-     * @throws NotFoundException
-     *
-     * @param int $id
-     *
-     * @return void
+     * @param null $id
      */
-    /**
-     * delete overwrite for soft delete
-     *
-     * @param  int $id
-     * @param  boolean $cascade
-     *
-     * @return bool
-     */
-
     public function delete($id = null) {
-        if (!$this->request->is('post')) {
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+        if (!$Users->existsById($id)) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->User->exists($id)) {
-            throw new NotFoundException(__('user'));
-        }
-        $user = $this->User->findById($id);
-        if (!$this->allowedByContainerId(Hash::extract($user['ContainerUserMembership'], '{n}.container_id'))) {
+        $user = $Users->get($id);
+        if (!$this->allowedByContainerId($user->id)) {
             $this->render403();
-            return false;
+            return;
         }
 
-        if ($this->User->__delete($id, $id)) {
-            $this->setFlash(__('User deleted'));
-            $this->redirect(['action' => 'index']);
-        } else {
-            $this->setFlash(__('Could not delete user'), false);
-            $this->redirect(['action' => 'index']);
+        if ($Users->delete($user)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
         }
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
 
     public function add() {
         $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
         /** @var $Usergroups App\Model\Table\UsergroupsTable */
@@ -245,8 +237,18 @@ class UsersController extends AppController {
 
     public function edit($id = null) {
         $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
+
+        if (!$Users->existsById($id)) {
+            throw new MethodNotAllowedException('Invalid User');
+        }
+
         $user = $Users->getUserWithContainerPermission($id, $this->MY_RIGHTS);
 
         $this->set('user', $user);
