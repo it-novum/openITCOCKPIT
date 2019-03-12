@@ -238,8 +238,7 @@
                                                 <a ui-sref="HostescalationsEdit({id: hostescalation.Hostescalation.id})"
                                                    ng-if="hostescalation.Hostescalation.allowEdit"
                                                    class="btn btn-default">
-                                                    <i class="fa fa-cog"></i>
-                                                </a>
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;                                                </a>
                                                 <a href="javascript:void(0);"
                                                    ng-if="!hostescalation.Hostescalation.allowEdit"
                                                    class="btn btn-default">
@@ -247,8 +246,7 @@
                                                 </a>
                                             <?php else: ?>
                                                 <a href="javascript:void(0);" class="btn btn-default">
-                                                    <i class="fa fa-cog"></i>
-                                                </a>
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;                                                </a>
                                             <?php endif; ?>
                                             <a href="javascript:void(0);" data-toggle="dropdown"
                                                class="btn btn-default dropdown-toggle"><span
