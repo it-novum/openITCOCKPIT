@@ -12,6 +12,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
@@ -156,6 +157,11 @@ class HostsTable extends Table {
         $validator
             ->integer('id')
             ->allowEmptyString('id', 'create');
+
+        $validator
+            ->integer('hosttemplate_id')
+            ->requirePresence('hosttemplate_id')
+            ->allowEmptyString('hosttemplate_id', false);
 
         $validator
             ->scalar('uuid')
@@ -842,7 +848,7 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order($HostFilter->getOrderForPaginator('Hosts.name', 'asc'));
-
+        
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->formatResultAsCake2($query->toArray(), false);

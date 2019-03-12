@@ -361,7 +361,7 @@ angular.module('openITCOCKPIT')
                 NotyService.genericSuccess();
 
                 if($scope.data.createAnother === false){
-                    $state.go('HostsIndex').then(function(){
+                    $state.go('HostsNotMonitored').then(function(){
                         NotyService.scrollTop();
                     });
                 }else{
