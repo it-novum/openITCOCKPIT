@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -39,6 +40,7 @@ class HosttemplatesTable extends Table {
 
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
+    use CustomValidationTrait;
 
     /**
      * Initialize method
@@ -205,7 +207,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('notify_on_recovery', 'create')
             ->allowEmptyString('notify_on_recovery', false)
             ->add('notify_on_recovery', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptions'],
+                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -214,7 +216,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('notify_on_down', 'create')
             ->allowEmptyString('notify_on_down', false)
             ->add('notify_on_down', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptions'],
+                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -223,7 +225,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('notify_on_unreachable', 'create')
             ->allowEmptyString('notify_on_unreachable', false)
             ->add('notify_on_unreachable', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptions'],
+                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -232,7 +234,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('notify_on_flapping', 'create')
             ->allowEmptyString('notify_on_flapping', false)
             ->add('notify_on_flapping', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptions'],
+                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -241,7 +243,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('notify_on_downtime', 'create')
             ->allowEmptyString('notify_on_downtime', false)
             ->add('notify_on_downtime', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptions'],
+                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -255,7 +257,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('flap_detection_on_up', 'create')
             ->allowEmptyString('flap_detection_on_up', false)
             ->add('flap_detection_on_up', 'custom', [
-                'rule'    => [$this, 'checkFlapDetectionOptions'],
+                'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
@@ -264,7 +266,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('flap_detection_on_down', 'create')
             ->allowEmptyString('flap_detection_on_down', false)
             ->add('flap_detection_on_down', 'custom', [
-                'rule'    => [$this, 'checkFlapDetectionOptions'],
+                'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
@@ -273,7 +275,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('flap_detection_on_unreachable', 'create')
             ->allowEmptyString('flap_detection_on_unreachable', false)
             ->add('flap_detection_on_unreachable', 'custom', [
-                'rule'    => [$this, 'checkFlapDetectionOptions'],
+                'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
@@ -349,7 +351,7 @@ class HosttemplatesTable extends Table {
         $validator
             ->allowEmptyString('customvariables', true)
             ->add('customvariables', 'custom', [
-                'rule'    => [$this, 'checkMacroNames'],
+                'rule'    => [$this, 'checkMacroNames'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => _('Macro name needs to be unique')
             ]);
 
@@ -381,80 +383,6 @@ class HosttemplatesTable extends Table {
         return !empty($context['data']['contacts']['_ids']) || !empty($context['data']['contactgroups']['_ids']);
     }
 
-    /**
-     * @param mixed $value
-     * @param array $context
-     * @return bool
-     *
-     * Custom validation rule for contacts and or contact groups
-     */
-    public function checkNotificationOptions($value, $context) {
-        $notificationOptions = [
-            'notify_on_recovery',
-            'notify_on_down',
-            'notify_on_unreachable',
-            'notify_on_flapping',
-            'notify_on_downtime'
-        ];
-
-        foreach ($notificationOptions as $notificationOption) {
-            if (isset($context['data'][$notificationOption]) && $context['data'][$notificationOption] == 1) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param mixed $value
-     * @param array $context
-     * @return bool
-     *
-     * Custom validation rule for contacts and or contact groups
-     */
-    public function checkFlapDetectionOptions($value, $context) {
-        $flapDetectionOptions = [
-            'flap_detection_on_up',
-            'flap_detection_on_down',
-            'flap_detection_on_unreachable'
-        ];
-
-        if (!isset($context['data']['flap_detection_enabled']) || $context['data']['flap_detection_enabled'] == 0) {
-            return true;
-        }
-
-        foreach ($flapDetectionOptions as $flapDetectionOption) {
-            if (isset($context['data'][$flapDetectionOption]) && $context['data'][$flapDetectionOption] == 1) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param string $value
-     * @param array $context
-     * @return bool
-     *
-     * Custom validation rule for contacts and or contact groups
-     */
-    public function checkMacroNames($value, $context) {
-        if (isset($context['data']['customvariables']) && is_array($context['data']['customvariables'])) {
-            $usedNames = [];
-
-            foreach ($context['data']['customvariables'] as $macro) {
-                if (in_array($macro['name'], $usedNames, true)) {
-                    //Macro name not unique
-                    return false;
-                }
-                $usedNames[] = $macro['name'];
-            }
-        }
-
-        return true;
-    }
 
     /**
      * @param HosttemplateFilter $CommandsFilter

@@ -59,7 +59,7 @@ angular.module('openITCOCKPIT')
                     hostgroups: {
                         _ids: []
                     },
-                    containers: {
+                    hosts_to_containers_sharing: {
                         _ids: []
                     },
                     parenthosts: {
@@ -199,6 +199,11 @@ angular.module('openITCOCKPIT')
             };
 
             var commandId = $scope.post.Host.command_id;
+            //May be triggered by watch from "Create another"
+            if(commandId === 0){
+                return;
+            }
+
             $http.get("/hosts/loadCommandArguments/" + commandId + ".json", {
                 params: params
             }).then(function(result){
@@ -209,6 +214,11 @@ angular.module('openITCOCKPIT')
 
         $scope.loadElements = function(){
             var containerId = $scope.post.Host.container_id;
+            //May be triggered by watch from "Create another"
+            if(containerId === 0){
+                return;
+            }
+
             $http.post("/hosts/loadElementsByContainerId/" + containerId + ".json?angular=true", {}).then(function(result){
                 $scope.hosttemplates = result.data.hosttemplates;
                 $scope.timeperiods = result.data.timeperiods;
@@ -223,6 +233,11 @@ angular.module('openITCOCKPIT')
 
         $scope.loadParentHosts = function(searchString){
             var containerId = $scope.post.Host.container_id;
+            //May be triggered by watch from "Create another"
+            if(containerId === 0){
+                return;
+            }
+
             $http.get("/hosts/loadParentHostsByString.json", {
                 params: {
                     'angular': true,
@@ -237,6 +252,12 @@ angular.module('openITCOCKPIT')
 
         $scope.loadHosttemplate = function(){
             var hosttemplateId = $scope.post.Host.hosttemplate_id;
+            if(hosttemplateId === 0){
+                //May be triggered by watch from "Create another"
+                $scope.init = false;
+                return;
+            }
+
             $http.post("/hosts/loadHosttemplate/" + hosttemplateId + ".json?angular=true", {}).then(function(result){
                 $scope.hosttemplate = result.data.hosttemplate;
                 setValuesFromHosttemplate();
@@ -275,7 +296,7 @@ angular.module('openITCOCKPIT')
             return false;
         };
 
-        $scope.runDnsLoopup = function(lookupByHostname){
+        $scope.runDnsLookup = function(lookupByHostname){
             $scope.data.dnsHostnameNotFound = false;
             $scope.data.dnsAddressNotFound = false;
             if($scope.data.dnsLookUp === false){
@@ -298,7 +319,7 @@ angular.module('openITCOCKPIT')
                 data.address = $scope.post.Host.address;
             }
 
-            $http.post("/hosts/runDnsLoopup.json?angular=true",
+            $http.post("/hosts/runDnsLookup.json?angular=true",
                 data
             ).then(function(result){
                 if(lookupByHostname){
@@ -337,12 +358,10 @@ angular.module('openITCOCKPIT')
             $http.post("/hosts/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                return;
-
                 NotyService.genericSuccess();
 
                 if($scope.data.createAnother === false){
-                    $state.go('HostsIndex').then(function(){
+                    $state.go('HostsNotMonitored').then(function(){
                         NotyService.scrollTop();
                     });
                 }else{

@@ -85,7 +85,18 @@ class HostComparisonForSave {
         $data['own_contactgroups'] = (int)$this->hasOwnContacts;
         $data['own_customvariables'] = (int)$this->hasOwnCustomvariables;
         $data['name'] = $this->host['name'];
+        $data['hosttemplate_id'] = $this->host['hosttemplate_id'];
         $data['address'] = $this->host['address'];
+        $data['container_id'] = $this->host['container_id'];
+        $data['hosts_to_containers_sharing'] = isset($this->host['hosts_to_containers_sharing']) ? $this->host['hosts_to_containers_sharing'] : [];
+
+        if (isset($data['hosts_to_containers_sharing']['_ids'])) {
+            $data['hosts_to_containers_sharing']['_ids'][] = $data['container_id'];
+            $data['hosts_to_containers_sharing']['_ids'] = array_unique($data['hosts_to_containers_sharing']['_ids']);
+        }
+
+        $data['parenthosts'] = isset($this->host['parenthosts']) ? $this->host['parenthosts'] : [];
+
         return $data;
     }
 

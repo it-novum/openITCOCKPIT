@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -62,38 +63,23 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Command $command
  * @property \App\Model\Entity\EventhandlerCommand $eventhandler_command
  * @property \App\Model\Entity\Timeperiod $timeperiod
- * @property \App\Model\Entity\CheckPeriod $check_period
- * @property \App\Model\Entity\NotifyPeriod $notify_period
+ * @property \App\Model\Entity\Timeperiod $check_period
+ * @property \App\Model\Entity\Timeperiod $notify_period
  * @property \App\Model\Entity\Satellite $satellite
- * @property \App\Model\Entity\ContactgroupsToHost[] $contactgroups_to_hosts
- * @property \App\Model\Entity\ContactsToHost[] $contacts_to_hosts
+ * @property \App\Model\Entity\Contactgroup[] $contactgroups
+ * @property \App\Model\Entity\Contact[] $contacts
  * @property \App\Model\Entity\DeletedHost[] $deleted_hosts
  * @property \App\Model\Entity\DeletedService[] $deleted_services
  * @property \App\Model\Entity\Eventcorrelation[] $eventcorrelations
- * @property \App\Model\Entity\GrafanaDashboard[] $grafana_dashboards
- * @property \App\Model\Entity\GrafanaUserdashboardMetric[] $grafana_userdashboard_metrics
  * @property \App\Model\Entity\Hostcommandargumentvalue[] $hostcommandargumentvalues
- * @property \App\Model\Entity\HostsToAutoreport[] $hosts_to_autoreports
- * @property \App\Model\Entity\HostsToContainer[] $hosts_to_containers
+ * @property \App\Model\Entity\Container[] $hosts_to_containers_sharing
  * @property \App\Model\Entity\HostsToHostdependency[] $hosts_to_hostdependencies
  * @property \App\Model\Entity\HostsToHostescalation[] $hosts_to_hostescalations
- * @property \App\Model\Entity\HostsToHostgroup[] $hosts_to_hostgroups
- * @property \App\Model\Entity\HostsToParenthost[] $hosts_to_parenthosts
- * @property \App\Model\Entity\IdoitHost[] $idoit_hosts
- * @property \App\Model\Entity\InstantreportsToHost[] $instantreports_to_hosts
- * @property \App\Model\Entity\LastUsedMkagent[] $last_used_mkagents
- * @property \App\Model\Entity\Mkservicedata[] $mkservicedata
- * @property \App\Model\Entity\Mksnmp[] $mksnmp
- * @property \App\Model\Entity\NagiosHostContactgroup[] $nagios_host_contactgroups
- * @property \App\Model\Entity\NagiosHostContact[] $nagios_host_contacts
- * @property \App\Model\Entity\NagiosHostParenthost[] $nagios_host_parenthosts
- * @property \App\Model\Entity\NagiosHost[] $nagios_hosts
+ * @property \App\Model\Entity\Hostgroup[] $hostgroups
+ * @property \App\Model\Entity\Host[] $parenthosts
  * @property \App\Model\Entity\Service[] $services
- * @property \App\Model\Entity\ServicesToAutoreport[] $services_to_autoreports
- * @property \App\Model\Entity\Widget[] $widgets
  */
-class Host extends Entity
-{
+class Host extends Entity {
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -105,100 +91,84 @@ class Host extends Entity
      * @var array
      */
     protected $_accessible = [
-        'uuid' => true,
-        'container_id' => true,
-        'name' => true,
-        'description' => true,
-        'hosttemplate_id' => true,
-        'address' => true,
-        'command_id' => true,
-        'eventhandler_command_id' => true,
-        'timeperiod_id' => true,
-        'check_interval' => true,
-        'retry_interval' => true,
-        'max_check_attempts' => true,
-        'first_notification_delay' => true,
-        'notification_interval' => true,
-        'notify_on_down' => true,
-        'notify_on_unreachable' => true,
-        'notify_on_recovery' => true,
-        'notify_on_flapping' => true,
-        'notify_on_downtime' => true,
-        'flap_detection_enabled' => true,
-        'flap_detection_on_up' => true,
-        'flap_detection_on_down' => true,
+        'uuid'                          => true,
+        'container_id'                  => true,
+        'name'                          => true,
+        'description'                   => true,
+        'hosttemplate_id'               => true,
+        'address'                       => true,
+        'command_id'                    => true,
+        'eventhandler_command_id'       => true,
+        'timeperiod_id'                 => true,
+        'check_interval'                => true,
+        'retry_interval'                => true,
+        'max_check_attempts'            => true,
+        'first_notification_delay'      => true,
+        'notification_interval'         => true,
+        'notify_on_down'                => true,
+        'notify_on_unreachable'         => true,
+        'notify_on_recovery'            => true,
+        'notify_on_flapping'            => true,
+        'notify_on_downtime'            => true,
+        'flap_detection_enabled'        => true,
+        'flap_detection_on_up'          => true,
+        'flap_detection_on_down'        => true,
         'flap_detection_on_unreachable' => true,
-        'low_flap_threshold' => true,
-        'high_flap_threshold' => true,
-        'process_performance_data' => true,
-        'freshness_checks_enabled' => true,
-        'freshness_threshold' => true,
-        'passive_checks_enabled' => true,
-        'event_handler_enabled' => true,
-        'active_checks_enabled' => true,
-        'retain_status_information' => true,
-        'retain_nonstatus_information' => true,
-        'notifications_enabled' => true,
-        'notes' => true,
-        'priority' => true,
-        'check_period_id' => true,
-        'notify_period_id' => true,
-        'tags' => true,
-        'own_contacts' => true,
-        'own_contactgroups' => true,
-        'own_customvariables' => true,
-        'host_url' => true,
-        'satellite_id' => true,
-        'host_type' => true,
-        'disabled' => true,
-        'usage_flag' => true,
-        'created' => true,
-        'modified' => true,
-        'container' => true,
-        'hosttemplate' => true,
-        'command' => true,
-        'eventhandler_command' => true,
-        'timeperiod' => true,
-        'check_period' => true,
-        'notify_period' => true,
-        'satellite' => true,
-        'contactgroups_to_hosts' => true,
-        'contacts_to_hosts' => true,
-        'deleted_hosts' => true,
-        'deleted_services' => true,
-        'eventcorrelations' => true,
-        'grafana_dashboards' => true,
-        'grafana_userdashboard_metrics' => true,
-        'hostcommandargumentvalues' => true,
-        'hosts_to_autoreports' => true,
-        'hosts_to_containers' => true,
-        'hosts_to_hostdependencies' => true,
-        'hosts_to_hostescalations' => true,
-        'hosts_to_hostgroups' => true,
-        'hosts_to_parenthosts' => true,
-        'idoit_hosts' => true,
-        'instantreports_to_hosts' => true,
-        'last_used_mkagents' => true,
-        'mkservicedata' => true,
-        'mksnmp' => true,
-        'nagios_host_contactgroups' => true,
-        'nagios_host_contacts' => true,
-        'nagios_host_parenthosts' => true,
-        'nagios_hosts' => true,
-        'services' => true,
-        'services_to_autoreports' => true,
-        'widgets' => true
+        'low_flap_threshold'            => true,
+        'high_flap_threshold'           => true,
+        'process_performance_data'      => true,
+        'freshness_checks_enabled'      => true,
+        'freshness_threshold'           => true,
+        'passive_checks_enabled'        => true,
+        'event_handler_enabled'         => true,
+        'active_checks_enabled'         => true,
+        'retain_status_information'     => true,
+        'retain_nonstatus_information'  => true,
+        'notifications_enabled'         => true,
+        'notes'                         => true,
+        'priority'                      => true,
+        'check_period_id'               => true,
+        'notify_period_id'              => true,
+        'tags'                          => true,
+        'own_contacts'                  => true,
+        'own_contactgroups'             => true,
+        'own_customvariables'           => true,
+        'host_url'                      => true,
+        'satellite_id'                  => true,
+        'host_type'                     => true,
+        'disabled'                      => true,
+        'usage_flag'                    => true,
+        'created'                       => true,
+        'modified'                      => true,
+        'container'                     => true,
+        'hosttemplate'                  => true,
+        'command'                       => true,
+        'eventhandler_command'          => true,
+        'timeperiod'                    => true,
+        'check_period'                  => true,
+        'notify_period'                 => true,
+        'satellite'                     => true,
+        'contactgroups'                 => true,
+        'contacts'                      => true,
+        'eventcorrelations'             => true,
+        'hostcommandargumentvalues'     => true,
+        'hosts_to_containers_sharing'   => true,
+        'hosts_to_hostdependencies'     => true,
+        'hosts_to_hostescalations'      => true,
+        'hostgroups'                    => true,
+        'parenthosts'                   => true,
+        'services'                      => true,
     ];
 
     /**
      * @return array
      */
-    public function getContainerIds(){
+    public function getContainerIds() {
         $containerIds = [
             $this->container_id
         ];
 
-        foreach($this->hosts_to_containers_sharing as $container){
+        foreach ($this->hosts_to_containers_sharing as $container) {
             /** @var Container $container */
             $containerIds[] = $container->get('id');
         }

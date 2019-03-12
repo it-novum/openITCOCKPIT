@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -33,6 +34,7 @@ class ContactsTable extends Table {
 
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
+    use CustomValidationTrait;
 
     /**
      * Initialize method
@@ -186,7 +188,7 @@ class ContactsTable extends Table {
         $validator
             ->allowEmptyString('customvariables', true)
             ->add('customvariables', 'custom', [
-                'rule'    => [$this, 'checkMacroNames'],
+                'rule'    => [$this, 'checkMacroNames'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => _('Macro name needs to be unique')
             ]);
 
@@ -286,22 +288,6 @@ class ContactsTable extends Table {
         }
 
         return false;
-    }
-
-    public function checkMacroNames($value, $context) {
-        if (isset($context['data']['customvariables']) && is_array($context['data']['customvariables'])) {
-            $usedNames = [];
-
-            foreach ($context['data']['customvariables'] as $macro) {
-                if (in_array($macro['name'], $usedNames, true)) {
-                    //Macro name not unique
-                    return false;
-                }
-                $usedNames[] = $macro['name'];
-            }
-        }
-
-        return true;
     }
 
     /**

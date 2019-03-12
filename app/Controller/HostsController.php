@@ -46,7 +46,6 @@ use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
@@ -1191,7 +1190,6 @@ class HostsController extends AppController {
             $this->set('host', $host);
             $this->set('_serialize', ['host']);
         }
-
 
 
         return;
@@ -3938,7 +3936,7 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosttemplate']);
     }
 
-    public function runDnsLoopup() {
+    public function runDnsLookup() {
         if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
