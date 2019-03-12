@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
@@ -46,6 +47,7 @@ class HostsTable extends Table {
 
     use PaginationAndScrollIndexTrait;
     use Cake2ResultTableTrait;
+    use CustomValidationTrait;
 
     /**
      * Initialize method
@@ -169,149 +171,218 @@ class HostsTable extends Table {
             ->allowEmptyString('name', false);
 
         $validator
-            ->scalar('description')
-            ->maxLength('description', 255)
-            ->allowEmptyString('description');
+            ->allowEmptyString('description', true);
 
         $validator
-            ->scalar('address')
-            ->maxLength('address', 128)
-            ->requirePresence('address', 'create')
-            ->allowEmptyString('address', false);
+            ->integer('priority')
+            ->requirePresence('priority', 'create')
+            ->range('priority', [1, 5], __('This value must be between 1 and 5'))
+            ->allowEmptyString('priority');
 
         $validator
-            ->integer('check_interval')
-            ->allowEmptyString('check_interval');
-
-        $validator
-            ->integer('retry_interval')
-            ->allowEmptyString('retry_interval');
+            ->integer('container_id')
+            ->requirePresence('container_id', 'create')
+            ->allowEmptyString('container_id', false)
+            ->greaterThanOrEqual('container_id', 1);
 
         $validator
             ->integer('max_check_attempts')
-            ->allowEmptyString('max_check_attempts');
-
-        $validator
-            ->numeric('first_notification_delay')
-            ->allowEmptyString('first_notification_delay');
+            ->requirePresence('max_check_attempts', 'create')
+            ->greaterThanOrEqual('max_check_attempts', 1, __('This value need to be at least 1'))
+            ->allowEmptyString('max_check_attempts', true);
 
         $validator
             ->numeric('notification_interval')
-            ->allowEmptyString('notification_interval');
+            ->requirePresence('notification_interval', 'create')
+            ->greaterThanOrEqual('notification_interval', 0, __('This value need to be at least 0'))
+            ->allowEmptyString('notification_interval', true);
 
         $validator
-            ->integer('notify_on_down')
-            ->allowEmptyString('notify_on_down');
+            ->integer('check_interval')
+            ->requirePresence('check_interval', 'create')
+            ->greaterThanOrEqual('check_interval', 1, __('This value need to be at least 1'))
+            ->allowEmptyString('check_interval', true);
 
         $validator
-            ->integer('notify_on_unreachable')
-            ->allowEmptyString('notify_on_unreachable');
+            ->integer('retry_interval')
+            ->requirePresence('retry_interval', 'create')
+            ->greaterThanOrEqual('retry_interval', 1, __('This value need to be at least 1'))
+            ->allowEmptyString('retry_interval', true);
 
         $validator
-            ->integer('notify_on_recovery')
-            ->allowEmptyString('notify_on_recovery');
+            ->integer('check_period_id')
+            ->requirePresence('check_period_id', 'create')
+            ->greaterThan('check_period_id', 0, __('Please select a check period'))
+            ->allowEmptyString('check_period_id', true);
 
         $validator
-            ->integer('notify_on_flapping')
-            ->allowEmptyString('notify_on_flapping');
+            ->integer('command_id')
+            ->requirePresence('command_id', 'create')
+            ->greaterThan('command_id', 0, __('Please select a check command'))
+            ->allowEmptyString('command_id', true);
 
         $validator
-            ->integer('notify_on_downtime')
-            ->allowEmptyString('notify_on_downtime');
+            ->integer('notify_period_id')
+            ->requirePresence('notify_period_id', 'create')
+            ->greaterThan('notify_period_id', 0, __('Please select a notify period'))
+            ->allowEmptyString('notify_period_id', true);
 
         $validator
-            ->integer('flap_detection_enabled')
-            ->allowEmptyString('flap_detection_enabled');
+            ->boolean('notify_on_recovery')
+            ->requirePresence('notify_on_recovery', 'create')
+            ->allowEmptyString('notify_on_recovery', true)
+            ->add('notify_on_recovery', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one notification option.')
+            ]);
 
         $validator
-            ->integer('flap_detection_on_up')
-            ->allowEmptyString('flap_detection_on_up');
+            ->boolean('notify_on_down')
+            ->requirePresence('notify_on_down', 'create')
+            ->allowEmptyString('notify_on_down', true)
+            ->add('notify_on_down', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one notification option.')
+            ]);
 
         $validator
-            ->integer('flap_detection_on_down')
-            ->allowEmptyString('flap_detection_on_down');
+            ->boolean('notify_on_unreachable')
+            ->requirePresence('notify_on_unreachable', 'create')
+            ->allowEmptyString('notify_on_unreachable', true)
+            ->add('notify_on_unreachable', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one notification option.')
+            ]);
 
         $validator
-            ->integer('flap_detection_on_unreachable')
-            ->allowEmptyString('flap_detection_on_unreachable');
+            ->boolean('notify_on_flapping')
+            ->requirePresence('notify_on_flapping', 'create')
+            ->allowEmptyString('notify_on_flapping', true)
+            ->add('notify_on_flapping', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one notification option.')
+            ]);
+
+        $validator
+            ->boolean('notify_on_downtime')
+            ->requirePresence('notify_on_downtime', 'create')
+            ->allowEmptyString('notify_on_downtime', true)
+            ->add('notify_on_downtime', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one notification option.')
+            ]);
+
+        $validator
+            ->boolean('flap_detection_enabled')
+            ->requirePresence('flap_detection_enabled', 'create')
+            ->allowEmptyString('flap_detection_enabled', true);
+
+        $validator
+            ->boolean('flap_detection_on_up')
+            ->requirePresence('flap_detection_on_up', 'create')
+            ->allowEmptyString('flap_detection_on_up', true)
+            ->add('flap_detection_on_up', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one flap detection option.')
+            ]);
+
+        $validator
+            ->boolean('flap_detection_on_down')
+            ->requirePresence('flap_detection_on_down', 'create')
+            ->allowEmptyString('flap_detection_on_down', true)
+            ->add('flap_detection_on_down', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one flap detection option.')
+            ]);
+
+        $validator
+            ->boolean('flap_detection_on_unreachable')
+            ->requirePresence('flap_detection_on_unreachable', 'create')
+            ->allowEmptyString('flap_detection_on_unreachable', true)
+            ->add('flap_detection_on_unreachable', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one flap detection option.')
+            ]);
 
         $validator
             ->numeric('low_flap_threshold')
-            ->allowEmptyString('low_flap_threshold');
+            ->requirePresence('low_flap_threshold', 'create')
+            ->allowEmptyString('low_flap_threshold', true);
 
         $validator
             ->numeric('high_flap_threshold')
-            ->allowEmptyString('high_flap_threshold');
+            ->requirePresence('high_flap_threshold', 'create')
+            ->allowEmptyString('high_flap_threshold', true);
 
         $validator
-            ->integer('process_performance_data')
-            ->allowEmptyString('process_performance_data');
+            ->boolean('process_performance_data')
+            ->requirePresence('process_performance_data', false)
+            ->allowEmptyString('process_performance_data', true);
 
         $validator
-            ->integer('freshness_checks_enabled')
-            ->allowEmptyString('freshness_checks_enabled');
+            ->boolean('freshness_checks_enabled')
+            ->requirePresence('freshness_checks_enabled', false)
+            ->allowEmptyString('freshness_checks_enabled', true);
 
         $validator
             ->integer('freshness_threshold')
             ->allowEmptyString('freshness_threshold');
 
         $validator
-            ->integer('passive_checks_enabled')
-            ->allowEmptyString('passive_checks_enabled');
+            ->boolean('passive_checks_enabled')
+            ->requirePresence('passive_checks_enabled', 'create')
+            ->allowEmptyString('passive_checks_enabled', true);
 
         $validator
-            ->integer('event_handler_enabled')
-            ->allowEmptyString('event_handler_enabled');
+            ->boolean('event_handler_enabled')
+            ->requirePresence('event_handler_enabled', 'create')
+            ->allowEmptyString('event_handler_enabled', true);
 
         $validator
-            ->integer('active_checks_enabled')
-            ->allowEmptyString('active_checks_enabled');
-
-        $validator
-            ->integer('retain_status_information')
-            ->allowEmptyString('retain_status_information');
-
-        $validator
-            ->integer('retain_nonstatus_information')
-            ->allowEmptyString('retain_nonstatus_information');
-
-        $validator
-            ->integer('notifications_enabled')
-            ->allowEmptyString('notifications_enabled');
+            ->boolean('active_checks_enabled')
+            ->requirePresence('active_checks_enabled', 'create')
+            ->allowEmptyString('active_checks_enabled', true);
 
         $validator
             ->scalar('notes')
-            ->maxLength('notes', 255)
-            ->allowEmptyString('notes');
-
-        $validator
-            ->integer('priority')
-            ->allowEmptyString('priority');
+            ->requirePresence('notes', false)
+            ->allowEmptyString('notes', true)
+            ->maxLength('notes', 255);
 
         $validator
             ->scalar('tags')
-            ->maxLength('tags', 255)
-            ->allowEmptyString('tags');
+            ->requirePresence('tags', false)
+            ->allowEmptyString('tags', true)
+            ->maxLength('tags', 255);
 
         $validator
-            ->integer('own_contacts')
+            ->scalar('host_url')
+            ->requirePresence('host_url', false)
+            ->allowEmptyString('host_url', true)
+            ->maxLength('host_url', 255);
+
+
+        $validator
+            ->allowEmptyString('customvariables', true)
+            ->add('customvariables', 'custom', [
+                'rule'    => [$this, 'checkMacroNames'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => _('Macro name needs to be unique')
+            ]);
+
+        $validator
+            ->boolean('own_contacts')
             ->requirePresence('own_contacts', 'create')
             ->allowEmptyString('own_contacts', false);
 
         $validator
-            ->integer('own_contactgroups')
+            ->boolean('own_contactgroups')
             ->requirePresence('own_contactgroups', 'create')
             ->allowEmptyString('own_contactgroups', false);
 
         $validator
-            ->integer('own_customvariables')
+            ->boolean('own_customvariables')
             ->requirePresence('own_customvariables', 'create')
             ->allowEmptyString('own_customvariables', false);
-
-        $validator
-            ->scalar('host_url')
-            ->maxLength('host_url', 255)
-            ->allowEmptyString('host_url');
 
         $validator
             ->integer('host_type')
@@ -319,13 +390,179 @@ class HostsTable extends Table {
             ->allowEmptyString('host_type', false);
 
         $validator
-            ->integer('disabled')
+            ->boolean('disabled')
             ->allowEmptyString('disabled');
 
         $validator
             ->integer('usage_flag')
             ->requirePresence('usage_flag', 'create')
             ->allowEmptyString('usage_flag', false);
+
+
+        /*
+                $validator
+                    ->integer('id')
+                    ->allowEmptyString('id', 'create');
+
+                $validator
+                    ->scalar('uuid')
+                    ->maxLength('uuid', 37)
+                    ->requirePresence('uuid', 'create')
+                    ->allowEmptyString('uuid', false)
+                    ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+
+                $validator
+                    ->scalar('name')
+                    ->maxLength('name', 255)
+                    ->requirePresence('name', 'create')
+                    ->allowEmptyString('name', false);
+
+                $validator
+                    ->scalar('description')
+                    ->maxLength('description', 255)
+                    ->allowEmptyString('description');
+
+                $validator
+                    ->scalar('address')
+                    ->maxLength('address', 128)
+                    ->requirePresence('address', 'create')
+                    ->allowEmptyString('address', false);
+
+                $validator
+                    ->integer('check_interval')
+                    ->allowEmptyString('check_interval');
+
+                $validator
+                    ->integer('retry_interval')
+                    ->allowEmptyString('retry_interval');
+
+                $validator
+                    ->integer('max_check_attempts')
+                    ->allowEmptyString('max_check_attempts');
+
+                $validator
+                    ->numeric('first_notification_delay')
+                    ->allowEmptyString('first_notification_delay');
+
+                $validator
+                    ->numeric('notification_interval')
+                    ->allowEmptyString('notification_interval');
+
+                $validator
+                    ->integer('notify_on_down')
+                    ->allowEmptyString('notify_on_down');
+
+                $validator
+                    ->integer('notify_on_unreachable')
+                    ->allowEmptyString('notify_on_unreachable');
+
+                $validator
+                    ->integer('notify_on_recovery')
+                    ->allowEmptyString('notify_on_recovery');
+
+                $validator
+                    ->integer('notify_on_flapping')
+                    ->allowEmptyString('notify_on_flapping');
+
+                $validator
+                    ->integer('notify_on_downtime')
+                    ->allowEmptyString('notify_on_downtime');
+
+                $validator
+                    ->integer('flap_detection_enabled')
+                    ->allowEmptyString('flap_detection_enabled');
+
+                $validator
+                    ->integer('flap_detection_on_up')
+                    ->allowEmptyString('flap_detection_on_up');
+
+                $validator
+                    ->integer('flap_detection_on_down')
+                    ->allowEmptyString('flap_detection_on_down');
+
+                $validator
+                    ->integer('flap_detection_on_unreachable')
+                    ->allowEmptyString('flap_detection_on_unreachable');
+
+                $validator
+                    ->numeric('low_flap_threshold')
+                    ->allowEmptyString('low_flap_threshold');
+
+                $validator
+                    ->numeric('high_flap_threshold')
+                    ->allowEmptyString('high_flap_threshold');
+
+                $validator
+                    ->integer('process_performance_data')
+                    ->allowEmptyString('process_performance_data');
+
+                $validator
+                    ->integer('freshness_checks_enabled')
+                    ->allowEmptyString('freshness_checks_enabled');
+
+                $validator
+                    ->integer('freshness_threshold')
+                    ->allowEmptyString('freshness_threshold');
+
+                $validator
+                    ->integer('passive_checks_enabled')
+                    ->allowEmptyString('passive_checks_enabled');
+
+                $validator
+                    ->integer('event_handler_enabled')
+                    ->allowEmptyString('event_handler_enabled');
+
+                $validator
+                    ->integer('active_checks_enabled')
+                    ->allowEmptyString('active_checks_enabled');
+
+                $validator
+                    ->integer('retain_status_information')
+                    ->allowEmptyString('retain_status_information');
+
+                $validator
+                    ->integer('retain_nonstatus_information')
+                    ->allowEmptyString('retain_nonstatus_information');
+
+                $validator
+                    ->integer('notifications_enabled')
+                    ->allowEmptyString('notifications_enabled');
+
+                $validator
+                    ->scalar('notes')
+                    ->maxLength('notes', 255)
+                    ->allowEmptyString('notes');
+
+                $validator
+                    ->integer('priority')
+                    ->allowEmptyString('priority');
+
+                $validator
+                    ->scalar('tags')
+                    ->maxLength('tags', 255)
+                    ->allowEmptyString('tags');
+
+                $validator
+                    ->integer('own_contacts')
+                    ->requirePresence('own_contacts', 'create')
+                    ->allowEmptyString('own_contacts', false);
+
+                $validator
+                    ->integer('own_contactgroups')
+                    ->requirePresence('own_contactgroups', 'create')
+                    ->allowEmptyString('own_contactgroups', false);
+
+                $validator
+                    ->integer('own_customvariables')
+                    ->requirePresence('own_customvariables', 'create')
+                    ->allowEmptyString('own_customvariables', false);
+
+                $validator
+                    ->scalar('host_url')
+                    ->maxLength('host_url', 255)
+                    ->allowEmptyString('host_url');
+
+        */
 
         return $validator;
     }
