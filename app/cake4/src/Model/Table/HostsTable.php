@@ -171,6 +171,12 @@ class HostsTable extends Table {
             ->allowEmptyString('name', false);
 
         $validator
+            ->scalar('address')
+            ->maxLength('address', 255)
+            ->requirePresence('address', 'create')
+            ->allowEmptyString('address', false);
+
+        $validator
             ->allowEmptyString('description', true);
 
         $validator
@@ -306,13 +312,11 @@ class HostsTable extends Table {
 
         $validator
             ->numeric('low_flap_threshold')
-            ->requirePresence('low_flap_threshold', 'create')
-            ->allowEmptyString('low_flap_threshold', true);
+            ->allowEmptyString('low_flap_threshold');
 
         $validator
             ->numeric('high_flap_threshold')
-            ->requirePresence('high_flap_threshold', 'create')
-            ->allowEmptyString('high_flap_threshold', true);
+            ->allowEmptyString('high_flap_threshold');
 
         $validator
             ->boolean('process_performance_data')
@@ -330,13 +334,11 @@ class HostsTable extends Table {
 
         $validator
             ->boolean('passive_checks_enabled')
-            ->requirePresence('passive_checks_enabled', 'create')
-            ->allowEmptyString('passive_checks_enabled', true);
+            ->allowEmptyString('passive_checks_enabled');
 
         $validator
             ->boolean('event_handler_enabled')
-            ->requirePresence('event_handler_enabled', 'create')
-            ->allowEmptyString('event_handler_enabled', true);
+            ->allowEmptyString('event_handler_enabled');
 
         $validator
             ->boolean('active_checks_enabled')

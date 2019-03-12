@@ -86,6 +86,7 @@ class HostComparisonForSave {
         $data['own_customvariables'] = (int)$this->hasOwnCustomvariables;
         $data['name'] = $this->host['name'];
         $data['address'] = $this->host['address'];
+        $data['container_id'] = $this->host['container_id'];
         return $data;
     }
 

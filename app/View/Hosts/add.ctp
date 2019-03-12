@@ -136,7 +136,7 @@
                                                         class="form-control"
                                                         type="text"
                                                         ng-model="post.Host.name"
-                                                        ng-blur="runDnsLoopup(true)">
+                                                        ng-blur="runDnsLookup(true)">
                                                 <div ng-repeat="error in errors.name">
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>
@@ -169,7 +169,7 @@
                                                         type="text"
                                                         placeholder="<?php echo __('IPv4/IPv6 address or FQDN'); ?>"
                                                         ng-model="post.Host.address"
-                                                        ng-blur="runDnsLoopup(false)">
+                                                        ng-blur="runDnsLookup(false)">
                                                 <div ng-repeat="error in errors.address">
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>

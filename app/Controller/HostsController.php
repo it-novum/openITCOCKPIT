@@ -3938,7 +3938,7 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosttemplate']);
     }
 
-    public function runDnsLoopup() {
+    public function runDnsLookup() {
         if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }

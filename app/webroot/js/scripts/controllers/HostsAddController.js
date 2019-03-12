@@ -275,7 +275,7 @@ angular.module('openITCOCKPIT')
             return false;
         };
 
-        $scope.runDnsLoopup = function(lookupByHostname){
+        $scope.runDnsLookup = function(lookupByHostname){
             $scope.data.dnsHostnameNotFound = false;
             $scope.data.dnsAddressNotFound = false;
             if($scope.data.dnsLookUp === false){
@@ -298,7 +298,7 @@ angular.module('openITCOCKPIT')
                 data.address = $scope.post.Host.address;
             }
 
-            $http.post("/hosts/runDnsLoopup.json?angular=true",
+            $http.post("/hosts/runDnsLookup.json?angular=true",
                 data
             ).then(function(result){
                 if(lookupByHostname){
