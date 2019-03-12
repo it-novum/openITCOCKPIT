@@ -352,6 +352,11 @@ class UsersTable extends Table {
         return $ret;
     }
 
+    /**
+     * @param null $userId
+     * @param $rights
+     * @return array
+     */
     public function getUserWithContainerPermission($userId = null, $rights){
         $user = $this->getUser($userId, $rights);
         $containerPermissions = [];
@@ -360,6 +365,14 @@ class UsersTable extends Table {
             $user = array_merge($user, $containerPermissions);
         }
         return $user;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Users.id' => $id]);
     }
 
     /**

@@ -11,6 +11,8 @@ angular.module('openITCOCKPIT')
             };
         };
 
+        $scope.deleteUrl = '/users/delete/';
+
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter === true;
         };
@@ -40,6 +42,27 @@ angular.module('openITCOCKPIT')
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
+        };
+
+        $scope.getObjectForDelete = function(user){
+            var object = {};
+            object[user.User.id] = user.User.full_name;
+            return object;
+        };
+
+        $scope.getObjectsForDelete = function(){
+            var objects = {};
+            var selectedObjects = MassChangeService.getSelected();
+            for(var key in $scope.users){
+                for(var id in selectedObjects){
+                    if(id == $scope.users[key].User.id){
+                        if($scope.users[key].User.allow_edit === true){
+                            objects[id] = $scope.users[key].User.full_name;
+                        }
+                    }
+                }
+            }
+            return objects;
         };
 
         //Fire on page load
