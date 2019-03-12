@@ -102,7 +102,7 @@ class HostsTable extends Table {
 
 
         $this->belongsToMany('Parenthosts', [
-            'className'        => 'Hostgroups',
+            'className'        => 'Hosts',
             'foreignKey'       => 'host_id',
             'targetForeignKey' => 'parenthost_id',
             'joinTable'        => 'hosts_to_parenthosts',

@@ -44,7 +44,7 @@ class HostcommandargumentvaluesTable extends Table {
             'foreignKey' => 'commandargument_id',
             'joinType'   => 'INNER'
         ]);
-        $this->belongsTo('Host', [
+        $this->belongsTo('Hosts', [
             'foreignKey' => 'host_id',
             'joinType'   => 'INNER'
         ]);

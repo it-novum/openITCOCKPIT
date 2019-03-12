@@ -87,6 +87,9 @@ class HostComparisonForSave {
         $data['name'] = $this->host['name'];
         $data['address'] = $this->host['address'];
         $data['container_id'] = $this->host['container_id'];
+        $data['hosts_to_containers_sharing'] = isset($this->host['hosts_to_containers_sharing']) ? $this->host['hosts_to_containers_sharing'] : [];
+        $data['parenthosts'] = isset($this->host['parenthosts']) ? $this->host['parenthosts'] : [];
+
         return $data;
     }
 

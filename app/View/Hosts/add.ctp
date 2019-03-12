@@ -95,7 +95,7 @@
                                                         chosen="sharingContainers"
                                                         multiple
                                                         ng-options="container.key as container.value for container in sharingContainers"
-                                                        ng-model="post.containers._ids">
+                                                        ng-model="post.Host.hosts_to_containers_sharing._ids">
                                                 </select>
                                                 <div ng-repeat="error in errors.container_id">
                                                     <div class="help-block text-danger">{{ error }}</div>
