@@ -35,7 +35,7 @@
         </h1>
     </div>
 </div>
-
+<massdelete></massdelete>
 
 <section id="widget-grid" class="">
     <div class="row">
@@ -63,7 +63,7 @@
                 <div>
 
                     <!-- widget content -->
-                    <div class="widget-body no-padding">
+                    <div class="widget-body no-padding" ng-init="objectName='<?php echo __('Host escalation #');?>'">
                         <div class="mobile_table" ng-show="hostescalations.length > 0">
                             <table id="hostescalation_list"
                                    class="table table-striped table-hover table-bordered smart-form"
@@ -238,7 +238,8 @@
                                                 <a ui-sref="HostescalationsEdit({id: hostescalation.Hostescalation.id})"
                                                    ng-if="hostescalation.Hostescalation.allowEdit"
                                                    class="btn btn-default">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;                                                </a>
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
                                                 <a href="javascript:void(0);"
                                                    ng-if="!hostescalation.Hostescalation.allowEdit"
                                                    class="btn btn-default">
@@ -246,7 +247,8 @@
                                                 </a>
                                             <?php else: ?>
                                                 <a href="javascript:void(0);" class="btn btn-default">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;                                                </a>
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
                                             <?php endif; ?>
                                             <a href="javascript:void(0);" data-toggle="dropdown"
                                                class="btn btn-default dropdown-toggle"><span

@@ -4,6 +4,7 @@ angular.module('openITCOCKPIT')
         $scope.currentPage = 1;
         $scope.useScroll = true;
         $scope.init = true;
+        $scope.deleteUrl = '/hostescalations/delete/';
 
         $scope.load = function(){
 
@@ -35,19 +36,10 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
-        $scope.getObjectsForDelete = function(){
-            var objects = {};
-            var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.hostescalations){
-                for(var id in selectedObjects){
-                    if(id == $scope.hostescalations[key].Hostescalation.id){
-                        if($scope.hostescalations[key].Hostescalation.allow_edit === true){
-                            objects[id] = $scope.hostescalations[key].Hostescalation.id;
-                        }
-                    }
-                }
-            }
-            return objects;
+        $scope.getObjectForDelete = function(hostescalation){
+            var object = {};
+            object[hostescalation.Hostescalation.id] = $scope.objectName + hostescalation.Hostescalation.id;
+            return object;
         };
 
         //Fire on page load
