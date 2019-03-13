@@ -765,7 +765,7 @@
                                     </div>
 
                                     <?php
-                                    $hostFalpOptions = [
+                                    $hostFlapOptions = [
                                         [
                                             'field' => 'flap_detection_on_up',
                                             'class' => 'success',
@@ -821,7 +821,7 @@
                                             </div>
                                         </legend>
                                         <ul class="config-flex-inner">
-                                            <?php foreach ($hostFalpOptions as $hostFalpOption): ?>
+                                            <?php foreach ($hostFlapOptions as $hostFalpOption): ?>
                                                 <li>
                                                     <div class="margin-bottom-0"
                                                          ng-class="{'has-error': errors.<?php echo $hostFalpOption['field']; ?>}">

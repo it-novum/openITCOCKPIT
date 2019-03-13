@@ -548,10 +548,19 @@ class HostsController extends AppController {
         }
     }
 
-    /**
-     * @deprecated
-     */
     public function edit($id = null) {
+        $this->layout = 'blank';
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+
+
+        /**************** OLD CODE ****************/
+
+
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->set('MY_WRITABLE_CONTAINERS', $this->getWriteContainers());
         $userId = $this->Auth->user('id');

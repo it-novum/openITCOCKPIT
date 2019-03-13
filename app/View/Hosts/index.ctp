@@ -518,7 +518,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     <td class="width-50">
                                         <div class="btn-group">
                                             <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                <a href="/hosts/edit/{{host.Host.id}}"
+                                                <a ui-sref="HostsEdit({id:host.Host.id})"
                                                    ng-if="host.Host.allow_edit"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -539,7 +539,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                             <ul class="dropdown-menu pull-right" id="menuHack-{{host.Host.uuid}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_edit">
-                                                        <a href="/hosts/edit/{{host.Host.id}}">
+                                                        <a ui-sref="HostsEdit({id:host.Host.id})">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
