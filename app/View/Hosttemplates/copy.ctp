@@ -44,7 +44,9 @@
         </h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
-                <back-button fallback-state='HosttemplatesIndex'></back-button>
+                <a back-button fallback-state='HosttemplatesIndex' class="btn btn-default btn-xs" iconcolor="white">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
             <?php endif; ?>
         </div>
     </header>

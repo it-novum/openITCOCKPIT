@@ -42,7 +42,9 @@
         <h2><?php echo __('Create new host template'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
-                <back-button fallback-state='HosttemplatesIndex'></back-button>
+                <a back-button fallback-state='HosttemplatesIndex' class="btn btn-default btn-xs" iconcolor="white">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
             <?php endif; ?>
         </div>
     </header>
@@ -554,7 +556,7 @@
                                         </div>
 
                                         <?php
-                                        $hostFalpOptions = [
+                                        $hostFlapOptions = [
                                             [
                                                 'field' => 'flap_detection_on_up',
                                                 'class' => 'success',
@@ -605,7 +607,7 @@
                                                 </div>
                                             </legend>
                                             <ul class="config-flex-inner">
-                                                <?php foreach ($hostFalpOptions as $hostFalpOption): ?>
+                                                <?php foreach ($hostFlapOptions as $hostFalpOption): ?>
                                                     <li>
                                                         <div class="margin-bottom-0"
                                                              ng-class="{'has-error': errors.<?php echo $hostFalpOption['field']; ?>}">
