@@ -71,9 +71,9 @@
                                 <thead>
                                 <tr>
                                     <th><?php echo __('Hosts'); ?></th>
-                                    <th><?php echo __('Ext. hosts'); ?></th>
+                                    <th><?php echo __('Excluded hosts'); ?></th>
                                     <th><?php echo __('Host groups'); ?></th>
-                                    <th><?php echo __('Ext. hosts groups'); ?></th>
+                                    <th><?php echo __('Excluded hosts groups'); ?></th>
                                     <th><?php echo __('First'); ?></th>
                                     <th><?php echo __('Last'); ?></th>
                                     <th><?php echo __('Interval'); ?></th>
