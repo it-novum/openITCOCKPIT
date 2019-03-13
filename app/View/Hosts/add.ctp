@@ -953,7 +953,7 @@
                                 </ul>
                             </div>
 
-                            <a ui-sref="HostsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            <a back-button fallback-state='HostsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>
                 </div>

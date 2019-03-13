@@ -147,7 +147,9 @@
                         <div class="well formactions ">
                             <div class="pull-right">
                                 <input class="btn btn-primary" type="submit" value="Save">&nbsp;
-                                <a ui-sref="HostgroupsIndex" class="btn btn-default">Cancel</a>
+                                <a back-button fallback-state='HostgroupsIndex' class="btn btn-default">
+                                    <?php echo __('Cancel'); ?>
+                                </a>
                             </div>
                         </div>
                     </div>

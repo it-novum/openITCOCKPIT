@@ -44,7 +44,9 @@
             {{post.Host.name}}
         </h2>
         <div class="widget-toolbar" role="menu">
-            <back-button fallback-state='HostsIndex'></back-button>
+            <a back-button fallback-state='HostsIndex' class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
         <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
             UUID: {{post.Host.uuid}}
@@ -922,7 +924,7 @@
                             <button type="submit" class="btn btn-primary">
                                 <?php echo __('Update host'); ?>
                             </button>
-                            <a ui-sref="HostsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            <a back-button fallback-state='HostsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>
                 </div>

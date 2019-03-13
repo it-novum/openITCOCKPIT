@@ -703,8 +703,10 @@
                 <div class="col-xs-12 margin-top-10 margin-bottom-10">
                     <div class="well formactions ">
                         <div class="pull-right">
-                            <input class="btn btn-primary" type="submit" value="<?php echo __('Update host template'); ?>">
-                            <a ui-sref="HosttemplatesIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            <input class="btn btn-primary" type="submit"
+                                   value="<?php echo __('Update host template'); ?>">
+                            <a back-button fallback-state='HosttemplatesIndex'
+                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>
                 </div>
