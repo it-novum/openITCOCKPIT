@@ -50,7 +50,9 @@
                     <?php echo __('Delete'); ?>
                 </button>
             <?php endif; ?>
-            <back-button fallback-state='HostgroupsIndex'></back-button>
+            <a back-button fallback-state='HostgroupsIndex' class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
         <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
             <?php echo __('UUID:'); ?> {{ hostgroup.Hostgroup.uuid }}
