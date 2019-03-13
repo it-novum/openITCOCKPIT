@@ -817,7 +817,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
         };
     })
 
-    .run(function($rootScope, SortService){
+    .run(function($rootScope, SortService, $state){
+
+        $rootScope.$on( '$stateChangeStart', function( event, to, toParams, from, fromParams ){
+            from.params = fromParams;
+            $state.previous = from;
+        });
 
         $rootScope.runningAjaxCalls = 0;
 

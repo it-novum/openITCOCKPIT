@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HosttemplatesIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService){
+    .controller('HosttemplatesIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService, $state){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Hosttemplates.name'));
