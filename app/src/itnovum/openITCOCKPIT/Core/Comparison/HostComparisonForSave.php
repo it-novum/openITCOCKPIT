@@ -30,6 +30,7 @@ use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
  * Class HostComparison
  *
  * Compares a given host with a given host template
+ * Replace equal values with null in the $host array.
  *
  * @package itnovum\openITCOCKPIT\Core\Comparison
  */

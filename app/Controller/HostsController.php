@@ -54,6 +54,7 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
+use itnovum\openITCOCKPIT\Core\Merger\HostMergerForView;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
@@ -556,6 +557,42 @@ class HostsController extends AppController {
             return;
         }
 
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$HostsTable->existsById($id)) {
+            throw new NotFoundException(__('Host template not found'));
+        }
+
+        $host = $HostsTable->getHostForEdit($id);
+        $hostForChangelog = $host;
+
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
+            $this->render403();
+            return;
+        }
+
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($host['Host']['hosttemplate_id']);
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return host information
+            $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
+
+            $HostComparisonForView = new HostMergerForView($host, $hosttemplate);
+            $mergedHost = $HostComparisonForView->getDataForView();
+
+            $this->set('commands', Api::makeItJavaScriptAble($commands));
+            $this->set('host', $mergedHost);
+            $this->set('hosttemplate', $hosttemplate);
+            $this->set('_serialize', ['host', 'commands', 'hosttemplate']);
+            return;
+        }
 
 
         /**************** OLD CODE ****************/

@@ -1105,6 +1105,51 @@ class HostsTable extends Table {
         return $this->formatListAsCake2($query->toArray());
     }
 
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getHostForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'Contactgroups',
+                'Contacts',
+                'Hostgroups',
+                'Customvariables',
+                'Parenthosts',
+                'HostsToContainersSharing',
+                'Hostcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+        $host = $query;
+        $host['hostgroups'] = [
+            '_ids' => Hash::extract($query, 'hostgroups.{n}.id')
+        ];
+        $host['contacts'] = [
+            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+        ];
+        $host['contactgroups'] = [
+            '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
+        ];
+        $host['parenthosts'] = [
+            '_ids' => Hash::extract($query, 'parenthosts.{n}.id')
+        ];
+        $host['hosts_to_containers_sharing'] = [
+            '_ids' => Hash::extract($query, 'hosts_to_containers_sharing.{n}.id')
+        ];
+
+        return [
+            'Host' => $host
+        ];
+    }
+
 
     /**
      * @param int $id
