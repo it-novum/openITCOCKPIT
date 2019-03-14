@@ -42,7 +42,9 @@
         <span class="widget-icon"> <i class="fa fa-bomb"></i> </span>
         <h2><?php echo __('Add Service Escalation'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <back-button fallback-state="ServiceescalationsIndex"></back-button>
+            <a back-button fallback-state='ServiceescalationsIndex' class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
@@ -340,7 +342,7 @@
             <div class="well formactions ">
                 <div class="pull-right">
                     <a ng-click="submit()" class="btn btn-primary"><?php echo __('Save'); ?></a>&nbsp;
-                    <a ui-sref="ServiceescalationsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                    <a back-button fallback-state='ServiceescalationsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
                 </div>
             </div>
         </div>

@@ -100,7 +100,9 @@
                                                             {{host.Host.name}}
                                                         </a>
                                                     <?php else: ?>
-                                                        {{host.Host.name}}
+                                                        <span class="label label-light label-xs">
+                                                            {{host.Host.name}}
+                                                        </span>
                                                     <?php endif; ?>
                                                     <i ng-if="host.Host.disabled == 1"
                                                        class="fa fa-power-off text-danger"
@@ -123,7 +125,9 @@
                                                             {{host.Host.name}}
                                                         </a>
                                                     <?php else: ?>
-                                                        {{host.Host.name}}
+                                                        <span class="label label-light label-xs">
+                                                            {{host.Host.name}}
+                                                        </span>
                                                     <?php endif; ?>
                                                     <i ng-if="host.Host.disabled == 1"
                                                        class="fa fa-power-off text-danger"
@@ -146,7 +150,9 @@
                                                             {{hostgroup.Hostgroup.Container.name}}
                                                         </a>
                                                     <?php else: ?>
+                                                    <span class="label label-light label-xs">
                                                         {{hostgroup.Hostgroup.Container.name}}
+                                                    </span>
                                                     <?php endif; ?>
                                                 </div>
                                             </li>
@@ -166,7 +172,9 @@
                                                             {{hostgroup.Hostgroup.Container.name}}
                                                         </a>
                                                     <?php else: ?>
-                                                        {{hostgroup.Hostgroup.Container.name}}
+                                                        <span class="label label-light label-xs">
+                                                            {{hostgroup.Hostgroup.Container.name}}
+                                                        </span>
                                                     <?php endif; ?>
                                                 </div>
                                             </li>

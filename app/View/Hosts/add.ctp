@@ -42,7 +42,9 @@
         <h2><?php echo __('Create new host'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                <back-button fallback-state='HostsIndex'></back-button>
+                <a back-button fallback-state='HostsIndex' class="btn btn-default btn-xs" iconcolor="white">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
             <?php endif; ?>
         </div>
     </header>
@@ -951,7 +953,7 @@
                                 </ul>
                             </div>
 
-                            <a ui-sref="HostsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            <a back-button fallback-state='HostsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>
                 </div>

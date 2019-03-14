@@ -50,7 +50,9 @@
                     <?php echo __('Delete'); ?>
                 </button>
             <?php endif; ?>
-            <back-button fallback-state="ServiceescalationsIndex"></back-button>
+            <a back-button fallback-state='ServiceescalationsIndex' class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
         <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
             <?php echo __('UUID: '); ?>{{ post.Serviceescalation.uuid }}
@@ -351,7 +353,7 @@
             <div class="well formactions ">
                 <div class="pull-right">
                     <a ng-click="submit()" class="btn btn-primary"><?php echo __('Save'); ?></a>&nbsp;
-                    <a ui-sref="ServiceescalationsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                    <a back-button fallback-state='ServiceescalationsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
                 </div>
             </div>
         </div>

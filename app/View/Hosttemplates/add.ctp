@@ -42,7 +42,9 @@
         <h2><?php echo __('Create new host template'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
-                <back-button fallback-state='HosttemplatesIndex'></back-button>
+                <a back-button fallback-state='HosttemplatesIndex' class="btn btn-default btn-xs" iconcolor="white">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
             <?php endif; ?>
         </div>
     </header>
@@ -698,7 +700,8 @@
 
                             <input class="btn btn-primary" type="submit"
                                    value="<?php echo __('Create host template'); ?>">
-                            <a ui-sref="HosttemplatesIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            <a back-button fallback-state='HosttemplatesIndex'
+                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>
                 </div>

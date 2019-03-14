@@ -2342,6 +2342,11 @@ input[type=text]:focus + .input-group-addon-no-focus {
     border-color: #CCC;
 }
 
+.label-group .label .no-border{
+    border-color: transparent;
+}
+
+
 .label-breadcrumb .label:not(:last-child):after {
     content: " ";
     display: block;
