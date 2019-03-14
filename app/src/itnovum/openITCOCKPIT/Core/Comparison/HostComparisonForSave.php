@@ -75,9 +75,9 @@ class HostComparisonForSave {
         $contactsAndContactgroups = $this->getDataForContactsAndContactgroups();
         $data['contacts'] = $contactsAndContactgroups['contacts'];
         $data['contactgroups'] = $contactsAndContactgroups['contactgroups'];
-        $data += $this->getDataForHostgroups();
-        $data += $this->getDataForCommandarguments();
-        $data += $this->getDataForCustomvariables();
+        $data['hostgroups'] = $this->getDataForHostgroups();
+        $data['hostcommandargumentvalues'] = $this->getDataForCommandarguments();
+        $data['customvariables'] = $this->getDataForCustomvariables();
 
         //Add host default data
         $data['host_type'] = GENERIC_HOST;
@@ -261,16 +261,12 @@ class HostComparisonForSave {
         if (!empty($hostgroupsDiff)) {
             //Host use own host groups
             return [
-                'hostgroups' => [
-                    '_ids' => $this->host['hostgroups']['_ids']
-                ]
+                '_ids' => $this->host['hostgroups']['_ids']
             ];
         }
 
         return [
-            'hostgroups' => [
-                '_ids' => []
-            ]
+            '_ids' => []
         ];
     }
 
@@ -286,16 +282,12 @@ class HostComparisonForSave {
         $customvariables = $customVariableDiffer->getCustomVariablesToSaveAsRepository();
         if ($customvariables->getSize() === 0) {
             //No diff
-            return [
-                'customvariables' => []
-            ];
+            return [];
         }
 
         $this->hasOwnCustomvariables = true;
 
-        return [
-            'customvariables' => $customvariables->getAllCustomVariablesAsArray()
-        ];
+        return $customvariables->getAllCustomVariablesAsArray();
     }
 
     /**
@@ -312,9 +304,7 @@ class HostComparisonForSave {
         if ($this->host['command_id'] != $this->hosttemplate['command_id']) {
             //Different check command than the host template uses.
             //Definitely the command arguments has changed
-            return [
-                'hostcommandargumentvalues' => $this->host['hostcommandargumentvalues']
-            ];
+            return $this->host['hostcommandargumentvalues'];
         }
 
         $hostCommandArguments = [];
@@ -333,15 +323,11 @@ class HostComparisonForSave {
         }
 
         if (empty($diff)) {
-            return [
-                'hostcommandargumentvalues' => []
-            ];
+            return [];
         }
 
         //There is a diff, save all command argument values for this host
-        return [
-            'hostcommandargumentvalues' => $this->host['hostcommandargumentvalues']
-        ];
+        return $this->host['hostcommandargumentvalues'];
     }
 
 }

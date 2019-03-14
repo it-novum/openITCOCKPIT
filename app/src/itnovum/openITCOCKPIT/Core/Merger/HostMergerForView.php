@@ -77,10 +77,11 @@ class HostMergerForView {
         $data['contactgroups'] = $contactsAndContactgroups['contactgroups'];
         $data['own_contacts'] = (int)$this->hasOwnContacts;
         $data['own_contactgroups'] = (int)$this->hasOwnContacts;
-        $data += $this->getDataForHostgroups();
-        $data += $this->getDataForCommandarguments();
-        $data += $this->getDataForCustomvariables();
+        $data['hostgroups'] = $this->getDataForHostgroups();
+        $data['hostcommandargumentvalues'] = $this->getDataForCommandarguments();
+        $data['customvariables'] = $this->getDataForCustomvariables();
         $data['own_customvariables'] = (int)$this->hasOwnCustomvariables;
+
         return [
             'Host' => $data
         ];
@@ -194,16 +195,12 @@ class HostMergerForView {
         if (empty($this->host['hostgroups']['_ids'])) {
             //Host use own host groups
             return [
-                'hostgroups' => [
-                    '_ids' => $this->hosttemplate['hostgroups']['_ids']
-                ]
+                '_ids' => $this->hosttemplate['hostgroups']['_ids']
             ];
         }
 
         return [
-            'hostgroups' => [
-                '_ids' => $this->host['hostgroups']['_ids']
-            ]
+            '_ids' => $this->host['hostgroups']['_ids']
         ];
     }
 
@@ -213,17 +210,13 @@ class HostMergerForView {
     public function getDataForCustomvariables() {
         if (empty($this->host['customvariables'])) {
             $this->hasOwnCustomvariables = false;
-            return [
-                'customvariables' => $this->hosttemplate['customvariables']
-            ];
+            return $this->hosttemplate['customvariables'];
         }
 
         $this->hasOwnCustomvariables = true;
         if (empty($this->hosttemplate['customvariables'])) {
             //Host template has no custom variables.
-            return [
-                'customvariables' => $this->host['customvariables']
-            ];
+            return $this->host['customvariables'];
         }
 
         //Merge host custom variables and host template custom variables
@@ -233,10 +226,7 @@ class HostMergerForView {
         );
 
         $CustomVariablesRepository = $CustomVariablesMerger->getCustomVariablesMergedAsRepository();
-        return [
-            'customvariables' => $CustomVariablesRepository->getAllCustomVariablesAsArray()
-        ];
-
+        return $CustomVariablesRepository->getAllCustomVariablesAsArray();
     }
 
     /**
@@ -251,14 +241,11 @@ class HostMergerForView {
      */
     public function getDataForCommandarguments() {
         if (empty($this->host['hostcommandargumentvalues'])) {
-            return [
-                'hostcommandargumentvalues' => $this->hosttemplate['hosttemplatecommandargumentvalues']
-            ];
+            return $this->hosttemplate['hosttemplatecommandargumentvalues'];
         }
 
-        return [
-            'hostcommandargumentvalues' => $this->host['hostcommandargumentvalues']
-        ];
+        return $this->host['hostcommandargumentvalues'];
+
     }
 
 }

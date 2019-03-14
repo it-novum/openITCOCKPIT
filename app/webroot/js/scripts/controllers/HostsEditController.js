@@ -298,6 +298,9 @@ angular.module('openITCOCKPIT')
             $http.post("/hosts/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
+
+                return;
+
                 NotyService.genericSuccess();
 
                 $state.go('HostsIndex').then(function(){
