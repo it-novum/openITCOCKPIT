@@ -56,6 +56,7 @@ use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForView;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
+use itnovum\openITCOCKPIT\Core\Permissions\HostContainersPermissions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\Timeline\AcknowledgementSerializer;
@@ -587,10 +588,20 @@ class HostsController extends AppController {
             $HostComparisonForView = new HostMergerForView($host, $hosttemplate);
             $mergedHost = $HostComparisonForView->getDataForView();
 
+            $HostContainersPermissions = new HostContainersPermissions(
+                $host['Host']['container_id'],
+                $host['Host']['hosts_to_containers_sharing']['_ids'],
+                $this->getWriteContainers(),
+                $this->hasRootPrivileges
+            );
+
             $this->set('commands', Api::makeItJavaScriptAble($commands));
             $this->set('host', $mergedHost);
             $this->set('hosttemplate', $hosttemplate);
-            $this->set('_serialize', ['host', 'commands', 'hosttemplate']);
+            $this->set('isPrimaryContainerChangeable', $HostContainersPermissions->isPrimaryContainerChangeable());
+            $this->set('allowSharing', $HostContainersPermissions->allowSharing($this->MY_RIGHTS, $host['Host']['host_type']));
+
+            $this->set('_serialize', ['host', 'commands', 'hosttemplate', 'isPrimaryContainerChangeable', 'allowSharing']);
             return;
         }
 

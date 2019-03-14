@@ -78,10 +78,15 @@
                                                         class="form-control"
                                                         chosen="containers"
                                                         ng-options="container.key as container.value for container in containers"
+                                                        ng-disabled="!data.isPrimaryContainerChangeable"
                                                         ng-model="post.Host.container_id">
                                                 </select>
+
                                                 <div ng-show="post.Host.container_id < 1" class="warning-glow">
                                                     <?php echo __('Please select a container.'); ?>
+                                                </div>
+                                                <div ng-show="post.Host.container_id === 1" class="help-block">
+                                                    <?php echo __('Objects in /root can\'t be moved to other containers'); ?>
                                                 </div>
                                                 <div ng-repeat="error in errors.container_id">
                                                     <div class="help-block text-danger">{{ error }}</div>
@@ -89,25 +94,28 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group" ng-class="{'has-error': errors.container_id}">
-                                            <label class="col-xs-12 col-lg-2 control-label">
-                                                <?php echo __('Shared containers'); ?>
-                                            </label>
-                                            <div class="col-xs-12 col-lg-10">
-                                                <select
-                                                        id="HostSharedContainers"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="sharingContainers"
-                                                        multiple
-                                                        ng-options="container.key as container.value for container in sharingContainers"
-                                                        ng-model="post.Host.hosts_to_containers_sharing._ids">
-                                                </select>
-                                                <div ng-repeat="error in errors.container_id">
-                                                    <div class="help-block text-danger">{{ error }}</div>
+                                        <?php if ($this->Acl->hasPermission('sharing', 'hosts')): ?>
+                                            <div class="form-group" ng-class="{'has-error': errors.container_id}">
+                                                <label class="col-xs-12 col-lg-2 control-label">
+                                                    <?php echo __('Shared containers'); ?>
+                                                </label>
+                                                <div class="col-xs-12 col-lg-10">
+                                                    <select
+                                                            id="HostSharedContainers"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            chosen="sharingContainers"
+                                                            multiple
+                                                            ng-options="container.key as container.value for container in sharingContainers"
+                                                            ng-disabled="data.allowSharing === false"
+                                                            ng-model="post.Host.hosts_to_containers_sharing._ids">
+                                                    </select>
+                                                    <div ng-repeat="error in errors.container_id">
+                                                        <div class="help-block text-danger">{{ error }}</div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        <?php endif; ?>
 
                                         <div class="form-group required"
                                              ng-class="{'has-error': errors.hosttemplate_id}">
@@ -924,7 +932,8 @@
                             <button type="submit" class="btn btn-primary">
                                 <?php echo __('Update host'); ?>
                             </button>
-                            <a back-button fallback-state='HostsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            <a back-button fallback-state='HostsIndex'
+                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>
                 </div>

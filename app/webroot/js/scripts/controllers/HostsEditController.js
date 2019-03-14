@@ -6,7 +6,9 @@ angular.module('openITCOCKPIT')
         $scope.data = {
             dnsLookUp: LocalStorageService.getItemWithDefault('HostsDnsLookUpEnabled', 'false') === 'true',
             dnsHostnameNotFound: false,
-            dnsAddressNotFound: false
+            dnsAddressNotFound: false,
+            isPrimaryContainerChangeable: false,
+            allowSharing: false
         };
 
         $scope.post = {
@@ -117,7 +119,6 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.containers = result.data.containers;
-                $scope.init = false;
             });
         };
 
@@ -133,26 +134,22 @@ angular.module('openITCOCKPIT')
                 $scope.post.Host = result.data.host.Host;
                 $scope.hosttemplate = result.data.hosttemplate;
 
+                $scope.data.isPrimaryContainerChangeable = result.data.isPrimaryContainerChangeable;
+                $scope.data.allowSharing = result.data.allowSharing;
+
                 jQuery(function(){
                     $('.tagsinput').tagsinput();
                 });
 
-                $scope.init = false;
+                $scope.loadElements();
+                $scope.loadParentHosts('');
+
+                setTimeout(function(){
+                    $scope.init = false;
+                }, 250);
             });
         };
 
-        $scope.loadCommands = function(){
-            var params = {
-                'angular': true
-            };
-
-            $http.get("/hosts/loadCommands.json", {
-                params: params
-            }).then(function(result){
-                $scope.commands = result.data.commands;
-                $scope.init = false;
-            });
-        };
 
         $scope.loadCommandArguments = function(){
             var params = {
@@ -165,7 +162,6 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.post.Host.hostcommandargumentvalues = result.data.hostcommandargumentvalues;
-                $scope.init = false;
             });
         };
 
@@ -344,7 +340,8 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            $scope.init = true; //Disable post.Host.command_id $watch
+            console.log('loadHosttemplate watch');
+            //$scope.init = true; //Disable post.Host.command_id $watch
             //$scope.loadHosttemplate();
         }, true);
 

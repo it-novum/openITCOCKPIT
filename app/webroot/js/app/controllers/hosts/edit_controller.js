@@ -110,9 +110,9 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
         //get the containers for sharing
         if($('#HostSharedContainer').length){
             $('#HostContainerId').change(function(){
-                var oldValue = $(this).attr('oldValue');
-                var containerId = $(this).val();
-                $(this).attr('oldValue', containerId);
+                var oldValue = $(this).attr('oldValue'); //>1
+                var containerId = $(this).val(); // >100
+                $(this).attr('oldValue', containerId); // <100
                 $.ajax({
                     url: '/Hosts/getSharingContainers/' + containerId + '.json',
                     type: 'post',
