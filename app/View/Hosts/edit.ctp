@@ -95,7 +95,10 @@
                                         </div>
 
                                         <?php if ($this->Acl->hasPermission('sharing', 'hosts')): ?>
-                                            <div class="form-group" ng-class="{'has-error': errors.container_id}">
+                                            <div
+                                                    class="form-group"
+                                                    ng-show="data.allowSharing"
+                                                    ng-class="{'has-error': errors.container_id}">
                                                 <label class="col-xs-12 col-lg-2 control-label">
                                                     <?php echo __('Shared containers'); ?>
                                                 </label>

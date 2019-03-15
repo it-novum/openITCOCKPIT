@@ -105,6 +105,24 @@ class HostContainersPermissions {
         return $HostSharingPermissions->allowSharing();
     }
 
+    /**
+     * @return boolean|null
+     */
+    public function isHostOnlyEditableDueToHostSharing() {
+        if (isset($this->MY_WRITABLE_CONTAINERS[$this->primaryContainerId])) {
+            //User has permissions to this host via primary container
+            return false;
+        }
+
+        foreach ($this->sharedContainerIds as $sharedContainerId) {
+            if (isset($this->MY_WRITABLE_CONTAINERS[$sharedContainerId])) {
+                return true;
+            }
+        }
+
+        //The user has no permissions to see this host at all
+        return null;
+    }
 
     /**
      * @param array|int $arr

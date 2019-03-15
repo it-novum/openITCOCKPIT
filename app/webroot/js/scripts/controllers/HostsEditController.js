@@ -8,7 +8,8 @@ angular.module('openITCOCKPIT')
             dnsHostnameNotFound: false,
             dnsAddressNotFound: false,
             isPrimaryContainerChangeable: false,
-            allowSharing: false
+            allowSharing: false,
+            isHostOnlyEditableDueToHostSharing: false
         };
 
         $scope.post = {
@@ -119,6 +120,7 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.containers = result.data.containers;
+                $scope.loadHost();
             });
         };
 
@@ -136,6 +138,12 @@ angular.module('openITCOCKPIT')
 
                 $scope.data.isPrimaryContainerChangeable = result.data.isPrimaryContainerChangeable;
                 $scope.data.allowSharing = result.data.allowSharing;
+                $scope.data.isHostOnlyEditableDueToHostSharing = result.data.isHostOnlyEditableDueToHostSharing;
+                if(result.data.isHostOnlyEditableDueToHostSharing === true){
+                    //User has only permissions to edit this host via host sharing.
+                    //We fake the displayed primary container id for the user to not expose any container names
+                    $scope.containers = result.data.fakeDisplayContainers;
+                }
 
                 jQuery(function(){
                     $('.tagsinput').tagsinput();
@@ -147,6 +155,14 @@ angular.module('openITCOCKPIT')
                 setTimeout(function(){
                     $scope.init = false;
                 }, 250);
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 
@@ -328,7 +344,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainers();
-        $scope.loadHost();
 
         $scope.$watch('post.Host.container_id', function(){
             if($scope.init){
