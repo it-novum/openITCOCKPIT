@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('afterExportCfg', function($http){
+angular.module('openITCOCKPIT').directive('afterExportCfg', function($http, $state){
     return {
         restrict: 'E',
         templateUrl: '/ConfigurationFiles/AfterExport.html',
@@ -18,8 +18,12 @@ angular.module('openITCOCKPIT').directive('afterExportCfg', function($http){
                     $scope.post = result.data.config;
                     $scope.init = false;
                 }, function errorCallback(result){
+                    if(result.status === 403){
+                        $state.go('403');
+                    }
+
                     if(result.status === 404){
-                        window.location.href = '/angular/not_found';
+                        $state.go('404');
                     }
                 });
             };

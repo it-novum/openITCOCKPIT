@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('BrowsersIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService){
+    .controller('BrowsersIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService, $state){
         SortService.setSort(QueryStringService.getValue('sort', 'Hoststatus.current_state'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.containerId = parseInt(QueryStringService.getValue('containerId', 1), 10); //Default ROOT_CONTAINER
@@ -92,12 +92,12 @@ angular.module('openITCOCKPIT')
                 $scope.paging = result.data.paging;
 
             }, function errorCallback(result){
-                console.log(result);
-                if(result.status === 404){
-                    window.location.href = '/angular/not_found';
-                }
                 if(result.status === 403){
-                    window.location.href = '/angular/forbidden';
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
                 }
             });
         };

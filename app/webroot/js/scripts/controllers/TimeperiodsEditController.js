@@ -44,8 +44,12 @@ angular.module('openITCOCKPIT')
                 $scope.post.Timeperiod.calendar_id = $scope.timeperiod.calendar_id;
                 $scope.init = false;
             }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
                 if(result.status === 404){
-                    window.location.href = '/angular/not_found';
+                    $state.go('404');
                 }
             });
             $scope.loadContainer();

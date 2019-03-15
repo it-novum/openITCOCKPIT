@@ -45,8 +45,12 @@ angular.module('openITCOCKPIT')
                 $scope.post.Tenant.max_users = $scope.tenant.Tenant.max_users;
                 $scope.init = false;
             }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
                 if(result.status === 404){
-                    window.location.href = '/angular/not_found';
+                    $state.go('404');
                 }
             });
         };

@@ -37,8 +37,12 @@ angular.module('openITCOCKPIT')
                 $scope.post.Rotation.name = $scope.rotation.Rotation.name;
                 $scope.post.Rotation.interval = parseInt($scope.rotation.Rotation.interval, 10);
             }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
                 if(result.status === 404){
-                    window.location.href = '/angular/not_found';
+                    $state.go('404');
                 }
             });
         };
