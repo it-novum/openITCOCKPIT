@@ -81,6 +81,21 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.createJQConsole = function(){
+
+            if(SudoService.hasError()){
+                $scope.hasWebSocketError = true;
+                $('#console').block({
+                    fadeIn: 1000,
+                    message: '<i class="fa fa-minus-circle fa-5x"></i>',
+                    theme: false
+                });
+                $('.blockElement').css({
+                    'background-color': '',
+                    'border': 'none',
+                    'color': '#FFFFFF'
+                });
+            }
+
             $scope.jqConsole = $('#console').jqconsole('', 'nagios$ ');
             $http.get('/commands/getConsoleWelcome/.json', {
                 params: {
@@ -95,19 +110,6 @@ angular.module('openITCOCKPIT')
                     var payload = JSON.parse(response.data);
                     $scope.jqConsole.Write(payload.payload, 'jqconsole-output');
                 }
-            });
-            SudoService.onError(function(){
-                $scope.hasWebSocketError = true;
-                $('#console').block({
-                    fadeIn: 1000,
-                    message: '<i class="fa fa-minus-circle fa-5x"></i>',
-                    theme: false
-                });
-                $('.blockElement').css({
-                    'background-color': '',
-                    'border': 'none',
-                    'color': '#FFFFFF'
-                });
             });
 
             var newLineInPromt = function(){
