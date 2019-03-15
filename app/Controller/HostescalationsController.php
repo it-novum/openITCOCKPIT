@@ -45,49 +45,39 @@ use itnovum\openITCOCKPIT\Filter\HostescalationsFilter;
  */
 class HostescalationsController extends AppController {
 
-    public $layout = 'Admin.default';
+    public $layout = 'blank';
 
 
     public function index() {
-        $this->layout = 'blank';
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
             return;
         }
 
         /** @var $HostescalationsTable HostescalationsTable */
         $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
 
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            //Legacy API Request
-            $this->set('all_hostescalations', $HostescalationsTable->getAllHostescalationsAsCake2($this->MY_RIGHTS));
-            $this->set('_serialize', ['all_hostescalations']);
-            return;
+        $HostescalationsFilter = new HostescalationsFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostescalationsFilter->getPage());
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        }
+        $hostescalations = $HostescalationsTable->getHostescalationsIndex($HostescalationsFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($hostescalations as $index => $hostescalation) {
+            $hostescalations[$index]['Hostescalation']['allow_edit'] = $this->isWritableContainer($hostescalation['Hostescalation']['container_id']);
         }
 
-        if ($this->isAngularJsRequest()) {
-            //AngularJS API Request
-            $HostescalationsFilter = new HostescalationsFilter($this->request);
-            $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostescalationsFilter->getPage());
-            $all_hostescalations = $HostescalationsTable->getHostescalationsIndex($HostescalationsFilter, $PaginateOMat);
 
-            foreach ($all_hostescalations as $index => $hostescalation) {
-                $allowEdit = $this->hasRootPrivileges;
-                if ($this->hasRootPrivileges === false) {
-                    $allowEdit = $this->isWritableContainer($hostescalation['Hostescalation']['container_id']);
-                }
-                $all_hostescalations[$index]['Hostescalation']['allow_edit'] = $allowEdit;
-            }
-
-
-            $this->set('all_hostescalations', $all_hostescalations);
-            $toJson = ['all_hostescalations', 'paging'];
-            if ($this->isScrollRequest()) {
-                $toJson = ['all_hostescalations', 'scroll'];
-            }
-            $this->set('_serialize', $toJson);
-            return;
+        $this->set('all_hostescalations', $hostescalations);
+        $toJson = ['all_hostescalations', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_hostescalations', 'scroll'];
         }
+        $this->set('_serialize', $toJson);
     }
 
     public function view($id = null) {

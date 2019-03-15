@@ -7,7 +7,6 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostescalationsFilter;
 
 /**
@@ -121,10 +120,11 @@ class HostescalationsTable extends Table {
 
     /**
      * @param HostescalationsFilter $HostescalationsFilter
-     * @param null|PaginateOMat $PaginateOMat
+     * @param null $PaginateOMat
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getHostescalationsIndex(HostescalationsFilter $HostescalationsFilter, $PaginateOMat = null) {
+    public function getHostescalationsIndex(HostescalationsFilter $HostescalationsFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all')
             ->contain([
                 'Contacts'      => function ($q) {
@@ -143,11 +143,19 @@ class HostescalationsTable extends Table {
                             ]);
                     },
                 ],
+                'Timeperiods'   => function ($q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'Timeperiods.id',
+                            'Timeperiods.name'
+                        ]);
+                },
                 'Hosts'         => function ($q) {
                     return $q->enableAutoFields(false)
                         ->select([
+                            'Hosts.id',
                             'Hosts.name',
-                            'Hosts.id'
+                            'Hosts.disabled'
                         ]);
                 },
                 'Hostgroups'    => [
@@ -162,6 +170,14 @@ class HostescalationsTable extends Table {
             ])
             ->disableHydration();
         $query->where($HostescalationsFilter->indexFilter());
+
+        $query->innerJoinWith('Containers', function ($q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['Hostescalations.container_id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+
         $query->order($HostescalationsFilter->getOrderForPaginator('Hostescalations.first_notification', 'asc'));
 
         if ($PaginateOMat === null) {

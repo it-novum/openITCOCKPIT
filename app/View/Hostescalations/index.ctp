@@ -88,23 +88,23 @@
                                 <tr ng-repeat="hostescalation in hostescalations">
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="host in hostescalation.HostescalationHostMembership"
-                                                ng-if="host.excluded == 0">
+                                            <li ng-repeat="host in hostescalation.Host"
+                                                ng-if="host._joinData.excluded == 0">
                                                 <div class="label-group label-breadcrumb label-breadcrumb-success padding-2">
                                                     <label class="label label-success label-xs">
                                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                                     </label>
                                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                        <a href="/hosts/edit/{{host.Host.id}}"
+                                                        <a href="/hosts/edit/{{host.id}}"
                                                            class="label label-light label-xs">
-                                                            {{host.Host.name}}
+                                                            {{host.name}}
                                                         </a>
                                                     <?php else: ?>
                                                         <span class="label label-light label-xs">
-                                                            {{host.Host.name}}
+                                                            {{host.name}}
                                                         </span>
                                                     <?php endif; ?>
-                                                    <i ng-if="host.Host.disabled == 1"
+                                                    <i ng-if="host.disabled == 1"
                                                        class="fa fa-power-off text-danger"
                                                        title="disabled" aria-hidden="true"></i>
                                                 </div>
@@ -113,23 +113,23 @@
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="host in hostescalation.HostescalationHostMembership"
-                                                ng-if="host.excluded == 1">
+                                            <li ng-repeat="host in hostescalation.Host"
+                                                ng-if="host._joinData.excluded == 1">
                                                 <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
                                                     <label class="label label-danger label-xs">
                                                         <i class="fa fa-minus" aria-hidden="true"></i>
                                                     </label>
                                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                        <a href="/hosts/edit/{{host.Host.id}}"
+                                                        <a href="/hosts/edit/{{host.id}}"
                                                            class="label label-light label-xs">
-                                                            {{host.Host.name}}
+                                                            {{host.name}}
                                                         </a>
                                                     <?php else: ?>
                                                         <span class="label label-light label-xs">
-                                                            {{host.Host.name}}
+                                                            {{host.name}}
                                                         </span>
                                                     <?php endif; ?>
-                                                    <i ng-if="host.Host.disabled == 1"
+                                                    <i ng-if="host.disabled == 1"
                                                        class="fa fa-power-off text-danger"
                                                        title="disabled" aria-hidden="true"></i>
                                                 </div>
@@ -138,20 +138,20 @@
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="hostgroup in hostescalation.HostescalationHostgroupMembership"
-                                                ng-if="hostgroup.excluded == 0">
+                                            <li ng-repeat="hostgroup in hostescalation.Hostgroup"
+                                                ng-if="hostgroup._joinData.excluded == 0">
                                                 <div class="label-group label-breadcrumb label-breadcrumb-success padding-2">
                                                     <label class="label label-success label-xs">
                                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                                     </label>
                                                     <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
-                                                        <a ui-sref="HostgroupsEdit({id: hostgroup.Hostgroup.id})"
+                                                        <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
                                                            class="label label-light label-xs">
-                                                            {{hostgroup.Hostgroup.Container.name}}
+                                                            {{hostgroup.container.name}}
                                                         </a>
                                                     <?php else: ?>
                                                     <span class="label label-light label-xs">
-                                                        {{hostgroup.Hostgroup.Container.name}}
+                                                        {{hostgroup.container.name}}
                                                     </span>
                                                     <?php endif; ?>
                                                 </div>
@@ -160,20 +160,20 @@
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="hostgroup in hostescalation.HostescalationHostgroupMembership"
-                                                ng-if="hostgroup.excluded == 1">
+                                            <li ng-repeat="hostgroup in hostescalation.Hostgroup"
+                                                ng-if="hostgroup._joinData.excluded == 1">
                                                 <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
                                                     <label class="label label-danger label-xs">
                                                         <i class="fa fa-minus" aria-hidden="true"></i>
                                                     </label>
                                                     <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
-                                                        <a ui-sref="HostgroupsEdit({id: hostgroup.Hostgroup.id})"
+                                                        <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
                                                            class="label label-light label-xs">
-                                                            {{hostgroup.Hostgroup.Container.name}}
+                                                            {{hostgroup.container.name}}
                                                         </a>
                                                     <?php else: ?>
                                                         <span class="label label-light label-xs">
-                                                            {{hostgroup.Hostgroup.Container.name}}
+                                                            {{hostgroup.container.name}}
                                                         </span>
                                                     <?php endif; ?>
                                                 </div>
@@ -191,10 +191,10 @@
                                     </td>
                                     <td>
                                         <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
-                                            <a ui-sref="TimeperiodsEdit({id: hostescalation.Timeperiod.id})">{{
-                                                hostescalation.Timeperiod.name }}</a>
+                                            <a ui-sref="TimeperiodsEdit({id: hostescalation.Hostescalation.timeperiod.id})">{{
+                                                hostescalation.Hostescalation.timeperiod.name }}</a>
                                         <?php else: ?>
-                                            {{ hostescalation.Timeperiod.name }}
+                                            {{ hostescalation.Hostescalation.timeperiod.name }}
                                         <?php endif; ?>
                                     </td>
                                     <td>
@@ -215,10 +215,10 @@
                                             <li ng-repeat="contactgroup in hostescalation.Contactgroup">
                                                 <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
                                                     <a ui-sref="ContactgroupsEdit({id: contactgroup.id})">
-                                                        {{ contactgroup.Container.name }}
+                                                        {{ contactgroup.container.name }}
                                                     </a>
                                                 <?php else: ?>
-                                                    {{ contactgroup.Container.name }}
+                                                    {{ contactgroup.container.name }}
                                                 <?php endif; ?>
                                             </li>
                                         </ul>
