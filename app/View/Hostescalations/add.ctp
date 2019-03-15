@@ -81,7 +81,7 @@
                                     </span>
                                 </div>
                             </label>
-                            <div class="col col-xs-12 col-lg-10">
+                            <div class="col col-xs-12 col-lg-10 success">
                                 <select id="HostescalationHost"
                                         multiple
                                         data-placeholder="<?php echo __('Please choose'); ?>"
@@ -107,7 +107,7 @@
                                     </span>
                                 </div>
                             </label>
-                            <div class="col col-xs-12 col-lg-10">
+                            <div class="col col-xs-12 col-lg-10 danger">
                                 <select id="HostescalationHostExcluded"
                                         multiple
                                         data-placeholder="<?php echo __('Please choose'); ?>"
@@ -133,7 +133,7 @@
                                     </span>
                                 </div>
                             </label>
-                            <div class="col col-xs-12 col-lg-10">
+                            <div class="col col-xs-12 col-lg-10 success">
                                 <select id="HostescalationHostgroup"
                                         multiple
                                         data-placeholder="<?php echo __('Please choose'); ?>"
@@ -160,7 +160,7 @@
                                     </span>
                                 </div>
                             </label>
-                            <div class="col col-xs-12 col-lg-10">
+                            <div class="col col-xs-12 col-lg-10 danger">
                                 <select id="HostescalationHostgroupExcluded"
                                         multiple
                                         data-placeholder="<?php echo __('Please choose'); ?>"
