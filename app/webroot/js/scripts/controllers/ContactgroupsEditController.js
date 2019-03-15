@@ -29,6 +29,14 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.post = result.data.contactgroup;
                 $scope.init = false;
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 

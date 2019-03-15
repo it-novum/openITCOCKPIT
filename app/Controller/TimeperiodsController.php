@@ -134,7 +134,7 @@ class TimeperiodsController extends AppController {
             'contain' => 'timeperiodtimeranges'
         ]);
         $timeperiodForChangeLog['Timeperiod'] = $timeperiod->toArray();
-        
+
         if (!$this->allowedByContainerId($timeperiod->get('container_id'))) {
             $this->render403();
             return;
