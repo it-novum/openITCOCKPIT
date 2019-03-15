@@ -108,6 +108,7 @@ class TimeperiodsController extends AppController {
             $this->render403();
             return;
         }
+
         $this->set('timeperiod', $timeperiod);
         $this->set('_serialize', ['timeperiod']);
     }
@@ -133,6 +134,11 @@ class TimeperiodsController extends AppController {
             'contain' => 'timeperiodtimeranges'
         ]);
         $timeperiodForChangeLog['Timeperiod'] = $timeperiod->toArray();
+
+        if (!$this->allowedByContainerId($timeperiod->get('container_id'))) {
+            $this->render403();
+            return;
+        }
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->data('Timeperiod'));
