@@ -55,7 +55,7 @@
                             </a>
 
                             <?php if ($isLdapAuth): ?>
-                                <a ui-sref="UsersLdap" class="btn btn-xs btn-warning">
+                                <a ui-sref="UsersAddFromLdap" class="btn btn-xs btn-warning">
                                     <i class="fa fa-plus"></i>
                                     <?php echo __('Import from LDAP'); ?>
                                 </a>
@@ -116,7 +116,7 @@
 
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-phone"></i>
+                                        <label class="input"> <i class="icon-prepend fa fa-building"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by user company'); ?>"
                                                    ng-model="filter.Users.company"
@@ -127,7 +127,7 @@
 
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-phone"></i>
+                                        <label class="input"> <i class="icon-prepend fa fa-users"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by user role'); ?>"
                                                    ng-model="filter.Users.role"
@@ -139,7 +139,7 @@
 
                             <div class="col-xs-12 col-md-6">
                                 <div class="form-group smart-form">
-                                    <label class="input"> <i class="icon-prepend fa fa-phone"></i>
+                                    <label class="input"> <i class="icon-prepend fa fa-stop"></i>
                                         <input type="text" class="input-sm"
                                                placeholder="<?php echo __('Filter by user status'); ?>"
                                                ng-model="filter.Users.status"

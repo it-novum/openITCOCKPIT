@@ -36,7 +36,9 @@ class UsersFilter extends Filter {
                 'User.full_name',
                 'User.email',
                 'User.company',
-                'User.phone'
+                'User.phone',
+                'User.status',
+                'User.usergroup_id'
             ]
         ];
 

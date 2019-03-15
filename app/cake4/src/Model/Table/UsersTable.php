@@ -9,6 +9,8 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Security;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
+use itnovum\openITCOCKPIT\Filter\UsersFilter;
 
 /**
  * Users Model
@@ -202,14 +204,15 @@ class UsersTable extends Table {
      * @param null $PaginateOMat
      * @return array
      */
-    public function getUsers($rights, $PaginateOMat = null) {
+    public function getUsers($rights, UsersFilter $usersFilter,$PaginateOMat = null) {
         $query = $this->find()
             ->disableHydration()
             ->contain(['Containers', 'Usergroups'])
             ->matching('Containers')
             ->order(['full_name' => 'asc'])
             ->where([
-                'ContainersUsersMemberships.container_id IN' => $rights
+                'ContainersUsersMemberships.container_id IN' => $rights,
+                $usersFilter
             ])
             ->select(function (Query $query) {
                 return [
