@@ -25,6 +25,16 @@ angular.module('openITCOCKPIT').directive('chosen', function($http, $filter, $ro
                 element.trigger('chosen:updated');
             }, true);
 
+            var unwatchDisabled = function(){};
+            if(attrs.hasOwnProperty('ngDisabled')){
+                unwatchDisabled = $scope.$watch(attrs.ngDisabled, function(){
+                    //If we set disabled=false in the view, the value of disabled is true here.
+                    //So, if disabled === false, we negate it to true to enable the element again. ¯\_(ツ)_/¯
+                    element[0].disabled = !element[0].disabled;
+                    element.trigger('chosen:updated');
+                }, true);
+            }
+
             var defaultOptions = {
                 placeholder_text_single: 'Please choose',
                 placeholder_text_multiple: 'Please choose',
@@ -60,6 +70,7 @@ angular.module('openITCOCKPIT').directive('chosen', function($http, $filter, $ro
             $scope.$on('$destroy', function(){
                 unwatchModel();
                 unwatchSource();
+                unwatchDisabled();
             });
         }
     };

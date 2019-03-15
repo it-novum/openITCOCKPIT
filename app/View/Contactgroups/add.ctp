@@ -42,7 +42,9 @@
         <h2><?php echo __('Create new contact group'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'contactgroups')): ?>
-                <back-button fallback-state='ContactgroupsIndex'></back-button>
+                <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default btn-xs" iconcolor="white">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
             <?php endif; ?>
         </div>
     </header>
@@ -126,7 +128,7 @@
                     <div class="well formactions ">
                         <div class="pull-right">
                             <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">
-                            <a ui-sref="ContactgroupsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>
                 </div>

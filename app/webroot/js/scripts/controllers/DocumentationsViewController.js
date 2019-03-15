@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('DocumentationsViewController', function($scope, $sce, $http, QueryStringService, MassChangeService, NotyService, BBParserService, $stateParams) {
+    .controller('DocumentationsViewController', function($scope, $sce, $http, QueryStringService, MassChangeService, NotyService, BBParserService, $stateParams, $state) {
 
         $scope.uuid = $stateParams.uuid;
         $scope.type = $stateParams.type;
@@ -79,8 +79,12 @@ angular.module('openITCOCKPIT')
                 }
 
             }, function errorCallback (result) {
-                if (result.status === 404) {
-                    window.location.href = '/angular/not_found';
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
                 }
             });
 

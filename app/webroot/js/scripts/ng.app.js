@@ -94,6 +94,18 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
     .config(function($urlRouterProvider, $stateProvider){
         $stateProvider
 
+            .state('403', {
+                url: '/error/403',
+                templateUrl: "/angular/forbidden.html",
+                controller: "Error403Controller"
+            })
+
+            .state('404', {
+                url: '/error/404',
+                templateUrl: "/angular/not_found.html",
+                controller: "Error404Controller"
+            })
+
             .state('AdministratorsQuerylog', {
                 url: '/Administrators/querylog',
                 templateUrl: "/Administrators/querylog.html",
@@ -817,7 +829,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
         };
     })
 
-    .run(function($rootScope, SortService){
+    .run(function($rootScope, SortService, $state){
+
+        $rootScope.$on( '$stateChangeStart', function( event, to, toParams, from, fromParams ){
+            from.params = fromParams;
+            $state.previous = from;
+        });
 
         $rootScope.runningAjaxCalls = 0;
 

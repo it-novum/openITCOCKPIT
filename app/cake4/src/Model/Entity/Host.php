@@ -78,6 +78,7 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Hostgroup[] $hostgroups
  * @property \App\Model\Entity\Host[] $parenthosts
  * @property \App\Model\Entity\Service[] $services
+ * @property \App\Model\Entity\Customvariable[] $customvariables
  */
 class Host extends Entity {
 
@@ -158,6 +159,7 @@ class Host extends Entity {
         'hostgroups'                    => true,
         'parenthosts'                   => true,
         'services'                      => true,
+        'customvariables'               => true
     ];
 
     /**

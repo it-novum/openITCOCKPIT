@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HosttemplatesUsedByController', function($scope, $http, QueryStringService, MassChangeService){
+    .controller('HosttemplatesUsedByController', function($scope, $http, QueryStringService, MassChangeService, $state){
 
         $scope.id = QueryStringService.getCakeId();
         $scope.total = 0;
@@ -19,8 +19,12 @@ angular.module('openITCOCKPIT')
                 $scope.hosttemplate = result.data.hosttemplate;
                 $scope.total = result.data.all_hosts.length;
             }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
                 if(result.status === 404){
-                    window.location.href = '/angular/not_found';
+                    $state.go('404');
                 }
             });
         };

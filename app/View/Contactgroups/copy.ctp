@@ -44,7 +44,9 @@
         </h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'contactgroups')): ?>
-                <back-button fallback-state='ContactgroupsIndex'></back-button>
+                <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default btn-xs" iconcolor="white">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
             <?php endif; ?>
         </div>
     </header>
@@ -101,7 +103,7 @@
                         <?php echo __('Copy'); ?>
                     </button>
                     <?php if ($this->Acl->hasPermission('index', 'contactgroups')): ?>
-                        <a ui-sref="ContactgroupsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
                     <?php endif; ?>
                 </div>
             </div>

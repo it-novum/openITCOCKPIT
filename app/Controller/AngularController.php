@@ -374,13 +374,13 @@ class AngularController extends AppController {
     }
 
     public function not_found() {
-        $this->layout = 'Admin.default';
+        $this->layout = 'blank';
         //Only ship HTML template
         return;
     }
 
     public function forbidden() {
-        $this->layout = 'Admin.default';
+        $this->layout = 'blank';
         //Only ship HTML template
         return;
     }
@@ -735,11 +735,6 @@ class AngularController extends AppController {
     }
 
     public function template_diff_button() {
-        //Only ship HTML template
-        return;
-    }
-
-    public function back_button() {
         //Only ship HTML template
         return;
     }

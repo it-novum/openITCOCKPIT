@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('Grafana_userdashboardsIndexController', function($scope, $http, SortService, MassChangeService){
+    .controller('Grafana_userdashboardsIndexController', function($scope, $http, SortService, MassChangeService, $state){
 
         SortService.setSort('GrafanaUserdashboard.name');
         SortService.setDirection('asc');
@@ -39,8 +39,12 @@ angular.module('openITCOCKPIT')
                 $scope.init = false;
 
             }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
                 if(result.status === 404){
-                    window.location.href = '/angular/not_found';
+                    $state.go('404');
                 }
             });
         };

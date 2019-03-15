@@ -50,7 +50,7 @@
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add')): ?>
+                        <?php if ($this->Acl->hasPermission('add', 'hosts')): ?>
                             <a ui-sref="HostsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
@@ -68,7 +68,7 @@
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-desktop"></i> </span>
                     <h2 class="hidden-mobile"><?php echo __('Hosts'); ?> </h2>
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                        <?php if ($this->Acl->hasPermission('index')): ?>
+                        <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
                             <li class="">
                                 <a ui-sref="HostsIndex"><i
                                             class="fa fa-stethoscope"></i> <span
@@ -76,7 +76,7 @@
                                 </a>
                             </li>
                         <?php endif; ?>
-                        <?php if ($this->Acl->hasPermission('notMonitored')): ?>
+                        <?php if ($this->Acl->hasPermission('notMonitored', 'hosts')): ?>
                             <li class="">
                                 <a ui-sref="HostsNotMonitored"><i
                                             class="fa fa-user-md"></i> <span
@@ -210,7 +210,7 @@
                                     </td>
 
                                     <td>
-                                        <?php if ($this->Acl->hasPermission('browser')): ?>
+                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                             <a ui-sref="HostsBrowser({id:host.Host.id})">
                                                 {{ host.Host.hostname }}
                                             </a>
@@ -237,28 +237,33 @@
 
                                     <td class="width-50">
                                         <div class="btn-group">
-                                            <?php if ($this->Acl->hasPermission('edit')): ?>
-                                                <a href="/hosts/edit/{{host.Host.id}}/_controller:hosts/_action:disabled/"
+                                            <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                                <a ui-sref="HostsEdit({id:host.Host.id})"
                                                    ng-if="host.Host.allow_edit"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
+                                                <a href="javascript:void(0);"
+                                                   ng-if="!host.Host.allow_edit"
+                                                   class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
                                             <?php else: ?>
-                                                <a href="javascript:void(0);" class="btn btn-default">
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                             <?php endif; ?>
                                             <a href="javascript:void(0);" data-toggle="dropdown"
                                                class="btn btn-default dropdown-toggle"><span
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right" id="menuHack-{{host.Host.uuid}}">
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_edit">
-                                                        <a href="/hosts/edit/{{host.Host.id}}/_controller:hosts/_action:disabled/">
+                                                        <a ui-sref="HostsEdit({id:host.Host.id})">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('sharing')): ?>
+                                                <?php if ($this->Acl->hasPermission('sharing', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_sharing">
                                                         <a href="/hosts/sharing/{{host.Host.id}}">
                                                             <i class="fa fa-sitemap fa-rotate-270"></i>
@@ -266,7 +271,7 @@
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('deactivate')): ?>
+                                                <?php if ($this->Acl->hasPermission('deactivate', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_edit">
                                                         <a href="javascript:void(0);"
                                                            ng-click="confirmActivate(getObjectForDelete(host))">
@@ -282,7 +287,7 @@
                                                     </li>
                                                 <?php endif; ?>
 
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_edit">
                                                         <?php echo $this->AdditionalLinks->renderAsListItems(
                                                             $additionalLinksList,
@@ -292,7 +297,7 @@
                                                         ); ?>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('delete')): ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                     <li class="divider" ng-if="host.Host.allow_edit"></li>
                                                     <li ng-if="host.Host.allow_edit">
                                                         <a href="javascript:void(0);" class="txt-color-red"
