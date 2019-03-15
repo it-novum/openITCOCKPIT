@@ -250,8 +250,8 @@
                                                 </a>
                                                 <a href="javascript:void(0);"
                                                    ng-if="!hostescalation.Hostescalation.allowEdit"
-                                                   class="btn btn-default">
-                                                    <i class="fa fa-cog"></i>
+                                                   class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
                                             <?php else: ?>
                                                 <a href="javascript:void(0);" class="btn btn-default">
