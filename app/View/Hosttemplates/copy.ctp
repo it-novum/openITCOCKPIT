@@ -156,7 +156,8 @@
                         <?php echo __('Copy host templates'); ?>
                     </button>
                     <?php if ($this->Acl->hasPermission('index', 'hosttemplates')): ?>
-                        <a ui-sref="HosttemplatesIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        <a back-button fallback-state='HosttemplatesIndex'
+                           class="btn btn-default"><?php echo __('Cancel'); ?></a>
                     <?php endif; ?>
                 </div>
             </div>

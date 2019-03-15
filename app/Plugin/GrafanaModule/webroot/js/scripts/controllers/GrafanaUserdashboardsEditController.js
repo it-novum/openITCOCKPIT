@@ -26,8 +26,12 @@ angular.module('openITCOCKPIT')
                 $scope.post.GrafanaUserdashboard.name = result.data.dashboard.GrafanaUserdashboard.name;
                 $scope.post.GrafanaUserdashboard.configuration_id = result.data.dashboard.GrafanaUserdashboard.configuration_id;
             }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
                 if(result.status === 404){
-                    window.location.href = '/angular/not_found';
+                    $state.go('404');
                 }
             });
         };
@@ -44,8 +48,12 @@ angular.module('openITCOCKPIT')
                 $scope.load();
 
             }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
                 if(result.status === 404){
-                    window.location.href = '/angular/not_found';
+                    $state.go('404');
                 }
             });
         };

@@ -53,7 +53,7 @@
     <div class="col-xs-12 col-sm-1">
         <label><!-- just a spacer for a nice layout --> &nbsp;</label>
         <br>
-        <button class="btn btn-default btn-sx txt-color-red" ng-click="callback(macro, index)">
+        <button class="btn btn-default btn-sx txt-color-red" ng-click="callback(macro, index)" style="margin-top: 7px;">
             <i class="fa fa-trash-o fa-lg"></i>
         </button>
     </div>

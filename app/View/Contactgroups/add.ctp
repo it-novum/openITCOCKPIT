@@ -128,7 +128,7 @@
                     <div class="well formactions ">
                         <div class="pull-right">
                             <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">
-                            <a ui-sref="ContactgroupsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>
                 </div>

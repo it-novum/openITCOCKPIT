@@ -78,7 +78,7 @@ class ContainersTable extends Table {
         $this->addBehavior('Tree');
 
         $this->hasMany('Contactgroups', [
-            'foreignKey' => 'container_id',
+            'foreignKey'       => 'container_id',
             'cascadeCallbacks' => true
         ])->setDependent(true);
 
@@ -203,11 +203,11 @@ class ContainersTable extends Table {
             ->requirePresence('name', 'create')
             ->allowEmptyString('name', false, __('This field cannot be left blank.'))
             ->add('name', 'custom', [
-                'rule' => function ($value, $context){
-                    if(isset($context['data']['containertype_id']) && $context['data']['containertype_id'] == CT_TENANT){
+                'rule'    => function ($value, $context) {
+                    if (isset($context['data']['containertype_id']) && $context['data']['containertype_id'] == CT_TENANT) {
                         $count = $this->find()
                             ->where([
-                                'Containers.name' => $context['data']['name'],
+                                'Containers.name'             => $context['data']['name'],
                                 'Containers.containertype_id' => CT_TENANT
                             ])
                             ->count();
@@ -470,13 +470,13 @@ class ContainersTable extends Table {
      * @param bool $threaded
      * @return array
      */
-    public function getChildren($id, $threaded = false){
+    public function getChildren($id, $threaded = false) {
         try {
             $query = $this->find('children', [
                 'for' => $id
             ]);
 
-            if($threaded){
+            if ($threaded) {
                 $query->find('threaded');
             }
 
@@ -484,9 +484,49 @@ class ContainersTable extends Table {
                 ->all()
                 ->toArray();
 
-        }catch (RecordNotFoundException $e){
+        } catch (RecordNotFoundException $e) {
             return [];
         }
+    }
+
+    /**
+     * !!! ONLY USE THIS FOR DISPLAY PURPOSE !!!
+     *
+     * @param int $hostPrimaryContainerId
+     * @param array $hostSharingContainerIds
+     * @param array $MY_RIGHTS
+     * @return null|array
+     */
+    public function getFakePrimaryContainerForHostEditDisplay($hostPrimaryContainerId, $hostSharingContainerIdsParam, $MY_RIGHTS) {
+        $hostSharingContainerIds = [];
+        foreach ($hostSharingContainerIdsParam as $hostSharingContainerId) {
+            $hostSharingContainerId = (int)$hostSharingContainerId;
+            $hostSharingContainerIds[$hostSharingContainerId] = $hostSharingContainerId;
+        }
+
+
+        $containerIdUserHasPermissionsOn = null;
+        foreach ($MY_RIGHTS as $MY_RIGHT_CONTAINER_ID) {
+            if (isset($hostSharingContainerIds[$MY_RIGHT_CONTAINER_ID])) {
+                //Get the first container id that the user has permissions for
+                $containerIdUserHasPermissionsOn = $hostSharingContainerIds[$MY_RIGHT_CONTAINER_ID];
+                break;
+            }
+        }
+
+        //get the name of the container
+        if ($containerIdUserHasPermissionsOn !== null) {
+            $path = '/' . $this->treePath($containerIdUserHasPermissionsOn);
+            // $path contains a sharing container.
+            // to let the select box display a shard container as read only, we set the primaryContainerId
+            // as for the $path
+            // THIS IS ONLY USED FOR DISPLAY PURPOSE
+            return [
+                $hostPrimaryContainerId => $path
+            ];
+        }
+
+        return null;
     }
 
     /**

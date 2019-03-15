@@ -700,7 +700,8 @@
 
                             <input class="btn btn-primary" type="submit"
                                    value="<?php echo __('Create host template'); ?>">
-                            <a ui-sref="HosttemplatesIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            <a back-button fallback-state='HosttemplatesIndex'
+                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>
                 </div>

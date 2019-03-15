@@ -47,8 +47,12 @@ angular.module('openITCOCKPIT')
                 $scope.post.Servicegroup.servicegroup_url = $scope.servicegroup.Servicegroup.servicegroup_url;
                 $scope.init = false;
             }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
                 if(result.status === 404){
-                    window.location.href = '/angular/not_found';
+                    $state.go('404');
                 }
             });
         };

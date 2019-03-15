@@ -342,7 +342,7 @@
             <div class="well formactions ">
                 <div class="pull-right">
                     <a ng-click="submit()" class="btn btn-primary"><?php echo __('Save'); ?></a>&nbsp;
-                    <a ui-sref="ServiceescalationsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                    <a back-button fallback-state='ServiceescalationsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
                 </div>
             </div>
         </div>

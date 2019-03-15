@@ -103,7 +103,7 @@
                         <?php echo __('Copy'); ?>
                     </button>
                     <?php if ($this->Acl->hasPermission('index', 'contactgroups')): ?>
-                        <a ui-sref="ContactgroupsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
                     <?php endif; ?>
                 </div>
             </div>

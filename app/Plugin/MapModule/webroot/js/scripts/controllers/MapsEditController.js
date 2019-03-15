@@ -33,8 +33,12 @@ angular.module('openITCOCKPIT')
                 $scope.post.Map.refresh_interval = (parseInt($scope.map.Map.refresh_interval, 10) / 1000);
                 $scope.init = false;
             }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
                 if(result.status === 404){
-                    window.location.href = '/angular/not_found';
+                    $state.go('404');
                 }
             });
         };

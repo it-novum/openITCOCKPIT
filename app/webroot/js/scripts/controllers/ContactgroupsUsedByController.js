@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ContactgroupsUsedByController', function($scope, $http, $stateParams){
+    .controller('ContactgroupsUsedByController', function($scope, $http, $stateParams, $state){
 
         $scope.id = $stateParams.id;
 
@@ -13,8 +13,12 @@ angular.module('openITCOCKPIT')
                 $scope.contactgroupWithRelations = result.data.contactgroupWithRelations;
                 $scope.total = $scope.getTotal();
             }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
                 if(result.status === 404){
-                    window.location.href = '/angular/not_found';
+                    $state.go('404');
                 }
             });
         };
