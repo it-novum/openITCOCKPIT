@@ -43,6 +43,7 @@ angular.module('openITCOCKPIT')
         $scope.showTimelineTab = false;
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
+        $scope.lastLoadDate = Date.now();
 
         $scope.graphAutoRefresh = true;
         $scope.graphAutoRefreshInterval = 0;
@@ -69,6 +70,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
+            $scope.lastLoadDate = Date.now();
             $http.get("/services/browser/" + $scope.id + ".json", {
                 params: {
                     'angular': true
