@@ -2424,6 +2424,13 @@ input[type=text]:focus + .input-group-addon-no-focus {
     color: #333;
 }
 
+.info-block-helptext {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    color: #737373;
+}
+
 .strikethrough {
     text-decoration: line-through;
 }
