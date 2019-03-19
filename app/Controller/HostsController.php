@@ -41,7 +41,6 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\Comparison\HostComparison;
 use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
@@ -583,8 +582,8 @@ class HostsController extends AppController {
             $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($host['Host']['hosttemplate_id']);
 
-            $HostComparisonForView = new HostMergerForView($host, $hosttemplate);
-            $mergedHost = $HostComparisonForView->getDataForView();
+            $HostMergerForView = new HostMergerForView($host, $hosttemplate);
+            $mergedHost = $HostMergerForView->getDataForView();
 
             $HostContainersPermissions = new HostContainersPermissions(
                 $host['Host']['container_id'],
@@ -614,6 +613,7 @@ class HostsController extends AppController {
             $this->set('allowSharing', $HostContainersPermissions->allowSharing($this->MY_RIGHTS, $host['Host']['host_type']));
             $this->set('isHostOnlyEditableDueToHostSharing', $isHostOnlyEditableDueToHostSharing);
             $this->set('fakeDisplayContainers', Api::makeItJavaScriptAble($fakeDisplayContainers));
+            $this->set('areContactsInheritedFromHosttemplate', $HostMergerForView->areContactsInheritedFromHosttemplate());
 
             $this->set('_serialize', [
                 'host',
@@ -622,7 +622,8 @@ class HostsController extends AppController {
                 'isPrimaryContainerChangeable',
                 'allowSharing',
                 'isHostOnlyEditableDueToHostSharing',
-                'fakeDisplayContainers'
+                'fakeDisplayContainers',
+                'areContactsInheritedFromHosttemplate'
             ]);
             return;
         }
@@ -692,15 +693,6 @@ class HostsController extends AppController {
             }
             $this->set('host', $hostEntity);
             $this->set('_serialize', ['host']);
-
-            return;
-
-            /************* OLD CODE ****************/
-
-
-            $ContactsInherited = $this->__inheritContactsAndContactgroups($host);
-            $this->Frontend->setJson('ContactsInherited', $ContactsInherited);
-
         }
     }
 
@@ -2336,101 +2328,6 @@ class HostsController extends AppController {
         ];
     }
 
-
-    /**
-     * $host is from prepareForView() but ther are no names in the service contact, only ids
-     * $_host is from $this->Host->findById, because of contact names
-     * @deprecated
-     */
-    protected function __inheritContactsAndContactgroups($host, $_host = []) {
-        $diffExists = 0;
-        if ($host['Host']['own_contacts'] == 0 && $host['Host']['own_contactgroups'] == 0) {
-            $ContactsCombined = Hash::combine($host['Hosttemplate']['Contact'], '{n}.id', '{n}.id');
-            $ContactgroupsCombined = Hash::combine($host['Hosttemplate']['Contactgroup'], '{n}.id', '{n}.id');
-
-            if (isset($this->request->data['Host']['Contact']) || isset($this->request->data['Host']['Contactgroup'])) {
-                if (isset($this->request->data['Host']['Contact']) && is_array($this->request->data['Host']['Contact'])) {
-                    $diffExists += sizeof(
-                        array_merge(
-                            array_diff($this->request->data['Host']['Contact'], $ContactsCombined),
-                            array_diff($ContactsCombined, $this->request->data['Host']['Contact'])
-                        )
-                    );
-                }
-                if (isset($this->request->data['Host']['Contactgroup']) && is_array($this->request->data['Host']['Contactgroup'])) {
-                    $diffExists += sizeof(
-                        array_merge(
-                            array_diff($this->request->data['Host']['Contactgroup'], $ContactgroupsCombined),
-                            array_diff($ContactgroupsCombined, $this->request->data['Host']['Contactgroup'])
-                        )
-                    );
-                }
-            }
-            if ($diffExists > 0) {
-                return [
-                    'inherit'      => false,
-                    'source'       => 'Host',
-                    'Contact'      => $this->request->data('Host.Contact'),
-                    'Contactgroup' => $this->request->data('Host.Contactgroup'),
-                ];
-
-            }
-
-            return [
-                'inherit'      => true,
-                'source'       => 'Hosttemplate',
-                'Contact'      => Hash::combine($host['Hosttemplate']['Contact'], '{n}.id', '{n}.name'),
-                'Contactgroup' => Hash::combine($host['Hosttemplate']['Contactgroup'], '{n}.id', '{n}.Container.name'),
-            ];
-        }
-
-        if (!empty($_host)) {
-            return [
-                'inherit'      => false,
-                'source'       => 'Host',
-                'Contact'      => Hash::combine($_host['Contact'], '{n}.id', '{n}.name'),
-                'Contactgroup' => Hash::combine($_host['Contactgroup'], '{n}.id', '{n}.Container.name'),
-            ];
-        }
-
-        $ContactsCombined = Hash::combine($host['Contact'], '{n}.id', '{n}.id');
-        $ContactgroupsCombined = Hash::combine($host['Contactgroup'], '{n}.id', '{n}.id');
-
-        if (isset($this->request->data['Host']['Contact']) || isset($this->request->data['Host']['Contactgroup'])) {
-            if (isset($this->request->data['Host']['Contact']) && is_array($this->request->data['Host']['Contact'])) {
-                $diffExists += sizeof(
-                    array_merge(
-                        array_diff($this->request->data['Host']['Contact'], $ContactsCombined),
-                        array_diff($ContactsCombined, $this->request->data['Host']['Contact'])
-                    )
-                );
-            }
-            if (isset($this->request->data['Host']['Contactgroup']) && is_array($this->request->data['Host']['Contactgroup'])) {
-                $diffExists += sizeof(
-                    array_merge(
-                        array_diff($this->request->data['Host']['Contactgroup'], $ContactgroupsCombined),
-                        array_diff($ContactgroupsCombined, $this->request->data['Host']['Contactgroup'])
-                    )
-                );
-            }
-        }
-        if ($diffExists > 0) {
-            return [
-                'inherit'      => false,
-                'source'       => 'Host',
-                'Contact'      => $this->request->data['Host']['Contact'],
-                'Contactgroup' => $this->request->data['Host']['Contactgroup'],
-            ];
-
-        }
-
-        return [
-            'inherit'      => false,
-            'source'       => 'Host',
-            'Contact'      => Hash::combine($host['Contact'], '{n}.id', '{n}.name'),
-            'Contactgroup' => Hash::combine($host['Contactgroup'], '{n}.id', '{n}.Container.name'),
-        ];
-    }
 
     /**
      * @deprecated

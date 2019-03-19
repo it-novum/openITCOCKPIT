@@ -2435,3 +2435,7 @@ input[type=text]:focus + .input-group-addon-no-focus {
     margin-bottom: 10px;
     color: #737373;
 }
+
+.strikethrough {
+    text-decoration: line-through;
+}
