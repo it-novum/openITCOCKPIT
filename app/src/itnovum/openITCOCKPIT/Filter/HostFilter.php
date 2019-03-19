@@ -38,6 +38,7 @@ class HostFilter extends Filter {
             ],
             'like'     => [
                 'Host.name',
+                'Host.description',
                 'Hoststatus.output',
                 'Host.address'
             ],
@@ -71,6 +72,7 @@ class HostFilter extends Filter {
         $filters = [
             'like'   => [
                 'Host.name',
+                'Host.description',
                 'Host.address'
             ],
             'equals' => [

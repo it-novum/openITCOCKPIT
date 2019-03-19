@@ -17,7 +17,6 @@ angular.module('openITCOCKPIT')
 
         $scope.load = function(){
             $scope.loadContainers();
-            $scope.loadContainerlist();
         };
 
         $scope.saveNewNode = function(){
@@ -61,11 +60,6 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadContainerlist = function(){
-            $http.get('/containers/byTenantForSelect/' + $scope.selectedTenant + '.json').then(function(result){
-                $scope.containerlist = result.data.paths;
-            });
-        };
 
         $scope.loadTenants();
 

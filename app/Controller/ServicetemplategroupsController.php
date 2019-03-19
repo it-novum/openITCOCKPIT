@@ -323,8 +323,9 @@ class ServicetemplategroupsController extends AppController {
             }
         }
         $servicetemplategroup = $this->Servicetemplategroup->findById($id);
+
         if ($this->hasRootPrivileges === true) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $containerIds = $this->MY_RIGHTS;
             $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
         } else {
             $hosts = $this->Host->hostsByContainerId($this->getWriteContainers(), 'list');
@@ -394,9 +395,9 @@ class ServicetemplategroupsController extends AppController {
             }
         }
         $servicetemplategroup = $this->Servicetemplategroup->findById($id);
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $containerIds = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges === true) {
-            $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
+            $hostgroups = $this->Hostgroup->hostgroupsByContainerIdNoTenantLookup($containerIds, 'list', 'id');
         } else {
             $hostgroups = $this->Hostgroup->hostgroupsByContainerId($this->getWriteContainers(), 'list', 'id');
         }

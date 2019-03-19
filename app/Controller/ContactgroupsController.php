@@ -67,7 +67,7 @@ class ContactgroupsController extends AppController {
                 'Container.name' => 'asc',
             ],
             'conditions' => [
-                'Container.parent_id' => $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS),
+                'Container.parent_id' => $this->MY_RIGHTS,
             ],
         ];
 

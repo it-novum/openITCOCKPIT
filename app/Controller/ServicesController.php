@@ -639,21 +639,55 @@ class ServicesController extends AppController {
         $this->loadModel('Customvariable');
 
         $userContainerId = $this->Auth->user('container_id');
-        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+
+
+        $myContainerId = $this->MY_RIGHTS;
         $myRights = $myContainerId;
         if (!$this->hasRootPrivileges && ($rootKey = array_search(ROOT_CONTAINER, $myRights)) !== false) {
             unset($myRights[$rootKey]);
         }
 
+        $containerIds = [];
+        $selectedHostId = 0;
+        //Only load required elements by host container id
+        if ($this->request->is('post') && isset($this->request->data['Service']['host_id'])) {
+            $host = $this->Host->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Host.id' => $this->request->data['Service']['host_id']
+                ],
+                'fields'     => [
+                    'Host.container_id'
+                ]
+            ]);
 
-        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
-        $timeperiods = $this->Timeperiod->find('list');
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
-        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
+            if (!empty($host)) {
+                $selectedHostId = (int)$this->request->data['Service']['host_id'];
+                $containerIds = array_unique([ROOT_CONTAINER, $host['Host']['container_id']]);
+            }
+        }
+
+        $this->Frontend->setJson('selectedHostId', $selectedHostId);
+
+
         $commands = $this->Command->serviceCommands('list');
-        $eventhandlers = $this->Command->eventhandlerCommands('list');
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
+
+        $timeperiods = [];
+        $contacts = [];
+        $contactgroups = [];
+        $eventhandlers = [];
+        $servicegroups = [];
+        $servicetemplates = [];
+
+        if (!empty($containerIds)) {
+            //Reload data for validation errors refill
+            $timeperiods = $this->Timeperiod->find('list');
+            $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
+            $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
+            $eventhandlers = $this->Command->eventhandlerCommands('list');
+            $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
+            $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
+        }
 
         $this->Frontend->set('data_placeholder', __('Please choose a contact'));
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
@@ -792,6 +826,9 @@ class ServicesController extends AppController {
 
             ],
         ]);
+
+        $hostContainerId = $__service['Host']['container_id'];
+
         if (!$this->allowedByContainerId(Hash::extract($__service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
             $this->render403();
 
@@ -853,16 +890,24 @@ class ServicesController extends AppController {
 
         $userContainerId = $this->Auth->user('container_id');
         $hosts = $this->Host->find('list');
-        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list', $service['Service']['service_type']);
+        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($this->MY_RIGHTS, 'list', $service['Service']['service_type']);
+
         $timeperiods = $this->Timeperiod->find('list');
+
         //container_id = 1 => ROOT
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
-        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
+        $containerIds = $this->MY_RIGHTS;
+
+        $loadElementContainerIds = [
+            $hostContainerId,
+            ROOT_CONTAINER
+        ];
+
+        $contacts = $this->Contact->contactsByContainerId($loadElementContainerIds, 'list', 'id');
+        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($loadElementContainerIds, 'list', 'id');
         $commands = $this->Command->serviceCommands('list');
         $eventhandlers = $this->Command->eventhandlerCommands('list');
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
+        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($loadElementContainerIds, 'list', 'id');
+
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
         $commandarguments = $this->Commandargument->find('all', [
             'recursive'  => -1,
@@ -876,6 +921,8 @@ class ServicesController extends AppController {
                 'Commandargument.command_id' => $service['Service']['eventhandler_command_id'],
             ],
         ]);
+
+
         $contacts_for_changelog = [];
         foreach ($service['Contact'] as $contact_id) {
             if (isset($contacts[$contact_id])) {
@@ -1629,7 +1676,7 @@ class ServicesController extends AppController {
 
             //Find hosts to copy on this host.
             if (!empty($servicesToCopy)) {
-                $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+                $containerIds = $this->MY_RIGHTS;
                 $hosts = $this->Host->hostsByContainerId($containerIds, 'list', ['Host.host_type' => GENERIC_HOST]);
             }
         }
@@ -3027,7 +3074,7 @@ class ServicesController extends AppController {
             if (!empty($hoststatus)) {
                 $record['StatehistoryHost']['state_time'] = $hoststatus['Hoststatus']['last_state_change'];
                 $record['StatehistoryHost']['state'] = $hoststatus['Hoststatus']['current_state'];
-                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type'])?true:false;
+                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type']) ? true : false;
                 $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
                 $statehistoryRecords[] = $StatehistoryHost;
             }
@@ -3165,6 +3212,65 @@ class ServicesController extends AppController {
             'notifications',
             'acknowledgements',
             'timeranges'
+        ]);
+    }
+
+    public function loadElementsByHostId($hostId) {
+        $host = $this->Host->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Host.id' => $hostId
+            ],
+            'fields'     => [
+                'Host.container_id'
+            ]
+        ]);
+
+        if (empty($host)) {
+            throw new NotFoundException();
+        }
+
+        $containerIds = array_unique([ROOT_CONTAINER, $host['Host']['container_id']]);
+        $timeperiods = $this->Timeperiod->find('list');
+        $timeperiods = $this->Service->makeItJavaScriptAble($timeperiods);
+
+        $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
+        $contacts = $this->Service->makeItJavaScriptAble($contacts);
+
+
+        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
+        $contactgroups = $this->Service->makeItJavaScriptAble($contactgroups);
+
+        $eventhandlers = $this->Command->eventhandlerCommands('list');
+        $eventhandlers = $this->Service->makeItJavaScriptAble($eventhandlers);
+
+        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
+        $servicegroups = $this->Service->makeItJavaScriptAble($servicegroups);
+
+        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list', [
+            GENERIC_SERVICE,
+            EVK_SERVICE
+        ]);
+        $servicetemplates = $this->Service->makeItJavaScriptAble($servicetemplates);
+
+        $this->set(compact([
+            'servicegroups',
+            'timeperiods',
+            'contacts',
+            'contactgroups',
+            'eventhandlers',
+            'Customvariable',
+            'servicetemplates'
+        ]));
+
+        $this->set('_serialize', [
+            'servicegroups',
+            'timeperiods',
+            'contacts',
+            'contactgroups',
+            'eventhandlers',
+            'Customvariable',
+            'servicetemplates'
         ]);
     }
 }
