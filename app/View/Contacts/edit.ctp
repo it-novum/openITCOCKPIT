@@ -45,7 +45,7 @@
         </h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'contacts')): ?>
-                <a back-button fallback-state='ContactsIndex' class="btn btn-default btn-xs" iconcolor="white">
+                <a back-button fallback-state='ContactsIndex' class="btn btn-default btn-xs">
                     <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
                 </a>
             <?php endif; ?>

@@ -42,7 +42,7 @@
         <span class="widget-icon"> <i class="fa fa-bomb"></i> </span>
         <h2><?php echo __('Add Service Escalation'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <a back-button fallback-state='ServiceescalationsIndex' class="btn btn-default btn-xs" iconcolor="white">
+            <a back-button fallback-state='ServiceescalationsIndex' class="btn btn-default btn-xs">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
             </a>
         </div>

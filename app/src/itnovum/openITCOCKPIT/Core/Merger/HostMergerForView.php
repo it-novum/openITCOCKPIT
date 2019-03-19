@@ -158,11 +158,6 @@ class HostMergerForView {
      * @return array
      */
     public function getDataForContactsAndContactgroups() {
-        if (empty($this->host['contacts']['_ids'])) {
-            $this->hasOwnContacts = false;
-            $this->host['contacts']['_ids'] = $this->hosttemplate['contacts']['_ids'];
-        }
-
         if (empty($this->host['contacts']['_ids']) && empty($this->host['contactgroups']['_ids'])) {
             $this->hasOwnContacts = false;
 
