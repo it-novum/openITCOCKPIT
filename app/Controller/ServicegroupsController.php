@@ -668,12 +668,27 @@ class ServicegroupsController extends AppController {
             }
         }
 
-        $servicesToAppend = [];
-        foreach (func_get_args() as $service_id) {
-            $service = $this->Service->findById($service_id);
-            $servicesToAppend[] = $service;
-        }
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $serviceIds = func_get_args();
+        $servicesToAppend = $this->Service->find('all', [
+            'recursive'  => -1,
+            'contain'    => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name'
+                    ]
+                ]
+            ],
+            'fields'     => [
+                'Service.id',
+                'Service.name'
+            ],
+            'conditions' => [
+                'Service.id' => $serviceIds
+            ]
+        ]);
+
+        $containerIds = $this->MY_RIGHTS;
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
 
         $this->set(compact(['servicesToAppend', 'servicegroups']));
