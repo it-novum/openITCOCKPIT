@@ -57,6 +57,11 @@ class HostMergerForView {
     private $hasOwnCustomvariables = false;
 
     /**
+     * @var bool
+     */
+    private $areContactsInheritedFromHosttemplate = false;
+
+    /**
      * HostComparison constructor.
      * @param array $host
      * @param array $hosttemplate HosttemplatesTable::$getHosttemplateForDiff()
@@ -160,6 +165,7 @@ class HostMergerForView {
     public function getDataForContactsAndContactgroups() {
         if (empty($this->host['contacts']['_ids']) && empty($this->host['contactgroups']['_ids'])) {
             $this->hasOwnContacts = false;
+            $this->areContactsInheritedFromHosttemplate = true;
 
             return [
                 'contacts'      => [
@@ -171,6 +177,7 @@ class HostMergerForView {
             ];
         } else {
             $this->hasOwnContacts = true;
+            $this->areContactsInheritedFromHosttemplate = false;
 
             return [
                 'contacts'      => [
@@ -241,6 +248,13 @@ class HostMergerForView {
 
         return $this->host['hostcommandargumentvalues'];
 
+    }
+
+    /**
+     * @return bool
+     */
+    public function areContactsInheritedFromHosttemplate() {
+        return $this->areContactsInheritedFromHosttemplate;
     }
 
 }
