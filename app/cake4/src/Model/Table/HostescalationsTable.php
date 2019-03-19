@@ -92,10 +92,53 @@ class HostescalationsTable extends Table {
             ->requirePresence('container_id')
             ->allowEmptyString('container_id', false);
 
+        $validator
+            ->add('contacts', 'custom', [
+                'rule'    => [$this, 'atLeastOne'],
+                'message' => __('You must specify at least one contact or contact group.')
+            ]);
+
+        $validator
+            ->add('contactgroups', 'custom', [
+                'rule'    => [$this, 'atLeastOne'],
+                'message' => __('You must specify at least one contact or contact group.')
+            ]);
+
+        $validator
+            ->requirePresence('hosts', true, __('You have to choose at least one host.'))
+            ->allowEmptyString('hosts', false)
+            ->multipleOptions('hosts', [
+                'min' => 1
+            ], __('You have to choose at least one host.'));
+
+        $validator
+            ->integer('timeperiod_id')
+            ->greaterThan('timeperiod_id', 0)
+            ->requirePresence('timeperiod_id')
+            ->allowEmptyString('timeperiod_id', false);
+
+        $validator
+            ->integer('first_notification')
+            ->greaterThan('first_notification', 0)
+            ->lessThanField('first_notification', 'last_notification', __('The first notification must be before the last notification.'),
+                function ($context) {
+                    return !($context['data']['last_notification'] === 0);
+                })
+            ->requirePresence('first_notification')
+            ->allowEmptyString('first_notification', false);
+
+        $validator
+            ->integer('last_notification')
+            ->greaterThanOrEqual('last_notification', 0)
+            ->greaterThanField('last_notification', 'first_notification', __('The first notification must be before the last notification.'),
+                function ($context) {
+                    return !($context['data']['last_notification'] === 0);
+                })
+            ->requirePresence('last_notification')
+            ->allowEmptyString('last_notification', false);
 
         return $validator;
     }
-
 
     /**
      * Returns a rules checker object that will be used for validating
@@ -108,6 +151,17 @@ class HostescalationsTable extends Table {
         $rules->add($rules->isUnique(['uuid']));
 
         return $rules;
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for contacts and or contact groups
+     */
+    public function atLeastOne($value, $context) {
+        return !empty($context['data']['contacts']['_ids']) || !empty($context['data']['contactgroups']['_ids']);
     }
 
     /**
@@ -192,5 +246,57 @@ class HostescalationsTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @param array|int $hosts
+     * @param array|int $excluded_hosts
+     * @return array
+     */
+    public function parseHostMembershipData($hosts = [], $excluded_hosts = []) {
+        $hostmembershipData = [];
+        foreach ($hosts as $host) {
+            $hostmembershipData[] = [
+                'id'        => $host,
+                '_joinData' => [
+                    'excluded' => 0
+                ]
+            ];
+        }
+        foreach ($excluded_hosts as $excluded_host) {
+            $hostmembershipData[] = [
+                'id'        => $excluded_host,
+                '_joinData' => [
+                    'excluded' => 1
+                ]
+            ];
+        }
+        return $hostmembershipData;
+    }
+
+    /**
+     * @param array $hostgroups
+     * @param array $excluded_hostgroups
+     * @return array
+     */
+    public function parseHostgroupMembershipData($hostgroups = [], $excluded_hostgroups = []) {
+        $hostgroupmembershipData = [];
+        foreach ($hostgroups as $hostgroup) {
+            $hostgroupmembershipData[] = [
+                'id' => $hostgroup,
+                '_joinData' => [
+                    'excluded'     => 0
+                ]
+            ];
+        }
+        foreach ($excluded_hostgroups as $excluded_hostgroup) {
+            $hostgroupmembershipData[] = [
+                'id' => $excluded_hostgroup,
+                '_joinData' => [
+                    'excluded'     => 1
+                ]
+            ];
+        }
+        return $hostgroupmembershipData;
     }
 }

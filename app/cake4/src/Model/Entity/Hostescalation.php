@@ -17,6 +17,10 @@ use Cake\ORM\Entity;
  * @property int $escalate_on_recovery
  * @property int $escalate_on_down
  * @property int $escalate_on_unreachable
+ * @property Host $hosts
+ * @property Hostgroup $hostgroups
+ * @property Contact $contacts
+ * @property Contactgroup $contactgroups
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
@@ -44,6 +48,10 @@ class Hostescalation extends Entity {
         'escalate_on_recovery'    => true,
         'escalate_on_down'        => true,
         'escalate_on_unreachable' => true,
+        'contacts'                => true,
+        'contactgroups'           => true,
+        'hosts'                   => true,
+        'hostgroups'              => true,
         'created'                 => true,
         'modified'                => true
     ];
