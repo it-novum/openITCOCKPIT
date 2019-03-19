@@ -24,5 +24,5 @@
 //	confirmation.
 
 $config = [
-    'version' => '3.6.1',
+    'version' => '3.7.0',
 ];
