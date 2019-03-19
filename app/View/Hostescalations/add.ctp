@@ -29,8 +29,8 @@
             <i class="fa fa-bomb fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Hostescalation'); ?>
-			</span>
+                <?php echo __('Host escalation'); ?>
+            </span>
             <div class="third_level"> <?php echo __('Add'); ?></div>
         </h1>
     </div>
@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-bomb"></i> </span>
-        <h2><?php echo __('Add Hostescalation'); ?></h2>
+        <h2><?php echo __('Add host escalation'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <a ui-sref="HostescalationsIndex" class="btn btn-default btn-xs" iconcolor="white">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
@@ -64,6 +64,10 @@
                                         ng-options="container.key as container.value for container in containers"
                                         ng-model="post.Hostescalation.container_id">
                                 </select>
+                                <div class="info-block-helptext">
+                                    <?php echo __('Notification escalations could be used to notify a certain user group in case of an emergency.
+Once a host or service escalated, contacts, contact group and notification options will be overwritten by the escalation.'); ?>
+                                </div>
                                 <div ng-repeat="error in errors.container_id">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
@@ -187,6 +191,10 @@
                                         min="0"
                                         placeholder="0"
                                         ng-model="post.Hostescalation.first_notification">
+                                <div class="info-block-helptext">
+                                    <?php echo __('Number of notifications that passed before the escalation rule will 
+                                    overwrite notification settings.'); ?>
+                                </div>
                                 <div ng-repeat="error in errors.first_notification">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
@@ -204,6 +212,16 @@
                                         min="0"
                                         placeholder="0"
                                         ng-model="post.Hostescalation.last_notification">
+                                <div class="info-block-helptext">
+                                    <?php echo __('If number of last_notification is reached, the notification rule 
+                                    will be disabled and the notification options of the host or service will be used again.'); ?>
+                                </div>
+                                <div class="info-block-helptext">
+                                    <?php echo __('Host escalates after: More than '); ?>
+                                    {{post.Hostescalation.first_notification ? post.Hostescalation.first_notification : '?'}}
+                                    <?php echo __(' where send and less than '); ?>
+                                    {{post.Hostescalation.last_notification ? post.Hostescalation.last_notification : '?'}}
+                                </div>
                                 <div ng-repeat="error in errors.last_notification">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>

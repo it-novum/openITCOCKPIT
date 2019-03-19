@@ -2316,7 +2316,7 @@ input[type=text]:focus + .input-group-addon-no-focus {
     border-color: #CCC;
 }
 
-.label-group .label .no-border{
+.label-group .label .no-border {
     border-color: transparent;
 }
 
@@ -2422,4 +2422,11 @@ input[type=text]:focus + .input-group-addon-no-focus {
 .label-group a.label:active,
 .label-group a.label:hover {
     color: #333;
+}
+
+.info-block-helptext {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    color: #737373;
 }
