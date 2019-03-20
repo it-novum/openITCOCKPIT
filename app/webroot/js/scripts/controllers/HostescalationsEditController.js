@@ -118,8 +118,9 @@ angular.module('openITCOCKPIT')
             $http.post("/hostescalations/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
+                var hostescalatingEditUrl = $state.href('HostescalationsEdit', {id: $scope.id});
                 NotyService.genericSuccess({
-                    message: '<u><a href="' + $location.absUrl() + '" class="txt-color-white"> '
+                    message: '<u><a href="' + hostescalatingEditUrl + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message,
                     timeout: 10000

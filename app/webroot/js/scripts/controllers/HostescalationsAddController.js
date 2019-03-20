@@ -66,12 +66,7 @@ angular.module('openITCOCKPIT')
             $http.post("/hostescalations/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                var hostescalatingEditUrl = $state.href('HostescalationsEdit', {id: result.data.id}, {absolute: true});
-                var hostescalatingEditUrlTest = $state.href('HostescalationsEdit', {id: result.data.id}, {absolute: false});
-                var hostescalatingEditUrlTestInherit = $state.href('HostescalationsEdit', {id: result.data.id}, {absolute: true, inherit: false});
-                console.log(hostescalatingEditUrl);
-                console.log(hostescalatingEditUrlTest);
-                console.log(hostescalatingEditUrlTestInherit);
+                var hostescalatingEditUrl = $state.href('HostescalationsEdit', {id: result.data.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + hostescalatingEditUrl + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName
