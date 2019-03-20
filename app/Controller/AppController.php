@@ -816,8 +816,7 @@ class AppController extends Controller {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $rights = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $rights = $this->MY_RIGHTS;
 
         if (is_array($containerIds)) {
             $result = array_intersect($containerIds, $rights);

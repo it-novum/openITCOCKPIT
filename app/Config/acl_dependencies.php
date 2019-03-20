@@ -300,8 +300,8 @@ $config = [
                 'deactivate'  => ['mass_deactivate'],
                 'index'       => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId', 'loadServicesByString', 'getSelectedServices'],
                 'browser'     => ['servicesByHostId', 'longOutputByUuid'],
-                'add'         => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
-                'edit'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
+                'add'         => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros', 'loadElementsByHostId'],
+                'edit'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros', 'loadElementsByHostId'],
                 'serviceList' => ['deleted']
             ],
             'Servicetemplategroups' => [

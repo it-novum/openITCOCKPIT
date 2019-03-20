@@ -762,7 +762,7 @@ class HostsController extends AppController {
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $containerIds = $this->MY_RIGHTS;
         $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
         $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
 

@@ -813,17 +813,26 @@ class HostgroupsController extends AppController {
         }
 
         $hostsToAppend = [];
-        foreach (func_get_args() as $host_id) {
-            $host = $this->Host->findById($host_id);
-            $hostsToAppend[] = $host;
-        }
+        $hostIds = func_get_args();
+
+        $hostsToAppend = $this->Host->find('all', [
+            'recursive' => -1,
+            'fields' => [
+                'Host.id',
+                'Host.name'
+            ],
+            'conditions' => [
+                'Host.id' => $hostIds
+            ]
+        ]);
+
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === true) {
             $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $containerIds = $this->MY_RIGHTS;
             $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         } else {
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->getWriteContainers());
