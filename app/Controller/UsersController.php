@@ -28,6 +28,7 @@
 
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
+use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
@@ -316,8 +317,9 @@ class UsersController extends AppController {
             $this->request->data = $this->request->data('User');
 
             //remove password validation when user is imported from ldap
-            $Users->validator()->remove('password');
-            $Users->validator()->remove('confirm_password');
+            $Users->getValidator()->remove('password');
+            $Users->getValidator()->remove('confirm_password');
+
 
             $user = $Users->newEntity();
             $user = $Users->patchEntity($user, $this->request->data);
