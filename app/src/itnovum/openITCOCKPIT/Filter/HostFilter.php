@@ -120,11 +120,11 @@ class HostFilter extends Filter {
     public function ajaxFilter() {
         $filters = [
             'like'   => [
-                'Host.name',
+                'Hosts.name',
             ],
             'equals' => [
-                'Host.uuid',
-                'Host.disabled'
+                'Hosts.uuid',
+                'Hosts.disabled'
             ]
         ];
 

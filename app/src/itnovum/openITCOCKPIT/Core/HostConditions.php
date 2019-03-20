@@ -98,6 +98,7 @@ class HostConditions {
 
     /**
      * @return array
+     * @deprecated Not compatible with CakePHP 4
      */
     public function getConditionsForFind() {
         $conditions = $this->conditions;
@@ -107,6 +108,16 @@ class HostConditions {
 
         if ($this->includeDisabled() === false) {
             $conditions['Host.disabled'] = 0;
+        }
+
+        return $conditions;
+    }
+
+    public function getWhereForFind() {
+        $conditions = $this->conditions;
+
+        if ($this->includeDisabled() === false) {
+            $conditions['Hosts.disabled'] = 0;
         }
 
         return $conditions;

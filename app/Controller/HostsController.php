@@ -2501,8 +2501,10 @@ class HostsController extends AppController {
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
         $HostCondition->setContainerIds($this->MY_RIGHTS);
 
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         $hosts = Api::makeItJavaScriptAble(
-            $this->Host->getHostsForAngular($HostCondition, $selected)
+            $HostsTable->getHostsForAngular($HostCondition, $selected)
         );
 
         $this->set(compact(['hosts']));
@@ -2520,6 +2522,9 @@ class HostsController extends AppController {
         $containerId = $this->request->query('containerId');
         $selected = $this->request->query('selected');
 
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
         $HostFilter = new HostFilter($this->request);
 
         $containerIds = [ROOT_CONTAINER, $containerId];
@@ -2536,7 +2541,7 @@ class HostsController extends AppController {
         $HostCondition->setContainerIds($containerIds);
 
         $hosts = Api::makeItJavaScriptAble(
-            $this->Host->getHostsForAngular($HostCondition, $selected)
+            $HostsTable->getHostsForAngular($HostCondition, $selected)
         );
 
         $this->set(compact(['hosts']));
@@ -2555,8 +2560,10 @@ class HostsController extends AppController {
         $selected = $this->request->query('selected');
         $includeDisabled = $this->request->query('includeDisabled') === 'true';
 
-        $HostFilter = new HostFilter($this->request);
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
+        $HostFilter = new HostFilter($this->request);
 
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
         $HostCondition->setIncludeDisabled($includeDisabled);
@@ -2573,7 +2580,7 @@ class HostsController extends AppController {
         }
 
         $hosts = Api::makeItJavaScriptAble(
-            $this->Host->getHostsForAngular($HostCondition, $selected)
+            $HostsTable->getHostsForAngular($HostCondition, $selected)
         );
 
         $this->set(compact(['hosts']));
@@ -3284,17 +3291,23 @@ class HostsController extends AppController {
         $HostFilter = new HostFilter($this->request);
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
 
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
         $HostCondition->setContainerIds($containerIds);
-        if ($hostId) {
+        if (!empty($hostId)) {
+            if (!is_array($hostId)) {
+                $hostId = [$hostId];
+            }
             $HostCondition->setNotConditions([
-                'Host.id' => $hostId
+                'Hosts.id IN' => $hostId
             ]);
         }
         $hosts = Api::makeItJavaScriptAble(
-            $this->Host->getHostsForAngular($HostCondition, $selected)
+            $HostsTable->getHostsForAngular($HostCondition, $selected)
         );
 
-        $this->set(compact(['hosts']));
+        $this->set('hosts', $hosts);
         $this->set('_serialize', ['hosts']);
     }
 
