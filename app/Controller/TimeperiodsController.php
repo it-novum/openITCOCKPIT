@@ -461,6 +461,7 @@ class TimeperiodsController extends AppController {
                         'name'                  => $timeperiodData['Timeperiod']['name'],
                         'description'           => $timeperiodData['Timeperiod']['description'],
                         'container_id'          => $sourceTimeperiod['container_id'],
+                        'calendar_id'           => $sourceTimeperiod['calendar_id'],
                         'uuid'                  => UUID::v4(),
                         'timeperiod_timeranges' => $sourceTimeperiod['timeperiod_timeranges']
                     ];
