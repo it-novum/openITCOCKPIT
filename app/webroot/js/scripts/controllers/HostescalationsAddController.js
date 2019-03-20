@@ -38,7 +38,7 @@ angular.module('openITCOCKPIT')
                 'angular': true
             };
 
-            $http.get("/contacts/loadContainers.json", {
+            $http.get("/hostescalations/loadContainers.json", {
                 params: params
             }).then(function(result){
                 $scope.containers = result.data.containers;
@@ -47,7 +47,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadElementsByContainerId = function(){
-            $http.get("/Hostescalations/loadElementsByContainerId/" + $scope.post.Hostescalation.container_id + ".json", {
+            $http.get("/hostescalations/loadElementsByContainerId/" + $scope.post.Hostescalation.container_id + ".json", {
                 params: {
                     'angular': true
                 }
@@ -66,7 +66,18 @@ angular.module('openITCOCKPIT')
             $http.post("/hostescalations/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                NotyService.genericSuccess();
+                var hostescalatingEditUrl = $state.href('HostescalationsEdit', {id: result.data.id}, {absolute: true});
+                var hostescalatingEditUrlTest = $state.href('HostescalationsEdit', {id: result.data.id}, {absolute: false});
+                var hostescalatingEditUrlTestInherit = $state.href('HostescalationsEdit', {id: result.data.id}, {absolute: true, inherit: false});
+                console.log(hostescalatingEditUrl);
+                console.log(hostescalatingEditUrlTest);
+                console.log(hostescalatingEditUrlTestInherit);
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + hostescalatingEditUrl + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message,
+                    timeout: 10000
+                });
                 $state.go('HostescalationsIndex');
                 NotyService.scrollTop();
             }, function errorCallback(result){

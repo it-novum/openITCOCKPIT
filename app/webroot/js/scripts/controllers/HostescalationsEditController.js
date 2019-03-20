@@ -1,83 +1,134 @@
 angular.module('openITCOCKPIT')
-    .controller('HostescalationsEditController', function($scope, $http, $state, $stateParams, NotyService) {
+    .controller('HostescalationsEditController', function($scope, $http, $state, $stateParams, $location, NotyService){
 
+        $scope.id = $stateParams.id;
         $scope.post = {
             Hostescalation: {
-                id: $stateParams.id,
-                uuid: null,
                 container_id: null,
+                first_notification: 1,
+                last_notification: 5,
+                notification_interval: 7200,
                 timeperiod_id: null,
-                first_notification: null,
-                last_notification: null,
-                notification_interval: null,
                 escalate_on_recovery: 0,
                 escalate_on_down: 0,
                 escalate_on_unreachable: 0,
-                Host: [],
-                Host_excluded: [],
-                Hostgroup: [],
-                Hostgroup_excluded: [],
-                Contact: [],
-                Contactgroup: [],
+                contacts: {
+                    _ids: []
+                },
+                contactgroups: {
+                    _ids: []
+                },
+                hosts: {
+                    _ids: []
+                },
+                hosts_excluded: {
+                    _ids: []
+                },
+                hostgroups: {
+                    _ids: []
+                },
+                hostgroups_excluded: {
+                    _ids: []
+                }
             }
         };
+        $scope.containers = {};
 
-        $scope.deleteUrl = "/hostescalations/delete/" + $scope.post.Hostescalation.id + ".json?angular=true";
-        $scope.successState = 'HostescalationsIndex';
-
-        $scope.load = function() {
-
-            $http.get("/hostescalations/edit/" + $scope.post.Hostescalation.id + ".json", {
+        $scope.load = function(){
+            $http.get("/hostescalations/edit/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
-            }).then(function(result) {
-                $scope.post.Hostescalation = result.data.hostescalation.Hostescalation;
+            }).then(function(result){
+                $scope.hostescalation = result.data.hostescalation;
+                $scope.post.Hostescalation.container_id = $scope.hostescalation.container_id;
+                $scope.post.Hostescalation.first_notification = $scope.hostescalation.first_notification;
+                $scope.post.Hostescalation.last_notification = $scope.hostescalation.last_notification;
+                $scope.post.Hostescalation.notification_interval = $scope.hostescalation.notification_interval;
+                $scope.post.Hostescalation.timeperiod_id = $scope.hostescalation.timeperiod_id;
+                $scope.post.Hostescalation.escalate_on_recovery = $scope.hostescalation.escalate_on_recovery;
+                $scope.post.Hostescalation.escalate_on_down = $scope.hostescalation.escalate_on_down;
+                $scope.post.Hostescalation.escalate_on_unreachable = $scope.hostescalation.escalate_on_unreachable;
 
+                for(var contactIndex in $scope.hostescalation.contacts){
+                    $scope.post.Hostescalation.contacts._ids.push($scope.hostescalation.contacts[contactIndex].id);
+                }
+                for(var contactgroupIndex in $scope.hostescalation.contactgroups){
+                    $scope.post.Hostescalation.contactgroups._ids.push($scope.hostescalation.contactgroups[contactgroupIndex].id);
+                }
+                for(var hostIndex in $scope.hostescalation.hosts){
+                    if($scope.hostescalation.hosts[hostIndex]._joinData.excluded === 0){
+                        $scope.post.Hostescalation.hosts._ids.push($scope.hostescalation.hosts[hostIndex].id);
+                    }else{
+                        $scope.post.Hostescalation.hosts_excluded._ids.push($scope.hostescalation.hosts[hostIndex].id);
+                    }
+
+                }
+                for(var hostgroupIndex in $scope.hostescalation.hostgroups){
+                    if($scope.hostescalation.hostgroups[hostgroupIndex]._joinData.excluded === 0){
+                        $scope.post.Hostescalation.hostgroups._ids.push($scope.hostescalation.hostgroups[hostgroupIndex].id);
+                    }else{
+                        $scope.post.Hostescalation.hostgroups_excluded._ids.push($scope.hostescalation.hostgroups[hostgroupIndex].id);
+                    }
+
+                }
+                $scope.init = false;
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+            $scope.loadContainer();
+        };
+
+        $scope.loadContainer = function(){
+            var params = {
+                'angular': true
+            };
+
+            $http.get("/hostescalations/loadContainers.json", {
+                params: params
+            }).then(function(result){
                 $scope.containers = result.data.containers;
-                $scope.hosts = result.data.hosts;
-                $scope.hostsExcluded = result.data.hostsExcluded;
-                $scope.hostgroups = result.data.hostgroups;
-                $scope.hostgroupsExcluded = result.data.hostgroupsExcluded;
-                $scope.timeperiods = result.data.timeperiods;
-                $scope.contacts = result.data.contacts;
-                $scope.contactgroups = result.data.contactgroups;
+                $scope.init = false;
             });
-
         };
 
-        $scope.loadElementsByContainerId = function() {
-            $http.get("/Hostescalations/loadElementsByContainerId/" + $scope.post.Hostescalation.container_id + ".json", {
+        $scope.loadElementsByContainerId = function(){
+            $http.get("/hostescalations/loadElementsByContainerId/" + $scope.post.Hostescalation.container_id + ".json", {
                 params: {
                     'angular': true
                 }
-            }).then(function(result) {
+            }).then(function(result){
                 $scope.hosts = result.data.hosts;
-                $scope.hostsExcluded = result.data.hostsExcluded;
+                $scope.hosts_excluded = result.data.hostsExcluded;
                 $scope.hostgroups = result.data.hostgroups;
-                $scope.hostgroupsExcluded = result.data.hostgroupsExcluded;
+                $scope.hostgroups_excluded = result.data.hostgroupsExcluded;
                 $scope.timeperiods = result.data.timeperiods;
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
-
-                $scope.processChosenExcludedHosts();
-                $scope.processChosenHosts();
-                $scope.processChosenExcludedHostgroups();
-                $scope.processChosenHostgroups();
             });
         };
 
-        $scope.submit = function() {
-            $http.post("/hostescalations/edit/" + $scope.post.Hostescalation.id + ".json?angular=true",
+        $scope.submit = function(){
+            $http.post("/hostescalations/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
-            ).then(function(result) {
-                NotyService.genericSuccess();
+            ).then(function(result){
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + $location.absUrl() + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message,
+                    timeout: 10000
+                });
                 $state.go('HostescalationsIndex');
                 NotyService.scrollTop();
-            }, function errorCallback (result) {
+            }, function errorCallback(result){
                 NotyService.genericError();
-
-                if (result.data.hasOwnProperty('error')) {
+                if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
             });
@@ -85,65 +136,65 @@ angular.module('openITCOCKPIT')
 
 
         $scope.processChosenHosts = function(){
-            for (var key in $scope.hosts) {
-                if (in_array($scope.hosts[key].key, $scope.post.Hostescalation.Host_excluded)) {
+            for(var key in $scope.hosts){
+                if(in_array($scope.hosts[key].key, $scope.post.Hostescalation.hosts_excluded._ids)){
                     $scope.hosts[key].disabled = true;
-                } else {
+                }else{
                     $scope.hosts[key].disabled = false;
                 }
             }
         };
 
         $scope.processChosenExcludedHosts = function(){
-            for (var key in $scope.hostsExcluded) {
-                if (in_array($scope.hostsExcluded[key].key, $scope.post.Hostescalation.Host)) {
-                    $scope.hostsExcluded[key].disabled = true;
-                } else {
-                    $scope.hostsExcluded[key].disabled = false;
+            for(var key in $scope.hosts_excluded){
+                if(in_array($scope.hosts_excluded[key].key, $scope.post.Hostescalation.hosts._ids)){
+                    $scope.hosts_excluded[key].disabled = true;
+                }else{
+                    $scope.hosts_excluded[key].disabled = false;
                 }
             }
         };
 
         $scope.processChosenHostgroups = function(){
-            for (var key in $scope.hostgroups) {
-                if (in_array($scope.hostgroups[key].key, $scope.post.Hostescalation.Hostgroup_excluded)) {
+            for(var key in $scope.hostgroups){
+                if(in_array($scope.hostgroups[key].key, $scope.post.Hostescalation.hostgroups_excluded._ids)){
                     $scope.hostgroups[key].disabled = true;
-                } else {
+                }else{
                     $scope.hostgroups[key].disabled = false;
                 }
             }
         };
 
         $scope.processChosenExcludedHostgroups = function(){
-            for (var key in $scope.hostgroupsExcluded) {
-                if (in_array($scope.hostgroupsExcluded[key].key, $scope.post.Hostescalation.Hostgroup)) {
-                    $scope.hostgroupsExcluded[key].disabled = true;
-                } else {
-                    $scope.hostgroupsExcluded[key].disabled = false;
+            for(var key in $scope.hostgroups_excluded){
+                if(in_array($scope.hostgroups_excluded[key].key, $scope.post.Hostescalation.hostgroups._ids)){
+                    $scope.hostgroups_excluded[key].disabled = true;
+                }else{
+                    $scope.hostgroups_excluded[key].disabled = false;
                 }
             }
         };
 
 
-        $scope.$watch('post.Hostescalation.container_id', function() {
-            if (typeof $scope.post.Hostescalation != "undefined" && $scope.post.Hostescalation.container_id != null) {
+        $scope.$watch('post.Hostescalation.container_id', function(){
+            if($scope.post.Hostescalation.container_id != null){
                 $scope.loadElementsByContainerId();
             }
         }, true);
 
-        $scope.$watch('post.Hostescalation.Host', function() {
+        $scope.$watch('post.Hostescalation.hosts._ids', function(){
             $scope.processChosenExcludedHosts();
         }, true);
 
-        $scope.$watch('post.Hostescalation.Host_excluded', function() {
+        $scope.$watch('post.Hostescalation.hosts_excluded._ids', function(){
             $scope.processChosenHosts();
         }, true);
 
-        $scope.$watch('post.Hostescalation.Hostgroup', function() {
+        $scope.$watch('post.Hostescalation.hostgroups._ids', function(){
             $scope.processChosenExcludedHostgroups();
         }, true);
 
-        $scope.$watch('post.Hostescalation.Hostgroup_excluded', function() {
+        $scope.$watch('post.Hostescalation.hostgroups_excluded._ids', function(){
             $scope.processChosenHostgroups();
         }, true);
 
