@@ -2723,8 +2723,9 @@ class HostsController extends AppController {
     }
 
     /**
-     * @param int $containerId
+     * @param $containerId
      * @param int $hostId
+     * @throws Exception
      */
     public function loadElementsByContainerId($containerId, $hostId = 0) {
         if (!$this->isAngularJsRequest()) {
