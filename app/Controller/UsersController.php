@@ -28,12 +28,14 @@
 
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
+use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
+use itnovum\openITCOCKPIT\Ldap\LdapClient;
 
 /**
  * Class UsersController
@@ -65,7 +67,7 @@ class UsersController extends AppController {
         $usersFilter = new UsersFilter($this->request);
 
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $usersFilter->getPage());
-        $all_users = $Users->getUsers($this->MY_RIGHTS, $PaginateOMat);
+        $all_users = $Users->getUsers($this->MY_RIGHTS, $usersFilter, $PaginateOMat);
         $isLdapAuth = false;
         if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap') {
             $isLdapAuth = true;
@@ -85,13 +87,14 @@ class UsersController extends AppController {
         }
 
         $this->set('isLdapAuth', $isLdapAuth);
-        $this->set('systemsettings', $systemsettings);
+        //$this->set('systemsettings', $systemsettings);
         $this->set('all_users', $all_users);
         $toJson = ['all_users', 'paging'];
         if ($this->isScrollRequest()) {
             $toJson = ['all_users', 'scroll'];
         }
-        $this->set('_serialize', ['toJson', 'all_users', 'systemsettings', 'isLdapAuth']);
+        // $this->set('_serialize', ['toJson', 'all_users', 'systemsettings', 'isLdapAuth']);
+        $this->set('_serialize', $toJson);
     }
 
     public function view($id = null) {
@@ -208,13 +211,14 @@ class UsersController extends AppController {
         }
 
         /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+/*        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
 
 
         $this->set('containers', $containers);
         $this->set('usergroups', $usergroups);
         $this->set('_serialize', ['containers', 'usergroups']);
+*/
     }
 
     public function loadDateformats() {
@@ -284,283 +288,65 @@ class UsersController extends AppController {
 
 
     public function addFromLdap() {
-        $this->layout = 'angularjs';
-
-
-        /**
-         * LDAP Start
-         */
-        if (isset($this->request->params['named']['ldap']) && $this->request->params['named']['ldap'] == true) {
-            $type = 'ldap';
-            $samaccountname = '';
-            if (isset($this->request->params['named']['samaccountname'])) {
-                $samaccountname = $this->request->params['named']['samaccountname'];
-            }
+        $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
         }
-        /**
-         * LDAP END
-         */
 
-        /**
-         * LDAP START
-         */
-        if ($type == 'ldap') {
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
+        $this->set('systemsettings', $systemsettings);
+        $this->set('_serialize', ['systemsettings']);
 
-            $PHPVersionChecker = new PHPVersionChecker();
-            if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
-                /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-                $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-                $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
 
-                $ldap = new \FreeDSx\Ldap\LdapClient([
-                    'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
-                    'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
-                    'ssl_allow_self_signed' => true,
-                    'ssl_validate_cert'     => false,
-                    'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
-                    'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
-                ]);
-                if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
-                    $ldap->startTls();
-                }
-                $ldap->bind(
-                    sprintf(
-                        '%s%s',
-                        $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
-                        $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
-                    ),
-                    $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
-                );
-
-                $filter = \FreeDSx\Ldap\Search\Filters::and(
-                    \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
-                    \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $samaccountname)
-                );
-                if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                    $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
-                    $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-                } else {
-                    $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
-                    $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-                }
-
-                /** @var \FreeDSx\Ldap\Entry\Entries $entries */
-                $entries = $ldap->search($search);
-                foreach ($entries as $entry) {
-                    $userDn = (string)$entry->getDn();
-                    $entry = $entry->toArray();
-                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
-
-                    if (isset($entry['uid'])) {
-                        $entry['samaccountname'] = $entry['uid'];
-                    }
-
-                    $ldapUser = [
-                        'mail'           => $entry['mail'][0],
-                        'givenname'      => $entry['givenname'][0],
-                        'sn'             => $entry['sn'][0],
-                        'samaccountname' => $entry['samaccountname'][0],
-                        'dn'             => $userDn
-                    ];
-                }
-
-            } else {
-                $ldapUser = $this->Ldap->userInfo($samaccountname);
-            }
-            if (!is_null($ldapUser)) {
-                // Overwrite request with LDAP data, that the user can not manipulate it with firebug ;)
-                $this->request->data['User']['email'] = $ldapUser['mail'];
-                $this->request->data['User']['firstname'] = $ldapUser['givenname'];
-                $this->request->data['User']['lastname'] = $ldapUser['sn'];
-                $this->request->data['User']['samaccountname'] = strtolower($ldapUser['samaccountname']);
-                $this->request->data['User']['ldap_dn'] = $ldapUser['dn'];
-            }
-        }
-        /**
-         * LDAP END
-         */
-
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $this->redirect([
-                'controller'     => 'users',
-                'action'         => 'add',
-                'ldap'           => 1,
-                'samaccountname' => $this->request->data('Ldap.samaccountname'),
-                //Fixing usernames like jon.doe
-                'fix'            => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
-            ]);
+
+            // save additional data to containersUsersMemberships
+            if (isset($this->request->data['User']['ContainersUsersMemberships'])) {
+                $containerPermissions = $Users->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
+                $this->request->data['User']['containers'] = $containerPermissions;
+            }
+
+            //@TODO remove these lines as they are implemented in users add
+            $this->request->data['User']['status'] = 1;
+
+            $this->request->data = $this->request->data('User');
+
+            //remove password validation when user is imported from ldap
+            $Users->getValidator()->remove('password');
+            $Users->getValidator()->remove('confirm_password');
+
+
+            $user = $Users->newEntity();
+            $user = $Users->patchEntity($user, $this->request->data);
+
+            $Users->save($user);
+            if ($user->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $user->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            }
+            $this->set('user', $user);
+            $this->set('_serialize', ['user']);
         }
 
-        $PHPVersionChecker = new PHPVersionChecker();
-        if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
 
-            $ldap = new \FreeDSx\Ldap\LdapClient([
-                'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
-                'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
-                'ssl_allow_self_signed' => true,
-                'ssl_validate_cert'     => false,
-                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
-                'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
-            ]);
-            if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
-                $ldap->startTls();
-            }
-            $ldap->bind(
-                sprintf(
-                    '%s%s',
-                    $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
-                    $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
-                ),
-                $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
-            );
-
-            $filter = \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']);
-            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
-                $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-            } else {
-                $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
-                $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-            }
-
-            $getAll = false;
-            if ($this->request->query('getAll') === 'true') {
-                $getAll = true;
-            }
-
-            $usersForSelect = [];
-            $paging = $ldap->paging($search, 100);
-            while ($paging->hasEntries()) {
-                foreach ($paging->getEntries() as $entry) {
-                    $userDn = (string)$entry->getDn();
-                    if (empty($userDn)) {
-                        continue;
-                    }
-
-                    $entry = $entry->toArray();
-                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
-                    foreach ($requiredFields as $requiredField) {
-                        if (!isset($entry[$requiredField])) {
-                            continue 2;
-                        }
-                    }
-
-                    if (isset($entry['uid'])) {
-                        $entry['samaccountname'] = $entry['uid'];
-                    }
-
-                    $displayName = sprintf(
-                        '%s, %s (%s)',
-                        $entry['givenname'][0],
-                        $entry['sn'][0],
-                        $entry['samaccountname'][0]
-                    );
-                    $usersForSelect[$entry['samaccountname'][0]] = $displayName;
-                }
-                if ($getAll === false) {
-                    //Only get the first few records
-                    $paging->end();
-                }
-            }
-        } else {
-            $usersForSelect = $this->Ldap->findAllUser();
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
-        }
-
-        $usersForSelect = Api::makeItJavaScriptAble($usersForSelect);
-
-        $isPhp7Dot1 = $PHPVersionChecker->isVersionGreaterOrEquals7Dot1();
-        $this->set(compact(['usersForSelect', 'systemsettings', 'isPhp7Dot1']));
-        $this->set('_serialize', ['usersForSelect', 'isPhp7Dot1']);
     }
 
     public function loadLdapUserByString() {
         $this->layout = 'blank';
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $Ldap = LdapClient::fromSystemsettings($Systemsettings->findAsArraySection('FRONTEND'));
+        $samaccountname = (string)$this->request->query('samaccountname');
+        $ldapUsers = $Ldap->getUsers($samaccountname);
 
-        $usersForSelect = [];
-        $samaccountname = $this->request->query('samaccountname');
-        if (!empty($samaccountname) && strlen($samaccountname) > 2) {
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
-
-            $ldap = new \FreeDSx\Ldap\LdapClient([
-                'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
-                'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
-                'ssl_allow_self_signed' => true,
-                'ssl_validate_cert'     => false,
-                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
-                'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
-            ]);
-            if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
-                $ldap->startTls();
-            }
-            $ldap->bind(
-                sprintf(
-                    '%s%s',
-                    $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
-                    $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
-                ),
-                $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
-            );
-
-            $filter = \FreeDSx\Ldap\Search\Filters::and(
-                \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
-                \FreeDSx\Ldap\Search\Filters::contains('sAMAccountName', $samaccountname)
-            );
-            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                $filter = \FreeDSx\Ldap\Search\Filters::and(
-                    \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
-                    \FreeDSx\Ldap\Search\Filters::contains('uid', $samaccountname)
-                );
-            }
-            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
-                $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-            } else {
-                $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
-                $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-            }
-
-            $paging = $ldap->paging($search, 100);
-            while ($paging->hasEntries()) {
-                foreach ($paging->getEntries() as $entry) {
-                    $userDn = (string)$entry->getDn();
-                    if (empty($userDn)) {
-                        continue;
-                    }
-
-                    $entry = $entry->toArray();
-                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
-                    foreach ($requiredFields as $requiredField) {
-                        if (!isset($entry[$requiredField])) {
-                            continue 2;
-                        }
-                    }
-
-                    if (isset($entry['uid'])) {
-                        $entry['samaccountname'] = $entry['uid'];
-                    }
-
-                    $displayName = sprintf(
-                        '%s, %s (%s)',
-                        $entry['givenname'][0],
-                        $entry['sn'][0],
-                        $entry['samaccountname'][0]
-                    );
-                    $usersForSelect[$entry['samaccountname'][0]] = $displayName;
-                }
-                $paging->end();
-            }
-        }
-
-        $usersForSelect = Api::makeItJavaScriptAble($usersForSelect);
+        //$usersForSelect = Api::makeItJavaScriptAble($ldapUsers);
+        $usersForSelect = $ldapUsers;
 
         $this->set('usersForSelect', $usersForSelect);
         $this->set('_serialize', ['usersForSelect']);

@@ -6,11 +6,16 @@ angular.module('openITCOCKPIT')
             $scope.filter = {
                 Users: {
                     full_name: '',
-                    email: ''
+                    email: '',
+                    phone:'',
+                    status:'',
+                    usergroup_id:'',
+                    company:'',
                 }
             };
         };
 
+        $scope.currentPage = 1;
         $scope.deleteUrl = '/users/delete/';
 
         $scope.triggerFilter = function(){
@@ -19,7 +24,6 @@ angular.module('openITCOCKPIT')
 
         $scope.resetFilter = function(){
             defaultFilter();
-            $scope.undoSelection();
         };
 
         $scope.load = function(){
@@ -30,13 +34,16 @@ angular.module('openITCOCKPIT')
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
                 'filter[Users.full_name]': $scope.filter.Users.full_name,
-                'filter[Users.email]': $scope.filter.Users.email
+                'filter[Users.email]': $scope.filter.Users.email,
+                'filter[Users.phone]': $scope.filter.Users.phone,
+                'filter[Users.status]': $scope.filter.Users.status,
+                'filter[Users.usergroup_id]': $scope.filter.Users.usergroup_id,
+                'filter[Users.company]': $scope.filter.Users.company
             };
 
             $http.get("/users/index.json", {
                 params: params
             }).then(function(result){
-                console.log(result.data);
                 $scope.Users = result.data.all_users;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
@@ -68,5 +75,11 @@ angular.module('openITCOCKPIT')
         //Fire on page load
         defaultFilter();
         $scope.load();
+
+        $scope.$watch('filter', function(){
+            $scope.currentPage = 1;
+            $scope.load();
+        }, true);
+
     });
 

@@ -9,6 +9,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Security;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Filter\UsersFilter;
 
 /**
  * Users Model
@@ -89,13 +90,13 @@ class UsersTable extends Table {
             ->email('email')
             ->requirePresence('email', 'create')
             ->allowEmptyString('email', false);
-
-        $validator
-            ->scalar('password')
-            ->maxLength('password', 45)
-            ->requirePresence('password', 'create')
-            ->allowEmptyString('password', false);
-
+        /*
+                $validator
+                    ->scalar('password')
+                    ->maxLength('password', 45)
+                    ->requirePresence('password', 'create')
+                    ->allowEmptyString('password', false);
+        */
         $validator
             ->scalar('firstname')
             ->maxLength('firstname', 100)
@@ -173,8 +174,29 @@ class UsersTable extends Table {
             ->requirePresence('recursive_browser', 'create')
             ->allowEmptyString('recursive_browser', false);
 
+        $validator
+            ->scalar('password')
+            ->maxLength('password', 45)
+            ->requirePresence('password', 'create')
+            ->allowEmptyString('password', false)
+            ->add('password', 'custom', [
+                'rule'    => self::PASSWORD_REGEX,
+                'message' => 'user_model.password_requirement_notice'
+            ]);
+
+        $validator->add('confirm_password',
+            'compareWith', [
+                'rule'    => ['compareWith', 'password'],
+                'message' => 'Passwords not equal'
+            ]);
+
         return $validator;
     }
+
+    /**
+     * Password validation regex.
+     */
+    const PASSWORD_REGEX = '/^(?=.*\d).{6,}$/i';
 
     /**
      * Returns a rules checker object that will be used for validating
@@ -190,6 +212,7 @@ class UsersTable extends Table {
         return $rules;
     }
 
+
     public function beforeSave($event, $entity, $options) {
         if (!empty($entity->password)) {
             $entity->password = Security::hash($entity->password, null, true);
@@ -202,14 +225,15 @@ class UsersTable extends Table {
      * @param null $PaginateOMat
      * @return array
      */
-    public function getUsers($rights, $PaginateOMat = null) {
+    public function getUsers($rights, UsersFilter $usersFilter, $PaginateOMat = null) {
         $query = $this->find()
             ->disableHydration()
             ->contain(['Containers', 'Usergroups'])
             ->matching('Containers')
             ->order(['full_name' => 'asc'])
             ->where([
-                'ContainersUsersMemberships.container_id IN' => $rights
+                'ContainersUsersMemberships.container_id IN' => $rights,
+                $usersFilter
             ])
             ->select(function (Query $query) {
                 return [
@@ -341,11 +365,11 @@ class UsersTable extends Table {
      * @return array
      */
     public function containerPermissionsForAngular($containers) {
-        if(empty($containers)){
+        if (empty($containers)) {
             return [];
         }
         $ret = [];
-        foreach ($containers as $container){
+        foreach ($containers as $container) {
             $ret['ContainersUsersMemberships'][$container['id']] = $container['_joinData']['permission_level'];
             $ret['containers']['_ids'][] = $container['id'];
         }
@@ -357,10 +381,10 @@ class UsersTable extends Table {
      * @param $rights
      * @return array
      */
-    public function getUserWithContainerPermission($userId = null, $rights){
+    public function getUserWithContainerPermission($userId = null, $rights) {
         $user = $this->getUser($userId, $rights);
         $containerPermissions = [];
-        if(!empty($user['containers'])){
+        if (!empty($user['containers'])) {
             $containerPermissions = $this->containerPermissionsForAngular($user['containers']);
             $user = array_merge($user, $containerPermissions);
         }

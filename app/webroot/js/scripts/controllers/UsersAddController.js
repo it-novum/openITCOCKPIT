@@ -13,6 +13,7 @@ angular.module('openITCOCKPIT')
                 'position': '',
                 'phone': '',
                 'password': '',
+                'confirm_password':'',
                 'usergroup_id': '',
                 'showstatsinmenu': 0,
                 'paginatorlength': 25,
@@ -102,7 +103,6 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
-            console.log($scope.post);
             $http.post("/users/add.json?angular=true",
                 $scope.post
             ).then(function(result){
