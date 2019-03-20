@@ -2590,34 +2590,6 @@ class HostsController extends AppController {
     /**
      * @deprecated
      */
-    public function loadParentHostsById($id = null) {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        if (!$this->Host->exists($id)) {
-            throw new NotFoundException(__('Invalid host'));
-        }
-
-
-        $parenthost = $this->Host->find('first', [
-            'conditions' => [
-                'Host.id' => $id
-            ],
-            'contain'    => [
-                'Parenthost'
-            ]
-        ]);
-
-        $parenthost = Hash::extract($parenthost, 'Parenthost.{n}.id');
-
-        $this->set(compact('parenthost'));
-        $this->set('_serialize', ['parenthost']);
-    }
-
-    /**
-     * @deprecated
-     */
     public function loadHostById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

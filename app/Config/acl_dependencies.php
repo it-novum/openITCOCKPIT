@@ -182,7 +182,6 @@ $config = [
                 'icon',
                 'hostservicelist',
                 'loadParentHostsByString',
-                'loadParentHostsById',
                 'hoststatus',
                 'hostBrowserMenu'
             ],
