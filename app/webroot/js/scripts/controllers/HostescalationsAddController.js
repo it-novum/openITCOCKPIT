@@ -73,8 +73,10 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message,
                     timeout: 10000
                 });
-                $state.go('HostescalationsIndex');
-                NotyService.scrollTop();
+                $state.go('HostescalationsIndex').then(function(){
+                    NotyService.scrollTop();
+                });
+
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){

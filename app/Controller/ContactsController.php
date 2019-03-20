@@ -382,6 +382,27 @@ class ContactsController extends AppController {
                         $Cache->set($sourceContact['id'], $sourceContact);
                     }
 
+                    $fieldsToCopy = [
+                        'user_id',
+                        'host_timeperiod_id',
+                        'service_timeperiod_id',
+                        'host_notifications_enabled',
+                        'service_notifications_enabled',
+                        'notify_service_recovery',
+                        'notify_service_warning',
+                        'notify_service_unknown',
+                        'notify_service_critical',
+                        'notify_service_flapping',
+                        'notify_service_downtime',
+                        'notify_host_recovery',
+                        'notify_host_down',
+                        'notify_host_unreachable',
+                        'notify_host_flapping',
+                        'notify_host_downtime',
+                        'host_push_notifications_enabled',
+                        'service_push_notifications_enabled'
+                    ];
+
                     $sourceContact = $Cache->get($sourceContactId);
 
                     $newContactData = [
@@ -395,6 +416,9 @@ class ContactsController extends AppController {
                             '_ids' => $sourceContact['containers']
                         ]
                     ];
+                    foreach ($fieldsToCopy as $fieldToCopy) {
+                        $newContactData[$fieldToCopy] = $sourceContact[$fieldToCopy];
+                    }
 
                     $newContactEntity = $ContactsTable->newEntity($newContactData);
                 }
@@ -446,6 +470,7 @@ class ContactsController extends AppController {
     /**
      * @param null $id
      * @todo Refactor with Cake4
+     * @deprecated
      */
     public function usedBy($id = null) {
         if (!$this->isApiRequest()) {

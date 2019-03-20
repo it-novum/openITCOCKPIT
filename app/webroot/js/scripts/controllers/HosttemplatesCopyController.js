@@ -70,7 +70,9 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('HosttemplatesIndex');
+                $state.go('HosttemplatesIndex').then(function(){
+                    NotyService.scrollTop();
+                });
             }, function errorCallback(result){
                 //Print errors
                 NotyService.genericError();
