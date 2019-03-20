@@ -44,7 +44,10 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('ContactsIndex');
+                $state.go('ContactsIndex').then(function(){
+                    NotyService.scrollTop();
+                });
+
             }, function errorCallback(result){
                 //Print errors
                 NotyService.genericError();

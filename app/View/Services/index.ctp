@@ -456,7 +456,7 @@
 
                                     <td>
                                         <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
-                                        <span ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                        <span ng-if="service.Service.active_checks_enabled === false">
                                             <?php echo __('n/a'); ?>
                                         </span>
                                     </td>
