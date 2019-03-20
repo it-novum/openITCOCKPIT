@@ -1,20 +1,21 @@
 angular.module('openITCOCKPIT')
-    .controller('UsersAddFromLdapController', function($scope, $http){
+    .controller('UsersAddFromLdapController', function($scope, $http, $state, NotyService){
 
 
         $scope.init = true;
 
         $scope.post = {
             'User': {
+                'ldap':1,
                 'status': '',
                 'email': '',
-                'samaccountname':'',
+                'samaccountname': '', //username
                 'firstname': '',
                 'lastname': '',
                 'company': '',
                 'position': '',
                 'phone': '',
-                'password': '',
+                //'password': '',
                 'usergroup_id': '',
                 'showstatsinmenu': 0,
                 'paginatorlength': 25,
@@ -40,16 +41,6 @@ angular.module('openITCOCKPIT')
         };
         $scope.errors = false;
 
-      /*  $scope.loadUsers = function(searchString){
-            $http.get("/users/addFromLdap.json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.users = result.data.usersForSelect;
-                $scope.isPhp7Dot1 = result.data.isPhp7Dot1;
-            });
-        };*/
 
         $scope.loadContainer = function(){
             $http.get("/containers/loadContainersForAngular.json", {
@@ -108,8 +99,8 @@ angular.module('openITCOCKPIT')
                     'samaccountname': searchString
                 }
             }).then(function(result){
-                console.log(result.data);
                 $scope.usersForSelect = result.data.usersForSelect;
+                console.log($scope.usersForSelect);
             });
         };
 
@@ -123,21 +114,42 @@ angular.module('openITCOCKPIT')
                 $scope.systemsettings = result.data.systemsettings;
             });
         };
+
+
         $scope.submit = function(){
+            console.log($scope.post);
+            $http.post("/users/addFromLdap.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                NotyService.genericSuccess();
+               // $state.go('UsersIndex');
 
+            }, function errorCallback(result){
+                NotyService.genericError();
+
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+            });
+
+
+            /*
             console.log($scope.data.selectedSamAccountName);
-
             if($scope.data.selectedSamAccountName.length === 0){
                 $scope.errors = [
                     'Please select one user'
                 ];
                 return false;
-            }
-
-            window.location.href = '/users/add/ldap:1/samaccountname:' + encodeURI($scope.data.selectedSamAccountName) + '/fix:1';
+            }*/
+            // window.location.href = '/users/add/ldap:1/samaccountname:' + encodeURI($scope.data.selectedSamAccountName) + '/fix:1';
         };
 
-
+        $scope.$watch('data.selectedSamAccountName', function(){
+            $scope.post.User.firstname = $scope.data.selectedSamAccountName.givenname;
+            $scope.post.User.lastname = $scope.data.selectedSamAccountName.sn;
+            $scope.post.User.samaccountname = $scope.data.selectedSamAccountName.samaccountname;
+            $scope.post.User.email = $scope.data.selectedSamAccountName.email;
+        }, true);
 
         $scope.loadContainer();
         $scope.loadStatus();
@@ -145,5 +157,4 @@ angular.module('openITCOCKPIT')
         $scope.loadUsergroups();
         $scope.loadSystemsettings();
         $scope.loadUsersByString();
-
     });

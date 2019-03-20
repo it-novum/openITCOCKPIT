@@ -315,6 +315,10 @@ class UsersController extends AppController {
 
             $this->request->data = $this->request->data('User');
 
+            //remove password validation when user is imported from ldap
+            $Users->validator()->remove('password');
+            $Users->validator()->remove('confirm_password');
+
             $user = $Users->newEntity();
             $user = $Users->patchEntity($user, $this->request->data);
 
