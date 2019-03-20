@@ -2080,170 +2080,6 @@ class HostsController extends AppController {
         return '';
     }
 
-
-    /**
-     * @deprecated
-     */
-    public function addCustomMacro($counter) {
-        $this->allowOnlyAjaxRequests();
-
-        $this->set('objecttype_id', OBJECT_HOST);
-        $this->set('counter', $counter);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function loadTemplateMacros($hosttemplate_id = null) {
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-
-        $this->loadModel('Hosttemplate');
-        if (!$this->Hosttemplate->exists($hosttemplate_id)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
-        }
-
-        if ($this->Hosttemplate->exists($hosttemplate_id)) {
-            $hosttemplate = $this->Hosttemplate->find('first', [
-                'conditions' => [
-                    'Hosttemplate.id' => $hosttemplate_id,
-                ],
-                'recursive'  => -1,
-                'contain'    => [
-                    'Customvariable' => [
-                        'fields' => [
-                            'Customvariable.name',
-                            'Customvariable.value',
-                            'Customvariable.objecttype_id',
-                        ],
-                    ],
-                ],
-                'fields'     => [
-                    'Hosttemplate.id',
-                ],
-            ]);
-        }
-        $this->set('hosttemplate', $hosttemplate);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function loadParametersByCommandId($command_id = null, $hosttemplate_id = null) {
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-        $test = [];
-        $commandarguments = [];
-        if ($command_id) {
-            /** @var $CommandargumentsTable CommandargumentsTable */
-            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
-            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
-            //print_r($commandarguments);
-            foreach ($commandarguments as $key => $commandargument) {
-                if ($hosttemplate_id) {
-                    $hosttemplate_command_argument_value = $this->Hosttemplatecommandargumentvalue->find('first', [
-                        'conditions' => [
-                            'Hosttemplatecommandargumentvalue.hosttemplate_id'    => $hosttemplate_id,
-                            'Hosttemplatecommandargumentvalue.commandargument_id' => $commandargument['Commandargument']['id'],
-                        ],
-                        'fields'     => 'Hosttemplatecommandargumentvalue.value',
-                    ]);
-                    if (isset($hosttemplate_command_argument_value['Hosttemplatecommandargumentvalue']['value'])) {
-                        $commandarguments[$key]['Hosttemplatecommandargumentvalue']['value'] = $hosttemplate_command_argument_value['Hosttemplatecommandargumentvalue']['value'];
-                    }
-                }
-            }
-        }
-
-        $this->set(compact('commandarguments'));
-    }
-
-    /**
-     * @deprecated
-     */
-    public function loadArguments($command_id = null, $hosttemplate_id = null) {
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-
-        if (!$this->Hosttemplate->exists($hosttemplate_id)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
-        }
-
-        $commandarguments = [];
-
-        $commandarguments = $this->Hosttemplatecommandargumentvalue->find('all', [
-            'conditions' => [
-                'Commandargument.command_id'                       => $command_id,
-                'Hosttemplatecommandargumentvalue.hosttemplate_id' => $hosttemplate_id,
-            ],
-        ]);
-
-        //Checking if the hosttemplade has own arguments defined
-        if (empty($commandarguments)) {
-            /** @var $CommandargumentsTable CommandargumentsTable */
-            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
-            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
-        }
-
-        $this->set('commandarguments', $commandarguments);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function loadArgumentsAdd($command_id = null) {
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-
-        /** @var $CommandargumentsTable CommandargumentsTable */
-        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
-        $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
-
-
-        $this->set('commandarguments', $commandarguments);
-        $this->render('load_arguments');
-    }
-
-    /**
-     * @deprecated
-     */
-    public function loadHosttemplatesArguments($hosttemplate_id = null) {
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-
-        $this->loadModel('Hosttemplate');
-        if (!$this->Hosttemplate->exists($hosttemplate_id)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
-        }
-
-        $this->loadModel('Hosttemplatecommandargumentvalue');
-        $commandarguments = $this->Hosttemplatecommandargumentvalue->find('all', [
-            //	'recursive' => -1,
-            'conditions' => [
-                'hosttemplate_id' => $hosttemplate_id,
-            ],
-        ]);
-        $commandarguments = Hash::remove($commandarguments, '{n}.Hosttemplatecommandargumentvalue.id');
-
-        // Renaming Hosttemplatecommandargumentvalue to Hostcommandargumentvalue that we can render the view load_arguments with values
-        $_commandarguments = [];
-        foreach ($commandarguments as $commandargument) {
-            $c = [];
-            // Remove id of command argument value that if the user change them we dont overwrite the orginal data form host template in the database
-            unset($commandargument['Hosttemplatecommandargumentvalue']['id']);
-            $c['Hostcommandargumentvalue'] = $commandargument['Hosttemplatecommandargumentvalue'];
-            $c['Commandargument'] = $commandargument['Commandargument'];
-            $_commandarguments[] = $c;
-        }
-        $this->set('commandarguments', $_commandarguments);
-        $this->render('load_arguments');
-    }
-
     /**
      * @deprecated
      */
@@ -2340,37 +2176,6 @@ class HostsController extends AppController {
 
         $this->set('output', $output);
         $this->set('_serialize', ['output']);
-    }
-
-    /**
-     * Renders the ID of the host as JSON.
-     *    Works if $this->request->data = array(
-     *        'Host' => array(
-     * @deprecated
-     */
-    public function addParentHosts() {
-        $this->allowOnlyPostRequests();
-        $data = $this->request->data;
-
-        // CakePHP save/validation necessity
-        if (!isset($data['Host']) || !is_array($data['Host'])) {
-            $data['Host'] = [];
-        }
-        if (!isset($data['Parenthost']) || !is_array($data['Parenthost'])) {
-            $data['Parenthost'] = [];
-        }
-        if (isset($data['Host']['Parenthost'])) {
-            $data['Parenthost']['Parenthost'] = $data['Host']['Parenthost'];
-        }
-        if (isset($data['Parenthost']['Parenthost'])) {
-            $data['Host']['Parenthost'] = $data['Parenthost']['Parenthost'];
-        }
-
-        if ($this->Host->save($data)) {
-            $this->serializeId();
-        } else {
-            $this->serializeErrorMessage();
-        }
     }
 
 
@@ -2485,106 +2290,6 @@ class HostsController extends AppController {
         $servicetemplategroup = $this->Servicetemplategroup->findById($stg_id);
         $this->set(compact(['servicetemplategroup', 'host']));
         $this->set('_serialize', ['servicetemplategroup', 'host']);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function ajaxList() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        $selected = $this->request->query('selected');
-
-        $HostFilter = new HostFilter($this->request);
-        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
-        $HostCondition->setContainerIds($this->MY_RIGHTS);
-
-        /** @var $HostsTable HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        $hosts = Api::makeItJavaScriptAble(
-            $HostsTable->getHostsForAngular($HostCondition, $selected)
-        );
-
-        $this->set(compact(['hosts']));
-        $this->set('_serialize', ['hosts']);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function loadHostsByContainerId() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        $containerId = $this->request->query('containerId');
-        $selected = $this->request->query('selected');
-
-        /** @var $HostsTable HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
-        $HostFilter = new HostFilter($this->request);
-
-        $containerIds = [ROOT_CONTAINER, $containerId];
-        if ($containerId == ROOT_CONTAINER) {
-            /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-            //Don't panic! Only root users can edit /root objects ;)
-            //So no loss of selected hosts/host templates
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-        }
-
-        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
-        $HostCondition->setContainerIds($containerIds);
-
-        $hosts = Api::makeItJavaScriptAble(
-            $HostsTable->getHostsForAngular($HostCondition, $selected)
-        );
-
-        $this->set(compact(['hosts']));
-        $this->set('_serialize', ['hosts']);
-    }
-
-    /**
-     * @param bool $onlyHostsWithWritePermission
-     * @deprecated
-     */
-    public function loadHostsByString($onlyHostsWithWritePermission = false) {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        $selected = $this->request->query('selected');
-        $includeDisabled = $this->request->query('includeDisabled') === 'true';
-
-        /** @var $HostsTable HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
-        $HostFilter = new HostFilter($this->request);
-
-        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
-        $HostCondition->setIncludeDisabled($includeDisabled);
-        $HostCondition->setContainerIds($this->MY_RIGHTS);
-        if ($onlyHostsWithWritePermission) {
-            $writeContainers = [];
-            foreach ($this->MY_RIGHTS_LEVEL as $containerId => $rightLevel) {
-                $rightLevel = (int)$rightLevel;
-                if ($rightLevel === WRITE_RIGHT) {
-                    $writeContainers[$containerId] = $rightLevel;
-                }
-            }
-            $HostCondition->setContainerIds(array_keys($writeContainers));
-        }
-
-        $hosts = Api::makeItJavaScriptAble(
-            $HostsTable->getHostsForAngular($HostCondition, $selected)
-        );
-
-        $this->set(compact(['hosts']));
-        $this->set('_serialize', ['hosts']);
     }
 
     /**
@@ -3271,6 +2976,78 @@ class HostsController extends AppController {
                 'Hosts.id IN' => $hostId
             ]);
         }
+        $hosts = Api::makeItJavaScriptAble(
+            $HostsTable->getHostsForAngular($HostCondition, $selected)
+        );
+
+        $this->set('hosts', $hosts);
+        $this->set('_serialize', ['hosts']);
+    }
+
+    /**
+     * @param bool $onlyHostsWithWritePermission
+     */
+    public function loadHostsByString($onlyHostsWithWritePermission = false) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->query('selected');
+        $includeDisabled = $this->request->query('includeDisabled') === 'true';
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $HostFilter = new HostFilter($this->request);
+
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setIncludeDisabled($includeDisabled);
+        $HostCondition->setContainerIds($this->MY_RIGHTS);
+        if ($onlyHostsWithWritePermission) {
+            $writeContainers = [];
+            foreach ($this->MY_RIGHTS_LEVEL as $containerId => $rightLevel) {
+                $rightLevel = (int)$rightLevel;
+                if ($rightLevel === WRITE_RIGHT) {
+                    $writeContainers[$containerId] = $rightLevel;
+                }
+            }
+            $HostCondition->setContainerIds(array_keys($writeContainers));
+        }
+
+        $hosts = Api::makeItJavaScriptAble(
+            $HostsTable->getHostsForAngular($HostCondition, $selected)
+        );
+
+        $this->set('hosts', $hosts);
+        $this->set('_serialize', ['hosts']);
+    }
+
+    public function loadHostsByContainerId() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerId = $this->request->query('containerId');
+        $selected = $this->request->query('selected');
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        $HostFilter = new HostFilter($this->request);
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setContainerIds($containerIds);
+
         $hosts = Api::makeItJavaScriptAble(
             $HostsTable->getHostsForAngular($HostCondition, $selected)
         );

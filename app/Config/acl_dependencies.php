@@ -257,12 +257,12 @@ $config = [
                 'extended' => ['loadHostgroupWithHostsById', 'listToPdf']
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid', 'getGrafanaIframeUrlForDatepicker'],
                 'add'        => ['loadContainers', 'loadCommands', 'loadElementsByContainerId', 'loadHosttemplate', 'runDnsLookup', 'loadCommandArguments'],
-                'edit'       => ['gethostbyname', 'gethostbyaddr', 'loadHosttemplate', 'addCustomMacro', 'loadTemplateMacros', 'loadParametersByCommandId', 'loadArguments', 'loadArgumentsAdd', 'loadHosttemplatesArguments', 'addParentHosts', 'loadElementsByContainerId', 'getSharingContainers'],
+                'edit'       => ['loadContainers', 'loadCommands', 'loadElementsByContainerId', 'loadHosttemplate', 'runDnsLookup', 'loadCommandArguments'],
             ],
             'Hosttemplates'         => [
                 'index' => ['view'],
