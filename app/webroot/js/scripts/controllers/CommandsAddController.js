@@ -60,7 +60,9 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('CommandsIndex');
+                $state.go('CommandsIndex').then(function(){
+                    NotyService.scrollTop();
+                });
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();
