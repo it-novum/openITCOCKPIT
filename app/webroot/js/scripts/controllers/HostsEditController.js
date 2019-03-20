@@ -142,6 +142,18 @@ angular.module('openITCOCKPIT')
                 $scope.data.allowSharing = result.data.allowSharing;
                 $scope.data.isHostOnlyEditableDueToHostSharing = result.data.isHostOnlyEditableDueToHostSharing;
                 $scope.data.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;
+
+                if($scope.data.areContactsInheritedFromHosttemplate){
+                    $('#ContactBlocker').block({
+                        message: null,
+                        overlayCSS: {
+                            opacity: 0.5,
+                            cursor: 'not-allowed',
+                            'background-color': 'rgb(255, 255, 255)'
+                        }
+                    });
+                }
+
                 if(result.data.isHostOnlyEditableDueToHostSharing === true){
                     //User has only permissions to edit this host via host sharing.
                     //We fake the displayed primary container id for the user to not expose any container names
@@ -358,9 +370,8 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            console.log('loadHosttemplate watch');
             //$scope.init = true; //Disable post.Host.command_id $watch
-            //$scope.loadHosttemplate();
+            $scope.loadHosttemplate();
         }, true);
 
         $scope.$watch('post.Host.command_id', function(){
@@ -385,6 +396,10 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.$watch('data.disableInheritance', function(){
+            if($scope.data.areContactsInheritedFromHosttemplate === false){
+                return;
+            }
+
             if($scope.data.disableInheritance === true){
                 //Overwrite with own contacts
                 $('#ContactBlocker').unblock();
