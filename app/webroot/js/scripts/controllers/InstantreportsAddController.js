@@ -72,7 +72,7 @@ angular.module('openITCOCKPIT')
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Instantreport.container_id,
-                        'filter[Host.name]': searchString,
+                        'filter[Hosts.name]': searchString,
                         'selected[]': $scope.post.Instantreport.Host
                     }
                 }).then(function(result){

@@ -182,7 +182,6 @@ $config = [
                 'icon',
                 'hostservicelist',
                 'loadParentHostsByString',
-                'loadParentHostsById',
                 'hoststatus',
                 'hostBrowserMenu'
             ],
@@ -258,12 +257,12 @@ $config = [
                 'extended' => ['loadHostgroupWithHostsById', 'listToPdf']
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid', 'getGrafanaIframeUrlForDatepicker'],
                 'add'        => ['loadContainers', 'loadCommands', 'loadElementsByContainerId', 'loadHosttemplate', 'runDnsLookup', 'loadCommandArguments'],
-                'edit'       => ['gethostbyname', 'gethostbyaddr', 'loadHosttemplate', 'addCustomMacro', 'loadTemplateMacros', 'loadParametersByCommandId', 'loadArguments', 'loadArgumentsAdd', 'loadHosttemplatesArguments', 'addParentHosts', 'loadElementsByContainerId', 'getSharingContainers'],
+                'edit'       => ['loadContainers', 'loadCommands', 'loadElementsByContainerId', 'loadHosttemplate', 'runDnsLookup', 'loadCommandArguments'],
             ],
             'Hosttemplates'         => [
                 'index' => ['view'],
@@ -301,8 +300,8 @@ $config = [
                 'deactivate'  => ['mass_deactivate'],
                 'index'       => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId', 'loadServicesByString', 'getSelectedServices'],
                 'browser'     => ['servicesByHostId', 'longOutputByUuid'],
-                'add'         => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
-                'edit'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
+                'add'         => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros', 'loadElementsByHostId'],
+                'edit'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros', 'loadElementsByHostId'],
                 'serviceList' => ['deleted']
             ],
             'Servicetemplategroups' => [

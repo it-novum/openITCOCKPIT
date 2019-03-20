@@ -29,12 +29,34 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
     $tagsinput: null,
     lang: null,
 
-    components: ['Highlight', 'Ajaxloader', 'CustomVariables'],
+    components: ['Highlight', 'Ajaxloader', 'CustomVariables', 'ContainerSelectbox'],
 
     _initialize: function(){
         var self = this;
 
+        this.selectedHostId = this.getVar('selectedHostId');
+
         this.Ajaxloader.setup();
+
+
+        this.ContainerSelectbox.setup(this.Ajaxloader);
+        this.ContainerSelectbox.addContainerEventListener({ // Bind change event for Container Selectbox
+            selectBoxSelector: '#ServiceHostId',
+            event: 'change.serviceHost',
+            ajaxUrl: '/services/loadElementsByHostId/:selectBoxValue:.json',
+            fieldTypes: {
+                timeperiods: '#ServiceNotifyPeriodId',
+                checkperiods: '#ServiceCheckPeriodId',
+                contacts: '#ServiceContact',
+                contactgroups: '#ServiceContactgroup',
+                servicegroups: '#ServiceServicegroup',
+                servicetemplates: '#ServiceServicetemplateId'
+            },
+            dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
+            dataPlaceholder: self.getVar('data_placeholder')
+        });
+
+
         this.CustomVariables.setup({
             controller: 'Services',
             ajaxUrl: 'addCustomMacro',
@@ -122,7 +144,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
                 url: '/hosts/loadHostsByString.json',
                 data: {
                     'angular': true,
-                    'filter[Host.name]': searchString
+                    'filter[Hosts.name]': searchString
                 },
                 success: function(response){
                     ChosenAjaxObj.addOptions(response.hosts);
@@ -838,6 +860,11 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
             requestParams['selected'] = selectedHostId;
         }
 
+        if(this.selectedHostId !== 0){
+            selectedHostId = this.selectedHostId;
+            requestParams['selected'] = this.selectedHostId;
+        }
+
 
         $.ajax({
             dataType: "json",
@@ -846,6 +873,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
             success: function(response){
                 var $selector = $(selector);
                 var list = self.buildList(response.hosts, selectedHostId);
+
                 $selector.append(list);
                 if(selectedHostId !== null){
                     $selector.val(selectedHostId);
