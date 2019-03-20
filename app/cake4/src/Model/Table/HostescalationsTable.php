@@ -41,6 +41,7 @@ class HostescalationsTable extends Table {
      */
     public function initialize(array $config) {
         parent::initialize($config);
+        $this->addBehavior('Timestamp');
 
         $this->setTable('hostescalations');
         $this->setPrimaryKey('id');
@@ -54,17 +55,21 @@ class HostescalationsTable extends Table {
             'joinType'   => 'INNER'
         ]);
         $this->belongsToMany('Contacts', [
-            'joinTable' => 'contacts_to_hostescalations'
+            'joinTable' => 'contacts_to_hostescalations',
+            'saveStrategy'     => 'replace'
         ]);
         $this->belongsToMany('Contactgroups', [
-            'joinTable' => 'contactgroups_to_hostescalations'
+            'joinTable' => 'contactgroups_to_hostescalations',
+            'saveStrategy'     => 'replace'
         ]);
 
         $this->belongsToMany('Hosts', [
-            'through' => 'HostescalationsHostMemberships'
+            'through' => 'HostescalationsHostMemberships',
+            'saveStrategy'     => 'replace'
         ]);
         $this->belongsToMany('Hostgroups', [
-            'through' => 'HostescalationsHostgroupMemberships'
+            'through' => 'HostescalationsHostgroupMemberships',
+            'saveStrategy'     => 'replace'
         ]);
     }
 
