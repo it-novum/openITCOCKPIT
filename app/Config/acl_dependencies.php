@@ -247,8 +247,8 @@ $config = [
             ],
             'Hostescalations'       => [
                 'index' => ['view'],
-                'add'   => ['loadElementsByContainerId'],
-                'edit'  => ['loadElementsByContainerId'],
+                'add'   => ['loadContainers', 'loadElementsByContainerId'],
+                'edit'  => ['loadContainers', 'loadElementsByContainerId'],
             ],
             'Hostgroups'            => [
                 'index'    => ['listToPdf', 'view', 'loadHostgroupsByString', 'loadHosgroupsByContainerId'],

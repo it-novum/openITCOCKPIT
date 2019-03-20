@@ -74,13 +74,13 @@ Once a host or service escalated, contacts, contact group and notification optio
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.Host}">
+                        <div class="form-group required" ng-class="{'has-error': errors.hosts}">
                             <label class="col col-md-2 control-label">
                                 <div class="label-group label-breadcrumb label-breadcrumb-success">
                                     <label class="label label-success label-xs">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </label>
-                                    <span class="label label-light label-xs no-border">
+                                    <span class="label label-light label-xs no-border" ng-class="{'has-error': errors.hosts}">
                                         <?php echo __('Hosts'); ?>
                                     </span>
                                 </div>
@@ -92,15 +92,15 @@ Once a host or service escalated, contacts, contact group and notification optio
                                         class="form-control"
                                         chosen="hosts"
                                         ng-options="host.key as host.value disable when host.disabled for host in hosts"
-                                        ng-model="post.Hostescalation.Host">
+                                        ng-model="post.Hostescalation.hosts._ids">
                                 </select>
-                                <div ng-repeat="error in errors.Host">
+                                <div ng-repeat="error in errors.hosts">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.Host_excluded}">
+                        <div class="form-group" ng-class="{'has-error': errors.hosts_excluded}">
                             <label class="col col-md-2 control-label">
                                 <div class="label-group label-breadcrumb label-breadcrumb-danger">
                                     <label class="label label-danger label-xs">
@@ -116,17 +116,17 @@ Once a host or service escalated, contacts, contact group and notification optio
                                         multiple
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
-                                        chosen="hostsExcluded"
-                                        ng-options="host.key as host.value disable when host.disabled for host in hostsExcluded"
-                                        ng-model="post.Hostescalation.Host_excluded">
+                                        chosen="hosts_excluded"
+                                        ng-options="host.key as host.value disable when host.disabled for host in hosts_excluded"
+                                        ng-model="post.Hostescalation.hosts_excluded._ids">
                                 </select>
-                                <div ng-repeat="error in errors.Host_excluded">
+                                <div ng-repeat="error in errors.hosts_exluded">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.Hostgroup}">
+                        <div class="form-group" ng-class="{'has-error': errors.hostgroups}">
                             <label class="col col-md-2 control-label">
                                 <div class="label-group label-breadcrumb label-breadcrumb-success">
                                     <label class="label label-success label-xs">
@@ -145,7 +145,7 @@ Once a host or service escalated, contacts, contact group and notification optio
                                         chosen="hostgroups"
                                         callback="loadHostgroups"
                                         ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups"
-                                        ng-model="post.Hostescalation.Hostgroup">
+                                        ng-model="post.Hostescalation.hostgroups._ids">
                                 </select>
                                 <div ng-repeat="error in errors.Hostgroup">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -153,7 +153,7 @@ Once a host or service escalated, contacts, contact group and notification optio
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.Hostgroup_excluded}">
+                        <div class="form-group" ng-class="{'has-error': errors.hostgroups_excluded}">
                             <label class="col col-md-2 control-label">
                                 <div class="label-group label-breadcrumb label-breadcrumb-danger">
                                     <label class="label label-danger label-xs">
@@ -169,12 +169,12 @@ Once a host or service escalated, contacts, contact group and notification optio
                                         multiple
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
-                                        chosen="hostgroupsExcluded"
+                                        chosen="hostgroups_excluded"
                                         callback="loadHostgroups"
-                                        ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroupsExcluded"
-                                        ng-model="post.Hostescalation.Hostgroup_excluded">
+                                        ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups_excluded"
+                                        ng-model="post.Hostescalation.hostgroups_excluded._ids">
                                 </select>
-                                <div ng-repeat="error in errors.Hostgroup_excluded">
+                                <div ng-repeat="error in errors.hostgroups_excluded">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
@@ -260,7 +260,7 @@ Once a host or service escalated, contacts, contact group and notification optio
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.Contact}">
+                        <div class="form-group required" ng-class="{'has-error': errors.contacts}">
                             <label class="col col-md-2 control-label">
                                 <?php echo __('Contacts'); ?>
                             </label>
@@ -272,15 +272,15 @@ Once a host or service escalated, contacts, contact group and notification optio
                                         chosen="contacts"
                                         callback="loadContacts"
                                         ng-options="contact.key as contact.value for contact in contacts"
-                                        ng-model="post.Hostescalation.Contact">
+                                        ng-model="post.Hostescalation.contacts._ids">
                                 </select>
-                                <div ng-repeat="error in errors.Contact">
+                                <div ng-repeat="error in errors.contacts">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.Contactgroup}">
+                        <div class="form-group required" ng-class="{'has-error': errors.contactgroups}">
                             <label class="col col-md-2 control-label">
                                 <?php echo __('Contact groups'); ?>
                             </label>
@@ -292,9 +292,9 @@ Once a host or service escalated, contacts, contact group and notification optio
                                         chosen="contactgroups"
                                         callback="loadContactgroups"
                                         ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
-                                        ng-model="post.Hostescalation.Contactgroup">
+                                        ng-model="post.Hostescalation.contactgroups._ids">
                                 </select>
-                                <div ng-repeat="error in errors.Contactgroup">
+                                <div ng-repeat="error in errors.contactgroups">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>

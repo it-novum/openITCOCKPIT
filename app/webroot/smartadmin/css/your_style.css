@@ -2391,12 +2391,13 @@ input[type=text]:focus + .input-group-addon-no-focus {
     border-left: 7px solid #d9534f;
 }
 
+/*
 .label-light {
     background-color: #fff;
     border-color: #ccc;
     color: #333;
 }
-
+*/
 .label-group {
     position: relative;
     display: inline-block;
@@ -2422,6 +2423,10 @@ input[type=text]:focus + .input-group-addon-no-focus {
 .label-group a.label:active,
 .label-group a.label:hover {
     color: #333;
+}
+
+.label-light.has-error{
+    color: #a94442;
 }
 
 .info-block-helptext {

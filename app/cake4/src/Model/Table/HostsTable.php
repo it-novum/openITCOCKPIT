@@ -160,7 +160,7 @@ class HostsTable extends Table {
 
         $validator
             ->integer('hosttemplate_id')
-            ->requirePresence('hosttemplate_id')
+            ->requirePresence('hosttemplate_id', 'create')
             ->allowEmptyString('hosttemplate_id', false);
 
         $validator
