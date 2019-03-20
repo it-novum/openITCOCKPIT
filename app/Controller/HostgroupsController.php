@@ -24,6 +24,7 @@
 //	confirmation.
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -377,6 +378,8 @@ class HostgroupsController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         if ($containerId == ROOT_CONTAINER) {
             //Don't panic! Only root users can edit /root objects ;)
@@ -396,7 +399,7 @@ class HostgroupsController extends AppController {
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
         $HostCondition->setContainerIds($containerIds);
         $hosts = Api::makeItJavaScriptAble(
-            $this->Host->getHostsForAngular($HostCondition, $selected)
+            $HostsTable->getHostsForAngular($HostCondition, $selected)
         );
         $this->set(compact(['hosts']));
         $this->set('_serialize', ['hosts']);
@@ -810,17 +813,26 @@ class HostgroupsController extends AppController {
         }
 
         $hostsToAppend = [];
-        foreach (func_get_args() as $host_id) {
-            $host = $this->Host->findById($host_id);
-            $hostsToAppend[] = $host;
-        }
+        $hostIds = func_get_args();
+
+        $hostsToAppend = $this->Host->find('all', [
+            'recursive' => -1,
+            'fields' => [
+                'Host.id',
+                'Host.name'
+            ],
+            'conditions' => [
+                'Host.id' => $hostIds
+            ]
+        ]);
+
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === true) {
             $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $containerIds = $this->MY_RIGHTS;
             $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         } else {
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->getWriteContainers());

@@ -207,7 +207,7 @@ class ContactgroupsController extends AppController {
                 return;
             } else {
                 //No errors
-                
+
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'edit',
                     'contactgroups',

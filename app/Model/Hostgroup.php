@@ -161,6 +161,66 @@ class Hostgroup extends AppModel {
         }
     }
 
+    public function hostgroupsByContainerIdNoTenantLookup($container_ids = [], $type = 'all', $index = 'container_id') {
+        if (!is_array($container_ids)) {
+            $container_ids = [$container_ids];
+        }
+        $container_ids = array_unique($container_ids);
+        switch ($type) {
+            case 'all':
+                return $this->find('all', [
+                    'recursive' => -1,
+                    'contain'   => [
+                        'Container' => [
+                            'conditions' => [
+                                'Container.id' => $container_ids,
+                            ],
+                        ],
+                    ],
+                    'order'     => [
+                        'Container.name' => 'ASC',
+                    ],
+                ]);
+
+            default:
+                if ($index == 'id') {
+                    $result = $this->find('all', [
+                        'recursive'  => -1,
+                        'contain'    => [
+                            'Container' => [
+                                'fields' => [
+                                    'Container.name',
+                                ],
+                            ],
+                        ],
+                        'order'      => [
+                            'Container.name' => 'ASC',
+                        ],
+                        'fields'     => [
+                            'Hostgroup.id',
+                            'Hostgroup.container_id',
+                        ],
+                        'conditions' => [
+                            'Hostgroup.container_id' => $container_ids,
+                        ],
+                    ]);
+
+                    $return = [];
+                    foreach ($result as $hostgroup) {
+                        $return[$hostgroup['Hostgroup']['id']] = $hostgroup['Container']['name'];
+                    }
+
+                    return $return;
+                }
+                asort($hostgroupsAsList);
+
+                return $hostgroupsAsList;
+        }
+
+        return [];
+    }
+
+
     public function findHostgroups($type = 'all', $options = [], $index = 'id') {
         if ($type == 'all') {
             return $this->find('all', $options);

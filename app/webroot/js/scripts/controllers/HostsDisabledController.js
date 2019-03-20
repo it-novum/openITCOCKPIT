@@ -10,6 +10,7 @@ angular.module('openITCOCKPIT')
             $scope.filter = {
                 Host: {
                     name: QueryStringService.getValue('filter[Host.name]', ''),
+                    description: QueryStringService.getValue('filter[Host.description]', ''),
                     address: '',
                     satellite_id: []
                 }
@@ -33,6 +34,7 @@ angular.module('openITCOCKPIT')
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
                 'filter[Hosts.name]': $scope.filter.Host.name,
+                'filter[Hosts.description]': $scope.filter.Host.description,
                 'filter[Hosts.address]': $scope.filter.Host.address,
                 'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id
             };

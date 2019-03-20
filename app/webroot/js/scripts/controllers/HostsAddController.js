@@ -241,7 +241,7 @@ angular.module('openITCOCKPIT')
             $http.get("/hosts/loadParentHostsByString.json", {
                 params: {
                     'angular': true,
-                    'filter[Host.name]': searchString,
+                    'filter[Hosts.name]': searchString,
                     'selected[]': $scope.post.Host.parenthosts._ids,
                     'containerId': containerId
                 }

@@ -23,6 +23,7 @@ angular.module('openITCOCKPIT')
                 Host: {
                     id: QueryStringService.getIds('filter[Hosts.id][]', []),
                     name: QueryStringService.getValue('filter[Hosts.name]', ''),
+                    description: '',
                     keywords: '',
                     not_keywords: '',
                     address: QueryStringService.getValue('filter[Hosts.address]', ''),
@@ -60,6 +61,7 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'filter[Hosts.id][]': $scope.filter.Host.id,
                 'filter[Hosts.name]': $scope.filter.Host.name,
+                'filter[Hosts.description]': $scope.filter.Host.description,
                 'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
                 'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
                 'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
@@ -183,6 +185,7 @@ angular.module('openITCOCKPIT')
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
                 'filter[Hosts.name]': $scope.filter.Host.name,
+                'filter[Hosts.description]': $scope.filter.Host.description,
                 'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
                 'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
                 'filter[Hosts.keywords][]': $scope.filter.Host.keywords.split(','),
@@ -191,7 +194,6 @@ angular.module('openITCOCKPIT')
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Hosts.address]': $scope.filter.Host.address,
                 'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id
-
             });
 
         };

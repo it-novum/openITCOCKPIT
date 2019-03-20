@@ -10,6 +10,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\ContainerNestedSet;
 
 /**
  * Containers Model
@@ -61,6 +62,11 @@ use Cake\Validation\Validator;
  * @mixin \Cake\ORM\Behavior\TreeBehavior
  */
 class ContainersTable extends Table {
+
+    /**
+     * @var null|array
+     */
+    private $containerCache = null;
 
     /**
      * Initialize method
@@ -319,7 +325,7 @@ class ContainersTable extends Table {
 
     /**
      * @param int|array $id
-     * @param array $ObjectsByConstancName Array of container types that should be considered
+     * @param int $ObjectsByConstancName
      * @param array $options
      * @param bool $hasRootPrivileges
      * @param array $exclude Array of container tyoes which gets excluded from result
@@ -334,8 +340,18 @@ class ContainersTable extends Table {
      * ### Options
      * - `delimiter`   The delimiter for the path (default /)
      * - `order`       Order of the returned array asc|desc (default asc)
+     *
+     * @throws \Exception
      */
-    public function easyPath($id, $ObjectsByConstancName = [], $options = [], $hasRootPrivileges = false, $exclude = []) {
+    public function easyPath($id, $ObjectsByConstancName, $options = [], $hasRootPrivileges = false, $exclude = []) {
+        if($this->containerCache === null){
+            $query = $this->find('all')
+                ->disableHydration()
+                ->toArray();
+
+            $this->containerCache = $query;
+        }
+
         if ($hasRootPrivileges == false) {
             if (is_array($id)) {
                 // User has no root privileges so we need to delete the root container
@@ -351,8 +367,13 @@ class ContainersTable extends Table {
             return [];
         }
 
-        $Constants = new Constants();
-        return $this->path($id, $options, $Constants->containerProperties($ObjectsByConstancName, $exclude));
+        //Container implementation in PHP but fast
+        $ContainerNestedSet = ContainerNestedSet::fromCake4($this->containerCache, $hasRootPrivileges);
+        return $ContainerNestedSet->easyPath($id, $ObjectsByConstancName, $exclude);
+
+        //Plain ORM but bad performance
+        //$Constants = new Constants();
+        //return $this->path($id, $options, $Constants->containerProperties($ObjectsByConstancName, $exclude));
     }
 
     /**

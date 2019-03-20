@@ -44,7 +44,7 @@
             {{post.Host.name}}
         </h2>
         <div class="widget-toolbar" role="menu">
-            <a back-button fallback-state='HostsIndex' class="btn btn-default btn-xs" iconcolor="white">
+            <a back-button fallback-state='HostsIndex' class="btn btn-default btn-xs">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
             </a>
         </div>
@@ -594,352 +594,384 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group"
-                                         ng-class="{'has-error': errors.contacts}">
-                                        <label class="col-xs-12 col-lg-2 control-label">
-                                            <?php echo __('Contacts'); ?>
-                                        </label>
-                                        <div class="col-xs-12 col-lg-10">
-                                            <div class="input-group" style="width: 100%">
-                                                <select
-                                                        id="ContactsPeriodSelect"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="contacts"
-                                                        multiple
-                                                        ng-options="contact.key as contact.value for contact in contacts"
-                                                        ng-model="post.Host.contacts._ids">
-                                                </select>
-                                                <template-diff ng-show="post.Host.hosttemplate_id"
-                                                               value="post.Host.contacts._ids"
-                                                               template-value="hosttemplate.Hosttemplate.contacts._ids"></template-diff>
-                                            </div>
-                                        </div>
-                                        <div ng-repeat="error in errors.contacts">
-                                            <div class="help-block text-danger">{{ error }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group"
-                                     ng-class="{'has-error': errors.contactgroups}">
-                                    <label class="col-xs-12 col-lg-2 control-label">
-                                        <?php echo __('Contact groups'); ?>
-                                    </label>
-                                    <div class="col-xs-12 col-lg-10">
-                                        <div class="input-group" style="width: 100%;">
-                                            <select
-                                                    id="ContactgroupsSelect"
-                                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                                    class="form-control"
-                                                    chosen="contactgroups"
-                                                    multiple
-                                                    ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
-                                                    ng-model="post.Host.contactgroups._ids">
-                                            </select>
-                                            <template-diff ng-show="post.Host.hosttemplate_id"
-                                                           value="post.Host.contactgroups._ids"
-                                                           template-value="hosttemplate.Hosttemplate.contactgroups._ids"></template-diff>
-                                        </div>
-                                        <div ng-repeat="error in errors.contactgroups">
-                                            <div class="help-block text-danger">{{ error }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <?php
-                                $hostOptions = [
-                                    [
-                                        'field' => 'notify_on_recovery',
-                                        'class' => 'success',
-                                        'text'  => __('Recovery')
-                                    ],
-                                    [
-                                        'field' => 'notify_on_down',
-                                        'class' => 'danger',
-                                        'text'  => __('Down')
-                                    ],
-                                    [
-                                        'field' => 'notify_on_unreachable',
-                                        'class' => 'default',
-                                        'text'  => __('Unreachable')
-                                    ],
-                                    [
-                                        'field' => 'notify_on_flapping',
-                                        'class' => 'primary',
-                                        'text'  => __('Flapping')
-                                    ],
-                                    [
-                                        'field' => 'notify_on_downtime',
-                                        'class' => 'primary',
-                                        'text'  => __('Downtime')
-                                    ],
-                                ];
-                                ?>
-                                <fieldset>
-                                    <legend class="font-sm"
-                                            ng-class="{'has-error-no-form': errors.notify_on_recovery}">
-                                        <div class="required">
-                                            <label>
-                                                <?php echo __('Host notification options'); ?>
-                                            </label>
-
-                                            <div ng-repeat="error in errors.notify_on_recovery">
-                                                <div class="text-danger">{{ error }}</div>
-                                            </div>
-                                        </div>
-                                    </legend>
-                                    <ul class="config-flex-inner">
-                                        <?php foreach ($hostOptions as $hostOption): ?>
-                                            <li>
-                                                <div class="margin-bottom-0"
-                                                     ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
-                                                    <label for="<?php echo $hostOption['field']; ?>"
-                                                           class="col col-md-7 control-label padding-top-0">
-                                                        <span class="label label-<?php echo $hostOption['class']; ?> notify-label-small">
-                                                            <?php echo $hostOption['text']; ?>
-                                                        </span>
-                                                    </label>
-                                                    <div class="col-md-2 smart-form">
-                                                        <label class="checkbox small-checkbox-label no-required">
-                                                            <input type="checkbox" name="checkbox"
-                                                                   ng-true-value="1"
-                                                                   ng-false-value="0"
-                                                                   id="<?php echo $hostOption['field']; ?>"
-                                                                   ng-model="post.Host.<?php echo $hostOption['field']; ?>">
-                                                            <i class="checkbox-<?php echo $hostOption['class']; ?>"></i>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <template-diff-button ng-show="post.Host.hosttemplate_id"
-                                                                      value="post.Host.<?php echo $hostOption['field']; ?>"
-                                                                      template-value="hosttemplate.Hosttemplate.<?php echo $hostOption['field']; ?>">
-                                                </template-diff-button>
-                                            </li>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                </fieldset>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row" ng-show="post.Host.hosttemplate_id">
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
-                        <div class="jarviswidget">
-                            <header>
-                                <span class="widget-icon">
-                                    <i class="fa fa-wrench"></i>
-                                </span>
-                                <h2><?php echo __('Misc. configuration'); ?></h2>
-                            </header>
-                            <div>
-                                <div class="widget-body">
-
-                                    <div class="form-group" ng-class="{'has-error': errors.host_url}">
-                                        <label class="col-xs-12 col-lg-2 control-label">
-                                            <?php echo __('Host URL'); ?>
-                                        </label>
-                                        <div class="col-xs-12 col-lg-10">
-                                            <div class="input-group" style="width: 100%;">
-                                                <input
-                                                        class="form-control"
-                                                        placeholder="https://issues.example.org?host=$HOSTNAME$"
-                                                        type="text"
-                                                        ng-model="post.Host.host_url">
-                                                <template-diff ng-show="post.Host.hosttemplate_id"
-                                                               value="post.Host.host_url"
-                                                               template-value="hosttemplate.Hosttemplate.host_url"></template-diff>
-                                            </div>
-                                            <div ng-repeat="error in errors.host_url">
-                                                <div class="help-block text-danger">{{ error }}</div>
-                                            </div>
-                                            <div class="help-block">
-                                                <?php echo __('The macros $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced'); ?>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group" ng-class="{'has-error': errors.notes}">
-                                        <label class="col-xs-12 col-lg-2 control-label">
-                                            <?php echo __('Notes'); ?>
-                                        </label>
-                                        <div class="col-xs-12 col-lg-10">
-                                            <div class="input-group" style="width: 100%;">
-                                                <input
-                                                        class="form-control"
-                                                        type="text"
-                                                        ng-model="post.Host.notes">
-                                                <template-diff ng-show="post.Host.hosttemplate_id"
-                                                               value="post.Host.notes"
-                                                               template-value="hosttemplate.Hosttemplate.notes"></template-diff>
-                                            </div>
-                                            <div ng-repeat="error in errors.notes">
-                                                <div class="help-block text-danger">{{ error }}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <?php
-                                    $hostFlapOptions = [
-                                        [
-                                            'field' => 'flap_detection_on_up',
-                                            'class' => 'success',
-                                            'text'  => __('Recovery')
-                                        ],
-                                        [
-                                            'field' => 'flap_detection_on_down',
-                                            'class' => 'danger',
-                                            'text'  => __('Down')
-                                        ],
-                                        [
-                                            'field' => 'flap_detection_on_unreachable',
-                                            'class' => 'default',
-                                            'text'  => __('Unreachable')
-                                        ]
-                                    ];
-                                    ?>
 
                                     <div class="form-group"
-                                         ng-class="{'has-error': errors.flap_detection_enabled}">
-                                        <label class="col-xs-12 col-lg-2 control-label" for="flapDetectionEnabled">
-                                            <?php echo __('Flap detection enabled'); ?>
+                                         ng-show="data.areContactsInheritedFromHosttemplate">
+                                        <label class="col-xs-12 col-lg-2 control-label" for="resetContacts">
+                                            <?php echo __('Disable inheritance'); ?>
                                         </label>
 
                                         <div class="col-xs-12 col-lg-1 smart-form">
                                             <label class="checkbox no-required no-padding no-margin label-default-off">
                                                 <input type="checkbox" name="checkbox"
-                                                       id="flapDetectionEnabled"
-                                                       ng-true-value="1"
-                                                       ng-false-value="0"
-                                                       ng-model="post.Host.flap_detection_enabled">
+                                                       id="resetContacts"
+                                                       ng-model="data.disableInheritance">
                                                 <i class="checkbox-primary"></i>
                                             </label>
-                                            <div class="padding-left-20">
-                                                <template-diff-button ng-show="post.Host.hosttemplate_id"
-                                                                      value="post.Host.flap_detection_enabled"
-                                                                      template-value="hosttemplate.Hosttemplate.flap_detection_enabled">
-                                                </template-diff-button>
+                                        </div>
+                                        <div
+                                                class="col col-xs-12 col-md-offset-2 help-block text-info"
+                                                ng-class="{'strikethrough': data.disableInheritance}">
+                                            <?php echo __('Contacts and contact groups got inherited from'); ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                                <a ui-sref="HosttemplatesEdit({id: post.Host.hosttemplate_id})">
+                                                    <?php echo __('host template'); ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('host template'); ?>
+                                            <?php endif; ?>
+                                            .
+                                        </div>
+                                    </div>
+
+                                    <div id="ContactBlocker">
+                                        <div class="form-group"
+                                             ng-class="{'has-error': errors.contacts}">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <?php echo __('Contacts'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <div class="input-group" style="width: 100%">
+                                                    <select
+                                                            id="ContactsPeriodSelect"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            chosen="contacts"
+                                                            multiple
+                                                            ng-options="contact.key as contact.value for contact in contacts"
+                                                            ng-model="post.Host.contacts._ids">
+                                                    </select>
+                                                    <template-diff ng-show="post.Host.hosttemplate_id"
+                                                                   value="post.Host.contacts._ids"
+                                                                   template-value="hosttemplate.Hosttemplate.contacts._ids"></template-diff>
+                                                </div>
+                                            </div>
+                                            <div ng-repeat="error in errors.contacts">
+                                                <div class="help-block text-danger">{{ error }}</div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="form-group"
+                                             ng-class="{'has-error': errors.contactgroups}">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <?php echo __('Contact groups'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <div class="input-group" style="width: 100%;">
+                                                    <select
+                                                            id="ContactgroupsSelect"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            chosen="contactgroups"
+                                                            multiple
+                                                            ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
+                                                            ng-model="post.Host.contactgroups._ids">
+                                                    </select>
+                                                    <template-diff ng-show="post.Host.hosttemplate_id"
+                                                                   value="post.Host.contactgroups._ids"
+                                                                   template-value="hosttemplate.Hosttemplate.contactgroups._ids"></template-diff>
+                                                </div>
+                                                <div ng-repeat="error in errors.contactgroups">
+                                                    <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <fieldset ng-show="post.Host.flap_detection_enabled">
+
+
+                                    <?php
+                                    $hostOptions = [
+                                        [
+                                            'field' => 'notify_on_recovery',
+                                            'class' => 'success',
+                                            'text'  => __('Recovery')
+                                        ],
+                                        [
+                                            'field' => 'notify_on_down',
+                                            'class' => 'danger',
+                                            'text'  => __('Down')
+                                        ],
+                                        [
+                                            'field' => 'notify_on_unreachable',
+                                            'class' => 'default',
+                                            'text'  => __('Unreachable')
+                                        ],
+                                        [
+                                            'field' => 'notify_on_flapping',
+                                            'class' => 'primary',
+                                            'text'  => __('Flapping')
+                                        ],
+                                        [
+                                            'field' => 'notify_on_downtime',
+                                            'class' => 'primary',
+                                            'text'  => __('Downtime')
+                                        ],
+                                    ];
+                                    ?>
+                                    <fieldset>
                                         <legend class="font-sm"
-                                                ng-class="{'has-error-no-form': errors.flap_detection_on_up}">
-                                            <div ng-class="{'required':post.Host.flap_detection_enabled}">
+                                                ng-class="{'has-error-no-form': errors.notify_on_recovery}">
+                                            <div class="required">
                                                 <label>
-                                                    <?php echo __('Flap detection options'); ?>
+                                                    <?php echo __('Host notification options'); ?>
                                                 </label>
 
-                                                <div ng-repeat="error in errors.flap_detection_on_up">
+                                                <div ng-repeat="error in errors.notify_on_recovery">
                                                     <div class="text-danger">{{ error }}</div>
                                                 </div>
                                             </div>
                                         </legend>
                                         <ul class="config-flex-inner">
-                                            <?php foreach ($hostFlapOptions as $hostFalpOption): ?>
+                                            <?php foreach ($hostOptions as $hostOption): ?>
                                                 <li>
                                                     <div class="margin-bottom-0"
-                                                         ng-class="{'has-error': errors.<?php echo $hostFalpOption['field']; ?>}">
-
-                                                        <label for="<?php echo $hostFalpOption['field']; ?>"
+                                                         ng-class="{'has-error': errors.<?php echo $hostOption['field']; ?>}">
+                                                        <label for="<?php echo $hostOption['field']; ?>"
                                                                class="col col-md-7 control-label padding-top-0">
-                                                                <span class="label label-<?php echo $hostFalpOption['class']; ?> notify-label-small">
-                                                                    <?php echo $hostFalpOption['text']; ?>
-                                                                </span>
+                                                        <span class="label label-<?php echo $hostOption['class']; ?> notify-label-small">
+                                                            <?php echo $hostOption['text']; ?>
+                                                        </span>
                                                         </label>
-
                                                         <div class="col-md-2 smart-form">
                                                             <label class="checkbox small-checkbox-label no-required">
                                                                 <input type="checkbox" name="checkbox"
                                                                        ng-true-value="1"
                                                                        ng-false-value="0"
-                                                                       ng-disabled="!post.Host.flap_detection_enabled"
-                                                                       id="<?php echo $hostFalpOption['field']; ?>"
-                                                                       ng-model="post.Host.<?php echo $hostFalpOption['field']; ?>">
-                                                                <i class="checkbox-<?php echo $hostFalpOption['class']; ?>"></i>
+                                                                       id="<?php echo $hostOption['field']; ?>"
+                                                                       ng-model="post.Host.<?php echo $hostOption['field']; ?>">
+                                                                <i class="checkbox-<?php echo $hostOption['class']; ?>"></i>
                                                             </label>
                                                         </div>
                                                     </div>
                                                     <template-diff-button ng-show="post.Host.hosttemplate_id"
-                                                                          value="post.Host.<?php echo $hostFalpOption['field']; ?>"
-                                                                          template-value="hosttemplate.Hosttemplate.<?php echo $hostFalpOption['field']; ?>">
+                                                                          value="post.Host.<?php echo $hostOption['field']; ?>"
+                                                                          template-value="hosttemplate.Hosttemplate.<?php echo $hostOption['field']; ?>">
                                                     </template-diff-button>
                                                 </li>
                                             <?php endforeach; ?>
                                         </ul>
                                     </fieldset>
-
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="row" ng-show="post.Host.hosttemplate_id">
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
-                        <div class="jarviswidget">
-                            <header>
+                    <div class="row" ng-show="post.Host.hosttemplate_id">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                            <div class="jarviswidget">
+                                <header>
+                                <span class="widget-icon">
+                                    <i class="fa fa-wrench"></i>
+                                </span>
+                                    <h2><?php echo __('Misc. configuration'); ?></h2>
+                                </header>
+                                <div>
+                                    <div class="widget-body">
+
+                                        <div class="form-group" ng-class="{'has-error': errors.host_url}">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <?php echo __('Host URL'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <div class="input-group" style="width: 100%;">
+                                                    <input
+                                                            class="form-control"
+                                                            placeholder="https://issues.example.org?host=$HOSTNAME$"
+                                                            type="text"
+                                                            ng-model="post.Host.host_url">
+                                                    <template-diff ng-show="post.Host.hosttemplate_id"
+                                                                   value="post.Host.host_url"
+                                                                   template-value="hosttemplate.Hosttemplate.host_url"></template-diff>
+                                                </div>
+                                                <div ng-repeat="error in errors.host_url">
+                                                    <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
+                                                <div class="help-block">
+                                                    <?php echo __('The macros $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced'); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" ng-class="{'has-error': errors.notes}">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <?php echo __('Notes'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <div class="input-group" style="width: 100%;">
+                                                    <input
+                                                            class="form-control"
+                                                            type="text"
+                                                            ng-model="post.Host.notes">
+                                                    <template-diff ng-show="post.Host.hosttemplate_id"
+                                                                   value="post.Host.notes"
+                                                                   template-value="hosttemplate.Hosttemplate.notes"></template-diff>
+                                                </div>
+                                                <div ng-repeat="error in errors.notes">
+                                                    <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <?php
+                                        $hostFlapOptions = [
+                                            [
+                                                'field' => 'flap_detection_on_up',
+                                                'class' => 'success',
+                                                'text'  => __('Recovery')
+                                            ],
+                                            [
+                                                'field' => 'flap_detection_on_down',
+                                                'class' => 'danger',
+                                                'text'  => __('Down')
+                                            ],
+                                            [
+                                                'field' => 'flap_detection_on_unreachable',
+                                                'class' => 'default',
+                                                'text'  => __('Unreachable')
+                                            ]
+                                        ];
+                                        ?>
+
+                                        <div class="form-group"
+                                             ng-class="{'has-error': errors.flap_detection_enabled}">
+                                            <label class="col-xs-12 col-lg-2 control-label" for="flapDetectionEnabled">
+                                                <?php echo __('Flap detection enabled'); ?>
+                                            </label>
+
+                                            <div class="col-xs-12 col-lg-1 smart-form">
+                                                <label class="checkbox no-required no-padding no-margin label-default-off">
+                                                    <input type="checkbox" name="checkbox"
+                                                           id="flapDetectionEnabled"
+                                                           ng-true-value="1"
+                                                           ng-false-value="0"
+                                                           ng-model="post.Host.flap_detection_enabled">
+                                                    <i class="checkbox-primary"></i>
+                                                </label>
+                                                <div class="padding-left-20">
+                                                    <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                                          value="post.Host.flap_detection_enabled"
+                                                                          template-value="hosttemplate.Hosttemplate.flap_detection_enabled">
+                                                    </template-diff-button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <fieldset ng-show="post.Host.flap_detection_enabled">
+                                            <legend class="font-sm"
+                                                    ng-class="{'has-error-no-form': errors.flap_detection_on_up}">
+                                                <div ng-class="{'required':post.Host.flap_detection_enabled}">
+                                                    <label>
+                                                        <?php echo __('Flap detection options'); ?>
+                                                    </label>
+
+                                                    <div ng-repeat="error in errors.flap_detection_on_up">
+                                                        <div class="text-danger">{{ error }}</div>
+                                                    </div>
+                                                </div>
+                                            </legend>
+                                            <ul class="config-flex-inner">
+                                                <?php foreach ($hostFlapOptions as $hostFalpOption): ?>
+                                                    <li>
+                                                        <div class="margin-bottom-0"
+                                                             ng-class="{'has-error': errors.<?php echo $hostFalpOption['field']; ?>}">
+
+                                                            <label for="<?php echo $hostFalpOption['field']; ?>"
+                                                                   class="col col-md-7 control-label padding-top-0">
+                                                                <span class="label label-<?php echo $hostFalpOption['class']; ?> notify-label-small">
+                                                                    <?php echo $hostFalpOption['text']; ?>
+                                                                </span>
+                                                            </label>
+
+                                                            <div class="col-md-2 smart-form">
+                                                                <label class="checkbox small-checkbox-label no-required">
+                                                                    <input type="checkbox" name="checkbox"
+                                                                           ng-true-value="1"
+                                                                           ng-false-value="0"
+                                                                           ng-disabled="!post.Host.flap_detection_enabled"
+                                                                           id="<?php echo $hostFalpOption['field']; ?>"
+                                                                           ng-model="post.Host.<?php echo $hostFalpOption['field']; ?>">
+                                                                    <i class="checkbox-<?php echo $hostFalpOption['class']; ?>"></i>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <template-diff-button ng-show="post.Host.hosttemplate_id"
+                                                                              value="post.Host.<?php echo $hostFalpOption['field']; ?>"
+                                                                              template-value="hosttemplate.Hosttemplate.<?php echo $hostFalpOption['field']; ?>">
+                                                        </template-diff-button>
+                                                    </li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        </fieldset>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" ng-show="post.Host.hosttemplate_id">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                            <div class="jarviswidget">
+                                <header>
                                 <span class="widget-icon">
                                     <i class="fa fa-usd"></i>
                                 </span>
-                                <h2><?php echo __('Host macro configuration'); ?></h2>
-                            </header>
-                            <div>
-                                <div class="widget-body"
-                                     ng-class="{'has-error-no-form': errors.customvariables_unique}">
+                                    <h2><?php echo __('Host macro configuration'); ?></h2>
+                                </header>
+                                <div>
+                                    <div class="widget-body"
+                                         ng-class="{'has-error-no-form': errors.customvariables_unique}">
 
-                                    <div class="row">
-                                        <div ng-repeat="error in errors.customvariables_unique">
-                                            <div class=" col-xs-12 text-danger">{{ error }}</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row"
-                                         ng-repeat="customvariable in post.Host.customvariables">
-                                        <macros-directive macro="customvariable"
-                                                          macro-name="'<?php echo __('HOST'); ?>'"
-                                                          index="$index"
-                                                          callback="deleteMacroCallback"
-                                                          errors="getMacroErrors($index)"
-                                        ></macros-directive>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-9 col-md-offset-2 padding-top-10 text-right">
-                                            <button type="button" class="btn btn-success btn-sm"
-                                                    ng-click="addMacro()">
-                                                <i class="fa fa-plus"></i>
-                                                <?php echo __('Add new macro'); ?>
-                                            </button>
+                                        <div class="row">
+                                            <div ng-repeat="error in errors.customvariables_unique">
+                                                <div class=" col-xs-12 text-danger">{{ error }}</div>
+                                            </div>
                                         </div>
 
-                                        <div class="col-xs-12 padding-top-10 text-info"
-                                             ng-show="post.Host.customvariables.length > 0">
-                                            <i class="fa fa-info-circle"></i>
-                                            <?php echo __('Macros in green color are inherited from the host template.'); ?>
+                                        <div class="row"
+                                             ng-repeat="customvariable in post.Host.customvariables">
+                                            <macros-directive macro="customvariable"
+                                                              macro-name="'<?php echo __('HOST'); ?>'"
+                                                              index="$index"
+                                                              callback="deleteMacroCallback"
+                                                              errors="getMacroErrors($index)"
+                                            ></macros-directive>
                                         </div>
-                                    </div>
 
+                                        <div class="row">
+                                            <div class="col-md-9 col-md-offset-2 padding-top-10 text-right">
+                                                <button type="button" class="btn btn-success btn-sm"
+                                                        ng-click="addMacro()">
+                                                    <i class="fa fa-plus"></i>
+                                                    <?php echo __('Add new macro'); ?>
+                                                </button>
+                                            </div>
+
+                                            <div class="col-xs-12 padding-top-10 text-info"
+                                                 ng-show="post.Host.customvariables.length > 0">
+                                                <i class="fa fa-info-circle"></i>
+                                                <?php echo __('Macros in green color are inherited from the host template.'); ?>
+                                            </div>
+                                        </div>
+
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
 
-                <div class="col-xs-12 margin-top-10 margin-bottom-10">
-                    <div class="well formactions ">
-                        <div class="pull-right">
-                            <button type="submit" class="btn btn-primary">
-                                <?php echo __('Update host'); ?>
-                            </button>
-                            <a back-button fallback-state='HostsIndex'
-                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                    <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+                                <button type="submit" class="btn btn-primary">
+                                    <?php echo __('Update host'); ?>
+                                </button>
+                                <a back-button fallback-state='HostsIndex'
+                                   class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            </div>
                         </div>
                     </div>
-                </div>
             </form>
         </div>
     </div>

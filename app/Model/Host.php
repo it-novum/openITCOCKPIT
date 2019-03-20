@@ -216,7 +216,7 @@ class Host extends AppModel {
      * @param HostConditions $HostConditions
      * @param array $selected
      * @return array|null
-     * @deprecated
+     * @deprecated Use HostsTable::getHostsForAngular
      */
     public function getHostsForAngular(HostConditions $HostConditions, $selected = []) {
         $query = [

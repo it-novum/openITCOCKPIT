@@ -55,8 +55,7 @@ class CalendarsController extends AppController {
     public function index() {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $containerIds = $this->MY_RIGHTS;
         $query = [
             'recursive'  => -1,
             'contain'    => [
@@ -86,7 +85,7 @@ class CalendarsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === true) {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $containerIds = $this->MY_RIGHTS;
             $tenants = $this->Tenant->tenantsByContainerId($containerIds, 'list', 'container_id');
         } else {
             $tenants = $this->Tenant->tenantsByContainerId($this->getWriteContainers(), 'list', 'container_id');
@@ -127,7 +126,7 @@ class CalendarsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === true) {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $containerIds = $this->MY_RIGHTS;
             $tenants = $this->Tenant->tenantsByContainerId($containerIds, 'list', 'container_id');
         } else {
             $tenants = $this->Tenant->tenantsByContainerId($this->getWriteContainers(), 'list', 'container_id');

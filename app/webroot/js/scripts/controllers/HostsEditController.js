@@ -9,7 +9,9 @@ angular.module('openITCOCKPIT')
             dnsAddressNotFound: false,
             isPrimaryContainerChangeable: false,
             allowSharing: false,
-            isHostOnlyEditableDueToHostSharing: false
+            isHostOnlyEditableDueToHostSharing: false,
+            areContactsInheritedFromHosttemplate: false,
+            disableInheritance: false
         };
 
         $scope.post = {
@@ -139,6 +141,19 @@ angular.module('openITCOCKPIT')
                 $scope.data.isPrimaryContainerChangeable = result.data.isPrimaryContainerChangeable;
                 $scope.data.allowSharing = result.data.allowSharing;
                 $scope.data.isHostOnlyEditableDueToHostSharing = result.data.isHostOnlyEditableDueToHostSharing;
+                $scope.data.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;
+
+                if($scope.data.areContactsInheritedFromHosttemplate){
+                    $('#ContactBlocker').block({
+                        message: null,
+                        overlayCSS: {
+                            opacity: 0.5,
+                            cursor: 'not-allowed',
+                            'background-color': 'rgb(255, 255, 255)'
+                        }
+                    });
+                }
+
                 if(result.data.isHostOnlyEditableDueToHostSharing === true){
                     //User has only permissions to edit this host via host sharing.
                     //We fake the displayed primary container id for the user to not expose any container names
@@ -202,9 +217,10 @@ angular.module('openITCOCKPIT')
             $http.get("/hosts/loadParentHostsByString.json", {
                 params: {
                     'angular': true,
-                    'filter[Host.name]': searchString,
+                    'filter[Hosts.name]': searchString,
                     'selected[]': $scope.post.Host.parenthosts._ids,
-                    'containerId': containerId
+                    'containerId': containerId,
+                    'hostId': $scope.id
                 }
             }).then(function(result){
                 $scope.parenthosts = result.data.hosts;
@@ -314,9 +330,6 @@ angular.module('openITCOCKPIT')
             $http.post("/hosts/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-
-                return;
-
                 NotyService.genericSuccess();
 
                 $state.go('HostsIndex').then(function(){
@@ -358,9 +371,8 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            console.log('loadHosttemplate watch');
             //$scope.init = true; //Disable post.Host.command_id $watch
-            //$scope.loadHosttemplate();
+            $scope.loadHosttemplate();
         }, true);
 
         $scope.$watch('post.Host.command_id', function(){
@@ -383,6 +395,32 @@ angular.module('openITCOCKPIT')
 
             LocalStorageService.setItem('HostsDnsLookUpEnabled', $scope.data.dnsLookUp);
         }, true);
+
+        $scope.$watch('data.disableInheritance', function(){
+            if($scope.data.areContactsInheritedFromHosttemplate === false){
+                return;
+            }
+
+            if($scope.data.disableInheritance === true){
+                //Overwrite with own contacts
+                $('#ContactBlocker').unblock();
+            }else{
+                //Inherit contacts
+                $('#ContactBlocker').block({
+                    message: null,
+                    overlayCSS: {
+                        opacity: 0.5,
+                        cursor: 'not-allowed',
+                        'background-color': 'rgb(255, 255, 255)'
+                    }
+                });
+
+                if(typeof $scope.hosttemplate !== "undefined"){
+                    $scope.post.Host.contacts._ids = $scope.hosttemplate.Hosttemplate.contacts._ids;
+                    $scope.post.Host.contactgroups._ids = $scope.hosttemplate.Hosttemplate.contactgroups._ids;
+                }
+            }
+        });
 
 
     });

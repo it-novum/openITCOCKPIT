@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Hostescalation
+ * @deprecated
+ */
 class Hostescalation extends AppModel {
 
     //var $recursive = 2;
@@ -147,16 +151,22 @@ class Hostescalation extends AppModel {
         ],
     ];
 
-    /*
-    Custom validation rule for contact and/or contactgroup fields
-    */
+    /**
+     * Custom validation rule for contact and/or contactgroup fields
+     * @deprecated
+     * @param $data
+     * @return bool
+     */
     public function atLeastOne($data) {
         return !empty($this->data[$this->name]['Contact']) || !empty($this->data[$this->name]['Contactgroup']);
     }
 
-    /*
-    Custom validation rule first_notification
-    */
+    /**Custom validation rule first_notification
+     * @deprecated
+     * @param array $field
+     * @param null $compare_field
+     * @return bool
+     */
     public function firstNotificationBeforeLastNotification($field = [], $compare_field = null) {
         foreach ($field as $key => $value) {
             $v1 = $value;
@@ -172,11 +182,11 @@ class Hostescalation extends AppModel {
         return true;
     }
 
-    /*
-    * Parse hosts array for hostescalation
-    * @param Array Host-Ids
-    * @param Array Host-Ids exluded
-    * @return filtered array in format ['host_id' => 1..n, 'exluded' => 0/1]
+    /** Parse hosts array for hostescalation
+     * @deprecated
+     * @param Array Host-Ids
+     * @param Array Host-Ids exluded
+     * @return filtered array in format ['host_id' => 1..n, 'exluded' => 0/1]
     */
     public function parseHostMembershipData($hosts = [], $hosts_exluded = []) {
         $host_memberships_for_hostescalation = [];
@@ -190,12 +200,13 @@ class Hostescalation extends AppModel {
         return $host_memberships_for_hostescalation;
     }
 
-    /*
-    * Parse hostgroups array for hostescalation
-    * @param Array Hostgroup-Ids
-    * @param Array Hostgroup-Ids exluded
-    * @return filtered array in format ['hostgroup_id' => 1..n, 'exluded' => 0/1]
-    */
+    /**
+     * Parse hostgroups array for hostescalation
+     * @deprecated
+     * @param Array Hostgroup-Ids
+     * @param Array Hostgroup-Ids exluded
+     * @return filtered array in format ['hostgroup_id' => 1..n, 'exluded' => 0/1]
+     */
     public function parseHostgroupMembershipData($hostgroups = [], $hostgroups_exluded = []) {
         $hostgroup_memberships_for_hostescalation = [];
         foreach ($hostgroups as $hostgroup_id) {

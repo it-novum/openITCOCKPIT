@@ -160,7 +160,7 @@ class HostsTable extends Table {
 
         $validator
             ->integer('hosttemplate_id')
-            ->requirePresence('hosttemplate_id')
+            ->requirePresence('hosttemplate_id', 'create')
             ->allowEmptyString('hosttemplate_id', false);
 
         $validator
@@ -742,7 +742,6 @@ class HostsTable extends Table {
                     'Hosttemplates.tags'
                 ]
             ]
-
         ]);
 
         $where = $HostFilter->indexFilter();
@@ -848,7 +847,7 @@ class HostsTable extends Table {
         $query->disableHydration();
         $query->group(['Hosts.id']);
         $query->order($HostFilter->getOrderForPaginator('Hosts.name', 'asc'));
-        
+
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->formatResultAsCake2($query->toArray(), false);
@@ -1148,6 +1147,104 @@ class HostsTable extends Table {
         return [
             'Host' => $host
         ];
+    }
+
+    /**
+     * @param HostConditions $HostConditions
+     * @param int|array $selected
+     * @return array|null
+     */
+    public function getHostsForAngular(HostConditions $HostConditions, $selected = []) {
+        if (!is_array($selected)) {
+            $selected = [$selected];
+        }
+
+        $query = $this->find('list');
+        $MY_RIGHTS = $HostConditions->getContainerIds();
+        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+        $query->contain([
+            'HostsToContainersSharing'
+        ]);
+        $where = $HostConditions->getWhereForFind();
+
+        if (is_array($selected)) {
+            $selected = array_filter($selected);
+        }
+        if (!empty($selected)) {
+            $where['NOT'] = [
+                'Hosts.id IN' => $selected
+            ];
+        }
+
+        if ($HostConditions->hasNotConditions()) {
+            if (!empty($where['NOT'])) {
+                $where['NOT'] = array_merge($where['NOT'], $HostConditions->getNotConditions());
+            } else {
+                if (!empty($HostConditions->getNotConditions())) {
+                    $where['NOT'] = $HostConditions->getNotConditions();
+                }
+            }
+        }
+
+        if (!empty($where)) {
+            $query->where($where);
+        }
+        $query->group(['Hosts.id']);
+        $query->order([
+            'Hosts.name' => 'asc'
+        ]);
+        $query->limit(ITN_AJAX_LIMIT);
+
+        $hostsWithLimit = $query->toArray();
+
+        $selectedHosts = [];
+        if (!empty($selected)) {
+            $query = $this->find('list');
+            $MY_RIGHTS = $HostConditions->getContainerIds();
+            $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+                }
+                return $q;
+            });
+            $query->contain([
+                'HostsToContainersSharing'
+            ]);
+            $where = [
+                'Hosts.id IN' => $selected
+            ];
+            if ($HostConditions->includeDisabled() === false) {
+                $where['Hosts.disabled'] = 0;
+            }
+            if ($HostConditions->hasNotConditions()) {
+                if (!empty($where['NOT'])) {
+                    $where['NOT'] = array_merge($where['NOT'], $HostConditions->getNotConditions());
+                } else {
+                    $where['NOT'] = $HostConditions->getNotConditions();
+                }
+            }
+
+
+            if (!empty($where)) {
+                $query->where($where);
+            }
+            $query->group(['Hosts.id']);
+            $query->order([
+                'Hosts.name' => 'asc'
+            ]);
+
+            $selectedHosts = $query->toArray();
+
+        }
+
+        $hosts = $hostsWithLimit + $selectedHosts;
+        asort($hosts, SORT_FLAG_CASE | SORT_NATURAL);
+        return $hosts;
     }
 
 

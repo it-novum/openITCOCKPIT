@@ -43,7 +43,7 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <a back-button fallback-state='ContactsIndex' class="btn btn-default btn-xs" iconcolor="white">
+                        <a back-button fallback-state='ContactsIndex' class="btn btn-default btn-xs">
                             <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     </div>

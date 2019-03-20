@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\ContainerNestedSet;
 
 
 /**
@@ -43,6 +44,7 @@ class TreeComponent extends Component {
         $this->Container = ClassRegistry::init('Container');
         App::import('Component', 'Constants');
         $this->Constants = new ConstantsComponent();
+        $this->containerCache = null;
     }
 
     /**
@@ -79,38 +81,40 @@ class TreeComponent extends Component {
             'order'        => 'asc',
         ];
         $options = Hash::merge($_options, $options);
-        if ($this->Container->hasAny()) {
-            $parent = $this->Container->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'id' => $id,
-                ],
-            ]);
 
-            //Merging parent and childs into one array
-            /*foreach($this->Container->children($id) as $child){
-                $parent[] = $child;
-            }*/
+        //Query runtime is ~2 seconds... for large systems >2.5k containers
+        $this->Container->virtualFields['path'] = 'SELECT CONCAT(\'/\', GROUP_CONCAT(alias.name ORDER BY alias.lft SEPARATOR \'/\'))
+            FROM containers AS alias
+            LEFT JOIN containers AS child
+                ON (alias.lft <= child.lft AND alias.rght >= child.rght)
+            WHERE child.id = Container.id';
 
-            $paths = [];
-            foreach ($parent as $container) {
-                if (in_array($container['Container']['containertype_id'], $options['valide_types'])) {
-                    $paths[$container['Container']['id']] = '/' . $this->treePath($container['Container']['id'], $options);
-                }
-            }
+        $paths = $this->Container->find('list', [
+            'recursive'  => -1,
+            'fields'     => [
+                'Container.id',
+                'Container.path'
+            ],
+            'conditions' => [
+                'AND' => [
+                    'Container.containertype_id' => $options['valide_types'],
+                    'Container.id'               => $id
+                ]
 
-            // some basic php sort functions, because Hash::sort will drop the key => value association
-            if ($options['order'] === 'asc') {
-                asort($paths);
-            }
+            ]
+        ]);
 
-            if ($options['order'] === 'desc') {
-                arsort($paths);
-            }
+        unset($this->Container->virtualFields['path']);
 
-            return $paths;
+        // some basic php sort functions, because Hash::sort will drop the key => value association
+        if ($options['order'] === 'asc') {
+            asort($paths);
         }
-        throw new NotFoundException(__('tenant.notfound'));
+
+        if ($options['order'] === 'desc') {
+            arsort($paths);
+        }
+        return $paths;
     }
 
     /**
@@ -164,6 +168,12 @@ class TreeComponent extends Component {
      * @deprecated Use ContainersTable
      */
     public function easyPath($id = null, $ObjectsByConstancName = [], $options = [], $hasRootPrivileges = false, $exclude = []) {
+        if ($this->containerCache === null) {
+            $this->containerCache = $this->Container->find('all', [
+                'recursive' => -1
+            ]);
+        }
+
         if ($hasRootPrivileges == false) {
             if (is_array($id)) {
                 // User has no root privileges so we need to delete the root container if it $id array
@@ -176,10 +186,10 @@ class TreeComponent extends Component {
                 }
             }
         }
-
-        //debug($this->Constants->containerProperties($ObjectsByConstancName));
         if (!empty($ObjectsByConstancName)) {
-            return $this->path($id, $options, $this->Constants->containerProperties($ObjectsByConstancName, $exclude));
+            //return $this->path($id, $options, $this->Constants->containerProperties($ObjectsByConstancName, $exclude));
+            $ContainerNestedSet = ContainerNestedSet::fromCake2($this->containerCache, $hasRootPrivileges);
+            return $ContainerNestedSet->easyPath($id, $ObjectsByConstancName, $exclude);
         }
 
         return [];
