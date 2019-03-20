@@ -3268,10 +3268,6 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hostcommandargumentvalues']);
     }
 
-
-    /**
-     * @deprecated
-     */
     public function loadParentHostsByString() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
