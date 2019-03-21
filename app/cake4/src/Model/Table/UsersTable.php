@@ -179,10 +179,7 @@ class UsersTable extends Table {
             ->maxLength('password', 45)
             ->requirePresence('password', 'create')
             ->allowEmptyString('password', false)
-            ->add('password', 'custom', [
-                'rule'    => self::PASSWORD_REGEX,
-                'message' => 'user_model.password_requirement_notice'
-            ]);
+            ->regex('password', self::PASSWORD_REGEX, 'user_model.password_requirement_notice');
 
         $validator->add('confirm_password',
             'compareWith', [

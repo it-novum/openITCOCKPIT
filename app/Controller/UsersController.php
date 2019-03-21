@@ -191,6 +191,7 @@ class UsersController extends AppController {
                 $this->request->data['User']['containers'] = $containerPermissions;
             }
 
+
             //@TODO remove these lines as they are implemented in users add
             $this->request->data['User']['status'] = 1;
 
@@ -206,6 +207,7 @@ class UsersController extends AppController {
                 $this->set('_serialize', ['error']);
                 return;
             }
+
             $this->set('user', $user);
             $this->set('_serialize', ['user']);
         }
@@ -219,6 +221,9 @@ class UsersController extends AppController {
         $this->set('usergroups', $usergroups);
         $this->set('_serialize', ['containers', 'usergroups']);
 */
+
+      //  $this->set('usergroups', $usergroups);
+      //  $this->set('_serialize', ['usergroups']);
     }
 
     public function loadDateformats() {
@@ -340,14 +345,14 @@ class UsersController extends AppController {
 
     public function loadLdapUserByString() {
         $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $Ldap = LdapClient::fromSystemsettings($Systemsettings->findAsArraySection('FRONTEND'));
         $samaccountname = (string)$this->request->query('samaccountname');
-        $ldapUsers = $Ldap->getUsers($samaccountname);
-
-        //$usersForSelect = Api::makeItJavaScriptAble($ldapUsers);
-        $usersForSelect = $ldapUsers;
-
+        $usersForSelect = $Ldap->getUsers($samaccountname);
         $this->set('usersForSelect', $usersForSelect);
         $this->set('_serialize', ['usersForSelect']);
     }

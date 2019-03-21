@@ -34,7 +34,7 @@ $timezones = CakeTime::listTimezones();
             <span>>
                 <?php echo __('Manage Users'); ?>
 			</span>
-            <div class="third_level"> <?php echo __('Add'); ?></div>
+            <div class="third_level"> <?php echo __('Add From LDAP'); ?></div>
         </h1>
     </div>
 </div>

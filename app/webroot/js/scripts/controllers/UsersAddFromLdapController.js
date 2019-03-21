@@ -49,6 +49,14 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.containers = result.data.containers;
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 
@@ -59,6 +67,14 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.usergroups = result.data.usergroups;
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 
@@ -69,6 +85,14 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.status = result.data.status;
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 
@@ -80,6 +104,14 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.dateformats = result.data.dateformats;
                 $scope.post.User.dateformat = result.data.defaultDateFormat;
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 
@@ -100,7 +132,14 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.usersForSelect = result.data.usersForSelect;
-                console.log($scope.usersForSelect);
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 
@@ -112,6 +151,14 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.systemsettings = result.data.systemsettings;
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 
@@ -122,7 +169,9 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-               // $state.go('UsersIndex');
+                $state.go('UsersIndex').then(function(){
+                    NotyService.scrollTop();
+                });
 
             }, function errorCallback(result){
                 NotyService.genericError();
@@ -131,17 +180,6 @@ angular.module('openITCOCKPIT')
                     $scope.errors = result.data.error;
                 }
             });
-
-
-            /*
-            console.log($scope.data.selectedSamAccountName);
-            if($scope.data.selectedSamAccountName.length === 0){
-                $scope.errors = [
-                    'Please select one user'
-                ];
-                return false;
-            }*/
-            // window.location.href = '/users/add/ldap:1/samaccountname:' + encodeURI($scope.data.selectedSamAccountName) + '/fix:1';
         };
 
         $scope.$watch('data.selectedSamAccountName', function(){
