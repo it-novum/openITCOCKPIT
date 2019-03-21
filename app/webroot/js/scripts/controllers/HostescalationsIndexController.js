@@ -11,7 +11,10 @@ angular.module('openITCOCKPIT')
             $scope.filter = {
                 Hostescalation: {
                     first_notification: '',
-                    last_notification: ''
+                    last_notification: '',
+                    escalate_on_recovery: 0,
+                    escalate_on_down: 0,
+                    escalate_on_unreachable: 0
                 }
             };
         };
