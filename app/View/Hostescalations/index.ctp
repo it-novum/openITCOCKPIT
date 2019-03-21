@@ -52,8 +52,11 @@
                                 <i class="fa fa-plus"></i> <?php echo __('New'); ?>
                             </a>
                         <?php endif; ?>
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
                     </div>
-
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-bomb"></i> </span>
@@ -61,15 +64,33 @@
 
                 </header>
                 <div>
+                    <div class="list-filter well" ng-show="showFilter">
+                        <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                        <div class="row">
 
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="pull-right margin-top-10">
+                                    <button type="button" ng-click="resetFilter()"
+                                            class="btn btn-xs btn-danger">
+                                        <?php echo __('Reset Filter'); ?>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- widget content -->
-                    <div class="widget-body no-padding" ng-init="objectName='<?php echo __('Host escalation #');?>'">
+                    <div class="widget-body no-padding" ng-init="objectName='<?php echo __('Host escalation #'); ?>'">
                         <div class="mobile_table" ng-show="hostescalations.length > 0">
                             <table id="hostescalation_list"
                                    class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>
+                                    <th class="text-align-center"><i class="fa fa-check-square-o"
+                                                                     aria-hidden="true"></i></th>
                                     <th><?php echo __('Hosts'); ?></th>
                                     <th><?php echo __('Excluded hosts'); ?></th>
                                     <th><?php echo __('Host groups'); ?></th>
@@ -86,6 +107,13 @@
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="hostescalation in hostescalations">
+                                    <td class="text-center" class="width-15">
+                                        <?php if ($this->Acl->hasPermission('delete', 'hostescalations')): ?>
+                                            <input type="checkbox"
+                                                   ng-model="massChange[hostescalation.Hostescalation.id]"
+                                                   ng-show="hostescalation.Hostescalation.allowEdit">
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <ul class="list-unstyled">
                                             <li ng-repeat="host in hostescalation.Host"
@@ -150,7 +178,7 @@
                                                             {{hostgroup.container.name}}
                                                         </a>
                                                     <?php else: ?>
-                                                    <span class="label label-light label-xs">
+                                                        <span class="label label-light label-xs">
                                                         {{hostgroup.container.name}}
                                                     </span>
                                                     <?php endif; ?>
@@ -289,17 +317,42 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="noMatch" ng-hide="hostescalations.length > 0">
-                            <center>
-                                <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                            </center>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="hostescalations.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
+                                </div>
+                            </div>
                         </div>
-
+                        <div class="row margin-top-10 margin-bottom-10" ng-show="hostescalations.length > 0">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-4 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                        </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                         <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>
+        </article>
     </div>
 </section>
