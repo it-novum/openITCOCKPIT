@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT', ['gridster'])
+angular.module('openITCOCKPIT', ['gridster', 'ng-nestable'])
 
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {
