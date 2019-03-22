@@ -6,7 +6,7 @@ angular.module('openITCOCKPIT')
 
         $scope.post = {
             'User': {
-                'ldap':1,
+                'ldap': 1,
                 'status': '',
                 'email': '',
                 'samaccountname': '', //username
