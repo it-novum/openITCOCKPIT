@@ -29,6 +29,7 @@ use App\Model\Table\SystemsettingsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\Permissions\ContactContainersPermissions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactsFilter;
 use itnovum\openITCOCKPIT\Ldap\LdapClient;
@@ -204,10 +205,17 @@ class ContactsController extends AppController {
             }
         }
 
+        $ContactContainersPermissions = new ContactContainersPermissions(
+            $contact['Contact']['containers']['_ids'],
+            $this->getWriteContainers(),
+            $this->hasRootPrivileges
+        );
+
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return contact information
             $this->set('contact', $contact);
-            $this->set('_serialize', ['contact']);
+            $this->set('areContainersChangeable', $ContactContainersPermissions->areContainersChangeable());
+            $this->set('_serialize', ['contact', 'areContainersChangeable']);
             return;
         }
 
@@ -215,6 +223,13 @@ class ContactsController extends AppController {
             //Update contact data
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             $contactEntity = $ContactsTable->get($id);
+
+            if ($ContactContainersPermissions->areContainersChangeable() === false) {
+                $contactBeforeEdit = $ContactsTable->getContactForEdit($id);
+                //Overwrite post data. User is not permitted to change container ids!
+                $this->request->data['Contact']['containers']['_ids'] = $contact['Contact']['containers']['_ids'];
+            }
+
             $contactEntity = $ContactsTable->patchEntity($contactEntity, $this->request->data('Contact'));
             $ContactsTable->save($contactEntity);
             if ($contactEntity->hasErrors()) {

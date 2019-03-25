@@ -71,6 +71,7 @@
                                     chosen="containers"
                                     multiple
                                     ng-options="container.key as container.value for container in containers"
+                                    ng-disabled="data.areContainersChangeable === false"
                                     ng-model="post.Contact.containers._ids">
                             </select>
                             <div ng-repeat="error in errors.containers">
