@@ -1936,6 +1936,10 @@ class HostsController extends AppController {
                 }
             }
         }
+
+        /** @var $HoststatusTable HoststatusTableInterface */
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+
         //Check permissions for Contact groups
         foreach ($mergedHost['Contactgroup'] as $key => $contactgroup) {
             $mergedHost['Contactgroup'][$key]['allowEdit'] = $this->isWritableContainer($contactgroup['Container']['parent_id']);
@@ -1944,7 +1948,7 @@ class HostsController extends AppController {
         $HoststatusFields->wildcard();
         $HoststatusConditions = new HoststatusConditions($this->DbBackend);
         //$HoststatusConditions->hostsDownAndUnreachable();
-        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
+        $hoststatus = $HoststatusTable->byUuid($host['Host']['uuid'], $HoststatusFields);
         if (empty($hoststatus)) {
             //Empty host state for Hoststatus object
             $hoststatus = [
@@ -1957,7 +1961,7 @@ class HostsController extends AppController {
         $parenthosts = $host['Parenthost'];
         $ParentHoststatusFields = new HoststatusFields($this->DbBackend);
         $ParentHoststatusFields->currentState()->lastStateChange();
-        $parentHostStatusRaw = $this->Hoststatus->byUuid(
+        $parentHostStatusRaw = $HoststatusTable->byUuid(
             Hash::extract($host['Parenthost'], '{n}.uuid'),
             $ParentHoststatusFields,
             $HoststatusConditions

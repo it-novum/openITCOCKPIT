@@ -5,6 +5,9 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
 
+        $scope.data = {
+            areContainersChangeable: false
+        };
 
         $scope.loadContainers = function(){
             var params = {
@@ -29,6 +32,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.post = result.data.contact;
                 $scope.init = false;
+                $scope.data.areContainersChangeable = result.data.areContainersChangeable;
                 $scope.loadCommands();
             }, function errorCallback(result){
                 if(result.status === 403){

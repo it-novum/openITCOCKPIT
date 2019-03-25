@@ -179,7 +179,7 @@ class UsersTable extends Table {
             ->maxLength('password', 45)
             ->requirePresence('password', 'create')
             ->allowEmptyString('password', false)
-            ->regex('password', self::PASSWORD_REGEX, 'user_model.password_requirement_notice');
+            ->regex('password', self::PASSWORD_REGEX, 'The password must consist of 6 alphanumeric characters and must contain at least one digit.');
 
         $validator->add('confirm_password',
             'compareWith', [

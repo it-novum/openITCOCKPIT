@@ -27,7 +27,7 @@ namespace itnovum\openITCOCKPIT\Core\Permissions;
 
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 
-class HostContainersPermissions {
+class HostContainersPermissions extends ContainersPermissions {
 
     /**
      * @var int
@@ -122,23 +122,6 @@ class HostContainersPermissions {
 
         //The user has no permissions to see this host at all
         return null;
-    }
-
-    /**
-     * @param array|int $arr
-     * @return array
-     */
-    private function castToIntArray($arr) {
-        if (!is_array($arr)) {
-            $arr = [$arr];
-        }
-
-        $intArr = [];
-        foreach ($arr as $item) {
-            $item = (int)$item;
-            $intArr[$item] = $item;
-        }
-        return $intArr;
     }
 
 }

@@ -1,12 +1,10 @@
 angular.module('openITCOCKPIT')
     .controller('UsersAddFromLdapController', function($scope, $http, $state, NotyService){
-
-
         $scope.init = true;
-
+        $scope.errors = false;
         $scope.post = {
             'User': {
-                'ldap':1,
+                'ldap': 1,
                 'status': '',
                 'email': '',
                 'samaccountname': '', //username
@@ -15,8 +13,8 @@ angular.module('openITCOCKPIT')
                 'company': '',
                 'position': '',
                 'phone': '',
-                //'password': '',
                 'usergroup_id': '',
+                'ldap_dn': null,
                 'showstatsinmenu': 0,
                 'paginatorlength': 25,
                 'dashboard_tab_rotation': 0,
@@ -39,8 +37,6 @@ angular.module('openITCOCKPIT')
         $scope.data = {
             selectedSamAccountName: ''
         };
-        $scope.errors = false;
-
 
         $scope.loadContainer = function(){
             $http.get("/containers/loadContainersForAngular.json", {
@@ -164,7 +160,6 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
-            console.log($scope.post);
             $http.post("/users/addFromLdap.json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -187,6 +182,9 @@ angular.module('openITCOCKPIT')
             $scope.post.User.lastname = $scope.data.selectedSamAccountName.sn;
             $scope.post.User.samaccountname = $scope.data.selectedSamAccountName.samaccountname;
             $scope.post.User.email = $scope.data.selectedSamAccountName.email;
+            if($scope.data.selectedSamAccountName.hasOwnProperty('dn')){
+                $scope.post.User.ldap_dn = $scope.data.selectedSamAccountName.dn;
+            }
         }, true);
 
         $scope.loadContainer();
