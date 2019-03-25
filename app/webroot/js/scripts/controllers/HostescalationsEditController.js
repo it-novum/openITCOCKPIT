@@ -114,6 +114,36 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadHosts = function(searchString){
+            if($scope.post.Hostescalation.container_id != null){
+                $http.get("/hosts/loadHostsByContainerId.json", {
+                    params: {
+                        'angular': true,
+                        'containerId': $scope.post.Hostescalation.container_id,
+                        'filter[Hosts.name]': searchString,
+                        'selected[]': $scope.post.Hostescalation.hosts._ids
+                    }
+                }).then(function(result){
+                    $scope.hosts = result.data.hosts;
+                });
+            }
+        };
+
+        $scope.loadExcludedHosts = function(searchString){
+            if($scope.post.Hostescalation.container_id != null){
+                $http.get("/hosts/loadHostsByContainerId.json", {
+                    params: {
+                        'angular': true,
+                        'containerId': $scope.post.Hostescalation.container_id,
+                        'filter[Hosts.name]': searchString,
+                        'selected[]': $scope.post.Hostescalation.hosts_excluded._ids
+                    }
+                }).then(function(result){
+                    $scope.hosts_excluded = result.data.hosts;
+                });
+            }
+        };
+
         $scope.submit = function(){
             $http.post("/hostescalations/edit/" + $scope.id + ".json?angular=true",
                 $scope.post

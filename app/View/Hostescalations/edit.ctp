@@ -144,7 +144,6 @@ Once a host or service escalated, contacts, contact group and notification optio
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="hostgroups"
-                                        callback="loadHostgroups"
                                         ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups"
                                         ng-model="post.Hostescalation.hostgroups._ids">
                                 </select>
@@ -171,7 +170,6 @@ Once a host or service escalated, contacts, contact group and notification optio
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="hostgroups_excluded"
-                                        callback="loadHostgroups"
                                         ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups_excluded"
                                         ng-model="post.Hostescalation.hostgroups_excluded._ids">
                                 </select>
@@ -271,7 +269,6 @@ Once a host or service escalated, contacts, contact group and notification optio
                                         data-placeholder="<?php echo __('Please choose a contact'); ?>"
                                         class="form-control"
                                         chosen="contacts"
-                                        callback="loadContacts"
                                         ng-options="contact.key as contact.value for contact in contacts"
                                         ng-model="post.Hostescalation.contacts._ids">
                                 </select>
@@ -291,7 +288,6 @@ Once a host or service escalated, contacts, contact group and notification optio
                                         data-placeholder="<?php echo __('Please choose a contactgroup'); ?>"
                                         class="form-control"
                                         chosen="contactgroups"
-                                        callback="loadContactgroups"
                                         ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
                                         ng-model="post.Hostescalation.contactgroups._ids">
                                 </select>
