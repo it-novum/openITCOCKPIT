@@ -1,8 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('UsersAddController', function($scope, $http, $rootScope, $state, NotyService){
-
         $scope.intervalText = 'disabled';
-
         $scope.post = {
             'User': {
                 'status': '',
@@ -13,7 +11,7 @@ angular.module('openITCOCKPIT')
                 'position': '',
                 'phone': '',
                 'password': '',
-                'confirm_password':'',
+                'confirm_password': '',
                 'usergroup_id': '',
                 'showstatsinmenu': 0,
                 'paginatorlength': 25,
@@ -33,7 +31,6 @@ angular.module('openITCOCKPIT')
                 'ContainersUsersMemberships': {}
             }
         };
-
 
 
         $scope.loadContainer = function(){
@@ -110,9 +107,7 @@ angular.module('openITCOCKPIT')
                 //$state.go('UsersIndex');
 
             }, function errorCallback(result){
-                console.log(result);
                 NotyService.genericError();
-
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
