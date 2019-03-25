@@ -25,6 +25,11 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use App\Lib\Exceptions\MissingDbBackendException;
+use App\Lib\Interfaces\HoststatusTableInterface;
+use App\Lib\Interfaces\ServicestatusTableInterface;
+use Cake\ORM\TableRegistry;
+
 class DbBackend {
 
     /**
@@ -65,8 +70,48 @@ class DbBackend {
     /**
      * @return string
      */
-    public function getBackendAsString(){
+    public function getBackendAsString() {
         return $this->backend;
+    }
+
+    /**
+     * @return HoststatusTableInterface
+     * @throws MissingDbBackendException
+     */
+    public function getHoststatusTable() {
+        if ($this->isNdoUtils()) {
+            /** @var $HoststatusTable HoststatusTableInterface */
+            $HoststatusTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Hoststatus');
+            return $HoststatusTable;
+        }
+
+        if ($this->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+    }
+
+    /**
+     * @return ServicestatusTableInterface
+     * @throws MissingDbBackendException
+     */
+    public function getServicestatusTable() {
+        if ($this->isNdoUtils()) {
+            /** @var $ServicestatusTable ServicestatusTableInterface */
+            $ServicestatusTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Servicestatus');
+            return $ServicestatusTable;
+        }
+
+        if ($this->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
     }
 
 }

@@ -74,6 +74,10 @@
                                     ng-disabled="data.areContainersChangeable === false"
                                     ng-model="post.Contact.containers._ids">
                             </select>
+                            <div class="text-info" ng-hide="data.areContainersChangeable">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Insufficient permissions to edit container.'); ?>
+                            </div>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
