@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -55,21 +56,21 @@ class HostescalationsTable extends Table {
             'joinType'   => 'INNER'
         ]);
         $this->belongsToMany('Contacts', [
-            'joinTable' => 'contacts_to_hostescalations',
-            'saveStrategy'     => 'replace'
+            'joinTable'    => 'contacts_to_hostescalations',
+            'saveStrategy' => 'replace'
         ]);
         $this->belongsToMany('Contactgroups', [
-            'joinTable' => 'contactgroups_to_hostescalations',
-            'saveStrategy'     => 'replace'
+            'joinTable'    => 'contactgroups_to_hostescalations',
+            'saveStrategy' => 'replace'
         ]);
 
         $this->belongsToMany('Hosts', [
-            'through' => 'HostescalationsHostMemberships',
-            'saveStrategy'     => 'replace'
+            'through'      => 'HostescalationsHostMemberships',
+            'saveStrategy' => 'replace'
         ]);
         $this->belongsToMany('Hostgroups', [
-            'through' => 'HostescalationsHostgroupMemberships',
-            'saveStrategy'     => 'replace'
+            'through'      => 'HostescalationsHostgroupMemberships',
+            'saveStrategy' => 'replace'
         ]);
     }
 
@@ -228,7 +229,67 @@ class HostescalationsTable extends Table {
                 ]
             ])
             ->disableHydration();
-        $query->where($HostescalationsFilter->indexFilter());
+        $indexFilter = $HostescalationsFilter->indexFilter();
+        if (array_key_exists('Hostescalations.escalate_on_recovery', $indexFilter) ||
+            array_key_exists('Hostescalations.escalate_on_down', $indexFilter) ||
+            array_key_exists('Hostescalations.escalate_on_unreachable', $indexFilter)
+        ) {
+            $query->where(function ($exp, Query $q) use ($indexFilter) {
+                //debug($exp);
+                //$defaultExp = $exp->and_($indexFilter);
+                /*
+                $escalateConditions = $exp->add([
+                    'Hostescalations.escalate_on_recovery' => $indexFilter['Hostescalations.escalate_on_recovery']
+                ])
+                    ->or_([])
+                    ->gt('Hostescalations.escalate_on_recovery', 0)
+                    ->gt('Hostescalations.escalate_on_down', 0)
+                    ->gt('Hostescalations.escalate_on_unreachable', 0);
+                $exp->add($escalateConditions);
+                */
+                $escalateOnConditions = [];
+                if(array_key_exists('Hostescalations.escalate_on_recovery', $indexFilter)){
+                    $escalateOnConditions[] = $exp->or_([
+                        'Hostescalations.escalate_on_recovery' => $indexFilter['Hostescalations.escalate_on_recovery']
+                    ]);
+                    unset($indexFilter['Hostescalations.escalate_on_recovery']);
+                }
+                if(array_key_exists('Hostescalations.escalate_on_down', $indexFilter)){
+                    $escalateOnConditions[] = $exp->or_([
+                        'Hostescalations.escalate_on_down' => $indexFilter['Hostescalations.escalate_on_down']
+                    ]);
+                    unset($indexFilter['Hostescalations.escalate_on_down']);
+
+                }
+                if(array_key_exists('Hostescalations.escalate_on_unreachable', $indexFilter)){
+                    $escalateOnConditions[] = $exp->or_([
+                        'Hostescalations.escalate_on_unreachable' => $indexFilter['Hostescalations.escalate_on_unreachable']
+                    ]);
+                    unset($indexFilter['Hostescalations.escalate_on_unreachable']);
+
+                }
+
+                $escalateOrConditions = $exp->or_($escalateOnConditions);
+                $escalateAndConditions = $exp->and_([])
+                    ->eq('Hostescalations.escalate_on_recovery', 0)
+                    ->eq('Hostescalations.escalate_on_down', 0)
+                    ->eq('Hostescalations.escalate_on_unreachable', 0);
+
+                $escalateAndConditionsAll = $exp->or_([
+                    $escalateAndConditions,
+                    $escalateOrConditions
+                ]);
+
+                $exp->add($escalateAndConditionsAll);
+                return $exp->and_([
+                    $indexFilter,
+                    $escalateAndConditionsAll
+                ]);
+
+            });
+        } else {
+            $query->where($indexFilter);
+        }
 
         $query->innerJoinWith('Containers', function ($q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
@@ -288,17 +349,17 @@ class HostescalationsTable extends Table {
         $hostgroupmembershipData = [];
         foreach ($hostgroups as $hostgroup) {
             $hostgroupmembershipData[] = [
-                'id' => $hostgroup,
+                'id'        => $hostgroup,
                 '_joinData' => [
-                    'excluded'     => 0
+                    'excluded' => 0
                 ]
             ];
         }
         foreach ($excluded_hostgroups as $excluded_hostgroup) {
             $hostgroupmembershipData[] = [
-                'id' => $excluded_hostgroup,
+                'id'        => $excluded_hostgroup,
                 '_joinData' => [
-                    'excluded'     => 1
+                    'excluded' => 1
                 ]
             ];
         }

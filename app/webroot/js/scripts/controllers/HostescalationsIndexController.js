@@ -9,12 +9,24 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Hostescalation: {
+                Hostescalations: {
                     first_notification: '',
                     last_notification: '',
-                    escalate_on_recovery: 0,
-                    escalate_on_down: 0,
-                    escalate_on_unreachable: 0
+                    escalate_on_recovery: '',
+                    escalate_on_down: '',
+                    escalate_on_unreachable: ''
+                },
+                Hosts: {
+                    name: ''
+                },
+                Hosts_excluded: {
+                    name: ''
+                },
+                Hostgroups: {
+                    name: ''
+                },
+                Hostgroups_excluded: {
+                    name: ''
                 }
             };
         };
@@ -27,12 +39,16 @@ angular.module('openITCOCKPIT')
         $scope.showFilter = false;
 
         $scope.load = function(){
-
             $http.get("/hostescalations/index.json", {
                 params: {
                     'angular': true,
                     'scroll': $scope.useScroll,
-                    'page': $scope.currentPage
+                    'page': $scope.currentPage,
+                    'filter[Hostescalations.first_notification]': $scope.filter.Hostescalations.first_notification,
+                    'filter[Hostescalations.last_notification]': $scope.filter.Hostescalations.last_notification,
+                    'filter[Hostescalations.escalate_on_recovery]': $scope.filter.Hostescalations.escalate_on_recovery,
+                    'filter[Hostescalations.escalate_on_down]': $scope.filter.Hostescalations.escalate_on_down,
+                    'filter[Hostescalations.escalate_on_unreachable]': $scope.filter.Hostescalations.escalate_on_unreachable
                 }
             }).then(function(result){
                 $scope.hostescalations = result.data.all_hostescalations;
@@ -104,10 +120,12 @@ angular.module('openITCOCKPIT')
         };
 
         //Fire on page load
+        defaultFilter();
+        //Fire on page load
         $scope.load();
 
-        //Fire on page load
-        defaultFilter();
+
+
         SortService.setCallback($scope.load);
 
         $scope.$watch('filter', function(){

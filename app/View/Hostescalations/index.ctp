@@ -72,7 +72,7 @@
                                     <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                                         <input type="text" class="input-sm"
                                                placeholder="<?php echo __('Filter by host name'); ?>"
-                                               ng-model="filter.Host.name"
+                                               ng-model="filter.Hosts.name"
                                                ng-model-options="{debounce: 500}">
                                     </label>
                                 </div>
@@ -83,7 +83,7 @@
                                         <i class="icon-prepend fa fa-sitemap"></i>
                                         <input type="text" class="input-sm"
                                                placeholder="<?php echo __('Filter by host group'); ?>"
-                                               ng-model="filter.Hostgroup.name"
+                                               ng-model="filter.Hostgroups.name"
                                                ng-model-options="{debounce: 500}">
                                     </label>
                                 </div>
@@ -97,7 +97,7 @@
                                         </span>
                                         <input type="text" class="input-sm"
                                                placeholder="<?php echo __('Filter by excluded host name'); ?>"
-                                               ng-model="filter.Host_excluded.name"
+                                               ng-model="filter.Hosts_excluded.name"
                                                ng-model-options="{debounce: 500}">
                                     </label>
                                 </div>
@@ -111,7 +111,7 @@
                                         </span>
                                         <input type="text" class="input-sm"
                                                placeholder="<?php echo __('Filter by excluded host group'); ?>"
-                                               ng-model="filter.Hostgroup_excluded.name"
+                                               ng-model="filter.Hostgroups_excluded.name"
                                                ng-model-options="{debounce: 500}">
                                     </label>
                                 </div>
@@ -125,11 +125,12 @@
                                         <div class="form-group smart-form">
                                             <label class="input">
                                                 <i class="icon-prepend fa fa-envelope-o"></i>
-                                                <input type="text" class="input-sm"
+                                                <input class="input-sm"
                                                        type="number"
                                                        min="1"
+                                                       step="1"
                                                        placeholder="<?php echo __('Filter by first notification'); ?>"
-                                                       ng-model="filter.Hostescalation.first_notification"
+                                                       ng-model="filter.Hostescalations.first_notification"
                                                        ng-model-options="{debounce: 500}">
                                             </label>
                                         </div>
@@ -138,11 +139,12 @@
                                         <div class="form-group smart-form">
                                             <label class="input">
                                                 <i class="icon-prepend fa fa-envelope-o"></i>
-                                                <input type="text" class="input-sm"
+                                                <input class="input-sm"
                                                        type="number"
                                                        min="0"
+                                                       step="1"
                                                        placeholder="<?php echo __('Filter by last notification'); ?>"
-                                                       ng-model="filter.Hostescalation.first_notification"
+                                                       ng-model="filter.Hostescalations.last_notification"
                                                        ng-model-options="{debounce: 500}">
                                             </label>
                                         </div>
@@ -155,8 +157,10 @@
                                     <div class="form-group smart-form">
                                         <label class="checkbox small-checkbox-label">
                                             <input type="checkbox" name="checkbox" checked="checked"
-                                                   ng-model="filter.Hostescalation.escalate_on_recovery"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="filter.Hostescalations.escalate_on_recovery"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="0">
                                             <i class="checkbox-success"></i>
                                             <?php echo __('Up'); ?>
                                         </label>
@@ -164,16 +168,20 @@
 
                                         <label class="checkbox small-checkbox-label">
                                             <input type="checkbox" name="checkbox" checked="checked"
-                                                   ng-model="filter.Hostescalation.escalate_on_down"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="filter.Hostescalations.escalate_on_down"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="0">
                                             <i class="checkbox-danger"></i>
                                             <?php echo __('Down'); ?>
                                         </label>
 
                                         <label class="checkbox small-checkbox-label">
                                             <input type="checkbox" name="checkbox" checked="checked"
-                                                   ng-model="filter.Hostescalation.escalate_on_unreachable"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="filter.Hostescalations.escalate_on_unreachable"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="0">
                                             <i class="checkbox-default"></i>
                                             <?php echo __('Unreachable'); ?>
                                         </label>
@@ -385,7 +393,18 @@
                                         <div ng-show="!(hostescalation.Hostescalation.escalate_on_recovery||
                                         hostescalation.Hostescalation.escalate_on_down||
                                         hostescalation.Hostescalation.escalate_on_unreachable)">
-                                            <?php echo __('All host states'); ?>
+                                            <span class="label-forced label-success margin-right-5"
+                                                  title="<?php echo __('Recovery'); ?>">
+                                                <?php echo __('R'); ?>
+                                            </span>
+                                            <span class="label-forced label-danger margin-right-5"
+                                                  title="<?php echo __('Down'); ?>">
+                                                <?php echo __('D'); ?>
+                                            </span>
+                                            <span class="label-forced label-default margin-right-5"
+                                                  title="<?php echo __('Unreachable'); ?>">
+                                                <?php echo __('U'); ?>
+                                            </span>
                                         </div>
                                     </td>
                                     <td class="text-center">

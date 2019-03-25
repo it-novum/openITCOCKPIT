@@ -50,7 +50,7 @@
     <div>
         <div class="widget-body">
             <form class="form-horizontal" ng-init="successMessage=
-            {objectName : '<?php echo __('Host escalation'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+            {objectName : '<?php echo __('Host escalation'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-9">
                         <div class="form-group required" ng-class="{'has-error': errors.container_id}">
