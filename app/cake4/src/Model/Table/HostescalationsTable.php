@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -241,7 +242,7 @@ class HostescalationsTable extends Table {
     public function getHostescalationsIndex(HostescalationsFilter $HostescalationsFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all')
             ->contain([
-                'Contacts'      => function ($q) {
+                'Contacts'      => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Contacts.id',
@@ -249,7 +250,7 @@ class HostescalationsTable extends Table {
                         ]);
                 },
                 'Contactgroups' => [
-                    'Containers' => function ($q) {
+                    'Containers' => function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->select([
                                 'Contactgroups.id',
@@ -257,14 +258,14 @@ class HostescalationsTable extends Table {
                             ]);
                     },
                 ],
-                'Timeperiods'   => function ($q) {
+                'Timeperiods'   => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Timeperiods.id',
                             'Timeperiods.name'
                         ]);
                 },
-                'Hosts'         => function ($q) {
+                'Hosts'         => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Hosts.id',
@@ -272,7 +273,7 @@ class HostescalationsTable extends Table {
                             'Hosts.disabled'
                         ]);
                 },
-                'HostsExcluded' => function ($q) {
+                'HostsExcluded' => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'HostsExcluded.id',
@@ -282,7 +283,7 @@ class HostescalationsTable extends Table {
                 },
 
                 'Hostgroups'         => [
-                    'Containers' => function ($q) {
+                    'Containers' => function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->select([
                                 'Hostgroups.id',
@@ -291,7 +292,7 @@ class HostescalationsTable extends Table {
                     },
                 ],
                 'HostgroupsExcluded' => [
-                    'Containers' => function ($q) {
+                    'Containers' => function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->select([
                                 'HostgroupsExcluded.id',
