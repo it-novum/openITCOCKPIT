@@ -19,13 +19,13 @@ angular.module('openITCOCKPIT')
                 Hosts: {
                     name: ''
                 },
-                Hosts_excluded: {
+                HostsExcluded: {
                     name: ''
                 },
                 Hostgroups: {
                     name: ''
                 },
-                Hostgroups_excluded: {
+                HostgroupsExcluded: {
                     name: ''
                 }
             };
@@ -48,7 +48,11 @@ angular.module('openITCOCKPIT')
                     'filter[Hostescalations.last_notification]': $scope.filter.Hostescalations.last_notification,
                     'filter[Hostescalations.escalate_on_recovery]': $scope.filter.Hostescalations.escalate_on_recovery,
                     'filter[Hostescalations.escalate_on_down]': $scope.filter.Hostescalations.escalate_on_down,
-                    'filter[Hostescalations.escalate_on_unreachable]': $scope.filter.Hostescalations.escalate_on_unreachable
+                    'filter[Hostescalations.escalate_on_unreachable]': $scope.filter.Hostescalations.escalate_on_unreachable,
+                    'filter[Hosts.name]': $scope.filter.Hosts.name,
+                    'filter[HostsExcluded.name]': $scope.filter.HostsExcluded.name,
+                    'filter[Hostgroups.name]': $scope.filter.Hostgroups.name,
+                    'filter[HostgroupsExcluded.name]': $scope.filter.HostgroupsExcluded.name
                 }
             }).then(function(result){
                 $scope.hostescalations = result.data.all_hostescalations;
@@ -84,8 +88,8 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.hostescalations){
                 for(var key in $scope.hostescalations){
-                    if($scope.hostescalations[key].Hostescalation.allowEdit === true){
-                        var id = $scope.hostescalations[key].Hostescalation.id;
+                    if($scope.hostescalations[key].allowEdit === true){
+                        var id = $scope.hostescalations[key].id;
                         $scope.massChange[id] = true;
                     }
                 }
@@ -100,7 +104,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(hostescalation){
             var object = {};
-            object[hostescalation.Hostescalation.id] = $scope.objectName + hostescalation.Hostescalation.id;
+            object[hostescalation.id] = $scope.objectName + hostescalation.id;
             return object;
         };
 
@@ -109,9 +113,9 @@ angular.module('openITCOCKPIT')
             var selectedObjects = MassChangeService.getSelected();
             for(var key in $scope.hostescalations){
                 for(var id in selectedObjects){
-                    if(id == $scope.hostescalations[key].Hostescalation.id){
-                        if($scope.hostescalations[key].Hostescalation.allowEdit === true){
-                            objects[id] = $scope.objectName + $scope.hostescalations[key].Hostescalation.id;
+                    if(id == $scope.hostescalations[key].id){
+                        if($scope.hostescalations[key].allowEdit === true){
+                            objects[id] = $scope.objectName + $scope.hostescalations[key].id;
                         }
                     }
                 }

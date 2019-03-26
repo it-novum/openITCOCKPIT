@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -32,6 +33,7 @@ class HostescalationsTable extends Table {
 
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
+    use CustomValidationTrait;
 
 
     /**
@@ -65,12 +67,37 @@ class HostescalationsTable extends Table {
         ]);
 
         $this->belongsToMany('Hosts', [
+            'className'    => 'Hosts',
             'through'      => 'HostescalationsHostMemberships',
-            'saveStrategy' => 'replace'
+            'saveStrategy' => 'replace',
+            'conditions'   => [
+                'HostescalationsHostMemberships.excluded' => 0
+            ]
+        ]);
+        $this->belongsToMany('HostsExcluded', [
+            'className'        => 'Hosts',
+            'through'          => 'HostescalationsHostMemberships',
+            'targetForeignKey' => 'host_id',
+            'saveStrategy'     => 'replace',
+            'conditions'       => [
+                'HostescalationsHostMemberships.excluded' => 1
+            ]
         ]);
         $this->belongsToMany('Hostgroups', [
             'through'      => 'HostescalationsHostgroupMemberships',
-            'saveStrategy' => 'replace'
+            'saveStrategy' => 'replace',
+            'conditions'   => [
+                'HostescalationsHostgroupMemberships.excluded' => 0
+            ]
+        ]);
+        $this->belongsToMany('HostgroupsExcluded', [
+            'className'        => 'Hostgroups',
+            'through'          => 'HostescalationsHostgroupMemberships',
+            'targetForeignKey' => 'hostgroup_id',
+            'saveStrategy'     => 'replace',
+            'conditions'       => [
+                'HostescalationsHostgroupMemberships.excluded' => 1
+            ]
         ]);
     }
 
@@ -143,6 +170,34 @@ class HostescalationsTable extends Table {
             ->requirePresence('last_notification')
             ->allowEmptyString('last_notification', false);
 
+
+        $validator
+            ->boolean('escalate_on_recovery')
+            ->requirePresence('escalate_on_recovery', 'create')
+            ->allowEmptyString('escalate_on_recovery', true)
+            ->add('escalate_on_recovery', 'custom', [
+                'rule'    => [$this, 'checkEscalateOptionsHostEscalation'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one escalate option.')
+            ]);
+
+        $validator
+            ->boolean('escalate_on_down')
+            ->requirePresence('escalate_on_down', 'create')
+            ->allowEmptyString('escalate_on_down', true)
+            ->add('escalate_on_down', 'custom', [
+                'rule'    => [$this, 'checkEscalateOptionsHostEscalation'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one escalate option.')
+            ]);
+
+        $validator
+            ->boolean('escalate_on_unreachable')
+            ->requirePresence('escalate_on_unreachable', 'create')
+            ->allowEmptyString('escalate_on_unreachable', true)
+            ->add('escalate_on_unreachable', 'custom', [
+                'rule'    => [$this, 'checkEscalateOptionsHostEscalation'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one escalate option.')
+            ]);
+
         return $validator;
     }
 
@@ -185,6 +240,40 @@ class HostescalationsTable extends Table {
      * @return array
      */
     public function getHostescalationsIndex(HostescalationsFilter $HostescalationsFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+        $indexFilter = $HostescalationsFilter->indexFilter();
+        $containFilter = [
+            'Hosts.name' => '',
+            'HostsExcluded.name' => '',
+            'Hostgroups.name' => '',
+            'HostgroupsExcluded.name' => ''
+        ];
+        //print_r($indexFilter);
+        if(!empty($indexFilter['Hosts.name LIKE'])){
+            $containFilter['Hosts.name'] = [
+                'Hosts.name LIKE' => $indexFilter['Hosts.name LIKE']
+            ];
+            unset($indexFilter['Hosts.name LIKE']);
+        }
+        if(!empty($indexFilter['HostsExcluded.name LIKE'])){
+            $containFilter['HostsExcluded.name'] = [
+                'HostsExcluded.name LIKE' => $indexFilter['HostsExcluded.name LIKE']
+            ];
+            unset($indexFilter['HostsExcluded.name LIKE']);
+
+        }
+        if(!empty($indexFilter['Hostgroups.name LIKE'])){
+            $containFilter['Hostgroups.name'] = [
+                'Containers.name LIKE' => $indexFilter['Hostgroups.name LIKE']
+            ];
+            unset($indexFilter['Hostgroups.name LIKE']);
+        }
+        if(!empty($indexFilter['HostgroupsExcluded.name LIKE'])){
+            $containFilter['HostgroupsExcluded.name'] = [
+                'Containers.name LIKE' => $indexFilter['HostgroupsExcluded.name LIKE']
+            ];
+            unset($indexFilter['HostgroupsExcluded.name LIKE']);
+        }
+
         $query = $this->find('all')
             ->contain([
                 'Contacts'      => function ($q) {
@@ -210,102 +299,55 @@ class HostescalationsTable extends Table {
                             'Timeperiods.name'
                         ]);
                 },
-                'Hosts'         => function ($q) {
+                'Hosts'         => function ($q) use($containFilter){
                     return $q->enableAutoFields(false)
+                        ->where($containFilter['Hosts.name'])
                         ->select([
                             'Hosts.id',
                             'Hosts.name',
                             'Hosts.disabled'
                         ]);
                 },
+                'HostsExcluded' => function ($q) use($containFilter){
+                    return $q->enableAutoFields(false)
+                        ->where($containFilter['HostsExcluded.name'])
+                        ->select([
+                            'HostsExcluded.id',
+                            'HostsExcluded.name',
+                            'HostsExcluded.disabled'
+                        ]);
+                },
                 'Hostgroups'    => [
-                    'Containers' => function ($q) {
+                    'Containers' => function ($q) use($containFilter){
                         return $q->enableAutoFields(false)
+                            ->where($containFilter['Hostgroups.name'])
                             ->select([
                                 'Hostgroups.id',
+                                'Containers.name'
+                            ]);
+                    },
+                ],
+                'HostgroupsExcluded'    => [
+                    'Containers' => function ($q) use($containFilter){
+                        return $q->enableAutoFields(false)
+                            ->where($containFilter['HostgroupsExcluded.name'])
+                            ->select([
+                                'HostgroupsExcluded.id',
                                 'Containers.name'
                             ]);
                     },
                 ]
             ])
             ->disableHydration();
-        $indexFilter = $HostescalationsFilter->indexFilter();
-        if (array_key_exists('Hostescalations.escalate_on_recovery', $indexFilter) ||
-            array_key_exists('Hostescalations.escalate_on_down', $indexFilter) ||
-            array_key_exists('Hostescalations.escalate_on_unreachable', $indexFilter)
-        ) {
-            $query->where(function ($exp, Query $q) use ($indexFilter) {
-                //debug($exp);
-                //$defaultExp = $exp->and_($indexFilter);
-                /*
-                $escalateConditions = $exp->add([
-                    'Hostescalations.escalate_on_recovery' => $indexFilter['Hostescalations.escalate_on_recovery']
-                ])
-                    ->or_([])
-                    ->gt('Hostescalations.escalate_on_recovery', 0)
-                    ->gt('Hostescalations.escalate_on_down', 0)
-                    ->gt('Hostescalations.escalate_on_unreachable', 0);
-                $exp->add($escalateConditions);
-                */
-                $escalateOnConditions = [];
-                if(array_key_exists('Hostescalations.escalate_on_recovery', $indexFilter)){
-                    $escalateOnConditions[] = $exp->or_([
-                        'Hostescalations.escalate_on_recovery' => $indexFilter['Hostescalations.escalate_on_recovery']
-                    ]);
-                    unset($indexFilter['Hostescalations.escalate_on_recovery']);
-                }
-                if(array_key_exists('Hostescalations.escalate_on_down', $indexFilter)){
-                    $escalateOnConditions[] = $exp->or_([
-                        'Hostescalations.escalate_on_down' => $indexFilter['Hostescalations.escalate_on_down']
-                    ]);
-                    unset($indexFilter['Hostescalations.escalate_on_down']);
-
-                }
-                if(array_key_exists('Hostescalations.escalate_on_unreachable', $indexFilter)){
-                    $escalateOnConditions[] = $exp->or_([
-                        'Hostescalations.escalate_on_unreachable' => $indexFilter['Hostescalations.escalate_on_unreachable']
-                    ]);
-                    unset($indexFilter['Hostescalations.escalate_on_unreachable']);
-
-                }
-
-                $escalateOrConditions = $exp->or_($escalateOnConditions);
-                $escalateAndConditions = $exp->and_([])
-                    ->eq('Hostescalations.escalate_on_recovery', 0)
-                    ->eq('Hostescalations.escalate_on_down', 0)
-                    ->eq('Hostescalations.escalate_on_unreachable', 0);
-
-                $escalateAndConditionsAll = $exp->or_([
-                    $escalateAndConditions,
-                    $escalateOrConditions
-                ]);
-
-                $exp->add($escalateAndConditionsAll);
-                return $exp->and_([
-                    $indexFilter,
-                    $escalateAndConditionsAll
-                ]);
-
-            });
-        } else {
-            $query->where($indexFilter);
-        }
-
-        $query->innerJoinWith('Containers', function ($q) use ($MY_RIGHTS) {
-            if (!empty($MY_RIGHTS)) {
-                return $q->where(['Hostescalations.container_id IN' => $MY_RIGHTS]);
-            }
-            return $q;
-        });
-
+        $query->where($indexFilter);
         $query->order($HostescalationsFilter->getOrderForPaginator('Hostescalations.first_notification', 'asc'));
-
+//debug((string)$query);
         if ($PaginateOMat === null) {
             //Just execute query
-            $result = $this->formatResultAsCake2($query->toArray(), false);
+            $result = $query->toArray();
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler(), false);
             } else {
                 $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
             }

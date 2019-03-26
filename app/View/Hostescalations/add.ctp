@@ -81,7 +81,8 @@ Once a host or service escalated, contacts, contact group and notification optio
                                     <label class="label label-success label-xs">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </label>
-                                    <span class="label label-light label-xs no-border" ng-class="{'has-error': errors.hosts}">
+                                    <span class="label label-light label-xs no-border"
+                                          ng-class="{'has-error': errors.hosts}">
                                         <?php echo __('Hosts'); ?>
                                     </span>
                                 </div>
@@ -219,9 +220,11 @@ Once a host or service escalated, contacts, contact group and notification optio
                                 </div>
                                 <div class="info-block-helptext">
                                     <?php echo __('Host escalates after: More than '); ?>
-                                    {{post.Hostescalation.first_notification ? post.Hostescalation.first_notification : '?'}}
+                                    {{post.Hostescalation.first_notification ? post.Hostescalation.first_notification :
+                                    '?'}}
                                     <?php echo __(' where send and less than '); ?>
-                                    {{post.Hostescalation.last_notification ? post.Hostescalation.last_notification : '?'}}
+                                    {{post.Hostescalation.last_notification ? post.Hostescalation.last_notification :
+                                    '?'}}
                                 </div>
                                 <div ng-repeat="error in errors.last_notification">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -301,11 +304,18 @@ Once a host or service escalated, contacts, contact group and notification optio
 
                         <fieldset>
                             <legend class="font-sm">
-                                <label><?php echo __('Host escalation options'); ?></label>
+                                <div class="required">
+                                    <label>
+                                        <?php echo __('Host escalation options'); ?>
+                                    </label>
+                                </div>
+                                <div ng-repeat="error in errors.escalate_on_recovery">
+                                    <div class="text-danger">{{ error }}</div>
+                                </div>
                             </legend>
                             <ul class="config-flex-inner">
                                 <li>
-                                    <div class="margin-bottom-0" ng-class="{'has-error': errors.escalate_on_recovery}">
+                                    <div class="margin-bottom-0">
                                         <label for="escalate_on_recovery"
                                                class="col col-md-7 control-label padding-top-0">
                                         <span class="label label-success notify-label-small">
@@ -325,7 +335,7 @@ Once a host or service escalated, contacts, contact group and notification optio
                                     </div>
                                 </li>
                                 <li>
-                                    <div class="margin-bottom-0" ng-class="{'has-error': errors.escalate_on_down}">
+                                    <div class="margin-bottom-0">
                                         <label for="escalate_on_down" class="col col-md-7 control-label padding-top-0">
                                             <span class="label label-danger notify-label-small">
                                             <?php echo __('Down'); ?>
@@ -344,8 +354,7 @@ Once a host or service escalated, contacts, contact group and notification optio
                                     </div>
                                 </li>
                                 <li>
-                                    <div class="margin-bottom-0"
-                                         ng-class="{'has-error': errors.escalate_on_unreachable}">
+                                    <div class="margin-bottom-0">
                                         <label for="escalate_on_unreachable"
                                                class="col col-md-7 control-label padding-top-0">
                                             <span class="label label-default notify-label-small">

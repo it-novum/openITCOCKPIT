@@ -41,7 +41,9 @@ class HostescalationsFilter extends Filter {
             ],
             'like'  => [
                 'Hosts.name',
-                'Container.name'
+                'HostsExcluded.name',
+                'Hostgroups.name',
+                'HostgroupsExcluded.name'
             ],
         ];
 
