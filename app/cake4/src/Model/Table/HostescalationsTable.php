@@ -312,7 +312,12 @@ class HostescalationsTable extends Table {
             $containFilter['Hosts.name'] = [
                 'Hosts.name LIKE' => $indexFilter['Hosts.name LIKE']
             ];
-            $query->matching('Hosts', function($q) use ($containFilter){
+            $query->matching('Hosts', function ($q) use ($containFilter) {
+                /*
+                return $q->where([
+                    'OR' => $containFilter['Hosts.name']
+                ]);
+                */
                 return $q->where($containFilter['Hosts.name']);
             });
             unset($indexFilter['Hosts.name LIKE']);
@@ -322,7 +327,12 @@ class HostescalationsTable extends Table {
             $containFilter['HostsExcluded.name'] = [
                 'HostsExcluded.name LIKE' => $indexFilter['HostsExcluded.name LIKE']
             ];
-            $query->matching('HostsExcluded', function($q) use ($containFilter){
+            $query->matching('HostsExcluded', function ($q) use ($containFilter) {
+                /*
+                return $q->where([
+                    'OR' => $containFilter['HostsExcluded.name']
+                ]);
+                */
                 return $q->where($containFilter['HostsExcluded.name']);
             });
             unset($indexFilter['HostsExcluded.name LIKE']);
@@ -332,7 +342,7 @@ class HostescalationsTable extends Table {
             $containFilter['Hostgroups.name'] = [
                 'Containers.name LIKE' => $indexFilter['Hostgroups.name LIKE']
             ];
-            $query->matching('Hostgroups.Containers', function($q) use ($containFilter){
+            $query->matching('Hostgroups.Containers', function ($q) use ($containFilter) {
                 return $q->where($containFilter['Hostgroups.name']);
             });
             unset($indexFilter['Hostgroups.name LIKE']);
@@ -341,7 +351,7 @@ class HostescalationsTable extends Table {
             $containFilter['HostgroupsExcluded.name'] = [
                 'Containers.name LIKE' => $indexFilter['HostgroupsExcluded.name LIKE']
             ];
-            $query->matching('HostgroupsExcluded.Containers', function($q) use ($containFilter){
+            $query->matching('HostgroupsExcluded.Containers', function ($q) use ($containFilter) {
                 return $q->where($containFilter['HostgroupsExcluded.name']);
             });
             unset($indexFilter['HostgroupsExcluded.name LIKE']);
