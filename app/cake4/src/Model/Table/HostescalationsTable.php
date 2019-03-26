@@ -300,6 +300,7 @@ class HostescalationsTable extends Table {
                     },
                 ]
             ])
+            ->group('Hostescalations.id')
             ->disableHydration();
         $indexFilter = $HostescalationsFilter->indexFilter();
         $containFilter = [
