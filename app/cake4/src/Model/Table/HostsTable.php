@@ -12,7 +12,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
@@ -1245,6 +1244,76 @@ class HostsTable extends Table {
         $hosts = $hostsWithLimit + $selectedHosts;
         asort($hosts, SORT_FLAG_CASE | SORT_NATURAL);
         return $hosts;
+    }
+
+    /**
+     * @param null|int $limit
+     * @param null|int $offset
+     * @param null|string $uuid
+     * @return array|Query
+     */
+    public function getHostsForExport($limit = null, $offset = null, $uuid = null) {
+        $where = [
+            'Hosts.disabled' => 0
+        ];
+        if ($uuid !== null) {
+            $where['Hosts.uuid'] = $uuid;
+        }
+
+
+        $query = $this->find()
+            ->where([
+                'Hosts.disabled' => 0
+            ])
+            ->contain([
+                'Hosttemplates'             =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id', 'uuid', 'check_interval', 'command_id']);
+                    },
+                'Contactgroups'             =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id', 'uuid']);
+                    },
+                'Contacts'                  =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id', 'uuid']);
+                    },
+                'Hostgroups'                =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id', 'uuid']);
+                    },
+                'Customvariables',
+                'Parenthosts'               =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id', 'uuid', 'disabled']);
+                    },
+                'Hostcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ]);
+
+        if ($limit !== null) {
+            $query->limit($limit);
+        }
+        if ($offset !== null) {
+            $query->offset($offset);
+        }
+
+        $query->all();
+        return $query;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getHostsCountForExport() {
+        $query = $this->find()
+            ->where([
+                'Hosts.disabled' => 0
+            ])
+            ->count();
+
+        return $query;
     }
 
 

@@ -353,6 +353,23 @@ class TimeperiodsTable extends Table {
     }
 
     /**
+     * @param $id
+     * @return string|null
+     */
+    public function getTimeperiodUuidById($id) {
+        $timeperiod = $this->find('all')
+            ->select(['Timeperiods.uuid'])
+            ->where(['Timeperiods.id' => $id])
+            ->first();
+
+        if (is_null($timeperiod)) {
+            return null;
+        }
+
+        return $timeperiod->uuid;
+    }
+
+    /**
      * @param int $id
      * @return bool
      */
