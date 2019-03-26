@@ -82,7 +82,7 @@ trait CustomValidationTrait {
      * @param array $context
      * @return bool
      *
-     * Custom validation rule for contacts and or contact groups
+     * Custom validation rule for notify options (host)
      */
     public function checkNotificationOptionsHost($value, $context) {
         $notificationOptions = [
@@ -102,4 +102,25 @@ trait CustomValidationTrait {
         return false;
     }
 
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for escalate options (host escalations)
+     */
+    public function checkEscalateOptionsHostEscalation($value, $context) {
+        $escalateOptions = [
+            'escalate_on_recovery',
+            'escalate_on_down',
+            'escalate_on_unreachable'
+        ];
+
+        foreach ($escalateOptions as $escalateOption) {
+            if (isset($context['data'][$escalateOption]) && $context['data'][$escalateOption] == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

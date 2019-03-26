@@ -67,4 +67,22 @@ trait PaginationAndScrollIndexTrait {
         return $result;
     }
 
+    /**
+     * @param Query $query
+     * @param ScrollIndex $ScrollIndex
+     * @return array
+     */
+    public function scrollCake4(Query $query, ScrollIndex $ScrollIndex) {
+        $query->offset($ScrollIndex->getOffset());
+        $query->limit($ScrollIndex->getLimit());
+
+        $result = $query->toArray();
+        if($result === null){
+            $result = [];
+        }
+        $ScrollIndex->determineHasNextPage($result);
+        $ScrollIndex->scroll();
+        return $result;
+    }
+
 }

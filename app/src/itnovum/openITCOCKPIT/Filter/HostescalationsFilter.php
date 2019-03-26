@@ -32,7 +32,7 @@ class HostescalationsFilter extends Filter {
      */
     public function indexFilter() {
         $filters = [
-            'equal' => [
+            'equals' => [
                 'Hostescalations.first_notification',
                 'Hostescalations.last_notification',
                 'Hostescalations.escalate_on_recovery',
@@ -41,9 +41,12 @@ class HostescalationsFilter extends Filter {
             ],
             'like'  => [
                 'Hosts.name',
-                'Container.name'
+                'HostsExcluded.name',
+                'Hostgroups.name',
+                'HostgroupsExcluded.name'
             ],
         ];
+
 
         return $this->getConditionsByFilters($filters);
     }
