@@ -5,7 +5,6 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -240,40 +239,6 @@ class HostescalationsTable extends Table {
      * @return array
      */
     public function getHostescalationsIndex(HostescalationsFilter $HostescalationsFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        $indexFilter = $HostescalationsFilter->indexFilter();
-        $containFilter = [
-            'Hosts.name' => '',
-            'HostsExcluded.name' => '',
-            'Hostgroups.name' => '',
-            'HostgroupsExcluded.name' => ''
-        ];
-        //print_r($indexFilter);
-        if(!empty($indexFilter['Hosts.name LIKE'])){
-            $containFilter['Hosts.name'] = [
-                'Hosts.name LIKE' => $indexFilter['Hosts.name LIKE']
-            ];
-            unset($indexFilter['Hosts.name LIKE']);
-        }
-        if(!empty($indexFilter['HostsExcluded.name LIKE'])){
-            $containFilter['HostsExcluded.name'] = [
-                'HostsExcluded.name LIKE' => $indexFilter['HostsExcluded.name LIKE']
-            ];
-            unset($indexFilter['HostsExcluded.name LIKE']);
-
-        }
-        if(!empty($indexFilter['Hostgroups.name LIKE'])){
-            $containFilter['Hostgroups.name'] = [
-                'Containers.name LIKE' => $indexFilter['Hostgroups.name LIKE']
-            ];
-            unset($indexFilter['Hostgroups.name LIKE']);
-        }
-        if(!empty($indexFilter['HostgroupsExcluded.name LIKE'])){
-            $containFilter['HostgroupsExcluded.name'] = [
-                'Containers.name LIKE' => $indexFilter['HostgroupsExcluded.name LIKE']
-            ];
-            unset($indexFilter['HostgroupsExcluded.name LIKE']);
-        }
-
         $query = $this->find('all')
             ->contain([
                 'Contacts'      => function ($q) {
@@ -299,38 +264,35 @@ class HostescalationsTable extends Table {
                             'Timeperiods.name'
                         ]);
                 },
-                'Hosts'         => function ($q) use($containFilter){
+                'Hosts'         => function ($q) {
                     return $q->enableAutoFields(false)
-                        ->where($containFilter['Hosts.name'])
                         ->select([
                             'Hosts.id',
                             'Hosts.name',
                             'Hosts.disabled'
                         ]);
                 },
-                'HostsExcluded' => function ($q) use($containFilter){
+                'HostsExcluded' => function ($q) {
                     return $q->enableAutoFields(false)
-                        ->where($containFilter['HostsExcluded.name'])
                         ->select([
                             'HostsExcluded.id',
                             'HostsExcluded.name',
                             'HostsExcluded.disabled'
                         ]);
                 },
-                'Hostgroups'    => [
-                    'Containers' => function ($q) use($containFilter){
+
+                'Hostgroups'         => [
+                    'Containers' => function ($q) {
                         return $q->enableAutoFields(false)
-                            ->where($containFilter['Hostgroups.name'])
                             ->select([
                                 'Hostgroups.id',
                                 'Containers.name'
                             ]);
                     },
                 ],
-                'HostgroupsExcluded'    => [
-                    'Containers' => function ($q) use($containFilter){
+                'HostgroupsExcluded' => [
+                    'Containers' => function ($q) {
                         return $q->enableAutoFields(false)
-                            ->where($containFilter['HostgroupsExcluded.name'])
                             ->select([
                                 'HostgroupsExcluded.id',
                                 'Containers.name'
@@ -339,9 +301,53 @@ class HostescalationsTable extends Table {
                 ]
             ])
             ->disableHydration();
+        $indexFilter = $HostescalationsFilter->indexFilter();
+        $containFilter = [
+            'Hosts.name'              => '',
+            'HostsExcluded.name'      => '',
+            'Hostgroups.name'         => '',
+            'HostgroupsExcluded.name' => ''
+        ];
+        if (!empty($indexFilter['Hosts.name LIKE'])) {
+            $containFilter['Hosts.name'] = [
+                'Hosts.name LIKE' => $indexFilter['Hosts.name LIKE']
+            ];
+            $query->matching('Hosts', function($q) use ($containFilter){
+                return $q->where($containFilter['Hosts.name']);
+            });
+            unset($indexFilter['Hosts.name LIKE']);
+        }
+
+        if (!empty($indexFilter['HostsExcluded.name LIKE'])) {
+            $containFilter['HostsExcluded.name'] = [
+                'HostsExcluded.name LIKE' => $indexFilter['HostsExcluded.name LIKE']
+            ];
+            $query->matching('HostsExcluded', function($q) use ($containFilter){
+                return $q->where($containFilter['HostsExcluded.name']);
+            });
+            unset($indexFilter['HostsExcluded.name LIKE']);
+
+        }
+        if (!empty($indexFilter['Hostgroups.name LIKE'])) {
+            $containFilter['Hostgroups.name'] = [
+                'Containers.name LIKE' => $indexFilter['Hostgroups.name LIKE']
+            ];
+            $query->matching('Hostgroups.Containers', function($q) use ($containFilter){
+                return $q->where($containFilter['Hostgroups.name']);
+            });
+            unset($indexFilter['Hostgroups.name LIKE']);
+        }
+        if (!empty($indexFilter['HostgroupsExcluded.name LIKE'])) {
+            $containFilter['HostgroupsExcluded.name'] = [
+                'Containers.name LIKE' => $indexFilter['HostgroupsExcluded.name LIKE']
+            ];
+            $query->matching('HostgroupsExcluded.Containers', function($q) use ($containFilter){
+                return $q->where($containFilter['HostgroupsExcluded.name']);
+            });
+            unset($indexFilter['HostgroupsExcluded.name LIKE']);
+        }
         $query->where($indexFilter);
         $query->order($HostescalationsFilter->getOrderForPaginator('Hostescalations.first_notification', 'asc'));
-//debug((string)$query);
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $query->toArray();
