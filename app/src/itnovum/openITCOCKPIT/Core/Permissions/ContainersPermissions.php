@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2018>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,33 +22,26 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Filter;
+namespace itnovum\openITCOCKPIT\Core\Permissions;
 
 
-class HostescalationsFilter extends Filter {
+abstract class ContainersPermissions {
 
     /**
+     * @param array|int $arr
      * @return array
      */
-    public function indexFilter() {
-        $filters = [
-            'equals' => [
-                'Hostescalations.first_notification',
-                'Hostescalations.last_notification',
-                'Hostescalations.escalate_on_recovery',
-                'Hostescalations.escalate_on_down',
-                'Hostescalations.escalate_on_unreachable'
-            ],
-            'like'  => [
-                'Hosts.name',
-                'HostsExcluded.name',
-                'Hostgroups.name',
-                'HostgroupsExcluded.name'
-            ],
-        ];
+    protected function castToIntArray($arr) {
+        if (!is_array($arr)) {
+            $arr = [$arr];
+        }
 
-
-        return $this->getConditionsByFilters($filters);
+        $intArr = [];
+        foreach ($arr as $item) {
+            $item = (int)$item;
+            $intArr[$item] = $item;
+        }
+        return $intArr;
     }
 
 }

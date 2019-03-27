@@ -1,5 +1,10 @@
 angular.module('openITCOCKPIT')
     .controller('ContactsAddController', function($scope, $http, SudoService, $state, NotyService){
+
+        $scope.data = {
+            createAnother: false
+        };
+
         var clearForm = function(){
             $scope.post = {
                 Contact: {

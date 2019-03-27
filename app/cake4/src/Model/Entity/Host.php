@@ -3,6 +3,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use Cake\Utility\Hash;
 
 /**
  * Host Entity
@@ -177,4 +178,177 @@ class Host extends Entity {
 
         return array_unique($containerIds);
     }
+
+    /**
+     * @return bool
+     */
+    public function hasParentHostsForExport() {
+        return !empty($this->getParentHostsForCfgAsArray());
+    }
+
+    /**
+     * @return string
+     */
+    public function getParentHostsForCfg() {
+        return implode(',', $this->getParentHostsForCfgAsArray());
+    }
+
+    /**
+     * @return array
+     */
+    public function getParentHostsForCfgAsArray() {
+        $parenthosts = [];
+        foreach ($this->parenthosts as $parenthost) {
+            if ($parenthost->get('disabled') === 0) {
+                $parenthosts[] = $parenthost->get('uuid');
+            }
+        }
+
+        return $parenthosts;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommandargumentValuesForCfg() {
+        $hostcommandargumentvaluesForCfg = [];
+        $hostcommandargumentvalues = $this->get('hostcommandargumentvalues');
+
+        foreach ($hostcommandargumentvalues as $hostcommandargumentvalue) {
+            /** @var $hostcommandargumentvalue Hostcommandargumentvalue */
+            $hostcommandargumentvaluesForCfg[] = [
+                'name'       => $hostcommandargumentvalue->get('commandargument')->get('name'),
+                'human_name' => $hostcommandargumentvalue->get('commandargument')->get('human_name'),
+                'value'      => $hostcommandargumentvalue->get('value')
+            ];
+        }
+
+        return Hash::sort($hostcommandargumentvaluesForCfg, '{n}.name', 'asc', 'natural');
+    }
+
+    /**
+     * @return string
+     */
+    public function getContactsforCfg() {
+        $contacts = [];
+        foreach ($this->get('contacts') as $contact) {
+            /** @var $contact Contact */
+            $contacts[] = $contact->get('uuid');
+        }
+        return implode(',', $contacts);
+    }
+
+    /**
+     * @return string
+     */
+    public function getContactgroupsforCfg() {
+        $contactgroups = [];
+        foreach ($this->get('contactgroups') as $contactgroup) {
+            /** @var $contactgroup Contactgroup */
+            $contactgroups[] = $contactgroup->get('uuid');
+        }
+        return implode(',', $contactgroups);
+    }
+
+    /**
+     * @return string
+     */
+    public function getNotificationOptionsForCfg() {
+        $onlyTemplateValues = true;
+        $cfgValues = [];
+        $fields = [
+            'notify_on_recovery'    => 'r',
+            'notify_on_down'        => 'd',
+            'notify_on_unreachable' => 'u',
+            'notify_on_flapping'    => 'f',
+            'notify_on_downtime'    => 's'
+        ];
+        foreach ($fields as $field => $cfgValue) {
+            if ($this->get($field) !== null) {
+                //One value is not from host template
+                $onlyTemplateValues = false;
+            }
+
+            if ($this->get($field) === 1) {
+                $cfgValues[] = $cfgValue;
+            }
+        }
+
+        if (empty($cfgValues) && $onlyTemplateValues === false) {
+            //Config error! Avoid this
+            $cfgValues[] = 'r';
+        }
+
+        return implode(',', $cfgValues);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFlapdetectionOptionsForCfg() {
+        $onlyTemplateValues = true;
+        $cfgValues = [];
+        $fields = [
+            'flap_detection_on_up'          => 'o',
+            'flap_detection_on_down'        => 'd',
+            'flap_detection_on_unreachable' => 'u'
+        ];
+        foreach ($fields as $field => $cfgValue) {
+            if ($this->get($field) !== null) {
+                //One value is not from host template
+                $onlyTemplateValues = false;
+            }
+
+            if ($this->get($field) === 1) {
+                $cfgValues[] = $cfgValue;
+            }
+        }
+
+        if (empty($cfgValues) && $onlyTemplateValues === false) {
+            //Config error! Avoid this
+            $cfgValues[] = 'o';
+        }
+
+        return implode(',', $cfgValues);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCustomvariables() {
+        return !empty($this->customvariables);
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomvariablesForCfg() {
+        $cfgValues = [];
+        foreach ($this->customvariables as $Customvariable) {
+            /** @var Customvariable $Customvariable */
+            $key = sprintf('_%s', $Customvariable->get('name'));
+            $cfgValues[$key] = $Customvariable->get('value');
+        }
+        return $cfgValues;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHostgroupsForCfg() {
+        $hostgroups = [];
+        foreach ($this->hostgroups as $hostgroup) {
+            /** @var Hostgroup $hostgroup */
+            $hostgroups[] = $hostgroup->get('uuid');
+        }
+        return implode(',', $hostgroups);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSatelliteHost() {
+        return $this->get('satellite_id') === 0;
+    }
+
 }

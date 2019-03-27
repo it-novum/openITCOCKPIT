@@ -72,7 +72,7 @@
                                     <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                                         <input type="text" class="input-sm"
                                                placeholder="<?php echo __('Filter by host name'); ?>"
-                                               ng-model="filter.Host.name"
+                                               ng-model="filter.Hosts.name"
                                                ng-model-options="{debounce: 500}">
                                     </label>
                                 </div>
@@ -83,7 +83,7 @@
                                         <i class="icon-prepend fa fa-sitemap"></i>
                                         <input type="text" class="input-sm"
                                                placeholder="<?php echo __('Filter by host group'); ?>"
-                                               ng-model="filter.Hostgroup.name"
+                                               ng-model="filter.Hostgroups.name"
                                                ng-model-options="{debounce: 500}">
                                     </label>
                                 </div>
@@ -97,7 +97,7 @@
                                         </span>
                                         <input type="text" class="input-sm"
                                                placeholder="<?php echo __('Filter by excluded host name'); ?>"
-                                               ng-model="filter.Host_excluded.name"
+                                               ng-model="filter.HostsExcluded.name"
                                                ng-model-options="{debounce: 500}">
                                     </label>
                                 </div>
@@ -111,7 +111,7 @@
                                         </span>
                                         <input type="text" class="input-sm"
                                                placeholder="<?php echo __('Filter by excluded host group'); ?>"
-                                               ng-model="filter.Hostgroup_excluded.name"
+                                               ng-model="filter.HostgroupsExcluded.name"
                                                ng-model-options="{debounce: 500}">
                                     </label>
                                 </div>
@@ -125,11 +125,12 @@
                                         <div class="form-group smart-form">
                                             <label class="input">
                                                 <i class="icon-prepend fa fa-envelope-o"></i>
-                                                <input type="text" class="input-sm"
+                                                <input class="input-sm"
                                                        type="number"
                                                        min="1"
+                                                       step="1"
                                                        placeholder="<?php echo __('Filter by first notification'); ?>"
-                                                       ng-model="filter.Hostescalation.first_notification"
+                                                       ng-model="filter.Hostescalations.first_notification"
                                                        ng-model-options="{debounce: 500}">
                                             </label>
                                         </div>
@@ -138,11 +139,12 @@
                                         <div class="form-group smart-form">
                                             <label class="input">
                                                 <i class="icon-prepend fa fa-envelope-o"></i>
-                                                <input type="text" class="input-sm"
+                                                <input class="input-sm"
                                                        type="number"
                                                        min="0"
+                                                       step="1"
                                                        placeholder="<?php echo __('Filter by last notification'); ?>"
-                                                       ng-model="filter.Hostescalation.first_notification"
+                                                       ng-model="filter.Hostescalations.last_notification"
                                                        ng-model-options="{debounce: 500}">
                                             </label>
                                         </div>
@@ -155,8 +157,10 @@
                                     <div class="form-group smart-form">
                                         <label class="checkbox small-checkbox-label">
                                             <input type="checkbox" name="checkbox" checked="checked"
-                                                   ng-model="filter.Hostescalation.escalate_on_recovery"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="filter.Hostescalations.escalate_on_recovery"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
                                             <i class="checkbox-success"></i>
                                             <?php echo __('Up'); ?>
                                         </label>
@@ -164,16 +168,20 @@
 
                                         <label class="checkbox small-checkbox-label">
                                             <input type="checkbox" name="checkbox" checked="checked"
-                                                   ng-model="filter.Hostescalation.escalate_on_down"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="filter.Hostescalations.escalate_on_down"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
                                             <i class="checkbox-danger"></i>
                                             <?php echo __('Down'); ?>
                                         </label>
 
                                         <label class="checkbox small-checkbox-label">
                                             <input type="checkbox" name="checkbox" checked="checked"
-                                                   ng-model="filter.Hostescalation.escalate_on_unreachable"
-                                                   ng-model-options="{debounce: 500}">
+                                                   ng-model="filter.Hostescalations.escalate_on_unreachable"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
                                             <i class="checkbox-default"></i>
                                             <?php echo __('Unreachable'); ?>
                                         </label>
@@ -222,14 +230,13 @@
                                     <td class="text-center" class="width-15">
                                         <?php if ($this->Acl->hasPermission('delete', 'hostescalations')): ?>
                                             <input type="checkbox"
-                                                   ng-model="massChange[hostescalation.Hostescalation.id]"
-                                                   ng-show="hostescalation.Hostescalation.allowEdit">
+                                                   ng-model="massChange[hostescalation.id]"
+                                                   ng-show="hostescalation.allowEdit">
                                         <?php endif; ?>
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="host in hostescalation.Host"
-                                                ng-if="host._joinData.excluded == 0">
+                                            <li ng-repeat="host in hostescalation.hosts">
                                                 <div class="label-group label-breadcrumb label-breadcrumb-success padding-2">
                                                     <label class="label label-success label-xs">
                                                         <i class="fa fa-plus" aria-hidden="true"></i>
@@ -253,8 +260,7 @@
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="host in hostescalation.Host"
-                                                ng-if="host._joinData.excluded == 1">
+                                            <li ng-repeat="host in hostescalation.hosts_excluded">
                                                 <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
                                                     <label class="label label-danger label-xs">
                                                         <i class="fa fa-minus" aria-hidden="true"></i>
@@ -278,8 +284,7 @@
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="hostgroup in hostescalation.Hostgroup"
-                                                ng-if="hostgroup._joinData.excluded == 0">
+                                            <li ng-repeat="hostgroup in hostescalation.hostgroups">
                                                 <div class="label-group label-breadcrumb label-breadcrumb-success padding-2">
                                                     <label class="label label-success label-xs">
                                                         <i class="fa fa-plus" aria-hidden="true"></i>
@@ -300,8 +305,7 @@
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="hostgroup in hostescalation.Hostgroup"
-                                                ng-if="hostgroup._joinData.excluded == 1">
+                                            <li ng-repeat="hostgroup in hostescalation.hostgroups_excluded">
                                                 <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
                                                     <label class="label label-danger label-xs">
                                                         <i class="fa fa-minus" aria-hidden="true"></i>
@@ -321,25 +325,25 @@
                                         </ul>
                                     </td>
                                     <td>
-                                        {{ hostescalation.Hostescalation.first_notification }}
+                                        {{ hostescalation.first_notification }}
                                     </td>
                                     <td>
-                                        {{ hostescalation.Hostescalation.last_notification }}
+                                        {{ hostescalation.last_notification }}
                                     </td>
                                     <td>
-                                        {{ hostescalation.Hostescalation.notification_interval }}
+                                        {{ hostescalation.notification_interval }}
                                     </td>
                                     <td>
                                         <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
-                                            <a ui-sref="TimeperiodsEdit({id: hostescalation.Hostescalation.timeperiod.id})">{{
-                                                hostescalation.Hostescalation.timeperiod.name }}</a>
+                                            <a ui-sref="TimeperiodsEdit({id: hostescalation.timeperiod.id})">{{
+                                                hostescalation.timeperiod.name }}</a>
                                         <?php else: ?>
-                                            {{ hostescalation.Hostescalation.timeperiod.name }}
+                                            {{ hostescalation.timeperiod.name }}
                                         <?php endif; ?>
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="contact in hostescalation.Contact">
+                                            <li ng-repeat="contact in hostescalation.contacts">
                                                 <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
                                                     <a ui-sref="ContactsEdit({id: contact.id})">
                                                         {{ contact.name }}
@@ -352,7 +356,7 @@
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="contactgroup in hostescalation.Contactgroup">
+                                            <li ng-repeat="contactgroup in hostescalation.contactgroups">
                                                 <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
                                                     <a ui-sref="ContactgroupsEdit({id: contactgroup.id})">
                                                         {{ contactgroup.container.name }}
@@ -367,37 +371,48 @@
                                         <div>
                                             <span class="label-forced label-success margin-right-5"
                                                   title="<?php echo __('Recovery'); ?>"
-                                                  ng-show="hostescalation.Hostescalation.escalate_on_recovery">
+                                                  ng-show="hostescalation.escalate_on_recovery">
                                                 <?php echo __('R'); ?>
                                             </span>
                                             <span class="label-forced label-danger margin-right-5"
                                                   title="<?php echo __('Down'); ?>"
-                                                  ng-show="hostescalation.Hostescalation.escalate_on_down">
+                                                  ng-show="hostescalation.escalate_on_down">
                                                 <?php echo __('D'); ?>
                                             </span>
                                             <span class="label-forced label-default margin-right-5"
                                                   title="<?php echo __('Unreachable'); ?>"
-                                                  ng-show="hostescalation.Hostescalation.escalate_on_unreachable">
+                                                  ng-show="hostescalation.escalate_on_unreachable">
                                                 <?php echo __('U'); ?>
                                             </span>
                                         </div>
                                         <!-- NOR operator => !OR -->
-                                        <div ng-show="!(hostescalation.Hostescalation.escalate_on_recovery||
-                                        hostescalation.Hostescalation.escalate_on_down||
-                                        hostescalation.Hostescalation.escalate_on_unreachable)">
-                                            <?php echo __('All host states'); ?>
+                                        <div ng-show="!(hostescalation.escalate_on_recovery||
+                                        hostescalation.escalate_on_down||
+                                        hostescalation.escalate_on_unreachable)">
+                                            <span class="label-forced label-success margin-right-5"
+                                                  title="<?php echo __('Recovery'); ?>">
+                                                <?php echo __('R'); ?>
+                                            </span>
+                                            <span class="label-forced label-danger margin-right-5"
+                                                  title="<?php echo __('Down'); ?>">
+                                                <?php echo __('D'); ?>
+                                            </span>
+                                            <span class="label-forced label-default margin-right-5"
+                                                  title="<?php echo __('Unreachable'); ?>">
+                                                <?php echo __('U'); ?>
+                                            </span>
                                         </div>
                                     </td>
                                     <td class="text-center">
                                         <div class="btn-group smart-form">
                                             <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
-                                                <a ui-sref="HostescalationsEdit({id: hostescalation.Hostescalation.id})"
-                                                   ng-if="hostescalation.Hostescalation.allowEdit"
+                                                <a ui-sref="HostescalationsEdit({id: hostescalation.id})"
+                                                   ng-if="hostescalation.allowEdit"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
                                                 <a href="javascript:void(0);"
-                                                   ng-if="!hostescalation.Hostescalation.allowEdit"
+                                                   ng-if="!hostescalation.allowEdit"
                                                    class="btn btn-default disabled">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
@@ -410,10 +425,10 @@
                                                class="btn btn-default dropdown-toggle"><span
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right"
-                                                id="menuHack-{{hostescalation.Hostescalation.id}}">
+                                                id="menuHack-{{hostescalation.id}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
-                                                    <li ng-if="hostescalation.Hostescalation.allowEdit">
-                                                        <a ui-sref="HostescalationsEdit({id:hostescalation.Hostescalation.id})">
+                                                    <li ng-if="hostescalation.allowEdit">
+                                                        <a ui-sref="HostescalationsEdit({id:hostescalation.id})">
                                                             <i class="fa fa-cog"></i>
                                                             <?php echo __('Edit'); ?>
                                                         </a>
@@ -421,8 +436,8 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'hostescalations')): ?>
                                                     <li class="divider"
-                                                        ng-if="hostescalation.Hostescalation.allowEdit"></li>
-                                                    <li ng-if="hostescalation.Hostescalation.allowEdit">
+                                                        ng-if="hostescalation.allowEdit"></li>
+                                                    <li ng-if="hostescalation.allowEdit">
                                                         <a href="javascript:void(0);"
                                                            class="txt-color-red"
                                                            ng-click="confirmDelete(getObjectForDelete(hostescalation))">

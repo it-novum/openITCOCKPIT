@@ -573,7 +573,7 @@ class GearmanWorkerShell extends AppShell {
                 break;
             case 'export_hosts':
                 $this->NagiosExport->init();
-                $this->NagiosExport->exportHosts(null);
+                $this->NagiosExport->exportHosts();
                 $return = ['task' => $payload['task']];
                 break;
             case 'export_commands':

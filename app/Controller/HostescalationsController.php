@@ -68,7 +68,7 @@ class HostescalationsController extends AppController {
         }
         $hostescalations = $HostescalationsTable->getHostescalationsIndex($HostescalationsFilter, $PaginateOMat, $MY_RIGHTS);
         foreach ($hostescalations as $index => $hostescalation) {
-            $hostescalations[$index]['Hostescalation']['allowEdit'] = $this->isWritableContainer($hostescalation['Hostescalation']['container_id']);
+            $hostescalations[$index]['allowEdit'] = $this->isWritableContainer($hostescalation['container_id']);
         }
 
 
