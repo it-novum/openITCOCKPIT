@@ -28,9 +28,7 @@
 
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
-use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -179,9 +177,6 @@ class UsersController extends AppController {
 
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
-        /** @var $Usergroups App\Model\Table\UsergroupsTable */
-        $Usergroups = TableRegistry::getTableLocator()->get('Usergroups');
-        $usergroups = $Usergroups->getUsergroupsList();
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
@@ -211,19 +206,6 @@ class UsersController extends AppController {
             $this->set('user', $user);
             $this->set('_serialize', ['user']);
         }
-
-        /** @var $ContainersTable ContainersTable */
-/*        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
-
-
-        $this->set('containers', $containers);
-        $this->set('usergroups', $usergroups);
-        $this->set('_serialize', ['containers', 'usergroups']);
-*/
-
-      //  $this->set('usergroups', $usergroups);
-      //  $this->set('_serialize', ['usergroups']);
     }
 
     public function loadDateformats() {

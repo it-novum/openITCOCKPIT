@@ -23,6 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Cronjob
+ * @deprecated use cake 4 model
+ */
+
 class Cronjob extends AppModel {
     public $hasOne = ['Cronschedule'];
 

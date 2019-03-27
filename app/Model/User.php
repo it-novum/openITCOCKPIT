@@ -26,7 +26,7 @@
 
 
 /**
- * @Deprecated use cake4 model
+ * @deprecated use cake4 model
  */
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
