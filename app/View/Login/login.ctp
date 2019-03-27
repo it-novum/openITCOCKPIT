@@ -13,6 +13,25 @@ endif;
 
 ?>
 
+<?php if ($isRemoteOrVnc === false): ?>
+    <div class="login-screen">
+        <figure>
+            <figcaption>Photo by SpaceX on Unsplash</figcaption>
+        </figure>
+        <figure>
+            <figcaption>Photo by NASA on Unsplash</figcaption>
+        </figure>
+    </div>
+<?php else: ?>
+    <div class="login-screen-vnc"></div>
+<?php endif; ?>
+<div class="container-fluid">
+    <div class="row">
+        <?php if ($isRemoteOrVnc === false): ?>
+            <div id="particles-js" class="col-xs-12 col-sm-6 col-md-7 col-lg-9"></div>
+        <?php endif; ?>
+    </div>
+</div>
 
 <div class="login-center">
     <div class="min-height container-fluid">
