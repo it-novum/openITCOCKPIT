@@ -25,6 +25,7 @@
 
 
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 
 App::uses('AuthComponent', 'Controller/Component');
@@ -83,7 +84,7 @@ class AppAuthComponent extends AuthComponent {
                     'User.status' => Status::ACTIVE,
                 ],
             ],
-            'Form',
+            'Cake4',
             'Api',
         ];
 

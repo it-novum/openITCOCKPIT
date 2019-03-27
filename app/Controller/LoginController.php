@@ -102,11 +102,13 @@ class LoginController extends AppController {
         if ($redirectBack) {
             $this->Auth->loginRedirect = $this->request->referer();
         }
-        if ($this->Auth->loggedIn()) {
-            $this->redirect($this->Auth->loginRedirect);
 
-            return;
-        }
+//        ?????
+//        if ($this->Auth->loggedIn()) {
+//            $this->redirect($this->Auth->loginRedirect);
+//
+//            return;
+//        }
         if (!empty($this->params['url']['redirectUrl'])) {
             $this->Session->write('Login.redirectUrl', $this->params['url']['redirectUrl']);
         } else if (($redirectUrl = $this->Auth->redirectUrl()) != '/') {
@@ -179,15 +181,16 @@ class LoginController extends AppController {
 
             /** @var $Users App\Model\Table\UsersTable */
             $Users = TableRegistry::getTableLocator()->get('Users');
-            $__user = null;
+
             // Allow login in with nickname or email address
             if (!empty($this->data['User']['email'])) {
-                $__user = $Users->getUserByEmail($this->data['User']['email']);
+                $user = $Users->getUserByEmail($this->data['User']['email']);
                 if (!empty($user)) {
-                    $this->request->data['User']['email'] = $__user['email'];
+                    $this->request->data['User']['email'] = $user['email'];
                 }
             }
 
+            $__user = null;
             if (isset($this->data['User']['auth_method']) && $this->data['User']['auth_method'] == 'ldap') {
                 $__user = $this->User->findBySamaccountname(strtolower($this->data['User']['samaccountname']));
             }
