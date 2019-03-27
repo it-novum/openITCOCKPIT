@@ -210,6 +210,21 @@ class Host extends Entity {
     /**
      * @return array
      */
+    public function getParentHostsForSatCfgAsArray() {
+        $parenthosts = [];
+        foreach ($this->parenthosts as $parenthost) {
+            /** @var $parenthost Host */
+            if ($parenthost->get('disabled') === 0 && $parenthost->get('satellite_id') === $this->get('satellite_id')) {
+                $parenthosts[] = $parenthost->get('uuid');
+            }
+        }
+
+        return $parenthosts;
+    }
+
+    /**
+     * @return array
+     */
     public function getCommandargumentValuesForCfg() {
         $hostcommandargumentvaluesForCfg = [];
         $hostcommandargumentvalues = $this->get('hostcommandargumentvalues');
@@ -348,7 +363,7 @@ class Host extends Entity {
      * @return bool
      */
     public function isSatelliteHost() {
-        return $this->get('satellite_id') === 0;
+        return $this->get('satellite_id') > 0;
     }
 
 }

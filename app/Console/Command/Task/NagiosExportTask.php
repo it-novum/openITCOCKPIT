@@ -33,7 +33,6 @@ use App\Model\Table\MacrosTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
-use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 
@@ -108,6 +107,21 @@ class NagiosExportTask extends AppShell {
     }
 
     /**
+     * @var KeyValueStore
+     */
+    private $TimeperiodUuidsCache;
+
+    /**
+     * @var KeyValueStore
+     */
+    private $CommandUuidsCache;
+
+    /**
+     * @var KeyValueStore
+     */
+    private $HosttemplateHostgroupsCache;
+
+    /**
      * SudoServer normally runs 24/7 so we need to refresh
      * class variables for each export, may be some thing changed in
      * Systemsettings, Satelliteconfig, or in on of the config files
@@ -133,6 +147,21 @@ class NagiosExportTask extends AppShell {
         $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
             return strpos($value, 'Module') !== false;
         });
+
+
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+
+        $this->TimeperiodUuidsCache = new KeyValueStore();
+        $this->TimeperiodUuidsCache->setArray($TimeperiodsTable->getAllTimeperiodsUuidsAsList());
+
+        $this->CommandUuidsCache = new KeyValueStore();
+        $this->CommandUuidsCache->setArray($CommandsTable->getAllCommandsUuidsAsList());
+
+        $this->HosttemplateHostgroupsCache = new KeyValueStore();
+
         if (in_array('DistributeModule', $modulePlugins)) {
             $this->dm = true;
             $this->dmConfig = [];
@@ -505,17 +534,8 @@ class NagiosExportTask extends AppShell {
             $content = $this->fileHeader();
         }
 
-
-        /** @var $CommandsTable CommandsTable */
-        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-
-        $CommandUuidsCache = new KeyValueStore();
-        $TimeperiodUuidsCache = new KeyValueStore();
-        $HosttemplateHostgroupsCache = new KeyValueStore();
 
         foreach ($hosts as $host) {
             /** @var $host \App\Model\Entity\Host */
@@ -550,21 +570,12 @@ class NagiosExportTask extends AppShell {
                     if ($host->get('command_id') === null) {
                         //Host has own command arguments but uses the same command as the host template
                         $commandId = $host->get('hosttemplate')->get('command_id');
-                        if (!$CommandUuidsCache->has($commandId)) {
-                            $commandUuid = $CommandsTable->getCommandUuidByCommandId($commandId);
-                            $CommandUuidsCache->set($commandId, $commandUuid);
-                        }
-
-                        $commandUuid = $CommandUuidsCache->get($commandId);
                     } else {
                         //Host has own command arguments AND own check command
                         $commandId = $host->get('command_id');
-                        if (!$CommandUuidsCache->has($commandId)) {
-                            $commandUuid = $CommandsTable->getCommandUuidByCommandId($commandId);
-                            $CommandUuidsCache->set($commandId, $commandUuid);
-                        }
-                        $commandUuid = $CommandUuidsCache->get($commandId);
                     }
+
+                    $commandUuid = $this->CommandUuidsCache->get($commandId);
 
                     $commandarguments = $host->getCommandargumentValuesForCfg();
                     $content .= $this->addContent('check_command', 1, sprintf(
@@ -578,11 +589,7 @@ class NagiosExportTask extends AppShell {
                     if ($host->get('command_id') !== null) {
                         //Host has own check command but this command has no arguments at all
                         $commandId = $host->get('command_id');
-                        if (!$CommandUuidsCache->has($commandId)) {
-                            $commandUuid = $CommandsTable->getCommandUuidByCommandId($commandId);
-                            $CommandUuidsCache->set($commandId, $commandUuid);
-                        }
-                        $commandUuid = $CommandUuidsCache->get($commandId);
+                        $commandUuid = $this->CommandUuidsCache->get($commandId);
                         $content .= $this->addContent('check_command', 1, $commandUuid);
                     }
                 }
@@ -594,19 +601,15 @@ class NagiosExportTask extends AppShell {
             }
 
             if ($host->get('check_period_id')) {
-                if (!$TimeperiodUuidsCache->has($host->get('check_period_id'))) {
-                    $timeperiodUuid = $TimeperiodsTable->getTimeperiodUuidById($host->get('check_period_id'));
-                    $TimeperiodUuidsCache->set($host->get('check_period_id'), $timeperiodUuid);
-                }
-                $timeperiodUuid = $TimeperiodUuidsCache->get($host->get('check_period_id'));
+                $timeperiodUuid = $this->TimeperiodUuidsCache->get($host->get('check_period_id'));
                 $content .= $this->addContent('check_period', 1, $timeperiodUuid);
             }
 
-            if ($host->get('check_interval')) {
+            if ($host->get('check_interval') !== null && $host->get('check_interval') !== '') {
                 $content .= $this->addContent('check_interval', 1, $host->get('check_interval'));
             }
 
-            if ($host->get('retry_interval')) {
+            if ($host->get('retry_interval') !== null && $host->get('retry_interval') !== '') {
                 $content .= $this->addContent('retry_interval', 1, $host->get('retry_interval'));
             }
 
@@ -684,11 +687,7 @@ class NagiosExportTask extends AppShell {
                 $content .= $this->addContent('notification_interval', 1, $host->get('notification_interval'));
 
             if ($host->get('notify_period_id')) {
-                if (!$TimeperiodUuidsCache->has($host->get('notify_period_id'))) {
-                    $timeperiodUuid = $TimeperiodsTable->getTimeperiodUuidById($host->get('notify_period_id'));
-                    $TimeperiodUuidsCache->set($host->get('notify_period_id'), $timeperiodUuid);
-                }
-                $timeperiodUuid = $TimeperiodUuidsCache->get($host->get('notify_period_id'));
+                $timeperiodUuid = $this->TimeperiodUuidsCache->get($host->get('notify_period_id'));
                 $content .= $this->addContent('notification_period', 1, $timeperiodUuid);
             }
 
@@ -716,6 +715,30 @@ class NagiosExportTask extends AppShell {
                 $content .= $this->addContent('notes', 1, $this->escapeLastBackslash($host->get('notes')));
             }
 
+            if (!$this->HosttemplateHostgroupsCache->has($host->get('hosttemplate_id'))) {
+                //Load hostgroups of the host template
+                $hostgroups = [];
+                $result = $HosttemplatesTable->getHostgroupsByHosttemplateId($host->get('hosttemplate_id'));
+                if (!empty($result['hostgroups'])) {
+                    $hostgroups = \Cake\Utility\Hash::extract($result['hostgroups'], '{n}.uuid');
+                }
+
+                $this->HosttemplateHostgroupsCache->set($host->get('hosttemplate_id'), implode(',', $hostgroups));
+            }
+            $hosttemplateHostgroupsForCfg = $this->HosttemplateHostgroupsCache->get($host->get('hosttemplate_id'));
+
+            if (!empty($host->get('hostgroups'))) {
+                //Use host groups of the host
+                $content .= $this->nl();
+                $content .= $this->addContent(';Hostgroup memberships:', 1);
+                $content .= $this->addContent('hostgroups', 1, $host->getHostgroupsForCfg());
+            } else if (empty($host->get('hostgroups')) && strlen($hosttemplateHostgroupsForCfg) > 0) {
+                //Use host groups of host template configuration
+                $content .= $this->nl();
+                $content .= $this->addContent(';Hostgroup memberships:', 1);
+                $content .= $this->addContent('hostgroups', 1, $hosttemplateHostgroupsForCfg);
+            }
+
             if ($host->hasCustomvariables()) {
                 $content .= $this->nl();
                 $content .= $this->addContent(';Custom  variables:', 1);
@@ -723,42 +746,6 @@ class NagiosExportTask extends AppShell {
                     $content .= $this->addContent($varName, 1, $varValue);
                 }
             }
-
-            if (!$HosttemplateHostgroupsCache->has($host->get('hosttemplate_id'))) {
-                //Load hostgroups of the host template
-                $query = $HosttemplatesTable->find()
-                    ->select([
-                        'Hosttemplates.id'
-                    ])
-                    ->contain([
-                        'Hostgroups' =>
-                            function (Query $query) {
-                                return $query->enableAutoFields(false)->select(['id', 'uuid']);
-                            }
-                    ])
-                    ->where([
-                        'Hosttemplates.id' => $host->get('hosttemplate_id')
-                    ])
-                    ->disableHydration()
-                    ->first();
-
-                $hostgroups = [];
-                if (!empty($query['hostgroups'])) {
-                    $hostgroups = \Cake\Utility\Hash::extract($query['hostgroups'], '{n}.uuid');
-                }
-
-                $HosttemplateHostgroupsCache->set($host->get('hosttemplate_id'), implode(',', $hostgroups));
-            }
-            $hosttemplateHostgroupsForCfg = $HosttemplateHostgroupsCache->get($host->get('hosttemplate_id'));
-
-            if (!empty($host->get('hostgroups'))) {
-                //Use host groups of the host
-                $content .= $this->addContent('hostgroups', 1, $host->getHostgroupsForCfg());
-            } else if (empty($host->get('hostgroups')) && strlen($hosttemplateHostgroupsForCfg) > 0) {
-                //Use host groups of host template configuration
-                $content .= $this->addContent('hostgroups', 1, $hosttemplateHostgroupsForCfg);
-            }
-
 
             $content .= $this->addContent('}', 0);
 
@@ -768,30 +755,10 @@ class NagiosExportTask extends AppShell {
             }
 
 
-            if ($this->dm === true && $host['Host']['satellite_id'] > 0) {
+            if ($this->dm === true && $host->isSatelliteHost()) {
                 //Generate config file for sat nagios
-                $this->exportSatHost($host, $commandarguments);
-
-                /*
-                 * May be not all hosts in hostgroup 'foo' are available on SAT system 'bar', so we create an array
-                 * with all hosts from system 'bar' in hostgroup 'foo' for each SAT system
-                 */
-                if (!empty($host['Hostgroup'])) {
-                    foreach ($host['Hostgroup'] as $hostgroup) {
-                        $this->dmConfig[$host['Host']['satellite_id']]['Hostgroup'][$hostgroup['uuid']][] = $host['Host']['uuid'];
-                    }
-                }
-                if (empty($host['Hostgroup']) && !empty($host['Hosttemplate']['Hostgroup'])) {
-                    foreach ($host['Hosttemplate']['Hostgroup'] as $hostgroup) {
-                        $this->dmConfig[$host['Host']['satellite_id']]['Hostgroup'][$hostgroup['uuid']][] = $host['Host']['uuid'];
-                    }
-                }
+                $this->exportSatHost($host, $HosttemplatesTable);
             }
-
-            if (isset($commandarguments)) {
-                unset($commandarguments);
-            }
-
         }
         if ($this->conf['minified']) {
             $file->write($content);
@@ -807,20 +774,17 @@ class NagiosExportTask extends AppShell {
 
     /**
      * @param \App\Model\Entity\Host $host
-     * @param null|array $commandarguments
+     * @param HosttemplatesTable $HosttemplatesTable
      */
-    private function exportSatHost(\App\Model\Entity\Host $host, $commandarguments) {
+    private function exportSatHost(\App\Model\Entity\Host $host, HosttemplatesTable $HosttemplatesTable) {
         $satelliteId = $host->get('satellite_id');
-
-        /** @var $CommandsTable CommandsTable */
-        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
 
         if (!is_dir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hosts'])) {
             mkdir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hosts']);
         }
 
         if (!$this->conf['minified']) {
-            $file = new File($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hosts'] . $host['Host']['uuid'] . $this->conf['suffix']);
+            $file = new File($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hosts'] . $host->get('uuid') . $this->conf['suffix']);
             $content = $this->fileHeader();
         } else {
             $file = new File($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hosts'] . 'hosts_minified' . $this->conf['suffix']);
@@ -832,131 +796,147 @@ class NagiosExportTask extends AppShell {
         }
 
         $content .= $this->addContent('define host{', 0);
-        $content .= $this->addContent('use', 1, $host['Hosttemplate']['uuid']);
-        $content .= $this->addContent('host_name', 1, $host['Host']['uuid']);
-        $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash($host['Host']['name']));
-        $content .= $this->addContent('address', 1, $host['Host']['address']);
+        $content .= $this->addContent('use', 1, $host->get('hosttemplate')->get('uuid'));
+        $content .= $this->addContent('host_name', 1, $host->get('uuid'));
+        $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash($host->get('name')));
+        $content .= $this->addContent('address', 1, $this->escapeLastBackslash($host->get('address')));
 
 
-        if ($host['Host']['description'] !== null && $host['Host']['description'] !== '')
-            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($host['Host']['description']));
+        if ($host->get('description'))
+            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($host->get('description')));
 
-        if (!empty($host['Parenthost'])) {
-
-            $parenthosts = [];
-            //Only wirte the parent hosts to monitoring config, that exists on this satellite
-            foreach ($host['Parenthost'] as $parenthost) {
-                if ($parenthost['satellite_id'] == $host['Host']['satellite_id']) {
-                    if ($parenthost['disabled'] == 0) {
-                        //Only write active hosts to monitoring configuration
-                        $parenthosts[] = $parenthost['uuid'];
-                    }
-                }
-            }
-
-            if (!empty($parenthosts)) {
-                $content .= $this->addContent('parents', 1, implode(',', $parenthosts));
-            }
+        $parenthosts = $host->getParentHostsForSatCfgAsArray();
+        if (!empty($parenthosts)) {
+            $content .= $this->addContent('parents', 1, implode(',', $parenthosts));
         }
 
         $content .= $this->nl();
         $content .= $this->addContent(';Check settings:', 1);
-        if (isset($commandarguments) && !empty($commandarguments)) {
-            if ($host['CheckCommand']['uuid'] !== null && $host['CheckCommand']['uuid'] !== '') {
-                //The host has its own check_command and own command args
-                $content .= $this->addContent('check_command', 1, $host['CheckCommand']['uuid'] . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+
+        if (!empty($host->get('hostcommandargumentvalues'))) {
+            if ($host->get('command_id') === null) {
+                //Host has own command arguments but uses the same command as the host template
+                $commandId = $host->get('hosttemplate')->get('command_id');
             } else {
-                //The host only has its own command args, but the same command as the hosttemplate
-                //This is not supported by nagios, so we need to select the command and create the
-                //config with the right comman
-                $command_id = Hash::extract($commandarguments, '{n}.Commandargument.command_id');
-                if (!empty($command_id)) {
-                    $command_id = array_pop($command_id);
-                    $command = $CommandsTable->getCommandUuidByCommandId($command_id);
-                    $content .= $this->addContent('check_command', 1, $command . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
-                    unset($command);
-                }
+                //Host has own command arguments AND own check command
+                $commandId = $host->get('command_id');
             }
+
+            $commandUuid = $this->CommandUuidsCache->get($commandId);
+            $commandarguments = $host->getCommandargumentValuesForCfg();
+            $content .= $this->addContent('check_command', 1, sprintf(
+                '%s!%s; %s',
+                $commandUuid,
+                implode('!', Hash::extract($commandarguments, '{n}.value')),
+                implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+            ));
         } else {
-            if ($host['CheckCommand']['uuid'] !== null && $host['CheckCommand']['uuid'] !== '')
-                $content .= $this->addContent('check_command', 1, $host['CheckCommand']['uuid']);
+            //May be check command without arguments
+            if ($host->get('command_id') !== null) {
+                //Host has own check command but this command has no arguments at all
+                $commandId = $host->get('command_id');
+                $commandUuid = $this->CommandUuidsCache->get($commandId);
+                $content .= $this->addContent('check_command', 1, $commandUuid);
+            }
         }
 
-        if ($host['CheckPeriod']['uuid'] !== null && $host['CheckPeriod']['uuid'] !== '')
-            $content .= $this->addContent('check_period', 1, $host['CheckPeriod']['uuid']);
+        if ($host->get('check_period_id')) {
+            $timeperiodUuid = $this->TimeperiodUuidsCache->get($host->get('check_period_id'));
+            $content .= $this->addContent('check_period', 1, $timeperiodUuid);
+        }
 
-        if ($host['Host']['check_interval'] !== null && $host['Host']['check_interval'] !== '')
-            $content .= $this->addContent('check_interval', 1, $host['Host']['check_interval']);
+        if ($host->get('check_interval') !== null && $host->get('check_interval') !== '') {
+            $content .= $this->addContent('check_interval', 1, $host->get('check_interval'));
+        }
 
-        if ($host['Host']['retry_interval'] !== null && $host['Host']['retry_interval'] !== '')
-            $content .= $this->addContent('retry_interval', 1, $host['Host']['retry_interval']);
+        if ($host->get('retry_interval') !== null && $host->get('retry_interval') !== '') {
+            $content .= $this->addContent('retry_interval', 1, $host->get('retry_interval'));
+        }
 
-        if ($host['Host']['max_check_attempts'] !== null && $host['Host']['max_check_attempts'] !== '')
-            $content .= $this->addContent('max_check_attempts', 1, $host['Host']['max_check_attempts']);
+        if ($host->get('max_check_attempts') !== null && $host->get('max_check_attempts') !== '') {
+            $content .= $this->addContent('max_check_attempts', 1, $host->get('max_check_attempts'));
+        }
 
-        if ($host['Host']['active_checks_enabled'] !== null && $host['Host']['active_checks_enabled'] !== '')
-            $content .= $this->addContent('active_checks_enabled', 1, $host['Host']['active_checks_enabled']);
+        if ($host->get('active_checks_enabled') !== null && $host->get('active_checks_enabled') !== '')
+            $content .= $this->addContent('active_checks_enabled', 1, $host->get('active_checks_enabled'));
 
-        if ($host['Host']['passive_checks_enabled'] !== null && $host['Host']['passive_checks_enabled'] !== '')
-            $content .= $this->addContent('passive_checks_enabled', 1, $host['Host']['passive_checks_enabled']);
+        if ($host->get('passive_checks_enabled') !== null && $host->get('passive_checks_enabled') !== '')
+            $content .= $this->addContent('passive_checks_enabled', 1, $host->get('passive_checks_enabled'));
 
         $content .= $this->nl();
         $content .= $this->addContent(';Notification settings:', 1);
 
-        if ($host['Host']['notifications_enabled'] !== null && $host['Host']['notifications_enabled'] !== '')
-            $content .= $this->addContent('notifications_enabled', 1, $host['Host']['notifications_enabled']);
+        if ($host->get('notifications_enabled') !== null && $host->get('notifications_enabled') !== '')
+            $content .= $this->addContent('notifications_enabled', 1, $host->get('notifications_enabled'));
 
-        if (!empty($host['Contact']))
-            $content .= $this->addContent('contacts', 1, implode(',', Hash::extract($host['Contact'], '{n}.uuid')));
+        if (!empty($host->get('contacts')))
+            $content .= $this->addContent('contacts', 1, $host->getContactsforCfg());
 
-        if (!empty($host['Contactgroup']))
-            $content .= $this->addContent('contact_groups', 1, implode(',', Hash::extract($host['Contactgroup'], '{n}.uuid')));
+        if (!empty($host->get('contactgroups'))) {
+            $content .= $this->addContent('contact_groups', 1, $host->getContactgroupsforCfg());
+        }
 
-        if ($host['Host']['notification_interval'] !== null && $host['Host']['notification_interval'] !== '')
-            $content .= $this->addContent('notification_interval', 1, $host['Host']['notification_interval']);
+        if ($host->get('notification_interval') !== null && $host->get('notification_interval') !== '')
+            $content .= $this->addContent('notification_interval', 1, $host->get('notification_interval'));
 
-        if ($host['NotifyPeriod']['uuid'] !== null && $host['NotifyPeriod']['uuid'] !== '')
-            $content .= $this->addContent('notification_period', 1, $host['NotifyPeriod']['uuid']);
+        if ($host->get('notify_period_id')) {
+            $timeperiodUuid = $this->TimeperiodUuidsCache->get($host->get('notify_period_id'));
+            $content .= $this->addContent('notification_period', 1, $timeperiodUuid);
+        }
 
-        $hostNotificationString = $this->hostNotificationString($host['Host']);
-        if (!empty($hostNotificationString)) {
-            $content .= $this->addContent('notification_options', 1, $hostNotificationString);
+        if (strlen($host->getNotificationOptionsForCfg()) > 0) {
+            $content .= $this->addContent('notification_options', 1, $host->getNotificationOptionsForCfg());
         }
 
         $content .= $this->nl();
         $content .= $this->addContent(';Flap detection settings:', 1);
 
-        if ($host['Host']['flap_detection_enabled'] === '1' || $host['Host']['flap_detection_enabled'] === '0')
-            $content .= $this->addContent('flap_detection_enabled', 1, $host['Host']['flap_detection_enabled']);
+        if ($host->get('flap_detection_enabled') === 1 || $host->get('flap_detection_enabled') === 0)
+            $content .= $this->addContent('flap_detection_enabled', 1, $host->get('flap_detection_enabled'));
 
-        if (
-            ($host['Host']['flap_detection_on_up'] === '1' || $host['Host']['flap_detection_on_up'] === '0') ||
-            ($host['Host']['flap_detection_on_down'] === '1' || $host['Host']['flap_detection_on_down'] === '0') ||
-            ($host['Host']['flap_detection_on_unreachable'] === '1' || $host['Host']['flap_detection_on_unreachable'] === '0')
-        ) {
-            if ($host['Host']['flap_detection_enabled'] === '1') {
-                $content .= $this->addContent('flap_detection_options', 1, $this->hostFlapdetectionString($host['Host']));
-            }
+        if ($host->get('flap_detection_enabled') === 1 && strlen($host->getFlapdetectionOptionsForCfg()) > 0) {
+            $content .= $this->addContent('flap_detection_options', 1, $host->getFlapdetectionOptionsForCfg());
         }
 
         $content .= $this->nl();
         $content .= $this->addContent(';Everything else:', 1);
 
-        if (isset($host['Host']['process_performance_data'])) {
-            if ($host['Host']['process_performance_data'] == 1 || $host['Host']['process_performance_data'] == 0)
-                $content .= $this->addContent('process_perf_data', 1, $host['Host']['process_performance_data']);
-        }
-        if (!empty($host['Host']['notes'])) {
-            if ($host['Host']['notes'] !== null && $host['Host']['notes'] !== '')
-                $content .= $this->addContent('notes', 1, $host['Host']['notes']);
+        if ($host->get('process_performance_data') === 1 || $host->get('process_performance_data') === 0)
+            $content .= $this->addContent('process_perf_data', 1, $host->get('process_performance_data'));
+
+        if ($host->get('notes') && strlen($host->get('notes')) > 0) {
+            $content .= $this->addContent('notes', 1, $this->escapeLastBackslash($host->get('notes')));
         }
 
+        if (!$this->HosttemplateHostgroupsCache->has($host->get('hosttemplate_id'))) {
+            //Load hostgroups of the host template
+            $hostgroups = [];
+            $result = $HosttemplatesTable->getHostgroupsByHosttemplateId($host->get('hosttemplate_id'));
+            if (!empty($result['hostgroups'])) {
+                $hostgroups = \Cake\Utility\Hash::extract($result['hostgroups'], '{n}.uuid');
+            }
 
-        if (!empty($host['Customvariable'])) {
+            $this->HosttemplateHostgroupsCache->set($host->get('hosttemplate_id'), implode(',', $hostgroups));
+        }
+        $hosttemplateHostgroupsForCfg = $this->HosttemplateHostgroupsCache->get($host->get('hosttemplate_id'));
+
+        if (!empty($host->get('hostgroups'))) {
+            //Use host groups of the host
+            $content .= $this->nl();
+            $content .= $this->addContent(';Hostgroup memberships:', 1);
+            $content .= $this->addContent('hostgroups', 1, $host->getHostgroupsForCfg());
+        } else if (empty($host->get('hostgroups')) && strlen($hosttemplateHostgroupsForCfg) > 0) {
+            //Use host groups of host template configuration
+            $content .= $this->nl();
+            $content .= $this->addContent(';Hostgroup memberships:', 1);
+            $content .= $this->addContent('hostgroups', 1, $hosttemplateHostgroupsForCfg);
+        }
+
+        if ($host->hasCustomvariables()) {
             $content .= $this->nl();
             $content .= $this->addContent(';Custom  variables:', 1);
-            foreach ($host['Customvariable'] as $customvariable) {
-                $content .= $this->addContent('_' . $customvariable['name'], 1, $customvariable['value']);
+            foreach ($host->getCustomvariablesForCfg() as $varName => $varValue) {
+                $content .= $this->addContent($varName, 1, $varValue);
             }
         }
         $content .= $this->addContent('}', 0);
@@ -2526,31 +2506,53 @@ class NagiosExportTask extends AppShell {
     }
 
     public function exportSatHostgroups() {
-        if (!empty($this->dmConfig) && is_array($this->dmConfig)) {
-            foreach ($this->dmConfig as $sat_id => $data) {
-                //Create hostgroups configuration
-                if (isset($data['Hostgroup']) && !empty($data['Hostgroup'])) {
-                    if (!is_dir($this->conf['satellite_path'] . $sat_id . DS . $this->conf['hostgroups'])) {
-                        mkdir($this->conf['satellite_path'] . $sat_id . DS . $this->conf['hostgroups']);
-                    }
-                    foreach ($data['Hostgroup'] as $hostgroupUuid => $members) {
-                        $file = new File($this->conf['satellite_path'] . $sat_id . DS . $this->conf['hostgroups'] . $hostgroupUuid . $this->conf['suffix']);
+        $hostgroups = $this->Hostgroup->find('all', [
+            'recursive' => -1,
+            'fields'    => [
+                'Hostgroup.id',
+                'Hostgroup.uuid',
+                'Hostgroup.description',
+            ],
+        ]);
 
-                        $content = $this->fileHeader();
-                        if (!$file->exists()) {
-                            $file->create();
-                        }
+        foreach ($this->Satellites as $satellite) {
+            $satelliteId = $satellite['Satellite']['id'];
 
-                        $content .= $this->addContent('define hostgroup{', 0);
-                        $content .= $this->addContent('hostgroup_name', 1, $hostgroupUuid);
-                        $content .= $this->addContent('alias', 1, $hostgroupUuid);
-                        $content .= $this->addContent('members', 1, implode(',', $members));
-                        $content .= $this->addContent('}', 0);
+            if (!is_dir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hostgroups'])) {
+                mkdir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hostgroups']);
+            }
 
-                        $file->write($content);
-                        $file->close();
+            if ($this->conf['minified']) {
+                $file = new File($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hostgroups'] . 'hostgroups_minified' . $this->conf['suffix']);
+                if (!$file->exists()) {
+                    $file->create();
+                }
+                $content = $this->fileHeader();
+            }
+
+            foreach ($hostgroups as $hostgroup) {
+                if (!$this->conf['minified']) {
+                    $file = new File($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hostgroups'] . $hostgroup['Hostgroup']['uuid'] . $this->conf['suffix']);
+
+                    $content = $this->fileHeader();
+                    if (!$file->exists()) {
+                        $file->create();
                     }
                 }
+
+                $content .= $this->addContent('define hostgroup{', 0);
+                $content .= $this->addContent('hostgroup_name', 1, $hostgroup['Hostgroup']['uuid']);
+                $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($hostgroup['Hostgroup']['description']));
+                $content .= $this->addContent('}', 0);
+
+                if (!$this->conf['minified']) {
+                    $file->write($content);
+                    $file->close();
+                }
+            }
+            if ($this->conf['minified']) {
+                $file->write($content);
+                $file->close();
             }
         }
     }
@@ -2584,17 +2586,6 @@ class NagiosExportTask extends AppShell {
         }
     }
 
-    /**
-     * @param array $hostOrHosttemplate
-     *
-     * @return string
-     * @deprecated Move to Entity
-     */
-    public function hostNotificationString($hostOrHosttemplate = []) {
-        $fields = ['notify_on_down' => 'd', 'notify_on_unreachable' => 'u', 'notify_on_recovery' => 'r', 'notify_on_flapping' => 'f', 'notify_on_downtime' => 's'];
-
-        return $this->_implode($hostOrHosttemplate, $fields);
-    }
 
     /**
      * @param array $serviceOrServicetemplate

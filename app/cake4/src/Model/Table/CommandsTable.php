@@ -332,6 +332,18 @@ class CommandsTable extends Table {
     }
 
     /**
+     * @return array
+     */
+    public function getAllCommandsUuidsAsList() {
+        $query = $this->find('list', [
+            'keyField'   => 'id',
+            'valueField' => 'uuid'
+        ])
+            ->disableHydration();
+        return $query->toArray();
+    }
+
+    /**
      * @param int $id
      * @return bool
      */

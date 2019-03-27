@@ -53,6 +53,15 @@ class KeyValueStore {
     }
 
     /**
+     * @param array $data
+     */
+    public function setArray($data){
+        foreach($data as $key => $value){
+            $this->set($key, $value);
+        }
+    }
+
+    /**
      * @param string|int $key
      * @return mixed
      * @throws \NotFoundException

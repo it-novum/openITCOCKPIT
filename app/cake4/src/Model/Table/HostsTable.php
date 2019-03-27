@@ -1285,7 +1285,7 @@ class HostsTable extends Table {
                 'Customvariables',
                 'Parenthosts'               =>
                     function (Query $q) {
-                        return $q->enableAutoFields(false)->select(['id', 'uuid', 'disabled']);
+                        return $q->enableAutoFields(false)->select(['id', 'uuid', 'disabled', 'satellite_id']);
                     },
                 'Hostcommandargumentvalues' => [
                     'Commandarguments'

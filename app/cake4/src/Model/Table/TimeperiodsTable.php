@@ -152,6 +152,18 @@ class TimeperiodsTable extends Table {
     }
 
     /**
+     * @return array
+     */
+    public function getAllTimeperiodsUuidsAsList() {
+        $query = $this->find('list', [
+            'keyField'   => 'id',
+            'valueField' => 'uuid'
+        ])
+            ->disableHydration();
+        return $query->toArray();
+    }
+
+    /**
      * @param TimeperiodsFilter $TimeperiodsFilter
      * @param null|PaginateOMat $PaginateOMat
      * @return array

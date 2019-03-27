@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -834,6 +835,30 @@ class HosttemplatesTable extends Table {
         }
 
         return false;
+    }
+
+    /**
+     * @param int $id
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getHostgroupsByHosttemplateId($id){
+        $query = $this->find()
+            ->select([
+                'Hosttemplates.id'
+            ])
+            ->contain([
+                'Hostgroups' =>
+                    function (Query $query) {
+                        return $query->enableAutoFields(false)->select(['id', 'uuid']);
+                    }
+            ])
+            ->where([
+                'Hosttemplates.id' => $id
+            ])
+            ->disableHydration()
+            ->first();
+
+        return $query;
     }
 
     /**
