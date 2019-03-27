@@ -233,8 +233,8 @@
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('usedBy', 'users')): ?>
-                                                    <li>
+                                                <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
+                                                    <li ng-if="!user.User.samaccountname">
                                                         <a ui-sref="UsersResetPassword({id:user.User.id})">
                                                             <i class="fa fa-reply-all fa-flip-horizontal"></i>
                                                             <?php echo __('Reset Password'); ?>

@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Cronschedule
+ * @deprecated use cake 4 model
+ */
 class Cronschedule extends AppModel {
     //public $belongsTo = ['Cronjob'];
 }

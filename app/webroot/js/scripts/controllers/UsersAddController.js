@@ -7,9 +7,9 @@ angular.module('openITCOCKPIT')
                 'email': '',
                 'firstname': '',
                 'lastname': '',
-                'company': '',
-                'position': '',
-                'phone': '',
+                'company': null,
+                'position': null,
+                'phone': null,
                 'password': '',
                 'confirm_password': '',
                 'usergroup_id': '',
@@ -104,7 +104,7 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                //$state.go('UsersIndex');
+                $state.go('UsersIndex');
 
             }, function errorCallback(result){
                 NotyService.genericError();

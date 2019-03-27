@@ -214,6 +214,7 @@ class UsersTable extends Table {
         if (!empty($entity->password)) {
             $entity->password = Security::hash($entity->password, null, true);
         }
+
         return true;
     }
 
@@ -386,6 +387,38 @@ class UsersTable extends Table {
             $user = array_merge($user, $containerPermissions);
         }
         return $user;
+    }
+
+    public function getUserByEmail($email = null) {
+        $query = $this->find()
+            ->disableHydration()
+            ->where([
+                'Users.email'  => $email,
+                'Users.status' => 1,
+            ])
+            ->select([
+                'Users.id',
+                'Users.email',
+                'Users.company',
+                'Users.status',
+                'Users.samaccountname',
+                'Users.usergroup_id',
+                //'Users.password',
+                'Users.firstname',
+                'Users.lastname',
+                'Users.position',
+                'Users.phone',
+                'Users.timezone',
+                'Users.dateformat',
+                'Users.showstatsinmenu',
+                'Users.dashboard_tab_rotation',
+                'Users.paginatorlength',
+                'Users.recursive_browser',
+            ]);
+        if (!is_null($query)) {
+            return $query->first();
+        }
+        return [];
     }
 
     /**

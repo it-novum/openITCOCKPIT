@@ -174,19 +174,20 @@ class LoginController extends AppController {
                 unset($this->request->data['email']);
             }
 
-
             $this->Auth->logout();
             $this->request->data = ['User' => $this->data['LoginUser']];
 
+            /** @var $Users App\Model\Table\UsersTable */
+            $Users = TableRegistry::getTableLocator()->get('Users');
+            $__user = null;
             // Allow login in with nickname or email address
-            if (!empty($this->data['User']['email']) && !Validation::email($this->data['User']['email'])) {
-                $user = $this->User->findByEmail($this->data['User']['email']);
+            if (!empty($this->data['User']['email'])) {
+                $__user = $Users->getUserByEmail($this->data['User']['email']);
                 if (!empty($user)) {
-                    $this->request->data['User']['email'] = $user['User']['email'];
+                    $this->request->data['User']['email'] = $__user['email'];
                 }
             }
 
-            $__user = null;
             if (isset($this->data['User']['auth_method']) && $this->data['User']['auth_method'] == 'ldap') {
                 $__user = $this->User->findBySamaccountname(strtolower($this->data['User']['samaccountname']));
             }
@@ -194,27 +195,7 @@ class LoginController extends AppController {
             if (!isset($this->request->data['User']['auth_method'])) {
                 $this->request->data['User']['auth_method'] = $systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'];
             }
-
             if ($this->Auth->login($__user, $this->request->data['User']['auth_method'])) {
-                //MOVED TO AppController!!!
-                //$_user = $this->User->findById($this->Auth->user('id'));
-                //$rights = [ROOT_CONTAINER];
-                //$hasRootPrivileges = false;
-                //foreach($_user['Container'] as $container){
-                //	$rights[] = (int)$container['id'];
-
-                //
-                //	if((int)$container['id'] === ROOT_CONTAINER){
-                //		$hasRootPrivileges = true;
-                //	}
-                //
-                //	foreach($this->Container->children($container['id'], true) as $childContainer){
-                //		$rights[] = (int)$childContainer['Container']['id'];
-                //	}
-                //}
-                //$this->Session->write('MY_RIGHTS', array_unique($rights));
-                //$this->Session->write('hasRootPrivileges', $hasRootPrivileges);
-
                 if (isset($this->data['User']['remember_me']) && $this->data['User']['remember_me'] &&
                     $systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] != 'twofactor'
                 ) {
@@ -298,7 +279,7 @@ class LoginController extends AppController {
         }
         //$this->layout = 'lock';
         $_user = $this->User->findById($id);
-        
+
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $this->_systemsettings = $Systemsettings->findAsArray();

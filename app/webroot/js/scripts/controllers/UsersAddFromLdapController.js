@@ -7,12 +7,12 @@ angular.module('openITCOCKPIT')
                 'ldap': 1,
                 'status': '',
                 'email': '',
-                'samaccountname': '', //username
+                'samaccountname': null, //username
                 'firstname': '',
                 'lastname': '',
-                'company': '',
-                'position': '',
-                'phone': '',
+                'company': null,
+                'position': null,
+                'phone': null,
                 'usergroup_id': '',
                 'ldap_dn': null,
                 'showstatsinmenu': 0,
