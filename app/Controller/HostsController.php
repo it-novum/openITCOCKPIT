@@ -696,56 +696,121 @@ class HostsController extends AppController {
         }
     }
 
-    /**
-     * @deprecated
-     */
     public function sharing($id = null) {
-        $this->set('MY_RIGHTS', $this->MY_RIGHTS);
-        $userId = $this->Auth->user('id');
+        $this->layout = 'blank';
 
-        if (!$this->Host->exists($id)) {
-            throw new NotFoundException(__('Invalid host'));
-        }
-
-        $host = $this->Host->find('first', [
-            'conditions' => [
-                'Host.id' => $id,
-            ],
-            'contain'    => [
-                'Container',
-            ],
-        ]);
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck)) {
-            $this->render403();
-
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        $User = new User($this->Auth);
 
-        $sharingContainers = array_diff_key($containers, [$host['Host']['container_id'] => $host['Host']['container_id']]);
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Container']['Container'][] = $this->request->data['Host']['container_id'];
-            if ($this->Host->saveAll(Hash::merge($this->request->data, $host))) {
-                if ($this->request->ext == 'json') {
-                    $this->serializeId(); // REST API ID serialization
-                } else {
-                    $this->setFlash(__('Host modified successfully'));
-                    $redirect = $this->Host->redirect($this->request->params, ['action' => 'index']);
-                    $this->redirect($redirect);
-                }
+        if (!$HostsTable->existsById($id)) {
+            throw new NotFoundException(__('Host not found'));
+        }
+
+        $host = $HostsTable->getHostSharing($id);
+        $hostForChangelog = $host;
+
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
+            $this->render403();
+            return;
+        }
+
+        $HostContainersPermissions = new HostContainersPermissions(
+            $host['Host']['container_id'],
+            $host['Host']['hosts_to_containers_sharing']['_ids'],
+            $this->getWriteContainers(),
+            $this->hasRootPrivileges
+        );
+
+        $allowSharing = $HostContainersPermissions->allowSharing($this->MY_RIGHTS, $host['Host']['host_type']);
+
+        if (!$allowSharing) {
+            $this->render403();
+            return;
+        }
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return host information
+
+            //In sharing view the user can not change the primary container
+            //This is because may be contacts or timeperiods etc are not available in the new container
+            //For this reason we fake the container select box for design reasons
+            $primaryContainerPath = $ContainersTable->getPathByIdAsString($host['Host']['container_id']);
+            $primaryContainerPathSelect = Api::makeItJavaScriptAble([
+                $host['Host']['container_id'] => $primaryContainerPath
+            ]);
+
+            $sharingContainers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            if (isset($sharingContainers[$host['Host']['container_id']])) {
+                //Remove primary container from result
+                unset($sharingContainers[$host['Host']['container_id']]);
+            }
+            $sharingContainers = Api::makeItJavaScriptAble($sharingContainers);
+
+            $this->set('host', $host);
+            $this->set('primaryContainerPathSelect', $primaryContainerPathSelect);
+            $this->set('sharingContainers', $sharingContainers);
+            $this->set('_serialize', [
+                'host',
+                'primaryContainerPathSelect',
+                'sharingContainers'
+            ]);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $hostEntity = $HostsTable->get($id);
+
+            //Only use this one field to avoid data manipulation!
+            $newSharingContainers = [
+                'hosts_to_containers_sharing' => $this->request->data('Host.hosts_to_containers_sharing')
+            ];
+
+            //Always add primary container
+            $newSharingContainers['hosts_to_containers_sharing']['_ids'][] = $hostEntity->get('container_id');
+
+            $hostEntity = $HostsTable->patchEntity($hostEntity, $newSharingContainers);
+            $HostsTable->save($hostEntity);
+            if ($hostEntity->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $hostEntity->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
             } else {
+                //No errors
+
+                // @todo fix changelog
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'edit',
+                    'hosts',
+                    $hostEntity->get('id'),
+                    OBJECT_HOST,
+                    $hostEntity->get('container_id'),
+                    $User->getId(),
+                    $hostEntity->get('name'),
+                    array_merge($HostsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
                 if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-                } else {
-                    $this->setFlash(__('Data could not be saved'), false);
+                    $this->serializeCake4Id($hostEntity); // REST API ID serialization
+                    return;
                 }
             }
+            $this->set('host', $hostEntity);
+            $this->set('_serialize', ['host']);
+            return;
         }
-        $this->set(compact(['host', 'containers', 'sharingContainers']));
     }
 
     /**

@@ -537,7 +537,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
                                     <a class="txt-color-blueDark" title="<?php echo __('Shared'); ?>"
                                        ng-if="host.Host.allow_sharing === true && host.Host.containerIds.length > 1"
-                                       href="/hosts/sharing/{{ host.Host.id }}">
+                                       ui-sref="HostsSharing({id:host.Host.id})">
                                         <i class="fa fa-sitemap fa-lg "></i></a>
 
                                     <i class="fa fa-low-vision fa-lg txt-color-blueLight"
@@ -607,7 +607,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('sharing', 'hosts')): ?>
                                                 <li ng-if="host.Host.allow_sharing">
-                                                    <a href="/hosts/sharing/{{host.Host.id}}">
+                                                    <a ui-sref="HostsSharing({id:host.Host.id})">
                                                         <i class="fa fa-sitemap fa-rotate-270"></i>
                                                         <?php echo __('Sharing'); ?>
                                                     </a>

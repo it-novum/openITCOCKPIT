@@ -275,7 +275,7 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('sharing', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_sharing">
-                                                        <a href="/hosts/sharing/{{host.Host.id}}">
+                                                        <a ui-sref="HostsSharing({id:host.Host.id})">
                                                             <i class="fa fa-sitemap fa-rotate-270"></i>
                                                             <?php echo __('Sharing'); ?>
                                                         </a>

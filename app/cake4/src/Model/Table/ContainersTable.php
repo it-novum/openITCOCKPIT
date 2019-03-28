@@ -2,7 +2,6 @@
 
 namespace App\Model\Table;
 
-use App\Lib\Constants;
 use Cake\Cache\Cache;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\ForbiddenException;
@@ -344,7 +343,7 @@ class ContainersTable extends Table {
      * @throws \Exception
      */
     public function easyPath($id, $ObjectsByConstancName, $options = [], $hasRootPrivileges = false, $exclude = []) {
-        if($this->containerCache === null){
+        if ($this->containerCache === null) {
             $query = $this->find('all')
                 ->disableHydration()
                 ->toArray();
@@ -456,6 +455,24 @@ class ContainersTable extends Table {
             }
         }, 'migration');
         return $path;
+    }
+
+    /**
+     * @param int $id
+     * @param string $delimiter
+     * @return string
+     */
+    public function getPathByIdAsString($id, $delimiter = '/') {
+        $path = $this->find('path', ['for' => $id])
+            ->disableHydration()
+            ->all()
+            ->toArray();
+        $nodes = [];
+        foreach ($path as $node) {
+            $nodes[] = $node['name'];
+        }
+
+        return $delimiter . implode($delimiter, $nodes);
     }
 
     public function getAllContainerByParentId($parentContainerId) {
