@@ -28,9 +28,6 @@ use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
 
-App::import('Model', 'Container');
-
-
 /**
  * @property Tenant $Tenant
  * @property Container $Container
@@ -57,9 +54,11 @@ class TenantsController extends AppController {
         ],
     ];
 
+    /**
+     * @deprecated
+     */
     public function index() {
         $this->layout = 'blank';
-
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
@@ -108,6 +107,10 @@ class TenantsController extends AppController {
         $this->set('_serialize', ['all_tenants']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -127,6 +130,9 @@ class TenantsController extends AppController {
         $this->set('_serialize', ['tenant']);
     }
 
+    /**
+     * @deprecated
+     */
     public function add() {
         $this->layout = 'blank';
 
@@ -164,7 +170,10 @@ class TenantsController extends AppController {
         }
     }
 
-
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -201,6 +210,10 @@ class TenantsController extends AppController {
         $this->set('_serialize', ['message']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function edit($id = null) {
         $this->layout = 'blank';
 
