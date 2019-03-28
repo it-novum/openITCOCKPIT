@@ -1,16 +1,17 @@
 angular.module('openITCOCKPIT')
     .controller('TenantsIndexController', function($scope, $http, SortService, MassChangeService){
-        SortService.setSort('Container.name');
+        SortService.setSort('Containers.name');
         SortService.setDirection('asc');
         $scope.currentPage = 1;
+        $scope.useScroll = true;
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                container: {
+                containers: {
                     name: ''
                 },
-                tenant: {
+                tenants: {
                     description: '',
                     is_active: ''
                 }
@@ -27,15 +28,17 @@ angular.module('openITCOCKPIT')
             $http.get("/tenants/index.json", {
                 params: {
                     'angular': true,
+                    'scroll': $scope.useScroll,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[Container.name]': $scope.filter.container.name,
-                    'filter[Tenant.description]': $scope.filter.tenant.description
+                    'filter[Containers.name]': $scope.filter.containers.name,
+                    'filter[Tenants.description]': $scope.filter.tenants.description
                 }
             }).then(function(result){
                 $scope.tenants = result.data.all_tenants;
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -70,19 +73,37 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
+        $scope.getObjectForDelete = function(tenant){
+            var object = {};
+            object[tenant.Tenant.id] = tenant.Tenant.container.name;
+            return object;
+        };
+
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
             for(var key in $scope.tenants){
                 for(var id in selectedObjects){
                     if(id == $scope.tenants[key].Tenant.id){
-                        objects[id] = $scope.tenants[key].Container.name;
+                        objects[id] = $scope.tenants[key].Tenant.container.name;
                     }
                 }
             }
             return objects;
         };
 
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
+
+        $scope.changepage = function(page){
+            $scope.undoSelection();
+            if(page !== $scope.currentPage){
+                $scope.currentPage = page;
+                $scope.load();
+            }
+        };
 
         //Fire on page load
         defaultFilter();

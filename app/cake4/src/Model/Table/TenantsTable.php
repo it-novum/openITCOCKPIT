@@ -2,9 +2,13 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\TenantFilter;
 
 /**
  * Tenants Model
@@ -23,6 +27,9 @@ use Cake\Validation\Validator;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class TenantsTable extends Table {
+
+    use Cake2ResultTableTrait;
+    use PaginationAndScrollIndexTrait;
 
     /**
      * Initialize method
@@ -111,6 +118,32 @@ class TenantsTable extends Table {
             ->allowEmptyString('city');
 
         return $validator;
+    }
+
+    /**
+     * @param TenantFilter $TenantFilter
+     * @param null|PaginateOMat $PaginateOMat
+     * @return array
+     */
+    public function getTenantsIndex(TenantFilter $TenantFilter, $PaginateOMat = null) {
+        $query = $this->find('all')
+            ->contain(['Containers'])
+            ->disableHydration();
+        $query->where($TenantFilter->indexFilter());
+        $query->order($TenantFilter->getOrderForPaginator('Containers.name', 'asc'));
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
+
+        return $result;
     }
 
     /**

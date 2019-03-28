@@ -25,44 +25,61 @@
 
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\TenantsTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
 
 /**
  * @property Tenant $Tenant
  * @property Container $Container
+ * @property AppPaginatorComponent $Paginator
  */
 class TenantsController extends AppController {
+
+    public $layout = 'blank';
+
     public $uses = [
         'Tenant',
         'Container',
-        'CakeTime',
-        'Utility',
-    ];
-    public $layout = 'angularjs';
-    public $components = [
-        'ListFilter.ListFilter',
-        'RequestHandler',
-    ];
-    public $helpers = ['ListFilter.ListFilter'];
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Container.name'     => ['label' => 'Name', 'searchType' => 'wildcard'],
-                'Tenant.description' => ['label' => 'description', 'searchType' => 'wildcard'],
-            ],
-        ],
     ];
 
     /**
      * @deprecated
      */
     public function index() {
-        $this->layout = 'blank';
-        if (!$this->isApiRequest()) {
-            //Only ship template for AngularJs
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
             return;
         }
+
+        /** @var $TenantsTable TenantsTable */
+        $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
+        $TenantFilter = new TenantFilter($this->request);
+
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $TenantFilter->getPage());
+        $all_tenants = $TenantsTable->getTenantsIndex($TenantFilter, $PaginateOMat);
+
+        foreach ($all_tenants as $key => $tenant) {
+            $all_tenants[$key]['Tenant']['allowEdit'] = false;
+            $tenantContainerId = $tenant['Tenant']['container_id'];
+            if (isset($this->MY_RIGHTS_LEVEL[$tenantContainerId])) {
+                if ((int)$this->MY_RIGHTS_LEVEL[$tenantContainerId] === WRITE_RIGHT) {
+                    $all_tenants[$key]['Tenant']['allowEdit'] = true;
+                }
+            }
+        }
+
+        $this->set('all_tenants', $all_tenants);
+        $toJson = ['all_tenants', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_tenants', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
+
+
+        /****** OLD CODE *****/
+        return;
 
         $TenantFilter = new TenantFilter($this->request);
 
