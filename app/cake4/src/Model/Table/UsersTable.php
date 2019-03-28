@@ -231,7 +231,7 @@ class UsersTable extends Table {
             ->order(['full_name' => 'asc'])
             ->where([
                 'ContainersUsersMemberships.container_id IN' => $rights,
-                $usersFilter
+                $usersFilter->indexFilter()
             ])
             ->select(function (Query $query) {
                 return [

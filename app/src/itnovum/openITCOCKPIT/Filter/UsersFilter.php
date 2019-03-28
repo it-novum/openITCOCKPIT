@@ -33,16 +33,33 @@ class UsersFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'like' => [
-                'User.full_name',
-                'User.email',
-                'User.company',
-                'User.phone',
-                'User.status',
-                'User.usergroup_id'
+                'Users.full_name',
+                'Users.email',
+                'Users.company',
+                'Users.phone',
+                'Users.status',
+                'Users.usergroup_id'
             ]
         ];
 
         return $this->getConditionsByFilters($filters);
     }
 
+    /**
+     * @return array
+     */
+    public function ajaxFilter() {
+        $filters = [
+            'like' => [
+                'Users.full_name',
+                'Users.email',
+                'Users.company',
+                'Users.phone',
+                'Users.status',
+                'Users.usergroup_id'
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
 }
