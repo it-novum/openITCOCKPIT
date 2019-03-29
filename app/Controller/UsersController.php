@@ -26,7 +26,6 @@
 //App::uses('AdminAppController', 'Admin.Controller');
 //require_once APP . 'Model/User.php';
 
-use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
@@ -55,21 +54,16 @@ class UsersController extends AppController {
 
     public function index() {
         $this->layout = 'blank';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
 
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
-
         $usersFilter = new UsersFilter($this->request);
-
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $usersFilter->getPage());
         $all_users = $Users->getUsers($this->MY_RIGHTS, $usersFilter, $PaginateOMat);
-        $isLdapAuth = false;
-        if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap') {
-            $isLdapAuth = true;
-        }
 
         foreach ($all_users as $index => $user) {
             $all_users[$index]['User']['allow_edit'] = true;
@@ -83,15 +77,11 @@ class UsersController extends AppController {
                 }
             }
         }
-
-        $this->set('isLdapAuth', $isLdapAuth);
-        //$this->set('systemsettings', $systemsettings);
         $this->set('all_users', $all_users);
         $toJson = ['all_users', 'paging'];
         if ($this->isScrollRequest()) {
             $toJson = ['all_users', 'scroll'];
         }
-        // $this->set('_serialize', ['toJson', 'all_users', 'systemsettings', 'isLdapAuth']);
         $this->set('_serialize', $toJson);
     }
 
@@ -144,6 +134,10 @@ class UsersController extends AppController {
      * @param null $id
      */
     public function delete($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
         if (!$Users->existsById($id)) {
@@ -209,6 +203,10 @@ class UsersController extends AppController {
     }
 
     public function loadDateformats() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
         $dateformats = $Users->getDateformats();

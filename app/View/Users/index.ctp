@@ -35,7 +35,6 @@
         </h1>
     </div>
 </div>
-
 <massdelete></massdelete>
 
 <section id="widget-grid" class="">
@@ -53,13 +52,10 @@
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('Create local user'); ?>
                             </a>
-
-                            <?php if ($isLdapAuth): ?>
-                                <a ui-sref="UsersAddFromLdap" class="btn btn-xs btn-warning">
-                                    <i class="fa fa-plus"></i>
-                                    <?php echo __('Import from LDAP'); ?>
-                                </a>
-                            <?php endif; ?>
+                            <a ng-if="isLdapAuth" ui-sref="UsersAddFromLdap" class="btn btn-xs btn-warning">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('Import from LDAP'); ?>
+                            </a>
                         <?php endif; ?>
 
                         <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">

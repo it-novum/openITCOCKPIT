@@ -7,10 +7,10 @@ angular.module('openITCOCKPIT')
                 Users: {
                     full_name: '',
                     email: '',
-                    phone:'',
-                    status:'',
-                    usergroup_id:'',
-                    company:'',
+                    phone: '',
+                    status: '',
+                    usergroup_id: '',
+                    company: '',
                 }
             };
         };
@@ -51,6 +51,25 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadSystemsettings = function(){
+            $http.get("/systemsettings/getSystemsettingsForAngularBySection.json", {
+                params: {
+                    'section': 'FRONTEND',
+                    'angular': true,
+                }
+            }).then(function(result){
+                $scope.isLdapAuth =  result.data.systemsettings.FRONTEND['FRONTEND.AUTH_METHOD']
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+        };
+
         $scope.getObjectForDelete = function(user){
             var object = {};
             object[user.User.id] = user.User.full_name;
@@ -75,6 +94,7 @@ angular.module('openITCOCKPIT')
         //Fire on page load
         defaultFilter();
         $scope.load();
+        $scope.loadSystemsettings();
 
         $scope.$watch('filter', function(){
             $scope.currentPage = 1;
