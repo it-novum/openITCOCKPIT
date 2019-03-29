@@ -158,4 +158,27 @@ class TenantsTable extends Table {
 
         return $rules;
     }
+
+    /**
+     * @param $id
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getTenantById($id) {
+        $query = $this->find()
+            ->where([
+                'Tenants.id' => $id
+            ])
+            ->disableHydration()
+            ->firstOrFail();
+
+        return $query;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Tenants.id' => $id]);
+    }
 }

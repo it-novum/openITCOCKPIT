@@ -76,70 +76,27 @@ class TenantsController extends AppController {
             $toJson = ['all_tenants', 'scroll'];
         }
         $this->set('_serialize', $toJson);
-
-
-        /****** OLD CODE *****/
-        return;
-
-        $TenantFilter = new TenantFilter($this->request);
-
-        $this->Tenant->virtualFields['name'] = 'Container.name';
-
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'order'      => [
-                $TenantFilter->getOrderForPaginator('Container.name', 'asc'),
-            ],
-            'conditions' => $TenantFilter->indexFilter(),
-            'limit'      => $this->Paginator->settings['limit']
-        ];
-
-        if (!$this->hasRootPrivileges) {
-            $query['conditions']['Container.id'] = $this->MY_RIGHTS;
-        }
-
-
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_tenants = $this->Tenant->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $all_tenants = $this->Paginator->paginate();
-        }
-
-        foreach ($all_tenants as $key => $tenant) {
-            $all_tenants[$key]['Tenant']['allowEdit'] = false;
-            $tenantContainerId = $tenant['Tenant']['container_id'];
-            if (isset($this->MY_RIGHTS_LEVEL[$tenantContainerId])) {
-                if ((int)$this->MY_RIGHTS_LEVEL[$tenantContainerId] === WRITE_RIGHT) {
-                    $all_tenants[$key]['Tenant']['allowEdit'] = true;
-                }
-            }
-        }
-
-        $this->set(compact(['all_tenants']));
-        $this->set('_serialize', ['all_tenants']);
     }
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param $id
      */
-    public function view($id = null) {
+    public function view($id) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
-        if (!$this->Tenant->exists($id)) {
+
+        /** @var $TenantsTable TenantsTable */
+        $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
+
+        if (!$TenantsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid tenant'));
         }
-        $tenant = $this->Tenant->findById($id);
-        if (!$this->allowedByContainerId(Hash::extract($tenant, 'Container.id'))) {
-            $this->render403();
 
+        $tenant = $TenantsTable->getTenantById($id);
+
+        if (!$this->allowedByContainerId($tenant['container_id'])) {
+            $this->render403();
             return;
         }
 
