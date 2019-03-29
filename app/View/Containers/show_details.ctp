@@ -60,7 +60,10 @@
                                 <i class="fa fa-location-arrow fa-lg"></i>
                                 <?php echo __('Locations'); ?> ({{containerDetails.ContainerLocation.length}})
                             </th>
-                            <th class="width-60"></th>
+                            <th class="no-sort text-center width-60">
+                                <i class="fa fa-cog fa-lg"></i>
+                            </th>
+
                         </tr>
                         <tr ng-repeat="containerlocation in containerDetails.ContainerLocation">
                             <td>

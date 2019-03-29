@@ -25,74 +25,40 @@
 
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\TenantsTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
-
-App::import('Model', 'Container');
-
 
 /**
  * @property Tenant $Tenant
  * @property Container $Container
+ * @property AppPaginatorComponent $Paginator
  */
 class TenantsController extends AppController {
+
+    public $layout = 'blank';
+
     public $uses = [
         'Tenant',
         'Container',
-        'CakeTime',
-        'Utility',
-    ];
-    public $layout = 'angularjs';
-    public $components = [
-        'ListFilter.ListFilter',
-        'RequestHandler',
-    ];
-    public $helpers = ['ListFilter.ListFilter'];
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Container.name'     => ['label' => 'Name', 'searchType' => 'wildcard'],
-                'Tenant.description' => ['label' => 'description', 'searchType' => 'wildcard'],
-            ],
-        ],
     ];
 
+    /**
+     * @deprecated
+     */
     public function index() {
-        $this->layout = 'blank';
-
-        if (!$this->isApiRequest()) {
-            //Only ship template for AngularJs
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
             return;
         }
 
+        /** @var $TenantsTable TenantsTable */
+        $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
         $TenantFilter = new TenantFilter($this->request);
 
-        $this->Tenant->virtualFields['name'] = 'Container.name';
-
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'order'      => [
-                $TenantFilter->getOrderForPaginator('Container.name', 'asc'),
-            ],
-            'conditions' => $TenantFilter->indexFilter(),
-            'limit'      => $this->Paginator->settings['limit']
-        ];
-
-        if (!$this->hasRootPrivileges) {
-            $query['conditions']['Container.id'] = $this->MY_RIGHTS;
-        }
-
-
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_tenants = $this->Tenant->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $all_tenants = $this->Paginator->paginate();
-        }
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $TenantFilter->getPage());
+        $all_tenants = $TenantsTable->getTenantsIndex($TenantFilter, $PaginateOMat);
 
         foreach ($all_tenants as $key => $tenant) {
             $all_tenants[$key]['Tenant']['allowEdit'] = false;
@@ -104,22 +70,33 @@ class TenantsController extends AppController {
             }
         }
 
-        $this->set(compact(['all_tenants']));
-        $this->set('_serialize', ['all_tenants']);
+        $this->set('all_tenants', $all_tenants);
+        $toJson = ['all_tenants', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_tenants', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
-    public function view($id = null) {
+    /**
+     * @param $id
+     */
+    public function view($id) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
-        if (!$this->Tenant->exists($id)) {
+
+        /** @var $TenantsTable TenantsTable */
+        $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
+
+        if (!$TenantsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid tenant'));
         }
-        $tenant = $this->Tenant->findById($id);
-        if (!$this->allowedByContainerId(Hash::extract($tenant, 'Container.id'))) {
-            $this->render403();
 
+        $tenant = $TenantsTable->getTenantById($id);
+
+        if (!$this->allowedByContainerId($tenant['container_id'])) {
+            $this->render403();
             return;
         }
 
@@ -127,6 +104,9 @@ class TenantsController extends AppController {
         $this->set('_serialize', ['tenant']);
     }
 
+    /**
+     * @deprecated
+     */
     public function add() {
         $this->layout = 'blank';
 
@@ -164,7 +144,10 @@ class TenantsController extends AppController {
         }
     }
 
-
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -201,6 +184,10 @@ class TenantsController extends AppController {
         $this->set('_serialize', ['message']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function edit($id = null) {
         $this->layout = 'blank';
 

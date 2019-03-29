@@ -56,7 +56,13 @@ class Tenant extends AppModel {
         ],
     ];
 
-
+    /**
+     * @param null $container_ids
+     * @param string $type
+     * @param string $index
+     * @return array|null
+     * @deprecated
+     */
     public function tenantsByContainerId($container_ids = null, $type = 'all', $index = 'id') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -103,6 +109,11 @@ class Tenant extends AppModel {
         }
     }
 
+    /**
+     * @param $containerId
+     * @return bool
+     * @deprecated
+     */
     public function __allowDelete($containerId) {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');

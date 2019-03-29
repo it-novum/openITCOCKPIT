@@ -1316,6 +1316,38 @@ class HostsTable extends Table {
         return $query;
     }
 
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getHostSharing($id) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+                'Hosts.container_id',
+                'Hosts.host_type'
+            ])
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+            ])
+            ->disableHydration()
+            ->first();
+
+        $host = $query;
+        $host['hosts_to_containers_sharing'] = [
+            '_ids' => Hash::extract($query, 'hosts_to_containers_sharing.{n}.id')
+        ];
+
+        return [
+            'Host' => $host
+        ];
+    }
+
 
     /**
      * @param int $id
