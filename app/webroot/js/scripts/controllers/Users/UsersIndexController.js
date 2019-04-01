@@ -7,10 +7,10 @@ angular.module('openITCOCKPIT')
                 Users: {
                     full_name: '',
                     email: '',
-                    phone:'',
-                    status:'',
-                    usergroup_id:'',
-                    company:'',
+                    phone: '',
+                    status: [],
+                    usergroup_id: '',
+                    company: '',
                 }
             };
         };
@@ -40,7 +40,7 @@ angular.module('openITCOCKPIT')
                 'filter[Users.usergroup_id]': $scope.filter.Users.usergroup_id,
                 'filter[Users.company]': $scope.filter.Users.company
             };
-
+console.log(params);
             $http.get("/users/index.json", {
                 params: params
             }).then(function(result){
@@ -48,6 +48,43 @@ angular.module('openITCOCKPIT')
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
+            });
+        };
+
+        $scope.loadSystemsettings = function(){
+            $http.get("/systemsettings/getSystemsettingsForAngularBySection.json", {
+                params: {
+                    'section': 'FRONTEND',
+                    'angular': true,
+                }
+            }).then(function(result){
+                $scope.isLdapAuth = result.data.systemsettings.FRONTEND['FRONTEND.AUTH_METHOD']
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+        };
+
+        $scope.loadUsergroups = function(){
+            $http.get("/usergroups/loadUsergroups.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.usergroups = result.data.usergroups;
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 
@@ -75,11 +112,15 @@ angular.module('openITCOCKPIT')
         //Fire on page load
         defaultFilter();
         $scope.load();
+        $scope.loadSystemsettings();
+        $scope.loadUsergroups();
+
 
         $scope.$watch('filter', function(){
             $scope.currentPage = 1;
             $scope.load();
         }, true);
+
 
     });
 

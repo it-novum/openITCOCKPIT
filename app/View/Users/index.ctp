@@ -35,7 +35,6 @@
         </h1>
     </div>
 </div>
-
 <massdelete></massdelete>
 
 <section id="widget-grid" class="">
@@ -53,13 +52,10 @@
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('Create local user'); ?>
                             </a>
-
-                            <?php if ($isLdapAuth): ?>
-                                <a ui-sref="UsersAddFromLdap" class="btn btn-xs btn-warning">
-                                    <i class="fa fa-plus"></i>
-                                    <?php echo __('Import from LDAP'); ?>
-                                </a>
-                            <?php endif; ?>
+                            <a ng-if="isLdapAuth" ui-sref="UsersAddFromLdap" class="btn btn-xs btn-warning">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('Import from LDAP'); ?>
+                            </a>
                         <?php endif; ?>
 
                         <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
@@ -124,28 +120,55 @@
                                         </label>
                                     </div>
                                 </div>
-
-                                <div class="col-xs-12 col-md-6">
-                                    <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-users"></i>
-                                            <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by user role'); ?>"
-                                                   ng-model="filter.Users.role"
-                                                   ng-model-options="{debounce: 500}">
-                                        </label>
-                                    </div>
-                                </div>
                             </div>
 
                             <div class="col-xs-12 col-md-6">
-                                <div class="form-group smart-form">
-                                    <label class="input"> <i class="icon-prepend fa fa-stop"></i>
-                                        <input type="text" class="input-sm"
-                                               placeholder="<?php echo __('Filter by user status'); ?>"
-                                               ng-model="filter.Users.status"
-                                               ng-model-options="{debounce: 500}">
-                                    </label>
-                                </div>
+                                <fieldset>
+                                    <legend><?php echo __('User Status'); ?></legend>
+                                    <div class="form-group smart-form">
+                                        <label class="checkbox small-checkbox-label">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model="filter.Users.status.active"
+                                                   ng-model-options="{debounce: 500}">
+                                            <i class="checkbox-primary"></i>
+                                            <?php echo __('Active'); ?>
+                                        </label>
+
+                                        <label class="checkbox small-checkbox-label">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model="filter.Users.status.inactive"
+                                                   ng-model-options="{debounce: 500}">
+                                            <i class="checkbox-primary"></i>
+                                            <?php echo __('Inactive'); ?>
+                                        </label>
+
+                                        <label class="checkbox small-checkbox-label">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model="filter.Users.status.suspended"
+                                                   ng-model-options="{debounce: 500}">
+                                            <i class="checkbox-primary"></i>
+                                            <?php echo __('suspended'); ?>
+                                        </label>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+                            <div class="col-xs-12 col-md-6">
+                                <fieldset>
+                                    <legend><?php echo __('User Role'); ?></legend>
+                                    <div class="form-group smart-form">
+                                        <select
+                                                id="UserRoles"
+                                                data-placeholder="<?php echo __('Filter by user role'); ?>"
+                                                class="input-sm"
+                                                chosen="usergroups"
+                                                multiple
+                                                ng-model="filter.Users.usergroup_id"
+                                                ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
+                                                ng-model-options="{debounce: 500}">
+                                        </select>
+                                    </div>
+                                </fieldset>
                             </div>
 
                             <div class="row">
