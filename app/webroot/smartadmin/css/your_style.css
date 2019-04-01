@@ -2465,3 +2465,8 @@ input[type=text]:focus + .input-group-addon-no-focus {
     top: 0px !important;
     text-align: left;
 }
+
+.bordered-vertical-on-left{
+    border-left:5px inset #428bca;
+    border-radius: 7px;
+}

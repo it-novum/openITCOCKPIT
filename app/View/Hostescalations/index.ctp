@@ -66,71 +66,96 @@
                 <div>
                     <div class="list-filter well" ng-show="showFilter">
                         <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
-                        <div class="row">
-                            <div class="col-xs-12 col-md-6">
-                                <div class="form-group smart-form">
-                                    <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
-                                        <input type="text" class="input-sm"
-                                               placeholder="<?php echo __('Filter by host name'); ?>"
-                                               ng-model="filter.Hosts.name"
-                                               ng-model-options="{debounce: 500}"
-                                               ng-focus="hostFocus=true;filter.HostsExcluded.name='';"
-                                               ng-blur="hostFocus=false"
-                                               ng-disabled="hostExcludeFocus"
-                                               ng-class="{'disabled': !hostFocus}">
-                                    </label>
+                        <div class="row padding-top-10">
+                            <div class="col col-md-6 bordered-vertical-on-left">
+                                <div class="row">
+                                    <div class="col-xs-12 no-padding">
+                                        <div class="form-group smart-form">
+                                            <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
+                                                <input type="text" class="input-sm"
+                                                       placeholder="<?php echo __('Filter by host name'); ?>"
+                                                       ng-model="filter.Hosts.name"
+                                                       ng-model-options="{debounce: 500}"
+                                                       ng-focus="hostFocus=true;filter.HostsExcluded.name='';"
+                                                       ng-blur="hostFocus=false"
+                                                       ng-disabled="hostExcludeFocus"
+                                                       ng-class="{'disabled': !hostFocus}">
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-xs-12 col-md-6">
-                                <div class="form-group smart-form">
-                                    <label class="input">
-                                        <i class="icon-prepend fa fa-sitemap"></i>
-                                        <input type="text" class="input-sm"
-                                               placeholder="<?php echo __('Filter by host group'); ?>"
-                                               ng-model="filter.Hostgroups.name"
-                                               ng-model-options="{debounce: 500}"
-                                               ng-focus="hostgroupFocus=true;filter.HostgroupsExcluded.name='';"
-                                               ng-blur="hostgroupFocus=false"
-                                               ng-disabled="hostgroupExcludeFocus"
-                                               ng-class="{'disabled': !hostgroupFocus}">
-                                    </label>
+                                <div class="row padding-top-5 padding-bottom-5">
+                                    <div class="col-xs-12 no-padding help-block helptext text-info">
+                                        <i class="fa fa-info-circle text-info"></i>
+                                        <?php echo __('Search is available for <b>"host"</b> OR <b>"excluded host"</b>. Fields will be reset by focus automatically'); ?>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-xs-12 col-md-6">
-                                <div class="form-group smart-form">
-                                    <label class="input">
+                                <div class="row">
+                                    <div class="col-xs-12 no-padding">
+                                        <div class="form-group smart-form">
+                                            <label class="input">
                                         <span class="icon-prepend fa-stack">
                                             <i class="fa fa-desktop fa-stack-1x"></i>
                                             <i class="fa fa-exclamation-triangle fa-stack-1x fa-xs cornered cornered-lr text-danger"></i>
                                         </span>
-                                        <input type="text" class="input-sm"
-                                               placeholder="<?php echo __('Filter by excluded host name'); ?>"
-                                               ng-model="filter.HostsExcluded.name"
-                                               ng-model-options="{debounce: 500}"
-                                               ng-focus="hostExcludeFocus=true;filter.Hosts.name='';"
-                                               ng-blur="hostExcludeFocus=false"
-                                               ng-disabled="hostFocus"
-                                               ng-class="{'disabled': !hostExcludeFocus}">
-                                    </label>
+                                                <input type="text" class="input-sm"
+                                                       placeholder="<?php echo __('Filter by excluded host name'); ?>"
+                                                       ng-model="filter.HostsExcluded.name"
+                                                       ng-model-options="{debounce: 500}"
+                                                       ng-focus="hostExcludeFocus=true;filter.Hosts.name='';"
+                                                       ng-blur="hostExcludeFocus=false"
+                                                       ng-disabled="hostFocus"
+                                                       ng-class="{'disabled': !hostExcludeFocus}"
+                                                       disabled="disabled">
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-md-6">
-                                <div class="form-group smart-form">
-                                    <label class="input">
+                            <div class="col col-md-6 bordered-vertical-on-left">
+                                <div class="row">
+                                    <div class="col-xs-12 no-padding">
+                                        <div class="form-group smart-form">
+                                            <label class="input">
+                                                <i class="icon-prepend fa fa-sitemap"></i>
+                                                <input type="text" class="input-sm"
+                                                       placeholder="<?php echo __('Filter by host group'); ?>"
+                                                       ng-model="filter.Hostgroups.name"
+                                                       ng-model-options="{debounce: 500}"
+                                                       ng-focus="hostgroupFocus=true;filter.HostgroupsExcluded.name='';"
+                                                       ng-blur="hostgroupFocus=false"
+                                                       ng-disabled="hostgroupExcludeFocus"
+                                                       ng-class="{'disabled': !hostgroupFocus}">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row padding-top-5 padding-bottom-5">
+                                    <div class="col-xs-12 no-padding help-block helptext text-info">
+                                        <i class="fa fa-info-circle text-info"></i>
+                                        <?php echo __('Search is available for <b>"host group"</b> OR <b>"excluded host group"</b>. Fields will be reset by focus automatically'); ?>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 no-padding">
+                                        <div class="form-group smart-form">
+                                            <label class="input">
                                         <span class="icon-prepend fa-stack">
                                             <i class="fa fa-sitemap fa-stack-1x"></i>
                                             <i class="fa fa-exclamation-triangle fa-stack-1x fa-xs cornered cornered-lr text-danger"></i>
                                         </span>
-                                        <input type="text" class="input-sm"
-                                               placeholder="<?php echo __('Filter by excluded host group'); ?>"
-                                               ng-model="filter.HostgroupsExcluded.name"
-                                               ng-model-options="{debounce: 500}"
-                                               ng-focus="hostgroupExcludeFocus=true;filter.Hostgroups.name='';"
-                                               ng-blur="hostgroupExcludeFocus=false"
-                                               ng-disabled="hostgroupFocus"
-                                               ng-readonly="hostgroupFocus"
-                                               ng-class="{'disabled': !hostgroupExcludeFocus}">
-                                    </label>
+                                                <input type="text" class="input-sm"
+                                                       placeholder="<?php echo __('Filter by excluded host group'); ?>"
+                                                       ng-model="filter.HostgroupsExcluded.name"
+                                                       ng-model-options="{debounce: 500}"
+                                                       ng-focus="hostgroupExcludeFocus=true;filter.Hostgroups.name='';"
+                                                       ng-blur="hostgroupExcludeFocus=false"
+                                                       ng-disabled="hostgroupFocus"
+                                                       ng-readonly="hostgroupFocus"
+                                                       ng-class="{'disabled': !hostgroupExcludeFocus}">
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
