@@ -156,7 +156,7 @@
                 <div class="col-xs-12 margin-top-10">
                     <div class="well formactions ">
                         <div class="pull-right">
-                            <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">&nbsp;
+                            <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">
                             <a back-button fallback-state='HostgroupsIndex' class="btn btn-default">
                                 <?php echo __('Cancel'); ?>
                             </a>
