@@ -142,8 +142,7 @@ angular.module('openITCOCKPIT')
                 NotyService.genericSuccess({
                     message: '<u><a href="' + $location.absUrl() + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName
-                        + '</a></u> ' + $scope.successMessage.message,
-                    timeout: 10000
+                        + '</a></u> ' + $scope.successMessage.message
                 });
                 $state.go('TimeperiodsIndex').then(function(){
                     NotyService.scrollTop();

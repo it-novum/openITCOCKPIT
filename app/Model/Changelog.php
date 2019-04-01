@@ -128,6 +128,9 @@ class Changelog extends AppModel {
             'map'                  => [
                 'Map' => '{(name|description)}',
             ],
+            'tenant'               => [
+                'tenant' => '{(container.name|description|is_active|max_users|firstname|lastname|street|zipcode|city)}',
+            ],
         ];
 
         return $_objectDefaults;

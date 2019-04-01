@@ -39,14 +39,15 @@ class TenantsController extends AppController {
 
     public $layout = 'blank';
 
-    public $uses = [
-        'Tenant',
-        'Container',
-    ];
-
     /**
      * @deprecated
      */
+    public $uses = [
+        'Tenant',
+        'Container',
+        'Changelog'
+    ];
+
     public function index() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
@@ -104,10 +105,66 @@ class TenantsController extends AppController {
         $this->set('_serialize', ['tenant']);
     }
 
-    /**
-     * @deprecated
-     */
     public function add() {
+        $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var $TenantsTable TenantsTable */
+        $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
+
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $tenant = $TenantsTable->newEntity();
+            $tenant = $TenantsTable->patchEntity($tenant, $this->request->data);
+
+            $tenant->container->parent_id = ROOT_CONTAINER;
+            $tenant->container->containertype_id = CT_TENANT;
+
+
+            $TenantsTable->save($tenant);
+            if ($tenant->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $tenant->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'add',
+                    $this->params['controller'],
+                    $tenant->get('id'),
+                    OBJECT_TENANT,
+                    [ROOT_CONTAINER],
+                    $User->getId(),
+                    $tenant->container->name,
+                    [
+                        'tenant' => $tenant->toArray()
+                    ]
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
+                //@todo refactor with cake4
+                Cache::clear(false, 'permissions');
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($tenant); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('tenant', $tenant);
+            $this->set('_serialize', ['tenant']);
+        }
+    }
+
+    /**
+     * @param null $id
+     */
+    public function edit($id = null) {
         $this->layout = 'blank';
 
         if (!$this->isApiRequest()) {
@@ -115,32 +172,78 @@ class TenantsController extends AppController {
             return;
         }
 
+        /** @var $TenantsTable TenantsTable */
+        $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
 
-        if ($this->request->is('post') || $this->request->is('put')) {
+        if (!$TenantsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid tenant'));
+        }
 
-            $this->request->data['Container']['parent_id'] = ROOT_CONTAINER;
-            $this->request->data['Container']['containertype_id'] = CT_TENANT;
+        if ($this->request->is('get')) {
+            $tenant = $TenantsTable->getTenantById($id);
 
+            if (!$this->allowedByContainerId($tenant['container_id'])) {
+                $this->render403();
+                return;
+            }
 
-            $isJsonRequest = $this->request->ext === 'json';
-            if ($this->Tenant->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
-                if ($isJsonRequest) {
-                    $this->serializeId();
+            $this->set('tenant', $tenant);
+            $this->set('_serialize', ['tenant']);
+            return;
+        }
 
-                    return;
-                } else {
-                    if ($this->request->ext != 'json') {
-                        $this->serializeId();
-                        return;
-                    }
-                }
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $oldTenant = $TenantsTable->get($id);
+            $oldTenantForChangelog = $oldTenant->toArray();
+            if (!$this->allowedByContainerId($oldTenant->get('container_id'))) {
+                $this->render403();
+                return;
+            }
+
+            $tenant = $TenantsTable->patchEntity($oldTenant, $this->request->data);
+
+            $tenant->container_id = $oldTenant->get('container_id');
+            $tenant->container->id = $oldTenant->get('container_id');
+            $tenant->container->parent_id = ROOT_CONTAINER;
+            $tenant->container->containertype_id = CT_TENANT;
+
+            $TenantsTable->save($tenant);
+            if ($tenant->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $tenant->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
             } else {
+                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'edit',
+                    $this->params['controller'],
+                    $tenant->get('id'),
+                    OBJECT_TENANT,
+                    [ROOT_CONTAINER],
+                    $User->getId(),
+                    $tenant->container->name,
+                    [
+                        'tenant' => $tenant->toArray()
+                    ],
+                    [
+                        'tenant' => $oldTenantForChangelog
+                    ]
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
+                //@todo refactor with cake4
+                Cache::clear(false, 'permissions');
+
                 if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
+                    $this->serializeCake4Id($tenant); // REST API ID serialization
                     return;
                 }
             }
+            $this->set('tenant', $tenant);
+            $this->set('_serialize', ['tenant']);
         }
     }
 
@@ -184,44 +287,5 @@ class TenantsController extends AppController {
         $this->set('_serialize', ['message']);
     }
 
-    /**
-     * @param null $id
-     * @deprecated
-     */
-    public function edit($id = null) {
-        $this->layout = 'blank';
 
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-
-        if (!$this->Tenant->exists($id)) {
-            throw new NotFoundException(__('Invalid tenant'));
-        }
-        $tenant = $this->Tenant->findById($id);
-
-        if (!$this->allowedByContainerId(Hash::extract($tenant, 'Container.id'))) {
-            $this->render403();
-
-            return;
-        }
-
-        $this->set(compact(['tenant']));
-        $this->set('_serialize', ['tenant']);
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Container']['containertype_id'] = CT_TENANT;
-            $this->request->data['Container']['parent_id'] = ROOT_CONTAINER;
-            $this->request->data['Container']['id'] = $tenant['Container']['id'];
-            $this->request->data['Tenant']['id'] = $tenant['Tenant']['id'];
-            if ($this->Tenant->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
-            } else {
-                if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-                    return;
-                }
-            }
-        }
-    }
 }
