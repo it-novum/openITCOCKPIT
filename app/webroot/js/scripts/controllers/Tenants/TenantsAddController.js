@@ -9,13 +9,11 @@ angular.module('openITCOCKPIT')
             $scope.post = {
                 id: 0,
                 description: '',
-                is_active: 1,
                 firstname: '',
                 lastname: '',
                 street: '',
                 zipcode: null,
                 city: '',
-                max_users: 0,
                 container: {
                     name: ''
                 }

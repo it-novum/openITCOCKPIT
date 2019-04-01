@@ -68,19 +68,6 @@ class TenantsTable extends Table {
             ->maxLength('description', 255)
             ->allowEmptyString('description');
 
-        $validator
-            ->integer('is_active')
-            ->requirePresence('is_active', 'create')
-            ->boolean('is_active')
-            ->allowEmptyString('is_active', true);
-
-        $validator
-            ->integer('max_users')
-            ->requirePresence('max_users', 'create')
-            ->greaterThanOrEqual('max_users', 0)
-            ->allowEmptyString('max_users', false);
-
-
         return $validator;
     }
 

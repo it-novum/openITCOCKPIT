@@ -92,25 +92,6 @@
                                 </div>
                             </div>
 
-                            <div class="form-group"
-                                 ng-class="{'has-error': errors.is_active}">
-                                <label class="col-xs-12 col-lg-2 control-label" for="isActive">
-                                    <?php echo __('Is active'); ?>
-                                </label>
-
-
-                                <div class="col-xs-12 col-lg-10 smart-form">
-                                    <label class="checkbox small-checkbox-label no-required">
-                                        <input type="checkbox" name="checkbox"
-                                               id="isActive"
-                                               ng-true-value="1"
-                                               ng-false-value="0"
-                                               ng-model="post.is_active">
-                                        <i class="checkbox-primary"></i>
-                                    </label>
-                                </div>
-                            </div>
-
                             <div class="form-group" ng-class="{'has-error': errors.firstname}">
                                 <label class="col-xs-12 col-lg-2 control-label">
                                     <?php echo __('First name'); ?>
@@ -196,30 +177,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="form-group required" ng-class="{'has-error': errors.max_users}">
-                                <label class="col-xs-12 col-lg-2 control-label hintmark_before">
-                                    <?php echo __('Max users'); ?>
-                                </label>
-                                <div class="col-xs-12 col-lg-10">
-                                    <div class="input-group" style="width: 100%;">
-                                        <input
-                                                class="form-control"
-                                                type="number"
-                                                min="0"
-                                                ng-model="post.max_users">
-                                    </div>
-                                    <div ng-repeat="error in errors.max_users">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                    <div class="help-block">
-                                        <span class="hintmark_before">
-                                            <?php echo __('Enter 0 to disable user limit.'); ?>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
 
                         </div>
 
