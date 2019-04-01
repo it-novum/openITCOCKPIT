@@ -106,7 +106,13 @@ angular.module('openITCOCKPIT')
             $http.post("/hosttemplates/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-                NotyService.genericSuccess();
+                var url = $state.href('HosttemplatesEdit', {id: $scope.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+
                 $state.go('HosttemplatesIndex').then(function(){
                     NotyService.scrollTop();
                 });

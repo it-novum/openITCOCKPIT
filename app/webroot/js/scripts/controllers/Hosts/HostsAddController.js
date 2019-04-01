@@ -358,7 +358,12 @@ angular.module('openITCOCKPIT')
             $http.post("/hosts/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                NotyService.genericSuccess();
+                var url = $state.href('HostsEdit', {id: result.data.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
 
                 if($scope.data.createAnother === false){
                     $state.go('HostsNotMonitored').then(function(){
