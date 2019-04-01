@@ -230,7 +230,9 @@ class ContactsController extends AppController {
                 $this->request->data['Contact']['containers']['_ids'] = $contact['Contact']['containers']['_ids'];
             }
 
+            $contactEntity->setAccess('uuid', false);
             $contactEntity = $ContactsTable->patchEntity($contactEntity, $this->request->data('Contact'));
+            $contactEntity->id = $id;
             $ContactsTable->save($contactEntity);
             if ($contactEntity->hasErrors()) {
                 $this->response->statusCode(400);
