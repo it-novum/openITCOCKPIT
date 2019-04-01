@@ -37,8 +37,10 @@ class UsersFilter extends Filter {
                 'Users.email',
                 'Users.company',
                 'Users.phone',
+            ],
+            'rlike' => [
                 'Users.status',
-                'Users.usergroup_id'
+                'Usergroups.usergroup_id'
             ]
         ];
 

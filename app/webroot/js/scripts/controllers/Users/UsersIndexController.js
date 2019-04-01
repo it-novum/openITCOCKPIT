@@ -8,7 +8,7 @@ angular.module('openITCOCKPIT')
                     full_name: '',
                     email: '',
                     phone: '',
-                    status: '',
+                    status: [],
                     usergroup_id: '',
                     company: '',
                 }
@@ -40,7 +40,7 @@ angular.module('openITCOCKPIT')
                 'filter[Users.usergroup_id]': $scope.filter.Users.usergroup_id,
                 'filter[Users.company]': $scope.filter.Users.company
             };
-
+console.log(params);
             $http.get("/users/index.json", {
                 params: params
             }).then(function(result){
@@ -58,7 +58,25 @@ angular.module('openITCOCKPIT')
                     'angular': true,
                 }
             }).then(function(result){
-                $scope.isLdapAuth =  result.data.systemsettings.FRONTEND['FRONTEND.AUTH_METHOD']
+                $scope.isLdapAuth = result.data.systemsettings.FRONTEND['FRONTEND.AUTH_METHOD']
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+        };
+
+        $scope.loadUsergroups = function(){
+            $http.get("/usergroups/loadUsergroups.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.usergroups = result.data.usergroups;
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
@@ -95,11 +113,14 @@ angular.module('openITCOCKPIT')
         defaultFilter();
         $scope.load();
         $scope.loadSystemsettings();
+        $scope.loadUsergroups();
+
 
         $scope.$watch('filter', function(){
             $scope.currentPage = 1;
             $scope.load();
         }, true);
+
 
     });
 
