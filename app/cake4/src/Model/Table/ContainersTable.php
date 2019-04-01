@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use Cake\Cache\Cache;
+use Cake\Database\Expression\QueryExpression;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\ORM\RulesChecker;
@@ -210,12 +211,27 @@ class ContainersTable extends Table {
             ->add('name', 'custom', [
                 'rule'    => function ($value, $context) {
                     if (isset($context['data']['containertype_id']) && $context['data']['containertype_id'] == CT_TENANT) {
-                        $count = $this->find()
-                            ->where([
-                                'Containers.name'             => $context['data']['name'],
-                                'Containers.containertype_id' => CT_TENANT
-                            ])
-                            ->count();
+                        if (isset($context['data']['id'])) {
+                            //In post data is an ID given
+                            //May be an update of a Tenant container
+                            $count = $this->find()
+                                ->where(function (QueryExpression $exp) use ($context) {
+                                    return $exp
+                                        ->eq('Containers.name', $context['data']['name'])
+                                        ->eq('Containers.containertype_id', CT_TENANT)
+                                        ->notEq('Containers.id', $context['data']['id']);
+                                })
+                                ->count();
+                        } else {
+                            //No ID given in POST data. Check if a tenant with this name already exists
+                            $count = $this->find()
+                                ->where([
+                                    'Containers.name'             => $context['data']['name'],
+                                    'Containers.containertype_id' => CT_TENANT
+                                ])
+                                ->count();
+                        }
+
 
                         return $count === 0;
                     }

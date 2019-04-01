@@ -6,6 +6,12 @@ angular.module('openITCOCKPIT')
         $scope.currentPage = 1;
         $scope.useScroll = true;
 
+        $scope.hostFocus = true;
+        $scope.hostExcludeFocus = false;
+
+        $scope.hostgroupFocus = true;
+        $scope.hostgroupExcludeFocus = false;
+
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {

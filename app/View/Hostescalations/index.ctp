@@ -73,7 +73,11 @@
                                         <input type="text" class="input-sm"
                                                placeholder="<?php echo __('Filter by host name'); ?>"
                                                ng-model="filter.Hosts.name"
-                                               ng-model-options="{debounce: 500}">
+                                               ng-model-options="{debounce: 500}"
+                                               ng-focus="hostFocus=true;filter.HostsExcluded.name='';"
+                                               ng-blur="hostFocus=false"
+                                               ng-disabled="hostExcludeFocus"
+                                               ng-class="{'disabled': !hostFocus}">
                                     </label>
                                 </div>
                             </div>
@@ -84,7 +88,11 @@
                                         <input type="text" class="input-sm"
                                                placeholder="<?php echo __('Filter by host group'); ?>"
                                                ng-model="filter.Hostgroups.name"
-                                               ng-model-options="{debounce: 500}">
+                                               ng-model-options="{debounce: 500}"
+                                               ng-focus="hostgroupFocus=true;filter.HostgroupsExcluded.name='';"
+                                               ng-blur="hostgroupFocus=false"
+                                               ng-disabled="hostgroupExcludeFocus"
+                                               ng-class="{'disabled': !hostgroupFocus}">
                                     </label>
                                 </div>
                             </div>
@@ -98,7 +106,11 @@
                                         <input type="text" class="input-sm"
                                                placeholder="<?php echo __('Filter by excluded host name'); ?>"
                                                ng-model="filter.HostsExcluded.name"
-                                               ng-model-options="{debounce: 500}">
+                                               ng-model-options="{debounce: 500}"
+                                               ng-focus="hostExcludeFocus=true;filter.Hosts.name='';"
+                                               ng-blur="hostExcludeFocus=false"
+                                               ng-disabled="hostFocus"
+                                               ng-class="{'disabled': !hostExcludeFocus}">
                                     </label>
                                 </div>
                             </div>
@@ -112,7 +124,12 @@
                                         <input type="text" class="input-sm"
                                                placeholder="<?php echo __('Filter by excluded host group'); ?>"
                                                ng-model="filter.HostgroupsExcluded.name"
-                                               ng-model-options="{debounce: 500}">
+                                               ng-model-options="{debounce: 500}"
+                                               ng-focus="hostgroupExcludeFocus=true;filter.Hostgroups.name='';"
+                                               ng-blur="hostgroupExcludeFocus=false"
+                                               ng-disabled="hostgroupFocus"
+                                               ng-readonly="hostgroupFocus"
+                                               ng-class="{'disabled': !hostgroupExcludeFocus}">
                                     </label>
                                 </div>
                             </div>

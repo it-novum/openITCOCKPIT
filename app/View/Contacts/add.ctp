@@ -50,7 +50,9 @@
     </header>
     <div>
         <div class="widget-body">
-            <form ng-submit="submit();" class="form-horizontal">
+            <form ng-submit="submit();" class="form-horizontal"
+                  ng-init="successMessage=
+            {objectName : '<?php echo __('Contact'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
                 <div class="row">
                     <div class="form-group required" ng-class="{'has-error': errors.containers}">

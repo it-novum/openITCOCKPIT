@@ -24,7 +24,10 @@
 
 namespace itnovum\openITCOCKPIT\Core\Views;
 
-
+/**
+ * Class Apikey
+ * @package itnovum\openITCOCKPIT\Core\Views
+ */
 class Apikey {
 
     private $id = null;
@@ -40,20 +43,20 @@ class Apikey {
      * @param array $apikey
      */
     public function __construct($apikey) {
-        if (isset($apikey['Apikey']['id'])) {
-            $this->id = (int)$apikey['Apikey']['id'];
+        if (isset($apikey['id'])) {
+            $this->id = (int)$apikey['id'];
         }
 
-        if (isset($apikey['Apikey']['user_id'])) {
-            $this->userId = (int)$apikey['Apikey']['user_id'];
+        if (isset($apikey['user_id'])) {
+            $this->userId = (int)$apikey['user_id'];
         }
 
-        if (isset($apikey['Apikey']['apikey'])) {
-            $this->apikey = $apikey['Apikey']['apikey'];
+        if (isset($apikey['apikey'])) {
+            $this->apikey = $apikey['apikey'];
         }
 
-        if (isset($apikey['Apikey']['description'])) {
-            $this->description = $apikey['Apikey']['description'];
+        if (isset($apikey['description'])) {
+            $this->description = $apikey['description'];
         }
 
     }

@@ -54,7 +54,9 @@
     </header>
     <div>
         <div class="widget-body">
-            <form ng-submit="submit();" class="form-horizontal">
+            <form ng-submit="submit();" class="form-horizontal"
+                  ng-init="successMessage=
+            {objectName : '<?php echo __('Host'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
                         <div class="jarviswidget">

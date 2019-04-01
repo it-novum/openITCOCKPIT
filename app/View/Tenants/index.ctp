@@ -119,10 +119,6 @@
                                         <i class="fa" ng-class="getSortClass('Tenants.description')"></i>
                                         <?php echo __('Description'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Tenants.is_active')">
-                                        <i class="fa" ng-class="getSortClass('Tenants.is_active')"></i>
-                                        <?php echo __('Is active'); ?>
-                                    </th>
                                     <th class="no-sort text-center">
                                         <i class="fa fa-cog fa-lg"></i>
                                     </th>
@@ -141,18 +137,6 @@
                                     <td>
                                         {{ tenant.Tenant.description }}
                                     </td>
-
-                                    <td>
-                                        <span class="label-forced label-danger"
-                                              ng-hide="tenant.Tenant.is_active">
-                                            <?php echo __('Disabled'); ?>
-                                        </span>
-                                        <span class="label-forced label-success"
-                                              ng-show="tenant.Tenant.is_active">
-                                            <?php echo __('Enabled'); ?>
-                                        </span>
-                                    </td>
-
 
                                     <td class="width-50">
                                         <div class="btn-group">

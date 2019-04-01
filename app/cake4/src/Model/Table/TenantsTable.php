@@ -68,55 +68,6 @@ class TenantsTable extends Table {
             ->maxLength('description', 255)
             ->allowEmptyString('description');
 
-        $validator
-            ->integer('is_active')
-            ->requirePresence('is_active', 'create')
-            ->allowEmptyString('is_active', false);
-
-        $validator
-            ->integer('number_users')
-            ->requirePresence('number_users', 'create')
-            ->allowEmptyString('number_users', false);
-
-        $validator
-            ->integer('max_users')
-            ->requirePresence('max_users', 'create')
-            ->allowEmptyString('max_users', false);
-
-        $validator
-            ->integer('number_hosts')
-            ->requirePresence('number_hosts', 'create')
-            ->allowEmptyString('number_hosts', false);
-
-        $validator
-            ->integer('number_services')
-            ->requirePresence('number_services', 'create')
-            ->allowEmptyString('number_services', false);
-
-        $validator
-            ->scalar('firstname')
-            ->maxLength('firstname', 255)
-            ->allowEmptyString('firstname');
-
-        $validator
-            ->scalar('lastname')
-            ->maxLength('lastname', 255)
-            ->allowEmptyString('lastname');
-
-        $validator
-            ->scalar('street')
-            ->maxLength('street', 255)
-            ->allowEmptyString('street');
-
-        $validator
-            ->integer('zipcode')
-            ->allowEmptyString('zipcode');
-
-        $validator
-            ->scalar('city')
-            ->maxLength('city', 255)
-            ->allowEmptyString('city');
-
         return $validator;
     }
 
@@ -167,6 +118,9 @@ class TenantsTable extends Table {
         $query = $this->find()
             ->where([
                 'Tenants.id' => $id
+            ])
+            ->contain([
+                'Containers'
             ])
             ->disableHydration()
             ->firstOrFail();

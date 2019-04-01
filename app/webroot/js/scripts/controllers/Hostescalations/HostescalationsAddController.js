@@ -100,8 +100,7 @@ angular.module('openITCOCKPIT')
                 NotyService.genericSuccess({
                     message: '<u><a href="' + hostescalatingEditUrl + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName
-                        + '</a></u> ' + $scope.successMessage.message,
-                    timeout: 10000
+                        + '</a></u> ' + $scope.successMessage.message
                 });
                 $state.go('HostescalationsIndex').then(function(){
                     NotyService.scrollTop();

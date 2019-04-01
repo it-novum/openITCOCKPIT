@@ -112,6 +112,9 @@ class TimeperiodsTable extends Table {
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
         /** @var $entity Entity */
         $rules->add(function ($entity, $options) {
+            if (empty($entity->timeperiod_timeranges)) {
+                return true;
+            }
             if (!empty($entity->timeperiod_timeranges)) {
                 $data = [];
                 foreach ($entity->timeperiod_timeranges as $timeperiodTimerangEentity) {
