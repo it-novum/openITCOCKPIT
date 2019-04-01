@@ -54,7 +54,7 @@ class TimeperiodTimerangesTable extends Table {
 
         $validator
             ->integer('day')
-            ->requirePresence('day', 'create')
+            ->inList('day', [1, 2, 3, 4, 5, 6, 7])
             ->allowEmptyString('day', false);
 
         $validator
