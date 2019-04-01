@@ -176,7 +176,7 @@
                                                class="btn btn-default dropdown-toggle"><span
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right"
-                                                id="menuHack-{{tcontact.Contact.id}}">
+                                                id="menuHack-{{contactgroup.Contactgroup.id}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
                                                     <li ng-if="contactgroup.Contactgroup.allow_edit">
                                                         <a ui-sref="ContactgroupsEdit({id:contactgroup.Contactgroup.id})">

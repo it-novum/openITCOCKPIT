@@ -64,6 +64,9 @@ class ScrollIndex {
             $this->limit = 25;
         }
 
+        //Uncomment for development purposes
+        //$this->limit = 1;
+
         if (isset($this->Paginator->settings['page'])) {
             $this->page = (int)$this->Paginator->settings['page'];
         }

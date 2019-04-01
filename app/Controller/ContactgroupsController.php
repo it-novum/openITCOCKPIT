@@ -197,7 +197,9 @@ class ContactgroupsController extends AppController {
                     'Containers'
                 ]
             ]);
+            $contactgroupEntity->setAccess('uuid', false);
             $contactgroupEntity = $ContactgroupsTable->patchEntity($contactgroupEntity, $this->request->data('Contactgroup'));
+            $contactgroupEntity->id = $id;
 
             $ContactgroupsTable->save($contactgroupEntity);
             if ($contactgroupEntity->hasErrors()) {
