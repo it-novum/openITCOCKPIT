@@ -145,7 +145,12 @@ angular.module('openITCOCKPIT')
             $http.post("/hosttemplates/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                NotyService.genericSuccess();
+                var url = $state.href('HosttemplatesEdit', {id: result.data.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
 
                 if($scope.data.createAnother === false){
                     $state.go('HosttemplatesIndex').then(function(){
