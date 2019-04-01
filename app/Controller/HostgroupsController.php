@@ -49,6 +49,10 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  */
 class HostgroupsController extends AppController {
 
+    /**
+     * @var array
+     * @deprecated
+     */
     public $uses = [
         'Hostgroup',
         'Container',
@@ -68,6 +72,9 @@ class HostgroupsController extends AppController {
         'Status',
     ];
 
+    /**
+     * @deprecated
+     */
     public function index() {
         $this->layout = 'blank';
         if (!$this->isApiRequest()) {
@@ -120,6 +127,10 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['all_hostgroups', 'paging']);
     }
 
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -138,6 +149,9 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['hostgroup']);
     }
 
+    /**
+     * @deprecated
+     */
     public function extended() {
         $this->layout = 'blank';
         if (!$this->isApiRequest()) {
@@ -149,7 +163,10 @@ class HostgroupsController extends AppController {
         }
     }
 
-
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
     public function edit($id = null) {
         $this->layout = 'blank';
         if (!$this->isApiRequest() && $id === null) {
@@ -263,6 +280,9 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['hostgroup']);
     }
 
+    /**
+     * @deprecated
+     */
     public function add() {
         $this->layout = 'blank';
         if (!$this->isApiRequest()) {
@@ -346,6 +366,10 @@ class HostgroupsController extends AppController {
         }
     }
 
+    /**
+     * @throws Exception
+     * @deprecated
+     */
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -366,6 +390,9 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['containers']);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadHosts() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -405,6 +432,10 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['hosts']);
     }
 
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
     public function loadHostgroupWithHostsById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -565,7 +596,10 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['hostgroup']);
     }
 
-
+    /**
+     * @param int|null $containerId
+     * @deprecated
+     */
     public function loadHosttemplates($containerId = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -593,6 +627,9 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['hosttemplates']);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadHostgroupsByString() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -613,6 +650,9 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['hostgroups']);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadHosgroupsByContainerId() {
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
@@ -664,6 +704,10 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['hostgroups']);
     }
 
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
     public function delete($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->request->is('post')) {
@@ -709,6 +753,10 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['message']);
     }
 
+    /**
+     * @param int|null $id
+     * @throws Exception
+     */
     public function mass_add($id = null) {
         $this->layout = 'Admin.default';
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -816,8 +864,8 @@ class HostgroupsController extends AppController {
         $hostIds = func_get_args();
 
         $hostsToAppend = $this->Host->find('all', [
-            'recursive' => -1,
-            'fields' => [
+            'recursive'  => -1,
+            'fields'     => [
                 'Host.id',
                 'Host.name'
             ],
@@ -850,6 +898,9 @@ class HostgroupsController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
+    /**
+     * @deprecated
+     */
     public function listToPdf() {
         $this->layout = 'Admin.default';
 

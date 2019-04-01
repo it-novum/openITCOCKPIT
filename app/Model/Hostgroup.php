@@ -33,6 +33,10 @@ use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 
+/**
+ * Class Hostgroup
+ * @deprecated
+ */
 class Hostgroup extends AppModel {
 
     public $belongsTo = [
@@ -66,11 +70,25 @@ class Hostgroup extends AppModel {
         ],
     ];
 
+    /**
+     * Hostgroup constructor.
+     * @param bool $id
+     * @param null $table
+     * @param null $ds
+     * @deprecated
+     */
     public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->Host = ClassRegistry::init('Host');
     }
 
+    /**
+     * @param array $container_ids
+     * @param string $type
+     * @param string $index
+     * @return array|null
+     * @deprecated
+     */
     public function hostgroupsByContainerId($container_ids = [], $type = 'all', $index = 'container_id') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -161,6 +179,13 @@ class Hostgroup extends AppModel {
         }
     }
 
+    /**
+     * @param array $container_ids
+     * @param string $type
+     * @param string $index
+     * @return array|null
+     * @deprecated
+     */
     public function hostgroupsByContainerIdNoTenantLookup($container_ids = [], $type = 'all', $index = 'container_id') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -221,6 +246,13 @@ class Hostgroup extends AppModel {
     }
 
 
+    /**
+     * @param string $type
+     * @param array $options
+     * @param string $index
+     * @return array|null
+     * @deprecated
+     */
     public function findHostgroups($type = 'all', $options = [], $index = 'id') {
         if ($type == 'all') {
             return $this->find('all', $options);
@@ -236,10 +268,22 @@ class Hostgroup extends AppModel {
         return $return;
     }
 
+    /**
+     * @param array $options
+     * @param string $index
+     * @return array|null
+     * @deprecated
+     */
     public function findList($options = [], $index = 'id') {
         return $this->findHostgroups('list', $options, $index);
     }
 
+    /**
+     * @param HostgroupConditions $HostgroupConditions
+     * @param array $selected
+     * @return array|null
+     * @deprecated
+     */
     public function getHostgroupsForAngular(HostgroupConditions $HostgroupConditions, $selected = []) {
         $query = [
             'recursive'  => -1,
