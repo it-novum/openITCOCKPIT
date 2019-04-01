@@ -24,6 +24,7 @@
 //	confirmation.
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use Cake\ORM\TableRegistry;
@@ -35,6 +36,7 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\CumulatedValue;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
@@ -46,6 +48,8 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  * @property Host $Host
  * @property Hosttemplate $Hosttemplate
  * @property User $User
+ *
+ * @property AppPaginatorComponent $Paginator
  */
 class HostgroupsController extends AppController {
 
@@ -64,7 +68,9 @@ class HostgroupsController extends AppController {
         MONITORING_SERVICESTATUS,
         MONITORING_OBJECTS,
     ];
+
     public $layout = 'angularjs';
+
     public $components = [
         'RequestHandler',
     ];
@@ -72,59 +78,41 @@ class HostgroupsController extends AppController {
         'Status',
     ];
 
-    /**
-     * @deprecated
-     */
     public function index() {
         $this->layout = 'blank';
-        if (!$this->isApiRequest()) {
-            //Only ship template for AngularJs
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
             return;
         }
 
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
         $HostgroupFilter = new HostgroupFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostgroupFilter->getPage());
 
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container',
-            ],
-            'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
-            'conditions' => $HostgroupFilter->indexFilter(),
-            'limit'      => $this->Paginator->settings['limit']
-        ];
-        if (!$this->hasRootPrivileges) {
-            $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
         }
 
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            unset($query['limit']);
-            $hostgroups = $this->Hostgroup->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $this->Paginator->settings['page'] = $HostgroupFilter->getPage();
-            $hostgroups = $this->Paginator->paginate();
-        }
+        $hostgroups = $HostgroupsTable->getHostgroupsIndex($HostgroupFilter, $PaginateOMat, $MY_RIGHTS);
 
         $all_hostgroups = [];
         foreach ($hostgroups as $hostgroup) {
-            $hostgroup['Hostgroup']['allowEdit'] = $this->hasPermission('edit', 'hostgroups');;
-            if ($this->hasRootPrivileges === false && $hostgroup['Hostgroup']['allowEdit'] === true) {
-                $hostgroup['Hostgroup']['allowEdit'] = $this->allowedByContainerId($hostgroup['Container']['parent_id']);
+            $hostgroup['allowEdit'] = $this->hasPermission('edit', 'hostgroups');
+            if ($this->hasRootPrivileges === false && $hostgroup['allowEdit'] === true) {
+                $hostgroup['allowEdit'] = $this->allowedByContainerId($hostgroup['parent_id']);
             }
 
-            $all_hostgroups[] = [
-                'Hostgroup' => $hostgroup['Hostgroup'],
-                'Container' => $hostgroup['Container'],
-            ];
-
+            $all_hostgroups[] = $hostgroup;
         }
 
-
         $this->set('all_hostgroups', $all_hostgroups);
-
-        //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_hostgroups', 'paging']);
+        $toJson = ['all_hostgroups', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_hostgroups', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     /**
