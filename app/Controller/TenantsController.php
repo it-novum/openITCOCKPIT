@@ -134,7 +134,7 @@ class TenantsController extends AppController {
 
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'add',
-                    $this->params['controller'],
+                    'tenants',
                     $tenant->get('id'),
                     OBJECT_TENANT,
                     [ROOT_CONTAINER],
@@ -217,7 +217,7 @@ class TenantsController extends AppController {
                 $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'edit',
-                    $this->params['controller'],
+                    'tenants',
                     $tenant->get('id'),
                     OBJECT_TENANT,
                     [ROOT_CONTAINER],
@@ -261,6 +261,11 @@ class TenantsController extends AppController {
 
         $container = $this->Tenant->findById($id);
 
+        /** @var $TenantsTable TenantsTable */
+        $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
+        $tenant = $TenantsTable->getTenantById($id);
+        $tenantForChangelog = $tenant;
+
         if (!$this->allowedByContainerId(Hash::extract($container, 'Container.id'))) {
             $this->render403();
 
@@ -274,6 +279,22 @@ class TenantsController extends AppController {
 
             if ($ContainersTable->delete($ContainersTable->get($container['Tenant']['container_id']))) {
                 Cache::clear(false, 'permissions');
+
+                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'delete',
+                    'tenants',
+                    $id,
+                    OBJECT_TENANT,
+                    [ROOT_CONTAINER],
+                    $User->getId(),
+                    $tenantForChangelog['container']['name'],
+                    []
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
                 $this->set('message', __('Tenant deleted successfully'));
                 $this->set('_serialize', ['message']);
                 return;
