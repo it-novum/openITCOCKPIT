@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -13,8 +14,7 @@ use Cake\ORM\Entity;
  *
  * @property \App\Model\Entity\User $user
  */
-class Apikey extends Entity
-{
+class Apikey extends Entity {
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -26,9 +26,9 @@ class Apikey extends Entity
      * @var array
      */
     protected $_accessible = [
-        'user_id' => true,
-        'apikey' => true,
+        'user_id'     => true,
+        'apikey'      => true,
         'description' => true,
-        'user' => true
+        'user'        => true
     ];
 }
