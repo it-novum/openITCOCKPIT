@@ -1,17 +1,18 @@
 angular.module('openITCOCKPIT')
     .controller('HostgroupsIndexController', function($scope, $http, SortService, MassChangeService){
 
-        SortService.setSort('Container.name');
+        SortService.setSort('Containers.name');
         SortService.setDirection('asc');
         $scope.currentPage = 1;
+        $scope.useScroll = true;
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                container: {
+                containers: {
                     name: ''
                 },
-                hostgroup: {
+                hostgroups: {
                     description: ''
                 }
             };
@@ -27,15 +28,17 @@ angular.module('openITCOCKPIT')
             $http.get("/hostgroups/index.json", {
                 params: {
                     'angular': true,
+                    'scroll': $scope.useScroll,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[Container.name]': $scope.filter.container.name,
-                    'filter[Hostgroup.description]': $scope.filter.hostgroup.description
+                    'filter[Containers.name]': $scope.filter.containers.name,
+                    'filter[Hostgroups.description]': $scope.filter.hostgroups.description
                 }
             }).then(function(result){
                 $scope.hostgroups = result.data.all_hostgroups;
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -56,8 +59,8 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.hostgroups){
                 for(var key in $scope.hostgroups){
-                    if($scope.hostgroups[key].Hostgroup.allowEdit){
-                        var id = $scope.hostgroups[key].Hostgroup.id;
+                    if($scope.hostgroups[key].allowEdit){
+                        var id = $scope.hostgroups[key].id;
                         $scope.massChange[id] = true;
                     }
                 }
@@ -70,13 +73,19 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
+        $scope.getObjectForDelete = function(hostgroup){
+            var object = {};
+            object[hostgroup.id] = hostgroup.Containers.name;
+            return object;
+        };
+
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
             for(var key in $scope.hostgroups){
                 for(var id in selectedObjects){
-                    if(id == $scope.hostgroups[key].Hostgroup.id){
-                        objects[id] = $scope.hostgroups[key].Container.name;
+                    if(id == $scope.hostgroups[key].id){
+                        objects[id] = $scope.hostgroups[key].Containers.name;
                     }
 
                 }
@@ -86,8 +95,8 @@ angular.module('openITCOCKPIT')
 
         $scope.linkForPdf = function(){
             var baseUrl = '/hostgroups/listToPdf.pdf';
-            baseUrl += '?filter[Container.name]=' + encodeURI($scope.filter.container.name);
-            baseUrl += '&filter[Hostgroup.description]=' + encodeURI($scope.filter.hostgroup.description);
+            baseUrl += '?filter[Container.name]=' + encodeURI($scope.filter.containers.name);
+            baseUrl += '&filter[Hostgroup.description]=' + encodeURI($scope.filter.hostgroups.description);
             return baseUrl;
         };
 
@@ -99,11 +108,10 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.deleteSelected = function(){
-            console.log('Delete');
-            console.log();
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
         };
-
 
         //Fire on page load
         defaultFilter();

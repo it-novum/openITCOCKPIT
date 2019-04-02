@@ -36,6 +36,18 @@ use itnovum\openITCOCKPIT\Database\ScrollIndex;
 trait PaginationAndScrollIndexTrait {
 
     /**
+     * @param array|null $result
+     * @return array
+     */
+    public function emptyArrayIfNull($result) {
+        if ($result === null) {
+            return [];
+        }
+
+        return $result;
+    }
+
+    /**
      * @param Query $query
      * @param Cake4Paginator $Cake4Paginator
      * @param bool $contain
@@ -47,6 +59,22 @@ trait PaginationAndScrollIndexTrait {
         $query->offset($Cake4Paginator->getOffset());
         $query->limit($Cake4Paginator->getLimit());
         $result = $this->formatResultAsCake2($query->toArray(), $contain);
+        $Cake4Paginator->setCurrent(sizeof($result));
+        $Cake4Paginator->paginate();
+        return $result;
+    }
+
+    /**
+     * @param Query $query
+     * @param Cake4Paginator $Cake4Paginator
+     * @return array
+     */
+    public function paginateCake4(Query $query, Cake4Paginator $Cake4Paginator) {
+        $Cake4Paginator->setCountResult($query->count());
+
+        $query->offset($Cake4Paginator->getOffset());
+        $query->limit($Cake4Paginator->getLimit());
+        $result = $this->emptyArrayIfNull($query->toArray());
         $Cake4Paginator->setCurrent(sizeof($result));
         $Cake4Paginator->paginate();
         return $result;
@@ -77,7 +105,7 @@ trait PaginationAndScrollIndexTrait {
         $query->limit($ScrollIndex->getLimit());
 
         $result = $query->toArray();
-        if($result === null){
+        if ($result === null) {
             $result = [];
         }
         $ScrollIndex->determineHasNextPage($result);

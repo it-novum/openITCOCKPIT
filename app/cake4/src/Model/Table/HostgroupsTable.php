@@ -8,6 +8,9 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 
 /**
  * Hostgroups Model
@@ -253,5 +256,39 @@ class HostgroupsTable extends Table {
         }
 
         return $list;
+    }
+
+    /**
+     * @param HostgroupFilter $HostgroupFilter
+     * @param null|PaginateOMat $PaginateOMat
+     * @package array $MY_RIGHTS
+     * @return array
+     */
+    public function getHostgroupsIndex(HostgroupFilter $HostgroupFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->contain([
+                'containers'
+            ]);
+
+        $where = $HostgroupFilter->indexFilter();
+        if(!empty($MY_RIGHTS)){
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+        $query->where($where);
+
+        $query->order($HostgroupFilter->getOrderForPaginator('Containers.name', 'asc'));
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
     }
 }

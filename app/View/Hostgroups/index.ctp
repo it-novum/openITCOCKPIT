@@ -85,7 +85,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-sitemap"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by host group name'); ?>"
-                                                   ng-model="filter.container.name"
+                                                   ng-model="filter.containers.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -95,7 +95,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by description'); ?>"
-                                                   ng-model="filter.hostgroup.description"
+                                                   ng-model="filter.hostgroups.description"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -119,12 +119,12 @@
                                     <th class="no-sort sorting_disabled width-15">
                                         <i class="fa fa-check-square-o fa-lg"></i>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Container.name')">
-                                        <i class="fa" ng-class="getSortClass('Container.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Containers.name')">
+                                        <i class="fa" ng-class="getSortClass('Containers.name')"></i>
                                         <?php echo __('Host group name'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Hostgroup.description')">
-                                        <i class="fa" ng-class="getSortClass('Hostgroup.description')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Hostgroups.description')">
+                                        <i class="fa" ng-class="getSortClass('Hostgroups.description')"></i>
                                         <?php echo __('Description'); ?>
                                     </th>
                                     <th class="no-sort text-center">
@@ -136,20 +136,57 @@
                                 <tr ng-repeat="hostgroup in hostgroups">
                                     <td class="text-center" class="width-15">
                                         <input type="checkbox"
-                                               ng-model="massChange[hostgroup.Hostgroup.id]"
-                                               ng-show="hostgroup.Hostgroup.allowEdit">
+                                               ng-model="massChange[hostgroup.id]"
+                                               ng-show="hostgroup.allowEdit">
                                     </td>
                                     <td>
-                                        {{ hostgroup.Container.name }}
+                                        {{ hostgroup.Containers.name }}
                                     </td>
                                     <td>
-                                        {{ hostgroup.Hostgroup.description }}
+                                        {{ hostgroup.description }}
                                     </td>
-                                    <td class="text-center">
-                                        <a ui-sref="HostgroupsEdit({id:hostgroup.Hostgroup.id})"
-                                           ng-if="hostgroup.Hostgroup.allowEdit">
-                                            <i class="fa fa-cog fa-lg txt-color-teal"></i>
-                                        </a>
+                                    <td class="width-50">
+                                        <div class="btn-group smart-form">
+                                            <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
+                                                <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
+                                                   ng-if="hostgroup.allowEdit"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                                <a href="javascript:void(0);"
+                                                   ng-if="!hostgroup.allowEdit"
+                                                   class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{hostgroup.id}}">
+                                                <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
+                                                    <li ng-if="hostgroup.allowEdit">
+                                                        <a ui-sref="HostgroupsEdit({id: hostgroup.id})">
+                                                            <i class="fa fa-cog"></i>
+                                                            <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'hostgroups')): ?>
+                                                    <li class="divider" ng-if="hostgroup.allowEdit"></li>
+                                                    <li ng-if="hostgroup.allowEdit">
+                                                        <a href="javascript:void(0);"
+                                                           class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(hostgroup))">
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -193,7 +230,9 @@
                                 </a>
                             </div>
                         </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>

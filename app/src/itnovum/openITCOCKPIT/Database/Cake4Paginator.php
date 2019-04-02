@@ -73,6 +73,9 @@ class Cake4Paginator {
                 $this->limit = 25;
             }
 
+            //Uncomment for development purposes
+            //$this->limit = 1;
+
             if (isset($this->Controller->Paginator->settings['page'])) {
                 $this->page = (int)$this->Controller->Paginator->settings['page'];
             }
