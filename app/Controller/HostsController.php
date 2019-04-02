@@ -3149,11 +3149,11 @@ class HostsController extends AppController {
             $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id')
         );
 
-        $parenthosts = $this->Host->hostsByContainerId($containerIds, 'list');
-        if ($host_id != 0 && isset($parenthosts[$host_id])) {
-            unset($parenthosts[$host_id]);
-        }
-        $parenthosts = $this->Host->makeItJavaScriptAble($parenthosts);
+        //$parenthosts = $this->Host->hostsByContainerId($containerIds, 'list');
+        //if ($host_id != 0 && isset($parenthosts[$host_id])) {
+        //    unset($parenthosts[$host_id]);
+        //}
+        //$parenthosts = $this->Host->makeItJavaScriptAble($parenthosts);
 
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = $this->Host->makeItJavaScriptAble($timeperiods);
@@ -3165,8 +3165,8 @@ class HostsController extends AppController {
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
         $contactgroups = $this->Host->makeItJavaScriptAble($contactgroups);
 
-        $this->set(compact(['hosttemplates', 'hostgroups', 'parenthosts', 'timeperiods', 'checkperiods', 'contacts', 'contactgroups']));
-        $this->set('_serialize', ['hosttemplates', 'hostgroups', 'parenthosts', 'timeperiods', 'checkperiods', 'contacts', 'contactgroups']);
+        $this->set(compact(['hosttemplates', 'hostgroups', 'timeperiods', 'checkperiods', 'contacts', 'contactgroups']));
+        $this->set('_serialize', ['hosttemplates', 'hostgroups', 'timeperiods', 'checkperiods', 'contacts', 'contactgroups']);
     }
 
     //Only for ACLs

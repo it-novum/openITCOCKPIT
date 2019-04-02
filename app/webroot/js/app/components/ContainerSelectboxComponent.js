@@ -25,8 +25,14 @@
 App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
     Ajaxloader: null,
 
+    callback: function(containerId){},
+
     setup: function(Ajaxloader){
         this.Ajaxloader = Ajaxloader;
+    },
+
+    setCallback: function(callback){
+        this.callback = callback;
     },
 
     addContainerEventListener: function(options){
@@ -87,6 +93,8 @@ App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
                         $querySelect.trigger("chosen:updated");
                     }
                     self.Ajaxloader.hide();
+
+                    self.callback(containerId);
                 }
             });
         });
