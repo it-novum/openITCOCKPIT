@@ -32,15 +32,15 @@ class UsersFilter extends Filter {
      */
     public function indexFilter() {
         $filters = [
-            'like' => [
+            'like'   => [
                 'Users.full_name',
                 'Users.email',
                 'Users.company',
                 'Users.phone',
-            ],
-            'rlike' => [
                 'Users.status',
-                'Usergroups.usergroup_id'
+            ],
+            'equals' => [
+                'Users.usergroup_id'
             ]
         ];
 
@@ -52,12 +52,14 @@ class UsersFilter extends Filter {
      */
     public function ajaxFilter() {
         $filters = [
-            'like' => [
+            'like'   => [
                 'Users.full_name',
                 'Users.email',
                 'Users.company',
                 'Users.phone',
                 'Users.status',
+            ],
+            'equals' => [
                 'Users.usergroup_id'
             ]
         ];
