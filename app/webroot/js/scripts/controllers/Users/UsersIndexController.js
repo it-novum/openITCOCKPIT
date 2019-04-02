@@ -9,7 +9,7 @@ angular.module('openITCOCKPIT')
                     email: '',
                     phone: '',
                     status: [],
-                    usergroup_id: '',
+                    usergroup_id: [],
                     company: '',
                 }
             };
@@ -37,10 +37,10 @@ angular.module('openITCOCKPIT')
                 'filter[Users.email]': $scope.filter.Users.email,
                 'filter[Users.phone]': $scope.filter.Users.phone,
                 'filter[Users.status]': $scope.filter.Users.status,
-                'filter[Users.usergroup_id]': $scope.filter.Users.usergroup_id,
+                'filter[Users.usergroup_id][]': $scope.filter.Users.usergroup_id,
                 'filter[Users.company]': $scope.filter.Users.company
             };
-console.log(params);
+
             $http.get("/users/index.json", {
                 params: params
             }).then(function(result){
