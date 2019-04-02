@@ -34,8 +34,30 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
     _initialize: function(){
         var self = this;
 
+        var ChosenAjaxObj = new ChosenAjax({
+            id: 'HostParenthost' //Target select box
+        });
         this.Ajaxloader.setup();
         this.ContainerSelectbox.setup(this.Ajaxloader);
+        this.ContainerSelectbox.setCallback(function(containerId){
+            var selected = ChosenAjaxObj.getSelected();
+
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadParentHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': '',
+                    'selected[]': selected,
+                    'containerId': containerId
+                },
+                success: function(response){
+                    ChosenAjaxObj.addOptions(response.hosts);
+                    ChosenAjaxObj.setSelected(selected);
+                }
+            });
+
+        });
         this.ContainerSelectbox.addContainerEventListener({ // Bind change event for Container Selectbox
             selectBoxSelector: '#HostContainerId',
             event: 'change.hostContainer',
@@ -77,9 +99,6 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             }
         });
 
-        var ChosenAjaxObj = new ChosenAjax({
-            id: 'HostParenthost' //Target select box
-        });
         ChosenAjaxObj.setCallback(function(searchString){
             var selected = ChosenAjaxObj.getSelected();
             $.ajax({
@@ -89,7 +108,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                     'angular': true,
                     'filter[Host.name]': searchString,
                     'selected[]': selected,
-                    'containerId': containerId,
+                    'containerId': $('#HostContainerId').val(),
                     'hostId': hostID
                 },
                 success: function(response){
