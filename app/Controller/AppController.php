@@ -115,6 +115,7 @@ class AppController extends Controller {
         'Constants',
         'Tree',
         'AdditionalLinks',
+        'CSRF'
         //'DebugKit.Toolbar'
     ];
 
