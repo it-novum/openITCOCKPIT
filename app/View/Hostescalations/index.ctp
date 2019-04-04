@@ -76,10 +76,7 @@
                                                        placeholder="<?php echo __('Filter by host name'); ?>"
                                                        ng-model="filter.Hosts.name"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-focus="hostFocus=true;filter.HostsExcluded.name='';"
-                                                       ng-blur="hostFocus=false"
-                                                       ng-disabled="hostExcludeFocus"
-                                                       ng-class="{'disabled': !hostFocus}">
+                                                       ng-focus="hostFocus=true;filter.HostsExcluded.name='';hostExcludeFocus=false;">
                                             </label>
                                         </div>
                                     </div>
@@ -87,7 +84,7 @@
                                 <div class="row padding-top-5 padding-bottom-5">
                                     <div class="col-xs-12 no-padding help-block helptext text-info">
                                         <i class="fa fa-info-circle text-info"></i>
-                                        <?php echo __('Search is available for <b>"host"</b> OR <b>"excluded host"</b>. Fields will be reset by focus automatically'); ?>
+                                        <?php echo __('You can either search for  <b>"host"</b> OR <b>"excluded host"</b>. Opposing Field will be reset automatically'); ?>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -102,11 +99,7 @@
                                                        placeholder="<?php echo __('Filter by excluded host name'); ?>"
                                                        ng-model="filter.HostsExcluded.name"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-focus="hostExcludeFocus=true;filter.Hosts.name='';"
-                                                       ng-blur="hostExcludeFocus=false"
-                                                       ng-disabled="hostFocus"
-                                                       ng-class="{'disabled': !hostExcludeFocus}"
-                                                       disabled="disabled">
+                                                       ng-focus="hostExcludeFocus=true;filter.Hosts.name='';hostFocus=false;">
                                             </label>
                                         </div>
                                     </div>
@@ -122,10 +115,7 @@
                                                        placeholder="<?php echo __('Filter by host group'); ?>"
                                                        ng-model="filter.Hostgroups.name"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-focus="hostgroupFocus=true;filter.HostgroupsExcluded.name='';"
-                                                       ng-blur="hostgroupFocus=false"
-                                                       ng-disabled="hostgroupExcludeFocus"
-                                                       ng-class="{'disabled': !hostgroupFocus}">
+                                                       ng-focus="hostgroupFocus=true;filter.HostgroupsExcluded.name='';hostgroupExcludeFocus=false;">
                                             </label>
                                         </div>
                                     </div>
@@ -133,7 +123,7 @@
                                 <div class="row padding-top-5 padding-bottom-5">
                                     <div class="col-xs-12 no-padding help-block helptext text-info">
                                         <i class="fa fa-info-circle text-info"></i>
-                                        <?php echo __('Search is available for <b>"host group"</b> OR <b>"excluded host group"</b>. Fields will be reset by focus automatically'); ?>
+                                        <?php echo __('You can either search for  <b>"host group"</b> OR <b>"excluded host group"</b>.  Opposing Field will be reset automatically'); ?>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -148,11 +138,7 @@
                                                        placeholder="<?php echo __('Filter by excluded host group'); ?>"
                                                        ng-model="filter.HostgroupsExcluded.name"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-focus="hostgroupExcludeFocus=true;filter.Hostgroups.name='';"
-                                                       ng-blur="hostgroupExcludeFocus=false"
-                                                       ng-disabled="hostgroupFocus"
-                                                       ng-readonly="hostgroupFocus"
-                                                       ng-class="{'disabled': !hostgroupExcludeFocus}">
+                                                       ng-focus="hostgroupExcludeFocus=true;filter.Hostgroups.name='';hostgroupFocus=false;">
                                             </label>
                                         </div>
                                     </div>

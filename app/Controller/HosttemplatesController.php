@@ -235,8 +235,12 @@ class HosttemplatesController extends AppController {
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update contact data
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            
             $hosttemplateEntity = $HosttemplatesTable->get($id);
+            $hosttemplateEntity->setAccess('uuid', false);
             $hosttemplateEntity = $HosttemplatesTable->patchEntity($hosttemplateEntity, $this->request->data('Hosttemplate'));
+            $hosttemplateEntity->id = $id;
+
             $HosttemplatesTable->save($hosttemplateEntity);
             if ($hosttemplateEntity->hasErrors()) {
                 $this->response->statusCode(400);
