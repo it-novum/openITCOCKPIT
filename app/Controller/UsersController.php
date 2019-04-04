@@ -86,7 +86,6 @@ class UsersController extends AppController {
         $user = $Users->getUserWithContainerPermission($id, $this->MY_RIGHTS);
         if (is_null($user)) {
             $this->render403();
-
             return;
         }
         $this->set('user', $user);
@@ -98,8 +97,8 @@ class UsersController extends AppController {
      * @param null $id
      */
     public function delete($id = null) {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship HTML Template
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
         /** @var $Users App\Model\Table\UsersTable */
@@ -165,8 +164,8 @@ class UsersController extends AppController {
     }
 
     public function loadDateformats() {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship HTML Template
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
         /** @var $Users App\Model\Table\UsersTable */
@@ -397,6 +396,10 @@ class UsersController extends AppController {
      * get all possible states a user can have
      */
     public function loadStatus() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
         $status = $Users->getUserStatus();

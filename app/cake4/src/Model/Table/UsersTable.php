@@ -82,6 +82,13 @@ class UsersTable extends Table {
             ->allowEmptyString('id', 'create');
 
         $validator
+            ->requirePresence('containers', true, __('You have to choose at least one option.'))
+            ->allowEmptyString('containers', false)
+            ->multipleOptions('containers', [
+                'min' => 1
+            ], __('You have to choose at least one option.'));
+
+        $validator
             ->integer('status')
             ->requirePresence('status', 'create')
             ->allowEmptyString('status', false);
@@ -95,13 +102,7 @@ class UsersTable extends Table {
             ->email('email')
             ->requirePresence('email', 'create')
             ->allowEmptyString('email', false);
-        /*
-                $validator
-                    ->scalar('password')
-                    ->maxLength('password', 45)
-                    ->requirePresence('password', 'create')
-                    ->allowEmptyString('password', false);
-        */
+
         $validator
             ->scalar('firstname')
             ->maxLength('firstname', 100)
