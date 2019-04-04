@@ -473,7 +473,7 @@
                 <table>
                     <tr>
                         <td>
-                            <h5>&nbsp;<?php echo __('Your password was reseted. Your new password is:'); ?></h5>
+                            <h5>&nbsp;<?php echo __('Your password was reset. Your new password is:'); ?></h5>
                             <hr noshade width="560" size="3" align="left">
                             <br>
                             <h1><?php echo $newPassword; ?></h1>

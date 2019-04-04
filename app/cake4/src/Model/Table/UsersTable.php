@@ -220,7 +220,6 @@ class UsersTable extends Table {
         if (!empty($entity->password)) {
             $entity->password = Security::hash($entity->password, null, true);
         }
-
         return true;
     }
 
@@ -433,6 +432,21 @@ class UsersTable extends Table {
      */
     public function existsById($id) {
         return $this->exists(['Users.id' => $id]);
+    }
+
+    /**
+     * @return string
+     */
+    public function generatePassword() {
+        $char = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+        $size = (sizeof($char) - 1);
+        $token = '';
+        for ($i = 0; $i < 7; $i++) {
+            $token .= $char[rand(0, $size)];
+        }
+        $token = $token . rand(0, 9);
+
+        return $token;
     }
 
     /**
