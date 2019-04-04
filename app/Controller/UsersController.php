@@ -296,33 +296,21 @@ class UsersController extends AppController {
     }
 
     public function resetPassword($id = null) {
-        $this->autoRender = false;
-        if (!$this->User->exists($id)) {
-            $this->setFlash(__('Invalid user'), false);
-            $this->redirect(['action' => 'index']);
-
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        $user = $this->User->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'User.id' => $id
-            ]
-        ]);
-        $generatePassword = function () {
-            $char = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-            $size = (sizeof($char) - 1);
-            $token = '';
-            for ($i = 0; $i < 7; $i++) {
-                $token .= $char[rand(0, $size)];
-            }
-            $token = $token . rand(0, 9);
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
 
-            return $token;
-        };
+        if (!$Users->existsById($id)) {
+            throw new MethodNotAllowedException('Invalid User');
+        }
 
-        $newPassword = $generatePassword();
+        $user = $Users->get($id);
+        $newPassword = $Users->generatePassword();
+
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $this->_systemsettings = $Systemsettings->findAsArray();
@@ -331,7 +319,7 @@ class UsersController extends AppController {
         $Email = new CakeEmail();
         $Email->config('default');
         $Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
-        $Email->to($user['User']['email']);
+        $Email->to($user->email);
         $Email->subject(__('Password reset'));
 
         $Email->emailFormat('both');
@@ -345,18 +333,20 @@ class UsersController extends AppController {
                 'contentId' => '100',
             ],
         ]);
-        $this->User->id = $id;
-        if ($this->User->saveField('password', AuthComponent::password($newPassword))) {
-            $Email->send();
-            $this->setFlash(__('Password reset successfully. A mail with the new password was sent to <b>' . h($user['User']['email']) . '</b>'));
-            $this->redirect(['action' => 'index']);
 
+        //$user->password = Security::hash($newPassword, null, true);
+        $user->password = $newPassword;
+
+        $Users->save($user);
+        if ($user->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $user->getErrors());
+            $this->set('_serialize', ['error']);
             return;
         }
-        $this->setFlash(__('Could not reset password'), false);
-        $this->redirect(['action' => 'index']);
-
-        return;
+        $Email->send();
+        $this->set('user', []);
+        $this->set('_serialize', ['user']);
     }
 
     public function loadUsersByContainerId() {

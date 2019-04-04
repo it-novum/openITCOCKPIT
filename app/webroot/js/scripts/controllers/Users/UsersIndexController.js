@@ -89,6 +89,27 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.resetPassword = function(userId){
+            console.log('reset password triggered');
+
+            $http.get("/users/resetPassword/" + userId + ".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                console.log(result)
+                //$scope.usergroups = result.data.usergroups;
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+        };
+
         $scope.getObjectForDelete = function(user){
             var object = {};
             object[user.User.id] = user.User.full_name;
