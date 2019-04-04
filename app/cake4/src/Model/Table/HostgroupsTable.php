@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
@@ -326,6 +327,32 @@ class HostgroupsTable extends Table {
         }
 
         return $extDataForChangelog;
+    }
+
+    public function getHostgroupForEdit($id){
+        $query = $this->find()
+            ->where([
+                'Hostgroups.id' => $id
+            ])
+            ->contain([
+                'Hosts',
+                'Hosttemplates',
+                'Containers'
+            ])
+            ->disableHydration()
+            ->first();
+
+        $hostgroup = $query;
+        $hostgroup['hosts'] = [
+            '_ids' => Hash::extract($query, 'hosts.{n}.id')
+        ];
+        $hostgroup['hosttemplates'] = [
+            '_ids' => Hash::extract($query, 'hosttemplates.{n}.id')
+        ];
+
+        return [
+            'Hostgroup' => $hostgroup
+        ];
     }
 
     /**

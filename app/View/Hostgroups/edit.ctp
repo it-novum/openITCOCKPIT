@@ -1,37 +1,11 @@
-<?php
-// Copyright (C) <2015>  <it-novum GmbH>
-//
-// This file is dual licensed
-//
-// 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
-//
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
-//
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-
-// 2.
-//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//	License agreement and license key will be shipped with the order
-//	confirmation.
-?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-sitemap fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Host groups'); ?>
             <span>>
-                <?php echo __('Host Groups'); ?>
+                <?php echo __('edit'); ?>
             </span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
 </div>
@@ -42,9 +16,12 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
-        <h2><?php echo __('Edit Host Groups'); ?></h2>
+        <h2>
+            <?php echo __('Edit host group:'); ?>
+            {{ post.Hostgroup.container.name }}
+        </h2>
         <div class="widget-toolbar" role="menu">
-            <?php if ($this->Acl->hasPermission('delete')): ?>
+            <?php if ($this->Acl->hasPermission('delete', 'hostgroups')): ?>
                 <button type="button" class="btn btn-danger btn-xs" ng-click="confirmDelete(hostgroup)">
                     <i class="fa fa-trash-o"></i>
                     <?php echo __('Delete'); ?>
@@ -55,14 +32,16 @@
             </a>
         </div>
         <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
-            <?php echo __('UUID:'); ?> {{ hostgroup.Hostgroup.uuid }}
+            <?php echo __('UUID:'); ?> {{ post.Hostgroup.uuid }}
         </div>
     </header>
     <div class="widget-body">
-        <form ng-submit="submit();" class="form-horizontal">
+        <form ng-submit="submit();" class="form-horizontal"
+              ng-init="successMessage=
+            {objectName : '<?php echo __('Host group'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
             <div class="row">
 
-                <div class="form-group required" ng-class="{'has-error': errors.Container.parent_id}">
+                <div class="form-group required" ng-class="{'has-error': errors.container.parent_id}">
                     <label class="col col-md-2 control-label">
                         <?php echo __('Container'); ?>
                     </label>
@@ -73,15 +52,15 @@
                                 class="form-control"
                                 chosen="containers"
                                 ng-options="container.key as container.value for container in containers"
-                                ng-model="post.Container.parent_id">
+                                ng-model="post.Hostgroup.container.parent_id">
                         </select>
-                        <div ng-repeat="error in errors.Container.parent_id">
+                        <div ng-repeat="error in errors.container.parent_id">
                             <div class="help-block text-danger">{{ error }}</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group required" ng-class="{'has-error': errors.Container.name}">
+                <div class="form-group required" ng-class="{'has-error': errors.container.name}">
                     <label class="col col-md-2 control-label">
                         <?php echo __('Host group name'); ?>
                     </label>
@@ -89,8 +68,8 @@
                         <input
                                 class="form-control"
                                 type="text"
-                                ng-model="post.Container.name">
-                        <div ng-repeat="error in errors.Container.name">
+                                ng-model="post.Hostgroup.container.name">
+                        <div ng-repeat="error in errors.container.name">
                             <div class="help-block text-danger">{{ error }}</div>
                         </div>
                     </div>
@@ -130,7 +109,7 @@
                                 chosen="hosts"
                                 callback="loadHosts" ,
                                 ng-options="host.key as host.value for host in hosts"
-                                ng-model="post.Hostgroup.Host">
+                                ng-model="post.Hostgroup.hosts._ids">
                         </select>
                     </div>
                 </div>
@@ -148,7 +127,7 @@
                                 chosen="hosttemplates"
                                 callback="loadHosttemplates"
                                 ng-options="hosttemplate.key as hosttemplate.value for hosttemplate in hosttemplates"
-                                ng-model="post.Hostgroup.Hosttemplate">
+                                ng-model="post.Hostgroup.hosttemplates._ids">
                         </select>
                     </div>
                 </div>
@@ -156,7 +135,7 @@
                 <div class="col-xs-12 margin-top-10">
                     <div class="well formactions ">
                         <div class="pull-right">
-                            <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">
+                            <input class="btn btn-primary" type="submit" value="<?php echo __('Update host group'); ?>">
                             <a back-button fallback-state='HostgroupsIndex' class="btn btn-default">
                                 <?php echo __('Cancel'); ?>
                             </a>
