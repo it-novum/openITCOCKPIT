@@ -23,14 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
-<div class="row" xmlns="http://www.w3.org/1999/html">
+<div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-sitemap fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <i class="fa fa-pencil-square-o fa-fw "></i>
+            <?php echo __('Host groups'); ?>
             <span>>
-                <?php echo __('Host Groups'); ?>
+                <?php echo __('Overview'); ?>
             </span>
         </h1>
     </div>
@@ -64,7 +63,7 @@
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-sitemap"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Host Groups'); ?></h2>
+                    <h2 class="hidden-mobile"><?php echo __('Host groups overview'); ?></h2>
                     <?php if ($this->Acl->hasPermission('extended')): ?>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>

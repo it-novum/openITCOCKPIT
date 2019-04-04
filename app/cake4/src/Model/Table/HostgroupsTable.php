@@ -8,7 +8,6 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 
@@ -59,8 +58,8 @@ class HostgroupsTable extends Table {
         ]);
         $this->belongsToMany('Hosttemplates', [
             'className'        => 'Hosttemplates',
-            'foreignKey'       => 'hosttemplate_id',
-            'targetForeignKey' => 'host_id',
+            'foreignKey'       => 'hostgroup_id',
+            'targetForeignKey' => 'hosttemplate_id',
             'joinTable'        => 'hosttemplates_to_hostgroups',
             'saveStrategy'     => 'replace'
         ]);
@@ -87,13 +86,14 @@ class HostgroupsTable extends Table {
         $validator
             ->scalar('description')
             ->maxLength('description', 255)
-            ->requirePresence('description', 'create')
-            ->allowEmptyString('description', false);
+            ->requirePresence('description', false)
+            ->allowEmptyString('description', true);
 
         $validator
             ->scalar('hostgroup_url')
             ->maxLength('hostgroup_url', 255)
-            ->allowEmptyString('hostgroup_url');
+            ->allowEmptyString('hostgroup_url', true)
+            ->url('hostgroup_url', __('Not a valid URL.'));
 
         return $validator;
     }
@@ -261,8 +261,8 @@ class HostgroupsTable extends Table {
     /**
      * @param HostgroupFilter $HostgroupFilter
      * @param null|PaginateOMat $PaginateOMat
-     * @package array $MY_RIGHTS
      * @return array
+     * @package array $MY_RIGHTS
      */
     public function getHostgroupsIndex(HostgroupFilter $HostgroupFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find()
@@ -271,7 +271,7 @@ class HostgroupsTable extends Table {
             ]);
 
         $where = $HostgroupFilter->indexFilter();
-        if(!empty($MY_RIGHTS)){
+        if (!empty($MY_RIGHTS)) {
             $where['Containers.parent_id IN'] = $MY_RIGHTS;
         }
         $query->where($where);
@@ -290,5 +290,49 @@ class HostgroupsTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $dataToParse
+     * @return array
+     */
+    public function resolveDataForChangelog($dataToParse = []) {
+        $extDataForChangelog = [
+            'Host'         => [],
+            'Hosttemplate' => [],
+        ];
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        if (!empty($dataToParse['Hostgroup']['hosts']['_ids'])) {
+            foreach ($HostsTable->getHostsAsList($dataToParse['Hostgroup']['hosts']['_ids']) as $hostId => $hostName) {
+                $extDataForChangelog['Contact'][] = [
+                    'id'   => $hostId,
+                    'name' => $hostName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Hostgroup']['hosttemplates']['_ids'])) {
+            foreach ($HosttemplatesTable->getHosttemplatesAsList($dataToParse['Hostgroup']['hosttemplates']['_ids']) as $hosttemplateId => $hosttemplateName) {
+                $extDataForChangelog['Hosttemplate'] = [
+                    'id'   => $hosttemplateId,
+                    'name' => $hosttemplateName
+                ];
+            }
+        }
+
+        return $extDataForChangelog;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Hostgroups.id' => $id]);
     }
 }
