@@ -37,6 +37,7 @@
         "guzzlehttp/guzzle": "^6.3",
         "symfony/process": "^3.4",
         "guiguiboy/php-cli-progress-bar": "^0.0.4",
-        "twig/twig": "^2.5"
+        "twig/twig": "^2.5",
+        "symfony/yaml": "^4.2"
     }
 }
