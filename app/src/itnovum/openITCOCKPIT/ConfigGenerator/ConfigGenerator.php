@@ -25,6 +25,9 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
+
 class ConfigGenerator {
 
     protected $basePath = APP . 'config_templates' . DS;
@@ -326,17 +329,17 @@ class ConfigGenerator {
     /**
      * @param $configToExport
      * @return bool|int
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     protected function saveConfigFile($configToExport) {
         //Do not call this method direct!
         //Call it from self::writeToFile() and use writeToFile to format $configToExport as required.
         //For example rewrite "1" to "yes" for yml or so
 
-        $loader = new \Twig_Loader_Filesystem($this->getTemplatePath());
-        $twig = new \Twig_Environment($loader, ['debug' => true]);
+        $loader = new FilesystemLoader($this->getTemplatePath());
+        $twig = new Environment($loader, ['debug' => true]);
 
         $FileHeader = new FileHeader();
         $configToExport['STATIC_FILE_HEADER'] = $FileHeader->getHeader($this->commentChar);
