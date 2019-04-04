@@ -155,10 +155,7 @@ class HostgroupsController extends AppController {
             $this->set('username', $User->getFullName());
         }
     }
-
-    /**
-     * @deprecated
-     */
+    
     public function add() {
         $this->layout = 'blank';
         if (!$this->isApiRequest()) {

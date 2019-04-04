@@ -309,7 +309,7 @@ class HostgroupsTable extends Table {
 
         if (!empty($dataToParse['Hostgroup']['hosts']['_ids'])) {
             foreach ($HostsTable->getHostsAsList($dataToParse['Hostgroup']['hosts']['_ids']) as $hostId => $hostName) {
-                $extDataForChangelog['Contact'][] = [
+                $extDataForChangelog['Host'][] = [
                     'id'   => $hostId,
                     'name' => $hostName
                 ];
@@ -318,7 +318,7 @@ class HostgroupsTable extends Table {
 
         if (!empty($dataToParse['Hostgroup']['hosttemplates']['_ids'])) {
             foreach ($HosttemplatesTable->getHosttemplatesAsList($dataToParse['Hostgroup']['hosttemplates']['_ids']) as $hosttemplateId => $hosttemplateName) {
-                $extDataForChangelog['Hosttemplate'] = [
+                $extDataForChangelog['Hosttemplate'][] = [
                     'id'   => $hosttemplateId,
                     'name' => $hosttemplateName
                 ];
