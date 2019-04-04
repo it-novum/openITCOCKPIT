@@ -334,7 +334,6 @@ class UsersController extends AppController {
             ],
         ]);
 
-        //$user->password = Security::hash($newPassword, null, true);
         $user->password = $newPassword;
 
         $Users->save($user);
@@ -349,38 +348,29 @@ class UsersController extends AppController {
         $this->set('_serialize', ['user']);
     }
 
+
     public function loadUsersByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        $containerId = (int)$this->request->query('containerId');
-        $containers = [ROOT_CONTAINER];
-        if (in_array($containerId, $this->MY_RIGHTS, true)) {
-            $containers[] = $containerId;
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $this->request->data['container_ids'] = 1;
+        $users = [];
+        if (isset($this->request->data['container_ids'])) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
+            $users = $this->User->usersByContainerId($containerIds, 'list');
+            $users = Api::makeItJavaScriptAble($users);
         }
-        $users = $this->User->find('list', [
-            'recursive'  => -1,
-            'joins'      => [
-                [
-                    'table'      => 'users_to_containers',
-                    'type'       => 'INNER',
-                    'alias'      => 'UsersToContainer',
-                    'conditions' => 'UsersToContainer.user_id = User.id',
-                ],
-            ],
-            'conditions' => [
-                'UsersToContainer.container_id' => $containers
-            ],
-            'group'      => 'User.id'
-        ]);
-        $users = Api::makeItJavaScriptAble(
-            $users
-        );
 
-        $this->set(compact(['users']));
-        $this->set('_serialize', ['users']);
+        $data = [
+            'users' => $users,
+        ];
+        $this->set($data);
+        $this->set('_serialize', array_keys($data));
     }
+
 
     /**
      * get all possible states a user can have
