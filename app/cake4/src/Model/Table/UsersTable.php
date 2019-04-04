@@ -87,6 +87,11 @@ class UsersTable extends Table {
             ->allowEmptyString('status', false);
 
         $validator
+            ->integer('usergroup_id')
+            ->requirePresence('usergroup_id', 'create')
+            ->allowEmptyString('usergroup_id', false);
+
+        $validator
             ->email('email')
             ->requirePresence('email', 'create')
             ->allowEmptyString('email', false);

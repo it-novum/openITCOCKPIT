@@ -23,9 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-//App::uses('AdminAppController', 'Admin.Controller');
-//require_once APP . 'Model/User.php';
-
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
@@ -39,21 +36,12 @@ use itnovum\openITCOCKPIT\Ldap\LdapClient;
  * @property User $User
  */
 class UsersController extends AppController {
-    public $layout = 'Admin.default';
-    public $uses = [
-        'User',
-        'Systemsetting',
-        'Tenant',
-        'Usergroup',
-        //'ContainerUserMembership',
-    ];
+    public $layout = 'blank';
     public $components = [
         'Ldap',
     ];
 
-
     public function index() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -88,39 +76,15 @@ class UsersController extends AppController {
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
-        if (!$this->User->exists($id)) {
-            throw new NotFoundException(__('Invalid user'));
-        }
-        $user = $this->User->findById($id);
-        $permissionsUser = $this->User->find('first', [
-            'joins'      => [
-                [
-                    'table'      => 'users_to_containers',
-                    'type'       => 'LEFT',
-                    'alias'      => 'UsersToContainer',
-                    'conditions' => 'UsersToContainer.user_id = User.id',
-                ],
-            ],
-            'conditions' => [
-                'User.id'                       => $id,
-                'UsersToContainer.container_id' => $this->MY_RIGHTS,
-            ],
-            'fields'     => [
-                'User.id',
-                'User.email',
-                'User.company',
-                'User.status',
-                'User.full_name',
-                'User.samaccountname',
-            ],
-            'group'      => [
-                'User.id',
-            ],
-        ]);
 
-        if (empty($permissionsUser)) {
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+        if (!$Users->existsById($id)) {
+            throw new MethodNotAllowedException('Invalid User');
+        }
+        $user = $Users->getUserWithContainerPermission($id, $this->MY_RIGHTS);
+        if (is_null($user)) {
             $this->render403();
 
             return;
@@ -163,7 +127,6 @@ class UsersController extends AppController {
 
 
     public function add() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -179,7 +142,6 @@ class UsersController extends AppController {
                 $containerPermissions = $Users->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
                 $this->request->data['User']['containers'] = $containerPermissions;
             }
-
 
             //@TODO remove these lines as they are implemented in users add
             $this->request->data['User']['status'] = 1;
@@ -225,7 +187,6 @@ class UsersController extends AppController {
 
 
     public function edit($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -273,7 +234,6 @@ class UsersController extends AppController {
 
 
     public function addFromLdap() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -324,7 +284,6 @@ class UsersController extends AppController {
     }
 
     public function loadLdapUserByString() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -438,7 +397,6 @@ class UsersController extends AppController {
      * get all possible states a user can have
      */
     public function loadStatus() {
-        $this->layout = 'blank';
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
         $status = $Users->getUserStatus();
