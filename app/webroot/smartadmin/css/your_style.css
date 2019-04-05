@@ -2343,6 +2343,14 @@ input[type=text]:focus + .input-group-addon-no-focus {
     border-left: 7px solid #d9534f;
 }
 
+.label-breadcrumb-primary .label:not(:last-child):after {
+    border-left: 7px solid #428bca;
+}
+
+.label-breadcrumb-default .label:not(:last-child):after {
+    border-left: 7px solid #adadad;
+}
+
 .label-breadcrumb .label:not(:last-child):before {
     content: " ";
     display: block;
@@ -2389,6 +2397,22 @@ input[type=text]:focus + .input-group-addon-no-focus {
     background-color: #d9534f;
     border-color: #d43f3a;
     border-left: 7px solid #d9534f;
+}
+
+
+.label-group .label-primary {
+    color: #fff;
+    background-color: #428bca;
+    border-color: #357ebd;
+    border-left: 7px solid #428bca;
+}
+
+
+.label-group .label-default {
+    color: #fff;
+    background-color: #adadad;
+    border-color: #a0a0a0;
+    border-left: 7px solid #adadad;
 }
 
 /*
