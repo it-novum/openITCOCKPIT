@@ -139,7 +139,7 @@
                                     </span>
                                 </div>
                             </label>
-                            <div class="col col-xs-12 col-lg-10 success">
+                            <div class="col col-xs-12 col-lg-10 default">
                                 <select id="HostdependencyHostgroup"
                                         multiple
                                         data-placeholder="<?php echo __('Please choose'); ?>"
@@ -162,7 +162,7 @@
                                     </span>
                                 </div>
                             </label>
-                            <div class="col col-xs-12 col-lg-10 danger">
+                            <div class="col col-xs-12 col-lg-10 info">
                                 <select id="HostdependencyHostgroupDependent"
                                         multiple
                                         data-placeholder="<?php echo __('Please choose'); ?>"
