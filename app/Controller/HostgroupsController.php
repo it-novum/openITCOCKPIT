@@ -289,7 +289,6 @@ class HostgroupsController extends AppController {
 
     /**
      * @param int|null $id
-     * @deprecated
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
