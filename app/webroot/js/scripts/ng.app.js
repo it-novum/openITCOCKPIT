@@ -347,8 +347,14 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
             })
 
             .state('HostgroupsAdd', {
-                url: '/hostgroups/add',
+                url: '/hostgroups/add/:ids',
                 templateUrl: "/hostgroups/add.html",
+                params: {
+                    ids: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 controller: "HostgroupsAddController"
             })
 
@@ -362,6 +368,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/hostgroups/extended',
                 templateUrl: "/hostgroups/extended.html",
                 controller: "HostgroupsExtendedController"
+            })
+
+            .state('HostgroupsAppend', {
+                url: '/hostgroups/append/:ids',
+                templateUrl: "/hostgroups/append.html",
+                controller: "HostgroupsAppendController"
             })
 
             .state('HostchecksIndex', {
@@ -831,7 +843,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
 
     .run(function($rootScope, SortService, $state){
 
-        $rootScope.$on( '$stateChangeStart', function( event, to, toParams, from, fromParams ){
+        $rootScope.$on('$stateChangeStart', function(event, to, toParams, from, fromParams){
             from.params = fromParams;
             $state.previous = from;
         });

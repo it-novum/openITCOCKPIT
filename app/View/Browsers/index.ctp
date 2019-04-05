@@ -227,6 +227,9 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
     </article>
 </div>
 
+<?php if ($this->Acl->hasPermission('add', 'hostgroups')): ?>
+    <add-hosts-to-hostgroup></add-hosts-to-hostgroup>
+<?php endif; ?>
 
 <div class="row">
     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -637,6 +640,15 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                                                 </li>
                                             <?php endif; ?>
 
+                                            <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
+                                                <li>
+                                                    <a ng-click="confirmAddHostsToHostgroup(getObjectForDelete(host))"
+                                                       class="a-clean pointer">
+                                                        <i class="fa fa-sitemap"></i> <?php echo __('Append to hostgroup'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+
                                             <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                 <li ng-if="host.Host.allow_edit">
                                                     <?php echo $this->AdditionalLinks->renderAsListItems(
@@ -726,8 +738,9 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                                     <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
                                         <li>
-                                            <a ng-href="{{ linkForAddToHostgroup() }}" class="a-clean">
-                                                <i class="fa fa-sitemap"></i> <?php echo __('Add to hostgroup'); ?>
+                                            <a ng-click="confirmAddHostsToHostgroup(getObjectsForDelete())"
+                                               class="a-clean pointer">
+                                                <i class="fa fa-sitemap"></i> <?php echo __('Append to hostgroup'); ?>
                                             </a>
                                         </li>
                                     <?php endif; ?>

@@ -197,11 +197,6 @@ angular.module('openITCOCKPIT')
             return buildUrl(baseUrl);
         };
 
-        $scope.linkForAddToHostgroup = function(){
-            var baseUrl = '/hostgroups/mass_add/';
-            return buildUrl(baseUrl);
-        };
-
         var buildUrl = function(baseUrl){
             var ids = Object.keys(MassChangeService.getSelected());
             return baseUrl + ids.join('/');
