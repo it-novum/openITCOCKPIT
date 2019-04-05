@@ -458,6 +458,7 @@ class UsersTable extends Table {
      * @return array
      */
     public function getDateformats() {
+        //Format: https://secure.php.net/manual/en/function.strftime.php
         return [
             1 => '%B %e, %Y %H:%M:%S',
             2 => '%m-%d-%Y  %H:%M:%S',

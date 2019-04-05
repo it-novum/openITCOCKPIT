@@ -683,6 +683,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "UsersAddFromLdapController"
             })
 
+            .state('ProfileEdit', {
+                url: '/profile/edit/',
+                templateUrl: "/profile/edit.html",
+                controller: "ProfileEditController"
+            })
+
             .state('HostsIndex', {
                 url: '/hosts/index',
                 templateUrl: "/hosts/index.html",
