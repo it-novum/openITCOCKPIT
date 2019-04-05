@@ -63,7 +63,7 @@ class HostdependenciesTable extends Table {
             'through'      => 'HostdependenciesHostMemberships',
             'saveStrategy' => 'replace',
             'conditions'   => [
-                'HostdependenciesHostMemberships.dependent' => 0
+                'HostdependenciesHostMembership.dependent' => 0
             ]
         ]);
         $this->belongsToMany('HostsDependent', [
@@ -72,14 +72,14 @@ class HostdependenciesTable extends Table {
             'targetForeignKey' => 'host_id',
             'saveStrategy'     => 'replace',
             'conditions'       => [
-                'HostdependenciesHostMemberships.dependent' => 1
+                'HostdependenciesHostMembership.dependent' => 1
             ]
         ]);
         $this->belongsToMany('Hostgroups', [
             'through'      => 'HostdependenciesHostgroupMemberships',
             'saveStrategy' => 'replace',
             'conditions'   => [
-                'HostdependenciesHostgroupMemberships.dependent' => 0
+                'HostdependenciesHostgroupMembership.dependent' => 0
             ]
         ]);
         $this->belongsToMany('HostgroupsDependent', [
@@ -88,7 +88,7 @@ class HostdependenciesTable extends Table {
             'targetForeignKey' => 'hostgroup_id',
             'saveStrategy'     => 'replace',
             'conditions'       => [
-                'HostdependenciesHostgroupMemberships.dependent' => 1
+                'HostdependenciesHostgroupMembership.dependent' => 1
             ]
         ]);
     }

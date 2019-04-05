@@ -204,6 +204,9 @@ angular.module('openITCOCKPIT')
 
 
         $scope.$watch('post.Hostdependency.container_id', function(){
+            if($scope.init){
+                return;
+            }
             if($scope.post.Hostdependency.container_id != null){
                 $scope.loadElementsByContainerId();
             }
