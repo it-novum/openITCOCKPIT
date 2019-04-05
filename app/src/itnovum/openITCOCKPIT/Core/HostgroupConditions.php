@@ -68,7 +68,11 @@ class HostgroupConditions {
     public function getConditionsForFind() {
         $conditions = $this->conditions;
         if (!empty($this->containerIds)) {
-            $conditions['Container.parent_id'] = $this->containerIds;
+            if(!is_array($this->containerIds)){
+                $this->containerIds = [$this->containerIds];
+            }
+
+            $conditions['Containers.parent_id IN'] = $this->containerIds;
         }
 
         return $conditions;
