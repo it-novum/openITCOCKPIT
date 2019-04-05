@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
@@ -515,86 +516,9 @@ class HostgroupsController extends AppController {
 
 
     /**
-     * @deprecated
-     */
-    public function loadHostgroupsByString() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        $selected = $this->request->query('selected');
-
-        $HostgroupFilter = new HostgroupFilter($this->request);
-
-        $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
-        $HostgroupCondition->setContainerIds($this->MY_RIGHTS);
-
-        $hostgroups = Api::makeItJavaScriptAble(
-            $this->Hostgroup->getHostgroupsForAngular($HostgroupCondition, $selected)
-        );
-
-        $this->set(compact(['hostgroups']));
-        $this->set('_serialize', ['hostgroups']);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function loadHosgroupsByContainerId() {
-        if (!$this->isApiRequest()) {
-            //Only ship template for AngularJs
-            return;
-        }
-
-        $containerId = $this->request->query('containerId');
-        $selected = $this->request->query('selected');
-        $HostgroupFilter = new HostgroupFilter($this->request);
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [CT_HOSTGROUP]);
-        } else {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [CT_HOSTGROUP]);
-        }
-        $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
-        $HostgroupCondition->setContainerIds($containerIds);
-
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
-            'conditions' => $HostgroupCondition->getConditionsForFind(),
-            'limit'      => $this->Paginator->settings['limit']
-        ];
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            unset($query['limit']);
-            $hostgroups = $this->Hostgroup->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $this->Paginator->settings['page'] = $HostgroupFilter->getPage();
-            $hostgroups = $this->Paginator->paginate();
-        }
-
-        $hostgroups = Api::makeItJavaScriptAble(
-            \Cake\Utility\Hash::combine(
-                $hostgroups,
-                '{n}.Hostgroup.id',
-                '{n}.Container.name'
-            )
-        );
-
-        $this->set(compact(['hostgroups']));
-        $this->set('_serialize', ['hostgroups']);
-    }
-
-
-    /**
      * @param int|null $id
      * @throws Exception
+     * @deprecated
      */
     public function mass_add($id = null) {
         $this->layout = 'Admin.default';
@@ -738,46 +662,41 @@ class HostgroupsController extends AppController {
     }
 
     /**
-     * @deprecated
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     public function listToPdf() {
         $this->layout = 'Admin.default';
 
         $HostgroupFilter = new HostgroupFilter($this->request);
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container',
-                'Host' => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name',
-                        'Host.uuid'
-                    ],
-                ]
-            ],
-            'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
-            'conditions' => $HostgroupFilter->indexFilter(),
-        ];
-        if (!$this->hasRootPrivileges) {
-            $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
-        }
 
-        $hostgroups = $this->Hostgroup->find('all', $query);
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        /** @var $HoststatusTable HoststatusTableInterface */
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+        $hostgroups = $HostgroupsTable->getHostgroupsForPdf($HostgroupFilter, $MY_RIGHTS);
 
 
         $hostgroupHostCount = 0;
-        foreach ($hostgroups as $hgKey => $hostgroup) {
-            $hostgroupHostUuids = \Cake\Utility\Hash::extract($hostgroup, 'Host.{n}.uuid');
+        foreach ($hostgroups as $index => $hostgroup) {
+            $hostgroupHostUuids = \Cake\Utility\Hash::extract($hostgroup, 'hosts.{n}.uuid');
             $hostgroupHostCount += count($hostgroupHostUuids);
             $HoststatusFields = new HoststatusFields($this->DbBackend);
             $HoststatusFields->wildcard();
-            $hoststatusOfHostgroup = $this->Hoststatus->byUuids($hostgroupHostUuids, $HoststatusFields);
-            $hostgroups[$hgKey]['all_hoststatus'] = $hoststatusOfHostgroup;
+            $hoststatusOfHostgroup = $HoststatusTable->byUuids($hostgroupHostUuids, $HoststatusFields);
+            $hostgroups[$index]['all_hoststatus'] = $hoststatusOfHostgroup;
         }
 
         $hostgroupCount = count($hostgroups);
-        $this->set(compact('hostgroups', 'hostgroupCount', 'hostgroupHostCount'));
+        $this->set('hostgroups', $hostgroups);
+        $this->set('hostgroupCount', $hostgroupCount);
+        $this->set('hostgroupHostCount', $hostgroupHostCount);
+
 
         $filename = 'Hostgroups_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';
@@ -900,6 +819,57 @@ class HostgroupsController extends AppController {
 
         $this->set('hosttemplates', $hosttemplates);
         $this->set('_serialize', ['hosttemplates']);
+    }
+
+    public function loadHostgroupsByString() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->query('selected');
+
+        $HostgroupFilter = new HostgroupFilter($this->request);
+
+        $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
+        $HostgroupCondition->setContainerIds($this->MY_RIGHTS);
+
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        $hostgroups = Api::makeItJavaScriptAble(
+            $HostgroupsTable->getHostgroupsForAngular($HostgroupCondition, $selected)
+        );
+
+        $this->set('hostgroups', $hostgroups);
+        $this->set('_serialize', ['hostgroups']);
+    }
+
+    public function loadHosgroupsByContainerId() {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerId = $this->request->query('containerId');
+        $HostgroupFilter = new HostgroupFilter($this->request);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        if ($containerId == ROOT_CONTAINER) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [CT_HOSTGROUP]);
+        } else {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [CT_HOSTGROUP]);
+        }
+        $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
+        $HostgroupCondition->setContainerIds($containerIds);
+
+        $hostgroups = $HostgroupsTable->getHostgroupsByContainerIdNew($HostgroupCondition);
+        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+
+        $this->set('hostgroups', $hostgroups);
+        $this->set('_serialize', ['hostgroups']);
     }
 
 }

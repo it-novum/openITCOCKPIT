@@ -731,6 +731,24 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "HostsSharingController"
             })
 
+            .state('HostdependenciesIndex', {
+                url: '/hostdependencies/index',
+                templateUrl: "/hostdependencies/index.html",
+                controller: "HostdependenciesIndexController"
+            })
+
+            .state('HostdependenciesAdd', {
+                url: '/hostdependencies/add',
+                templateUrl: "/hostdependencies/add.html",
+                controller: "HostdependenciesAddController"
+            })
+
+            .state('HostdependenciesEdit', {
+                url: '/hostdependencies/edit/:id',
+                templateUrl: "/hostdependencies/edit.html",
+                controller: "HostdependenciesEditController"
+            })
+
     })
 
     /*
@@ -837,7 +855,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
 
     .run(function($rootScope, SortService, $state){
 
-        $rootScope.$on( '$stateChangeStart', function( event, to, toParams, from, fromParams ){
+        $rootScope.$on('$stateChangeStart', function(event, to, toParams, from, fromParams){
             from.params = fromParams;
             $state.previous = from;
         });

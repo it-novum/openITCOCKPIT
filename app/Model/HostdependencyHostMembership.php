@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class HostdependencyHostMembership
+ * @deprecated
+ */
 class HostdependencyHostMembership extends AppModel {
     public $useTable = 'hosts_to_hostdependencies';
     public $belongsTo = [

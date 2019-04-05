@@ -304,6 +304,7 @@ class HostescalationsTable extends Table {
             ->group('Hostescalations.id')
             ->disableHydration();
         $indexFilter = $HostescalationsFilter->indexFilter();
+
         $containFilter = [
             'Hosts.name'              => '',
             'HostsExcluded.name'      => '',
@@ -315,11 +316,6 @@ class HostescalationsTable extends Table {
                 'Hosts.name LIKE' => $indexFilter['Hosts.name LIKE']
             ];
             $query->matching('Hosts', function ($q) use ($containFilter) {
-                /*
-                return $q->where([
-                    'OR' => $containFilter['Hosts.name']
-                ]);
-                */
                 return $q->where($containFilter['Hosts.name']);
             });
             unset($indexFilter['Hosts.name LIKE']);
@@ -330,11 +326,6 @@ class HostescalationsTable extends Table {
                 'HostsExcluded.name LIKE' => $indexFilter['HostsExcluded.name LIKE']
             ];
             $query->matching('HostsExcluded', function ($q) use ($containFilter) {
-                /*
-                return $q->where([
-                    'OR' => $containFilter['HostsExcluded.name']
-                ]);
-                */
                 return $q->where($containFilter['HostsExcluded.name']);
             });
             unset($indexFilter['HostsExcluded.name LIKE']);
@@ -357,6 +348,9 @@ class HostescalationsTable extends Table {
                 return $q->where($containFilter['HostgroupsExcluded.name']);
             });
             unset($indexFilter['HostgroupsExcluded.name LIKE']);
+        }
+        if(!empty($MY_RIGHTS)){
+            $indexFilter['Hostescalations.container_id IN'] = $MY_RIGHTS;
         }
         $query->where($indexFilter);
         $query->order($HostescalationsFilter->getOrderForPaginator('Hostescalations.first_notification', 'asc'));
