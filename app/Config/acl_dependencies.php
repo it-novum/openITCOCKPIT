@@ -252,8 +252,8 @@ $config = [
             ],
             'Hostgroups'            => [
                 'index'    => ['listToPdf', 'view', 'loadHostgroupsByString', 'loadHosgroupsByContainerId'],
-                'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates', 'loadContainers'],
-                'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
+                'add'      => ['loadHosts', 'loadHosttemplates', 'loadContainers', 'addHostsToHostgroup', 'append'],
+                'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers', 'addHostsToHostgroup', 'append'],
                 'extended' => ['loadHostgroupWithHostsById', 'listToPdf']
             ],
             'Hosts'                 => [

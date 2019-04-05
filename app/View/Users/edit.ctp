@@ -307,7 +307,7 @@ $timezones = CakeTime::listTimezones();
                                             <option value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
                                         <?php endforeach; ?>
                                     </optgroup>
-                                <?php endforeach;; ?>
+                                <?php endforeach; ?>
                             </select>
                             <div ng-repeat="error in errors.User.timezone">
                                 <div class="help-block text-danger">{{ error }}</div>

@@ -41,51 +41,30 @@ class ProfileController extends AppController {
 
     public $components = ['Upload'];
 
-    /*public function change_password() {
-        if($this->request->is('post')) {
-            if($this->User->changePassword($this->Auth->user('id'), $this->request->data)) {
-                return $this->flashBack('Your password was successfully updated.', '/admin/dashboard', true);
-            }else{
-                $this->setFlash(__('Please check your input'), false);
-            }
-        }
-    }*/
-
     public function edit() {
-        $user = $this->User->find('first', [
-            'conditions' => [
-                'User.id' => $this->Auth->user('id'),
-            ],
-            'contain'    => [
-                'Apikey'
-            ],
-        ]);
+        $this->layout = 'blank';
+        /*      if (!$this->isApiRequest()) {
+                  //Only ship HTML template for angular
+                  return;
+              }
+      */
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+        $user = $Users->get($this->Auth->user('id'));
 
-        //Format: https://secure.php.net/manual/en/function.strftime.php
-        $dateformats = [
-            1 => '%B %e, %Y %H:%M:%S',
-            2 => '%m-%d-%Y  %H:%M:%S',
-            3 => '%m-%d-%Y  %H:%M',
-            4 => '%m-%d-%Y  %l:%M:%S %p',
-            5 => '%H:%M:%S  %m-%d-%Y',
-
-            6  => '%e %B %Y, %H:%M:%S',
-            7  => '%d.%m.%Y - %H:%M:%S',
-            9  => '%d.%m.%Y - %l:%M:%S %p',
-            10 => '%H:%M:%S - %d.%m.%Y', //Default date format
-            11 => '%H:%M - %d.%m.%Y',
-
-            12 => '%Y-%m-%d %H:%M',
-            13 => '%Y-%m-%d %H:%M:%S'
+        $userForFrontend = [
+            'firstname'         => $user->firstname,
+            'lastname'          => $user->lastname,
+            'samaccountname'    => $user->samaccountname,
+            'email'             => $user->email,
+            'phone'             => $user->phone,
+            'showstatsinmenu'   => $user->showstatsinmenu,
+            'recursive_browser' => $user->recursive_browser,
+            'paginatorlength'   => $user->paginatorlength,
+            'dateformat'        => $user->dateformat,
+            'timezone'          => $user->timezone,
+            'image'             => $user->image
         ];
-
-        $selectedUserTime = 10;
-
-        foreach ($dateformats as $key => $dateformat) {
-            if ($dateformat == $user['User']['dateformat']) {
-                $selectedUserTime = $key;
-            }
-        }
 
         if ($this->request->is('post') || $this->request->is('put')) {
             /***** Change user data *****/
@@ -179,12 +158,8 @@ class ProfileController extends AppController {
                 }
             }
         }
-        $paginatorLength = $this->Paginator->settings['limit'];
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
-        $user = $this->User->findById($this->Auth->user('id'));
-        $this->set(compact('user', 'systemsettings', 'dateformats', 'selectedUserTime', 'paginatorLength'));
+        $this->set('user', $userForFrontend);
+        $this->set('_serialize', ['user']);
     }
 
     public function apikey() {

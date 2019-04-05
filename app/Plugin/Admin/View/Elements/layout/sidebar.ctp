@@ -39,7 +39,7 @@
         ?>
         <span>
             <a data-html="true" data-original-title="<?php echo __('Edit profile'); ?>" data-placement="right"
-               rel="tooltip" href="/profile/edit">
+               rel="tooltip" ui-sref="ProfileEdit">
                 <img class="online" alt="me" src="<?php echo $img; ?>">
                 <span style="max-width: 142px;">
                     <?php echo h($this->Auth->user('full_name')); ?>

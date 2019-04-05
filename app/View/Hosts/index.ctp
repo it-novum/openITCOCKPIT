@@ -63,6 +63,11 @@ $this->Paginator->options(['url' => $this->params['named']]);
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
 
+<?php if ($this->Acl->hasPermission('add', 'hostgroups')): ?>
+    <add-hosts-to-hostgroup></add-hosts-to-hostgroup>
+<?php endif; ?>
+
+
 <section id="widget-grid" class="">
 
     <div class="row">
@@ -584,6 +589,15 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                     </li>
                                                 <?php endif; ?>
 
+                                                <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
+                                                    <li>
+                                                        <a ng-click="confirmAddHostsToHostgroup(getObjectForDelete(host))"
+                                                           class="a-clean pointer">
+                                                            <i class="fa fa-sitemap"></i> <?php echo __('Append to hostgroup'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_edit">
                                                         <?php echo $this->AdditionalLinks->renderAsListItems(
@@ -671,10 +685,12 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                 </a>
                                             </li>
                                         <?php endif; ?>
+
                                         <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
                                             <li>
-                                                <a ng-href="{{ linkForAddToHostgroup() }}" class="a-clean">
-                                                    <i class="fa fa-sitemap"></i> <?php echo __('Add to hostgroup'); ?>
+                                                <a ng-click="confirmAddHostsToHostgroup(getObjectsForDelete())"
+                                                   class="a-clean pointer">
+                                                    <i class="fa fa-sitemap"></i> <?php echo __('Append to hostgroup'); ?>
                                                 </a>
                                             </li>
                                         <?php endif; ?>
