@@ -88,6 +88,11 @@ class ContainersTable extends Table {
             'cascadeCallbacks' => true
         ])->setDependent(true);
 
+        $this->hasMany('Hostgroups', [
+            'foreignKey'       => 'container_id',
+            'cascadeCallbacks' => true
+        ])->setDependent(true);
+
         //$this->belongsTo('ParentContainers', [
         //    'className' => 'Containers',
         //    'foreignKey' => 'parent_id'

@@ -53,7 +53,7 @@ angular.module('openITCOCKPIT')
                     params: {
                         'angular': true,
                         'selected': $scope.post.Hostgroup.id,
-                        'filter[Host.name]': $scope.filter.Host.name
+                        'filter[Hosts.name]': $scope.filter.Host.name
                     }
                 }).then(function(result){
                     $scope.hostgroup = result.data.hostgroup;

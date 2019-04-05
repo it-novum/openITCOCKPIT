@@ -286,6 +286,114 @@ class HostgroupsController extends AppController {
         }
     }
 
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
+    public function delete($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$HostgroupsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid Hostgroup'));
+        }
+
+        $hostgroup = $HostgroupsTable->getHostgroupById($id);
+        $container = $ContainersTable->get($hostgroup->get('container')->get('id'), [
+            'contain' => [
+                'Hostgroups'
+            ]
+        ]);
+
+        if (!$this->allowedByContainerId($hostgroup->get('container')->get('parent_id'))) {
+            $this->render403();
+            return;
+        }
+
+        //Container wird nicht gelöscht!
+        //Anscheinend muss man wie bei cake2 den contianer löschen, der dann
+        //Die hostgruppe mit löscht
+
+
+        if ($ContainersTable->delete($container)) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                'delete',
+                'hostgroups',
+                $id,
+                OBJECT_HOSTGROUP,
+                $container->get('parent_id'),
+                $User->getId(),
+                $container->get('name'),
+                [
+                    'Hostgroup' => $hostgroup->toArray()
+                ]
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
+
+        /**** OLD CODE ****/
+        return;
+
+        $userId = $this->Auth->user('id');
+
+
+        if (!$this->Hostgroup->exists($id)) {
+            throw new NotFoundException(__('Invalid hostgroup'));
+        }
+
+        $container = $this->Hostgroup->findById($id);
+
+        if (!$this->allowedByContainerId(\Cake\Utility\Hash::extract($container, 'Container.parent_id'))) {
+            $this->render403();
+            return;
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($ContainersTable->delete($ContainersTable->get($container['Hostgroup']['container_id']))) {
+            Cache::clear(false, 'permissions');
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                $this->params['action'],
+                $this->params['controller'],
+                $id,
+                OBJECT_HOSTGROUP,
+                $container['Container']['parent_id'],
+                $userId,
+                $container['Container']['name'],
+                $container
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+
+            $this->set('message', __('Host group deleted successfully'));
+            $this->set('_serialize', ['message']);
+            return;
+        }
+        $this->response->statusCode(400);
+        $this->set('message', __('Could not delete host group'));
+        $this->set('_serialize', ['message']);
+    }
+
 
     /**
      * @param int|null $id
@@ -296,9 +404,13 @@ class HostgroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->Hostgroup->exists($id)) {
-            throw new NotFoundException(__('Invalid host group'));
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        if (!$HostgroupsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid Hostgroup'));
         }
+
 
         $HostFilter = new HostFilter($this->request);
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
@@ -353,7 +465,7 @@ class HostgroupsController extends AppController {
         foreach ($hostgroup['Host'] as $host) {
             $hosts[$host['id']] = $host['uuid'];
             if (!empty($hosts) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts')) {
-                $hostContainers[$host['id']] = Hash::extract($host['Container'], '{n}.id');
+                $hostContainers[$host['id']] = \Cake\Utility\Hash::extract($host['Container'], '{n}.id');
             }
         }
 
@@ -385,7 +497,7 @@ class HostgroupsController extends AppController {
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
-            $serviceUuids = Hash::extract($host, 'Service.{n}.uuid');
+            $serviceUuids = \Cake\Utility\Hash::extract($host, 'Service.{n}.uuid');
             $servicestatus = $this->Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
             $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus, false);
 
@@ -410,7 +522,7 @@ class HostgroupsController extends AppController {
             $all_hosts[] = $tmpRecord;
         }
 
-        $hostStatusForHostgroup = Hash::apply(
+        $hostStatusForHostgroup = \Cake\Utility\Hash::apply(
             $all_hosts,
             '{n}.Hoststatus[isInMonitoring=true].currentState',
             'array_count_values'
@@ -518,7 +630,7 @@ class HostgroupsController extends AppController {
         }
 
         $hostgroups = Api::makeItJavaScriptAble(
-            Hash::combine(
+            \Cake\Utility\Hash::combine(
                 $hostgroups,
                 '{n}.Hostgroup.id',
                 '{n}.Container.name'
@@ -529,54 +641,6 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['hostgroups']);
     }
 
-    /**
-     * @param int|null $id
-     * @deprecated
-     */
-    public function delete($id = null) {
-        $userId = $this->Auth->user('id');
-        if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
-        }
-
-        if (!$this->Hostgroup->exists($id)) {
-            throw new NotFoundException(__('Invalid hostgroup'));
-        }
-
-        $container = $this->Hostgroup->findById($id);
-
-        if (!$this->allowedByContainerId(Hash::extract($container, 'Container.parent_id'))) {
-            $this->render403();
-            return;
-        }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        if ($ContainersTable->delete($ContainersTable->get($container['Hostgroup']['container_id']))) {
-            Cache::clear(false, 'permissions');
-            $changelog_data = $this->Changelog->parseDataForChangelog(
-                $this->params['action'],
-                $this->params['controller'],
-                $id,
-                OBJECT_HOSTGROUP,
-                $container['Container']['parent_id'],
-                $userId,
-                $container['Container']['name'],
-                $container
-            );
-            if ($changelog_data) {
-                CakeLog::write('log', serialize($changelog_data));
-            }
-
-            $this->set('message', __('Host group deleted successfully'));
-            $this->set('_serialize', ['message']);
-            return;
-        }
-        $this->response->statusCode(400);
-        $this->set('message', __('Could not delete host group'));
-        $this->set('_serialize', ['message']);
-    }
 
     /**
      * @param int|null $id
@@ -754,7 +818,7 @@ class HostgroupsController extends AppController {
 
         $hostgroupHostCount = 0;
         foreach ($hostgroups as $hgKey => $hostgroup) {
-            $hostgroupHostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
+            $hostgroupHostUuids = \Cake\Utility\Hash::extract($hostgroup, 'Host.{n}.uuid');
             $hostgroupHostCount += count($hostgroupHostUuids);
             $HoststatusFields = new HoststatusFields($this->DbBackend);
             $HoststatusFields->wildcard();

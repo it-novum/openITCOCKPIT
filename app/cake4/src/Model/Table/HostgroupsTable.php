@@ -49,7 +49,8 @@ class HostgroupsTable extends Table {
         $this->belongsTo('Containers', [
             'foreignKey' => 'container_id',
             'joinType'   => 'INNER'
-        ]);
+        ])->setDependent(true);
+
         $this->belongsToMany('Hosts', [
             'className'        => 'Hosts',
             'foreignKey'       => 'hostgroup_id',
@@ -329,7 +330,7 @@ class HostgroupsTable extends Table {
         return $extDataForChangelog;
     }
 
-    public function getHostgroupForEdit($id){
+    public function getHostgroupForEdit($id) {
         $query = $this->find()
             ->where([
                 'Hostgroups.id' => $id
@@ -353,6 +354,18 @@ class HostgroupsTable extends Table {
         return [
             'Hostgroup' => $hostgroup
         ];
+    }
+
+    /**
+     * @param int $id
+     * @return \App\Model\Entity\Hostgroup
+     */
+    public function getHostgroupById($id) {
+        return $this->get($id, [
+            'contain' => [
+                'Containers'
+            ]
+        ]);
     }
 
     /**
