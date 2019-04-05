@@ -71,7 +71,7 @@ class HostescalationsTable extends Table {
             'through'      => 'HostescalationsHostMemberships',
             'saveStrategy' => 'replace',
             'conditions'   => [
-                'HostescalationsHostMemberships.excluded' => 0
+                'HostescalationsHostMembership.excluded' => 0
             ]
         ]);
         $this->belongsToMany('HostsExcluded', [
@@ -80,14 +80,14 @@ class HostescalationsTable extends Table {
             'targetForeignKey' => 'host_id',
             'saveStrategy'     => 'replace',
             'conditions'       => [
-                'HostescalationsHostMemberships.excluded' => 1
+                'HostescalationsHostMembership.excluded' => 1
             ]
         ]);
         $this->belongsToMany('Hostgroups', [
             'through'      => 'HostescalationsHostgroupMemberships',
             'saveStrategy' => 'replace',
             'conditions'   => [
-                'HostescalationsHostgroupMemberships.excluded' => 0
+                'HostescalationsHostgroupMembership.excluded' => 0
             ]
         ]);
         $this->belongsToMany('HostgroupsExcluded', [
@@ -96,7 +96,7 @@ class HostescalationsTable extends Table {
             'targetForeignKey' => 'hostgroup_id',
             'saveStrategy'     => 'replace',
             'conditions'       => [
-                'HostescalationsHostgroupMemberships.excluded' => 1
+                'HostescalationsHostgroupMembership.excluded' => 1
             ]
         ]);
     }
