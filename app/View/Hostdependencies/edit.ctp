@@ -79,7 +79,7 @@
                             <label class="col col-md-2 control-label">
                                 <div class="label-group label-breadcrumb label-breadcrumb-default">
                                     <label class="label label-default label-xs">
-                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                        <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                     </label>
                                     <span class="label label-light label-xs no-border"
                                           ng-class="{'has-error': errors.hosts}">
@@ -87,7 +87,7 @@
                                     </span>
                                 </div>
                             </label>
-                            <div class="col col-xs-12 col-lg-10">
+                            <div class="col col-xs-12 col-lg-10 default">
                                 <select id="HostdependencyHost"
                                         multiple
                                         data-placeholder="<?php echo __('Please choose'); ?>"
@@ -106,20 +106,20 @@
                             <label class="col col-md-2 control-label">
                                 <div class="label-group label-breadcrumb label-breadcrumb-primary">
                                     <label class="label label-primary label-xs">
-                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                        <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
                                     </label>
                                     <span class="label label-light label-xs no-border">
                                         <?php echo __('Dependent hosts'); ?>
                                     </span>
                                 </div>
                             </label>
-                            <div class="col col-xs-12 col-lg-10">
+                            <div class="col col-xs-12 col-lg-10 info">
                                 <select id="HostdependencyHostDependent"
                                         multiple
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
-                                        chosen="hosts_excluded"
-                                        ng-options="host.key as host.value disable when host.disabled for host in hosts_excluded"
+                                        chosen="hosts_dependent"
+                                        ng-options="host.key as host.value disable when host.disabled for host in hosts_dependent"
                                         ng-model="post.Hostdependency.hosts_dependent._ids">
                                 </select>
                                 <div ng-repeat="error in errors.hosts_dependent">
@@ -130,16 +130,16 @@
 
                         <div class="form-group">
                             <label class="col col-md-2 control-label">
-                                <div class="label-group label-breadcrumb label-breadcrumb-success">
-                                    <label class="label label-success label-xs">
-                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                <div class="label-group label-breadcrumb label-breadcrumb-default">
+                                    <label class="label label-default label-xs">
+                                        <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                     </label>
                                     <span class="label label-light label-xs no-border">
                                         <?php echo __('Host groups'); ?>
                                     </span>
                                 </div>
                             </label>
-                            <div class="col col-xs-12 col-lg-10 success">
+                            <div class="col col-xs-12 col-lg-10 default">
                                 <select id="HostdependencyHostgroup"
                                         multiple
                                         data-placeholder="<?php echo __('Please choose'); ?>"
@@ -153,16 +153,16 @@
 
                         <div class="form-group">
                             <label class="col col-md-2 control-label">
-                                <div class="label-group label-breadcrumb label-breadcrumb-danger">
-                                    <label class="label label-danger label-xs">
-                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                <div class="label-group label-breadcrumb label-breadcrumb-primary">
+                                    <label class="label label-primary label-xs">
+                                        <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
                                     </label>
                                     <span class="label label-light label-xs no-border">
                                         <?php echo __('Dependent host groups'); ?>
                                     </span>
                                 </div>
                             </label>
-                            <div class="col col-xs-12 col-lg-10 danger">
+                            <div class="col col-xs-12 col-lg-10 info">
                                 <select id="HostdependencyHostgroupDependent"
                                         multiple
                                         data-placeholder="<?php echo __('Please choose'); ?>"
@@ -239,7 +239,8 @@
                                 </li>
                                 <li>
                                     <div class="margin-bottom-0">
-                                        <label for="execution_fail_on_down" class="col col-md-7 control-label padding-top-0">
+                                        <label for="execution_fail_on_down"
+                                               class="col col-md-7 control-label padding-top-0">
                                             <span class="label label-danger notify-label-small">
                                             <?php echo __('Down'); ?>
                                             </span>
@@ -349,7 +350,8 @@
                                 </li>
                                 <li>
                                     <div class="margin-bottom-0">
-                                        <label for="notification_fail_on_down" class="col col-md-7 control-label padding-top-0">
+                                        <label for="notification_fail_on_down"
+                                               class="col col-md-7 control-label padding-top-0">
                                             <span class="label label-danger notify-label-small">
                                             <?php echo __('Down'); ?>
                                             </span>
