@@ -316,11 +316,6 @@ class HostgroupsController extends AppController {
             return;
         }
 
-        //Container wird nicht gelöscht!
-        //Anscheinend muss man wie bei cake2 den contianer löschen, der dann
-        //Die hostgruppe mit löscht
-
-
         if ($ContainersTable->delete($container)) {
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -347,51 +342,6 @@ class HostgroupsController extends AppController {
         $this->response->statusCode(500);
         $this->set('success', false);
         $this->set('_serialize', ['success']);
-        return;
-
-        /**** OLD CODE ****/
-        return;
-
-        $userId = $this->Auth->user('id');
-
-
-        if (!$this->Hostgroup->exists($id)) {
-            throw new NotFoundException(__('Invalid hostgroup'));
-        }
-
-        $container = $this->Hostgroup->findById($id);
-
-        if (!$this->allowedByContainerId(\Cake\Utility\Hash::extract($container, 'Container.parent_id'))) {
-            $this->render403();
-            return;
-        }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        if ($ContainersTable->delete($ContainersTable->get($container['Hostgroup']['container_id']))) {
-            Cache::clear(false, 'permissions');
-            $changelog_data = $this->Changelog->parseDataForChangelog(
-                $this->params['action'],
-                $this->params['controller'],
-                $id,
-                OBJECT_HOSTGROUP,
-                $container['Container']['parent_id'],
-                $userId,
-                $container['Container']['name'],
-                $container
-            );
-            if ($changelog_data) {
-                CakeLog::write('log', serialize($changelog_data));
-            }
-
-            $this->set('message', __('Host group deleted successfully'));
-            $this->set('_serialize', ['message']);
-            return;
-        }
-        $this->response->statusCode(400);
-        $this->set('message', __('Could not delete host group'));
-        $this->set('_serialize', ['message']);
     }
 
 
