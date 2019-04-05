@@ -93,11 +93,11 @@ $Logo = new Logo();
                 <!-- Hostgroup -->
                 <tr>
                     <td class="bg-color-lightGray" colspan="8">
-                        <span class="font-md"><?php echo $hostgroup['Container']['name']; ?></span>
+                        <span class="font-md"><?php echo $hostgroup['container']['name']; ?></span>
                     </td>
                 </tr>
-                <?php if (!empty($hostgroup['Host'])): ?>
-                    <?php foreach ($hostgroup['Host'] as $key => $host): ?>
+                <?php if (!empty($hostgroup['hosts'])): ?>
+                    <?php foreach ($hostgroup['hosts'] as $key => $host): ?>
                         <?php
                         if (isset($hostgroup['all_hoststatus'][$host['uuid']]['Hoststatus'])):
                             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(

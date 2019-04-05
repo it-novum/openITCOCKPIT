@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
@@ -517,6 +518,7 @@ class HostgroupsController extends AppController {
     /**
      * @param int|null $id
      * @throws Exception
+     * @deprecated
      */
     public function mass_add($id = null) {
         $this->layout = 'Admin.default';
@@ -660,46 +662,41 @@ class HostgroupsController extends AppController {
     }
 
     /**
-     * @deprecated
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     public function listToPdf() {
         $this->layout = 'Admin.default';
 
         $HostgroupFilter = new HostgroupFilter($this->request);
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container',
-                'Host' => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name',
-                        'Host.uuid'
-                    ],
-                ]
-            ],
-            'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
-            'conditions' => $HostgroupFilter->indexFilter(),
-        ];
-        if (!$this->hasRootPrivileges) {
-            $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
-        }
 
-        $hostgroups = $this->Hostgroup->find('all', $query);
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        /** @var $HoststatusTable HoststatusTableInterface */
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+        $hostgroups = $HostgroupsTable->getHostgroupsForPdf($HostgroupFilter, $MY_RIGHTS);
 
 
         $hostgroupHostCount = 0;
-        foreach ($hostgroups as $hgKey => $hostgroup) {
-            $hostgroupHostUuids = \Cake\Utility\Hash::extract($hostgroup, 'Host.{n}.uuid');
+        foreach ($hostgroups as $index => $hostgroup) {
+            $hostgroupHostUuids = \Cake\Utility\Hash::extract($hostgroup, 'hosts.{n}.uuid');
             $hostgroupHostCount += count($hostgroupHostUuids);
             $HoststatusFields = new HoststatusFields($this->DbBackend);
             $HoststatusFields->wildcard();
-            $hoststatusOfHostgroup = $this->Hoststatus->byUuids($hostgroupHostUuids, $HoststatusFields);
-            $hostgroups[$hgKey]['all_hoststatus'] = $hoststatusOfHostgroup;
+            $hoststatusOfHostgroup = $HoststatusTable->byUuids($hostgroupHostUuids, $HoststatusFields);
+            $hostgroups[$index]['all_hoststatus'] = $hoststatusOfHostgroup;
         }
 
         $hostgroupCount = count($hostgroups);
-        $this->set(compact('hostgroups', 'hostgroupCount', 'hostgroupHostCount'));
+        $this->set('hostgroups', $hostgroups);
+        $this->set('hostgroupCount', $hostgroupCount);
+        $this->set('hostgroupHostCount', $hostgroupHostCount);
+
 
         $filename = 'Hostgroups_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';

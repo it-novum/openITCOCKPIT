@@ -481,6 +481,32 @@ class HostgroupsTable extends Table {
     }
 
     /**
+     * @param HostgroupFilter $HostgroupFilter
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getHostgroupsForPdf(HostgroupFilter $HostgroupFilter, $MY_RIGHTS = []){
+
+        $query = $this->find()
+            ->contain([
+                'hosts',
+                'Containers'
+            ]);
+
+        $where = $HostgroupFilter->indexFilter();
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+        $query->where($where)
+            ->order(
+                $HostgroupFilter->getOrderForPaginator('Containers.name', 'asc')
+            )->disableHydration();
+
+        $data = $query->all();
+        return $this->emptyArrayIfNull($data->toArray());
+    }
+
+    /**
      * @param int $id
      * @return bool
      */
