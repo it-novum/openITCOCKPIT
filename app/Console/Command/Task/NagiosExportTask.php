@@ -27,6 +27,7 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\DeletedHostsTable;
 use App\Model\Table\DeletedServicesTable;
+use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
@@ -1663,20 +1664,10 @@ class NagiosExportTask extends AppShell {
     /**
      * @param null|string $uid
      */
-    public function exportHostgroups($uuid = null) {
-        if ($uuid !== null) {
-            $hostgroups = [];
-            $hostgroups[] = $this->Hostgroup->findByUuid($uuid);
-        } else {
-            $hostgroups = $this->Hostgroup->find('all', [
-                'recursive' => -1,
-                'fields'    => [
-                    'Hostgroup.id',
-                    'Hostgroup.uuid',
-                    'Hostgroup.description',
-                ],
-            ]);
-        }
+    public function exportHostgroups() {
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $hostgroups = $HostgroupsTable->getHostgroupsForExport();
 
         if (!is_dir($this->conf['path'] . $this->conf['hostgroups'])) {
             mkdir($this->conf['path'] . $this->conf['hostgroups']);
@@ -1691,17 +1682,22 @@ class NagiosExportTask extends AppShell {
         }
 
         foreach ($hostgroups as $hostgroup) {
+            /** @var $hostgroup \App\Model\Entity\Hostgroup */
             if (!$this->conf['minified']) {
-                $file = new File($this->conf['path'] . $this->conf['hostgroups'] . $hostgroup['Hostgroup']['uuid'] . $this->conf['suffix']);
+                $file = new File($this->conf['path'] . $this->conf['hostgroups'] . $hostgroup->get('uuid') . $this->conf['suffix']);
                 $content = $this->fileHeader();
                 if (!$file->exists()) {
                     $file->create();
                 }
             }
 
+            $alias = $this->escapeLastBackslash($hostgroup->get('description'));
+            if(empty($alias)){
+                $alias = $hostgroup->get('uuid');
+            }
             $content .= $this->addContent('define hostgroup{', 0);
-            $content .= $this->addContent('hostgroup_name', 1, $hostgroup['Hostgroup']['uuid']);
-            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($hostgroup['Hostgroup']['description']));
+            $content .= $this->addContent('hostgroup_name', 1, $hostgroup->get('uuid'));
+            $content .= $this->addContent('alias', 1, $alias);
             $content .= $this->addContent('}', 0);
 
             if (!$this->conf['minified']) {
@@ -2506,14 +2502,9 @@ class NagiosExportTask extends AppShell {
     }
 
     public function exportSatHostgroups() {
-        $hostgroups = $this->Hostgroup->find('all', [
-            'recursive' => -1,
-            'fields'    => [
-                'Hostgroup.id',
-                'Hostgroup.uuid',
-                'Hostgroup.description',
-            ],
-        ]);
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $hostgroups = $HostgroupsTable->getHostgroupsForExport();
 
         foreach ($this->Satellites as $satellite) {
             $satelliteId = $satellite['Satellite']['id'];
@@ -2531,8 +2522,9 @@ class NagiosExportTask extends AppShell {
             }
 
             foreach ($hostgroups as $hostgroup) {
+                /** @var $hostgroup \App\Model\Entity\Hostgroup */
                 if (!$this->conf['minified']) {
-                    $file = new File($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hostgroups'] . $hostgroup['Hostgroup']['uuid'] . $this->conf['suffix']);
+                    $file = new File($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hostgroups'] . $hostgroup->get('uuid') . $this->conf['suffix']);
 
                     $content = $this->fileHeader();
                     if (!$file->exists()) {
@@ -2540,9 +2532,13 @@ class NagiosExportTask extends AppShell {
                     }
                 }
 
+                $alias = $this->escapeLastBackslash($hostgroup->get('description'));
+                if(empty($alias)){
+                    $alias = $hostgroup->get('uuid');
+                }
                 $content .= $this->addContent('define hostgroup{', 0);
-                $content .= $this->addContent('hostgroup_name', 1, $hostgroup['Hostgroup']['uuid']);
-                $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($hostgroup['Hostgroup']['description']));
+                $content .= $this->addContent('hostgroup_name', 1, $hostgroup->get('uuid'));
+                $content .= $this->addContent('alias', 1, $alias);
                 $content .= $this->addContent('}', 0);
 
                 if (!$this->conf['minified']) {

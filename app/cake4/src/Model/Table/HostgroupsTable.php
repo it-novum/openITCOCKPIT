@@ -507,6 +507,21 @@ class HostgroupsTable extends Table {
     }
 
     /**
+     * @return array
+     */
+    public function getHostgroupsForExport(){
+        $query = $this->find()
+            ->select([
+                'Hostgroups.id',
+                'Hostgroups.uuid',
+                'Hostgroups.description'
+            ])
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
      * @param int $id
      * @return bool
      */
