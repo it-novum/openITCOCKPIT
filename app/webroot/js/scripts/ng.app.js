@@ -695,6 +695,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "UsersAddFromLdapController"
             })
 
+            .state('ProfileEdit', {
+                url: '/profile/edit/',
+                templateUrl: "/profile/edit.html",
+                controller: "ProfileEditController"
+            })
+
             .state('HostsIndex', {
                 url: '/hosts/index',
                 templateUrl: "/hosts/index.html",
@@ -735,6 +741,24 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/hosts/sharing/:id',
                 templateUrl: "/hosts/sharing.html",
                 controller: "HostsSharingController"
+            })
+
+            .state('HostdependenciesIndex', {
+                url: '/hostdependencies/index',
+                templateUrl: "/hostdependencies/index.html",
+                controller: "HostdependenciesIndexController"
+            })
+
+            .state('HostdependenciesAdd', {
+                url: '/hostdependencies/add',
+                templateUrl: "/hostdependencies/add.html",
+                controller: "HostdependenciesAddController"
+            })
+
+            .state('HostdependenciesEdit', {
+                url: '/hostdependencies/edit/:id',
+                templateUrl: "/hostdependencies/edit.html",
+                controller: "HostdependenciesEditController"
             })
 
     })

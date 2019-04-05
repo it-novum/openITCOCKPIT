@@ -292,6 +292,7 @@ $config = [
                 ],
                 [
                     'url'   => ['controller' => 'hostdependencies', 'action' => 'index'],
+                    'state' => 'HostdependenciesIndex',
                     'title' => 'Host Dependencies',
                     'icon'  => 'sitemap',
                 ],
