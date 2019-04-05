@@ -122,6 +122,7 @@ angular.module('openITCOCKPIT')
                     });
                 }else{
                     clearForm();
+                    $scope.errors = {};
                     NotyService.scrollTop();
                 }
 

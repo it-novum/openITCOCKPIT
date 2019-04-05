@@ -95,8 +95,8 @@ angular.module('openITCOCKPIT')
 
         $scope.linkForPdf = function(){
             var baseUrl = '/hostgroups/listToPdf.pdf';
-            baseUrl += '?filter[Container.name]=' + encodeURI($scope.filter.containers.name);
-            baseUrl += '&filter[Hostgroup.description]=' + encodeURI($scope.filter.hostgroups.description);
+            baseUrl += '?filter[Containers.name]=' + encodeURI($scope.filter.containers.name);
+            baseUrl += '&filter[Hostgroups.description]=' + encodeURI($scope.filter.hostgroups.description);
             return baseUrl;
         };
 

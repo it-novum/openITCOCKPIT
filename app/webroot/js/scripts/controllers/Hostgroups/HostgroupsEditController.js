@@ -3,15 +3,19 @@ angular.module('openITCOCKPIT')
 
 
         $scope.post = {
-            Container: {
-                name: '',
-                parent_id: 0
-            },
             Hostgroup: {
                 description: '',
                 hostgroup_url: '',
-                Host: [],
-                Hosttemplate: []
+                container: {
+                    name: '',
+                    parent_id: 0
+                },
+                hosts: {
+                    _ids: []
+                },
+                hosttemplates: {
+                    _ids: []
+                }
             }
         };
 
@@ -28,24 +32,8 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                $scope.hostgroup = result.data.hostgroup;
+                $scope.post = result.data.hostgroup;
 
-                var selectedHosts = [];
-                var selectedHosttemplates = [];
-                var key;
-                for(key in $scope.hostgroup.Host){
-                    selectedHosts.push(parseInt($scope.hostgroup.Host[key].id, 10));
-                }
-                for(key in $scope.hostgroup.Hosttemplate){
-                    selectedHosttemplates.push(parseInt($scope.hostgroup.Hosttemplate[key].id, 10));
-                }
-
-                $scope.post.Hostgroup.Host = selectedHosts;
-                $scope.post.Hostgroup.Hosttemplate = selectedHosttemplates;
-                $scope.post.Container.name = $scope.hostgroup.Container.name;
-                $scope.post.Container.parent_id = parseInt($scope.hostgroup.Container.parent_id, 10);
-                $scope.post.Hostgroup.description = $scope.hostgroup.Hostgroup.description;
-                $scope.post.Hostgroup.hostgroup_url = $scope.hostgroup.Hostgroup.hostgroup_url;
                 $scope.init = false;
             }, function errorCallback(result){
                 if(result.status === 403){
@@ -73,9 +61,9 @@ angular.module('openITCOCKPIT')
             $http.get("/hostgroups/loadHosts.json", {
                 params: {
                     'angular': true,
-                    'containerId': $scope.post.Container.parent_id,
+                    'containerId': $scope.post.Hostgroup.container.parent_id,
                     'filter[Hosts.name]': searchString,
-                    'selected[]': $scope.post.Hostgroup.Host
+                    'selected[]': $scope.post.Hostgroup.hosts._ids
                 }
             }).then(function(result){
                 $scope.hosts = result.data.hosts;
@@ -86,9 +74,9 @@ angular.module('openITCOCKPIT')
             $http.get("/hostgroups/loadHosttemplates.json", {
                 params: {
                     'angular': true,
-                    'containerId': $scope.post.Container.parent_id,
+                    'containerId': $scope.post.Hostgroup.container.parent_id,
                     'filter[Hosttemplates.name]': searchString,
-                    'selected[]': $scope.post.Hostgroup.Hosttemplate
+                    'selected[]': $scope.post.Hostgroup.hosttemplates._ids
                 }
             }).then(function(result){
                 $scope.hosttemplates = result.data.hosttemplates;
@@ -99,9 +87,16 @@ angular.module('openITCOCKPIT')
             $http.post("/hostgroups/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-                console.log('Data saved successfully');
-                NotyService.genericSuccess();
-                $state.go('HostgroupsIndex');
+                var url = $state.href('HostgroupsEdit', {id: $scope.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+
+                $state.go('HostgroupsIndex').then(function(){
+                    NotyService.scrollTop();
+                });
 
             }, function errorCallback(result){
                 NotyService.genericError();
@@ -113,7 +108,7 @@ angular.module('openITCOCKPIT')
         };
 
 
-        $scope.$watch('post.Container.parent_id', function(){
+        $scope.$watch('post.Hostgroup.container.parent_id', function(){
             if($scope.init){
                 return;
             }

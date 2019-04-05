@@ -23,9 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-//App::uses('AdminAppController', 'Admin.Controller');
-//require_once APP . 'Model/User.php';
-
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
@@ -39,21 +36,12 @@ use itnovum\openITCOCKPIT\Ldap\LdapClient;
  * @property User $User
  */
 class UsersController extends AppController {
-    public $layout = 'Admin.default';
-    public $uses = [
-        'User',
-        'Systemsetting',
-        'Tenant',
-        'Usergroup',
-        //'ContainerUserMembership',
-    ];
+    public $layout = 'blank';
     public $components = [
         'Ldap',
     ];
 
-
     public function index() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -88,41 +76,16 @@ class UsersController extends AppController {
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
-        if (!$this->User->exists($id)) {
-            throw new NotFoundException(__('Invalid user'));
-        }
-        $user = $this->User->findById($id);
-        $permissionsUser = $this->User->find('first', [
-            'joins'      => [
-                [
-                    'table'      => 'users_to_containers',
-                    'type'       => 'LEFT',
-                    'alias'      => 'UsersToContainer',
-                    'conditions' => 'UsersToContainer.user_id = User.id',
-                ],
-            ],
-            'conditions' => [
-                'User.id'                       => $id,
-                'UsersToContainer.container_id' => $this->MY_RIGHTS,
-            ],
-            'fields'     => [
-                'User.id',
-                'User.email',
-                'User.company',
-                'User.status',
-                'User.full_name',
-                'User.samaccountname',
-            ],
-            'group'      => [
-                'User.id',
-            ],
-        ]);
 
-        if (empty($permissionsUser)) {
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+        if (!$Users->existsById($id)) {
+            throw new MethodNotAllowedException('Invalid User');
+        }
+        $user = $Users->getUserWithContainerPermission($id, $this->MY_RIGHTS);
+        if (is_null($user)) {
             $this->render403();
-
             return;
         }
         $this->set('user', $user);
@@ -134,8 +97,8 @@ class UsersController extends AppController {
      * @param null $id
      */
     public function delete($id = null) {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship HTML Template
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
         /** @var $Users App\Model\Table\UsersTable */
@@ -163,7 +126,6 @@ class UsersController extends AppController {
 
 
     public function add() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -179,7 +141,6 @@ class UsersController extends AppController {
                 $containerPermissions = $Users->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
                 $this->request->data['User']['containers'] = $containerPermissions;
             }
-
 
             //@TODO remove these lines as they are implemented in users add
             $this->request->data['User']['status'] = 1;
@@ -203,8 +164,8 @@ class UsersController extends AppController {
     }
 
     public function loadDateformats() {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship HTML Template
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
         /** @var $Users App\Model\Table\UsersTable */
@@ -225,7 +186,6 @@ class UsersController extends AppController {
 
 
     public function edit($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -273,7 +233,6 @@ class UsersController extends AppController {
 
 
     public function addFromLdap() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -324,7 +283,6 @@ class UsersController extends AppController {
     }
 
     public function loadLdapUserByString() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -338,33 +296,21 @@ class UsersController extends AppController {
     }
 
     public function resetPassword($id = null) {
-        $this->autoRender = false;
-        if (!$this->User->exists($id)) {
-            $this->setFlash(__('Invalid user'), false);
-            $this->redirect(['action' => 'index']);
-
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        $user = $this->User->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'User.id' => $id
-            ]
-        ]);
-        $generatePassword = function () {
-            $char = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-            $size = (sizeof($char) - 1);
-            $token = '';
-            for ($i = 0; $i < 7; $i++) {
-                $token .= $char[rand(0, $size)];
-            }
-            $token = $token . rand(0, 9);
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
 
-            return $token;
-        };
+        if (!$Users->existsById($id)) {
+            throw new MethodNotAllowedException('Invalid User');
+        }
 
-        $newPassword = $generatePassword();
+        $user = $Users->get($id);
+        $newPassword = $Users->generatePassword();
+
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $this->_systemsettings = $Systemsettings->findAsArray();
@@ -373,7 +319,7 @@ class UsersController extends AppController {
         $Email = new CakeEmail();
         $Email->config('default');
         $Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
-        $Email->to($user['User']['email']);
+        $Email->to($user->email);
         $Email->subject(__('Password reset'));
 
         $Email->emailFormat('both');
@@ -387,58 +333,53 @@ class UsersController extends AppController {
                 'contentId' => '100',
             ],
         ]);
-        $this->User->id = $id;
-        if ($this->User->saveField('password', AuthComponent::password($newPassword))) {
-            $Email->send();
-            $this->setFlash(__('Password reset successfully. A mail with the new password was sent to <b>' . h($user['User']['email']) . '</b>'));
-            $this->redirect(['action' => 'index']);
 
+        $user->password = $newPassword;
+
+        $Users->save($user);
+        if ($user->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $user->getErrors());
+            $this->set('_serialize', ['error']);
             return;
         }
-        $this->setFlash(__('Could not reset password'), false);
-        $this->redirect(['action' => 'index']);
-
-        return;
+        $Email->send();
+        $this->set('user', []);
+        $this->set('_serialize', ['user']);
     }
+
 
     public function loadUsersByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        $containerId = (int)$this->request->query('containerId');
-        $containers = [ROOT_CONTAINER];
-        if (in_array($containerId, $this->MY_RIGHTS, true)) {
-            $containers[] = $containerId;
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $this->request->data['container_ids'] = 1;
+        $users = [];
+        if (isset($this->request->data['container_ids'])) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
+            $users = $this->User->usersByContainerId($containerIds, 'list');
+            $users = Api::makeItJavaScriptAble($users);
         }
-        $users = $this->User->find('list', [
-            'recursive'  => -1,
-            'joins'      => [
-                [
-                    'table'      => 'users_to_containers',
-                    'type'       => 'INNER',
-                    'alias'      => 'UsersToContainer',
-                    'conditions' => 'UsersToContainer.user_id = User.id',
-                ],
-            ],
-            'conditions' => [
-                'UsersToContainer.container_id' => $containers
-            ],
-            'group'      => 'User.id'
-        ]);
-        $users = Api::makeItJavaScriptAble(
-            $users
-        );
 
-        $this->set(compact(['users']));
-        $this->set('_serialize', ['users']);
+        $data = [
+            'users' => $users,
+        ];
+        $this->set($data);
+        $this->set('_serialize', array_keys($data));
     }
+
 
     /**
      * get all possible states a user can have
      */
     public function loadStatus() {
-        $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
         $status = $Users->getUserStatus();

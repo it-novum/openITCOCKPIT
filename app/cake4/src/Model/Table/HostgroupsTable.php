@@ -7,8 +7,9 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 
@@ -49,7 +50,8 @@ class HostgroupsTable extends Table {
         $this->belongsTo('Containers', [
             'foreignKey' => 'container_id',
             'joinType'   => 'INNER'
-        ]);
+        ])->setDependent(true);
+
         $this->belongsToMany('Hosts', [
             'className'        => 'Hosts',
             'foreignKey'       => 'hostgroup_id',
@@ -59,8 +61,8 @@ class HostgroupsTable extends Table {
         ]);
         $this->belongsToMany('Hosttemplates', [
             'className'        => 'Hosttemplates',
-            'foreignKey'       => 'hosttemplate_id',
-            'targetForeignKey' => 'host_id',
+            'foreignKey'       => 'hostgroup_id',
+            'targetForeignKey' => 'hosttemplate_id',
             'joinTable'        => 'hosttemplates_to_hostgroups',
             'saveStrategy'     => 'replace'
         ]);
@@ -87,13 +89,14 @@ class HostgroupsTable extends Table {
         $validator
             ->scalar('description')
             ->maxLength('description', 255)
-            ->requirePresence('description', 'create')
-            ->allowEmptyString('description', false);
+            ->requirePresence('description', false)
+            ->allowEmptyString('description', true);
 
         $validator
             ->scalar('hostgroup_url')
             ->maxLength('hostgroup_url', 255)
-            ->allowEmptyString('hostgroup_url');
+            ->allowEmptyString('hostgroup_url', true)
+            ->url('hostgroup_url', __('Not a valid URL.'));
 
         return $validator;
     }
@@ -261,8 +264,8 @@ class HostgroupsTable extends Table {
     /**
      * @param HostgroupFilter $HostgroupFilter
      * @param null|PaginateOMat $PaginateOMat
-     * @package array $MY_RIGHTS
      * @return array
+     * @package array $MY_RIGHTS
      */
     public function getHostgroupsIndex(HostgroupFilter $HostgroupFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find()
@@ -271,7 +274,7 @@ class HostgroupsTable extends Table {
             ]);
 
         $where = $HostgroupFilter->indexFilter();
-        if(!empty($MY_RIGHTS)){
+        if (!empty($MY_RIGHTS)) {
             $where['Containers.parent_id IN'] = $MY_RIGHTS;
         }
         $query->where($where);
@@ -290,5 +293,224 @@ class HostgroupsTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $dataToParse
+     * @return array
+     */
+    public function resolveDataForChangelog($dataToParse = []) {
+        $extDataForChangelog = [
+            'Host'         => [],
+            'Hosttemplate' => [],
+        ];
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        if (!empty($dataToParse['Hostgroup']['hosts']['_ids'])) {
+            foreach ($HostsTable->getHostsAsList($dataToParse['Hostgroup']['hosts']['_ids']) as $hostId => $hostName) {
+                $extDataForChangelog['Host'][] = [
+                    'id'   => $hostId,
+                    'name' => $hostName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Hostgroup']['hosttemplates']['_ids'])) {
+            foreach ($HosttemplatesTable->getHosttemplatesAsList($dataToParse['Hostgroup']['hosttemplates']['_ids']) as $hosttemplateId => $hosttemplateName) {
+                $extDataForChangelog['Hosttemplate'][] = [
+                    'id'   => $hosttemplateId,
+                    'name' => $hosttemplateName
+                ];
+            }
+        }
+
+        return $extDataForChangelog;
+    }
+
+    public function getHostgroupForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Hostgroups.id' => $id
+            ])
+            ->contain([
+                'Hosts',
+                'Hosttemplates',
+                'Containers'
+            ])
+            ->disableHydration()
+            ->first();
+
+        $hostgroup = $query;
+        $hostgroup['hosts'] = [
+            '_ids' => Hash::extract($query, 'hosts.{n}.id')
+        ];
+        $hostgroup['hosttemplates'] = [
+            '_ids' => Hash::extract($query, 'hosttemplates.{n}.id')
+        ];
+
+        return [
+            'Hostgroup' => $hostgroup
+        ];
+    }
+
+    /**
+     * @param int $id
+     * @return \App\Model\Entity\Hostgroup
+     */
+    public function getHostgroupById($id) {
+        return $this->get($id, [
+            'contain' => [
+                'Containers'
+            ]
+        ]);
+    }
+
+    /**
+     * @param HostgroupConditions $HostgroupConditions
+     * @param array|int $selected
+     * @return array|null
+     */
+    public function getHostgroupsForAngular(HostgroupConditions $HostgroupConditions, $selected = []) {
+        if (!is_array($selected)) {
+            $selected = [$selected];
+        }
+        $selected = array_filter($selected);
+
+
+        $where = $HostgroupConditions->getConditionsForFind();
+
+        if (!empty($selected)) {
+            $where['NOT'] = [
+                'Hostgroups.id IN' => $selected
+            ];
+        }
+
+        $query = $this->find()
+            ->contain([
+                'containers'
+            ])
+            ->select([
+                'Containers.name',
+                'Hostgroups.id'
+            ])
+            ->where(
+                $where
+            )
+            ->order([
+                'Containers.name' => 'asc'
+            ])
+            ->limit(ITN_AJAX_LIMIT)
+            ->disableHydration()
+            ->all();
+
+        $hostgroupsWithLimit = [];
+        $result = $this->emptyArrayIfNull($query->toArray());
+        foreach ($result as $row) {
+            $hostgroupsWithLimit[$row['id']] = $row['Containers']['name'];
+        }
+
+        $selectedHostgroups = [];
+        if (!empty($selected)) {
+            $query = $this->find()
+                ->contain([
+                    'containers'
+                ])
+                ->select([
+                    'Containers.name',
+                    'Hostgroups.id'
+                ])
+                ->where([
+                    'Hostgroups.id IN' => $selected
+                ])
+                ->order([
+                'Containers.name' => 'asc'
+            ])
+                ->limit(ITN_AJAX_LIMIT)
+                ->disableHydration()
+                ->all();
+
+            $selectedHostgroups = [];
+            $result = $this->emptyArrayIfNull($query->toArray());
+            foreach ($result as $row) {
+                $selectedHostgroups[$row['id']] = $row['Containers']['name'];
+            }
+        }
+
+        $hostgroups = $hostgroupsWithLimit + $selectedHostgroups;
+        asort($hostgroups, SORT_FLAG_CASE | SORT_NATURAL);
+
+        return $hostgroups;
+    }
+
+    /**
+     * @param HostgroupConditions $HostgroupConditions
+     * @param array|int $selected
+     * @return array|null
+     */
+    public function getHostgroupsByContainerIdNew(HostgroupConditions $HostgroupConditions) {
+        $where = $HostgroupConditions->getConditionsForFind();
+
+        $query = $this->find()
+            ->contain([
+                'containers'
+            ])
+            ->select([
+                'Containers.name',
+                'Hostgroups.id'
+            ])
+            ->where(
+                $where
+            )
+            ->order([
+                'Containers.name' => 'asc'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $hostgroups = [];
+        $result = $this->emptyArrayIfNull($query->toArray());
+        foreach ($result as $row) {
+            $hostgroups[$row['id']] = $row['Containers']['name'];
+        }
+
+        return $hostgroups;
+    }
+
+    /**
+     * @param HostgroupFilter $HostgroupFilter
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getHostgroupsForPdf(HostgroupFilter $HostgroupFilter, $MY_RIGHTS = []){
+
+        $query = $this->find()
+            ->contain([
+                'hosts',
+                'Containers'
+            ]);
+
+        $where = $HostgroupFilter->indexFilter();
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+        $query->where($where)
+            ->order(
+                $HostgroupFilter->getOrderForPaginator('Containers.name', 'asc')
+            )->disableHydration();
+
+        $data = $query->all();
+        return $this->emptyArrayIfNull($data->toArray());
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Hostgroups.id' => $id]);
     }
 }

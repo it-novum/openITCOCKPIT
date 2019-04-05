@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('UsersIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService){
+    .controller('UsersIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService, NotyService){
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -8,7 +8,7 @@ angular.module('openITCOCKPIT')
                     full_name: '',
                     email: '',
                     phone: '',
-                    status: [],
+                    status: QueryStringService.userstate(),
                     usergroup_id: [],
                     company: '',
                 }
@@ -36,7 +36,7 @@ angular.module('openITCOCKPIT')
                 'filter[Users.full_name]': $scope.filter.Users.full_name,
                 'filter[Users.email]': $scope.filter.Users.email,
                 'filter[Users.phone]': $scope.filter.Users.phone,
-                'filter[Users.status]': $scope.filter.Users.status,
+                'filter[Users.status][]': $rootScope.currentStateForApi($scope.filter.Users.status),
                 'filter[Users.usergroup_id][]': $scope.filter.Users.usergroup_id,
                 'filter[Users.company]': $scope.filter.Users.company
             };
@@ -50,6 +50,7 @@ angular.module('openITCOCKPIT')
                 $scope.init = false;
             });
         };
+
 
         $scope.loadSystemsettings = function(){
             $http.get("/systemsettings/getSystemsettingsForAngularBySection.json", {
@@ -88,6 +89,29 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.resetPassword = function(userId, email){
+            console.log('reset password triggered');
+
+            $http.get("/users/resetPassword/" + userId + ".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                var msg = 'Password reset successfully. A mail with the new password was sent to ' + email;
+                NotyService.genericSuccess({message: msg});
+            }, function errorCallback(result){
+                var msg = 'Password reset failed';
+                NotyService.genericError({message: msg});
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+        };
+
         $scope.getObjectForDelete = function(user){
             var object = {};
             object[user.User.id] = user.User.full_name;
@@ -114,7 +138,7 @@ angular.module('openITCOCKPIT')
         $scope.load();
         $scope.loadSystemsettings();
         $scope.loadUsergroups();
-
+        console.log(QueryStringService.userstate());
 
         $scope.$watch('filter', function(){
             $scope.currentPage = 1;

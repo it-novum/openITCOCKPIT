@@ -82,21 +82,27 @@ class UsersTable extends Table {
             ->allowEmptyString('id', 'create');
 
         $validator
+            ->requirePresence('containers', true, __('You have to choose at least one option.'))
+            ->allowEmptyString('containers', false)
+            ->multipleOptions('containers', [
+                'min' => 1
+            ], __('You have to choose at least one option.'));
+
+        $validator
             ->integer('status')
             ->requirePresence('status', 'create')
             ->allowEmptyString('status', false);
 
         $validator
+            ->integer('usergroup_id')
+            ->requirePresence('usergroup_id', 'create')
+            ->allowEmptyString('usergroup_id', false);
+
+        $validator
             ->email('email')
             ->requirePresence('email', 'create')
             ->allowEmptyString('email', false);
-        /*
-                $validator
-                    ->scalar('password')
-                    ->maxLength('password', 45)
-                    ->requirePresence('password', 'create')
-                    ->allowEmptyString('password', false);
-        */
+
         $validator
             ->scalar('firstname')
             ->maxLength('firstname', 100)
@@ -209,12 +215,16 @@ class UsersTable extends Table {
         return $rules;
     }
 
-
+    /**
+     * @param $event
+     * @param $entity
+     * @param $options
+     * @return bool
+     */
     public function beforeSave($event, $entity, $options) {
         if (!empty($entity->password)) {
             $entity->password = Security::hash($entity->password, null, true);
         }
-
         return true;
     }
 
@@ -427,6 +437,21 @@ class UsersTable extends Table {
      */
     public function existsById($id) {
         return $this->exists(['Users.id' => $id]);
+    }
+
+    /**
+     * @return string
+     */
+    public function generatePassword() {
+        $char = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+        $size = (sizeof($char) - 1);
+        $token = '';
+        for ($i = 0; $i < 7; $i++) {
+            $token .= $char[rand(0, $size)];
+        }
+        $token = $token . rand(0, 9);
+
+        return $token;
     }
 
     /**

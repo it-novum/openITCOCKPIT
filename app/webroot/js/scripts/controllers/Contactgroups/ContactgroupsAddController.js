@@ -1,16 +1,24 @@
 angular.module('openITCOCKPIT')
     .controller('ContactgroupsAddController', function($scope, $http, SudoService, $state, NotyService){
-        $scope.post = {
-            Contactgroup: {
-                description: '',
-                container: {
-                    parent_id: null
-                },
-                contacts: {
-                    _ids: []
-                }
-            }
+
+        $scope.data = {
+            createAnother: false
         };
+
+        var clearForm = function(){
+            $scope.post = {
+                Contactgroup: {
+                    description: '',
+                    container: {
+                        parent_id: null
+                    },
+                    contacts: {
+                        _ids: []
+                    }
+                }
+            };
+        };
+        clearForm();
 
         $scope.init = true;
 
@@ -47,9 +55,15 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                $state.go('ContactgroupsIndex').then(function(){
+                if($scope.data.createAnother === false){
+                    $state.go('ContactgroupsIndex').then(function(){
+                        NotyService.scrollTop();
+                    });
+                }else{
+                    clearForm();
+                    $scope.errors = {};
                     NotyService.scrollTop();
-                });
+                }
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){
@@ -77,6 +91,12 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
+
+            if(!$scope.post.Contactgroup.container.parent_id){
+                //Create another
+                return;
+            }
+
             $scope.loadContacts();
         }, true);
 

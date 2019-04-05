@@ -132,6 +132,34 @@ angular.module('openITCOCKPIT')
 
             },
 
+            userstate: function(){
+                var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
+                if(sourceUrl.includes('/ng/#!/')){
+                    sourceUrl = sourceUrl.replace('/ng/#!', '');
+                }
+                var query = parseUri(sourceUrl).queryKey;
+
+                var userstates = {
+                    active: false,
+                    inactive: false,
+                    suspended: false
+                };
+
+                for(var key in query){
+                    if(key === 'filter[Users.status][1]'){
+                        userstates.active = true;
+                    }
+                    if(key === 'filter[Users.status][2]'){
+                        userstates.inactive = true;
+                    }
+                    if(key === 'filter[Users.status][4]'){
+                        userstates.suspended = true;
+                    }
+                }
+                return userstates;
+
+            },
+
             servicestate: function(){
                 var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
                 if(sourceUrl.includes('/ng/#!/')){

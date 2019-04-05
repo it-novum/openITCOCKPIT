@@ -129,7 +129,13 @@
                 <div class="col-xs-12 margin-top-10 margin-bottom-10">
                     <div class="well formactions ">
                         <div class="pull-right">
-                            <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">
+
+                            <label>
+                                <input type="checkbox" ng-model="data.createAnother">
+                                <?php echo _('Create another'); ?>
+                            </label>
+
+                            <input class="btn btn-primary" type="submit" value="<?php echo __('Create contact group'); ?>">
                             <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>

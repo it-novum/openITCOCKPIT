@@ -93,7 +93,7 @@ $timezones = CakeTime::listTimezones();
                         </div>
                     </div>
 
-                    <div class="form-group" ng-class="{'has-error': errors.usergroups}">
+                    <div class="form-group required" ng-class="{'has-error': errors.usergroup_id}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('User role'); ?>
                         </label>
