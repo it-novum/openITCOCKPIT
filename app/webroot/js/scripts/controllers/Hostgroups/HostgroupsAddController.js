@@ -1,9 +1,25 @@
 angular.module('openITCOCKPIT')
-    .controller('HostgroupsAddController', function($scope, $http, $state, NotyService){
+    .controller('HostgroupsAddController', function($scope, $http, $state, $stateParams, NotyService){
 
         $scope.data = {
             createAnother: false
         };
+
+        // preSelectedIds is used for "Append hosts to host group from /hosts/index"
+        var preSelectedIds = $stateParams.ids;
+        if(preSelectedIds !== null){
+            var idsAsString = preSelectedIds.split(',');
+            preSelectedIds = [];
+            //int ids are required for AngularJS
+            for(var i in idsAsString){
+                preSelectedIds.push(parseInt(idsAsString[i], 10));
+            }
+        }
+
+        if(preSelectedIds === null){
+            preSelectedIds = [];
+        }
+
 
         var clearForm = function(){
             $scope.post = {
@@ -15,7 +31,7 @@ angular.module('openITCOCKPIT')
                         parent_id: 0
                     },
                     hosts: {
-                        _ids: []
+                        _ids: preSelectedIds
                     },
                     hosttemplates: {
                         _ids: []

@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<?php $timezones = CakeTime::listTimezones(); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -41,263 +42,367 @@
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('User', [
-                'class' => 'form-horizontal',
-            ]);
-            echo $this->Form->input('firstname', [
-                'label' => __('First name'),
-                'value' => $user['User']['firstname'],
-            ]);
-            echo $this->Form->input('lastname', [
-                'label' => __('Last name'),
-                'value' => $user['User']['lastname'],
-            ]);
+            <form ng-submit="submit();" class="form-horizontal">
 
-            if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap' && $user['User']['samaccountname'] !== null):
-                echo $this->Form->input('samaccountname', [
-                    'label'    => __('Username'),
-                    'value'    => $user['User']['samaccountname'],
-                    'readonly' => true,
-                    'help'     => __('This is the username, you need to for the login!'),
-                ]);
-            endif;
+                <div class="row">
 
-            echo $this->Form->input('email', [
-                'label' => __('Email'),
-                'value' => $user['User']['email'],
-            ]);
-            echo $this->Form->input('phone', [
-                'label' => __('Phone'),
-                'value' => $user['User']['phone'],
-            ]);
-            ?>
+                    <div class="form-group required" ng-class="{'has-error': errors.firstname}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('First name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.User.firstname">
+                            <div ng-repeat="error in errors.firstname">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
 
-            <hr/>
+                    <div class="form-group required" ng-class="{'has-error': errors.lastname}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Last name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.User.lastname">
+                            <div ng-repeat="error in errors.lastname">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
 
-            <?php echo $this->Form->fancyCheckbox('showstatsinmenu', [
-                'caption'          => __('Show status stats in menu'),
-                'wrapGridClass'    => 'col col-xs-10',
-                'captionGridClass' => 'col col-xs-10',
-                'captionClass'     => 'col col-md-2 control-label',
-                'checked'          => (boolean)$user['User']['showstatsinmenu'],
-            ]);
+                    <div ng-if="isLdapAuth" class="form-group required" ng-class="{'has-error': errors.samaccountname}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Username'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.User.samaccountname">
+                            <div ng-repeat="error in errors.email">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
 
-            echo $this->Form->fancyCheckbox('recursive_browser', [
-                'caption'          => __('Recursive Browser'),
-                'wrapGridClass'    => 'col col-xs-10',
-                'captionGridClass' => 'col col-xs-10',
-                'captionClass'     => 'col col-md-2 control-label',
-                'checked'          => (boolean)$user['User']['recursive_browser'],
-            ]);
+                    <div class="form-group required" ng-class="{'has-error': errors.email}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Email Address'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.User.email"
+                                    ng-readonly="isLdapAuth">
+                            <div ng-repeat="error in errors.email">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
 
-            echo $this->Form->input('paginatorlength', [
-                'label' => __('Listelement Length'),
-                'value' => $paginatorLength,
-                'help'  => __('This field defines the length of every list in the openITCOCKPIT System for your Profile. You can choose between 1 and 1000'),
-            ]);
-            ?>
-            <hr/>
-            <?php
-            $options = [];
-            //Avoid change of time on 12:59:59:59 for example
-            $timestamp = time();
-            foreach ($dateformats as $key => $dateformat):
-                $options[$key] = $this->Time->format($timestamp, $dateformat);
-            endforeach;
+                    <div class="form-group required" ng-class="{'has-error': errors.phone}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Phone Number'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.User.phone">
+                            <div ng-repeat="error in errors.phone">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
 
-            echo $this->Form->input('dateformat', [
-                'label'    => __('Date format'),
-                'options'  => $options,
-                'selected' => $selectedUserTime,
-                'class'    => 'chosen',
-                'style'    => 'width: 100%',
-            ]); ?>
-            <?php echo $this->Form->input('timezone', [
-                'label'    => __('Timezone'),
-                'options'  => CakeTime::listTimezones(),
-                'selected' => $user['User']['timezone'],
-                'class'    => 'chosen',
-                'style'    => 'width: 100%',
-                'help'     => __('Server timezone is:') . ' <strong>' . date_default_timezone_get() . '</strong> ' . __('Current server time:') . ' <strong>' . date('d.m.Y H:i:s') . '</strong>',
-            ]); ?>
-            <?php /*echo $this->Form->input('language', [
-				'label' => __('Language'),
-				'options' => [__('English')],
-				'value' => $user['User']['language']
-			]); */ ?>
+                    <hr>
 
-            <?php echo $this->Form->formActions(__('Save'), [
-                'cancelButton' => [
-                    'title' => __('Cancel'),
-                    'url'   => '/dashboards/',
-                ]
-            ]); ?>
+                    <div class="form-group" ng-class="{'has-error': errors.showstatsinmenu}">
+                        <label class="col col-md-2 control-label" for="userShowstatsinmenu">
+                            <?php echo __('Show status stats in menu'); ?>
+                        </label>
+                        <div class="col-xs-10 smart-form">
+                            <label class="checkbox small-checkbox-label no-required">
+                                <input type="checkbox" name="checkbox"
+                                       id="userShowstatsinmenu"
+                                       ng-model="post.User.showstatsinmenu">
+                                <i class="checkbox-primary"></i>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.recursive_browser}">
+                        <label class="col col-md-2 control-label" for="userRecursiveBrowser">
+                            <?php echo __('Recursive Browser'); ?>
+                        </label>
+                        <div class="col-xs-10 smart-form">
+                            <label class="checkbox small-checkbox-label no-required">
+                                <input type="checkbox" name="checkbox"
+                                       id="userRecursiveBrowser"
+                                       ng-model="post.User.recursive_browser">
+                                <i class="checkbox-primary"></i>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.paginatorlength}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Listelement Length'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input class="form-control"
+                                   type="number"
+                                   ng-model="post.User.paginatorlength">
+                            <div>
+                                <div class="help-block text-muted"><?php echo __('This field defines the length of every list in the openITCOCKPIT System for your Profile. You can choose between 1 and 1000'); ?></div>
+                            </div>
+                            <div ng-repeat="error in errors.paginatorlength">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.dateformat}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Date Format'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+
+                            <select
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="dateformats"
+                                    ng-options="dateformat.key as dateformat.value for dateformat in dateformats"
+                                    ng-model="post.User.dateformat">
+                            </select>
+                            <div ng-repeat="error in errors.User.dateformat">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group required" ng-class="{'has-error': errors.timezone}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Timezone'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+
+                            <select
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="{}"
+                                    ng-init="post.User.timezone = post.User.timezone || 'Europe/Berlin'"
+                                    ng-model="post.User.timezone">
+                                <?php foreach ($timezones as $continent => $continentTimezones): ?>
+                                    <optgroup label="<?php echo h($continent); ?>">
+                                        <?php foreach ($continentTimezones as $timezoneKey => $timezoneName): ?>
+                                            <option value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
+                                <?php endforeach; ?>
+                            </select>
+                            <div ng-repeat="error in errors.User.timezone">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                        <div class="helpText text-muted col-md-offset-2 col-md-6">
+                            <br/>
+                            <?php echo __('Server timezone is:'); ?>
+                            <strong>
+                                <?php echo h(date_default_timezone_get()); ?>
+                            </strong>
+                            <?php echo __('Current server time:'); ?>
+                            <strong>
+                                <?php echo date('d.m.Y H:i:s'); ?>
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+                                <input class="btn btn-primary" type="submit"
+                                       value="<?php echo __('Update Profile'); ?>">
+                                <a ui-sref="UsersIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-</div>
 
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-picture-o"></i> </span>
-        <h2><?php echo __('Your picture'); ?></h2>
-    </header>
-    <div>
-        <div class="widget-body">
-            <?php
-            if ($user['User']['image'] != null && $user['User']['image'] != ''):
-                if (file_exists(WWW_ROOT . 'userimages' . DS . $user['User']['image'])):
-                    echo $this->html->image('/userimages' . DS . $user['User']['image'], ['height' => 70]);
-                    echo ' <a class="txt-color-red" href="/profile/deleteImage"><i class="fa fa-trash-o"></i> ' . __('Delete my image') . '</a>';
+    <div class="jarviswidget" id="wid-id-0">
+        <header>
+            <span class="widget-icon"> <i class="fa fa-picture-o"></i> </span>
+            <h2><?php echo __('Your picture'); ?></h2>
+        </header>
+        <div>
+            <div class="widget-body">
+                <?php
+                if ($user['User']['image'] != null && $user['User']['image'] != ''):
+                    if (file_exists(WWW_ROOT . 'userimages' . DS . $user['User']['image'])):
+                        echo $this->html->image('/userimages' . DS . $user['User']['image'], ['height' => 70]);
+                        echo ' <a class="txt-color-red" href="/profile/deleteImage"><i class="fa fa-trash-o"></i> ' . __('Delete my image') . '</a>';
+                    else:
+                        echo $this->html->image('/img/fallback_user.png', ['width' => 70, 'height' => 70]);
+                        echo ' <span class="text-muted">' . __('You have no own image uploaded yet') . '</span>';
+                    endif;
                 else:
                     echo $this->html->image('/img/fallback_user.png', ['width' => 70, 'height' => 70]);
                     echo ' <span class="text-muted">' . __('You have no own image uploaded yet') . '</span>';
                 endif;
-            else:
-                echo $this->html->image('/img/fallback_user.png', ['width' => 70, 'height' => 70]);
-                echo ' <span class="text-muted">' . __('You have no own image uploaded yet') . '</span>';
-            endif;
 
-            echo $this->Form->create('Picture', [
-                'enctype' => 'multipart/form-data',
-            ]);
-
-            echo $this->Form->input('Image', [
-                'type'   => 'file',
-                'accept' => 'image/png,image/jpeg,image/gif',
-                'style'  => 'padding: 0px;',
-                'help'   => __('Allowd image types are: .jpg, .png and .gif. Best image size is 120x120px'),
-                'label'  => __('Select image'),
-            ]);
-            ?>
-
-            <br/><br/>
-            <div class="padding-top-20"></div>
-            <?php
-            echo $this->Form->formActions(__('Upload image'), [
-                'cancelButton' => [
-                    'title' => __('Cancel'),
-                    'url'   => '/dashboards/',
-                ]
-            ]); ?>
-        </div>
-    </div>
-</div>
-
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-unlock-alt"></i> </span>
-        <h2><?php echo __('Change password'); ?></h2>
-    </header>
-    <div>
-        <div class="widget-body">
-            <?php
-            if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap' && $user['User']['samaccountname'] !== null):
-                ?>
-                <div class="padding-top-20">
-                    <br/>
-                    <center class="text-info">
-                        <i class="fa fa-info-circle"></i>
-                        &nbsp;
-                        <?php echo __('Due to LDAP authentication you need to change your password over the operating system or your LDAP account manager tool.'); ?>
-                    </center>
-                </div>
-            <?php
-            else:
-                echo $this->Form->create('Password', [
-                    'class' => 'form-horizontal',
+                echo $this->Form->create('Picture', [
+                    'enctype' => 'multipart/form-data',
                 ]);
-                echo $this->Form->input('current_password', [
-                    'type'     => 'password',
-                    'label'    => __('Current password'),
-                    'required' => true,
+
+                echo $this->Form->input('Image', [
+                    'type'   => 'file',
+                    'accept' => 'image/png,image/jpeg,image/gif',
+                    'style'  => 'padding: 0px;',
+                    'help'   => __('Allowd image types are: .jpg, .png and .gif. Best image size is 120x120px'),
+                    'label'  => __('Select image'),
                 ]);
                 ?>
-                <hr>
+
+                <br/><br/>
+                <div class="padding-top-20"></div>
                 <?php
-                echo $this->Form->input('new_password', [
-                    'type'     => 'password',
-                    'label'    => __('New password'),
-                    'required' => true,
-                    'help'     => __('user_model.password_requirement_notice'),
-                ]);
-                echo $this->Form->input('new_password_repeat', [
-                    'type'     => 'password',
-                    'label'    => __('Retype password'),
-                    'required' => true,
-                ]);
-
-                echo $this->Form->formActions('Change password', [
+                echo $this->Form->formActions(__('Upload image'), [
                     'cancelButton' => [
                         'title' => __('Cancel'),
                         'url'   => '/dashboards/',
                     ]
-                ]);
-            endif;
-            ?>
+                ]); ?>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <div class="widget-toolbar" role="menu">
-            <button type="button" class="btn btn-xs btn-default" ng-click="load()">
-                <i class="fa fa-refresh"></i>
-                <?php echo __('Refresh'); ?>
-            </button>
+    <div class="jarviswidget" id="wid-id-0">
+        <header>
+            <span class="widget-icon"> <i class="fa fa-unlock-alt"></i> </span>
+            <h2><?php echo __('Change password'); ?></h2>
+        </header>
+        <div>
+            <div class="widget-body">
+                <?php
+                if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap' && $user['User']['samaccountname'] !== null):
+                    ?>
+                    <div class="padding-top-20">
+                        <br/>
+                        <center class="text-info">
+                            <i class="fa fa-info-circle"></i>
+                            &nbsp;
+                            <?php echo __('Due to LDAP authentication you need to change your password over the operating system or your LDAP account manager tool.'); ?>
+                        </center>
+                    </div>
+                <?php
+                else:
+                    echo $this->Form->create('Password', [
+                        'class' => 'form-horizontal',
+                    ]);
+                    echo $this->Form->input('current_password', [
+                        'type'     => 'password',
+                        'label'    => __('Current password'),
+                        'required' => true,
+                    ]);
+                    ?>
+                    <hr>
+                    <?php
+                    echo $this->Form->input('new_password', [
+                        'type'     => 'password',
+                        'label'    => __('New password'),
+                        'required' => true,
+                        'help'     => __('user_model.password_requirement_notice'),
+                    ]);
+                    echo $this->Form->input('new_password_repeat', [
+                        'type'     => 'password',
+                        'label'    => __('Retype password'),
+                        'required' => true,
+                    ]);
 
-            <button type="button" class="btn btn-xs btn-success" ng-click="createApiKey()">
-                <i class="fa fa-key"></i>
-                <?php echo __('Create new API key'); ?>
-            </button>
+                    echo $this->Form->formActions('Change password', [
+                        'cancelButton' => [
+                            'title' => __('Cancel'),
+                            'url'   => '/dashboards/',
+                        ]
+                    ]);
+                endif;
+                ?>
+            </div>
         </div>
+    </div>
 
-        <span class="widget-icon"> <i class="fa fa-key"></i> </span>
-        <h2><?php echo __('API keys'); ?></h2>
+    <div class="jarviswidget" id="wid-id-0">
+        <header>
+            <div class="widget-toolbar" role="menu">
+                <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                    <i class="fa fa-refresh"></i>
+                    <?php echo __('Refresh'); ?>
+                </button>
 
-    </header>
-    <div>
-        <div class="widget-body">
-
-            <div class="row">
-                <div class="col-xs-12 text-center text-info" ng-show="apikeys.length === 0">
-                    <i class="fa fa-info-circle"></i>
-                    <?php echo __('No API keys created yet. You can still use the api using your username and password.'); ?>
-                    <?php echo __('In some cases it is easier to send an API key via a HTTP Header.'); ?>
-                </div>
+                <button type="button" class="btn btn-xs btn-success" ng-click="createApiKey()">
+                    <i class="fa fa-key"></i>
+                    <?php echo __('Create new API key'); ?>
+                </button>
             </div>
 
-            <div class="row">
-                <div class="col-xs-12 col-md-1 bold">
-                    <?php echo __('ID'); ?>
+            <span class="widget-icon"> <i class="fa fa-key"></i> </span>
+            <h2><?php echo __('API keys'); ?></h2>
+
+        </header>
+        <div>
+            <div class="widget-body">
+
+                <div class="row">
+                    <div class="col-xs-12 text-center text-info" ng-show="apikeys.length === 0">
+                        <i class="fa fa-info-circle"></i>
+                        <?php echo __('No API keys created yet. You can still use the api using your username and password.'); ?>
+                        <?php echo __('In some cases it is easier to send an API key via a HTTP Header.'); ?>
+                    </div>
                 </div>
-                <div class="col-xs-12 col-md-9 bold">
-                    <?php echo __('Description'); ?>
-                </div>
-                <div class="col-xs-12 col-md-2 bold">
-                    <?php echo __('Show'); ?>
-                </div>
-            </div>
-            <div class="row" ng-repeat="apikey in apikeys">
-                <div class="col-xs-12 col-md-1">
-                    {{apikey.id}}
-                </div>
-                <div class="col-xs-12 col-md-9">
-                    {{apikey.description}}
-                </div>
-                <div class="col-xs-12 col-md-2">
-                    <button class="btn btn-primary btn-xs btn-block" ng-click="editApiKey(apikey.id)">
-                        <i class="fa fa-eye"></i>
+
+                <div class="row">
+                    <div class="col-xs-12 col-md-1 bold">
+                        <?php echo __('ID'); ?>
+                    </div>
+                    <div class="col-xs-12 col-md-9 bold">
+                        <?php echo __('Description'); ?>
+                    </div>
+                    <div class="col-xs-12 col-md-2 bold">
                         <?php echo __('Show'); ?>
-                    </button>
+                    </div>
                 </div>
-            </div>
+                <div class="row" ng-repeat="apikey in apikeys">
+                    <div class="col-xs-12 col-md-1">
+                        {{apikey.id}}
+                    </div>
+                    <div class="col-xs-12 col-md-9">
+                        {{apikey.description}}
+                    </div>
+                    <div class="col-xs-12 col-md-2">
+                        <button class="btn btn-primary btn-xs btn-block" ng-click="editApiKey(apikey.id)">
+                            <i class="fa fa-eye"></i>
+                            <?php echo __('Show'); ?>
+                        </button>
+                    </div>
+                </div>
 
+            </div>
         </div>
     </div>
-</div>
 
-<create-apikey-directive></create-apikey-directive>
-<edit-apikey-directive></edit-apikey-directive>
+    <create-apikey-directive></create-apikey-directive>
+    <edit-apikey-directive></edit-apikey-directive>
 

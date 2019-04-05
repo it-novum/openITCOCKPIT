@@ -39,7 +39,9 @@
 
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
-
+<?php if ($this->Acl->hasPermission('add', 'hostgroups')): ?>
+    <add-hosts-to-hostgroup></add-hosts-to-hostgroup>
+<?php endif; ?>
 
 <section id="widget-grid" class="">
 
@@ -311,6 +313,16 @@
                                                         ); ?>
                                                     </li>
                                                 <?php endif; ?>
+
+                                                <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
+                                                    <li>
+                                                        <a ng-click="confirmAddHostsToHostgroup(getObjectForDelete(host))"
+                                                           class="a-clean pointer">
+                                                            <i class="fa fa-sitemap"></i> <?php echo __('Append to hostgroup'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+
                                                 <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                     <li class="divider" ng-if="host.Host.allow_edit"></li>
                                                     <li ng-if="host.Host.allow_edit">
@@ -387,10 +399,12 @@
                                                 </a>
                                             </li>
                                         <?php endif; ?>
+
                                         <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
                                             <li>
-                                                <a ng-href="{{ linkForAddToHostgroup() }}" class="a-clean">
-                                                    <i class="fa fa-sitemap"></i> <?php echo __('Add to hostgroup'); ?>
+                                                <a ng-click="confirmAddHostsToHostgroup(getObjectsForDelete())"
+                                                   class="a-clean pointer">
+                                                    <i class="fa fa-sitemap"></i> <?php echo __('Append to hostgroup'); ?>
                                                 </a>
                                             </li>
                                         <?php endif; ?>
