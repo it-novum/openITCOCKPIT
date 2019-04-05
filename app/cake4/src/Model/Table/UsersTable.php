@@ -215,7 +215,12 @@ class UsersTable extends Table {
         return $rules;
     }
 
-
+    /**
+     * @param $event
+     * @param $entity
+     * @param $options
+     * @return bool
+     */
     public function beforeSave($event, $entity, $options) {
         if (!empty($entity->password)) {
             $entity->password = Security::hash($entity->password, null, true);

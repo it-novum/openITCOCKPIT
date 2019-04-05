@@ -169,7 +169,7 @@ $timezones = CakeTime::listTimezones();
                         </div>
                     </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.company}">
+                    <div class="form-group" ng-class="{'has-error': errors.company}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Company'); ?>
                         </label>
@@ -184,7 +184,7 @@ $timezones = CakeTime::listTimezones();
                         </div>
                     </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.position}">
+                    <div class="form-group" ng-class="{'has-error': errors.position}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Company Position'); ?>
                         </label>
@@ -199,7 +199,7 @@ $timezones = CakeTime::listTimezones();
                         </div>
                     </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.phone}">
+                    <div class="form-group" ng-class="{'has-error': errors.phone}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Phone Number'); ?>
                         </label>
@@ -334,7 +334,8 @@ $timezones = CakeTime::listTimezones();
                             <input
                                     class="form-control"
                                     type="password"
-                                    ng-model="post.User.password">
+                                    ng-model="post.User.password"
+                                    autocomplete="new-password">
                             <div ng-repeat="error in errors.password">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -349,7 +350,8 @@ $timezones = CakeTime::listTimezones();
                             <input
                                     class="form-control"
                                     type="password"
-                                    ng-model="post.User.confirm_password">
+                                    ng-model="post.User.confirm_password"
+                                    autocomplete="new-password">
                             <div ng-repeat="error in errors.confirm_password">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>

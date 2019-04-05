@@ -184,7 +184,7 @@ angular.module('openITCOCKPIT')
                     'containerId': $scope.post.Instantreport.container_id
                 }
             }).then(function(result){
-                $scope.users = result.data.users;
+                $scope.users = result.data.users.users;
             });
         };
 

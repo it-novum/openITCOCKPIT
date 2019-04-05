@@ -258,7 +258,7 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
                                                     <li ng-if="!user.User.samaccountname">
-                                                        <a ng-click="resetPassword(user.User.id)">
+                                                        <a ng-click="resetPassword(user.User.id, user.User.email)">
                                                             <i class="fa fa-reply-all fa-flip-horizontal"></i>
                                                             <?php echo __('Reset Password'); ?>
                                                         </a>

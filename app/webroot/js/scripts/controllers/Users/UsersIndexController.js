@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('UsersIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService){
+    .controller('UsersIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService, NotyService){
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -89,7 +89,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.resetPassword = function(userId){
+        $scope.resetPassword = function(userId, email){
             console.log('reset password triggered');
 
             $http.get("/users/resetPassword/" + userId + ".json", {
@@ -97,9 +97,11 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                console.log(result)
-                //$scope.usergroups = result.data.usergroups;
+                var msg = 'Password reset successfully. A mail with the new password was sent to ' + email;
+                NotyService.genericSuccess({message: msg});
             }, function errorCallback(result){
+                var msg = 'Password reset failed';
+                NotyService.genericError({message: msg});
                 if(result.status === 403){
                     $state.go('403');
                 }
