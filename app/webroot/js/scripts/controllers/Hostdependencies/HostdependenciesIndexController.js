@@ -16,7 +16,7 @@ angular.module('openITCOCKPIT')
         var defaultFilter = function(){
             $scope.filter = {
                 Hostdependencies: {
-                    inherits_parent: 0,
+                    inherits_parent: '',
                     execution_fail_on_up: '',
                     execution_fail_on_down: '',
                     execution_fail_on_unreachable: '',

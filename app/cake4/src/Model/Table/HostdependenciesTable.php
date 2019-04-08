@@ -61,35 +61,23 @@ class HostdependenciesTable extends Table {
         $this->belongsToMany('Hosts', [
             'className'    => 'Hosts',
             'through'      => 'HostdependenciesHostMemberships',
-            'saveStrategy' => 'replace',
-            'conditions'   => [
-                'HostdependenciesHostMembership.dependent' => 0
-            ]
+            'saveStrategy' => 'replace'
         ]);
         $this->belongsToMany('HostsDependent', [
             'className'        => 'Hosts',
             'through'          => 'HostdependenciesHostMemberships',
             'targetForeignKey' => 'host_id',
-            'saveStrategy'     => 'replace',
-            'conditions'       => [
-                'HostdependenciesHostMembership.dependent' => 1
-            ]
+            'saveStrategy'     => 'replace'
         ]);
         $this->belongsToMany('Hostgroups', [
             'through'      => 'HostdependenciesHostgroupMemberships',
-            'saveStrategy' => 'replace',
-            'conditions'   => [
-                'HostdependenciesHostgroupMembership.dependent' => 0
-            ]
+            'saveStrategy' => 'replace'
         ]);
         $this->belongsToMany('HostgroupsDependent', [
             'className'        => 'Hostgroups',
             'through'          => 'HostdependenciesHostgroupMemberships',
             'targetForeignKey' => 'hostgroup_id',
-            'saveStrategy'     => 'replace',
-            'conditions'       => [
-                'HostdependenciesHostgroupMembership.dependent' => 1
-            ]
+            'saveStrategy'     => 'replace'
         ]);
     }
 
@@ -164,15 +152,18 @@ class HostdependenciesTable extends Table {
     public function getHostdependenciesIndex(HostdependenciesFilter $HostdependenciesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all')
             ->contain([
-                'Timeperiods'   => function (Query $q) {
+                'Timeperiods'    => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Timeperiods.id',
                             'Timeperiods.name'
                         ]);
                 },
-                'Hosts'         => function (Query $q) {
+                'Hosts'          => function (Query $q) {
                     return $q->enableAutoFields(false)
+                        ->where([
+                            'HostdependenciesHostMemberships.dependent' => 0
+                        ])
                         ->select([
                             'Hosts.id',
                             'Hosts.name',
@@ -181,6 +172,9 @@ class HostdependenciesTable extends Table {
                 },
                 'HostsDependent' => function (Query $q) {
                     return $q->enableAutoFields(false)
+                        ->where([
+                            'HostdependenciesHostMemberships.dependent' => 1
+                        ])
                         ->select([
                             'HostsDependent.id',
                             'HostsDependent.name',
@@ -188,9 +182,12 @@ class HostdependenciesTable extends Table {
                         ]);
                 },
 
-                'Hostgroups'         => [
+                'Hostgroups'          => [
                     'Containers' => function (Query $q) {
                         return $q->enableAutoFields(false)
+                            ->where([
+                                'HostdependenciesHostgroupMemberships.dependent' => 0
+                            ])
                             ->select([
                                 'Hostgroups.id',
                                 'Containers.name'
@@ -200,6 +197,9 @@ class HostdependenciesTable extends Table {
                 'HostgroupsDependent' => [
                     'Containers' => function (Query $q) {
                         return $q->enableAutoFields(false)
+                            ->where([
+                                'HostdependenciesHostgroupMemberships.dependent' => 1
+                            ])
                             ->select([
                                 'HostgroupsDependent.id',
                                 'Containers.name'
@@ -211,9 +211,9 @@ class HostdependenciesTable extends Table {
             ->disableHydration();
         $indexFilter = $HostdependenciesFilter->indexFilter();
         $containFilter = [
-            'Hosts.name'              => '',
+            'Hosts.name'               => '',
             'HostsDependent.name'      => '',
-            'Hostgroups.name'         => '',
+            'Hostgroups.name'          => '',
             'HostgroupsDependent.name' => ''
         ];
         if (!empty($indexFilter['Hosts.name LIKE'])) {
@@ -225,7 +225,6 @@ class HostdependenciesTable extends Table {
             });
             unset($indexFilter['Hosts.name LIKE']);
         }
-
         if (!empty($indexFilter['HostsDependent.name LIKE'])) {
             $containFilter['HostsDependent.name'] = [
                 'HostsDependent.name LIKE' => $indexFilter['HostsDependent.name LIKE']
@@ -233,7 +232,7 @@ class HostdependenciesTable extends Table {
             $query->matching('HostsDependent', function ($q) use ($containFilter) {
                 return $q->where($containFilter['HostsDependent.name']);
             });
-            unset($indexFilter['HostsExcluded.name LIKE']);
+            unset($indexFilter['HostsDependent.name LIKE']);
 
         }
         if (!empty($indexFilter['Hostgroups.name LIKE'])) {
@@ -252,13 +251,14 @@ class HostdependenciesTable extends Table {
             $query->matching('HostgroupsDependent.Containers', function ($q) use ($containFilter) {
                 return $q->where($containFilter['HostgroupsDependent.name']);
             });
-            unset($indexFilter['HostgroupsExcluded.name LIKE']);
+            unset($indexFilter['HostgroupsDependent.name LIKE']);
         }
-        if(!empty($MY_RIGHTS)){
+        if (!empty($MY_RIGHTS)) {
             $indexFilter['Hostdependencies.container_id IN'] = $MY_RIGHTS;
         }
         $query->where($indexFilter);
         $query->order($HostdependenciesFilter->getOrderForPaginator('Hostdependencies.id', 'asc'));
+
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $query->toArray();

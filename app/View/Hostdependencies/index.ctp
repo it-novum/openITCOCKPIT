@@ -269,7 +269,7 @@
                                                        ng-model="filter.Hostdependencies.inherits_parent"
                                                        ng-model-options="{debounce: 500}"
                                                        ng-true-value="1"
-                                                       ng-false-value="">
+                                                       ng-false-value="0">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Inherits parent'); ?>
                                             </label>
