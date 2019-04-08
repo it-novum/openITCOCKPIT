@@ -24,6 +24,7 @@
 //	confirmation.
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostdependenciesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
