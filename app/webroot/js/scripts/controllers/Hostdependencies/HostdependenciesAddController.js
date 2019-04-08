@@ -1,6 +1,7 @@
 angular.module('openITCOCKPIT')
-    .controller('HostdependenciesAddController', function($scope, $http, $state, NotyService){
-
+    .controller('HostdependenciesAddController', function($scope, $http, $state, $stateParams, $location, NotyService){
+        $scope.init = true;
+        $scope.id = $stateParams.id;
         $scope.post = {
             Hostdependency: {
                 container_id: null,
@@ -32,11 +33,10 @@ angular.module('openITCOCKPIT')
         };
         $scope.containers = {};
 
-        $scope.load = function(){
+        $scope.loadContainer = function(){
             var params = {
                 'angular': true
             };
-
             $http.get("/hostdependencies/loadContainers.json", {
                 params: params
             }).then(function(result){
@@ -56,6 +56,10 @@ angular.module('openITCOCKPIT')
                 $scope.hostgroups = result.data.hostgroups;
                 $scope.hostgroups_dependent = result.data.hostgroupsDependent;
                 $scope.timeperiods = result.data.timeperiods;
+                $scope.processChosenHosts();
+                $scope.processChosenDependentHosts();
+                $scope.processChosenHostgroups();
+                $scope.processChosenDependentHostgroups();
             });
         };
 
@@ -74,7 +78,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.loadExcludedHosts = function(searchString){
+        $scope.loadDependentHosts = function(searchString){
             if($scope.post.Hostdependency.container_id != null){
                 $http.get("/hosts/loadHostsByContainerId.json", {
                     params: {
@@ -84,25 +88,26 @@ angular.module('openITCOCKPIT')
                         'selected[]': $scope.post.Hostdependency.hosts_dependent._ids
                     }
                 }).then(function(result){
-                    $scope.hosts_excluded = result.data.hosts;
+                    $scope.hosts_dependent = result.data.hosts;
                 });
             }
         };
 
         $scope.submit = function(){
+            console.log($scope.post);
             $http.post("/hostdependencies/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                var hostdependencyEditUrl = $state.href('HostdependenciesEdit', {id: result.data.id});
+                var hostdependencyEditUrl = $state.href('HostdependenciesEdit', {id: $scope.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + hostdependencyEditUrl + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message
                 });
+
                 $state.go('HostdependenciesIndex').then(function(){
                     NotyService.scrollTop();
                 });
-
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
@@ -160,21 +165,34 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.$watch('post.Hostdependency.hosts._ids', function(){
+            if($scope.init){
+                return;
+            }
             $scope.processChosenDependentHosts();
         }, true);
 
         $scope.$watch('post.Hostdependency.hosts_dependent._ids', function(){
+            if($scope.init){
+                return;
+            }
             $scope.processChosenHosts();
         }, true);
 
         $scope.$watch('post.Hostdependency.hostgroups._ids', function(){
+            if($scope.init){
+                return;
+            }
             $scope.processChosenDependentHostgroups();
         }, true);
 
-        $scope.$watch('post.Hostescalation.hostgroups_dependent._ids', function(){
+        $scope.$watch('post.Hostdependency.hostgroups_dependent._ids', function(){
+            if($scope.init){
+                return;
+            }
             $scope.processChosenHostgroups();
         }, true);
 
         //Fire on page load
-        $scope.load();
+        $scope.loadContainer();
+
     });
