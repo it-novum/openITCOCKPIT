@@ -242,8 +242,8 @@ $config = [
             ],
             'Hostdependencies'      => [
                 'index' => ['view'],
-                'add'   => ['loadElementsByContainerId'],
-                'edit'  => ['loadElementsByContainerId'],
+                'add'   => ['loadContainers', 'loadElementsByContainerId'],
+                'edit'  => ['loadContainers', 'loadElementsByContainerId'],
             ],
             'Hostescalations'       => [
                 'index' => ['view'],

@@ -1,6 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('HostdependenciesEditController', function($scope, $http, $state, $stateParams, $location, NotyService){
-
+        $scope.init = true;
         $scope.id = $stateParams.id;
         $scope.post = {
             Hostdependency: {
@@ -70,7 +70,6 @@ angular.module('openITCOCKPIT')
                     }
 
                 }
-                $scope.init = false;
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
@@ -87,7 +86,6 @@ angular.module('openITCOCKPIT')
             var params = {
                 'angular': true
             };
-
             $http.get("/hostdependencies/loadContainers.json", {
                 params: params
             }).then(function(result){
@@ -107,6 +105,10 @@ angular.module('openITCOCKPIT')
                 $scope.hostgroups = result.data.hostgroups;
                 $scope.hostgroups_dependent = result.data.hostgroupsDependent;
                 $scope.timeperiods = result.data.timeperiods;
+                $scope.processChosenHosts();
+                $scope.processChosenDependentHosts();
+                $scope.processChosenHostgroups();
+                $scope.processChosenDependentHostgroups();
             });
         };
 
@@ -204,27 +206,36 @@ angular.module('openITCOCKPIT')
 
 
         $scope.$watch('post.Hostdependency.container_id', function(){
-            if($scope.init){
-                return;
-            }
             if($scope.post.Hostdependency.container_id != null){
                 $scope.loadElementsByContainerId();
             }
         }, true);
 
         $scope.$watch('post.Hostdependency.hosts._ids', function(){
+            if($scope.init){
+                return;
+            }
             $scope.processChosenDependentHosts();
         }, true);
 
         $scope.$watch('post.Hostdependency.hosts_dependent._ids', function(){
+            if($scope.init){
+                return;
+            }
             $scope.processChosenHosts();
         }, true);
 
         $scope.$watch('post.Hostdependency.hostgroups._ids', function(){
+            if($scope.init){
+                return;
+            }
             $scope.processChosenDependentHostgroups();
         }, true);
 
         $scope.$watch('post.Hostdependency.hostgroups_dependent._ids', function(){
+            if($scope.init){
+                return;
+            }
             $scope.processChosenHostgroups();
         }, true);
 

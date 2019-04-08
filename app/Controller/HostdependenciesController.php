@@ -139,7 +139,6 @@ class HostdependenciesController extends AppController {
             $this->render403();
             return;
         }
-//debug($hostdependency);
         if ($this->request->is('post')) {
             /** @var $HostdependenciesTable HostdependenciesTable */
             $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
@@ -180,19 +179,20 @@ class HostdependenciesController extends AppController {
 
         if ($this->request->is('post')) {
             /** @var $HostdependenciesTable HostdependenciesTable */
+            $data = [];
             $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
-            $this->request->data['Hostdependency']['uuid'] = UUID::v4();
             $data['hosts'] = $HostdependenciesTable->parseHostMembershipData(
                 $this->request->data('Hostdependency.hosts._ids'),
-                $this->request->data('Hostdependency.hosts_excluded._ids')
+                $this->request->data('Hostdependency.hosts_dependent._ids')
             );
             $data['hostgroups'] = $HostdependenciesTable->parseHostgroupMembershipData(
                 $this->request->data('Hostdependency.hostgroups._ids'),
-                $this->request->data('Hostdependency.hostgroups_excluded._ids')
+                $this->request->data('Hostdependency.hostgroups_dependent._ids')
             );
 
             $data = array_merge($this->request->data('Hostdependency'), $data);
             $hostdependency = $HostdependenciesTable->newEntity($data);
+            $hostdependency->set('uuid', UUID::v4());
             $HostdependenciesTable->save($hostdependency);
 
             if ($hostdependency->hasErrors()) {
@@ -285,11 +285,10 @@ class HostdependenciesController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP, CT_CONTACTGROUP]);
         } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP, CT_CONTACTGROUP]);
         }
-
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
         $this->set('_serialize', ['containers']);

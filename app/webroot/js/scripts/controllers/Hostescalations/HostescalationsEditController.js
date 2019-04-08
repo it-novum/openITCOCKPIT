@@ -1,6 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('HostescalationsEditController', function($scope, $http, $state, $stateParams, $location, NotyService){
-
+        $scope.init = true;
         $scope.id = $stateParams.id;
         $scope.post = {
             Hostescalation: {
@@ -111,6 +111,10 @@ angular.module('openITCOCKPIT')
                 $scope.timeperiods = result.data.timeperiods;
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
+                $scope.processChosenHosts();
+                $scope.processChosenExcludedHosts();
+                $scope.processChosenHostgroups();
+                $scope.processChosenExcludedHostgroups();
             });
         };
 
@@ -214,18 +218,30 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.$watch('post.Hostescalation.hosts._ids', function(){
+            if($scope.init){
+                return;
+            }
             $scope.processChosenExcludedHosts();
         }, true);
 
         $scope.$watch('post.Hostescalation.hosts_excluded._ids', function(){
+            if($scope.init){
+                return;
+            }
             $scope.processChosenHosts();
         }, true);
 
         $scope.$watch('post.Hostescalation.hostgroups._ids', function(){
+            if($scope.init){
+                return;
+            }
             $scope.processChosenExcludedHostgroups();
         }, true);
 
         $scope.$watch('post.Hostescalation.hostgroups_excluded._ids', function(){
+            if($scope.init){
+                return;
+            }
             $scope.processChosenHostgroups();
         }, true);
 

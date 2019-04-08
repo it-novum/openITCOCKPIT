@@ -174,7 +174,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
+                        <div class="form-group">
                             <label class="col col-md-2 control-label">
                                 <?php echo __('Timeperiod'); ?>
                             </label>
@@ -186,9 +186,6 @@
                                         ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
                                         ng-model="post.Hostdependency.timeperiod_id">
                                 </select>
-                                <div ng-repeat="error in errors.timeperiod_id">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
                             </div>
                         </div>
                         <div class="form-group">
