@@ -24,6 +24,9 @@
 //	confirmation.
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostgroupsTable;
+use App\Model\Table\HostsTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
@@ -68,6 +71,10 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
 
         foreach ($all_downtimes as $downtime) {
@@ -95,55 +102,38 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                         if (!$this->checkStatusDatForDowntime($statusdat, $downtime['Systemdowntimes']['id'], $downtime['Systemdowntimes']['comment'])) {
                             switch ($downtime['Systemdowntimes']['objecttype_id']) {
                                 case OBJECT_HOST:
-                                    $host = $this->Host->find('first', [
-                                        'recursive'  => -1,
-                                        'conditions' => [
-                                            'Host.id' => $downtime['Systemdowntimes']['object_id']
-                                        ],
-                                        'fields'     => [
-                                            'Host.id',
-                                            'Host.uuid'
-                                        ]
-                                    ]);
-                                    if (empty($host)) {
+                                    try {
+                                        $hostUuid = $HostsTable->getHostUuidById($downtime['Systemdowntimes']['object_id']);
+                                        $this->Externalcommand->setHostDowntime([
+                                            'hostUuid'     => $hostUuid,
+                                            'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
+                                            'comment'      => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                            'author'       => $downtime['Systemdowntimes']['author'],
+                                            'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
+                                            'end'          => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        ]);
+                                    } catch (RecordNotFoundException $e) {
                                         // The object for recurring downtime was deleted, so we delete the downtime
                                         $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
-                                        break;
                                     }
-                                    $this->Externalcommand->setHostDowntime([
-                                        'hostUuid'     => $host['Host']['uuid'],
-                                        'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                        'comment'      => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
-                                        'author'       => $downtime['Systemdowntimes']['author'],
-                                        'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end'          => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
-                                    ]);
                                     break;
 
                                 case OBJECT_HOSTGROUP:
-                                    $hostgroup = $this->Hostgroup->find('first', [
-                                        'recursive'  => -1,
-                                        'conditions' => [
-                                            'Hostgroup.id' => $downtime['Systemdowntimes']['object_id']
-                                        ],
-                                        'fields'     => [
-                                            'Hostgroup.id',
-                                            'Hostgroup.uuid'
-                                        ]
-                                    ]);
-                                    if (empty($hostgroup)) {
+                                    try {
+                                        $hostgroupUuid = $HostgroupsTable->getHostgroupUuidById($downtime['Systemdowntimes']['object_id']);
+                                        $this->Externalcommand->setHostgroupDowntime([
+                                            'hostgroupUuid' => $hostgroupUuid,
+                                            'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
+                                            'comment'       => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                            'author'        => $downtime['Systemdowntimes']['author'],
+                                            'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
+                                            'end'           => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        ]);
+                                    } catch (RecordNotFoundException $e) {
                                         // The object for recurring downtime was deleted, so we delete the downtime
                                         $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
-                                        break;
                                     }
-                                    $this->Externalcommand->setHostgroupDowntime([
-                                        'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
-                                        'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
-                                        'comment'       => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
-                                        'author'        => $downtime['Systemdowntimes']['author'],
-                                        'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end'           => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
-                                    ]);
+
                                     break;
 
                                 case OBJECT_SERVICE:
@@ -185,24 +175,14 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
                                         break;
                                     }
-                                    $hostUuids = $this->Host->find('list', [
-                                        'recursive'  => -1,
-                                        'joins'      => [
-                                            [
-                                                'table'      => 'hosts_to_containers',
-                                                'type'       => 'INNER',
-                                                'alias'      => 'HostToContainers',
-                                                'conditions' => 'HostToContainers.host_id = Host.id',
-                                            ]
-                                        ],
-                                        'fields'     => [
-                                            'Host.uuid'
-                                        ],
-                                        'conditions' => [
-                                            'HostToContainers.container_id' => $downtime['Systemdowntimes']['object_id'],
-                                            'Host.disabled'                 => 0
-                                        ]
-                                    ]);
+
+                                    $hosts = $HostsTable->getHostsByContainerId(
+                                        [$downtime['Systemdowntimes']['object_id']],
+                                        'list',
+                                        'uuid'
+                                    );
+
+                                    $hostUuids = array_keys($hosts);
 
                                     $this->Externalcommand->setContainerDowntime([
                                         'hostUuids'    => $hostUuids,
@@ -255,29 +235,19 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                     break;
 
                                 case OBJECT_HOSTGROUP:
-                                    $hostgroup = $this->Hostgroup->find('first', [
-                                        'recursive'  => -1,
-                                        'conditions' => [
-                                            'Hostgroup.id' => $downtime['Systemdowntimes']['object_id']
-                                        ],
-                                        'fields'     => [
-                                            'Hostgroup.id',
-                                            'Hostgroup.uuid'
-                                        ]
-                                    ]);
-                                    if (empty($hostgroup)) {
-                                        // The object for recurring downtime was deleted, so we delete the downtime
+                                    try {
+                                        $hostgroupUuid = $HostgroupsTable->getHostgroupUuidById($downtime['Systemdowntimes']['object_id']);
+                                        $this->Externalcommand->setHostgroupDowntime([
+                                            'hostgroupUuid' => $hostgroupUuid,
+                                            'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
+                                            'comment'       => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                            'author'        => $downtime['Systemdowntimes']['author'],
+                                            'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
+                                            'end'           => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        ]);
+                                    } catch (RecordNotFoundException $e) {
                                         $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
-                                        break;
                                     }
-                                    $this->Externalcommand->setHostgroupDowntime([
-                                        'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
-                                        'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
-                                        'comment'       => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
-                                        'author'        => $downtime['Systemdowntimes']['author'],
-                                        'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end'           => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
-                                    ]);
                                     break;
 
                                 case OBJECT_SERVICE:
@@ -388,29 +358,20 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                     break;
 
                                 case OBJECT_HOSTGROUP:
-                                    $hostgroup = $this->Hostgroup->find('first', [
-                                        'recursive'  => -1,
-                                        'conditions' => [
-                                            'Hostgroup.id' => $downtime['Systemdowntimes']['object_id']
-                                        ],
-                                        'fields'     => [
-                                            'Hostgroup.id',
-                                            'Hostgroup.uuid'
-                                        ]
-                                    ]);
-                                    if (empty($hostgroup)) {
+                                    try {
+                                        $hostgroupUuid = $HostgroupsTable->getHostgroupUuidById($downtime['Systemdowntimes']['object_id']);
+                                        $this->Externalcommand->setHostgroupDowntime([
+                                            'hostgroupUuid' => $hostgroupUuid,
+                                            'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
+                                            'comment'       => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                            'author'        => $downtime['Systemdowntimes']['author'],
+                                            'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
+                                            'end'           => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        ]);
+                                    } catch (RecordNotFoundException $e) {
                                         // The object for recurring downtime was deleted, so we delete the downtime
                                         $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
-                                        break;
                                     }
-                                    $this->Externalcommand->setHostgroupDowntime([
-                                        'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
-                                        'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
-                                        'comment'       => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
-                                        'author'        => $downtime['Systemdowntimes']['author'],
-                                        'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end'           => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
-                                    ]);
                                     break;
 
                                 case OBJECT_SERVICE:
