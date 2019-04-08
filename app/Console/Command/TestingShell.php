@@ -25,12 +25,9 @@
 
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
-use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ProxiesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Comparison\HostComparison;
-use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
-use itnovum\openITCOCKPIT\Core\HostConditions;
 
 class TestingShell extends AppShell {
     /*
@@ -80,6 +77,12 @@ class TestingShell extends AppShell {
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        debug($HostgroupsTable->getHostsByHostgroupUuidForExternalcommandsIncludeingHosttemplateHosts('c25e755c-2b4f-4941-8a94-579f57d4760b'));
+
     }
 
     public function getOptionParser() {

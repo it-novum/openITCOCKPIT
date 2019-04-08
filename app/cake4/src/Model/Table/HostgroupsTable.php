@@ -594,6 +594,90 @@ class HostgroupsTable extends Table {
         }
     }
 
+    /**
+     * @param string $uuid
+     * @return array
+     */
+    public function getHostsByHostgroupUuidForExternalcommandsIncludeingHosttemplateHosts($uuid) {
+        $query = $this->find()
+            ->select([
+                'Hostgroups.id'
+            ])
+            ->where([
+                'Hostgroups.uuid' => $uuid,
+            ])
+            ->contain([
+                'hosts'         =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)
+                            ->select([
+                                'Hosts.id',
+                                'Hosts.uuid',
+                                'Hosts.satellite_id',
+                                'Hosts.active_checks_enabled'
+                            ])
+                            ->where([
+                                'Hosts.disabled' => 0
+                            ])
+                            ->contain([
+                                'hosttemplates' =>
+                                    function (Query $q) {
+                                        return $q->enableAutoFields(false)
+                                            ->select([
+                                                'Hosttemplates.active_checks_enabled'
+                                            ]);
+                                    }
+                            ]);
+                    },
+                'hosttemplates' =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)
+                            ->select([
+                                'Hosttemplates.id',
+                            ]);
+                    },
+            ])->disableHydration();
+        try {
+            $tmpResult = $query->firstOrFail();
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+            $hosts = [];
+            foreach($tmpResult['hosts'] as $host){
+                $hosts[$host['id']] = $host;
+            }
+
+            foreach ($tmpResult['hosttemplates'] as $hosttemplate) {
+
+                $hostsFromHosttemplate = $HostsTable->find()
+                    ->select([
+                        'Hosts.id',
+                        'Hosts.uuid',
+                        'Hosts.satellite_id',
+                        'Hosts.active_checks_enabled'
+                    ])
+                    ->where([
+                        'Hosts.hosttemplate_id' => $hosttemplate['id'],
+                        'Hosts.disabled'        => 0
+                    ])
+                    ->disableHydration()
+                    ->all();
+
+                //Merge Hosts from host templates
+                $hostsFromHosttemplate = $this->emptyArrayIfNull($hostsFromHosttemplate->toArray());
+                foreach($hostsFromHosttemplate as $hostFromHosttemplate){
+                    $hosts[$hostFromHosttemplate['id']] = $hostFromHosttemplate;
+                }
+            }
+
+            $tmpResult['hosts'] = $hosts;
+
+            return $tmpResult;
+        } catch (RecordNotFoundException $e) {
+            return [];
+        }
+    }
+
 
     /**
      * @param int $id
