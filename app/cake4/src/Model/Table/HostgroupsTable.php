@@ -643,7 +643,7 @@ class HostgroupsTable extends Table {
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
             $hosts = [];
-            foreach($tmpResult['hosts'] as $host){
+            foreach ($tmpResult['hosts'] as $host) {
                 $hosts[$host['id']] = $host;
             }
 
@@ -665,7 +665,7 @@ class HostgroupsTable extends Table {
 
                 //Merge Hosts from host templates
                 $hostsFromHosttemplate = $this->emptyArrayIfNull($hostsFromHosttemplate->toArray());
-                foreach($hostsFromHosttemplate as $hostFromHosttemplate){
+                foreach ($hostsFromHosttemplate as $hostFromHosttemplate) {
                     $hosts[$hostFromHosttemplate['id']] = $hostFromHosttemplate;
                 }
             }
@@ -676,6 +676,46 @@ class HostgroupsTable extends Table {
         } catch (RecordNotFoundException $e) {
             return [];
         }
+    }
+
+    /**
+     * @param int $id
+     * @param array $MY_RIGHTS
+     * @return array
+     * @throws RecordNotFoundException
+     */
+    public function getHostsByHostgroupForMaps($id, $MY_RIGHTS = []) {
+        $where = [
+            'Hostgroups.id' => $id
+        ];
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+
+        $hostgroup = $this->find()
+            ->select([
+                'Hostgroups.id',
+                'Hostgroups.description',
+                'Containers.name'
+            ])
+            ->contain([
+                'containers',
+                'hosts' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'Hosts.id',
+                            'Hosts.uuid',
+                            'Hosts.name',
+                            'Hosts.description'
+                        ])
+                        ->contain(['HostsToContainersSharing']);
+                }
+            ])
+            ->where($where)
+            ->disableHydration()
+            ->firstOrFail();
+
+        return $hostgroup;
     }
 
 

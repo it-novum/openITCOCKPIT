@@ -321,23 +321,25 @@ class Map extends MapModuleAppModel {
 
     /**
      * @param Model $Service
-     * @param Model $Hoststatus
-     * @param Model $Servicestatus
      * @param $hostgroup
      * @return array
+     *
      */
-    public function getHostgroupInformation(Model $Service, Model $Hoststatus, Model $Servicestatus, $hostgroup) {
+    public function getHostgroupInformation(Model $Service, $hostgroup) {
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
 
-        $hostUuids = Hash::extract($hostgroup['Host'], '{n}.uuid');
+        $hostUuids = \Cake\Utility\Hash::extract($hostgroup['hosts'], '{n}.uuid');
 
-        $hoststatusByUuids = $Hoststatus->byUuid($hostUuids, $HoststatusFields);
+        $hoststatusByUuids = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
 
         $hostgroupLight = [
-            'id'          => (int)$hostgroup['Hostgroup']['id'],
-            'name'        => $hostgroup['Container']['name'],
-            'description' => $hostgroup['Hostgroup']['description']
+            'id'          => (int)$hostgroup['id'],
+            'name'        => $hostgroup['Containers']['name'],
+            'description' => $hostgroup['description']
         ];
 
         if (empty($hoststatusByUuids)) {
@@ -381,7 +383,7 @@ class Map extends MapModuleAppModel {
         }
 
         //Check services for cumulated state (only if host is up)
-        $hostIds = Hash::extract($hostgroup['Host'], '{n}.id');
+        $hostIds = \Cake\Utility\Hash::extract($hostgroup['hosts'], '{n}.id');
 
         //Check services for cumulated state (only if host is up)
         $services = $Service->find('list', [
@@ -399,7 +401,7 @@ class Map extends MapModuleAppModel {
         $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
         $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
         $ServicestatusConditions->servicesWarningCriticalAndUnknown();
-        $servicestatus = $Servicestatus->byUuid($services, $ServicestatusFieds, $ServicestatusConditions);
+        $servicestatus = $ServicestatusTable->byUuid($services, $ServicestatusFieds, $ServicestatusConditions);
 
         if (!empty($servicestatus)) {
             $worstServiceState = array_values(
@@ -774,15 +776,16 @@ class Map extends MapModuleAppModel {
     }
 
     /**
+     * @param Model $Host
      * @param Model $Service
-     * @param Model $Hoststatus
-     * @param Model $Servicestatus
      * @param $hostgroup
      * @param UserTime $UserTime
      * @return array
      */
-    public function getHostgroupSummary(Model $Host, Model $Service, Model $Hoststatus, Model $Servicestatus, $hostgroup) {
+    public function getHostgroupSummary(Model $Host, Model $Service, $hostgroup) {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
         $HoststatusFields
             ->currentState()
             ->isHardstate()
@@ -796,9 +799,9 @@ class Map extends MapModuleAppModel {
             ->scheduledDowntimeDepth()
             ->problemHasBeenAcknowledged();
 
-        $hostUuids = Hash::extract($hostgroup['Host'], '{n}.uuid');
+        $hostUuids = \Cake\Utility\Hash::extract($hostgroup['hosts'], '{n}.uuid');
 
-        $hoststatusByUuids = $Hoststatus->byUuid($hostUuids, $HoststatusFields);
+        $hoststatusByUuids = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
         $hostStateSummary = $Host->getHostStateSummary($hoststatusByUuids, false);
 
         $ServicestatusFieds = new ServicestatusFields($this->DbBackend);
@@ -842,7 +845,7 @@ class Map extends MapModuleAppModel {
         ];
 
 
-        foreach ($hostgroup['Host'] as $host) {
+        foreach ($hostgroup['hosts'] as $host) {
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host(['Host' => $host]);
             if (isset($hoststatusByUuids[$Host->getUuid()])) {
                 $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(
@@ -880,7 +883,7 @@ class Map extends MapModuleAppModel {
 
             $servicesUuids = Hash::extract($services, '{n}.Service.uuid');
             $servicesIdsByUuid = Hash::combine($services, '{n}.Service.uuid', '{n}.Service.id');
-            $servicestatusResults = $Servicestatus->byUuid($servicesUuids, $ServicestatusFieds, $ServicestatusConditions);
+            $servicestatusResults = $ServicestatusTable->byUuid($servicesUuids, $ServicestatusFieds, $ServicestatusConditions);
 
             $serviceIdsGroupByStatePerHost = [
                 0 => [],
@@ -911,9 +914,9 @@ class Map extends MapModuleAppModel {
         $hoststatusResult = Hash::sort($hoststatusResult, '{s}.Hoststatus.currentState', 'desc');
 
         $hostgroup = [
-            'id'                  => $hostgroup['Hostgroup']['id'],
-            'name'                => $hostgroup['Container']['name'],
-            'description'         => $hostgroup['Hostgroup']['description'],
+            'id'                  => $hostgroup['id'],
+            'name'                => $hostgroup['Containers']['name'],
+            'description'         => $hostgroup['description'],
             'HostSummary'         => $hostStateSummary,
             'TotalServiceSummary' => $totalServiceStateSummary
         ];

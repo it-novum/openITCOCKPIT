@@ -22,8 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\HostgroupsTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\MapConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
@@ -231,53 +232,28 @@ class MapeditorsController extends MapModuleAppController {
                 break;
 
             case 'hostgroup':
-                $hostgroup = $this->Hostgroup->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container' => [
-                            'fields' => [
-                                'Container.name'
-                            ]
-                        ],
-                        'Host'      => [
-                            'Container',
-                            'fields'     => [
-                                'Host.id',
-                                'Host.uuid'
-                            ],
-                            'conditions' => [
-                                'Host.disabled' => 0
-                            ]
-                        ]
-                    ],
-                    'fields'     => [
-                        'Hostgroup.id',
-                        'Hostgroup.description'
-                    ],
-                    'conditions' => [
-                        'Hostgroup.id' => $objectId
-                    ]
-                ]);
-                
-                if (!empty($hostgroup)) {
-                    if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'), false)) {
-                            $allowView = false;
-                            break;
-                        }
-                    }
-                    $allowView = true;
-                    $properties = $this->Map->getHostgroupInformation(
-                        $this->Service,
-                        $this->Hoststatus,
-                        $this->Servicestatus,
-                        $hostgroup
-                    );
-                    break;
-                }
-                $allowView = false;
-                break;
+                try {
+                    /** @var $HostgroupsTable HostgroupsTable */
+                    $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
+                    $hostgroup = $HostgroupsTable->getHostsByHostgroupForMaps($objectId, []);
+
+                        if ($this->hasRootPrivileges === false) {
+                            if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'hosts.{n}.hosts_to_containers_sharing.{n}.id'), false)) {
+                                $allowView = false;
+                                break;
+                            }
+                        }
+                        $allowView = true;
+                        $properties = $this->Map->getHostgroupInformation(
+                            $this->Service,
+                            $hostgroup
+                        );
+                        break;
+                }catch (\Exception $e){
+                    $allowView = false;
+                }
+                break;
             case 'servicegroup':
                 $servicegroup = $this->Servicegroup->find('first', [
                     'recursive'  => -1,
@@ -1234,43 +1210,20 @@ class MapeditorsController extends MapModuleAppController {
 
                 break;
             case 'hostgroup':
-                $query = [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container' => [
-                            'fields' => [
-                                'Container.name'
-                            ]
-                        ],
-                        'Host'      => [
-                            'Container',
-                            'fields'     => [
-                                'Host.id',
-                                'Host.uuid',
-                                'Host.name',
-                                'Host.description'
-                            ],
-                            'conditions' => [
-                                'Host.disabled' => 0
-                            ]
-                        ]
-                    ],
-                    'fields'     => [
-                        'Hostgroup.id',
-                        'Hostgroup.description'
-                    ],
-                    'conditions' => [
-                        'Hostgroup.id' => $objectId
-                    ]
-                ];
-                if (!$this->hasRootPrivileges) {
-                    $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
-                }
-                $hostgroup = $this->Hostgroup->find('first', $query);
+                try {
+                    $MY_RIGHTS = [];
+                    if (!$this->hasRootPrivileges) {
+                        $MY_RIGHTS = $this->MY_RIGHTS;
+                    }
 
-                if (!empty($hostgroup)) {
+
+                    /** @var $HostgroupsTable HostgroupsTable */
+                    $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+                    $hostgroup = $HostgroupsTable->getHostsByHostgroupForMaps($objectId, $MY_RIGHTS);
+
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Container.{n}.HostsToContainer.container_id'), false)) {
+                        if (!$this->allowedByContainerId(\Cake\Utility\Hash::extract($hostgroup, 'hosts.{n}.hosts_to_containers_sharing.id'), false)) {
                             $this->render403();
                             return;
                         }
@@ -1279,18 +1232,17 @@ class MapeditorsController extends MapModuleAppController {
                     $summary = $this->Map->getHostgroupSummary(
                         $this->Host,
                         $this->Service,
-                        $this->Hoststatus,
-                        $this->Servicestatus,
                         $hostgroup
                     );
                     $this->set('type', 'hostgroup');
                     $this->set('summary', $summary);
                     $this->set('_serialize', ['hostgroup', 'summary']);
                     return;
-                }
 
-                throw new NotFoundException('Host group not found!');
-                return;
+
+                } catch (\Exception $e) {
+                    throw new NotFoundException('Host group not found!');
+                }
                 break;
             case 'servicegroup':
                 $query = [

@@ -68,7 +68,8 @@ class HostsTable extends Table {
             'className'        => 'Containers',
             'joinTable'        => 'hosts_to_containers',
             'foreignKey'       => 'host_id',
-            'targetForeignKey' => 'container_id'
+            'targetForeignKey' => 'container_id',
+            'saveStrategy'     => 'replace'
         ]);
 
         $this->belongsTo('Containers', [
