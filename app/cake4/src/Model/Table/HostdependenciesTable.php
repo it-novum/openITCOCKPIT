@@ -55,7 +55,7 @@ class HostdependenciesTable extends Table {
         ]);
         $this->belongsTo('Timeperiods', [
             'foreignKey' => 'timeperiod_id',
-            'joinType'   => 'INNER'
+            'joinType'   => 'LEFT'
         ]);
 
         $this->belongsToMany('Hosts', [
