@@ -761,6 +761,36 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "HostdependenciesEditController"
             })
 
+            .state('ServicetemplatesIndex', {
+                url: '/servicetemplates/index',
+                templateUrl: "/servicetemplates/index.html",
+                controller: "ServicetemplatesIndexController"
+            })
+
+            .state('ServicetemplatesAdd', {
+                url: '/servicetemplates/add',
+                templateUrl: "/servicetemplates/add.html",
+                controller: "ServicetemplatesAddController"
+            })
+
+            .state('ServicetemplatesEdit', {
+                url: '/servicetemplates/edit/:id',
+                templateUrl: "/servicetemplates/edit.html",
+                controller: "ServicetemplatesEditController"
+            })
+
+            .state('ServicetemplatesCopy', {
+                url: '/servicetemplates/copy/:ids',
+                templateUrl: "/servicetemplates/copy.html",
+                controller: "ServicetemplatesCopyController"
+            })
+
+            .state('ServicetemplatesUsedBy', {
+                url: '/servicetemplates/usedBy/:id',
+                templateUrl: "/servicetemplates/usedBy.html",
+                controller: "ServicetemplatesUsedByController"
+            })
+
     })
 
     /*

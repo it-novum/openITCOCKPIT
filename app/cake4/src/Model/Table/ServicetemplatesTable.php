@@ -2,9 +2,13 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
 /**
  * Servicetemplates Model
@@ -35,6 +39,10 @@ use Cake\Validation\Validator;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class ServicetemplatesTable extends Table {
+
+
+    use Cake2ResultTableTrait;
+    use PaginationAndScrollIndexTrait;
 
     /**
      * Initialize method
@@ -334,6 +342,46 @@ class ServicetemplatesTable extends Table {
             ->notEmpty('check_freshness');
 
         return $validator;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Servicetemplates.id' => $id]);
+    }
+
+    /**
+     * @param ServicetemplateFilter $ServicetemplateFilter
+     * @param null|PaginateOMat $PaginateOMat
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServicetemplatesIndex(ServicetemplateFilter $ServicetemplateFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+
+        $query = $this->find('all')->disableHydration();
+        $where = $ServicetemplateFilter->indexFilter();
+        $where['Servicetemplates.servicetemplatetype_id'] = GENERIC_SERVICE;
+        if (!empty($MY_RIGHTS)) {
+            $where['Servicetemplates.container_id IN'] = $MY_RIGHTS;
+        }
+
+        $query->where($where);
+        $query->order($ServicetemplateFilter->getOrderForPaginator('Servicetemplates.name', 'asc'));
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
+
+        return $result;
     }
 
     /**

@@ -168,6 +168,7 @@ $config = [
                 ],
                 [
                     'url'   => ['controller' => 'servicetemplates', 'action' => 'index'],
+                    'state' => 'ServicetemplatesIndex',
                     'title' => 'Service Templates',
                     'icon'  => 'pencil-square-o',
                 ],

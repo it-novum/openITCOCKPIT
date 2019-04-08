@@ -27,14 +27,17 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\ServicetemplatesTable;
+use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
 /**
- * @property ChangelogComponent $Changelog
+ * @property Changelog $Changelog
  * @property CustomValidationErrorsComponent $CustomValidationErrors
  * @property Servicetemplate $Servicetemplate
  * @property Timeperiod $Timeperiod
@@ -44,20 +47,27 @@ use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
  * @property Customvariable $Customvariable
  * @property Servicetemplatecommandargumentvalue $Servicetemplatecommandargumentvalue
  * @property Servicetemplateeventcommandargumentvalue $Servicetemplateeventcommandargumentvalue
+ *
+ * @property AppPaginatorComponent $Paginator
  */
 class ServicetemplatesController extends AppController {
-    public $layout = 'Admin.default';
+
+    //public $layout = 'Admin.default';
+    public $layout = 'blank';
+
     public $components = [
         'ListFilter.ListFilter',
         'CustomValidationErrors',
         'AdditionalLinks',
         'Flash',
     ];
+
     public $helpers = [
         'ListFilter.ListFilter',
         'CustomValidationErrors',
         'CustomVariables',
     ];
+
     public $listFilters = [
         'index' => [
             'fields' => [
@@ -67,6 +77,7 @@ class ServicetemplatesController extends AppController {
             ],
         ],
     ];
+
     public $uses = [
         'Servicetemplate',
         'Service',
@@ -85,43 +96,37 @@ class ServicetemplatesController extends AppController {
     ];
 
     public function index() {
-        $options = [
-            'recursive'  => -1,
-            'order'      => [
-                'Servicetemplate.name' => 'asc',
-            ],
-            'conditions' => [
-                //'Servicetemplate.servicetemplatetype_id' => GENERIC_SERVICE,
-                'Container.id'                           => $this->MY_RIGHTS,
-                'Servicetemplate.servicetemplatetype_id' => GENERIC_SERVICE,
-            ],
-            'fields'     => [
-                'Servicetemplate.id',
-                'Servicetemplate.uuid',
-                'Servicetemplate.template_name',
-                'Servicetemplate.name',
-                'Servicetemplate.container_id',
-                'Servicetemplate.description',
-                'Container.*',
-            ],
-            'contain'    => [
-                'Container',
-            ],
-        ];
-
-        if ($this->isApiRequest()) {
-            unset($options['limit']);
-            $all_servicetemplates = $this->Servicetemplate->find('all', $options);
-        } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
-            $all_servicetemplates = $this->Paginator->paginate();
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
         }
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        $resolvedContainerNames = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges);
-        $this->set(compact(['all_servicetemplates', 'resolvedContainerNames']));
-        $this->set('_serialize', ['all_servicetemplates']);
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        $ServicetemplateFilter = new ServicetemplateFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+        $servicetemplates = $ServicetemplatesTable->getServicetemplatesIndex($ServicetemplateFilter, $PaginateOMat, $MY_RIGHTS);
+
+        foreach ($servicetemplates as $index => $servicetemplate) {
+            $servicetemplates[$index]['Servicetemplate']['allow_edit'] = true;
+            if ($this->hasRootPrivileges === false) {
+                $servicetemplates[$index]['Servicetemplate']['allow_edit'] = $this->isWritableContainer($servicetemplate['Servicetemplate']['container_id']);
+            }
+        }
+
+
+        $this->set('all_servicetemplates', $servicetemplates);
+        $toJson = ['all_servicetemplates', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_servicetemplates', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function view($id = null) {
@@ -732,7 +737,7 @@ class ServicetemplatesController extends AppController {
             if ($this->request->data('Servicetemplate.notify_period_id')) {
                 if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Servicetemplate']['notify_period_id'])) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
-                        $ext_data_for_changelog['NotifyPeriod']= [
+                        $ext_data_for_changelog['NotifyPeriod'] = [
                             'id'   => $timeperiodId,
                             'name' => $timeperiodName
                         ];
@@ -744,7 +749,7 @@ class ServicetemplatesController extends AppController {
             if ($this->request->data('Servicetemplate.check_period_id')) {
                 if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Servicetemplate']['check_period_id'])) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
-                        $ext_data_for_changelog['CheckPeriod']= [
+                        $ext_data_for_changelog['CheckPeriod'] = [
                             'id'   => $timeperiodId,
                             'name' => $timeperiodName
                         ];
@@ -1475,6 +1480,7 @@ class ServicetemplatesController extends AppController {
                 'sizeof'        => 0,
             ],
         ];
+
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
