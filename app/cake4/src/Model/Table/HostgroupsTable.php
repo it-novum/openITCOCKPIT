@@ -9,7 +9,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
@@ -230,11 +229,10 @@ class HostgroupsTable extends Table {
      * @param array $ids
      * @return array
      */
-    public function getHostgroupsAsList($ids = []) {
+    public function getHostgroupsAsList($ids = [], $MY_RIGHTS = []) {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
-
         $query = $this->find()
             ->select([
                 'Hostgroups.id',
@@ -242,11 +240,21 @@ class HostgroupsTable extends Table {
             ])
             ->contain(['Containers'])
             ->disableHydration();
+
+        $where = [];
         if (!empty($ids)) {
-            $query->where([
+            $where = [
                 'Hostgroups.id IN'            => $ids,
                 'Containers.containertype_id' => CT_HOSTGROUP
-            ]);
+            ];
+        }
+
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+
+        if (!empty($where)) {
+            $query->where($where);
         }
 
         $result = $query->toArray();
@@ -428,8 +436,8 @@ class HostgroupsTable extends Table {
                     'Hostgroups.id IN' => $selected
                 ])
                 ->order([
-                'Containers.name' => 'asc'
-            ])
+                    'Containers.name' => 'asc'
+                ])
                 ->limit(ITN_AJAX_LIMIT)
                 ->disableHydration()
                 ->all();
@@ -486,7 +494,7 @@ class HostgroupsTable extends Table {
      * @param array $MY_RIGHTS
      * @return array
      */
-    public function getHostgroupsForPdf(HostgroupFilter $HostgroupFilter, $MY_RIGHTS = []){
+    public function getHostgroupsForPdf(HostgroupFilter $HostgroupFilter, $MY_RIGHTS = []) {
 
         $query = $this->find()
             ->contain([
@@ -510,7 +518,7 @@ class HostgroupsTable extends Table {
     /**
      * @return array
      */
-    public function getHostgroupsForExport(){
+    public function getHostgroupsForExport() {
         $query = $this->find()
             ->select([
                 'Hostgroups.id',
@@ -526,7 +534,7 @@ class HostgroupsTable extends Table {
      * @param int $id
      * @return string
      */
-    public function getHostgroupUuidById($id){
+    public function getHostgroupUuidById($id) {
         $query = $this->find()
             ->select([
                 'Hostgroups.uuid',
@@ -539,6 +547,7 @@ class HostgroupsTable extends Table {
 
         return $hostgroup->get('uuid');
     }
+
 
     /**
      * @param int $id
