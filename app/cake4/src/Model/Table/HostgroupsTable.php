@@ -554,13 +554,13 @@ class HostgroupsTable extends Table {
      * @param string $uuid
      * @return array
      */
-    public function getHostsByHostgroupUuidForRescheduling($uuid) {
+    public function getHostsByHostgroupUuidForExternalcommands($uuid) {
         $query = $this->find()
             ->select([
                 'Hostgroups.id'
             ])
             ->where([
-                'Hostgroups.uuid' => $uuid
+                'Hostgroups.uuid' => $uuid,
             ])
             ->contain([
                 'hosts' =>
@@ -571,6 +571,9 @@ class HostgroupsTable extends Table {
                                 'Hosts.uuid',
                                 'Hosts.satellite_id',
                                 'Hosts.active_checks_enabled'
+                            ])
+                            ->where([
+                                'Hosts.disabled' => 0
                             ])
                             ->contain([
                                 'hosttemplates' =>

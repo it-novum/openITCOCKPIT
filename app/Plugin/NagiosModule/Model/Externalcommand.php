@@ -128,7 +128,7 @@ class Externalcommand extends NagiosModuleAppModel {
         /** @var $HostgroupsTable HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
-        $hostgroup = $HostgroupsTable->getHostsByHostgroupUuidForRescheduling($options['hostgroupUuid']);
+        $hostgroup = $HostgroupsTable->getHostsByHostgroupUuidForExternalcommands($options['hostgroupUuid']);
 
         if (isset($hostgroup['hosts']) && !empty($hostgroup['hosts'])) {
             foreach ($hostgroup['hosts'] as $host) {
@@ -564,42 +564,29 @@ class Externalcommand extends NagiosModuleAppModel {
      * @since     3.0.1
      */
     public function setHostgroupAck($options) {
-        $this->Hostgroup = ClassRegistry::init('Hostgroup');
-        $this->Hoststatus = ClassRegistry::init(MONITORING_HOSTSTATUS);
-        $hostgroup = $this->Hostgroup->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Hostgroup.uuid' => $options['hostgroupUuid'],
-            ],
-            'contain'    => [
-                'Host' => [
-                    'fields' => [
-                        'Host.uuid',
-                        'Host.satellite_id',
-                    ],
-                ],
-            ],
-        ]);
-        if (isset($hostgroup['Host']) && !empty($hostgroup['Host'])) {
-            $hostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $hostgroup = $HostgroupsTable->getHostsByHostgroupUuidForExternalcommands($options['hostgroupUuid']);
 
+        if (isset($hostgroup['hosts']) && !empty($hostgroup['hosts'])) {
+            $hostUuids = \Cake\Utility\Hash::extract($hostgroup, 'hosts.{n}.uuid');
             if ($this->DbBackend === null) {
                 $this->DbBackend = new DbBackend();
             }
 
-            $this->Hoststatus = ClassRegistry::init(MONITORING_HOSTSTATUS);
+            $HoststatusTable = $this->DbBackend->getHoststatusTable();
             $HoststatusFields = new HoststatusFields($this->DbBackend);
             $HoststatusFields->currentState();
+            $hoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
 
-            $hoststatus = $this->Hoststatus->byUuid($hostUuids, $HoststatusFields);
-
-            foreach ($hostgroup['Host'] as $host) {
+            foreach ($hostgroup['hosts'] as $host) {
                 if (isset($hoststatus[$host['uuid']]['Hoststatus']['current_state'])) {
                     if ($hoststatus[$host['uuid']]['Hoststatus']['current_state'] > 0) {
                         $this->setHostAck(['hostUuid' => $host['uuid'], 'author' => $options['author'], 'comment' => $options['comment'], 'sticky' => $options['sticky'], 'type' => $options['type']]);
                     }
                 }
             }
+
         }
     }
 
@@ -1002,23 +989,11 @@ class Externalcommand extends NagiosModuleAppModel {
      * @since     3.0.1
      */
     public function disableHostgroupNotifications($options = []) {
-        $this->Hostgroup = ClassRegistry::init('Hostgroup');
-        $hostgroup = $this->Hostgroup->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Hostgroup.uuid' => $options['hostgroupUuid'],
-            ],
-            'contain'    => [
-                'Host' => [
-                    'fields' => [
-                        'Host.uuid',
-                    ],
-                ],
-            ],
-        ]);
-
-        if (isset($hostgroup['Host']) && !empty($hostgroup['Host'])) {
-            foreach ($hostgroup['Host'] as $host) {
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $hostgroup = $HostgroupsTable->getHostsByHostgroupUuidForExternalcommands($options['hostgroupUuid']);
+        if (isset($hostgroup['hosts']) && !empty($hostgroup['hosts'])) {
+            foreach ($hostgroup['hosts'] as $host) {
                 $this->disableHostNotifications(['uuid' => $host['uuid'], 'type' => $options['type']]);
             }
         }
@@ -1038,23 +1013,11 @@ class Externalcommand extends NagiosModuleAppModel {
      * @since     3.0.1
      */
     public function enableHostgroupNotifications($options = []) {
-        $this->Hostgroup = ClassRegistry::init('Hostgroup');
-        $hostgroup = $this->Hostgroup->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Hostgroup.uuid' => $options['hostgroupUuid'],
-            ],
-            'contain'    => [
-                'Host' => [
-                    'fields' => [
-                        'Host.uuid',
-                    ],
-                ],
-            ],
-        ]);
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
-        if (isset($hostgroup['Host']) && !empty($hostgroup['Host'])) {
-            foreach ($hostgroup['Host'] as $host) {
+        if (isset($hostgroup['hosts']) && !empty($hostgroup['hosts'])) {
+            foreach ($hostgroup['hosts'] as $host) {
                 $this->enableHostNotifications(['uuid' => $host['uuid'], 'type' => $options['type']]);
             }
         }
