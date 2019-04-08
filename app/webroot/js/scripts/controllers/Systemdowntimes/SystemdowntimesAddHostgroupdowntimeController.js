@@ -76,7 +76,7 @@ angular.module('openITCOCKPIT')
                     if($scope.post.Systemdowntime.is_recurring){
                         $state.go('SystemdowntimesHostgroup');
                     }else{
-                        $state.go('DowntimesHostgroup');
+                        $state.go('DowntimesHost');
                     }
                 },
                 function errorCallback(result){
