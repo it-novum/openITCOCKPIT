@@ -4,6 +4,8 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -546,6 +548,47 @@ class HostgroupsTable extends Table {
         $hostgroup = $query->firstOrFail();
 
         return $hostgroup->get('uuid');
+    }
+
+    /**
+     * @param string $uuid
+     * @return array
+     */
+    public function getHostsByHostgroupUuidForRescheduling($uuid) {
+        $query = $this->find()
+            ->select([
+                'Hostgroups.id'
+            ])
+            ->where([
+                'Hostgroups.uuid' => $uuid
+            ])
+            ->contain([
+                'hosts' =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)
+                            ->select([
+                                'Hosts.id',
+                                'Hosts.uuid',
+                                'Hosts.satellite_id',
+                                'Hosts.active_checks_enabled'
+                            ])
+                            ->contain([
+                                'hosttemplates' =>
+                                    function (Query $q) {
+                                        return $q->enableAutoFields(false)
+                                            ->select([
+                                                'Hosttemplates.active_checks_enabled'
+                                            ]);
+                                    }
+                            ]);
+                    },
+            ])->disableHydration();
+        try {
+            $result = $query->firstOrFail();
+            return $result;
+        } catch (RecordNotFoundException $e) {
+            return [];
+        }
     }
 
 
