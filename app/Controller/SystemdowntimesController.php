@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostgroupsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\AngularRequest;
 use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
@@ -418,6 +419,10 @@ class SystemdowntimesController extends AppController {
             }
 
             if ($isRecurringDowntime === false) {
+
+                /** @var $HostgroupsTable HostgroupsTable */
+                $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
                 $this->Systemdowntime->set($this->request->data);
                 if ($this->Systemdowntime->validateMany($this->request->data)) {
                     foreach ($this->request->data as $request) {
@@ -433,18 +438,8 @@ class SystemdowntimesController extends AppController {
                                 $request['Systemdowntime']['to_time']
                             ));
 
-                        $hostgroup = $this->Hostgroup->find('first', [
-                            'recursive'  => -1,
-                            'conditions' => [
-                                'Hostgroup.id' => $request['Systemdowntime']['object_id'],
-                            ],
-                            'fields'     => [
-                                'Hostgroup.uuid',
-                            ],
-                        ]);
-
                         $payload = [
-                            'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
+                            'hostgroupUuid' => $HostgroupsTable->getHostgroupUuidById($request['Systemdowntime']['object_id']),
                             'downtimetype'  => $request['Systemdowntime']['downtimetype_id'],
                             'start'         => $start,
                             'end'           => $end,

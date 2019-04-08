@@ -523,6 +523,24 @@ class HostgroupsTable extends Table {
 
     /**
      * @param int $id
+     * @return string
+     */
+    public function getHostgroupUuidById($id){
+        $query = $this->find()
+            ->select([
+                'Hostgroups.uuid',
+            ])
+            ->where([
+                'Hostgroups.id',
+            ]);
+
+        $hostgroup = $query->firstOrFail();
+
+        return $hostgroup->get('uuid');
+    }
+
+    /**
+     * @param int $id
      * @return bool
      */
     public function existsById($id) {
