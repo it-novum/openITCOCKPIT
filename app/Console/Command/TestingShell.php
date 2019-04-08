@@ -77,50 +77,6 @@ class TestingShell extends AppShell {
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
-        /** @var $HostgroupsTable HostgroupsTable */
-        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-
-
-        debug($HostgroupsTable->getHostsByHostgroupForMaps(1, [1,2,3,4,5456,]));
-
-
-
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container' => [
-                    'fields' => [
-                        'Container.name'
-                    ]
-                ],
-                'Host'      => [
-                    'Container',
-                    'fields'     => [
-                        'Host.id',
-                        'Host.uuid',
-                        'Host.name',
-                        'Host.description'
-                    ],
-                    'conditions' => [
-                        'Host.disabled' => 0
-                    ]
-                ]
-            ],
-            'fields'     => [
-                'Hostgroup.id',
-                'Hostgroup.description'
-            ],
-            'conditions' => [
-                'Hostgroup.id' => 1
-            ]
-        ];
-
-        $hostgroup = $this->Hostgroup->find('first', $query);
-
-        debug($hostgroup);
-
-
     }
 
     public function getOptionParser() {
