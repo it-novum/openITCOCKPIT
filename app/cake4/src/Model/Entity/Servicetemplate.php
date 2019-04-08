@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -57,25 +58,20 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $modified
  *
  * @property \App\Model\Entity\Container $container
- * @property \App\Model\Entity\Servicetemplatetype $servicetemplatetype
- * @property \App\Model\Entity\CheckPeriod $check_period
- * @property \App\Model\Entity\NotifyPeriod $notify_period
+ * @property \App\Model\Entity\Timeperiod $check_period
+ * @property \App\Model\Entity\Timeperiod $notify_period
  * @property \App\Model\Entity\Command $command
  * @property \App\Model\Entity\EventhandlerCommand $eventhandler_command
  * @property \App\Model\Entity\Timeperiod $timeperiod
- * @property \App\Model\Entity\ContactgroupsToServicetemplate[] $contactgroups_to_servicetemplates
- * @property \App\Model\Entity\ContactsToServicetemplate[] $contacts_to_servicetemplates
+ * @property \App\Model\Entity\Contactgroup[] $contactgroups_to_servicetemplates
+ * @property \App\Model\Entity\Contact[] $contacts_to_servicetemplates
  * @property \App\Model\Entity\DeletedService[] $deleted_services
- * @property \App\Model\Entity\GeServicetemplatedocsToServicetemplate[] $ge_servicetemplatedocs_to_servicetemplates
- * @property \App\Model\Entity\Mkcheck[] $mkchecks
- * @property \App\Model\Entity\Service[] $services
  * @property \App\Model\Entity\Servicetemplatecommandargumentvalue[] $servicetemplatecommandargumentvalues
  * @property \App\Model\Entity\Servicetemplateeventcommandargumentvalue[] $servicetemplateeventcommandargumentvalues
  * @property \App\Model\Entity\ServicetemplatesToServicegroup[] $servicetemplates_to_servicegroups
  * @property \App\Model\Entity\ServicetemplatesToServicetemplategroup[] $servicetemplates_to_servicetemplategroups
  */
-class Servicetemplate extends Entity
-{
+class Servicetemplate extends Entity {
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -87,70 +83,65 @@ class Servicetemplate extends Entity
      * @var array
      */
     protected $_accessible = [
-        'uuid' => true,
-        'template_name' => true,
-        'name' => true,
-        'container_id' => true,
-        'servicetemplatetype_id' => true,
-        'check_period_id' => true,
-        'notify_period_id' => true,
-        'description' => true,
-        'command_id' => true,
-        'check_command_args' => true,
-        'checkcommand_info' => true,
-        'eventhandler_command_id' => true,
-        'timeperiod_id' => true,
-        'check_interval' => true,
-        'retry_interval' => true,
-        'max_check_attempts' => true,
-        'first_notification_delay' => true,
-        'notification_interval' => true,
-        'notify_on_warning' => true,
-        'notify_on_unknown' => true,
-        'notify_on_critical' => true,
-        'notify_on_recovery' => true,
-        'notify_on_flapping' => true,
-        'notify_on_downtime' => true,
-        'flap_detection_enabled' => true,
-        'flap_detection_on_ok' => true,
-        'flap_detection_on_warning' => true,
-        'flap_detection_on_unknown' => true,
-        'flap_detection_on_critical' => true,
-        'low_flap_threshold' => true,
-        'high_flap_threshold' => true,
-        'process_performance_data' => true,
-        'freshness_checks_enabled' => true,
-        'freshness_threshold' => true,
-        'passive_checks_enabled' => true,
-        'event_handler_enabled' => true,
-        'active_checks_enabled' => true,
-        'retain_status_information' => true,
-        'retain_nonstatus_information' => true,
-        'notifications_enabled' => true,
-        'notes' => true,
-        'priority' => true,
-        'tags' => true,
-        'service_url' => true,
-        'is_volatile' => true,
-        'check_freshness' => true,
-        'created' => true,
-        'modified' => true,
-        'container' => true,
-        'servicetemplatetype' => true,
-        'check_period' => true,
-        'notify_period' => true,
-        'command' => true,
-        'eventhandler_command' => true,
-        'timeperiod' => true,
-        'contactgroups_to_servicetemplates' => true,
-        'contacts_to_servicetemplates' => true,
-        'deleted_services' => true,
-        'ge_servicetemplatedocs_to_servicetemplates' => true,
-        'mkchecks' => true,
-        'services' => true,
-        'servicetemplatecommandargumentvalues' => true,
+        'uuid'                                      => true,
+        'template_name'                             => true,
+        'name'                                      => true,
+        'container_id'                              => true,
+        'servicetemplatetype_id'                    => true,
+        'check_period_id'                           => true,
+        'notify_period_id'                          => true,
+        'description'                               => true,
+        'command_id'                                => true,
+        'check_command_args'                        => true,
+        'checkcommand_info'                         => true,
+        'eventhandler_command_id'                   => true,
+        'timeperiod_id'                             => true,
+        'check_interval'                            => true,
+        'retry_interval'                            => true,
+        'max_check_attempts'                        => true,
+        'first_notification_delay'                  => true,
+        'notification_interval'                     => true,
+        'notify_on_warning'                         => true,
+        'notify_on_unknown'                         => true,
+        'notify_on_critical'                        => true,
+        'notify_on_recovery'                        => true,
+        'notify_on_flapping'                        => true,
+        'notify_on_downtime'                        => true,
+        'flap_detection_enabled'                    => true,
+        'flap_detection_on_ok'                      => true,
+        'flap_detection_on_warning'                 => true,
+        'flap_detection_on_unknown'                 => true,
+        'flap_detection_on_critical'                => true,
+        'low_flap_threshold'                        => true,
+        'high_flap_threshold'                       => true,
+        'process_performance_data'                  => true,
+        'freshness_checks_enabled'                  => true,
+        'freshness_threshold'                       => true,
+        'passive_checks_enabled'                    => true,
+        'event_handler_enabled'                     => true,
+        'active_checks_enabled'                     => true,
+        'retain_status_information'                 => true,
+        'retain_nonstatus_information'              => true,
+        'notifications_enabled'                     => true,
+        'notes'                                     => true,
+        'priority'                                  => true,
+        'tags'                                      => true,
+        'service_url'                               => true,
+        'is_volatile'                               => true,
+        'check_freshness'                           => true,
+        'created'                                   => true,
+        'modified'                                  => true,
+        'container'                                 => true,
+        'check_period'                              => true,
+        'notify_period'                             => true,
+        'command'                                   => true,
+        'eventhandler_command'                      => true,
+        'timeperiod'                                => true,
+        'contactgroups_to_servicetemplates'         => true,
+        'contacts_to_servicetemplates'              => true,
+        'servicetemplatecommandargumentvalues'      => true,
         'servicetemplateeventcommandargumentvalues' => true,
-        'servicetemplates_to_servicegroups' => true,
+        'servicetemplates_to_servicegroups'         => true,
         'servicetemplates_to_servicetemplategroups' => true
     ];
 }

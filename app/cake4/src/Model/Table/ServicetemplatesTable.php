@@ -1,7 +1,7 @@
 <?php
+
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -10,18 +10,14 @@ use Cake\Validation\Validator;
  * Servicetemplates Model
  *
  * @property \App\Model\Table\ContainersTable|\Cake\ORM\Association\BelongsTo $Containers
- * @property \App\Model\Table\ServicetemplatetypesTable|\Cake\ORM\Association\BelongsTo $Servicetemplatetypes
- * @property \App\Model\Table\CheckPeriodsTable|\Cake\ORM\Association\BelongsTo $CheckPeriods
- * @property \App\Model\Table\NotifyPeriodsTable|\Cake\ORM\Association\BelongsTo $NotifyPeriods
+ * @property \App\Model\Table\TimeperiodsTable|\Cake\ORM\Association\BelongsTo $CheckPeriods
+ * @property \App\Model\Table\TimeperiodsTable|\Cake\ORM\Association\BelongsTo $NotifyPeriods
  * @property \App\Model\Table\CommandsTable|\Cake\ORM\Association\BelongsTo $Commands
  * @property \App\Model\Table\EventhandlerCommandsTable|\Cake\ORM\Association\BelongsTo $EventhandlerCommands
  * @property \App\Model\Table\TimeperiodsTable|\Cake\ORM\Association\BelongsTo $Timeperiods
  * @property \App\Model\Table\ContactgroupsToServicetemplatesTable|\Cake\ORM\Association\HasMany $ContactgroupsToServicetemplates
  * @property \App\Model\Table\ContactsToServicetemplatesTable|\Cake\ORM\Association\HasMany $ContactsToServicetemplates
  * @property \App\Model\Table\DeletedServicesTable|\Cake\ORM\Association\HasMany $DeletedServices
- * @property \App\Model\Table\GeServicetemplatedocsToServicetemplatesTable|\Cake\ORM\Association\HasMany $GeServicetemplatedocsToServicetemplates
- * @property \App\Model\Table\MkchecksTable|\Cake\ORM\Association\HasMany $Mkchecks
- * @property \App\Model\Table\ServicesTable|\Cake\ORM\Association\HasMany $Services
  * @property \App\Model\Table\ServicetemplatecommandargumentvaluesTable|\Cake\ORM\Association\HasMany $Servicetemplatecommandargumentvalues
  * @property \App\Model\Table\ServicetemplateeventcommandargumentvaluesTable|\Cake\ORM\Association\HasMany $Servicetemplateeventcommandargumentvalues
  * @property \App\Model\Table\ServicetemplatesToServicegroupsTable|\Cake\ORM\Association\HasMany $ServicetemplatesToServicegroups
@@ -38,8 +34,7 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class ServicetemplatesTable extends Table
-{
+class ServicetemplatesTable extends Table {
 
     /**
      * Initialize method
@@ -47,8 +42,7 @@ class ServicetemplatesTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         parent::initialize($config);
 
         $this->setTable('servicetemplates');
@@ -57,60 +51,74 @@ class ServicetemplatesTable extends Table
 
         $this->addBehavior('Timestamp');
 
+        $this->belongsToMany('Contactgroups', [
+            'className'        => 'Contactgroups',
+            'foreignKey'       => 'servicetemplate_id',
+            'targetForeignKey' => 'contactgroup_id',
+            'joinTable'        => 'contactgroups_to_servicetemplates',
+            'saveStrategy'     => 'replace'
+        ]);
+
+        $this->belongsToMany('Contacts', [
+            'className'        => 'Contacts',
+            'foreignKey'       => 'servicetemplate_id',
+            'targetForeignKey' => 'contact_id',
+            'joinTable'        => 'contacts_to_servicetemplates',
+            'saveStrategy'     => 'replace'
+        ]);
+
+        $this->belongsToMany('Servicegroups', [
+            'className'        => 'Servicegroups',
+            'foreignKey'       => 'servicetemplate_id',
+            'targetForeignKey' => 'servicegroup_id',
+            'joinTable'        => 'servicetemplates_to_servicegroups',
+            'saveStrategy'     => 'replace'
+        ]);
+
         $this->belongsTo('Containers', [
-            'foreignKey' => 'container_id'
+            'foreignKey' => 'container_id',
+            'joinType'   => 'INNER'
         ]);
-        $this->belongsTo('Servicetemplatetypes', [
-            'foreignKey' => 'servicetemplatetype_id',
-            'joinType' => 'INNER'
+
+        $this->belongsTo('CheckPeriod', [
+            'className'  => 'Timeperiods',
+            'foreignKey' => 'check_period_id',
+            'joinType'   => 'INNER'
         ]);
-        $this->belongsTo('CheckPeriods', [
-            'foreignKey' => 'check_period_id'
+
+        $this->belongsTo('NotifyPeriod', [
+            'className'  => 'Timeperiods',
+            'foreignKey' => 'notify_period_id',
+            'joinType'   => 'INNER'
         ]);
-        $this->belongsTo('NotifyPeriods', [
-            'foreignKey' => 'notify_period_id'
-        ]);
-        $this->belongsTo('Commands', [
+
+        $this->belongsTo('CheckCommand', [
+            'className'  => 'Commands',
             'foreignKey' => 'command_id',
-            'joinType' => 'INNER'
+            'joinType'   => 'INNER'
         ]);
-        $this->belongsTo('EventhandlerCommands', [
-            'foreignKey' => 'eventhandler_command_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('Timeperiods', [
-            'foreignKey' => 'timeperiod_id'
-        ]);
-        $this->hasMany('ContactgroupsToServicetemplates', [
-            'foreignKey' => 'servicetemplate_id'
-        ]);
-        $this->hasMany('ContactsToServicetemplates', [
-            'foreignKey' => 'servicetemplate_id'
-        ]);
-        $this->hasMany('DeletedServices', [
-            'foreignKey' => 'servicetemplate_id'
-        ]);
-        $this->hasMany('GeServicetemplatedocsToServicetemplates', [
-            'foreignKey' => 'servicetemplate_id'
-        ]);
-        $this->hasMany('Mkchecks', [
-            'foreignKey' => 'servicetemplate_id'
-        ]);
-        $this->hasMany('Services', [
-            'foreignKey' => 'servicetemplate_id'
-        ]);
+
+        $this->hasMany('Customvariables', [
+            'conditions'   => [
+                'objecttype_id' => OBJECT_SERVICETEMPLATE
+            ],
+            'foreignKey'   => 'object_id',
+            'saveStrategy' => 'replace'
+        ])->setDependent(true);
+
         $this->hasMany('Servicetemplatecommandargumentvalues', [
-            'foreignKey' => 'servicetemplate_id'
-        ]);
+            'saveStrategy' => 'replace'
+        ])->setDependent(true);
+
         $this->hasMany('Servicetemplateeventcommandargumentvalues', [
             'foreignKey' => 'servicetemplate_id'
         ]);
-        $this->hasMany('ServicetemplatesToServicegroups', [
-            'foreignKey' => 'servicetemplate_id'
+
+        /*
+        $this->hasMany('Service', [
+            'saveStrategy' => 'replace'
         ]);
-        $this->hasMany('ServicetemplatesToServicetemplategroups', [
-            'foreignKey' => 'servicetemplate_id'
-        ]);
+        */
     }
 
     /**
@@ -119,8 +127,7 @@ class ServicetemplatesTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
@@ -336,17 +343,8 @@ class ServicetemplatesTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules)
-    {
+    public function buildRules(RulesChecker $rules) {
         $rules->add($rules->isUnique(['uuid']));
-        $rules->add($rules->existsIn(['container_id'], 'Containers'));
-        $rules->add($rules->existsIn(['servicetemplatetype_id'], 'Servicetemplatetypes'));
-        $rules->add($rules->existsIn(['check_period_id'], 'CheckPeriods'));
-        $rules->add($rules->existsIn(['notify_period_id'], 'NotifyPeriods'));
-        $rules->add($rules->existsIn(['command_id'], 'Commands'));
-        $rules->add($rules->existsIn(['eventhandler_command_id'], 'EventhandlerCommands'));
-        $rules->add($rules->existsIn(['timeperiod_id'], 'Timeperiods'));
-
         return $rules;
     }
 }
