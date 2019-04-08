@@ -68,7 +68,8 @@ class HostsTable extends Table {
             'className'        => 'Containers',
             'joinTable'        => 'hosts_to_containers',
             'foreignKey'       => 'host_id',
-            'targetForeignKey' => 'container_id'
+            'targetForeignKey' => 'container_id',
+            'saveStrategy'     => 'replace'
         ]);
 
         $this->belongsTo('Containers', [
@@ -1346,6 +1347,24 @@ class HostsTable extends Table {
         return [
             'Host' => $host
         ];
+    }
+
+    /**
+     * @param int $id
+     * @return string
+     */
+    public function getHostUuidById($id) {
+        $query = $this->find()
+            ->select([
+                'Hosts.uuid',
+            ])
+            ->where([
+                'Hosts.id' => $id
+            ]);
+
+        $host = $query->firstOrFail();
+
+        return $host->get('uuid');
     }
 
 

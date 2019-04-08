@@ -4,6 +4,8 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -229,11 +231,10 @@ class HostgroupsTable extends Table {
      * @param array $ids
      * @return array
      */
-    public function getHostgroupsAsList($ids = []) {
+    public function getHostgroupsAsList($ids = [], $MY_RIGHTS = []) {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
-
         $query = $this->find()
             ->select([
                 'Hostgroups.id',
@@ -241,11 +242,21 @@ class HostgroupsTable extends Table {
             ])
             ->contain(['Containers'])
             ->disableHydration();
+
+        $where = [];
         if (!empty($ids)) {
-            $query->where([
+            $where = [
                 'Hostgroups.id IN'            => $ids,
                 'Containers.containertype_id' => CT_HOSTGROUP
-            ]);
+            ];
+        }
+
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+
+        if (!empty($where)) {
+            $query->where($where);
         }
 
         $result = $query->toArray();
@@ -427,8 +438,8 @@ class HostgroupsTable extends Table {
                     'Hostgroups.id IN' => $selected
                 ])
                 ->order([
-                'Containers.name' => 'asc'
-            ])
+                    'Containers.name' => 'asc'
+                ])
                 ->limit(ITN_AJAX_LIMIT)
                 ->disableHydration()
                 ->all();
@@ -485,7 +496,7 @@ class HostgroupsTable extends Table {
      * @param array $MY_RIGHTS
      * @return array
      */
-    public function getHostgroupsForPdf(HostgroupFilter $HostgroupFilter, $MY_RIGHTS = []){
+    public function getHostgroupsForPdf(HostgroupFilter $HostgroupFilter, $MY_RIGHTS = []) {
 
         $query = $this->find()
             ->contain([
@@ -509,7 +520,7 @@ class HostgroupsTable extends Table {
     /**
      * @return array
      */
-    public function getHostgroupsForExport(){
+    public function getHostgroupsForExport() {
         $query = $this->find()
             ->select([
                 'Hostgroups.id',
@@ -525,19 +536,188 @@ class HostgroupsTable extends Table {
      * @param int $id
      * @return string
      */
-    public function getHostgroupUuidById($id){
+    public function getHostgroupUuidById($id) {
         $query = $this->find()
             ->select([
                 'Hostgroups.uuid',
             ])
             ->where([
-                'Hostgroups.id',
+                'Hostgroups.id' => $id
             ]);
 
         $hostgroup = $query->firstOrFail();
 
         return $hostgroup->get('uuid');
     }
+
+    /**
+     * @param string $uuid
+     * @return array
+     */
+    public function getHostsByHostgroupUuidForExternalcommands($uuid) {
+        $query = $this->find()
+            ->select([
+                'Hostgroups.id'
+            ])
+            ->where([
+                'Hostgroups.uuid' => $uuid,
+            ])
+            ->contain([
+                'hosts' =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)
+                            ->select([
+                                'Hosts.id',
+                                'Hosts.uuid',
+                                'Hosts.satellite_id',
+                                'Hosts.active_checks_enabled'
+                            ])
+                            ->where([
+                                'Hosts.disabled' => 0
+                            ])
+                            ->contain([
+                                'hosttemplates' =>
+                                    function (Query $q) {
+                                        return $q->enableAutoFields(false)
+                                            ->select([
+                                                'Hosttemplates.active_checks_enabled'
+                                            ]);
+                                    }
+                            ]);
+                    },
+            ])->disableHydration();
+        try {
+            $result = $query->firstOrFail();
+            return $result;
+        } catch (RecordNotFoundException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * @param string $uuid
+     * @return array
+     */
+    public function getHostsByHostgroupUuidForExternalcommandsIncludeingHosttemplateHosts($uuid) {
+        $query = $this->find()
+            ->select([
+                'Hostgroups.id'
+            ])
+            ->where([
+                'Hostgroups.uuid' => $uuid,
+            ])
+            ->contain([
+                'hosts'         =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)
+                            ->select([
+                                'Hosts.id',
+                                'Hosts.uuid',
+                                'Hosts.satellite_id',
+                                'Hosts.active_checks_enabled'
+                            ])
+                            ->where([
+                                'Hosts.disabled' => 0
+                            ])
+                            ->contain([
+                                'hosttemplates' =>
+                                    function (Query $q) {
+                                        return $q->enableAutoFields(false)
+                                            ->select([
+                                                'Hosttemplates.active_checks_enabled'
+                                            ]);
+                                    }
+                            ]);
+                    },
+                'hosttemplates' =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)
+                            ->select([
+                                'Hosttemplates.id',
+                            ]);
+                    },
+            ])->disableHydration();
+        try {
+            $tmpResult = $query->firstOrFail();
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+            $hosts = [];
+            foreach ($tmpResult['hosts'] as $host) {
+                $hosts[$host['id']] = $host;
+            }
+
+            foreach ($tmpResult['hosttemplates'] as $hosttemplate) {
+
+                $hostsFromHosttemplate = $HostsTable->find()
+                    ->select([
+                        'Hosts.id',
+                        'Hosts.uuid',
+                        'Hosts.satellite_id',
+                        'Hosts.active_checks_enabled'
+                    ])
+                    ->where([
+                        'Hosts.hosttemplate_id' => $hosttemplate['id'],
+                        'Hosts.disabled'        => 0
+                    ])
+                    ->disableHydration()
+                    ->all();
+
+                //Merge Hosts from host templates
+                $hostsFromHosttemplate = $this->emptyArrayIfNull($hostsFromHosttemplate->toArray());
+                foreach ($hostsFromHosttemplate as $hostFromHosttemplate) {
+                    $hosts[$hostFromHosttemplate['id']] = $hostFromHosttemplate;
+                }
+            }
+
+            $tmpResult['hosts'] = $hosts;
+
+            return $tmpResult;
+        } catch (RecordNotFoundException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * @param int $id
+     * @param array $MY_RIGHTS
+     * @return array
+     * @throws RecordNotFoundException
+     */
+    public function getHostsByHostgroupForMaps($id, $MY_RIGHTS = []) {
+        $where = [
+            'Hostgroups.id' => $id
+        ];
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+
+        $hostgroup = $this->find()
+            ->select([
+                'Hostgroups.id',
+                'Hostgroups.description',
+                'Containers.name'
+            ])
+            ->contain([
+                'containers',
+                'hosts' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select([
+                            'Hosts.id',
+                            'Hosts.uuid',
+                            'Hosts.name',
+                            'Hosts.description'
+                        ])
+                        ->contain(['HostsToContainersSharing']);
+                }
+            ])
+            ->where($where)
+            ->disableHydration()
+            ->firstOrFail();
+
+        return $hostgroup;
+    }
+
 
     /**
      * @param int $id

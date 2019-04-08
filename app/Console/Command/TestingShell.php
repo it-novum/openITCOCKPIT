@@ -25,12 +25,9 @@
 
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
-use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ProxiesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Comparison\HostComparison;
-use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
-use itnovum\openITCOCKPIT\Core\HostConditions;
 
 class TestingShell extends AppShell {
     /*

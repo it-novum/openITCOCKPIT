@@ -24,6 +24,7 @@
 //	confirmation.
 
 
+use App\Model\Table\HostgroupsTable;
 use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -89,18 +90,10 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
         }
 
         //Ship data for GET requests
-        $hostgroups = $this->Hostgroup->findList([
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'order'      => [
-                'Container.name' => 'asc',
-            ],
-            'conditions' => [
-                'Container.parent_id' => $this->MY_RIGHTS,
-            ],
-        ]);
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $hostgroups = $HostgroupsTable->getHostgroupsAsList([], $this->MY_RIGHTS);
+
         $customFieldsToRefill = [
             'GrafanaConfiguration' => [
                 'use_https',
@@ -150,18 +143,9 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
             return;
         }
 
-        $hostgroups = $this->Hostgroup->findList([
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'order'      => [
-                'Container.name' => 'asc',
-            ],
-            'conditions' => [
-                'Container.parent_id' => $this->MY_RIGHTS,
-            ],
-        ]);
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $hostgroups = $HostgroupsTable->getHostgroupsAsList([], $this->MY_RIGHTS);
 
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);
 
