@@ -191,8 +191,8 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
                 $client = (json_decode($client)) ? json_decode($client) : ['message' => (string)$client];
 
                 //Resolve: ITC-2169 RVID: 5-445b21 - Medium - Server-Side Request Forgery
-                $message = __('Error while connection to Grafana Server.');
-                $message = __('For detailed information, please uncomment line %s in %s. Detailed output is disabled for security reasons.', (__LINE__ + 1),  __FILE__);
+                $message = __('Error while connecting to Grafana server.');
+                $message = __('For detailed information, please uncomment line %s in %s. Detailed output is disabled due to security reasons.', (__LINE__ + 1),  __FILE__);
                 //$message = $client;
 
                 if (is_object($client) && property_exists($client, 'message')) {
