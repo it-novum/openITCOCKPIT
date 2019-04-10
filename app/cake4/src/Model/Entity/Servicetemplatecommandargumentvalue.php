@@ -5,19 +5,19 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Hosttemplatecommandargumentvalue Entity
+ * Servicetemplatecommandargumentvalue Entity
  *
  * @property int $id
  * @property int $commandargument_id
- * @property int $hosttemplate_id
+ * @property int $servicetemplate_id
  * @property string $value
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
  * @property \App\Model\Entity\Commandargument $commandargument
- * @property \App\Model\Entity\Hosttemplate $hosttemplate
+ * @property \App\Model\Entity\Servicetemplate $servicetemplate
  */
-class Hosttemplatecommandargumentvalue extends Entity {
+class Servicetemplatecommandargumentvalue extends Entity {
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -30,11 +30,11 @@ class Hosttemplatecommandargumentvalue extends Entity {
      */
     protected $_accessible = [
         'commandargument_id' => true,
-        'hosttemplate_id'    => true,
+        'servicetemplate_id' => true,
         'value'              => true,
         'created'            => true,
         'modified'           => true,
         'commandargument'    => true,
-        'hosttemplate'       => true
+        'servicetemplate'    => true
     ];
 }

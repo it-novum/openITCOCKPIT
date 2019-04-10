@@ -129,6 +129,10 @@ class ServicetemplatesController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -165,6 +169,20 @@ class ServicetemplatesController extends AppController {
         $this->set('_serialize', ['servicetemplate']);
     }
 
+    public function add() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+    }
+
+
+    /**
+     * @param null $id
+     * @param null $servicetemplatetype_id
+     * @throws Exception
+     * @deprecated
+     */
     public function edit($id = null, $servicetemplatetype_id = null) {
         $userId = $this->Auth->user('id');
         $this->Servicetemplate->id = $id;
@@ -586,7 +604,12 @@ class ServicetemplatesController extends AppController {
     }
 
 
-    public function add($servicetemplatetype_id = null) {
+    /**
+     * @param null $servicetemplatetype_id
+     * @throws Exception
+     * @deprecated
+     */
+    public function addOld($servicetemplatetype_id = null) {
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsettings = $Systemsettings->findAsArraySection('MONITORING');
@@ -864,6 +887,10 @@ class ServicetemplatesController extends AppController {
         $this->set(compact(['_timeperiods', '_contacts', '_contactgroups', '_servicegroups']));
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function delete($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->Servicetemplate->exists($id)) {
@@ -937,6 +964,10 @@ class ServicetemplatesController extends AppController {
         $this->redirect($redirect);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function mass_delete($id = null) {
 
         $userId = $this->Auth->user('id');
@@ -1031,6 +1062,10 @@ class ServicetemplatesController extends AppController {
 
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function copy($id = null) {
         $userId = $this->Auth->user('id');
         $servicetmpl = $this->Servicetemplate->find('all', [
@@ -1233,6 +1268,11 @@ class ServicetemplatesController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
+    /**
+     * @param null $id
+     * @throws Exception
+     * @deprecated
+     */
     public function assignGroup($id = null) {
         $servicetmpl = $this->Servicetemplate->find('all', [
             'conditions' => [
@@ -1331,6 +1371,10 @@ class ServicetemplatesController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function usedBy($id = null) {
 
         $this->layout = 'angularjs';
@@ -1439,6 +1483,11 @@ class ServicetemplatesController extends AppController {
         $this->set('_serialize', ['all_services', 'servicetemplate']);
     }
 
+    /**
+     * @param null $command_id
+     * @param null $servicetemplate_id
+     * @deprecated
+     */
     public function loadArguments($command_id = null, $servicetemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -1463,6 +1512,10 @@ class ServicetemplatesController extends AppController {
         $this->set('commandarguments', $commandarguments);
     }
 
+    /**
+     * @param null $servicetemplate_id
+     * @deprecated
+     */
     public function loadContactsAndContactgroups($servicetemplate_id = null) {
         $this->allowOnlyAjaxRequests();
 
@@ -1500,6 +1553,10 @@ class ServicetemplatesController extends AppController {
 
     }
 
+    /**
+     * @param null $command_id
+     * @deprecated
+     */
     public function loadArgumentsAdd($command_id = null) {
         $this->allowOnlyAjaxRequests();
 
@@ -1512,6 +1569,10 @@ class ServicetemplatesController extends AppController {
         $this->render('load_arguments');
     }
 
+    /**
+     * @param null $command_id
+     * @deprecated
+     */
     public function loadNagArgumentsAdd($command_id = null) {
         $this->allowOnlyAjaxRequests();
 
@@ -1523,6 +1584,10 @@ class ServicetemplatesController extends AppController {
         $this->render('load_nag_arguments');
     }
 
+    /**
+     * @param $counter
+     * @deprecated
+     */
     public function addCustomMacro($counter) {
         $this->allowOnlyAjaxRequests();
 
@@ -1532,6 +1597,10 @@ class ServicetemplatesController extends AppController {
 
     /**
      * Loads the paramters for 'Check Command'.
+     *
+     * @param null $command_id
+     * @param null $servicetemplate_id
+     * @deprecated
      */
     public function loadParametersByCommandId($command_id = null, $servicetemplate_id = null) {
         $this->allowOnlyAjaxRequests();
@@ -1571,6 +1640,10 @@ class ServicetemplatesController extends AppController {
 
     /**
      * Loads the parameters for the 'Eventhandler check command'.
+     *
+     * @param null $command_id
+     * @param null $servicetemplate_id
+     * @deprecated
      */
     public function loadNagParametersByCommandId($command_id = null, $servicetemplate_id = null) {
         $this->allowOnlyAjaxRequests();
@@ -1608,6 +1681,10 @@ class ServicetemplatesController extends AppController {
         $this->set(compact('commandarguments'));
     }
 
+    /**
+     * @param null $containerId
+     * @deprecated
+     */
     public function loadElementsByContainerId($containerId = null) {
         $this->allowOnlyAjaxRequests();
         /** @var $ContainersTable ContainersTable */
@@ -1642,6 +1719,10 @@ class ServicetemplatesController extends AppController {
         $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']);
     }
 
+    /**
+     * @param null $containerId
+     * @deprecated
+     */
     public function loadServicetemplatesByContainerId($containerId = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
