@@ -154,6 +154,13 @@ class ServicetemplatesTable extends Table {
             ->allowEmptyString('name', false);
 
         $validator
+            ->scalar('template_name')
+            ->maxLength('template_name', 255)
+            ->requirePresence('template_name', 'create')
+            ->allowEmptyString('template_name', false);
+
+
+        $validator
             ->allowEmptyString('description', true);
 
         $validator
@@ -202,6 +209,12 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('command_id', 'create')
             ->greaterThan('command_id', 0, __('Please select a check command'))
             ->allowEmptyString('command_id', false);
+
+        $validator
+            ->integer('eventhandler_command_id')
+            ->requirePresence('eventhandler_command_id', false)
+            ->greaterThan('eventhandler_command_id', 0, __('Please select a event handler'))
+            ->allowEmptyString('eventhandler_command_id', true);
 
         $validator
             ->integer('notify_period_id')
@@ -302,15 +315,6 @@ class ServicetemplatesTable extends Table {
             ->allowEmptyString('process_performance_data', true);
 
         $validator
-            ->boolean('freshness_checks_enabled')
-            ->requirePresence('freshness_checks_enabled', false)
-            ->allowEmptyString('freshness_checks_enabled', true);
-
-        $validator
-            ->integer('freshness_threshold')
-            ->allowEmptyString('freshness_threshold');
-
-        $validator
             ->boolean('passive_checks_enabled')
             ->requirePresence('passive_checks_enabled', 'create')
             ->allowEmptyString('passive_checks_enabled', false);
@@ -361,6 +365,21 @@ class ServicetemplatesTable extends Table {
                 'rule'    => [$this, 'checkMacroNames'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => _('Macro name needs to be unique')
             ]);
+
+        $validator
+            ->boolean('is_volatile')
+            ->requirePresence('is_volatile', false)
+            ->allowEmptyString('is_volatile', true);
+
+        $validator
+            ->boolean('freshness_checks_enabled')
+            ->requirePresence('freshness_checks_enabled', false)
+            ->allowEmptyString('freshness_checks_enabled', true);
+
+        $validator
+            ->integer('freshness_threshold')
+            ->allowEmptyString('freshness_threshold');
+
     }
 
     /**

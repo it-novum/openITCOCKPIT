@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -526,6 +527,7 @@ class ContactsTable extends Table {
             if ($container_id != ROOT_CONTAINER) {
                 $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'ContactContactsByContainerId');
                 // Get container id of the tenant container
+                // Tenant contacts are available for all users of a tenant (oITC V2 legacy)
                 if (isset($path[1])) {
                     $tenantContainerIds[] = $path[1]['id'];
                 }
@@ -542,7 +544,7 @@ class ContactsTable extends Table {
 
         $query = $this->find('all');
         $query->contain(['Containers']);
-        $query->innerJoinWith('Containers', function ($q) use ($containerIds) {
+        $query->innerJoinWith('Containers', function (Query $q) use ($containerIds) {
             return $q->where(['Containers.id IN' => $containerIds]);
         });
 

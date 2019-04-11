@@ -562,7 +562,8 @@ class HosttemplatesController extends AppController {
     }
 
     /**
-     * @param null|int $hosttemplateId
+     * @param int|null $hosttemplateId
+     * @throws Exception
      */
     public function loadContainers($hosttemplateId = null) {
         if (!$this->isAngularJsRequest()) {

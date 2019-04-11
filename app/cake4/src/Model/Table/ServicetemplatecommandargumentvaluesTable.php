@@ -92,7 +92,7 @@ class ServicetemplatecommandargumentvaluesTable extends Table {
         $query = $this->find()
             ->contain(['Commandarguments'])
             ->where([
-                'Servicetemplatecommandargumentvalues.hosttemplate_id' => $servicetemplateId,
+                'Servicetemplatecommandargumentvalues.servicetemplate_id' => $servicetemplateId,
                 'Commandarguments.command_id'                          => $commandId
             ])
             ->disableHydration()

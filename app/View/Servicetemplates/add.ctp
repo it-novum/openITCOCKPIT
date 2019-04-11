@@ -79,15 +79,36 @@
                                                         ng-options="container.key as container.value for container in containers"
                                                         ng-model="post.Servicetemplate.container_id">
                                                 </select>
+                                                <div ng-show="post.Servicetemplate.container_id < 1" class="warning-glow">
+                                                    <?php echo __('Please select a container.'); ?>
+                                                </div>
                                                 <div ng-repeat="error in errors.container_id">
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="form-group required" ng-class="{'has-error': errors.name}">
+                                        <div class="form-group required" ng-class="{'has-error': errors.template_name}">
                                             <label class="col-xs-12 col-lg-2 control-label">
                                                 <?php echo __('Template name'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <input
+                                                        class="form-control"
+                                                        type="text"
+                                                        ng-model="post.Servicetemplate.template_name">
+                                                <div ng-repeat="error in errors.template_name">
+                                                    <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
+                                                <div class="help-block">
+                                                    <?php echo __('Name of the service template'); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group required" ng-class="{'has-error': errors.name}">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <?php echo __('Service name'); ?>
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
                                                 <input
@@ -96,6 +117,9 @@
                                                         ng-model="post.Servicetemplate.name">
                                                 <div ng-repeat="error in errors.name">
                                                     <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
+                                                <div class="help-block">
+                                                    <?php echo __('Default name of services using this service template'); ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -649,11 +673,102 @@
                                             </ul>
                                         </fieldset>
 
+
+                                        <div class="form-group"
+                                             ng-class="{'has-error': errors.is_volatile}">
+                                            <label class="col-xs-12 col-lg-2 control-label" for="isVolatile">
+                                                <?php echo __('Status volatile'); ?>
+                                            </label>
+
+                                            <div class="col-xs-12 col-lg-10 smart-form">
+                                                <label class="checkbox small-checkbox-label no-required">
+                                                    <input type="checkbox" name="checkbox"
+                                                           id="isVolatile"
+                                                           ng-true-value="1"
+                                                           ng-false-value="0"
+                                                           ng-model="post.Servicetemplate.is_volatile">
+                                                    <i class="checkbox-primary"></i>
+                                                </label>
+                                                <div class="help-block">
+                                                    <a href="https://www.naemon.org/documentation/usersguide/volatileservices.html" target="_blank">
+                                                        <i class="fa fa-external-link-square"></i>
+                                                        <?php echo __('Online documentation'); ?>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                            <div class="jarviswidget">
+                                <header>
+                                <span class="widget-icon">
+                                    <i class="fa fa-exclamation"></i>
+                                </span>
+                                    <h2><?php echo __('Event Handler configuration'); ?></h2>
+                                </header>
+                                <div>
+                                    <div class="widget-body">
+                                        <div class="form-group required"
+                                             ng-class="{'has-error': errors.eventhandler_command_id}">
+                                            <label class="col-xs-12 col-lg-2 control-label">
+                                                <?php echo __('Event Handler'); ?>
+                                            </label>
+                                            <div class="col-xs-12 col-lg-10">
+                                                <select
+                                                        id="ServiceCheckCommandSelect"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="commands"
+                                                        ng-options="eventhandler.key as eventhandler.value for eventhandler in eventhandlerCommands"
+                                                        ng-model="post.Servicetemplate.eventhandler_command_id">
+                                                </select>
+                                                <div ng-repeat="error in errors.eventhandler_command_id">
+                                                    <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group"
+                                             ng-class="{'has-error': errors.servicetemplateeventcommandargumentvalues}"
+                                             ng-repeat="servicetemplateeventcommandargumentvalue in post.Servicetemplate.servicetemplateeventcommandargumentvalues">
+                                            <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-primary">
+                                                {{servicetemplateeventcommandargumentvalue.commandargument.human_name}}
+                                            </label>
+                                            <div class="col-xs-12 col-lg-8">
+                                                <input
+                                                        class="form-control"
+                                                        type="text"
+                                                        ng-model="servicetemplateeventcommandargumentvalue.value">
+                                                <div ng-repeat="error in errors.servicetemplateeventcommandargumentvalues">
+                                                    <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
+                                                <div class="help-block">
+                                                    {{servicetemplateeventcommandargumentvalue.commandargument.name}}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group"
+                                             ng-show="post.Servicetemplate.eventhandler_command_id > 0 && post.Servicetemplate.servicetemplateeventcommandargumentvalues.length == 0">
+                                            <div class="col-xs-12 col-lg-offset-2 text-info">
+                                                <i class="fa fa-info-circle"></i>
+                                                <?php echo __('This Event Handler command does not have any parameters.'); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
 
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">

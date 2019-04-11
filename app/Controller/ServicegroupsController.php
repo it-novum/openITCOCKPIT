@@ -43,6 +43,7 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  * @property Host $Host
  * @property Servicetemplate $Servicetemplate
  * @property TreeComponent $Tree
+ * @deprecated
  */
 class ServicegroupsController extends AppController {
     public $uses = [
@@ -66,6 +67,9 @@ class ServicegroupsController extends AppController {
     ];
 
 
+    /**
+     * @deprecated
+     */
     public function index() {
         $this->layout = 'blank';
         if (!$this->isApiRequest()) {
@@ -113,6 +117,10 @@ class ServicegroupsController extends AppController {
         $this->set('_serialize', ['all_servicegroups', 'paging']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -132,6 +140,10 @@ class ServicegroupsController extends AppController {
         $this->set('_serialize', ['servicegroup']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function edit($id = null) {
         $this->layout = 'blank';
         if (!$this->isApiRequest() && $id === null) {
@@ -269,6 +281,9 @@ class ServicegroupsController extends AppController {
         $this->set('_serialize', ['servicegroup']);
     }
 
+    /**
+     * @deprecated
+     */
     public function add() {
         $this->layout = 'blank';
         if (!$this->isApiRequest()) {
@@ -359,7 +374,10 @@ class ServicegroupsController extends AppController {
         }
     }
 
-
+    /**
+     * @throws Exception
+     * @deprecated
+     */
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -380,6 +398,10 @@ class ServicegroupsController extends AppController {
         $this->set('_serialize', ['containers']);
     }
 
+    /**
+     * @param null $containerId
+     * @deprecated
+     */
     public function loadServices($containerId = null) {
         $this->allowOnlyAjaxRequests();
 
@@ -393,6 +415,10 @@ class ServicegroupsController extends AppController {
         $this->set('_serialize', array_keys($data));
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function loadServicegroupWithServicesById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -558,6 +584,10 @@ class ServicegroupsController extends AppController {
         $this->set('_serialize', ['servicegroup']);
     }
 
+    /**
+     * @param null $containerId
+     * @deprecated
+     */
     public function loadServicetemplates($containerId = null) {
         $this->allowOnlyAjaxRequests();
 
@@ -569,6 +599,10 @@ class ServicegroupsController extends AppController {
         $this->set('_serialize', array_keys($data));
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function delete($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->request->is('post')) {
@@ -611,6 +645,10 @@ class ServicegroupsController extends AppController {
         $this->redirect(['action' => 'index']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function mass_delete($id = null) {
         $userId = $this->Auth->user('id');
 
@@ -652,6 +690,10 @@ class ServicegroupsController extends AppController {
         $this->redirect(['action' => 'index']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function mass_add($id = null) {
         if ($this->request->is('post') || $this->request->is('put')) {
             $targetServicegroup = $this->request->data('Servicegroup.id');
@@ -715,6 +757,9 @@ class ServicegroupsController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
+    /**
+     * @deprecated
+     */
     public function listToPdf() {
         $this->layout = 'Admin.default';
 
@@ -804,6 +849,9 @@ class ServicegroupsController extends AppController {
         ];
     }
 
+    /**
+     * @deprecated
+     */
     public function loadServicegroupsByContainerId() {
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
@@ -853,6 +901,9 @@ class ServicegroupsController extends AppController {
         $this->set('_serialize', ['servicegroups']);
     }
 
+    /**
+     * @deprecated
+     */
     public function extended() {
         $this->layout = 'blank';
         $User = new User($this->Auth);
@@ -893,6 +944,9 @@ class ServicegroupsController extends AppController {
         $this->set('_serialize', ['servicegroups', 'username']);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadServicegroupsByString() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

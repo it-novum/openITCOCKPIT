@@ -149,32 +149,16 @@ class HostgroupsTable extends Table {
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
                 $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'HostgroupHostgroupsByContainerId');
 
-                foreach ($path as $containers) {
-                    if ($containers['containertype_id'] == CT_HOSTGROUP) {
-                        $tenantContainerIds[] = $containers['parent_id'];
-                    }
-                }
+                // Tenant host groups are available for all users of a tenant (oITC V2 legacy)
                 $tenantContainerIds[] = $path[1]['id'];
             } else {
                 $tenantContainerIds[] = ROOT_CONTAINER;
             }
         }
         $tenantContainerIds = array_unique($tenantContainerIds);
+        $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
 
-        $hostgroupsAsList = [];
 
-        foreach ($tenantContainerIds as $tenantContainerId) {
-            $children = $ContainersTable->find('children', ['for' => $tenantContainerId])->disableHydration()->all()->toArray();
-            foreach ($children as $child) {
-                if ($child['containertype_id'] == CT_HOSTGROUP) {
-                    // containerId of hostgroup => hostgroup name
-                    $hostgroupsAsList[$child['id']] = $child['name'];
-                }
-            }
-        }
-        if (empty($hostgroupsAsList)) {
-            return [];
-        }
         switch ($type) {
             case 'all':
                 $query = $this->find()
@@ -182,7 +166,7 @@ class HostgroupsTable extends Table {
                         'Containers'
                     ])
                     ->where([
-                        'Containers.id IN' => array_keys($hostgroupsAsList)
+                        'Containers.parent_id IN' => $containerIds
                     ])
                     ->order([
                         'Containers.name' => 'ASC'
@@ -190,40 +174,39 @@ class HostgroupsTable extends Table {
                     ->disableHydration()
                     ->all();
 
-                return $query->toArray();
+                return $this->emptyArrayIfNull($query->toArray());
 
 
             default:
-                if ($index == 'id') {
-                    $query = $this->find()
-                        ->contain([
-                            'Containers'
-                        ])
-                        ->where([
-                            'Containers.id IN' => array_keys($hostgroupsAsList)
-                        ])
-                        ->order([
-                            'Containers.name' => 'ASC'
-                        ])
-                        ->disableHydration()
-                        ->all();
+                $query = $this->find()
+                    ->contain([
+                        'Containers'
+                    ])
+                    ->where([
+                        'Containers.parent_id IN' => $containerIds
+                    ])
+                    ->order([
+                        'Containers.name' => 'ASC'
+                    ])
+                    ->disableHydration()
+                    ->all();
 
-                    $query = $query->toArray();
-                    if (empty($query)) {
-                        $query = [];
-                    }
-
-
-                    $return = [];
-                    foreach ($query as $hostgroup) {
-                        $return[$hostgroup['id']] = $hostgroup['container']['name'];
-                    }
-
-                    return $return;
+                $query = $query->toArray();
+                if (empty($query)) {
+                    $query = [];
                 }
-                asort($hostgroupsAsList);
 
-                return $hostgroupsAsList;
+
+                $return = [];
+                foreach ($query as $hostgroup) {
+                    if ($index === 'id') {
+                        $return[$hostgroup['id']] = $hostgroup['container']['name'];
+                    } else {
+                        $return[$hostgroup['container_id']] = $hostgroup['container']['name'];
+                    }
+                }
+
+                return $return;
         }
     }
 

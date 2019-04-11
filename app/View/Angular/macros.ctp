@@ -23,7 +23,8 @@
 //  confirmation.
 ?>
 <div class="col-xs-12">
-    <div class="col-xs-12 col-lg-3 hidden-mobile text-primary" ng-class="{'text-success': macro.objecttype_id === 512}">
+    <div class="col-xs-12 col-lg-3 hidden-mobile text-primary"
+         ng-class="{'text-success': macro.objecttype_id === 512 || macro.objecttype_id === 4096}">
         <div style="padding-top: 29px; width: 100%;">
             <!-- spacer for nice layout -->
         </div>

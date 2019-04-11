@@ -24,6 +24,7 @@ use Cake\Validation\Validator;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class ServicetemplateeventcommandargumentvaluesTable extends Table {
+
     /**
      * Initialize method
      *
@@ -81,5 +82,27 @@ class ServicetemplateeventcommandargumentvaluesTable extends Table {
         $rules->add($rules->existsIn(['servicetemplate_id'], 'Servicetemplates'));
 
         return $rules;
+    }
+
+    /**
+     * @param int $servicetemplateId
+     * @param int $commandId
+     * @return array
+     */
+    public function getByServicetemplateIdAndCommandId($servicetemplateId, $commandId) {
+        $query = $this->find()
+            ->contain(['Commandarguments'])
+            ->where([
+                'Servicetemplateeventcommandargumentvalues.servicetemplate_id' => $servicetemplateId,
+                'Commandarguments.command_id'                          => $commandId
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        return $result;
     }
 }

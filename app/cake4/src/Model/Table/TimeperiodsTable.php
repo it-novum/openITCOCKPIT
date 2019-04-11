@@ -409,6 +409,7 @@ class TimeperiodsTable extends Table {
             if ($container_id != ROOT_CONTAINER) {
                 $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'TimeperiodTimeperiodsByContainerId');
                 // Get container id of the tenant container
+                // Tenant timeperiods are available for all users of a tenant (oITC V2 legacy)
                 if (isset($path[1])) {
                     $tenantContainerIds[] = $path[1]['id'];
                 }

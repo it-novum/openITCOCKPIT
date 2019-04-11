@@ -224,6 +224,8 @@ class ContactgroupsTable extends Table {
                 // Get container id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
                 $path = $ContainersTable->getPathByIdAndCacheResult($containerId, 'ContactGroupContactsByContainerId');
+
+                // Tenant contact groups are available for all users of a tenant (oITC V2 legacy)
                 if (isset($path[1])) {
                     $tenantContainerIds[] = $path[1]['id'];
                 }
@@ -232,14 +234,17 @@ class ContactgroupsTable extends Table {
             }
         }
         $tenantContainerIds = array_unique($tenantContainerIds);
-        if (empty($tenantContainerIds)) {
+        $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
+
+
+        if (empty($containerIds)) {
             return [];
         }
 
         $query = $this->find()
             ->contain(['Containers'])
             ->where([
-                'Containers.parent_id IN'     => $tenantContainerIds,
+                'Containers.parent_id IN'     => $containerIds,
                 'Containers.containertype_id' => CT_CONTACTGROUP
             ])
             ->disableHydration()
