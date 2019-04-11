@@ -82,7 +82,7 @@ class UsersTable extends Table {
             ->allowEmptyString('id', 'create');
 
         $validator
-            ->requirePresence('containers', true, __('You have to choose at least one option.'))
+            ->requirePresence('containers', 'create', __('You have to choose at least one option.'))
             ->allowEmptyString('containers', false)
             ->multipleOptions('containers', [
                 'min' => 1

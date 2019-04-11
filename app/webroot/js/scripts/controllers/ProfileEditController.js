@@ -4,7 +4,9 @@ angular.module('openITCOCKPIT')
         $scope.apikeys = [];
 
         $scope.post = {
-
+            User:{},
+            Picture:{},
+            Password:{}
         };
         $scope.isLdapAuth = false;
 
@@ -41,7 +43,51 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.dateformats = result.data.dateformats;
-                $scope.post.User.dateformat = result.data.defaultDateFormat;
+            });
+        };
+
+        $scope.submitUser = function(){
+            console.log($scope.post);
+            $http.post("/profile/edit.json?angular=true",
+                {User:$scope.post.User}
+            ).then(function(result){
+                NotyService.genericSuccess();
+                $state.go('ProfileEdit');
+            }, function errorCallback(result){
+                NotyService.genericError();
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+            });
+        };
+
+        $scope.submitPicture = function(){
+            console.log($scope.post);
+            $http.post("/profile/edit.json?angular=true",
+                {Picture:$scope.post.Picture}
+            ).then(function(result){
+                NotyService.genericSuccess();
+                $state.go('ProfileEdit');
+            }, function errorCallback(result){
+                NotyService.genericError();
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+            });
+        };
+
+        $scope.submitPassword = function(){
+            console.log($scope.post);
+            $http.post("/profile/edit.json?angular=true",
+                {Password:$scope.post.Password}
+            ).then(function(result){
+                NotyService.genericSuccess();
+                $state.go('ProfileEdit');
+            }, function errorCallback(result){
+                NotyService.genericError();
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
             });
         };
 

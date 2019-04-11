@@ -50,7 +50,7 @@ class ProfileController extends AppController {
       */
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
-        $user = $Users->get($this->Auth->user('id'));
+        $user = $Users->get($this->Auth->user('id'), ['contain' => 'containers', 'users_to_containers']);
 
         $userForFrontend = [
             'firstname'         => $user->firstname,
@@ -69,38 +69,34 @@ class ProfileController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             /***** Change user data *****/
             if (isset($this->request->data['User'])) {
-                //Convert dateformat ID into real dateformat for MySQL database
-                $this->request->data['User']['dateformat'] = $dateformats[$this->request->data['User']['dateformat']];
-
-                //Fix container for validation
-                $user = $this->User->findById($this->Auth->user('id'));
-                $this->request->data['ContainerUserMembership'] = $user['ContainerUserMembership'];
-                $this->request->data['User']['id'] = $user['User']['id'];
-                $this->request->data['User']['Container'] = Hash::extract($user['ContainerUserMembership'], '{n}.id');
-                $this->request->data['User']['usergroup_id'] = $user['User']['usergroup_id'];
-
                 if ($this->request->data['User']['paginatorlength'] < '0') {
                     $this->request->data['User']['paginatorlength'] = '1';
                 }
                 if ($this->request->data['User']['paginatorlength'] > '1000') {
                     $this->request->data['User']['paginatorlength'] = '1000';
                 }
-                if ($this->User->save($this->request->data)) {
-                    $this->setFlash(__('Profile edit successfully'));
-                    $sessionUser = $this->Session->read('Auth');
 
-                    $merged = Hash::merge($sessionUser, $this->request->data);
-                    $this->Session->write('Auth', $merged);
+                $userToSave = $Users->patchEntity($user, $this->request->data('User'));
 
-                    return $this->redirect(['action' => 'edit']);
+                $Users->save($userToSave);
+                if ($userToSave->hasErrors()) {
+                    $this->response->statusCode(400);
+                    $this->set('error', $user->getErrors());
+                    $this->set('_serialize', ['error']);
+                    return;
                 }
-                $this->setFlash(__('Could not save data'), false);
+                $sessionUser = $this->Session->read('Auth');
 
-                return $this->redirect(['action' => 'edit']);
+                $merged = Hash::merge($sessionUser, $this->request->data);
+                $this->Session->write('Auth', $merged);
+
+                $this->set('user', $userToSave);
+                $this->set('_serialize', ['user']);
             }
 
             /***** Change users profile image *****/
             if (isset($this->request->data['Picture']) && !empty($this->request->data['Picture'])) {
+                die();
                 if (!file_exists(WWW_ROOT . 'userimages')) {
                     mkdir(WWW_ROOT . 'userimages');
                 }
@@ -130,6 +126,7 @@ class ProfileController extends AppController {
 
             /***** Change users password *****/
             if (isset($this->request->data['Password'])) {
+                die();
                 if (Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']) {
                     $this->setFlash(__('The entered password is not your current password'), false);
 

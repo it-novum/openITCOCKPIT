@@ -42,7 +42,7 @@
     </header>
     <div>
         <div class="widget-body">
-            <form ng-submit="submit();" class="form-horizontal">
+            <form ng-submit="submitUser();" class="form-horizontal">
 
                 <div class="row">
 
