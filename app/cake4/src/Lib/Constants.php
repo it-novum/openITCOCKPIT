@@ -184,7 +184,19 @@ class Constants {
             'SAP_MODULE'              => 1 << 7,
         ]);
     }
-    
+
+    private function defineUserstatus() {
+        $this->define([
+            'ACTIVE'             => 1,
+            'INACTIVE'           => 2,
+            'DELETED'            => 3,
+            'SUSPENDED'          => 4,
+            'ACTIVATION_PENDING' => 11,
+            'DONE'               => 5,
+            'CANCELLED'          => 6,
+        ]);
+    }
+
 
     private function attachContainerpropertiesToContainers() {
         $this->containersWithProperties = [
