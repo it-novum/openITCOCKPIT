@@ -140,8 +140,6 @@ class ServicegroupsTable extends Table {
         $tenantContainerIds = array_unique($tenantContainerIds);
         $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
 
-        debug($containerIds);
-
 
         switch ($type) {
             case 'all':
