@@ -27,6 +27,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicetemplatecommandargumentvaluesTable;
 use App\Model\Table\ServicetemplateeventcommandargumentvaluesTable;
 use App\Model\Table\ServicetemplatesTable;
@@ -1938,8 +1939,8 @@ class ServicetemplatesController extends AppController {
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        /** @var $HostgroupsTable HostgroupsTable */
-        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
         if (!$ContainersTable->existsById($container_id)) {
             throw new NotFoundException(__('Invalid Container'));
@@ -1957,7 +1958,7 @@ class ServicetemplatesController extends AppController {
         $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
+        $servicegroups = $ServicegroupsTable->getServicegroupsByContainerId($containerIds, 'list');
         $servicegroups = Api::makeItJavaScriptAble($servicegroups);
 
         $this->set('timeperiods', $timeperiods);

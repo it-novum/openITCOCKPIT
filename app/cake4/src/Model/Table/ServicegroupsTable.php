@@ -2,8 +2,10 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -25,6 +27,9 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Servicegroup findOrCreate($search, callable $callback = null, $options = [])
  */
 class ServicegroupsTable extends Table {
+
+    use PaginationAndScrollIndexTrait;
+
     /**
      * Initialize method
      *
@@ -102,5 +107,92 @@ class ServicegroupsTable extends Table {
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
 
         return $rules;
+    }
+
+
+    /**
+     * @param array|int $containerIds
+     * @param string $type
+     * @param string $index
+     * @return array|null
+     */
+    public function getServicegroupsByContainerId($containerIds = [], $type = 'all', $index = 'id') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $tenantContainerIds = [];
+
+        foreach ($containerIds as $container_id) {
+            if ($container_id != ROOT_CONTAINER) {
+                // Get contaier id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'ServicegroupServicegroupsByContainerId');
+
+                // Tenant service groups are available for all users of a tenant (oITC V2 legacy)
+                $tenantContainerIds[] = $path[1]['id'];
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+        $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
+
+        debug($containerIds);
+
+
+        switch ($type) {
+            case 'all':
+                $query = $this->find()
+                    ->contain([
+                        'Containers'
+                    ])
+                    ->where([
+                        'Containers.parent_id IN'     => $containerIds,
+                        'Containers.containertype_id' => CT_SERVICEGROUP,
+                    ])
+                    ->order([
+                        'Containers.name' => 'ASC'
+                    ])
+                    ->disableHydration()
+                    ->all();
+
+                return $this->emptyArrayIfNull($query->toArray());
+
+
+            default:
+                $query = $this->find()
+                    ->contain([
+                        'Containers'
+                    ])
+                    ->where([
+                        'Containers.parent_id IN'     => $containerIds,
+                        'Containers.containertype_id' => CT_SERVICEGROUP,
+                    ])
+                    ->order([
+                        'Containers.name' => 'ASC'
+                    ])
+                    ->disableHydration()
+                    ->all();
+
+                $query = $query->toArray();
+                if (empty($query)) {
+                    $query = [];
+                }
+
+
+                $return = [];
+                foreach ($query as $servicegroup) {
+                    if ($index === 'id') {
+                        $return[$servicegroup['id']] = $servicegroup['container']['name'];
+                    } else {
+                        $return[$servicegroup['container_id']] = $servicegroup['container']['name'];
+                    }
+                }
+
+                return $return;
+        }
     }
 }

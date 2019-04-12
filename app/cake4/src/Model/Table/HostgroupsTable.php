@@ -166,7 +166,8 @@ class HostgroupsTable extends Table {
                         'Containers'
                     ])
                     ->where([
-                        'Containers.parent_id IN' => $containerIds
+                        'Containers.parent_id IN' => $containerIds,
+                        'Containers.containertype_id' => CT_HOSTGROUP
                     ])
                     ->order([
                         'Containers.name' => 'ASC'
@@ -183,7 +184,8 @@ class HostgroupsTable extends Table {
                         'Containers'
                     ])
                     ->where([
-                        'Containers.parent_id IN' => $containerIds
+                        'Containers.parent_id IN' => $containerIds,
+                        'Containers.containertype_id' => CT_HOSTGROUP
                     ])
                     ->order([
                         'Containers.name' => 'ASC'
