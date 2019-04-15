@@ -27,6 +27,9 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\ServicegroupsTable;
+use App\Model\Table\ServicetemplatecommandargumentvaluesTable;
+use App\Model\Table\ServicetemplateeventcommandargumentvaluesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
@@ -1685,44 +1688,6 @@ class ServicetemplatesController extends AppController {
      * @param null $containerId
      * @deprecated
      */
-    public function loadElementsByContainerId($containerId = null) {
-        $this->allowOnlyAjaxRequests();
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-        /** @var $ContactgroupsTable ContactgroupsTable */
-        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-
-        if (!$ContainersTable->existsById($containerId)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
-        }
-
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-
-        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
-        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
-        $checkperiods = $timeperiods;
-
-        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-        $contacts = Api::makeItJavaScriptAble($contacts);
-
-        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
-        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
-
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
-        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
-
-        $this->set(compact(['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']));
-        $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']);
-    }
-
-    /**
-     * @param null $containerId
-     * @deprecated
-     */
     public function loadServicetemplatesByContainerId($containerId = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -1743,6 +1708,265 @@ class ServicetemplatesController extends AppController {
         );
         $this->set(compact(['servicetemplates']));
         $this->set('_serialize', ['servicetemplates']);
+    }
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+    /**
+     * @param int|null $hosttemplateId
+     * @throws Exception
+     */
+    public function loadContainers($hosttemplateId = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
+        }
+
+        $areContainersRestricted = false;
+        if (is_numeric($hosttemplateId)) {
+            //Edit mode
+
+            /** @var $HosttemplatesTable HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+            $hosttemplatesContainerId = $HosttemplatesTable->getContainerIdById($hosttemplateId);
+            $usedContainerIds = $HostsTable->getHostPrimaryContainerIdsByHosttemplateId($hosttemplateId);
+
+            if (!empty($usedContainerIds)) {
+                //This host template is used by some hosts.
+                //Container options needs to be needs to be restricted if the hosts are using some sub containers...
+                $restrictedContainers = [];
+                foreach ($containers as $containerId => $path) {
+                    $containerId = (int)$containerId;
+                    if (in_array($containerId, [ROOT_CONTAINER, $hosttemplatesContainerId], true)) {
+                        $restrictedContainers[$containerId] = $path;
+                    } else {
+                        $areContainersRestricted = true;
+                    }
+                }
+                $containers = $restrictedContainers;
+            }
+        }
+
+
+        $this->set('containers', Api::makeItJavaScriptAble($containers));
+        $this->set('areContainersRestricted', $areContainersRestricted);
+        $this->set('_serialize', ['containers', 'areContainersRestricted']);
+    }
+
+    public function loadCommands() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
+
+        $eventhandlerCommands = [
+            0 => __('None')
+        ];
+
+        //Use foreach because of arra_merge remove the keys and adding None after getCommandByTypeAsList()
+        //will display "None" as the last element in the select box
+        foreach($CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND) as $eventhandlerCommndId => $eventhandlerCommandName){
+            $eventhandlerCommands[$eventhandlerCommndId] = $eventhandlerCommandName;
+        }
+
+        $this->set('commands', Api::makeItJavaScriptAble($commands));
+        $this->set('eventhandlerCommands', Api::makeItJavaScriptAble($eventhandlerCommands));
+        $this->set('_serialize', ['commands', 'eventhandlerCommands']);
+    }
+
+    /**
+     * @param null $commandId
+     * @param null $servicetemplateId
+     */
+    public function loadCommandArguments($commandId = null, $servicetemplateId = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+
+        //ServicetemplatecommandargumentvaluesTable
+
+        if (!$CommandsTable->existsById($commandId)) {
+            throw new NotFoundException(__('Invalid command'));
+        }
+
+        $servicetemplatecommandargumentvalues = [];
+
+        if ($servicetemplateId != null) {
+            //User passed an servicetemplateId, so we are in a non add mode!
+            //Check if the servicetemplate has defined command arguments
+
+            /** @var $ServicetemplatecommandargumentvaluesTable ServicetemplatecommandargumentvaluesTable */
+            $ServicetemplatecommandargumentvaluesTable = TableRegistry::getTableLocator()->get('Servicetemplatecommandargumentvalues');
+
+            $servicetemplateCommandArgumentValues = $ServicetemplatecommandargumentvaluesTable->getByServicetemplateIdAndCommandId($servicetemplateId, $commandId);
+
+            foreach ($servicetemplateCommandArgumentValues as $servicetemplateCommandArgumentValue) {
+                $servicetemplatecommandargumentvalues[] = [
+                    'commandargument_id' => $servicetemplateCommandArgumentValue['commandargument_id'],
+                    'servicetemplate_id' => $servicetemplateCommandArgumentValue['servicetemplate_id'],
+                    'value'              => $servicetemplateCommandArgumentValue['value'],
+                    'commandargument'    => [
+                        'name'       => $servicetemplateCommandArgumentValue['commandargument']['name'],
+                        'human_name' => $servicetemplateCommandArgumentValue['commandargument']['human_name'],
+                        'command_id' => $servicetemplateCommandArgumentValue['commandargument']['command_id'],
+                    ]
+                ];
+            }
+        }
+
+        //Get command arguments
+        if (empty($servicetemplatecommandargumentvalues)) {
+            //Servicetemplate has no command arguments defined
+            //Or we are in servicetemplates/add ?
+
+            //Load command arguments of the check command
+            foreach ($CommandargumentsTable->getByCommandId($commandId) as $commandargument) {
+                $servicetemplatecommandargumentvalues[] = [
+                    'commandargument_id' => $commandargument['Commandargument']['id'],
+                    'value'              => '',
+                    'commandargument'    => [
+                        'name'       => $commandargument['Commandargument']['name'],
+                        'human_name' => $commandargument['Commandargument']['human_name'],
+                        'command_id' => $commandargument['Commandargument']['command_id'],
+                    ]
+                ];
+            }
+        };
+
+        $this->set('servicetemplatecommandargumentvalues', $servicetemplatecommandargumentvalues);
+        $this->set('_serialize', ['servicetemplatecommandargumentvalues']);
+    }
+
+    /**
+     * @param null $commandId
+     * @param null $servicetemplateId
+     */
+    public function loadEventhandlerCommandArguments($commandId = null, $servicetemplateId = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+
+        //ServicetemplateeventcommandargumentvaluesTable
+
+        if (!$CommandsTable->existsById($commandId)) {
+            throw new NotFoundException(__('Invalid command'));
+        }
+
+        $servicetemplateeventhandlercommandargumentvalues = [];
+
+        if ($servicetemplateId != null) {
+            //User passed an servicetemplateId, so we are in a non add mode!
+            //Check if the servicetemplate has defined command arguments for the event handler
+
+            /** @var $ServicetemplateeventcommandargumentvaluesTable ServicetemplateeventcommandargumentvaluesTable */
+            $ServicetemplateeventcommandargumentvaluesTable = TableRegistry::getTableLocator()->get('Servicetemplateeventcommandargumentvalues');
+
+            $servicetemplateEventhandlerCommandArgumentValues = $ServicetemplateeventcommandargumentvaluesTable->getByServicetemplateIdAndCommandId($servicetemplateId, $commandId);
+
+            foreach ($servicetemplateEventhandlerCommandArgumentValues as $servicetemplateEventhandlerCommandArgumentValue) {
+                $servicetemplateeventhandlercommandargumentvalues[] = [
+                    'commandargument_id' => $servicetemplateEventhandlerCommandArgumentValue['commandargument_id'],
+                    'servicetemplate_id' => $servicetemplateEventhandlerCommandArgumentValue['servicetemplate_id'],
+                    'value'              => $servicetemplateEventhandlerCommandArgumentValue['value'],
+                    'commandargument'    => [
+                        'name'       => $servicetemplateEventhandlerCommandArgumentValue['commandargument']['name'],
+                        'human_name' => $servicetemplateEventhandlerCommandArgumentValue['commandargument']['human_name'],
+                        'command_id' => $servicetemplateEventhandlerCommandArgumentValue['commandargument']['command_id'],
+                    ]
+                ];
+            }
+        }
+
+        //Get command arguments
+        if (empty($servicetemplateeventhandlercommandargumentvalues)) {
+            //Servicetemplate has no command arguments defined
+            //Or we are in servicetemplates/add ?
+
+            //Load event handler command arguments of the check command
+            foreach ($CommandargumentsTable->getByCommandId($commandId) as $commandargument) {
+                $servicetemplateeventhandlercommandargumentvalues[] = [
+                    'commandargument_id' => $commandargument['Commandargument']['id'],
+                    'value'              => '',
+                    'commandargument'    => [
+                        'name'       => $commandargument['Commandargument']['name'],
+                        'human_name' => $commandargument['Commandargument']['human_name'],
+                        'command_id' => $commandargument['Commandargument']['command_id'],
+                    ]
+                ];
+            }
+        };
+
+        $this->set('servicetemplateeventhandlercommandargumentvalues', $servicetemplateeventhandlercommandargumentvalues);
+        $this->set('_serialize', ['servicetemplateeventhandlercommandargumentvalues']);
+    }
+
+    public function loadElementsByContainerId($container_id = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        if (!$ContainersTable->existsById($container_id)) {
+            throw new NotFoundException(__('Invalid Container'));
+        }
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
+
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
+        $checkperiods = $timeperiods;
+
+        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
+        $contacts = Api::makeItJavaScriptAble($contacts);
+
+        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
+        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
+
+        $servicegroups = $ServicegroupsTable->getServicegroupsByContainerId($containerIds, 'list');
+        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
+
+        $this->set('timeperiods', $timeperiods);
+        $this->set('checkperiods', $checkperiods);
+        $this->set('contacts', $contacts);
+        $this->set('contactgroups', $contactgroups);
+        $this->set('servicegroups', $servicegroups);
+        $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']);
     }
 
 }
