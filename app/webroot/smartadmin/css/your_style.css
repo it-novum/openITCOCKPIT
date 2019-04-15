@@ -2490,3 +2490,7 @@ input[type=text]:focus + .input-group-addon-no-focus {
     border-left:5px inset #428bca;
     border-radius: 7px;
 }
+.dropzoneStyle{
+    height:100px;
+    padding: 15px;
+}

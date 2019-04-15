@@ -233,7 +233,7 @@
                             <div class="pull-right">
                                 <input class="btn btn-primary" type="submit"
                                        value="<?php echo __('Update Profile'); ?>">
-                                <a ui-sref="UsersIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                <a ui-sref="ProfileEdit" class="btn btn-default"><?php echo __('Cancel'); ?></a>
                             </div>
                         </div>
                     </div>
@@ -241,15 +241,54 @@
             </form>
         </div>
     </div>
+</div>
 
-    <div class="jarviswidget" id="wid-id-0">
-        <header>
-            <span class="widget-icon"> <i class="fa fa-picture-o"></i> </span>
-            <h2><?php echo __('Your picture'); ?></h2>
-        </header>
-        <div>
-            <div class="widget-body">
+<div class="jarviswidget" id="wid-id-0">
+    <header>
+        <span class="widget-icon"> <i class="fa fa-picture-o"></i> </span>
+        <h2><?php echo __('Your picture'); ?></h2>
+    </header>
+    <div>
+        <div class="widget-body">
+            <form ng-submit="submitPicture();" class="form-horizontal">
+                <!-- Iconset Upload dropzone -->
+                <div class="row">
+                    <img ng-if="post.User.image == null" src="/img/fallback_user.png" alt="fallback_profile_img"
+                         width="70" height="70">
+
+                    <div class="form-group required" ng-class="{'has-error': errors.dateformat}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Select image'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <div class="col-xs-12 text-info">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('Max allowed file size: '); ?>
+                                {{ maxUploadLimit.string }}
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="profileImg-dropzone dropzone dropzoneStyle"
+                                     action="/profile/edit.json">
+                                </div>
+                            </div>
+                            <div ng-repeat="error in errors.User.dateformat">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                    <div class="well formactions ">
+                        <div class="pull-right">
+                            <input class="btn btn-primary" type="submit"
+                                   value="<?php echo __('Update Profile Picture'); ?>">
+                            <a ui-sref="ProfileEdit" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        </div>
+                    </div>
+                </div>
                 <?php
+                /*
                 if ($user['User']['image'] != null && $user['User']['image'] != ''):
                     if (file_exists(WWW_ROOT . 'userimages' . DS . $user['User']['image'])):
                         echo $this->html->image('/userimages' . DS . $user['User']['image'], ['height' => 70]);
@@ -284,22 +323,23 @@
                         'title' => __('Cancel'),
                         'url'   => '/dashboards/',
                     ]
-                ]); ?>
-            </div>
+                ]);
+                */ ?>
+            </form>
         </div>
     </div>
+</div>
 
-    <div class="jarviswidget" id="wid-id-0">
-        <header>
-            <span class="widget-icon"> <i class="fa fa-unlock-alt"></i> </span>
-            <h2><?php echo __('Change password'); ?></h2>
-        </header>
-        <div>
-            <div class="widget-body">
-                <?php
-                if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap' && $user['User']['samaccountname'] !== null):
-                    ?>
-                    <div class="padding-top-20">
+<div class="jarviswidget" id="wid-id-0">
+    <header>
+        <span class="widget-icon"> <i class="fa fa-unlock-alt"></i> </span>
+        <h2><?php echo __('Change password'); ?></h2>
+    </header>
+    <div>
+        <div class="widget-body">
+            <form ng-submit="submitPassword();" class="form-horizontal">
+                <div class="row">
+                    <div ng-if="isLdapAuth" class="padding-top-20">
                         <br/>
                         <center class="text-info">
                             <i class="fa fa-info-circle"></i>
@@ -307,102 +347,129 @@
                             <?php echo __('Due to LDAP authentication you need to change your password over the operating system or your LDAP account manager tool.'); ?>
                         </center>
                     </div>
-                <?php
-                else:
-                    echo $this->Form->create('Password', [
-                        'class' => 'form-horizontal',
-                    ]);
-                    echo $this->Form->input('current_password', [
-                        'type'     => 'password',
-                        'label'    => __('Current password'),
-                        'required' => true,
-                    ]);
-                    ?>
+
+                    <div ng-if="!isLdapAuth" class="form-group required"
+                         ng-class="{'has-error': errors.current_password}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Current Password'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="password"
+                                    ng-model="post.Password.current_password">
+                            <div ng-repeat="error in errors.current_password">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <hr>
-                    <?php
-                    echo $this->Form->input('new_password', [
-                        'type'     => 'password',
-                        'label'    => __('New password'),
-                        'required' => true,
-                        'help'     => __('user_model.password_requirement_notice'),
-                    ]);
-                    echo $this->Form->input('new_password_repeat', [
-                        'type'     => 'password',
-                        'label'    => __('Retype password'),
-                        'required' => true,
-                    ]);
 
-                    echo $this->Form->formActions('Change password', [
-                        'cancelButton' => [
-                            'title' => __('Cancel'),
-                            'url'   => '/dashboards/',
-                        ]
-                    ]);
-                endif;
-                ?>
-            </div>
-        </div>
-    </div>
+                    <div ng-if="!isLdapAuth" class="form-group required" ng-class="{'has-error': errors.password}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('New Password'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="password"
+                                    ng-model="post.Password.password">
+                            <div ng-repeat="error in errors.password">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
 
-    <div class="jarviswidget" id="wid-id-0">
-        <header>
-            <div class="widget-toolbar" role="menu">
-                <button type="button" class="btn btn-xs btn-default" ng-click="load()">
-                    <i class="fa fa-refresh"></i>
-                    <?php echo __('Refresh'); ?>
-                </button>
+                    <div ng-if="!isLdapAuth" class="form-group required"
+                         ng-class="{'has-error': errors.confirm_password}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Retype password'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="password"
+                                    ng-model="post.Password.confirm_password">
+                            <div ng-repeat="error in errors.confirm_password">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
 
-                <button type="button" class="btn btn-xs btn-success" ng-click="createApiKey()">
-                    <i class="fa fa-key"></i>
-                    <?php echo __('Create new API key'); ?>
-                </button>
-            </div>
-
-            <span class="widget-icon"> <i class="fa fa-key"></i> </span>
-            <h2><?php echo __('API keys'); ?></h2>
-
-        </header>
-        <div>
-            <div class="widget-body">
-
-                <div class="row">
-                    <div class="col-xs-12 text-center text-info" ng-show="apikeys.length === 0">
-                        <i class="fa fa-info-circle"></i>
-                        <?php echo __('No API keys created yet. You can still use the api using your username and password.'); ?>
-                        <?php echo __('In some cases it is easier to send an API key via a HTTP Header.'); ?>
+                    <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+                                <input class="btn btn-primary" type="submit"
+                                       value="<?php echo __('Update Password'); ?>">
+                                <a ui-sref="ProfileEdit" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-                <div class="row">
-                    <div class="col-xs-12 col-md-1 bold">
-                        <?php echo __('ID'); ?>
-                    </div>
-                    <div class="col-xs-12 col-md-9 bold">
-                        <?php echo __('Description'); ?>
-                    </div>
-                    <div class="col-xs-12 col-md-2 bold">
+<div class="jarviswidget" id="wid-id-0">
+    <header>
+        <div class="widget-toolbar" role="menu">
+            <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                <i class="fa fa-refresh"></i>
+                <?php echo __('Refresh'); ?>
+            </button>
+
+            <button type="button" class="btn btn-xs btn-success" ng-click="createApiKey()">
+                <i class="fa fa-key"></i>
+                <?php echo __('Create new API key'); ?>
+            </button>
+        </div>
+
+        <span class="widget-icon"> <i class="fa fa-key"></i> </span>
+        <h2><?php echo __('API keys'); ?></h2>
+
+    </header>
+    <div>
+        <div class="widget-body">
+
+            <div class="row">
+                <div class="col-xs-12 text-center text-info" ng-show="apikeys.length === 0">
+                    <i class="fa fa-info-circle"></i>
+                    <?php echo __('No API keys created yet. You can still use the api using your username and password.'); ?>
+                    <?php echo __('In some cases it is easier to send an API key via a HTTP Header.'); ?>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-md-1 bold">
+                    <?php echo __('ID'); ?>
+                </div>
+                <div class="col-xs-12 col-md-9 bold">
+                    <?php echo __('Description'); ?>
+                </div>
+                <div class="col-xs-12 col-md-2 bold">
+                    <?php echo __('Show'); ?>
+                </div>
+            </div>
+            <div class="row" ng-repeat="apikey in apikeys">
+                <div class="col-xs-12 col-md-1">
+                    {{apikey.id}}
+                </div>
+                <div class="col-xs-12 col-md-9">
+                    {{apikey.description}}
+                </div>
+                <div class="col-xs-12 col-md-2">
+                    <button class="btn btn-primary btn-xs btn-block" ng-click="editApiKey(apikey.id)">
+                        <i class="fa fa-eye"></i>
                         <?php echo __('Show'); ?>
-                    </div>
+                    </button>
                 </div>
-                <div class="row" ng-repeat="apikey in apikeys">
-                    <div class="col-xs-12 col-md-1">
-                        {{apikey.id}}
-                    </div>
-                    <div class="col-xs-12 col-md-9">
-                        {{apikey.description}}
-                    </div>
-                    <div class="col-xs-12 col-md-2">
-                        <button class="btn btn-primary btn-xs btn-block" ng-click="editApiKey(apikey.id)">
-                            <i class="fa fa-eye"></i>
-                            <?php echo __('Show'); ?>
-                        </button>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
+</div>
 
-    <create-apikey-directive></create-apikey-directive>
-    <edit-apikey-directive></edit-apikey-directive>
+<create-apikey-directive></create-apikey-directive>
+<edit-apikey-directive></edit-apikey-directive>
 

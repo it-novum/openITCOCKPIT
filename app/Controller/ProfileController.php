@@ -24,6 +24,7 @@
 //	confirmation.
 use App\Model\Table\ApikeysTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 
 /**
  * Class ProfileController
@@ -89,14 +90,14 @@ class ProfileController extends AppController {
 
                 $merged = Hash::merge($sessionUser, $this->request->data);
                 $this->Session->write('Auth', $merged);
-
-                $this->set('user', $userToSave);
-                $this->set('_serialize', ['user']);
+                /*
+                                $this->set('user', $userToSave);
+                                $this->set('_serialize', ['user']);
+                */
             }
 
             /***** Change users profile image *****/
             if (isset($this->request->data['Picture']) && !empty($this->request->data['Picture'])) {
-                die();
                 if (!file_exists(WWW_ROOT . 'userimages')) {
                     mkdir(WWW_ROOT . 'userimages');
                 }
@@ -104,29 +105,61 @@ class ProfileController extends AppController {
                 if (isset($this->request->data['Picture']['Image']) && isset($this->request->data['Picture']['Image']['tmp_name']) && isset($this->request->data['Picture']['Image']['name'])) {
                     $filename = $this->Upload->uploadUserimage($this->request->data['Picture']['Image']);
                     if ($filename) {
-                        $user = $this->User->findById($this->Auth->user('id'));
-                        $this->User->id = $this->Auth->user('id');
-                        if ($this->User->saveField('image', $filename)) {
-                            $this->Session->write('Auth.User.image', $filename);
+                        $oldFilename = $user->filename;
+                        $user->filename = $filename;
 
-                            //Delete old image
-                            if (file_exists(WWW_ROOT . 'userimages' . DS . $user['User']['image']) && !is_dir(WWW_ROOT . 'userimages' . DS . $user['User']['image'])) {
-                                unlink(WWW_ROOT . 'userimages' . DS . $user['User']['image']);
-                            }
-                            $this->setFlash(__('Image uploaded successfully'));
-
-                            return $this->redirect(['action' => 'edit']);
+                        $Users->save($userToSave);
+                        if ($userToSave->hasErrors()) {
+                            $this->response->statusCode(400);
+                            $this->set('error', $user->getErrors());
+                            $this->set('_serialize', ['error']);
+                            return;
                         }
-                    }
-                    $this->setFlash(__('Could not save image data, may be wrong data type. Allowd types are .png, .jpg and .gif'), false);
+                        $this->Session->write('Auth.User.image', $filename);
 
-                    return $this->redirect(['action' => 'edit']);
+                        //Delete old image
+                        $path = WWW_ROOT . 'userimages' . DS;
+                        if (!is_null($oldFilename) && file_exists($path . $oldFilename) && !is_dir($path . $oldFilename)) {
+                            unlink($path . $oldFilename);
+                        }
+
+                        /* $this->set('user', $userToSave);
+                         $this->set('_serialize', ['user']);
+                        */
+                    }
+                    $this->set('error', 'Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif');
+                    $this->set('_serialize', ['error']);
+                    return;
                 }
             }
 
             /***** Change users password *****/
             if (isset($this->request->data['Password'])) {
-                die();
+
+
+                if(Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']){
+                    $this->set('error', __('Current Password is incorrect'));
+                    $this->set('_serialize', ['error']);
+                    return;
+                }
+
+                $userToSave = $Users->patchEntity($user, $this->request->data('User'));
+
+                $Users->save($userToSave);
+                if ($userToSave->hasErrors()) {
+                    $this->response->statusCode(400);
+                    $this->set('error', $user->getErrors());
+                    $this->set('_serialize', ['error']);
+                    return;
+                }
+                $sessionUser = $this->Session->read('Auth');
+
+                $merged = Hash::merge($sessionUser, $this->request->data);
+                $this->Session->write('Auth', $merged);
+
+
+                /*old stuff */
+
                 if (Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']) {
                     $this->setFlash(__('The entered password is not your current password'), false);
 
@@ -153,10 +186,15 @@ class ProfileController extends AppController {
 
                     return $this->redirect(['action' => 'edit']);
                 }
+
+                /*old stuff */
             }
         }
+
+        $FileUploadSize = new FileUploadSize();
+        $this->set('maxUploadLimit', $FileUploadSize->toArray());
         $this->set('user', $userForFrontend);
-        $this->set('_serialize', ['user']);
+        $this->set('_serialize', ['user', 'maxUploadLimit']);
     }
 
     public function apikey() {
