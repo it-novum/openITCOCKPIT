@@ -337,7 +337,7 @@ class Ldap implements ConnectionInterface
     {
         $protocol = $this::PROTOCOL;
 
-        if ($this->isUsingSSL()) {
+        if ($this->isUsingSSL() || $this->isUsingTLS()) {
             $protocol = $this::PROTOCOL_SSL;
         }
 
