@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use Model\Adldap;
 
 /**
@@ -39,6 +40,12 @@ class LdapComponent extends Component {
 
         //Load external lib
         require_once APP . 'Model' . DS . 'Adldap.php';
+
+        $PHPVersionChecker = new PHPVersionChecker();
+        if($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()){
+            //Only use Adldap for legacy PHP versions
+            return false;
+        }
 
         //Load Systemsettings
         $this->Systemsetting = ClassRegistry::init('Systemsetting');
