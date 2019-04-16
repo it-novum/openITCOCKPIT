@@ -407,6 +407,36 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             }
         }
 
+        if ($config['string']['USE_AUTO_NETWORKING'] === '1') {
+            $json = [];
+
+            //Load contants of /etc/docker/daemon.json if file exists
+            if (file_exists('/etc/docker/daemon.json') && is_file('/etc/docker/daemon.json')) {
+                $json = json_decode(file_get_contents('/etc/docker/daemon.json'), true);
+            }
+
+            //Remove IP Address settings to restore docker default
+            if(isset($json['bip'])){
+                unset($json['bip']);
+            }
+
+            if(isset($json['fixed-cidr'])){
+                unset($json['fixed-cidr']);
+            }
+
+            if(empty($json)){
+                //Config is empty now... Remove it
+                unlink('/etc/docker/daemon.json');
+            }else{
+                //Save rest of docker.json
+                $file = fopen('/etc/docker/daemon.json', 'w+');
+                if (is_resource($file)) {
+                    fwrite($file, json_encode($json, JSON_PRETTY_PRINT));
+                    fclose($file);
+                }
+            }
+        }
+
         return $success;
     }
 
