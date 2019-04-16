@@ -381,7 +381,7 @@ angular.module('openITCOCKPIT')
             $http.get("/hosts/ping.json", {
                 params: {
                     'angular': true,
-                    'address': $scope.mergedHost.Host.address
+                    'id': $scope.id
                 }
             }).then(function(result){
                 $scope.pingResult = result.data.output;
