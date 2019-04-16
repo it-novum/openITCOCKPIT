@@ -259,76 +259,21 @@ $timezones = CakeTime::listTimezones();
                 </div>
             </div>
 
-            <div class="form-group required" ng-class="{'has-error': errors.Configfile.default_gateway}">
+            <div class="form-group required" ng-class="{'has-error': errors.Configfile.docker_compose_subnet}">
                 <label class="col col-md-2 control-label">
-                    <?php echo __('Default Gateway'); ?>
+                    <?php echo __('Docker Compose subnet'); ?>
                 </label>
                 <div class="col col-xs-10">
                     <input
                             class="form-control"
                             type="text"
-                            ng-model="post.string.default_gateway">
-                    <div ng-repeat="error in errors.Configfile.default_gateway">
+                            ng-model="post.string.docker_compose_subnet">
+                    <div ng-repeat="error in errors.Configfile.docker_compose_subnet">
                         <div class="help-block text-danger">{{ error }}</div>
                     </div>
                 </div>
                 <div class="helpText text-muted col-md-offset-2 col-md-6">
-                    <?php echo h($GraphingDocker->getHelpText('default_gateway')); ?>
-                </div>
-            </div>
-
-            <div class="form-group required" ng-class="{'has-error': errors.Configfile.dns1}">
-                <label class="col col-md-2 control-label">
-                    <?php echo __('Primary DNS server'); ?>
-                </label>
-                <div class="col col-xs-10">
-                    <input
-                            class="form-control"
-                            type="text"
-                            ng-model="post.string.dns1">
-                    <div ng-repeat="error in errors.Configfile.dns1">
-                        <div class="help-block text-danger">{{ error }}</div>
-                    </div>
-                </div>
-                <div class="helpText text-muted col-md-offset-2 col-md-6">
-                    <?php echo h($GraphingDocker->getHelpText('dns1')); ?>
-                </div>
-            </div>
-
-            <div class="form-group required" ng-class="{'has-error': errors.Configfile.dns2}">
-                <label class="col col-md-2 control-label">
-                    <?php echo __('Secondary DNS server'); ?>
-                </label>
-                <div class="col col-xs-10">
-                    <input
-                            class="form-control"
-                            type="text"
-                            ng-model="post.string.dns2">
-                    <div ng-repeat="error in errors.Configfile.dns2">
-                        <div class="help-block text-danger">{{ error }}</div>
-                    </div>
-                </div>
-                <div class="helpText text-muted col-md-offset-2 col-md-6">
-                    <?php echo h($GraphingDocker->getHelpText('dns2')); ?>
-                </div>
-            </div>
-
-            <div class="form-group required" ng-class="{'has-error': errors.Configfile.mtu}">
-                <label class="col col-md-2 control-label">
-                    <?php echo __('MTU'); ?>
-                </label>
-                <div class="col col-xs-10">
-                    <input
-                            class="form-control"
-                            type="number"
-                            min="1"
-                            ng-model="post.int.mtu">
-                    <div ng-repeat="error in errors.Configfile.mtu">
-                        <div class="help-block text-danger">{{ error }}</div>
-                    </div>
-                </div>
-                <div class="helpText text-muted col-md-offset-2 col-md-6">
-                    <?php echo h($GraphingDocker->getHelpText('mtu')); ?>
+                    <?php echo h($GraphingDocker->getHelpText('docker_compose_subnet')); ?>
                 </div>
             </div>
 

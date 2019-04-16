@@ -51,16 +51,13 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             'USE_AUTO_NETWORKING'   => '1', //String for AngularJs - sorry,
             'bip'                   => '',
             'fixed_cidr'            => '',
-            'default_gateway'       => '',
-            'dns1'                  => '',
-            'dns2'                  => ''
+            'docker_compose_subnet' => ''
         ],
         'int'    => [
             'number_of_carbon_cache_instances' => 2,
             'number_of_carbon_c_relay_workers' => 4,
             'local_graphite_http_port'         => 8888,
-            'local_graphite_plaintext_port'    => 2003,
-            'mtu'                              => 1500,
+            'local_graphite_plaintext_port'    => 2003
         ],
         'bool'   => [
             'WHISPER_FALLOCATE_CREATE' => 1
@@ -82,10 +79,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         $fieldsThatCanBeEmpty = [
             'bip',
             'fixed_cidr',
-            'default_gateway',
-            'dns1',
-            'dns2',
-            'mtu'
+            'docker_compose_subnet'
         ];
 
         foreach ($this->defaults as $type => $fields) {
@@ -166,7 +160,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         if ($data['string']['USE_AUTO_NETWORKING'] == '0') {
             $error = [];
 
-            foreach (['bip', 'fixed_cidr'] as $field) {
+            foreach (['bip', 'fixed_cidr', 'docker_compose_subnet'] as $field) {
                 if (isset($data['string'][$field])) {
                     //Parse 192.168.1.1/24
                     $bip = explode('/', $data['string'][$field]);
@@ -191,21 +185,9 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
                 }
             }
 
-            if (isset($data['string']['dns1'])) {
-                if (!filter_var($data['string']['dns1'], FILTER_VALIDATE_IP)) {
-                    $error['Configfile']['dns1'][] = __('Value is not a valid IPv4 address');
-                }
-            }
-
-            if (isset($data['string']['dns2'])) {
-                if (!filter_var($data['string']['dns2'], FILTER_VALIDATE_IP)) {
-                    $error['Configfile']['dns2'][] = __('Value is not a valid IPv4 address');
-                }
-            }
-
-            if (isset($data['string']['default_gateway'])) {
-                if (!filter_var($data['string']['default_gateway'], FILTER_VALIDATE_IP)) {
-                    $error['Configfile']['default_gateway'][] = __('Value is not a valid IPv4 address');
+            if (isset($data['string']['fixed_cidr']) && isset($data['string']['docker_compose_subnet'])) {
+                if ($data['string']['fixed_cidr'] === $data['string']['docker_compose_subnet']) {
+                    $error['Configfile']['docker_compose_subnet'][] = __('Can not be the same subnet as used for Fixed CIDR');
                 }
             }
 
@@ -225,10 +207,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         $fieldsToRemove = [
             'bip',
             'fixed_cidr',
-            'default_gateway',
-            'dns1',
-            'dns2',
-            'mtu'
+            'docker_compose_subnet'
         ];
 
         foreach ($requestData as $type => $fields) {
@@ -275,12 +254,9 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             'WHISPER_FALLOCATE_CREATE'         => __(' Only beneficial on linux filesystems that support the fallocate system call. It maintains the benefits of contiguous reads/writes, but with a potentially much faster creation speed, by allowing the kernel to handle the block allocation and zero-ing. Enabling this option may allow a large increase of MAX_CREATES_PER_MINUTE. If enabled on an OS or filesystem that is unsupported this option will gracefully fallback to standard POSIX file access methods.'),
             'timezone'                         => __('Set your local timezone for Graphite-Web. (Django\'s default is America/Chicago) If your graphs appear to be offset by a couple hours then this probably needs to be explicitly set to your local timezone. Set this value to the same timezone, as your servers timezone is!'),
             'USE_AUTO_NETWORKING'              => __('Determine if docker daemon will automatically configure network interface docker0'),
-            'bip'                              => __('Supply a specific IP address and netmask for the docker0 bridge, using standard CIDR notation. For example: 192.168.1.5/24'),
-            'default_gateway'                  => __('Container default Gateway IPV4 address'),
-            'dns1'                             => __('Primary DNS server to use'),
-            'dns2'                             => __('Secondary DNS server to use'),
-            'mtu'                              => __('Override the maximum packet length on docker0'),
-            'fixed_cidr'                       => __('Restrict the IP range from the docker0 subnet, using standard CIDR notation. For example: 172.16.1.0/28. This range must be an IPv4 range for fixed IPs, and must be a subset of the bridge IP range. For example, with fixeed-cidr=192.168.1.0/25, IPs for your containers will be chosen from the first half of addresses included in the 192.168.1.0/24 subnet.')
+            'bip'                              => __('Supply a specific IP address and netmask for the docker0 bridge, using standard CIDR notation. For example: 10.253.253.1/24'),
+            'fixed_cidr'                       => __('Restrict the IP range from the docker0 subnet, using standard CIDR notation. For example: 10.253.253.0/24. Needs to be a subnet, where BIP is part of.'),
+            'docker_compose_subnet'            => __('Subnet used by Docker Compose in CIDR notation. For Example  192.168.1.0/24. Needs to be a different subnet than used for Fixed CIDR!')
         ];
 
         if (isset($help[$key])) {
@@ -412,6 +388,24 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         }
         $ConfigSymlink->link();
 
+        ///etc/docker/daemon.json
+        if ($config['string']['USE_AUTO_NETWORKING'] === '0') {
+            $json = [];
+
+            //Load contants of /etc/docker/daemon.json if file exists
+            if (file_exists('/etc/docker/daemon.json') && is_file('/etc/docker/daemon.json')) {
+                $json = json_decode(file_get_contents('/etc/docker/daemon.json'), true);
+            }
+
+            $json['bip'] = $config['string']['bip'];
+            $json['fixed-cidr'] = $config['string']['fixed_cidr'];
+
+            $file = fopen('/etc/docker/daemon.json', 'w+');
+            if (is_resource($file)) {
+                fwrite($file, json_encode($json, JSON_PRETTY_PRINT));
+                fclose($file);
+            }
+        }
 
         return $success;
     }
@@ -429,48 +423,13 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         if (file_exists('/etc/docker/daemon.json') && is_file('/etc/docker/daemon.json')) {
             $json = json_decode(file_get_contents('/etc/docker/daemon.json'), true);
 
-            if (isset($json['bip']) && isset($json['default-gateway']) && isset($json['dns']) && isset($json['fixed-cidr'])) {
+            if (isset($json['bip']) && isset($json['fixed-cidr'])) {
                 $config['string']['USE_AUTO_NETWORKING'] = 0;
-
-                if (isset($json['bip'])) {
-                    $config['string']['bip'] = $json['bip'];
-                }
-
-                if (isset($json['fixed-cidr'])) {
-                    $config['string']['fixed_cidr'] = $json['fixed-cidr'];
-                }
-
-                if (isset($json['mtu']) && is_numeric($json['mtu'])) {
-                    $config['int']['mtu'] = (int)$json['mtu'];
-
-                    if ($config['int']['mtu'] <= 0) {
-                        $config['int']['mtu'] = 1500;
-                    }
-                }
-
-                if (isset($json['default-gateway'])) {
-                    $config['string']['default_gateway'] = $json['default-gateway'];
-                }
-
-                if (isset($json['dns'])) {
-                    if (!is_array($json['dns'])) {
-                        $config['string']['dns1'] = '8.8.8.8';
-                        $config['string']['dns2'] = '8.8.4.4';
-                    } else {
-                        if (isset($json['dns'][0])) {
-                            $config['string']['dns1'] = $json['dns'][0];
-                            $config['string']['dns2'] = $json['dns'][0];
-                        }
-                        if (isset($json['dns'][1])) {
-                            $config['string']['dns2'] = $json['dns'][1];
-                        }
-                    }
-                }
+                $config['string']['bip'] = $json['bip'];
+                $config['string']['fixed_cidr'] = $json['fixed-cidr'];
             }
 
         }
-
-        debug($config);
 
         return $config;
 
