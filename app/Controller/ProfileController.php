@@ -44,10 +44,10 @@ class ProfileController extends AppController {
 
     public function edit() {
         $this->layout = 'blank';
-              if (!$this->isApiRequest()) {
-                  //Only ship HTML template for angular
-                  return;
-              }
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
 
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
@@ -140,16 +140,14 @@ class ProfileController extends AppController {
 
             /***** Change users password *****/
             if (isset($this->request->data['Password'])) {
-
-                //if(Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']){
-                if(true){
+                if ($Users->getPasswordHash($this->request->data['Password']['current_password']) != $user->password) {
                     $this->set('error', __('Current Password is incorrect'));
                     $this->set('_serialize', ['error']);
                     return;
                 }
 
-                $userToSave = $Users->patchEntity($user, $this->request->data('User'));
-
+                $userToSave = $Users->patchEntity($user, $this->request->data('Password'));
+debug($userToSave);
                 $Users->save($userToSave);
                 if ($userToSave->hasErrors()) {
                     $this->response->statusCode(400);
@@ -157,41 +155,41 @@ class ProfileController extends AppController {
                     $this->set('_serialize', ['error']);
                     return;
                 }
-                $sessionUser = $this->Session->read('Auth');
+                //$sessionUser = $this->Session->read('Auth');
 
-                $merged = Hash::merge($sessionUser, $this->request->data);
-                $this->Session->write('Auth', $merged);
+               // $merged = Hash::merge($sessionUser, $this->request->data);
+               // $this->Session->write('Auth', $merged);
 
 
                 /*old stuff */
 
-              /*  if (Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']) {
-                    $this->setFlash(__('The entered password is not your current password'), false);
+                /*  if (Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']) {
+                      $this->setFlash(__('The entered password is not your current password'), false);
 
-                    return $this->redirect(['action' => 'edit']);
-                }
+                      return $this->redirect(['action' => 'edit']);
+                  }
 
-                if (isset($this->request->data['Password']['new_password']) && isset($this->request->data['Password']['new_password_repeat'])) {
-                    if ($this->request->data['Password']['new_password'] == $this->request->data['Password']['new_password_repeat']) {
-                        $user = $this->User->findById($this->Auth->user('id'));
-                        $this->User->id = $this->Auth->user('id');
-                        if ($this->User->saveField('password', AuthComponent::password($this->request->data['Password']['new_password']))) {
-                            $this->setFlash(__('Password changed successfully'));
-                            $this->redirect(['action' => 'edit']);
-                        }
-                        $this->setFlash(__('Error while saving data'), false);
-                        $this->redirect(['action' => 'edit']);
-                    } else {
-                        $this->setFlash(__('The entered passwords are not the same'), false);
+                  if (isset($this->request->data['Password']['new_password']) && isset($this->request->data['Password']['new_password_repeat'])) {
+                      if ($this->request->data['Password']['new_password'] == $this->request->data['Password']['new_password_repeat']) {
+                          $user = $this->User->findById($this->Auth->user('id'));
+                          $this->User->id = $this->Auth->user('id');
+                          if ($this->User->saveField('password', AuthComponent::password($this->request->data['Password']['new_password']))) {
+                              $this->setFlash(__('Password changed successfully'));
+                              $this->redirect(['action' => 'edit']);
+                          }
+                          $this->setFlash(__('Error while saving data'), false);
+                          $this->redirect(['action' => 'edit']);
+                      } else {
+                          $this->setFlash(__('The entered passwords are not the same'), false);
 
-                        return $this->redirect(['action' => 'edit']);
-                    }
-                } else {
-                    $this->setFlash(__('Plase enter and confirm your new password'), false);
+                          return $this->redirect(['action' => 'edit']);
+                      }
+                  } else {
+                      $this->setFlash(__('Plase enter and confirm your new password'), false);
 
-                    return $this->redirect(['action' => 'edit']);
-                }
-*/
+                      return $this->redirect(['action' => 'edit']);
+                  }
+  */
                 /*old stuff */
             }
         }

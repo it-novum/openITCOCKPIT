@@ -108,6 +108,7 @@ angular.module('openITCOCKPIT')
 
             }, function errorCallback(result){
                 NotyService.genericError();
+                console.log(result);
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

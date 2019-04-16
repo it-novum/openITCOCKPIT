@@ -1,7 +1,9 @@
 angular.module('openITCOCKPIT')
     .controller('ProfileEditController', function($scope, $http, $state, $stateParams, NotyService){
+
         $scope.init = true;
         $scope.apikeys = [];
+        $scope.isLdapAuth = false;
 
         $scope.post = {
             //contains every form from template
@@ -29,7 +31,7 @@ angular.module('openITCOCKPIT')
                 description: ''
             }
         };
-        $scope.isLdapAuth = false;
+
 
         $scope.load = function(){
             $http.get("/profile/edit.json", {
@@ -37,7 +39,6 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                console.log(result.data.user);
                 $scope.post.User = result.data.user;
                 $scope.maxUploadLimit = result.data.maxUploadLimit;
                 $scope.init = false;
@@ -137,7 +138,6 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submitUser = function(){
-            console.log($scope.post);
             $http.post("/profile/edit.json?angular=true",
                 {User: $scope.post.User}
             ).then(function(result){
@@ -152,14 +152,12 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submitPicture = function(){
-            console.log($scope.post);
             $http.post("/profile/edit.json?angular=true",
                 {Picture: $scope.post.Picture}
             ).then(function(result){
                 NotyService.genericSuccess();
                 $scope.load();
             }, function errorCallback(result){
-                console.log(result);
                 NotyService.genericError({message: result.error});
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
@@ -168,7 +166,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submitPassword = function(){
-            console.log($scope.post.Password);
             $http.post("/profile/edit.json?angular=true",
                 {Password: $scope.post.Password}
             ).then(function(result){
@@ -193,9 +190,7 @@ angular.module('openITCOCKPIT')
 
         $scope.$watch('init', function(){
             if($scope.maxUploadLimit != null){
-                 createDropzone();
+                createDropzone();
             }
         }, true);
-
-
     });
