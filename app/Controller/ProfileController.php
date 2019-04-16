@@ -292,6 +292,7 @@ class ProfileController extends AppController {
             //Resolve ITC-2170
             $newApiKey = $this->Session->read('latest_api_key');
             $this->Session->delete('latest_api_key');
+
             if (!isset($newApiKey['key']) || !isset($newApiKey['time'])) {
                 throw new BadRequestException();
             }
