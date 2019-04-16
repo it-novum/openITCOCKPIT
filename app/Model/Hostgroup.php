@@ -85,29 +85,13 @@ class Hostgroup extends AppModel {
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
                 $path = $this->Container->getPath($container_id);
 
-                foreach ($path as $containers) {
-                    if ($containers["Container"]["containertype_id"] == CT_HOSTGROUP) {
-                        $tenantContainerIds[] = $containers["Container"]['parent_id'];
-                    }
-                }
                 $tenantContainerIds[] = $path[1]['Container']['id'];
             } else {
                 $tenantContainerIds[] = ROOT_CONTAINER;
             }
         }
         $tenantContainerIds = array_unique($tenantContainerIds);
-
-        $hostgroupsAsList = [];
-
-        foreach ($tenantContainerIds as $tenantContainerId) {
-
-            $children = $this->Container->children($tenantContainerId, true);
-            foreach ($children as $child) {
-                if ($child['Container']['containertype_id'] == CT_HOSTGROUP) {
-                    $hostgroupsAsList[$child['Container']['id']] = $child['Container']['name'];
-                }
-            }
-        }
+        $containerIds = array_unique(array_merge($tenantContainerIds, $container_ids));
 
         switch ($type) {
             case 'all':
@@ -116,7 +100,8 @@ class Hostgroup extends AppModel {
                     'contain'   => [
                         'Container' => [
                             'conditions' => [
-                                'Container.id' => array_keys($hostgroupsAsList),
+                                'Container.parent_id' => $containerIds,
+                                'Container.containertype_id' => CT_HOSTGROUP
                             ],
                         ],
                     ],
@@ -126,41 +111,41 @@ class Hostgroup extends AppModel {
                 ]);
 
             default:
-                if ($index == 'id') {
-                    $result = $this->find('all', [
-                        'recursive'  => -1,
-                        'contain'    => [
-                            'Container' => [
-                                'fields' => [
-                                    'Container.name',
-                                ],
+                $result = $this->find('all', [
+                    'recursive'  => -1,
+                    'contain'    => [
+                        'Container' => [
+                            'fields' => [
+                                'Container.name',
                             ],
                         ],
-                        'order'      => [
-                            'Container.name' => 'ASC',
-                        ],
-                        'fields'     => [
-                            'Hostgroup.id',
-                            'Hostgroup.container_id',
-                        ],
-                        'conditions' => [
-                            'Hostgroup.container_id' => array_keys($hostgroupsAsList),
-                        ],
-                    ]);
+                    ],
+                    'order'      => [
+                        'Container.name' => 'ASC',
+                    ],
+                    'fields'     => [
+                        'Hostgroup.id',
+                        'Hostgroup.container_id',
+                    ],
+                    'conditions' => [
+                        'Container.parent_id'      => $containerIds,
+                        'Container.containertype_id' => CT_HOSTGROUP
+                    ],
+                ]);
 
-                    $return = [];
-                    foreach ($result as $hostgroup) {
+                $return = [];
+                foreach ($result as $hostgroup) {
+                    if ($index == 'id') {
                         $return[$hostgroup['Hostgroup']['id']] = $hostgroup['Container']['name'];
+                    } else {
+                        $return[$hostgroup['Hostgroup']['container_id']] = $hostgroup['Container']['name'];
                     }
 
-                    return $return;
                 }
-                asort($hostgroupsAsList);
 
-                return $hostgroupsAsList;
+                return $return;
+
         }
-
-        return [];
     }
 
     public function hostgroupsByContainerIdNoTenantLookup($container_ids = [], $type = 'all', $index = 'container_id') {
