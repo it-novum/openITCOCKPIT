@@ -469,9 +469,7 @@
     </div>
 </div>
 
- <!--<create-apikey-directive></create-apikey-directive> -->
 <edit-apikey-directive></edit-apikey-directive>
-
 
 
 <div id="angularCreateApiKeyModal" class="modal" role="dialog">
