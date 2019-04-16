@@ -49,8 +49,8 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             'carbon_storage_schema' => '60s:365d',
             'timezone'              => 'Europe/Berlin',
             'USE_AUTO_NETWORKING'   => '1', //String for AngularJs - sorry,
-            'bip'                   => '',
-            'fixed_cidr'            => '',
+            //'bip'                   => '',
+            //'fixed_cidr'            => '',
             'docker_compose_subnet' => ''
         ],
         'int'    => [
@@ -77,8 +77,8 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         $Validator = new ConfigValidator();
 
         $fieldsThatCanBeEmpty = [
-            'bip',
-            'fixed_cidr',
+            //'bip',
+            //'fixed_cidr',
             'docker_compose_subnet'
         ];
 
@@ -160,7 +160,9 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         if ($data['string']['USE_AUTO_NETWORKING'] == '0') {
             $error = [];
 
-            foreach (['bip', 'fixed_cidr', 'docker_compose_subnet'] as $field) {
+            //Remove bip and fixed_cidr because restart issues of docker daemon
+            //foreach (['bip', 'fixed_cidr', 'docker_compose_subnet'] as $field) {
+            foreach (['docker_compose_subnet'] as $field) {
                 if (isset($data['string'][$field])) {
                     //Parse 192.168.1.1/24
                     $bip = explode('/', $data['string'][$field]);
@@ -185,6 +187,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
                 }
             }
 
+
             if (isset($data['string']['fixed_cidr']) && isset($data['string']['docker_compose_subnet'])) {
                 if ($data['string']['fixed_cidr'] === $data['string']['docker_compose_subnet']) {
                     $error['Configfile']['docker_compose_subnet'][] = __('Can not be the same subnet as used for Fixed CIDR');
@@ -205,8 +208,8 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         $records = [];
 
         $fieldsToRemove = [
-            'bip',
-            'fixed_cidr',
+            //'bip',
+            //'fixed_cidr',
             'docker_compose_subnet'
         ];
 
@@ -254,8 +257,8 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             'WHISPER_FALLOCATE_CREATE'         => __(' Only beneficial on linux filesystems that support the fallocate system call. It maintains the benefits of contiguous reads/writes, but with a potentially much faster creation speed, by allowing the kernel to handle the block allocation and zero-ing. Enabling this option may allow a large increase of MAX_CREATES_PER_MINUTE. If enabled on an OS or filesystem that is unsupported this option will gracefully fallback to standard POSIX file access methods.'),
             'timezone'                         => __('Set your local timezone for Graphite-Web. (Django\'s default is America/Chicago) If your graphs appear to be offset by a couple hours then this probably needs to be explicitly set to your local timezone. Set this value to the same timezone, as your servers timezone is!'),
             'USE_AUTO_NETWORKING'              => __('Determine if docker daemon will automatically configure network interface docker0'),
-            'bip'                              => __('Supply a specific IP address and netmask for the docker0 bridge, using standard CIDR notation. For example: 10.253.253.1/24'),
-            'fixed_cidr'                       => __('Restrict the IP range from the docker0 subnet, using standard CIDR notation. For example: 10.253.253.0/24. Needs to be a subnet, where BIP is part of.'),
+            //'bip'                              => __('Supply a specific IP address and netmask for the docker0 bridge, using standard CIDR notation. For example: 10.253.253.1/24'),
+            //'fixed_cidr'                       => __('Restrict the IP range from the docker0 subnet, using standard CIDR notation. For example: 10.253.253.0/24. Needs to be a subnet, where BIP is part of.'),
             'docker_compose_subnet'            => __('Subnet used by Docker Compose in CIDR notation. For Example  192.168.1.0/24. Needs to be a different subnet than used for Fixed CIDR!')
         ];
 
@@ -389,6 +392,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         $ConfigSymlink->link();
 
         ///etc/docker/daemon.json
+        /*
         if ($config['string']['USE_AUTO_NETWORKING'] === '0') {
             $json = [];
 
@@ -436,6 +440,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
                 }
             }
         }
+        */
 
         return $success;
     }
@@ -450,6 +455,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
 
         ///etc/docker/daemon.json
+        /*
         if (file_exists('/etc/docker/daemon.json') && is_file('/etc/docker/daemon.json')) {
             $json = json_decode(file_get_contents('/etc/docker/daemon.json'), true);
 
@@ -460,6 +466,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             }
 
         }
+        */
 
         return $config;
 

@@ -222,6 +222,9 @@ $timezones = CakeTime::listTimezones();
             </div>
         </div>
 
+        <?php
+        /*
+         * Maybe we implement this some day? /etc/docker/daemon.json
         <div ng-show="post.string.USE_AUTO_NETWORKING == '0'">
             <div class="form-group required" ng-class="{'has-error': errors.Configfile.bip}">
                 <label class="col col-md-2 control-label">
@@ -258,6 +261,7 @@ $timezones = CakeTime::listTimezones();
                     <?php echo h($GraphingDocker->getHelpText('fixed_cidr')); ?>
                 </div>
             </div>
+            */ ?>
 
             <div class="form-group required" ng-class="{'has-error': errors.Configfile.docker_compose_subnet}">
                 <label class="col col-md-2 control-label">
