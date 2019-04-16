@@ -44,11 +44,11 @@ class ProfileController extends AppController {
 
     public function edit() {
         $this->layout = 'blank';
-        /*      if (!$this->isApiRequest()) {
+              if (!$this->isApiRequest()) {
                   //Only ship HTML template for angular
                   return;
               }
-      */
+
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
         $user = $Users->get($this->Auth->user('id'), ['contain' => 'containers', 'users_to_containers']);
@@ -66,6 +66,11 @@ class ProfileController extends AppController {
             'timezone'          => $user->timezone,
             'image'             => $user->image
         ];
+
+        $FileUploadSize = new FileUploadSize();
+        $this->set('maxUploadLimit', $FileUploadSize->toArray());
+        $this->set('user', $userForFrontend);
+        $this->set('_serialize', ['user', 'maxUploadLimit']);
 
         if ($this->request->is('post') || $this->request->is('put')) {
             /***** Change user data *****/
@@ -136,8 +141,8 @@ class ProfileController extends AppController {
             /***** Change users password *****/
             if (isset($this->request->data['Password'])) {
 
-
-                if(Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']){
+                //if(Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']){
+                if(true){
                     $this->set('error', __('Current Password is incorrect'));
                     $this->set('_serialize', ['error']);
                     return;
@@ -160,7 +165,7 @@ class ProfileController extends AppController {
 
                 /*old stuff */
 
-                if (Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']) {
+              /*  if (Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']) {
                     $this->setFlash(__('The entered password is not your current password'), false);
 
                     return $this->redirect(['action' => 'edit']);
@@ -186,15 +191,12 @@ class ProfileController extends AppController {
 
                     return $this->redirect(['action' => 'edit']);
                 }
-
+*/
                 /*old stuff */
             }
         }
 
-        $FileUploadSize = new FileUploadSize();
-        $this->set('maxUploadLimit', $FileUploadSize->toArray());
-        $this->set('user', $userForFrontend);
-        $this->set('_serialize', ['user', 'maxUploadLimit']);
+
     }
 
     public function apikey() {

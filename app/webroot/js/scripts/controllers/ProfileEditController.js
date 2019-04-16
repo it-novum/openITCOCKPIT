@@ -4,9 +4,30 @@ angular.module('openITCOCKPIT')
         $scope.apikeys = [];
 
         $scope.post = {
-            User:{},
-            Picture:{},
-            Password:{}
+            //contains every form from template
+            User: {
+                firstname: '',
+                lastname: '',
+                email: '',
+                phone: '',
+                showstatsinmenu: 0,
+                recursive_browser: 0,
+                paginatorlength: 25,
+                dateformat: '',
+                timezone: '',
+            },
+            Picture: {
+                picture: ''
+            },
+            Password: {
+                current_password: null,
+                password: null,
+                confirm_password: null
+            },
+            Apikey: {
+                apikey: '',
+                description: ''
+            }
         };
         $scope.isLdapAuth = false;
 
@@ -16,7 +37,7 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                //console.log(result);
+                console.log(result.data.user);
                 $scope.post.User = result.data.user;
                 $scope.maxUploadLimit = result.data.maxUploadLimit;
                 $scope.init = false;
@@ -61,14 +82,14 @@ angular.module('openITCOCKPIT')
                         $previewElement.removeClass('dz-processing');
                         $previewElement.addClass('dz-success');
 
-                        NotyService.genericSuccess({message:response.response.message});
+                        NotyService.genericSuccess({message: response.response.message});
                         return;
                     }
 
                     $previewElement.removeClass('dz-processing');
                     $previewElement.addClass('dz-error');
 
-                    NotyService.genericError({message:response.response.message});
+                    NotyService.genericError({message: response.response.message});
                 },
                 error: function(obj, errorMessage, xhr){
                     var $previewElement = $(obj.previewElement);
@@ -76,20 +97,49 @@ angular.module('openITCOCKPIT')
                     $previewElement.addClass('dz-error');
 
                     if(typeof xhr === "undefined"){
-                        NotyService.genericError({message:errorMessage});
+                        NotyService.genericError({message: errorMessage});
                     }else{
                         var response = JSON.parse(obj.xhr.response);
-                        NotyService.genericError({message:response.response.message});
+                        NotyService.genericError({message: response.response.message});
                     }
                 }
             });
+        };
+
+        $scope.createApiKey = function(apiKeyId){
+            $scope.getNewApiKey();
+            $('#angularCreateApiKeyModal').modal('show');
+        };
+
+        $scope.saveApiKey = function(){
+            $http.post("/profile/create_apikey.json", {
+                angular: true,
+                Apikey: $scope.post.Apikey
+            })
+                .then(function(result){
+                    $scope.newApiKey = null;
+                    $scope.load();
+                    $('#angularCreateApiKeyModal').modal('hide');
+                }, function errorCallback(result){
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                });
+        };
+
+        $scope.getNewApiKey = function(){
+            $http.get("/profile/create_apikey.json?angular=true")
+                .then(function(result){
+                    $scope.newApiKey = result.data.apikey;
+                    $scope.post.Apikey.apikey = $scope.newApiKey;
+                });
         };
 
 
         $scope.submitUser = function(){
             console.log($scope.post);
             $http.post("/profile/edit.json?angular=true",
-                {User:$scope.post.User}
+                {User: $scope.post.User}
             ).then(function(result){
                 NotyService.genericSuccess();
                 $scope.load();
@@ -104,13 +154,13 @@ angular.module('openITCOCKPIT')
         $scope.submitPicture = function(){
             console.log($scope.post);
             $http.post("/profile/edit.json?angular=true",
-                {Picture:$scope.post.Picture}
+                {Picture: $scope.post.Picture}
             ).then(function(result){
                 NotyService.genericSuccess();
                 $scope.load();
             }, function errorCallback(result){
                 console.log(result);
-                NotyService.genericError({message:result.error});
+                NotyService.genericError({message: result.error});
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
@@ -118,12 +168,17 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submitPassword = function(){
-            console.log($scope.post);
+            console.log($scope.post.Password);
             $http.post("/profile/edit.json?angular=true",
-                {Password:$scope.post.Password}
+                {Password: $scope.post.Password}
             ).then(function(result){
-                NotyService.genericSuccess();
-                $scope.load();
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: $scope.errors});
+                }else{
+                    NotyService.genericSuccess();
+                    $scope.load();
+                }
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
@@ -138,12 +193,9 @@ angular.module('openITCOCKPIT')
 
         $scope.$watch('init', function(){
             if($scope.maxUploadLimit != null){
-                createDropzone();
+                 createDropzone();
             }
-        },true);
+        }, true);
 
-        $scope.$watch('post.User', function(){
-            console.log($scope.post.User);
-        },true);
 
     });
