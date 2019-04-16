@@ -895,12 +895,8 @@ class ServicesController extends AppController {
         $timeperiods = $this->Timeperiod->find('list');
 
         //container_id = 1 => ROOT
-        $containerIds = $this->MY_RIGHTS;
 
-        $loadElementContainerIds = [
-            $hostContainerId,
-            ROOT_CONTAINER
-        ];
+        $loadElementContainerIds = $this->Tree->resolveChildrenOfContainerIds($hostContainerId);
 
         $contacts = $this->Contact->contactsByContainerId($loadElementContainerIds, 'list', 'id');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($loadElementContainerIds, 'list', 'id');
@@ -3229,8 +3225,8 @@ class ServicesController extends AppController {
         if (empty($host)) {
             throw new NotFoundException();
         }
+        $containerIds = $this->Tree->resolveChildrenOfContainerIds($host['Host']['container_id']);
 
-        $containerIds = array_unique([ROOT_CONTAINER, $host['Host']['container_id']]);
         $timeperiods = $this->Timeperiod->find('list');
         $timeperiods = $this->Service->makeItJavaScriptAble($timeperiods);
 
