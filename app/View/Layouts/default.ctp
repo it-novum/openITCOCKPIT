@@ -18,7 +18,7 @@
 <?php echo $this->element('Admin.layout/header') ?>
 <div class="container" id="main-container">
     <div class="row">
-        <div class="col-md-12 controller <?php echo $this->name ?>_<?php echo $this->action ?>">
+        <div class="col-md-12 controller <?php echo h($this->name) ?>_<?php echo h($this->action) ?>">
             <?php echo $this->Flash->render(); ?>
             <?php echo $this->Flash->render('auth'); ?>
             <?php echo $content_for_layout; ?>

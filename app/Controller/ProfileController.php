@@ -30,6 +30,9 @@
  * @property AppAuthComponent Auth
  * @property Systemsetting Systemsetting
  * @property Apikey Apikey
+ *
+ * @property UploadComponent $Upload
+ * @property SessionComponent $Session
  */
 class ProfileController extends AppController {
     public $layout = 'angularjs';
@@ -39,7 +42,7 @@ class ProfileController extends AppController {
         'Apikey'
     ];
 
-    public $components = ['Upload'];
+    public $components = ['Upload', 'Session'];
 
     /*public function change_password() {
         if($this->request->is('post')) {
@@ -270,6 +273,14 @@ class ProfileController extends AppController {
             //Generate new API key
             $bytes = openssl_random_pseudo_bytes(80, $cstrong);
             $apikey = bin2hex($bytes);
+
+            $newApiKey = [
+                'key'  => $apikey,
+                'time' => time()
+            ];
+
+            $this->Session->write('latest_api_key', $newApiKey);
+
             $this->set('apikey', $apikey);
             $this->set('_serialize', ['apikey']);
             return;
@@ -278,8 +289,26 @@ class ProfileController extends AppController {
         if ($this->request->is('post')) {
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             //Save new API key
-            $apikey = $this->request->data;
-            $apikey['Apikey']['user_id'] = $User->getId();
+            //Resolve ITC-2170
+            $newApiKey = $this->Session->read('latest_api_key');
+            $this->Session->delete('latest_api_key');
+
+            if (!isset($newApiKey['key']) || !isset($newApiKey['time'])) {
+                throw new BadRequestException();
+            }
+
+            //Is API-Key older than 5 minutes?
+            if ($newApiKey['time'] < (time() - 5 * 60)) {
+                throw new BadRequestException('API key expired');
+            }
+
+            $apikey = [
+                'Apikey' => [
+                    'apikey'      => $newApiKey['key'],
+                    'description' => $this->request->data('Apikey.description'),
+                    'user_id'     => $User->getId()
+                ]
+            ];
 
             $this->Apikey->create();
             if (!$this->Apikey->save($apikey)) {
