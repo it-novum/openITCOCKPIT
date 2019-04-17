@@ -335,16 +335,22 @@ class HostdependenciesTable extends Table {
             ->contain([
                 'hosts'       =>
                     function (Query $q) {
-                        return $q->enableAutoFields(false)->select(['id', 'uuid', 'check_interval', 'command_id']);
+                        return $q->enableAutoFields(false)
+                            ->where([
+                                'Hosts.disabled' => 0
+                            ])
+                            ->select(['uuid']);
                     },
                 'hostgroups'  =>
                     function (Query $q) {
-                        return $q->enableAutoFields(false)->select(['id', 'uuid']);
+                        return $q->enableAutoFields(false)
+                            ->select(['uuid']);
                     },
                 'Timeperiods' =>
                     function (Query $q) {
-                        return $q->enableAutoFields(false)->select(['id', 'uuid']);
-                    },
+                        return $q->enableAutoFields(false)
+                            ->select(['uuid']);
+                    }
             ])
             ->select([
                 'id',
@@ -370,7 +376,5 @@ class HostdependenciesTable extends Table {
         $query->all();
 
         return $query;
-
-        //  return $this->emptyArrayIfNull($query->toArray());
     }
 }

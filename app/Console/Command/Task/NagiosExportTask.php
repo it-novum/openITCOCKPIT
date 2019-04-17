@@ -28,6 +28,7 @@ use App\Model\Table\ContactsTable;
 use App\Model\Table\DeletedHostsTable;
 use App\Model\Table\DeletedServicesTable;
 use App\Model\Table\HostdependenciesTable;
+use App\Model\Table\HostescalationsTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
@@ -1757,112 +1758,94 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportHostescalations($uuid = null) {
-        $query = [
-            'recursive' => -1,
-            'contain'   => [
-                'HostescalationHostMembership'      => [
-                    'Host' => [
-                        'conditions' => [
-                            'Host.disabled' => 0
-                        ],
-                        'fields'     => [
-                            'uuid'
-                        ],
-                    ],
-                ],
-                'HostescalationHostgroupMembership' => [
-                    'Hostgroup' => [
-                        'fields' => [
-                            'Hostgroup.uuid'
-                        ]
-                    ],
-                ],
-                'Timeperiod'                        => [
-                    'fields' => [
-                        'uuid',
-                    ],
-                ],
-            ],
-        ];
-
-        if ($uuid !== null) {
-            $hostescalations = [];
-            $query['conditions'] = [
-                'Hostescalation.uuid' => $uuid
-            ];
-            $hostescalations[] = $this->Hostescalation->find('first', $query);
-        } else {
-            $hostescalations = $this->Hostescalation->find('all', $query);
-        }
+        /* @var $HostescalationsTable HostescalationsTable */
+        /* @var $hostescalation \App\Model\Entity\Hostescalation */
+        /* @var $contact \App\Model\Entity\Contact */
+        /* @var $hostgroup \App\Model\Entity\Hostgroup */
+        /* @var $host \App\Model\Entity\Host */
+        /* @var $contactgroup \App\Model\Entity\Contactgroup */
+        $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
+        $hostescalations = $HostescalationsTable->getHostescalationsForExport($uuid);
 
         if (!is_dir($this->conf['path'] . $this->conf['hostescalations'])) {
             mkdir($this->conf['path'] . $this->conf['hostescalations']);
         }
-
         foreach ($hostescalations as $hostescalation) {
-            if (!empty($hostescalation['HostescalationHostMembership']) || !empty($hostescalation['HostescalationHostgroupMembership'])) {
-                $includedHosts = Hash::extract($hostescalation, 'HostescalationHostMembership.{n}[excluded=0].Host.uuid');
-                $exludedHosts = Hash::extract($hostescalation, 'HostescalationHostMembership.{n}[excluded=1].Host.uuid');
 
-                // Prefix the hosts with an !
-                $_exludedHosts = [];
-                foreach ($exludedHosts as $extHost) {
-                    $_exludedHosts[] = '!' . $extHost;
-                }
-
-                $hosts = Hash::merge($includedHosts, $_exludedHosts);
-
-                $includedHostgroups = Hash::extract($hostescalation, 'HostescalationHostgroupMembership.{n}[excluded=0].Hostgroup.uuid');
-                $exludedHostgroups = Hash::extract($hostescalation, 'HostescalationHostgroupMembership.{n}[excluded=1].Hostgroup.uuid');
-
-                // Prefix the hosts with an !
-                $_exludedHostgroups = [];
-                foreach ($exludedHostgroups as $extHostgroup) {
-                    $_exludedHostgroups[] = '!' . $extHostgroup;
-                }
-                $hostgroups = Hash::merge($includedHostgroups, $_exludedHostgroups);
-
-                if (!empty($includedHosts) || !empty($includedHostgroups)) {
-                    $file = new File($this->conf['path'] . $this->conf['hostescalations'] . $hostescalation['Hostescalation']['uuid'] . $this->conf['suffix']);
-                    $content = $this->fileHeader();
-                    if (!$file->exists()) {
-                        $file->create();
-                    }
-
-                    $content .= $this->addContent('define hostescalation{', 0);
-                    if (!empty($hosts)) {
-                        $content .= $this->addContent('host_name', 1, implode(',', $hosts));
-                    }
-
-                    if (!empty($hostgroups)) {
-                        $content .= $this->addContent('hostgroup_name', 1, implode(',', $hostgroups));
-                    }
-                    if (!empty($hostescalation['Contact'])) {
-                        $content .= $this->addContent('contacts', 1, implode(',', Hash::extract($hostescalation['Contact'], '{n}.uuid')));
-                    }
-                    if (!empty($hostescalation['Contactgroup'])) {
-                        $content .= $this->addContent('contact_groups', 1, implode(',', Hash::extract($hostescalation['Contactgroup'], '{n}.uuid')));
-                    }
-                    $content .= $this->addContent('first_notification', 1, $hostescalation['Hostescalation']['first_notification']);
-                    $content .= $this->addContent('last_notification', 1, $hostescalation['Hostescalation']['last_notification']);
-                    $content .= $this->addContent('notification_interval', 1, (int)$hostescalation['Hostescalation']['notification_interval'] * 60);
-                    $content .= $this->addContent('escalation_period', 1, $hostescalation['Timeperiod']['uuid']);
-                    $hostEscalationString = $this->hostEscalationString($hostescalation['Hostescalation']);
-                    if (!empty($hostEscalationString)) {
-                        $content .= $this->addContent('escalation_options', 1, $hostEscalationString);
-                    }
-
-                    $content .= $this->addContent('}', 0);
-                    $file->write($content);
-                    $file->close();
-                } else {
-                    //This hostescalation is broken!
-                    $this->Hostescalation->delete($hostescalation['Hostescalation']['id']);
-                }
-            } else {
+            $hostsForCfg = [];
+            $excludedHostsForCfg = [];
+            $hosts = $hostescalation->get('hosts');
+            $hostgroups = $hostescalation->get('hostgroups');
+            if (empty($hosts) && empty($hostgroups)) {
                 //This hostescalation is broken!
-                $this->Hostescalation->delete($hostescalation['Hostescalation']['id']);
+                $HostescalationsTable->delete($hostescalation);
+                continue;
             }
+            if (!is_null($hosts)) {
+                foreach ($hosts as $host) {
+                    if ($host->get('_joinData')->get('excluded') === 0) {
+                        $hostsForCfg[] = $host->get('uuid');
+                    } else {
+                        $excludedHostsForCfg[] = '!' . $host->get('uuid');
+                    }
+                }
+            }
+
+            $hostgroupsForCfg = [];
+            $excludedHostgroupsForCfg = [];
+            $hostgroups = $hostescalation->get('hostgroups');
+            if (!is_null($hostgroups)) {
+                foreach ($hostgroups as $hostgroup) {
+                    if ($hostgroup->get('_joinData')->get('excluded') === 0) {
+                        $hostgroupsForCfg[] = $hostgroup->get('uuid');
+                    } else {
+                        $excludedHostgroupsForCfg[] = '!' . $hostgroup->get('uuid');
+                    }
+                }
+            }
+            $contactUuids = [];
+            foreach ($hostescalation->get('contacts') as $contact) {
+                $contactUuids[] = $contact->get('uuid');
+            }
+            $contactgroupUuids = [];
+            foreach ($hostescalation->get('contactgroups') as $contactgroup) {
+                $contactgroupUuids[] = $contactgroup->get('uuid');
+            }
+            if (empty($hostsForCfg) && empty($hostgroups)) {
+                //This hostescalation is broken!
+                $HostescalationsTable->delete($hostescalation);
+                continue;
+            }
+            $file = new File($this->conf['path'] . $this->conf['hostescalations'] . $hostescalation->get('uuid') . $this->conf['suffix']);
+            $content = $this->fileHeader();
+            if (!$file->exists()) {
+                $file->create();
+            }
+            $content .= $this->addContent('define hostescalation{', 0);
+            if (!empty($hosts)) {
+                $content .= $this->addContent('host_name', 1, implode(',', array_merge($hostsForCfg, $excludedHostsForCfg)));
+            }
+
+            if (!empty($hostgroups)) {
+                $content .= $this->addContent('hostgroup_name', 1, implode(',', array_merge($hostgroupsForCfg, $excludedHostgroupsForCfg)));
+            }
+            if (!empty($contactUuids)) {
+                $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
+            }
+            if (!empty($contactgroupUuids)) {
+                $content .= $this->addContent('contact_groups', 1, implode(',', $contactgroupUuids));
+            }
+            $content .= $this->addContent('first_notification', 1, $hostescalation->get('first_notification'));
+            $content .= $this->addContent('last_notification', 1, $hostescalation->get('last_notification'));
+            $content .= $this->addContent('notification_interval', 1, (int)$hostescalation->get('notification_interval') * 60);
+            $content .= $this->addContent('escalation_period', 1, $hostescalation->get('timeperiod')->get('uuid'));
+            $hostEscalationString = $hostescalation->getHostEscalationStringForCfg();
+            if (!empty($hostEscalationString)) {
+                $content .= $this->addContent('escalation_options', 1, $hostEscalationString);
+            }
+            $content .= $this->addContent('}', 0);
+            $file->write($content);
+            $file->close();
         }
     }
 
@@ -2225,7 +2208,7 @@ class NagiosExportTask extends AppShell {
             $dependentHostsForCfg = [];
             $hosts = $hostdependency->get('hosts');
             //Check if the host dependency is valid
-            if(is_null($hosts)){
+            if (is_null($hosts)) {
                 //This host dependency is broken, ther are no hosts in it!
                 $HostdependenciesTable->delete($hostdependency);
                 $file->close();
@@ -2269,15 +2252,15 @@ class NagiosExportTask extends AppShell {
             $content .= $this->addContent('inherits_parent', 1, $hostdependency->get('inherits_parent'));
 
             $executionFailureCriteriaForCfgString = $hostdependency->getExecutionFailureCriteriaForCfg();
-            if(!empty($executionFailureCriteriaForCfgString)){
+            if (!empty($executionFailureCriteriaForCfgString)) {
                 $content .= $this->addContent('execution_failure_criteria', 1, $executionFailureCriteriaForCfgString);
             }
             $notificationFailureCriteriaForCfgString = $hostdependency->getNotificationFailureCriteriaForCfg();
-            if(!empty($notificationFailureCriteriaForCfgString)){
+            if (!empty($notificationFailureCriteriaForCfgString)) {
                 $content .= $this->addContent('notification_failure_criteria', 1, $notificationFailureCriteriaForCfgString);
             }
             $dependencyTimeperiod = $hostdependency->get('timeperiod');
-            if(!is_null($dependencyTimeperiod)){
+            if (!is_null($dependencyTimeperiod)) {
                 $content .= $this->addContent('dependency_period', 1, $dependencyTimeperiod->get('uuid'));
             }
             $content .= $this->addContent('}', 0);
