@@ -81,6 +81,8 @@ class ProfileController extends AppController {
                 if ($this->request->data['User']['paginatorlength'] > '1000') {
                     $this->request->data['User']['paginatorlength'] = '1000';
                 }
+                //prevent multiple hash of password
+                unset($user->password);
 
                 $userToSave = $Users->patchEntity($user, $this->request->data('User'));
 
@@ -112,9 +114,11 @@ class ProfileController extends AppController {
                     if ($filename) {
                         $oldFilename = $user->filename;
                         $user->filename = $filename;
+                        //prevent multiple hash of password
+                        unset($user->password);
 
-                        $Users->save($userToSave);
-                        if ($userToSave->hasErrors()) {
+                        $Users->save($user);
+                        if ($user->hasErrors()) {
                             $this->response->statusCode(400);
                             $this->set('error', $user->getErrors());
                             $this->set('_serialize', ['error']);
@@ -147,7 +151,7 @@ class ProfileController extends AppController {
                 }
 
                 $userToSave = $Users->patchEntity($user, $this->request->data('Password'));
-debug($userToSave);
+
                 $Users->save($userToSave);
                 if ($userToSave->hasErrors()) {
                     $this->response->statusCode(400);
@@ -155,46 +159,8 @@ debug($userToSave);
                     $this->set('_serialize', ['error']);
                     return;
                 }
-                //$sessionUser = $this->Session->read('Auth');
-
-               // $merged = Hash::merge($sessionUser, $this->request->data);
-               // $this->Session->write('Auth', $merged);
-
-
-                /*old stuff */
-
-                /*  if (Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']) {
-                      $this->setFlash(__('The entered password is not your current password'), false);
-
-                      return $this->redirect(['action' => 'edit']);
-                  }
-
-                  if (isset($this->request->data['Password']['new_password']) && isset($this->request->data['Password']['new_password_repeat'])) {
-                      if ($this->request->data['Password']['new_password'] == $this->request->data['Password']['new_password_repeat']) {
-                          $user = $this->User->findById($this->Auth->user('id'));
-                          $this->User->id = $this->Auth->user('id');
-                          if ($this->User->saveField('password', AuthComponent::password($this->request->data['Password']['new_password']))) {
-                              $this->setFlash(__('Password changed successfully'));
-                              $this->redirect(['action' => 'edit']);
-                          }
-                          $this->setFlash(__('Error while saving data'), false);
-                          $this->redirect(['action' => 'edit']);
-                      } else {
-                          $this->setFlash(__('The entered passwords are not the same'), false);
-
-                          return $this->redirect(['action' => 'edit']);
-                      }
-                  } else {
-                      $this->setFlash(__('Plase enter and confirm your new password'), false);
-
-                      return $this->redirect(['action' => 'edit']);
-                  }
-  */
-                /*old stuff */
             }
         }
-
-
     }
 
     public function apikey() {

@@ -216,6 +216,10 @@ class UsersController extends AppController {
             $this->request->data = $this->request->data('User');
 
             $user = $Users->get($id);
+            //prevent multiple hash of password
+            if(empty($this->request->data('password'))){
+                unset($user->password);
+            }
             $user = $Users->patchEntity($user, $this->request->data);
 
             $Users->save($user);

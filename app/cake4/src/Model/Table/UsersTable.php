@@ -237,7 +237,6 @@ class UsersTable extends Table {
     }
 
 
-
     /**
      * @param $rights
      * @param null $PaginateOMat
