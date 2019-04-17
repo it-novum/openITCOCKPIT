@@ -54,6 +54,7 @@ class HostdependenciesTable extends Table {
             'joinType'   => 'INNER'
         ]);
         $this->belongsTo('Timeperiods', [
+            'className'  => 'Timeperiods',
             'foreignKey' => 'timeperiod_id',
             'joinType'   => 'LEFT'
         ]);
@@ -323,5 +324,53 @@ class HostdependenciesTable extends Table {
             ];
         }
         return $hostgroupmembershipData;
+    }
+
+    /**
+     * @param null|string $uuid
+     * @return array
+     */
+    public function getHostdependenciesForExport($uuid = null) {
+        $query = $this->find()
+            ->contain([
+                'hosts'       =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id', 'uuid', 'check_interval', 'command_id']);
+                    },
+                'hostgroups'  =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id', 'uuid']);
+                    },
+                'Timeperiods' =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id', 'uuid']);
+                    },
+            ])
+            ->select([
+                'id',
+                'uuid',
+                'inherits_parent',
+                'execution_fail_on_up',
+                'execution_fail_on_down',
+                'execution_fail_on_unreachable',
+                'execution_fail_on_pending',
+                'execution_none',
+                'notification_fail_on_up',
+                'notification_fail_on_down',
+                'notification_fail_on_unreachable',
+                'notification_fail_on_pending',
+                'notification_none'
+            ]);
+        if ($uuid !== null) {
+            $query->where([
+                'Hostdependencies.uuid' => $uuid
+            ]);
+        }
+
+        $query->all();
+
+        return $query;
+
+        //  return $this->emptyArrayIfNull($query->toArray());
     }
 }
