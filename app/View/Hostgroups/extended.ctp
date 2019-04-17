@@ -63,6 +63,7 @@
                 class="form-control"
                 chosen="hostgroups"
                 ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                callback="loadHostgroupsCallback"
                 ng-model="post.Hostgroup.id">
         </select>
     </div>
