@@ -52,7 +52,28 @@ class Hostescalation extends Entity {
         'contactgroups'           => true,
         'hosts'                   => true,
         'hostgroups'              => true,
+        'timeperiods'             => true,
         'created'                 => true,
         'modified'                => true
     ];
+
+    /**
+     * @return string
+     */
+    public function getHostEscalationStringForCfg() {
+        $cfgValues = [];
+        $fields = [
+            'escalate_on_recovery'    => 'r',
+            'escalate_on_down'        => 'd',
+            'escalate_on_unreachable' => 'u'
+        ];
+        foreach ($fields as $field => $cfgValue) {
+            if ($this->get($field) === 1) {
+                $cfgValues[] = $cfgValue;
+            }
+        }
+
+        return implode(',', $cfgValues);
+    }
+
 }

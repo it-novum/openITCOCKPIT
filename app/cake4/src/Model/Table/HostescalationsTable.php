@@ -69,35 +69,24 @@ class HostescalationsTable extends Table {
         $this->belongsToMany('Hosts', [
             'className'    => 'Hosts',
             'through'      => 'HostescalationsHostMemberships',
-            'saveStrategy' => 'replace',
-            'conditions'   => [
-                'HostescalationsHostMembership.excluded' => 0
-            ]
+            'saveStrategy' => 'replace'
         ]);
         $this->belongsToMany('HostsExcluded', [
             'className'        => 'Hosts',
             'through'          => 'HostescalationsHostMemberships',
             'targetForeignKey' => 'host_id',
-            'saveStrategy'     => 'replace',
-            'conditions'       => [
-                'HostescalationsHostMembership.excluded' => 1
-            ]
+            'saveStrategy'     => 'replace'
         ]);
         $this->belongsToMany('Hostgroups', [
             'through'      => 'HostescalationsHostgroupMemberships',
-            'saveStrategy' => 'replace',
-            'conditions'   => [
-                'HostescalationsHostgroupMembership.excluded' => 0
-            ]
+            'saveStrategy' => 'replace'
+
         ]);
         $this->belongsToMany('HostgroupsExcluded', [
             'className'        => 'Hostgroups',
             'through'          => 'HostescalationsHostgroupMemberships',
             'targetForeignKey' => 'hostgroup_id',
-            'saveStrategy'     => 'replace',
-            'conditions'       => [
-                'HostescalationsHostgroupMembership.excluded' => 1
-            ]
+            'saveStrategy'     => 'replace'
         ]);
     }
 
@@ -267,6 +256,9 @@ class HostescalationsTable extends Table {
                 },
                 'Hosts'         => function (Query $q) {
                     return $q->enableAutoFields(false)
+                        ->where([
+                            'HostescalationsHostMemberships.excluded' => 0
+                        ])
                         ->select([
                             'Hosts.id',
                             'Hosts.name',
@@ -275,6 +267,9 @@ class HostescalationsTable extends Table {
                 },
                 'HostsExcluded' => function (Query $q) {
                     return $q->enableAutoFields(false)
+                        ->where([
+                            'HostescalationsHostMemberships.excluded' => 1
+                        ])
                         ->select([
                             'HostsExcluded.id',
                             'HostsExcluded.name',
@@ -285,6 +280,9 @@ class HostescalationsTable extends Table {
                 'Hostgroups'         => [
                     'Containers' => function (Query $q) {
                         return $q->enableAutoFields(false)
+                            ->where([
+                                'HostescalationsHostgroupMemberships.excluded' => 0
+                            ])
                             ->select([
                                 'Hostgroups.id',
                                 'Containers.name'
@@ -294,6 +292,9 @@ class HostescalationsTable extends Table {
                 'HostgroupsExcluded' => [
                     'Containers' => function (Query $q) {
                         return $q->enableAutoFields(false)
+                            ->where([
+                                'HostescalationsHostgroupMemberships.excluded' => 1
+                            ])
                             ->select([
                                 'HostgroupsExcluded.id',
                                 'Containers.name'
@@ -418,5 +419,60 @@ class HostescalationsTable extends Table {
             ];
         }
         return $hostgroupmembershipData;
+    }
+    /**
+     * @param null|string $uuid
+     * @return array
+     */
+    public function getHostescalationsForExport($uuid = null) {
+        $query = $this->find()
+            ->contain([
+                'Hosts'       =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)
+                            ->where([
+                                'Hosts.disabled' => 0
+                            ])
+                            ->select(['uuid']);
+                    },
+                'Hostgroups'  =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)
+                            ->select(['uuid']);
+                    },
+                'Timeperiods' =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)
+                            ->select(['uuid']);
+                    },
+                'Contacts' =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)
+                            ->select(['uuid']);
+                    },
+                'Contactgroups'  =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)
+                            ->select(['uuid']);
+                    }
+            ])
+            ->select([
+                'id',
+                'uuid',
+                'timeperiod_id',
+                'first_notification',
+                'last_notification',
+                'notification_interval',
+                'escalate_on_recovery',
+                'escalate_on_down',
+                'escalate_on_unreachable'
+            ]);
+        if ($uuid !== null) {
+            $query->where([
+                'Hostescalations.uuid' => $uuid
+            ]);
+        }
+        $query->all();
+        return $query;
     }
 }
