@@ -142,9 +142,6 @@ class UsersController extends AppController {
                 $this->request->data['User']['containers'] = $containerPermissions;
             }
 
-            //@TODO remove these lines as they are implemented in users add
-            $this->request->data['User']['status'] = 1;
-
             $this->request->data = $this->request->data('User');
             $user = $Users->newEntity();
             $user = $Users->patchEntity($user, $this->request->data);
@@ -210,9 +207,6 @@ class UsersController extends AppController {
                 $this->request->data['User']['containers'] = $containerPermissions;
             }
 
-            //@TODO remove these lines as they are implemented in users edit
-            $this->request->data['User']['status'] = 1;
-
             $this->request->data = $this->request->data('User');
 
             $user = $Users->get($id);
@@ -257,9 +251,6 @@ class UsersController extends AppController {
                 $containerPermissions = $Users->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
                 $this->request->data['User']['containers'] = $containerPermissions;
             }
-
-            //@TODO remove these lines as they are implemented in users add
-            $this->request->data['User']['status'] = 1;
 
             $this->request->data = $this->request->data('User');
 
@@ -372,23 +363,5 @@ class UsersController extends AppController {
         ];
         $this->set($data);
         $this->set('_serialize', array_keys($data));
-    }
-
-
-    /**
-     * get all possible states a user can have
-     */
-    public function loadStatus() {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
-        $status = $Users->getUserStatus();
-        $status = Api::makeItJavaScriptAble($status);
-
-        $this->set('status', $status);
-        $this->set('_serialize', ['status']);
     }
 }

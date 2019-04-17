@@ -89,11 +89,6 @@ class UsersTable extends Table {
             ], __('You have to choose at least one option.'));
 
         $validator
-            ->integer('status')
-            ->requirePresence('status', 'create')
-            ->allowEmptyString('status', false);
-
-        $validator
             ->integer('usergroup_id')
             ->requirePresence('usergroup_id', 'create')
             ->allowEmptyString('usergroup_id', false);
@@ -258,7 +253,6 @@ class UsersTable extends Table {
                     'Users.email',
                     'Users.company',
                     'Users.phone',
-                    'Users.status',
                     'Users.samaccountname',
                     'Usergroups.id',
                     'Usergroups.name',
@@ -305,7 +299,6 @@ class UsersTable extends Table {
                     'Users.id',
                     'Users.email',
                     'Users.company',
-                    'Users.status',
                     'Users.samaccountname',
                     'Users.usergroup_id',
                     //'Users.password',
@@ -335,22 +328,6 @@ class UsersTable extends Table {
         }
         return [];
 
-    }
-
-
-    /**
-     * @param null $userId
-     * @return array|int
-     */
-    public function getUserStatus($userId = null) {
-        if (!is_null($userId)) {
-            //return state for the given user ID
-            return $this->get($userId)->status;
-
-        } else {
-            //no user ID so return all possible states
-            return [];
-        }
     }
 
     /**
@@ -413,13 +390,11 @@ class UsersTable extends Table {
             ->disableHydration()
             ->where([
                 'Users.email'  => $email,
-                'Users.status' => 1,
             ])
             ->select([
                 'Users.id',
                 'Users.email',
                 'Users.company',
-                'Users.status',
                 'Users.samaccountname',
                 'Users.usergroup_id',
                 //'Users.password',

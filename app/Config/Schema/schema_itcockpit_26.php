@@ -1074,7 +1074,6 @@ class AppSchema extends CakeSchema {
     public $users = [
         'id'                     => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 10, 'key' => 'primary'],
         'usergroup_id'           => ['type' => 'integer', 'null' => false, 'default' => null],
-        'status'                 => ['type' => 'integer', 'null' => false, 'default' => '1', 'length' => 3],
         'email'                  => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'password'               => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 45, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'firstname'              => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],

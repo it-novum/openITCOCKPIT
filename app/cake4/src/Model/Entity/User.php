@@ -54,7 +54,6 @@ class User extends Entity {
      */
     protected $_accessible = [
         'usergroup_id'            => true,
-        'status'                  => true,
         'email'                   => true,
         'password'                => true,
         'firstname'               => true,

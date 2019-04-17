@@ -3,7 +3,6 @@ angular.module('openITCOCKPIT')
         $scope.intervalText = 'disabled';
         $scope.post = {
             'User': {
-                'status': '',
                 'email': '',
                 'firstname': '',
                 'lastname': '',
@@ -50,16 +49,6 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.usergroups = result.data.usergroups;
-            });
-        };
-
-        $scope.loadStatus = function(){
-            $http.get("/users/loadStatus.json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.status = result.data.status;
             });
         };
 
@@ -118,7 +107,6 @@ angular.module('openITCOCKPIT')
 
         $scope.loadContainer();
         $scope.loadUsergroups();
-        $scope.loadStatus();
         $scope.loadDateformats();
     });
 

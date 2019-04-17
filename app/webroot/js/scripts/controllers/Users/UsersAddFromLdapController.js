@@ -5,7 +5,6 @@ angular.module('openITCOCKPIT')
         $scope.post = {
             'User': {
                 'ldap': 1,
-                'status': '',
                 'email': '',
                 'samaccountname': null, //username
                 'firstname': '',
@@ -63,24 +62,6 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.usergroups = result.data.usergroups;
-            }, function errorCallback(result){
-                if(result.status === 403){
-                    $state.go('403');
-                }
-
-                if(result.status === 404){
-                    $state.go('404');
-                }
-            });
-        };
-
-        $scope.loadStatus = function(){
-            $http.get("/users/loadStatus.json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.status = result.data.status;
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
@@ -188,7 +169,6 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.loadContainer();
-        $scope.loadStatus();
         $scope.loadDateformats();
         $scope.loadUsergroups();
         $scope.loadSystemsettings();

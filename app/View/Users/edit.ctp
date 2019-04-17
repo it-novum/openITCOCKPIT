@@ -108,22 +108,6 @@ $timezones = CakeTime::listTimezones();
                         </div>
                     </div>
 
-                    <div class="form-group" ng-class="{'has-error': errors.status}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Status'); ?>
-                        </label>
-                        <div class="col col-xs-10">
-                            <select
-                                    id="UserStatus"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="status"
-                                    ng-options="state.key as state.value for state in status"
-                                    ng-model="post.User.status">
-                            </select>
-                        </div>
-                    </div>
-
                     <div class="form-group required" ng-class="{'has-error': errors.email}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Email Address'); ?>

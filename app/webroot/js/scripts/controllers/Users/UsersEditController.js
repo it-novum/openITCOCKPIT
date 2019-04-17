@@ -7,7 +7,6 @@ angular.module('openITCOCKPIT')
 
         $scope.post = {
             'User': {
-                'status': '',
                 'email': '',
                 'firstname': '',
                 'lastname': '',
@@ -42,7 +41,6 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.post.User = result.data.user;
-                console.log(result.data.user);
             });
         };
 
@@ -63,16 +61,6 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.usergroups = result.data.usergroups;
-            });
-        };
-
-        $scope.loadStatus = function(){
-            $http.get("/users/loadStatus.json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.status = result.data.status;
             });
         };
 
@@ -113,7 +101,6 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
-            console.log($scope.post);
             $http.post("/users/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -133,7 +120,6 @@ angular.module('openITCOCKPIT')
 
         $scope.loadContainer();
         $scope.loadUsergroups();
-        $scope.loadStatus();
         $scope.loadDateformats();
         $scope.load();
     });
