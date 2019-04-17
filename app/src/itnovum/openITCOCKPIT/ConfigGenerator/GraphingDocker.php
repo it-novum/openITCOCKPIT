@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use Symfony\Component\Yaml\Yaml;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -467,6 +468,19 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
 
         }
         */
+
+        if (file_exists($this->linkedOutfile)) {
+            try {
+                $yamlConfig = Yaml::parseFile($this->linkedOutfile);
+                if (isset($yamlConfig['networks']['default']['ipam']['config'][0]['subnet'])) {
+                    $config['string']['USE_AUTO_NETWORKING'] = 0;
+                    $config['string']['docker_compose_subnet'] = $yamlConfig['networks']['default']['ipam']['config'][0]['subnet'];
+                }
+            } catch (\Exception $e) {
+                echo $e->getMessage();
+                echo PHP_EOL;
+            }
+        }
 
         return $config;
 
