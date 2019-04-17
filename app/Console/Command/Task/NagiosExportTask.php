@@ -27,6 +27,7 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\DeletedHostsTable;
 use App\Model\Table\DeletedServicesTable;
+use App\Model\Table\HostdependenciesTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
@@ -1692,7 +1693,7 @@ class NagiosExportTask extends AppShell {
             }
 
             $alias = $this->escapeLastBackslash($hostgroup->get('description'));
-            if(empty($alias)){
+            if (empty($alias)) {
                 $alias = $hostgroup->get('uuid');
             }
             $content .= $this->addContent('define hostgroup{', 0);
@@ -2205,112 +2206,82 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportHostdependencies($uuid = null) {
-        $query = [
-            'recursive' => -1,
-            'contain'   => [
-                'HostdependencyHostMembership'      => [
-                    'Host' => [
-                        'fields'     => [
-                            'Host.id',
-                            'Host.uuid',
-                            'Host.disabled'
-
-                        ],
-                        'conditions' => [
-                            'Host.disabled' => 0
-                        ]
-                    ]
-                ],
-                'HostdependencyHostgroupMembership' => [
-                    'Hostgroup' => [
-                        'fields' => [
-                            'Hostgroup.id',
-                            'Hostgroup.uuid'
-
-                        ]
-                    ]
-                ],
-                'Timeperiod'                        => [
-                    'fields' => [
-                        'Timeperiod.id',
-                        'Timeperiod.uuid',
-                    ]
-                ]
-            ],
-
-        ];
-        if ($uuid !== null) {
-            $hostdependencies = [];
-            $query['conditions'] = [
-                'Hostdependency.uuid' => $uuid
-            ];
-            $hostdependencies[] = $this->Hostdependency->find('first', $query);
-        } else {
-            $hostdependencies = $this->Hostdependency->find('all', $query);
-        }
+        /** @var $HostdependenciesTable HostdependenciesTable */
+        $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+        $hostdependencies = $HostdependenciesTable->getHostdependenciesForExport($uuid);
 
         if (!is_dir($this->conf['path'] . $this->conf['hostdependencies'])) {
             mkdir($this->conf['path'] . $this->conf['hostdependencies']);
         }
 
         foreach ($hostdependencies as $hostdependency) {
-            $file = new File($this->conf['path'] . $this->conf['hostdependencies'] . $hostdependency['Hostdependency']['uuid'] . $this->conf['suffix']);
+            $file = new File($this->conf['path'] . $this->conf['hostdependencies'] . $hostdependency->get('uuid') . $this->conf['suffix']);
             $content = $this->fileHeader();
             if (!$file->exists()) {
                 $file->create();
             }
 
-            $hosts = Hash::extract($hostdependency, 'HostdependencyHostMembership.{n}[dependent=0].Host.uuid');
-            $dependentHosts = Hash::extract($hostdependency, 'HostdependencyHostMembership.{n}[dependent=1].Host.uuid');
-
-            $hostGroups = Hash::extract($hostdependency, 'HostdependencyHostgroupMembership.{n}[dependent=0].Hostgroup.uuid');
-            $dependentHostGroups = Hash::extract($hostdependency, 'HostdependencyHostgroupMembership.{n}[dependent=1].Hostgroup.uuid');
-
-
-            if (!empty($hosts) && !empty($dependentHosts)) {
-                $content .= $this->addContent('define hostdependency{', 0);
-
-                $content .= $this->addContent('host_name', 1, implode(',', $hosts));
-                $content .= $this->addContent('dependent_host_name', 1, implode(',', $dependentHosts));
-
-                if (!empty($hostGroups)) {
-                    $content .= $this->addContent('hostgroup_name', 1, implode(',', $hostGroups));
-                }
-
-                if (!empty($dependentHostGroups)) {
-                    $content .= $this->addContent('dependent_hostgroup_name', 1, implode(',', $dependentHostGroups));
-                }
-            }
-
-            $content .= $this->addContent('inherits_parent', 1, $hostdependency['Hostdependency']['inherits_parent']);
-
-
-            $hostDependencyExecutionString = $this->hostDependencyExecutionString($hostdependency['Hostdependency']);
-            if (!empty($hostDependencyExecutionString)) {
-                $content .= $this->addContent('execution_failure_criteria', 1, $hostDependencyExecutionString);
-            }
-
-            $hostDependencyNotificationString = $this->hostDependencyNotificationString($hostdependency['Hostdependency']);
-            if (!empty($hostDependencyNotificationString)) {
-                $content .= $this->addContent('notification_failure_criteria', 1, $hostDependencyNotificationString);
-            }
-
-            if ($hostdependency['Timeperiod']['uuid'] !== null && $hostdependency['Timeperiod']['uuid'] !== '') {
-                $content .= $this->addContent('dependency_period', 1, $hostdependency['Timeperiod']['uuid']);
-            }
-
-            $content .= $this->addContent('}', 0);
-
+            $hostsForCfg = [];
+            $dependentHostsForCfg = [];
+            $hosts = $hostdependency->get('hosts');
             //Check if the host dependency is valid
-            if (empty($hosts) || empty($dependentHosts)) {
+            if(is_null($hosts)){
                 //This host dependency is broken, ther are no hosts in it!
-                $this->Hostdependency->delete($hostdependency['Hostdependency']['id']);
+                $HostdependenciesTable->delete($hostdependency);
                 $file->close();
                 if ($file->exists()) {
                     $file->delete();
                 }
                 continue;
             }
+            foreach ($hosts as $host) {
+                if ($host->get('_joinData')->get('dependent') === 0) {
+                    $hostsForCfg[] = $host->get('uuid');
+                } else {
+                    $dependentHostsForCfg[] = $host->get('uuid');
+                }
+            }
+            if (!empty($hostsForCfg) && !empty($dependentHostsForCfg)) {
+                $content .= $this->addContent('define hostdependency{', 0);
+
+                $content .= $this->addContent('host_name', 1, implode(',', $hostsForCfg));
+                $content .= $this->addContent('dependent_host_name', 1, implode(',', $dependentHostsForCfg));
+            }
+            $hostgroupsForCfg = [];
+            $dependentHostgroupsForCfg = [];
+            if (!is_null($hostdependency->get('hostgroups'))) {
+                $hostgroups = $hostdependency->get('hostgroups');
+                foreach ($hostgroups as $hostgroup) {
+                    if ($hostgroup->get('_joinData')->get('dependent') === 0) {
+                        $hostgroupsForCfg[] = $hostgroup->get('uuid');
+                    } else {
+                        $dependentHostgroupsForCfg[] = $hostgroup->get('uuid');
+                    }
+                }
+            }
+            if (!empty($hostgroupsForCfg)) {
+                $content .= $this->addContent('hostgroup_name', 1, implode(',', $hostgroupsForCfg));
+            }
+            if (!empty($dependentHostgroupsForCfg)) {
+                $content .= $this->addContent('dependent_hostgroup_name', 1, implode(',', $dependentHostgroupsForCfg));
+            }
+
+            $content .= $this->addContent('inherits_parent', 1, $hostdependency->get('inherits_parent'));
+
+            $executionFailureCriteriaForCfgString = $hostdependency->getExecutionFailureCriteriaForCfg();
+            if(!empty($executionFailureCriteriaForCfgString)){
+                $content .= $this->addContent('execution_failure_criteria', 1, $executionFailureCriteriaForCfgString);
+            }
+            $notificationFailureCriteriaForCfgString = $hostdependency->getNotificationFailureCriteriaForCfg();
+            if(!empty($notificationFailureCriteriaForCfgString)){
+                $content .= $this->addContent('notification_failure_criteria', 1, $notificationFailureCriteriaForCfgString);
+            }
+            $dependencyTimeperiod = $hostdependency->get('timeperiod');
+            if(!is_null($dependencyTimeperiod)){
+                $content .= $this->addContent('dependency_period', 1, $dependencyTimeperiod->get('uuid'));
+            }
+            $content .= $this->addContent('}', 0);
+
             $file->write($content);
             $file->close();
         }
@@ -2533,7 +2504,7 @@ class NagiosExportTask extends AppShell {
                 }
 
                 $alias = $this->escapeLastBackslash($hostgroup->get('description'));
-                if(empty($alias)){
+                if (empty($alias)) {
                     $alias = $hostgroup->get('uuid');
                 }
                 $content .= $this->addContent('define hostgroup{', 0);

@@ -23,6 +23,7 @@ use Cake\ORM\Entity;
  * @property int $notification_fail_on_pending
  * @property int $notification_none
  * @property Host $hosts
+ * @property Timeperiod $timeperiods
  * @property Hostgroup $hostgroups
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
@@ -58,7 +59,51 @@ class Hostdependency extends Entity {
         'notification_none'                => true,
         'hosts'                            => true,
         'hostgroups'                       => true,
+        'timeperiods'                      => true,
         'created'                          => true,
         'modified'                         => true
     ];
+
+    /**
+     * @return string
+     */
+    public function getExecutionFailureCriteriaForCfg() {
+        $cfgValues = [];
+        $fields = [
+            'execution_fail_on_up'          => 'o',
+            'execution_fail_on_down'        => 'd',
+            'execution_fail_on_unreachable' => 'u',
+            'execution_fail_on_pending'     => 'p',
+            'execution_none'                => 'n'
+        ];
+        foreach ($fields as $field => $cfgValue) {
+            if ($this->get($field) === 1) {
+                $cfgValues[] = $cfgValue;
+            }
+        }
+
+        return implode(',', $cfgValues);
+    }
+
+    /**
+     * @return string
+     */
+    public function getNotificationFailureCriteriaForCfg() {
+        $cfgValues = [];
+        $fields = [
+            'notification_fail_on_up'          => 'o',
+            'notification_fail_on_down'        => 'd',
+            'notification_fail_on_unreachable' => 'u',
+            'notification_fail_on_pending'     => 'p',
+            'notification_none'                => 'n'
+        ];
+
+        foreach ($fields as $field => $cfgValue) {
+            if ($this->get($field) === 1) {
+                $cfgValues[] = $cfgValue;
+            }
+        }
+
+        return implode(',', $cfgValues);
+    }
 }
