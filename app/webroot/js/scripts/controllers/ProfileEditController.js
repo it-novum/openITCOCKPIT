@@ -119,7 +119,7 @@ angular.module('openITCOCKPIT')
             })
                 .then(function(result){
                     $scope.newApiKey = null;
-                    $scope.load();
+                    $scope.loadApiKey();
                     $('#angularCreateApiKeyModal').modal('hide');
                 }, function errorCallback(result){
                     if(result.data.hasOwnProperty('error')){

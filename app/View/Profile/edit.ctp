@@ -414,7 +414,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <div class="widget-toolbar" role="menu">
-            <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+            <button type="button" class="btn btn-xs btn-default" ng-click="loadApiKey()">
                 <i class="fa fa-refresh"></i>
                 <?php echo __('Refresh'); ?>
             </button>

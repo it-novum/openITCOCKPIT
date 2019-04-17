@@ -104,11 +104,11 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('UsersIndex');
-
+                $state.go('UsersIndex').then(function(){
+                    NotyService.scrollTop();
+                });
             }, function errorCallback(result){
                 NotyService.genericError();
-                console.log(result);
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

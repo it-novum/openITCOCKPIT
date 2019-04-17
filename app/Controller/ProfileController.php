@@ -232,9 +232,10 @@ class ProfileController extends AppController {
     }
 
     public function create_apikey() {
+
         $this->layout = 'blank';
-        if (!$this->isAngularJsRequest()) {
-            //Only ship template
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
