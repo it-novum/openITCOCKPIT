@@ -193,23 +193,9 @@ class UsersTable extends Table {
                 'message' => 'Passwords not equal'
             ]);
 
-      /*  $validator->add('current_password',
-            'checkCurrentPassword', [
-                'rule'    => 'checkCurrentPassword',
-                'message' => 'The provided Password is different from your Password'
-            ]);
-*/
         return $validator;
     }
 
-
-  /*  public function checkCurrentPassword($check, array $context){
-        debug($check);
-        debug($context);
-        $pass = Security::hash($context['User']['current_password'], null, true);
-        return $pass == Security::hash($context['User']['current_password'], null, true);
-    }
-*/
     /**
      * Password validation regex.
      */
@@ -237,9 +223,7 @@ class UsersTable extends Table {
      */
     public function beforeSave($event, $entity, $options) {
         if (!empty($entity->password)) {
-            //$entity->password = Security::hash($entity->password, null, true);
-            $this->getPasswordHash($entity->password);
-            return false;
+            $entity->password = $this->getPasswordHash($entity->password);
         }
         return true;
     }

@@ -146,7 +146,6 @@ class UsersController extends AppController {
             $this->request->data['User']['status'] = 1;
 
             $this->request->data = $this->request->data('User');
-
             $user = $Users->newEntity();
             $user = $Users->patchEntity($user, $this->request->data);
 
