@@ -8,7 +8,6 @@ angular.module('openITCOCKPIT')
                     full_name: '',
                     email: '',
                     phone: '',
-                    status: QueryStringService.userstate(),
                     usergroup_id: [],
                     company: '',
                 }
@@ -36,7 +35,6 @@ angular.module('openITCOCKPIT')
                 'filter[Users.full_name]': $scope.filter.Users.full_name,
                 'filter[Users.email]': $scope.filter.Users.email,
                 'filter[Users.phone]': $scope.filter.Users.phone,
-                'filter[Users.status][]': $rootScope.currentStateForApi($scope.filter.Users.status),
                 'filter[Users.usergroup_id][]': $scope.filter.Users.usergroup_id,
                 'filter[Users.company]': $scope.filter.Users.company
             };
@@ -138,7 +136,6 @@ angular.module('openITCOCKPIT')
         $scope.load();
         $scope.loadSystemsettings();
         $scope.loadUsergroups();
-        console.log(QueryStringService.userstate());
 
         $scope.$watch('filter', function(){
             $scope.currentPage = 1;
