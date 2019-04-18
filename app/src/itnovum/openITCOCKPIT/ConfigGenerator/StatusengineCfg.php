@@ -25,6 +25,9 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
+
 class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'statusengine';
@@ -107,9 +110,9 @@ class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
      *
      * @param array $dbRecords
      * @return bool|int
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function writeToFile($dbRecords) {
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
@@ -162,10 +165,10 @@ class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
          * - Perfdata.php
          * - Graphite.php
          */
-        $loader = new \Twig_Loader_Filesystem([
+        $loader = new FilesystemLoader([
             $this->getTemplatePath()
         ]);
-        $twig = new \Twig_Environment($loader, ['debug' => true]);
+        $twig = new Environment($loader, ['debug' => true]);
 
         // /etc/statusengine/Config/Statusengine.php
         $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/statusengine/Statusengine.php', '/etc/statusengine/Config/Statusengine.php');
