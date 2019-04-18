@@ -59,7 +59,6 @@
 <div class="row padding-bottom-10" ng-if="hostgroups.length > 0">
     <div class="col col-xs-11">
         <select
-                ng-if="hostgroups.length > 0"
                 class="form-control"
                 chosen="hostgroups"
                 ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
