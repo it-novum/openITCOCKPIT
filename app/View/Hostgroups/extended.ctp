@@ -56,7 +56,7 @@
         </h1>
     </div>
 </div>
-<div class="row padding-bottom-10" ng-if="hostgroups.length > 0">
+<div class="row padding-bottom-10">
     <div class="col col-xs-11">
         <select
                 class="form-control"
