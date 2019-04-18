@@ -91,7 +91,6 @@ class ApiAuthenticate extends BaseAuthenticate {
             $apikey = $ApikeysTable->find()
                 ->where([
                     'Apikeys.apikey' => $username,
-                    'Users.status'   => 1
                 ])
                 ->contain([
                     'Users' => [
@@ -109,7 +108,6 @@ class ApiAuthenticate extends BaseAuthenticate {
         $cake2User = [
             'id'                     => $user['id'],
             'usergroup_id'           => $user['usergroup_id'],
-            'status'                 => $user['status'],
             'email'                  => $user['email'],
             'password'               => $user['password'],
             'firstname'              => $user['firstname'],

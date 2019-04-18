@@ -37,7 +37,6 @@ class UsersFilter extends Filter {
                 'Users.email',
                 'Users.company',
                 'Users.phone',
-                'Users.status',
             ],
             'equals' => [
                 'Users.usergroup_id'
@@ -57,7 +56,6 @@ class UsersFilter extends Filter {
                 'Users.email',
                 'Users.company',
                 'Users.phone',
-                'Users.status',
             ],
             'equals' => [
                 'Users.usergroup_id'

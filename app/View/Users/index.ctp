@@ -124,37 +124,6 @@
 
                             <div class="col-xs-12 col-md-6">
                                 <fieldset>
-                                    <legend><?php echo __('User Status'); ?></legend>
-                                    <div class="form-group smart-form">
-                                        <label class="checkbox small-checkbox-label">
-                                            <input type="checkbox" name="checkbox" checked="checked"
-                                                   ng-model="filter.Users.status.active"
-                                                   ng-model-options="{debounce: 500}">
-                                            <i class="checkbox-primary"></i>
-                                            <?php echo __('Active'); ?>
-                                        </label>
-
-                                        <label class="checkbox small-checkbox-label">
-                                            <input type="checkbox" name="checkbox" checked="checked"
-                                                   ng-model="filter.Users.status.inactive"
-                                                   ng-model-options="{debounce: 500}">
-                                            <i class="checkbox-primary"></i>
-                                            <?php echo __('Inactive'); ?>
-                                        </label>
-
-                                        <label class="checkbox small-checkbox-label">
-                                            <input type="checkbox" name="checkbox" checked="checked"
-                                                   ng-model="filter.Users.status.suspended"
-                                                   ng-model-options="{debounce: 500}">
-                                            <i class="checkbox-primary"></i>
-                                            <?php echo __('suspended'); ?>
-                                        </label>
-                                    </div>
-                                </fieldset>
-                            </div>
-
-                            <div class="col-xs-12 col-md-6">
-                                <fieldset>
                                     <legend><?php echo __('User Role'); ?></legend>
                                     <div class="form-group smart-form">
                                         <select

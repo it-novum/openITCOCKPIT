@@ -92,7 +92,6 @@ class Cake4Authenticate extends BaseAuthenticate {
                 ->where([
                     'Users.email'    => $username,
                     'Users.password' => $passwordHashed,
-                    'Users.status'   => 1
                 ])
                 ->contain([
                     'Usergroups'
@@ -106,7 +105,6 @@ class Cake4Authenticate extends BaseAuthenticate {
         $cake2User = [
             'id'                     => $user['id'],
             'usergroup_id'           => $user['usergroup_id'],
-            'status'                 => $user['status'],
             'email'                  => $user['email'],
             'password'               => $user['password'],
             'firstname'              => $user['firstname'],
