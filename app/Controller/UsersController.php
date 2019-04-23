@@ -211,7 +211,7 @@ class UsersController extends AppController {
 
             $user = $Users->get($id);
             //prevent multiple hash of password
-            if(empty($this->request->data('password'))){
+            if (empty($this->request->data('password'))) {
                 unset($user->password);
             }
             $user = $Users->patchEntity($user, $this->request->data);
@@ -272,7 +272,54 @@ class UsersController extends AppController {
             $this->set('user', $user);
             $this->set('_serialize', ['user']);
         }
+    }
 
+    public function editFromLdap($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
+        $this->set('systemsettings', $systemsettings);
+        $this->set('_serialize', ['systemsettings']);
+
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+
+        $user = $Users->getUserWithContainerPermission($id, $this->MY_RIGHTS);
+        $this->set('user', $user);
+        $this->set('_serialize', ['user']);
+
+        if ($this->request->is('post') || $this->request->is('put')) {
+
+            // save additional data to containersUsersMemberships
+            if (isset($this->request->data['User']['ContainersUsersMemberships'])) {
+                $containerPermissions = $Users->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
+                $this->request->data['User']['containers'] = $containerPermissions;
+            }
+
+            $this->request->data = $this->request->data('User');
+
+            //remove password validation when user is imported from ldap
+            $Users->getValidator()->remove('password');
+            $Users->getValidator()->remove('confirm_password');
+
+
+            $user = $Users->get($id);
+            $user = $Users->patchEntity($user, $this->request->data);
+
+            $Users->save($user);
+            if ($user->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $user->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            }
+            $this->set('user', $user);
+            $this->set('_serialize', ['user']);
+        }
 
     }
 

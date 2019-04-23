@@ -189,12 +189,16 @@
                                     <td>{{user.User.phone}}</td>
                                     <td>{{user.User.company}}</td>
                                     <td>{{user.User.usergroup.name}}</td>
-                                    <!-- active, suspended, deleted -->
                                     <td class="width-50">
                                         <div class="btn-group smart-form">
                                             <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
                                                 <a ui-sref="UsersEdit({id: user.User.id})"
-                                                   ng-if="user.User.allow_edit"
+                                                   ng-if="user.User.allow_edit && !user.User.samaccountname"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                                <a ui-sref="UsersEditFromLdap({id: user.User.id})"
+                                                   ng-if="user.User.allow_edit && user.User.samaccountname"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
@@ -213,10 +217,16 @@
                                             <ul class="dropdown-menu pull-right"
                                                 id="menuHack-{{user.User.id}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
-                                                    <li ng-if="user.User.allow_edit">
+                                                    <li ng-if="user.User.allow_edit && !user.User.samaccountname">
                                                         <a ui-sref="UsersEdit({id:user.User.id})">
                                                             <i class="fa fa-cog"></i>
                                                             <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
+                                                    <li ng-if="user.User.allow_edit && user.User.samaccountname">
+                                                        <a ui-sref="UsersEditFromLdap({id:user.User.id})">
+                                                            <i class="fa fa-cog"></i>
+                                                            <?php echo __('Edit Ldap'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
