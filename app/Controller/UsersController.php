@@ -46,6 +46,8 @@ class UsersController extends AppController {
             //Only ship HTML Template
             return;
         }
+        $userId = $this->Auth->User('id');
+
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
 
@@ -66,9 +68,10 @@ class UsersController extends AppController {
             }
         }
         $this->set('all_users', $all_users);
-        $toJson = ['all_users', 'paging'];
+        $this->set('userId', $userId);
+        $toJson = ['all_users', 'paging', 'userId'];
         if ($this->isScrollRequest()) {
-            $toJson = ['all_users', 'scroll'];
+            $toJson = ['all_users', 'scroll', 'userId'];
         }
         $this->set('_serialize', $toJson);
     }
@@ -143,6 +146,7 @@ class UsersController extends AppController {
             }
 
             $this->request->data = $this->request->data('User');
+
             $user = $Users->newEntity();
             $user = $Users->patchEntity($user, $this->request->data);
 

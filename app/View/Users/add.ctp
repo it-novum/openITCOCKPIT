@@ -82,12 +82,14 @@ $timezones = CakeTime::listTimezones();
                             </legend>
                             <input type="radio" value="1" ng-value="1" id="{{'read_'+containerId}}"
                                    name="{{'containerPermissions1_'+containerId}}"
-                                   ng-model="post.User.ContainersUsersMemberships[containerId]">
+                                   ng-model="post.User.ContainersUsersMemberships[containerId]"
+                                   ng-checked="{{containerId != 1}}">
                             <label for="userPermissionButton"
                                    class="padding-10 font-sm"><?php echo __('read'); ?></label>
                             <input type="radio" value="2" ng-value="2" id="{{'write_'+containerId}}"
                                    name="{{'containerPermissions2_'+containerId}}"
-                                   ng-model="post.User.ContainersUsersMemberships[containerId]">
+                                   ng-model="post.User.ContainersUsersMemberships[containerId]"
+                                   ng-checked="{{containerId == 1}}">
                             <label for="userPermissionButton"
                                    class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
                         </div>
@@ -105,6 +107,21 @@ $timezones = CakeTime::listTimezones();
                                     ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
                                     ng-model="post.User.usergroup_id">
                             </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.is_active}">
+                        <label class="col col-md-2 control-label" for="userIsActive">
+                            <?php echo __('Is Active'); ?>
+                        </label>
+                        <div class="col-xs-10 smart-form">
+                            <label class="checkbox small-checkbox-label no-required">
+                                <input type="checkbox"
+                                       id="userIsActive"
+                                       name="checkbox"
+                                       ng-model="post.User.is_active">
+                                <i class="checkbox-primary"></i>
+                            </label>
                         </div>
                     </div>
 

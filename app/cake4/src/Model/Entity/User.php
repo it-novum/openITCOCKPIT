@@ -70,6 +70,7 @@ class User extends Entity {
         'showstatsinmenu'         => true,
         'dashboard_tab_rotation'  => true,
         'paginatorlength'         => true,
+        'is_active'               => true,
         'recursive_browser'       => true,
         'created'                 => true,
         'modified'                => true,

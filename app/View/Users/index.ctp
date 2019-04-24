@@ -173,6 +173,10 @@
                                         <i class="fa" ng-class="getSortClass('Users.company')"></i>
                                         <?php echo __('Company'); ?>
                                     </th>
+                                    <th class="no-sort" ng-click="orderBy('Users.is_active')">
+                                        <i class="fa" ng-class="getSortClass('Users.is_active')"></i>
+                                        <?php echo __('Is active'); ?>
+                                    </th>
                                     <th class="no-sort" ng-click="orderBy('User.usergroup.name')">
                                         <i class="fa" ng-class="getSortClass('User.usergroup.name')"></i>
                                         <?php echo __('User role'); ?>
@@ -188,6 +192,10 @@
                                     <td>{{user.User.email}}</td>
                                     <td>{{user.User.phone}}</td>
                                     <td>{{user.User.company}}</td>
+                                    <td>
+                                        <i class="fa fa-check" ng-if="user.User.is_active"></i>
+                                        <i class="fa fa-times" ng-if="!user.User.is_active"></i>
+                                        </td>
                                     <td>{{user.User.usergroup.name}}</td>
                                     <td class="width-50">
                                         <div class="btn-group smart-form">
@@ -239,8 +247,8 @@
                                                     </li>
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'users')): ?>
-                                                    <li class="divider" ng-if="user.User.allow_edit"></li>
-                                                    <li ng-if="user.User.allow_edit">
+                                                    <li class="divider" ng-if="user.User.allow_edit && (user.User.id != userId)"></li>
+                                                    <li ng-if="user.User.allow_edit && (user.User.id != userId)">
                                                         <a href="javascript:void(0);"
                                                            class="txt-color-red"
                                                            ng-click="confirmDelete(getObjectForDelete(user))">

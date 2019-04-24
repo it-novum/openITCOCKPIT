@@ -9,15 +9,16 @@ angular.module('openITCOCKPIT')
                 'samaccountname': null, //username
                 'firstname': '',
                 'lastname': '',
+                'is_active':true,
                 'company': null,
                 'position': null,
                 'phone': null,
                 'usergroup_id': '',
                 'ldap_dn': null,
-                'showstatsinmenu': 0,
+                'showstatsinmenu': false,
                 'paginatorlength': 25,
                 'dashboard_tab_rotation': 0,
-                'recursive_browser': 0,
+                'recursive_browser': false,
                 'dateformat': '',
                 'containers': {
                     /* example data CURRENTLY NOT USED!

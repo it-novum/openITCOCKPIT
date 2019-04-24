@@ -42,6 +42,7 @@ angular.module('openITCOCKPIT')
             $http.get("/users/index.json", {
                 params: params
             }).then(function(result){
+                $scope.userId = result.data.userId;
                 $scope.Users = result.data.all_users;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;

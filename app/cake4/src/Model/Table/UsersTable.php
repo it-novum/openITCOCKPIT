@@ -94,6 +94,11 @@ class UsersTable extends Table {
             ->allowEmptyString('usergroup_id', false);
 
         $validator
+            ->boolean('is_active')
+            ->requirePresence('is_active', 'create')
+            ->allowEmptyString('is_active', false);
+
+        $validator
             ->email('email')
             ->requirePresence('email', 'create')
             ->allowEmptyString('email', false);
@@ -253,6 +258,7 @@ class UsersTable extends Table {
                     'Users.email',
                     'Users.company',
                     'Users.phone',
+                    'Users.is_active',
                     'Users.samaccountname',
                     'Usergroups.id',
                     'Usergroups.name',
@@ -301,6 +307,7 @@ class UsersTable extends Table {
                     'Users.company',
                     'Users.samaccountname',
                     'Users.usergroup_id',
+                    'Users.is_active',
                     //'Users.password',
                     'Users.firstname',
                     'Users.lastname',
@@ -397,6 +404,7 @@ class UsersTable extends Table {
                 'Users.company',
                 'Users.samaccountname',
                 'Users.usergroup_id',
+                'Users.is_active',
                 //'Users.password',
                 'Users.firstname',
                 'Users.lastname',

@@ -11,14 +11,15 @@ angular.module('openITCOCKPIT')
                 'firstname': '',
                 'lastname': '',
                 'company': '',
+                'is_active': true,
                 'position': '',
                 'phone': '',
                 'password': '',
                 'usergroup_id': '',
-                'showstatsinmenu': 0,
+                'showstatsinmenu': false,
                 'paginatorlength': 25,
                 'dashboard_tab_rotation': 0,
-                'recursive_browser': 0,
+                'recursive_browser': false,
                 'dateformat': '',
                 'containers': {
                     /* example data CURRENTLY NOT USED!

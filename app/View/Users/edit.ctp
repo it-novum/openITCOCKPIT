@@ -108,6 +108,21 @@ $timezones = CakeTime::listTimezones();
                         </div>
                     </div>
 
+                    <div class="form-group" ng-class="{'has-error': errors.is_active}">
+                        <label class="col col-md-2 control-label" for="userIsActive">
+                            <?php echo __('Is Active'); ?>
+                        </label>
+                        <div class="col-xs-10 smart-form">
+                            <label class="checkbox small-checkbox-label no-required">
+                                <input type="checkbox"
+                                       id="userIsActive"
+                                       name="checkbox"
+                                       ng-model="post.User.is_active">
+                                <i class="checkbox-primary"></i>
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="form-group required" ng-class="{'has-error': errors.email}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Email Address'); ?>
