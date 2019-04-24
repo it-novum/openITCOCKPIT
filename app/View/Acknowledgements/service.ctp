@@ -237,8 +237,8 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                 <td>
                                     {{ Acknowledgement.AcknowledgedService.author_name }}
                                 </td>
-                                <td>
-                                    {{ Acknowledgement.AcknowledgedService.comment_data }}
+                                <td ng-bind-html="Acknowledgement.AcknowledgedService.comment_data | trustAsHtml">
+
                                 </td>
                                 <td class="text-center">
                                         <span ng-show="Acknowledgement.AcknowledgedService.is_sticky">
