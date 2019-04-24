@@ -209,8 +209,8 @@
                                 <td>
                                     {{ Acknowledgement.AcknowledgedHost.author_name }}
                                 </td>
-                                <td>
-                                    {{ Acknowledgement.AcknowledgedHost.comment_data }}
+                                <td ng-bind-html="Acknowledgement.AcknowledgedHost.comment_data | trustAsHtml">
+
                                 </td>
                                 <td class="text-center">
                                         <span ng-show="Acknowledgement.AcknowledgedHost.is_sticky">
