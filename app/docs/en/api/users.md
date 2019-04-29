@@ -96,7 +96,6 @@
             "position": null,
             "company": null,
             "phone": null,
-            "linkedin_id": null,
             "timezone": "Europe\/Berlin",
             "dateformat": "%H:%M:%S - %d.%m.%Y",
             "image": null,

@@ -81,7 +81,7 @@ class AppAuthComponent extends AuthComponent {
                 ],
                 'scope'     => [
                     //'User.login_retries <=' => 3,
-                    'User.status' => Status::ACTIVE,
+                    'User.is_active' => 1,
                 ],
             ],
             'Cake4',
@@ -126,7 +126,7 @@ class AppAuthComponent extends AuthComponent {
                     return false;
                 }
 
-                if (isset($user['User']['status']) && $user['User']['status'] != Status::ACTIVE) {
+                if (isset($user['User']['is_active']) && $user['User']['is_active'] != 1) {
                     return false;
                 }
 
@@ -254,7 +254,7 @@ class AppAuthComponent extends AuthComponent {
                  * If the login request comes from login.ctp, we use the credentials out of $_REQUEST
                  * If the request is from $this->autoLogin(), we use the credentials out of CT_USER cookie
                  */
-                if (isset($user['User']['status']) && $user['User']['status'] != Status::ACTIVE) {
+                if (isset($user['User']['is_active']) && $user['User']['is_active'] != 1) {
                     return false;
                 }
                 $_options = [];
@@ -323,7 +323,7 @@ class AppAuthComponent extends AuthComponent {
                 $user = ClassRegistry::init('User')->find('first', [
                     'conditions' => [
                         'email'  => $autoLoginData['email'],
-                        'status' => Status::ACTIVE,
+                        'is_active' => 1,
                     ],
                     'contain'    => false,
                 ]);

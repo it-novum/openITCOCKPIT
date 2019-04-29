@@ -76,10 +76,25 @@ $timezones = CakeTime::listTimezones();
 
                     <!-- Container permissions read/write -->
                     <div class="row" ng-repeat="(key, containerId) in post.User.containers._ids">
+
                         <div class="col col-md-2"></div>
                         <div class="col col-md-10">
                             <legend class="no-padding font-sm text-primary">{{getContainerName(containerId)}}
                             </legend>
+                            <input type="radio" value="1"
+                                    id="{{'read_'+containerId}}"
+                                   name="{{'containerPermissions1_'+containerId}}"
+                                   ng-model="post.User.ContainersUsersMemberships[containerId]" checked>
+                            <label for="userPermissionButton"
+                                   class="padding-10 font-sm"><?php echo __('read'); ?></label>
+                            <input type="radio" value="2"
+                                    id="{{'write_'+containerId}}"
+                                   name="{{'containerPermissions2_'+containerId}}"
+                                   ng-model="post.User.ContainersUsersMemberships[containerId]">
+                            <label for="userPermissionButton"
+                                   class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+
+                            <!--
                             <input type="radio" value="1" ng-value="1" id="{{'read_'+containerId}}"
                                    name="{{'containerPermissions1_'+containerId}}"
                                    ng-model="post.User.ContainersUsersMemberships[containerId]"
@@ -91,7 +106,7 @@ $timezones = CakeTime::listTimezones();
                                    ng-model="post.User.ContainersUsersMemberships[containerId]"
                                    ng-checked="{{containerId == 1}}">
                             <label for="userPermissionButton"
-                                   class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                                   class="padding-10 font-sm"><?php echo __('read/write'); ?></label> -->
                         </div>
                     </div>
 

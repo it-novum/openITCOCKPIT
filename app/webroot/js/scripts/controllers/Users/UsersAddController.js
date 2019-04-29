@@ -90,6 +90,8 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
+            console.log($scope.post);
+
             $http.post("/users/add.json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -103,11 +105,17 @@ angular.module('openITCOCKPIT')
                     $scope.errors = result.data.error;
                 }
             });
+            
         };
 
 
         $scope.loadContainer();
         $scope.loadUsergroups();
         $scope.loadDateformats();
+
+        $scope.$watch('post.User.containers._ids', function(){
+            console.log($scope.post.User.containers._ids);
+        },true);
+
     });
 
