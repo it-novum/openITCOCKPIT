@@ -40,12 +40,12 @@ App.Controllers.LocationsAddController = Frontend.AppController.extend({
          * Binding events
          */
         $('#LocationLatitude').keyup(function(){
-            var locationLatitudeValue = $(this).val().replace(/,/gi, '.').replace(/[^\d\.]/g, '');
+            var locationLatitudeValue = $(this).val().replace(/,/gi, '.').replace(/[^\d.-]/g, '');
             $(this).val(locationLatitudeValue);
         });
 
         $('#LocationLongitude').keyup(function(){
-            var locationLongitudeValue = $(this).val().replace(/,/gi, '.').replace(/[^\d\.]/g, '');
+            var locationLongitudeValue = $(this).val().replace(/,/gi, '.').replace(/[^\d.-]/g, '');
             $(this).val(locationLongitudeValue);
         });
 
