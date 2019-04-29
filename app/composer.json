@@ -70,6 +70,7 @@
     "require-dev": {
         "cakephp/bake": "^1.8",
         "slevomat/coding-standard": "3.0",
-        "phpunit/phpunit": "6.5.13"
+        "phpunit/phpunit": "6.5.13",
+        "symfony/yaml": "^4.2"
     }
 }

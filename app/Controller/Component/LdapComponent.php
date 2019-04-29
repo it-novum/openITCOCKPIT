@@ -24,6 +24,7 @@
 //	confirmation.
 
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use Model\Adldap;
 
 /**
@@ -40,6 +41,12 @@ class LdapComponent extends Component {
 
         //Load external lib
         require_once OLD_APP . 'Model' . DS . 'Adldap.php';
+
+        $PHPVersionChecker = new PHPVersionChecker();
+        if($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()){
+            //Only use Adldap for legacy PHP versions
+            return false;
+        }
 
         //Load Systemsettings
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */

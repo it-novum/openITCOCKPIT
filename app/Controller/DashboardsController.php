@@ -142,6 +142,20 @@ class DashboardsController extends AppController {
 
     public function dynamicDirective() {
         $directiveName = $this->request->query('directive');
+
+        $widgets = $this->Widget->getAvailableWidgets($this->PERMISSIONS);
+        $isValidDirective = false;
+        foreach($widgets as $widget){
+            if($widget['directive'] === $directiveName){
+                $isValidDirective = true;
+                break;
+            }
+        }
+
+        if(!$isValidDirective){
+            throw new ForbiddenException();
+        }
+
         if (strlen($directiveName) < 2) {
             throw new RuntimeException('Wrong AngularJS directive name?');
         }

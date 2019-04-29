@@ -70,3 +70,12 @@ services:
         max-file: "10"
 volumes:
   grafana-data:
+{% if USE_AUTO_NETWORKING == 0 %}
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: {{docker_compose_subnet}}
+{% endif %}

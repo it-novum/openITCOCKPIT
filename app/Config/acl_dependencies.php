@@ -46,7 +46,6 @@ $config = [
                 'export',
                 'not_found',
                 'forbidden',
-                'nested_list',
                 'executing',
                 'acknowledge_service',
                 'downtime_service',

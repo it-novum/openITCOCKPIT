@@ -203,6 +203,86 @@ $timezones = CakeTime::listTimezones();
             </div>
         </div>
 
+        <div class="form-group required" ng-class="{'has-error': errors.Configfile.local_graphite_plaintext_port}">
+            <label class="col col-md-2 control-label">
+                <?php echo __('Network configuration'); ?>
+            </label>
+            <div class="col col-xs-10">
+                <select class="form-control"
+                        ng-model="post.string.USE_AUTO_NETWORKING">
+                    <option value="1"><?php echo __('Automatically'); ?></option>
+                    <option value="0"><?php echo __('Manually'); ?></option>
+                </select>
+                <div ng-repeat="error in errors.Configfile.USE_AUTO_NETWORKING">
+                    <div class="help-block text-danger">{{ error }}</div>
+                </div>
+            </div>
+            <div class="helpText text-muted col-md-offset-2 col-md-6">
+                <?php echo h($GraphingDocker->getHelpText('USE_AUTO_NETWORKING')); ?>
+            </div>
+        </div>
+
+        <div ng-show="post.string.USE_AUTO_NETWORKING == '0'">
+            <?php
+            /*
+             * Maybe we implement this some day? /etc/docker/daemon.json
+                <div class="form-group required" ng-class="{'has-error': errors.Configfile.bip}">
+                    <label class="col col-md-2 control-label">
+                        <?php echo __('BIP'); ?>
+                    </label>
+                    <div class="col col-xs-10">
+                        <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.string.bip">
+                        <div ng-repeat="error in errors.Configfile.bip">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                    <div class="helpText text-muted col-md-offset-2 col-md-6">
+                        <?php echo h($GraphingDocker->getHelpText('bip')); ?>
+                    </div>
+                </div>
+
+                <div class="form-group required" ng-class="{'has-error': errors.Configfile.fixed_cidr}">
+                    <label class="col col-md-2 control-label">
+                        <?php echo __('Fixed CIDR'); ?>
+                    </label>
+                    <div class="col col-xs-10">
+                        <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.string.fixed_cidr">
+                        <div ng-repeat="error in errors.Configfile.fixed_cidr">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                    <div class="helpText text-muted col-md-offset-2 col-md-6">
+                        <?php echo h($GraphingDocker->getHelpText('fixed_cidr')); ?>
+                    </div>
+                </div>
+                */ ?>
+
+            <div class="form-group required" ng-class="{'has-error': errors.Configfile.docker_compose_subnet}">
+                <label class="col col-md-2 control-label">
+                    <?php echo __('Docker Compose subnet'); ?>
+                </label>
+                <div class="col col-xs-10">
+                    <input
+                            class="form-control"
+                            type="text"
+                            ng-model="post.string.docker_compose_subnet">
+                    <div ng-repeat="error in errors.Configfile.docker_compose_subnet">
+                        <div class="help-block text-danger">{{ error }}</div>
+                    </div>
+                </div>
+                <div class="helpText text-muted col-md-offset-2 col-md-6">
+                    <?php echo h($GraphingDocker->getHelpText('docker_compose_subnet')); ?>
+                </div>
+            </div>
+
+        </div>
+
     </div>
 
     <div class="row">
