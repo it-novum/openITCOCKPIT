@@ -112,7 +112,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
             ucfirst($this->request->controller),
             ucfirst($this->request->action)
         ); ?>
-        <div ng-controller="<?php echo $AngularController; ?>">
+        <div ng-controller="<?php echo h($AngularController); ?>">
             <div ui-view>
                 <?php
                 //Remove this line if ui-router is in use!!

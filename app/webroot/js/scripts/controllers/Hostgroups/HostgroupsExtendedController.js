@@ -47,6 +47,18 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadHostgroupsCallback = function(searchString){
+            $http.get("/hostgroups/loadHostgroupsByString.json", {
+                params: {
+                    'angular': true,
+                    'filter[Container.name]': searchString,
+                }
+            }).then(function(result){
+                $scope.hostgroups = result.data.hostgroups;
+            });
+        };
+
+
         $scope.loadHostsWithStatus = function(){
             if($scope.post.Hostgroup.id){
                 $http.get("/hostgroups/loadHostgroupWithHostsById/" + $scope.post.Hostgroup.id + ".json", {

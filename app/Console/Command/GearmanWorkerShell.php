@@ -683,7 +683,21 @@ class GearmanWorkerShell extends AppShell {
                 break;
 
             case 'delete_sql_backup':
-                $return = unlink($payload['path']);
+                $backup_files = [];
+                $files = scandir("/opt/openitc/nagios/backup/");
+                foreach ($files as $file) {
+                    if (strstr($file, ".sql")) {
+                        $backup_files["/opt/openitc/nagios/backup/" . $file] = $file;
+                    }
+                }
+
+                $fileToDelete = $payload['path'];
+
+                $return = false;
+                if(isset($backup_files[$fileToDelete]) && is_file($fileToDelete)){
+                    $return = unlink($fileToDelete);
+                }
+
                 break;
 
             case 'check_background_processes':

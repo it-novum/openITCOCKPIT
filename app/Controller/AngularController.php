@@ -405,11 +405,6 @@ class AngularController extends AppController {
         return;
     }
 
-    public function nested_list() {
-        //Only ship HTML template
-        return;
-    }
-
     public function reschedule_host() {
         //Only ship HTML template
         return;

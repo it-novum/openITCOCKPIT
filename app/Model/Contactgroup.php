@@ -110,12 +110,14 @@ class Contactgroup extends AppModel {
             }
         }
         $tenantContainerIds = array_unique($tenantContainerIds);
+        $containerIds = array_unique(array_merge($tenantContainerIds, $container_ids));
+
 
         switch ($type) {
             case 'all':
                 return $this->find('all', [
                     'conditions' => [
-                        'Container.parent_id'        => $tenantContainerIds,
+                        'Container.parent_id'        => $containerIds,
                         'Container.containertype_id' => CT_CONTACTGROUP,
                     ],
                     'recursive'  => 1,
@@ -128,7 +130,7 @@ class Contactgroup extends AppModel {
                 $return = [];
                 $results = $this->find('all', [
                     'conditions' => [
-                        'Container.parent_id'        => $tenantContainerIds,
+                        'Container.parent_id'        => $containerIds,
                         'Container.containertype_id' => CT_CONTACTGROUP,
                     ],
                     'recursive'  => 1,
@@ -142,8 +144,6 @@ class Contactgroup extends AppModel {
 
                 return $return;
         }
-
-        return [];
     }
 
     /**

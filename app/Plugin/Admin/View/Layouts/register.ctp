@@ -70,6 +70,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     printf('<script src="%s"></script>', '/js/scripts/ng.app.js');
     printf('<script src="%s"></script>', '/vendor/javascript-detect-element-resize/jquery.resize.js');
     printf('<script src="%s"></script>', '/vendor/angular-gridster/dist/angular-gridster.min.js');
+    printf('<script src="%s"></script>', '/js/lib/angular-nestable.js');
 
     foreach ($appScripts as $appScript):
         printf('<script src="/%s"></script>', str_replace(WWW_ROOT, '', $appScript));

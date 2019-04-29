@@ -81,7 +81,7 @@
 
             <?php if ($this->Acl->hasPermission('index', 'statistics')): ?>
                 <?php if ($this->request->controller === 'dashboards'): ?>
-                    <?php if ($askForHelp === true): ?>
+                    <?php if (isset($askForHelp) && $askForHelp === true): ?>
                         <ask-anonymous-statistics></ask-anonymous-statistics>
                     <?php endif; ?>
                 <?php endif; ?>

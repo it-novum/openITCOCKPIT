@@ -1,5 +1,4 @@
-var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
-
+var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'ng-nestable'])
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {
             response: function(result){

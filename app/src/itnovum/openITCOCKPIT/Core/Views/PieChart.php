@@ -142,38 +142,40 @@ class PieChart {
         $colors_service = [
             [92, 184, 92, $alpha], [240, 173, 78, $alpha], [217, 83, 79, $alpha], [183, 183, 183, $alpha],
         ];
+        $colorsNotInMonitoring = [66, 139, 202, $alpha];
         $state_total = array_sum($chart_data);
 
+        if ($state_total === 0) {
+            $chart_data_array[-1] = ['color' => $colorsNotInMonitoring, 'startAngle' => 0.0, 'endAngle' => 2 * M_PI, 'show_percent_value' => 100];
+        } else {
+            $colors = (sizeof($chart_data) === 3) ? $colors_host : $colors_service;
+            krsort($chart_data);
 
-        //debug(array_sum($chart_data));
-        $colors = (sizeof($chart_data) === 3) ? $colors_host : $colors_service;
-        krsort($chart_data);
+            $chart_data_array = [];
+            foreach ($chart_data as $state => $state_count) {
+                $state_data_per['size'] = $state_count / $state_total * 100;
+                if ($state_data_per['size'] === 0) {
+                    $chart_data_array[$state] = ['color' => $colors[$state], 'startAngle' => $startAngle, 'endAngle' => $endAngle, 'show_percent_value' => $state_data_per['size']];
+                    continue;
+                }
+                $startAngle = $endAngle;
+                $endAngle = $startAngle + deg2rad(360 * $state_data_per['size'] / 100);
+                if ($startAngle < $this->DEF_CHART_START && !$set_start) {
+                    $set_start = true;
+                    $angleDiff = $this->DEF_CHART_START - $startAngle;
+                    $startAngle += $angleDiff;
+                    $endAngle += $angleDiff;
+                }
+                if ($endAngle > $this->CHART_END) {
+                    $endAngle = ($this->CHART_END - $endAngle) * (-1);
+                }
+                if ($startAngle === $endAngle)
+                    $endAngle -= 0.00000001;
 
-        $chart_data_array = [];
-        foreach ($chart_data as $state => $state_count) {
-            $state_data_per['size'] = $state_count / $state_total * 100;
-            if ($state_data_per['size'] === 0) {
+
                 $chart_data_array[$state] = ['color' => $colors[$state], 'startAngle' => $startAngle, 'endAngle' => $endAngle, 'show_percent_value' => $state_data_per['size']];
-                continue;
             }
-            $startAngle = $endAngle;
-            $endAngle = $startAngle + deg2rad(360 * $state_data_per['size'] / 100);
-            if ($startAngle < $this->DEF_CHART_START && !$set_start) {
-                $set_start = true;
-                $angleDiff = $this->DEF_CHART_START - $startAngle;
-                $startAngle += $angleDiff;
-                $endAngle += $angleDiff;
-            }
-            if ($endAngle > $this->CHART_END) {
-                $endAngle = ($this->CHART_END - $endAngle) * (-1);
-            }
-            if ($startAngle === $endAngle)
-                $endAngle -= 0.00000001;
-
-
-            $chart_data_array[$state] = ['color' => $colors[$state], 'startAngle' => $startAngle, 'endAngle' => $endAngle, 'show_percent_value' => $state_data_per['size']];
         }
-
         $this->circle3d($chart_data_array);
         $this->circle($chart_data_array);
     }
@@ -190,50 +192,54 @@ class PieChart {
         $colors_service = [
             [92, 184, 92, $alpha], [240, 173, 78, $alpha], [217, 83, 79, $alpha], [183, 183, 183, $alpha],
         ];
+        $colorsNotInMonitoring = [66, 139, 202, $alpha];
         $state_total = array_sum($chart_data);
+        if ($state_total === 0) {
+            $chart_data_array[-1] = ['color' => $colorsNotInMonitoring, 'startAngle' => 0.0, 'endAngle' => M_PI, 'show_percent_value' => 100];
+        } else {
 
-        $colors = (sizeof($chart_data) === 3) ? $colors_host : $colors_service;
-        krsort($chart_data);
+            $colors = (sizeof($chart_data) === 3) ? $colors_host : $colors_service;
+            krsort($chart_data);
 
-        $chart_data_array = [];
-        foreach ($chart_data as $state => $state_count) {
-            $state_data_per['size'] = number_format($state_count / $state_total * 100, 4);
-            if ($state_data_per['size'] === 0) {
+            $chart_data_array = [];
+            foreach ($chart_data as $state => $state_count) {
+                $state_data_per['size'] = number_format($state_count / $state_total * 100, 4);
+                if ($state_data_per['size'] === 0) {
+                    $chart_data_array[$state] = [
+                        'color'              => $colors[$state],
+                        'startAngle'         => $startAngle,
+                        'endAngle'           => $endAngle,
+                        'show_percent_value' => $state_data_per['size'],
+                    ];
+                    continue;
+                }
+                $startAngle = $endAngle;
+                $degree = 180 * $state_data_per['size'] / 100;
+                $radian = round($degree) * M_PI / 180;
+                $endAngle = $startAngle + $radian;
+
+                if ($startAngle < 0 && !$set_start) {
+                    $set_start = true;
+                    $angleDiff = 0 - $startAngle;
+                    $startAngle += $angleDiff;
+                    $endAngle += $angleDiff;
+                }
+                if ($endAngle > 180) {
+                    $endAngle = (180 - $endAngle) * (-1);
+                }
+                if ($startAngle === $endAngle)
+                    if ($startAngle < 0 && $set_start) {
+                        $startAngle = 0.0;
+                    }
+
                 $chart_data_array[$state] = [
                     'color'              => $colors[$state],
                     'startAngle'         => $startAngle,
                     'endAngle'           => $endAngle,
                     'show_percent_value' => $state_data_per['size'],
                 ];
-                continue;
             }
-            $startAngle = $endAngle;
-            $degree = 180 * $state_data_per['size'] / 100;
-            $radian = round($degree) * M_PI / 180;
-            $endAngle = $startAngle + $radian;
-
-            if ($startAngle < 0 && !$set_start) {
-                $set_start = true;
-                $angleDiff = 0 - $startAngle;
-                $startAngle += $angleDiff;
-                $endAngle += $angleDiff;
-            }
-            if ($endAngle > 180) {
-                $endAngle = (180 - $endAngle) * (-1);
-            }
-            if ($startAngle === $endAngle)
-                if ($startAngle < 0 && $set_start) {
-                    $startAngle = 0.0;
-                }
-
-            $chart_data_array[$state] = [
-                'color'              => $colors[$state],
-                'startAngle'         => $startAngle,
-                'endAngle'           => $endAngle,
-                'show_percent_value' => $state_data_per['size'],
-            ];
         }
-
         $this->circle3d($chart_data_array);
         $this->circle($chart_data_array);
     }
