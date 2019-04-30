@@ -121,7 +121,7 @@ class ServicetemplatesTable extends Table {
         ])->setDependent(true);
 
         $this->hasMany('Servicetemplateeventcommandargumentvalues', [
-            'foreignKey' => 'servicetemplate_id',
+            'foreignKey'   => 'servicetemplate_id',
             'saveStrategy' => 'replace'
         ]);
 
@@ -567,7 +567,7 @@ class ServicetemplatesTable extends Table {
                 'Contacts',
                 'Servicegroups',
                 'Customvariables',
-                'Servicetemplatecommandargumentvalues' => [
+                'Servicetemplatecommandargumentvalues'      => [
                     'Commandarguments'
                 ],
                 'Servicetemplateeventcommandargumentvalues' => [
@@ -609,6 +609,61 @@ class ServicetemplatesTable extends Table {
             ->firstOrFail();
 
         return (int)$query->get('container_id');
+    }
+
+    /**
+     * @param array $containerIds
+     * @param ServicetemplateFilter $ServicetemplateFilter
+     * @param array $selected
+     * @return array|\Cake\ORM\Query
+     */
+    public function getServicetemplatesForAngular($containerIds, ServicetemplateFilter $ServicetemplateFilter, $selected = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        if (!is_array($selected)) {
+            $selected = [$selected];
+        }
+
+        $where = $ServicetemplateFilter->ajaxFilter();
+        $where['Servicetemplates.container_id IN'] = $containerIds;
+        $query = $this->find('list')
+            ->select([
+                'Servicetemplates.id',
+                'Servicetemplates.name'
+            ])
+            ->where($where)
+            ->order([
+                'Servicetemplates.name' => 'asc'
+            ])
+            ->limit(ITN_AJAX_LIMIT)
+            ->disableHydration();
+
+        $servicetemplatesWithLimit = $query->toArray();
+        if (empty($servicetemplatesWithLimit)) {
+            $servicetemplatesWithLimit = [];
+        }
+
+        $selectedServicetemplates = [];
+        if (!empty($selected)) {
+            $query = $this->find('list')
+                ->where([
+                    'Servicetemplates.id IN'           => $selected,
+                    'Servicetemplates.container_id IN' => $containerIds
+                ])
+                ->order([
+                    'Servicetemplates.name' => 'asc'
+                ]);
+
+            $selectedServicetemplates = $query->toArray();
+            if (empty($selectedServicetemplates)) {
+                $selectedServicetemplates = [];
+            }
+        }
+
+        $servicetemplates = $servicetemplatesWithLimit + $selectedServicetemplates;
+        asort($servicetemplates, SORT_FLAG_CASE | SORT_NATURAL);
+        return $servicetemplates;
     }
 
 }
