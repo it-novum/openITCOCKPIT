@@ -132,6 +132,10 @@ for i in "$@"; do
             oitc rights
         ;;
 
+        --cc)
+        oitc clear_model_cache
+        ;;
+
         *)
             #No default at the moment
         ;;
