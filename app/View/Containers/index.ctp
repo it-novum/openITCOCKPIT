@@ -172,7 +172,7 @@ $timezones = CakeTime::listTimezones();
                                             $Container.containertype_id == <?php echo CT_TENANT; ?> ||
                                             $Container.containertype_id == <?php echo CT_LOCATION; ?>"
                                                class="text-info padding-left-10 font-xs pointer"
-                                               ui-sref="ContainersShowDetails({id:$Container.id})">
+                                               ui-sref="ContainersShowDetails({id:$Container.id, tenant:selectedContainer.id})">
                                                 <i class="fa fa-info"></i>
                                                 <?php echo __('Show details'); ?>
                                             </a>
