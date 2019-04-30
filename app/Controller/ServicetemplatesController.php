@@ -28,6 +28,7 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\ServicegroupsTable;
+use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatecommandargumentvaluesTable;
 use App\Model\Table\ServicetemplateeventcommandargumentvaluesTable;
 use App\Model\Table\ServicetemplatesTable;
@@ -41,7 +42,6 @@ use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
 /**
  * @property Changelog $Changelog
- * @property CustomValidationErrorsComponent $CustomValidationErrors
  * @property Servicetemplate $Servicetemplate
  * @property Timeperiod $Timeperiod
  * @property Contact $Contact
@@ -55,31 +55,7 @@ use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
  */
 class ServicetemplatesController extends AppController {
 
-    //public $layout = 'Admin.default';
     public $layout = 'blank';
-
-    public $components = [
-        'ListFilter.ListFilter',
-        'CustomValidationErrors',
-        'AdditionalLinks',
-        'Flash',
-    ];
-
-    public $helpers = [
-        'ListFilter.ListFilter',
-        'CustomValidationErrors',
-        'CustomVariables',
-    ];
-
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Servicetemplate.template_name' => ['label' => 'Template name', 'searchType' => 'wildcard'],
-                'Servicetemplate.name'          => ['label' => 'Service name', 'searchType' => 'wildcard'],
-                'Servicetemplate.description'   => ['label' => 'Template description', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
 
     public $uses = [
         'Servicetemplate',
@@ -134,761 +110,174 @@ class ServicetemplatesController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
      */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Servicetemplate->exists($id)) {
-            throw new NotFoundException(__('404 Not Found'));
+
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        if (!$ServicetemplatesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid service template'));
         }
-        $servicetemplate = $this->Servicetemplate->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container',
-                'CheckPeriod',
-                'NotifyPeriod',
-                'CheckCommand',
-                'EventhandlerCommand',
-                'Customvariable',
-                'Servicetemplatecommandargumentvalue',
-                'Servicetemplateeventcommandargumentvalue',
-                'Contactgroup',
-                'Contact',
-            ],
-            'conditions' => [
-                'Servicetemplate.id' => $id,
-            ],
+
+        $servicetemplate = $ServicetemplatesTable->getServicetemplateById($id, [
+            'Containers',
+            'Servicetemplatecommandargumentvalues',
+            'Servicetemplateeventcommandargumentvalues',
+            'Customvariables'
         ]);
 
-        if (!$this->allowedByContainerId(Hash::extract($servicetemplate, 'Container.id'))) {
-            $this->render403();
 
-            return;
+        if (!$this->allowedByContainerId($servicetemplate['Servicetemplate']['container']['id'])) {
+            throw new ForbiddenException('403 Forbidden');
         }
 
-        $this->set(compact(['servicetemplate']));
+        $this->set('servicetemplate', $servicetemplate);
         $this->set('_serialize', ['servicetemplate']);
     }
 
-    public function add() {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship HTML Template
-            return;
-        }
-    }
-
-
-    /**
-     * @param null $id
-     * @param null $servicetemplatetype_id
-     * @throws Exception
-     * @deprecated
-     */
-    public function edit($id = null, $servicetemplatetype_id = null) {
-        $userId = $this->Auth->user('id');
-        $this->Servicetemplate->id = $id;
-        if (!$this->Servicetemplate->exists()) {
-            throw new NotFoundException(__('Invalid servicetemplate'));
-        }
-
-        $serviceTemplate = $this->Servicetemplate->find('first', [
-            'conditions' => [
-                'Servicetemplate.id' => $id,
-            ],
-            'contain'    => [
-                'Contactgroup'                             => ['Container'],
-                'Servicegroup'                             => ['Container'],
-                'CheckCommand',
-                'EventhandlerCommand',
-                'Container',
-                'Customvariable',
-                'NotifyPeriod',
-                'CheckPeriod',
-                'Contact',
-                'Service',
-                'Servicetemplatecommandargumentvalue'      => ['Commandargument'],
-                'Servicetemplateeventcommandargumentvalue' => ['Commandargument'],
-            ],
-        ]);
-        if (!$this->allowedByContainerId(Hash::extract($serviceTemplate, 'Container.id'))) {
-            $this->render403();
-
+    public function add($servicetemplatetype_id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        $servicetemplate_for_changelog = $serviceTemplate;
-
-
-        $oldServicetemplateCheckCommandId = $serviceTemplate['Servicetemplate']['command_id'];
-        $oldServicetemplateEventkCommandId = $serviceTemplate['Servicetemplate']['eventhandler_command_id'];
-
-        /** @var $CommandsTable CommandsTable */
-        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-        /** @var $ContactgroupsTable ContactgroupsTable */
-        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-
-        $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
-        $eventHandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
-        if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
-        } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
-        }
-
-        if (count($serviceTemplate['Service']) > 0) {
-            $newContainers = [];
-            foreach ($containers as $containerId => $containerName) {
-                if (!in_array($containerId, [ROOT_CONTAINER, $serviceTemplate['Servicetemplate']['container_id']]))
-                    continue;
-                $newContainers[$containerId] = $containerName;
-            }
-            $containers = $newContainers;
-        }
-
-        // Data to refill form
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $containerId = $this->request->data('Servicetemplate.container_id');
-        } else {
-            $containerId = $serviceTemplate['Servicetemplate']['container_id'];
-        }
-
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-
-        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
-        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-        $contactGroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
-        $serviceGroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
-
-        //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
-        /** @var $CommandargumentsTable CommandargumentsTable */
-        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
-        $commandarguments = $CommandargumentsTable->getByCommandId($serviceTemplate['CheckCommand']['id']);
-
-        //Fix that we dont lose any unsaved host macros, because of vaildation error
-        if (isset($this->request->data['Customvariable'])) {
-            $serviceTemplate['Customvariable'] = $this->request->data['Customvariable'];
-        }
-        $this->Frontend->set('data_placeholder', __('Please choose a contact'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
-        $this->Frontend->setJson('lang_minutes', __('minutes'));
-        $this->Frontend->setJson('lang_seconds', __('seconds'));
-        $this->Frontend->setJson('lang_and', __('and'));
-        $this->Frontend->setJson('servicetemplate_id', $serviceTemplate['Servicetemplate']['id']);
-
-        $this->set('back_url', $this->referer());
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $ext_data_for_changelog = [
-                'Contact'             => [],
-                'Contactgroup'        => [],
-                'Servicegroup'        => [],
-                'EventhandlerCommand' => [],
-            ];
-            if ($this->request->data('Servicetemplate.Contact')) {
-                if ($contactsForChangelog = $ContactsTable->getContactsAsList($this->request->data['Servicetemplate']['Contact'])) {
-                    foreach ($contactsForChangelog as $contactId => $contactName) {
-                        $ext_data_for_changelog['Contact'][] = [
-                            'id'   => $contactId,
-                            'name' => $contactName,
-                        ];
-                    }
-                    unset($contactsForChangelog);
-                }
-            }
-            if ($this->request->data('Servicetemplate.Contactgroup')) {
-                if ($contactgroupsForChangelog = $ContactgroupsTable->getContactgroupsAsList($this->request->data['Servicetemplate']['Contactgroup'])) {
-                    foreach ($contactgroupsForChangelog as $contactgroupId => $contactgroupName) {
-                        $ext_data_for_changelog['Contactgroup'][] = [
-                            'id'   => $contactgroupId,
-                            'name' => $contactgroupName,
-                        ];
-                    }
-                    unset($contactgroupsForChangelog);
-                }
-            }
-            if ($this->request->data('Servicetemplate.Servicegroup')) {
-                if ($servicegroupsForChangelog = $this->Servicegroup->find('all', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container' => [
-                            'fields' => [
-                                'Container.name',
-                            ],
-                        ],
-                    ],
-                    'fields'     => [
-                        'Servicegroup.id',
-                    ],
-                    'conditions' => [
-                        'Servicegroup.id' => $this->request->data['Servicetemplate']['Servicegroup'],
-                    ],
-                ])
-                ) {
-                    foreach ($servicegroupsForChangelog as $servicegroupData) {
-                        $ext_data_for_changelog['Servicegroup'][] = [
-                            'id'   => $servicegroupData['Servicegroup']['id'],
-                            'name' => $servicegroupData['Container']['name'],
-                        ];
-                    }
-                    unset($servicegroupsForChangelog);
-                }
-            }
-            if ($this->request->data('Servicetemplate.notify_period_id')) {
-                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Servicetemplate']['notify_period_id'])) {
-                    foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
-                        $ext_data_for_changelog['NotifyPeriod'] = [
-                            'id'   => $timeperiodId,
-                            'name' => $timeperiodName,
-                        ];
-                    }
-                    unset($timeperiodsForChangelog);
-                }
-            }
-            if ($this->request->data('Servicetemplate.check_period_id')) {
-                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Servicetemplate']['check_period_id'])) {
-                    foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
-                        $ext_data_for_changelog['CheckPeriod'] = [
-                            'id'   => $timeperiodId,
-                            'name' => $timeperiodName,
-                        ];
-                    }
-                    unset($timeperiodsForChangelog);
-                }
-            }
-            if ($this->request->data('Servicetemplate.command_id')) {
-                /** @var $Commands CommandsTable */
-                $Commands = TableRegistry::getTableLocator()->get('Commands');
-                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Servicetemplate']['command_id']);
-                foreach ($commandsForChangelog as $commandId => $commandName) {
-                    $ext_data_for_changelog['CheckCommand'] = [
-                        'id'   => $commandId,
-                        'name' => $commandName,
-                    ];
-                }
-                unset($commandsForChangelog);
-            }
-
-            if ($this->request->data('Servicetemplate.eventhandler_command_id') && $this->request->data('Servicetemplate.eventhandler_command_id') > 0) {
-                /** @var $Commands CommandsTable */
-                $Commands = TableRegistry::getTableLocator()->get('Commands');
-                $eventHandlerCommandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Servicetemplate']['eventhandler_command_id']);
-                foreach ($eventHandlerCommandsForChangelog as $eventHandlerCommandId => $eventHandlerCommandName) {
-                    $ext_data_for_changelog['EventhandlerCommand'] = [
-                        'id'   => $eventHandlerCommandId,
-                        'name' => $eventHandlerCommandName,
-                    ];
-                }
-                unset($eventHandlerCommandsForChangelog);
-            }
-
-            //Checks if the user deletes a customvariable/macro over the trash icon
-            if (!isset($this->request->data['Customvariable'])) {
-                $this->request->data['Customvariable'] = [];
-            }
+        if ($this->request->is('post')) {
+            /** @var $ServicetemplatesTable ServicetemplatesTable */
+            $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+            $this->request->data['Servicetemplate']['uuid'] = UUID::v4();
+            $this->request->data['Servicetemplate']['servicetemplatetype_id'] = GENERIC_SERVICE;
 
             if ($servicetemplatetype_id !== null && is_numeric($servicetemplatetype_id)) {
+                //Legacy???
                 $this->request->data['Servicetemplate']['servicetemplatetype_id'] = $servicetemplatetype_id;
             }
-            $isJson = $this->request->ext == 'json';
 
-            if ($this->request->data('Servicetemplate.Contact') === '') {
-                $this->request->data['Servicetemplate']['Contact'] = [];
-            }
-            if ($this->request->data('Servicetemplate.Contactgroup') === '') {
-                $this->request->data['Servicetemplate']['Contactgroup'] = [];
-            }
-            if ($this->request->data('Servicetemplate.Servicegroup') === '') {
-                $this->request->data['Servicetemplate']['Servicegroup'] = [];
-            }
-            $this->request->data['Contact']['Contact'] = $this->request->data('Servicetemplate.Contact');
-            $this->request->data['Contactgroup']['Contactgroup'] = $this->request->data('Servicetemplate.Contactgroup');
-            $this->request->data['Servicegroup']['Servicegroup'] = $this->request->data('Servicetemplate.Servicegroup');
+            $servicetemplate = $ServicetemplatesTable->newEntity();
+            $servicetemplate = $ServicetemplatesTable->patchEntity($servicetemplate, $this->request->data('Servicetemplate'));
 
-            $this->Servicetemplate->set($this->request->data);
-            if ($this->Servicetemplate->validates()) {
-                //Delete Command argument values
-                $this->Servicetemplatecommandargumentvalue->deleteAll([
-                    'servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
-                ]);
+            $ServicetemplatesTable->save($servicetemplate);
+            if ($servicetemplate->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $servicetemplate->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
 
-                //Delete old event handler command argument values
-                $this->Servicetemplateeventcommandargumentvalue->deleteAll([
-                    'servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
-                ]);
+                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
-                $this->Customvariable->deleteAll([
-                    'object_id'     => $serviceTemplate['Servicetemplate']['id'],
-                    'objecttype_id' => OBJECT_SERVICETEMPLATE,
-                ], false);
-
-                //CleaUp for services
-
-                // $oldServicetemplateCheckCommandId = $serviceTemplate['Servicetemplate']['command_id'];
-                //$oldServicetemplateEventkCommandId
-
-                $dependentServices = $this->Service->find('list', [
-                    'conditions' => [
-                        'Service.servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
-                        'Service.command_id IS NULL'
-                    ]
-                ]);
-            }
-
-            // Save everything including custom variables
-            if ($this->Servicetemplate->saveAll($this->request->data)) {
-                $requestData = array_merge($this->request->data, $ext_data_for_changelog);
+                $extDataForChangelog = $ServicetemplatesTable->resolveDataForChangelog($this->request->data);
                 $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $id,
+                    'add',
+                    'servicetemplates',
+                    $servicetemplate->get('id'),
                     OBJECT_SERVICETEMPLATE,
-                    $this->request->data['Servicetemplate']['container_id'],
-                    $userId,
-                    $this->request->data['Servicetemplate']['name'],
-                    $requestData,
-                    $servicetemplate_for_changelog
+                    $servicetemplate->get('container_id'),
+                    $User->getId(),
+                    $servicetemplate->get('template_name'),
+                    array_merge($this->request->data, $extDataForChangelog)
                 );
 
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                if ($oldServicetemplateCheckCommandId != $this->request->data['Servicetemplate']['command_id']) {
-                    //Check command of service template was changed
-                    //Delete all custom command arguments of services
-                    //if command_id from Service is NULL
-                    $serviceCommandArgumentValuesToDelete = $this->Servicetemplate->find('first', [
-                        'recursive'  => -1,
-                        'contain'    => [
-                            'Service' => [
-                                'conditions' => [
-                                    'Service.command_id IS NULL'
-                                ],
-                                'fields'     => [
-                                    'Service.id'
-                                ],
-                            ]
-                        ],
-                        'conditions' => [
-                            'Servicetemplate.id' => $this->Servicetemplate->id
-                        ],
-                        'fields'     => [
-                            'Servicetemplate.id'
-                        ]
-                    ]);
 
-                    if (!empty($serviceCommandArgumentValuesToDelete['Service'])) {
-                        $serviceIds = Hash::extract($serviceCommandArgumentValuesToDelete['Service'], '{n}.id');
-                        if (!empty($serviceIds)) {
-                            $this->Servicecommandargumentvalue->deleteAll([
-                                'Servicecommandargumentvalue.service_id' => $serviceIds
-                            ]);
-                        }
-                    }
-                }
-
-                if ($oldServicetemplateEventkCommandId != $this->request->data['Servicetemplate']['eventhandler_command_id']) {
-                    //Event handler command of service template was changed
-                    //Delete all custom event handler command arguments of services
-                    //if eventhandler_command_id from Service is NULL
-                    $serviceEventHandlerCommandArgumentValuesToDelete = $this->Servicetemplate->find('first', [
-                        'recursive'  => -1,
-                        'contain'    => [
-                            'Service' => [
-                                'conditions' => [
-                                    'Service.eventhandler_command_id IS NULL'
-                                ],
-                                'fields'     => [
-                                    'Service.id'
-                                ],
-                            ]
-                        ],
-                        'conditions' => [
-                            'Servicetemplate.id' => $this->Servicetemplate->id
-                        ],
-                        'fields'     => [
-                            'Servicetemplate.id'
-                        ]
-                    ]);
-
-                    if (!empty($serviceEventHandlerCommandArgumentValuesToDelete['Service'])) {
-                        $serviceIds = Hash::extract($serviceEventHandlerCommandArgumentValuesToDelete['Service'], '{n}.id');
-                        if (!empty($serviceIds)) {
-                            $this->Serviceeventcommandargumentvalue->deleteAll([
-                                'Serviceeventcommandargumentvalue.service_id' => $serviceIds
-                            ]);
-                        }
-                    }
-                }
-
-
-                if ($isJson) {
-                    $this->serializeId();
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($servicetemplate); // REST API ID serialization
                     return;
                 }
-
-                $flashHref = $this->Servicetemplate->flashRedirect($this->request->params, ['action' => 'edit']);
-                $flashHref[] = $id;
-                $flashHref[] = $servicetemplatetype_id;
-
-                $this->setFlash(__('<a href="' . Router::url($flashHref) . '">Servicetemplate</a> successfully saved.'));
-
-                $redirect = $this->Servicetemplate->redirect($this->request->params, ['action' => 'index']);
-                $this->redirect($redirect);
-            } else {
-                if ($isJson) {
-                    $this->serializeErrorMessage();
-                    return;
-                }
-
-                $this->setFlash(__('Could not save data.'), false);
-                $this->CustomValidationErrors->loadModel($this->Servicetemplate);
-                $this->CustomValidationErrors->customFields([
-                    'notification_interval',
-                    'check_interval',
-                    'retry_interval',
-                    'notify_on_recovery',
-                    'flap_detection_on_up',
-                ]);
-                $this->CustomValidationErrors->fetchErrors();
-
-                foreach ($this->Customvariable->validationErrors as $customVariableValidationError) {
-                    if (isset($customVariableValidationError['name'])) {
-                        $this->set('customVariableValidationError', current($customVariableValidationError['name']));
-                    }
-                }
-
-                foreach ($this->Customvariable->validationErrors as $customVariableValidationError) {
-                    if (isset($customVariableValidationError['value'])) {
-                        $this->set('customVariableValidationErrorValue', current($customVariableValidationError['value']));
-                    }
-
-                    // Refill data that was loaded by Ajax
-                    if ($ContainersTable->existsById($this->request->data('Servicetemplate.container_id'))) {
-                        $containerIds = $this->request->data('Servicetemplate.container_id');
-                        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
-
-                        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
-                        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-                        $contactGroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
-                        $serviceGroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
-                    }
-                }
-                $serviceTemplate['Contact'] = $this->request->data['Servicetemplate']['Contact'];
-                $serviceTemplate['Contactgroup'] = $this->request->data['Servicetemplate']['Contactgroup'];
-                $serviceTemplate['Servicegroup'] = $this->request->data['Servicetemplate']['Servicegroup'];
             }
-        } else {
-            $serviceTemplate['Contact'] = Hash::combine($serviceTemplate['Contact'], '{n}.id', '{n}.id');
-            $serviceTemplate['Contactgroup'] = Hash::combine($serviceTemplate['Contactgroup'], '{n}.id', '{n}.id');
-            $serviceTemplate['Servicegroup'] = Hash::combine($serviceTemplate['Servicegroup'], '{n}.id', '{n}.id');
+            $this->set('servicetemplate', $servicetemplate);
+            $this->set('_serialize', ['servicetemplate']);
         }
-
-        $this->request->data = Hash::merge($serviceTemplate, $this->request->data);
-        $this->set([
-            '_timeperiods'     => $timeperiods,
-            '_contacts'        => $contacts,
-            '_contactgroups'   => $contactGroups,
-            '_servicegroups'   => $serviceGroups,
-            'containers'       => $containers,
-            'servicetemplate'  => $serviceTemplate,
-            'commands'         => $commands,
-            'eventhandlers'    => $eventHandlers,
-            'commandarguments' => $commandarguments,
-        ]);
     }
-
 
     /**
-     * @param null $servicetemplatetype_id
-     * @throws Exception
-     * @deprecated
+     * @param int|null $id
+     * @param int|null $servicetemplatetype_id
      */
-    public function addOld($servicetemplatetype_id = null) {
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsettings = $Systemsettings->findAsArraySection('MONITORING');
-        $active_checks_enabled = false;
-        //If servicetemplate != checkMK servicetemplate
-        if ($servicetemplatetype_id == GENERIC_SERVICE || $servicetemplatetype_id === null) {
-            $active_checks_enabled = $systemsettings['MONITORING']['MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT'];
+    public function edit($id = null, $servicetemplatetype_id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
         }
 
-        $_timeperiods = [];
-        $_contacts = [];
-        $_contactgroups = [];
-        $_servicegroups = [];
-        $userId = $this->Auth->user('id');
-        // Checking if the user hit submit and a validation error happents, to refill input fields
-        $Customvariable = [];
-        $customFieldsToRefill = [
-            'Servicetemplate' => [
-                'notification_interval',
-                'notify_on_recovery',
-                'notify_on_warning',
-                'notify_on_unknown',
-                'notify_on_critical',
-                'notify_on_flapping',
-                'notify_on_downtime',
-                'check_interval',
-                'retry_interval',
-                'process_performance_data',
-                'active_checks_enabled',
-                'flap_detection_enabled',
-                'flap_detection_on_ok',
-                'flap_detection_on_warning',
-                'flap_detection_on_unknown',
-                'flap_detection_on_critical',
-                'priority',
-                'Contact',
-                'Contactgroup',
-                'Servicegroup'
-            ],
-        ];
-        $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
-
-        //Fix that we dont lose any unsaved host macros, because of vaildation error
-        if (isset($this->request->data['Customvariable'])) {
-            $Customvariable = $this->request->data['Customvariable'];
-        }
-
-        $userContainerId = $this->Auth->user('container_id');
-
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
         /** @var $CommandsTable CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-        /** @var $ContactgroupsTable ContactgroupsTable */
-        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
-        $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
-        $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
-
-
-        if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
-        } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
+        if (!$ServicetemplatesTable->existsById($id)) {
+            throw new NotFoundException(__('Service template not found'));
         }
 
-        $this->Frontend->set('ServicetemplateActiveChecksEnabled_', __('1'));
-        $this->Frontend->set('data_placeholder', __('Please choose a contact'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
-        $this->Frontend->setJson('lang_minutes', __('minutes'));
-        $this->Frontend->setJson('lang_seconds', __('seconds'));
-        $this->Frontend->setJson('lang_and', __('and'));
+        $servicetemplate = $ServicetemplatesTable->getServicetemplateForEdit($id);
+        $servicetemplateForChangeLog = $servicetemplate;
 
-        $this->set('back_url', $this->referer());
-        $this->set(compact(['containers', 'commands', 'eventhandlers', 'userContainerId', 'userValues', 'Customvariable', 'active_checks_enabled']));
-        if ($this->request->is('post') || $this->request->is('put')) {
-            //Fixing structure of $this->request->data for HABTM
+        if (!$this->allowedByContainerId($servicetemplate['Servicetemplate']['container_id'])) {
+            $this->render403();
+            return;
+        }
 
-            if (isset($this->request->data['Servicetemplate']) && is_array($this->request->data['Servicetemplate'])) {
-                if (isset($this->request->data['Contact'])) {
-                    $this->request->data['Servicetemplate']['Contact'] = $this->request->data['Contact'];
-                }
-                if (isset($this->request->data['Contactgroup'])) {
-                    $this->request->data['Servicetemplate']['Contactgroup'] = $this->request->data['Contactgroup'];
-                }
-            }
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return service template information
+            $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
+            $eventhandlerCommands = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
+            $this->set('commands', Api::makeItJavaScriptAble($commands));
+            $this->set('eventhandlerCommands', Api::makeItJavaScriptAble($eventhandlerCommands));
+            $this->set('servicetemplate', $servicetemplate);
+            $this->set('_serialize', ['servicetemplate', 'commands', 'eventhandlerCommands']);
+            return;
+        }
 
-            $ext_data_for_changelog = [
-                'Contact'             => [],
-                'Contactgroup'        => [],
-                'Servicegroup'        => [],
-                'EventhandlerCommand' => [],
-            ];
-            if ($this->request->data('Servicetemplate.Contact')) {
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            //Update service template data
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
-                if ($contactsForChangelog = $ContactsTable->getContactsAsList($this->request->data['Servicetemplate']['Contact'])) {
-                    foreach ($contactsForChangelog as $contactId => $contactName) {
-                        $ext_data_for_changelog['Contact'][] = [
-                            'id'   => $contactId,
-                            'name' => $contactName,
-                        ];
-                    }
-                    unset($contactsForChangelog);
-                }
-            }
-            if ($this->request->data('Servicetemplate.Contactgroup')) {
-                if ($contactgroupsForChangelog = $ContactgroupsTable->getContactgroupsAsList($this->request->data['Servicetemplate']['Contactgroup'])) {
-                    foreach ($contactgroupsForChangelog as $contactgroupId => $contactgroupName) {
-                        $ext_data_for_changelog['Contactgroup'][] = [
-                            'id'   => $contactgroupId,
-                            'name' => $contactgroupName
-                        ];
-                    }
-                    unset($contactgroupsForChangelog);
-                }
-            }
-            if ($this->request->data('Servicetemplate.Servicegroup')) {
-                if ($servicegroupsForChangelog = $this->Servicegroup->find('all', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container' => [
-                            'fields' => [
-                                'Container.name',
-                            ],
-                        ],
-                    ],
-                    'fields'     => [
-                        'Servicegroup.id',
-                    ],
-                    'conditions' => [
-                        'Servicegroup.id' => $this->request->data['Servicetemplate']['Servicegroup'],
-                    ],
-                ])
-                ) {
-                    foreach ($servicegroupsForChangelog as $servicegroupData) {
-                        $ext_data_for_changelog['Servicegroup'][] = [
-                            'id'   => $servicegroupData['Servicegroup']['id'],
-                            'name' => $servicegroupData['Container']['name'],
-                        ];
-                    }
-                    unset($servicegroupsForChangelog);
-                }
-            }
-            if ($this->request->data('Servicetemplate.notify_period_id')) {
-                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Servicetemplate']['notify_period_id'])) {
-                    foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
-                        $ext_data_for_changelog['NotifyPeriod'] = [
-                            'id'   => $timeperiodId,
-                            'name' => $timeperiodName
-                        ];
-                    }
-                    unset($timeperiodsForChangelog);
-                }
+            $servicetemplateEntity = $ServicetemplatesTable->get($id);
+            $servicetemplateEntity->setAccess('uuid', false);
+            $servicetemplateEntity = $ServicetemplatesTable->patchEntity($servicetemplateEntity, $this->request->data('Servicetemplate'));
+            $servicetemplateEntity->id = $id;
 
-            }
-            if ($this->request->data('Servicetemplate.check_period_id')) {
-                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Servicetemplate']['check_period_id'])) {
-                    foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
-                        $ext_data_for_changelog['CheckPeriod'] = [
-                            'id'   => $timeperiodId,
-                            'name' => $timeperiodName
-                        ];
-                    }
-                    unset($timeperiodsForChangelog);
-                }
-
-            }
-            if ($this->request->data('Servicetemplate.command_id')) {
-                /** @var $Commands CommandsTable */
-                $Commands = TableRegistry::getTableLocator()->get('Commands');
-                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Servicetemplate']['command_id']);
-                foreach ($commandsForChangelog as $commandId => $commandName) {
-                    $ext_data_for_changelog['CheckCommand'] = [
-                        'id'   => $commandId,
-                        'name' => $commandName,
-                    ];
-                }
-                unset($commandsForChangelog);
-            }
-
-            if ($this->request->data('Servicetemplate.eventhandler_command_id')) {
-                /** @var $Commands CommandsTable */
-                $Commands = TableRegistry::getTableLocator()->get('Commands');
-                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Servicetemplate']['eventhandler_command_id']);
-                foreach ($commandsForChangelog as $commandId => $commandName) {
-                    $ext_data_for_changelog['EventhandlerCommand'] = [
-                        'id'   => $commandId,
-                        'name' => $commandName,
-                    ];
-                }
-                unset($commandsForChangelog);
-            }
-
-            $this->request->data['Servicetemplate']['uuid'] = $this->Servicetemplate->createUUID();
-
-            if ($servicetemplatetype_id !== null && is_numeric($servicetemplatetype_id)) {
-                $this->request->data['Servicetemplate']['servicetemplatetype_id'] = $servicetemplatetype_id;
-            }
-
-            $this->request->data['Contact'] = $this->request->data('Servicetemplate.Contact');
-            $this->request->data['Contactgroup'] = $this->request->data('Servicetemplate.Contactgroup');
-            $this->request->data['Servicegroup'] = $this->request->data('Servicetemplate.Servicegroup');
-
-            $isJson = $this->request->ext == 'json';
-            //Save everything including custom variables
-
-            if ($this->Servicetemplate->saveAll($this->request->data)) {
-                $changelogData = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $this->Servicetemplate->id,
-                    OBJECT_SERVICETEMPLATE,
-                    $this->request->data('Servicetemplate.container_id'),
-                    $userId,
-                    $this->request->data['Servicetemplate']['name'],
-                    array_merge($this->request->data, $ext_data_for_changelog)
-                );
-                if ($changelogData) {
-                    CakeLog::write('log', serialize($changelogData));
-                }
-
-                if ($isJson) {
-                    $this->serializeId();
-                } else {
-                    $flashHref = $this->Servicetemplate->flashRedirect($this->request->params, ['action' => 'edit']);
-                    $flashHref[] = $this->Servicetemplate->id;
-                    $flashHref[] = $servicetemplatetype_id;
-
-                    $this->setFlash(__('<a href="' . Router::url($flashHref) . '">Servicetemplate</a> successfully saved.'));
-
-                    $redirect = $this->Servicetemplate->redirect($this->request->params, ['action' => 'index']);
-                    $this->redirect($redirect);
-                }
-                //$this->redirect(array('action' => 'index'));
+            $ServicetemplatesTable->save($servicetemplateEntity);
+            if ($servicetemplateEntity->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $servicetemplateEntity->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
             } else {
-                if ($isJson) {
-                    $this->serializeErrorMessage();
+                //No errors
 
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'edit',
+                    'servicetemplates',
+                    $servicetemplateEntity->id,
+                    OBJECT_SERVICETEMPLATE,
+                    $servicetemplateEntity->get('container_id'),
+                    $User->getId(),
+                    $servicetemplateEntity->template_name,
+                    array_merge($ServicetemplatesTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ServicetemplatesTable->resolveDataForChangelog($servicetemplateForChangeLog), $servicetemplateForChangeLog)
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($servicetemplateEntity); // REST API ID serialization
                     return;
                 }
-
-                $this->setFlash(__('Could not save data'), false);
-                $this->CustomValidationErrors->loadModel($this->Servicetemplate);
-                $this->CustomValidationErrors->customFields(['notification_interval', 'check_interval', 'retry_interval', 'notify_on_recovery', 'flap_detection_on_up']);
-                $this->CustomValidationErrors->fetchErrors();
-
-                foreach ($this->Customvariable->validationErrors as $customVariableValidationError) {
-                    if (isset($customVariableValidationError['name'])) {
-                        $this->set('customVariableValidationError', current($customVariableValidationError['name']));
-                    }
-                }
-
-                foreach ($this->Customvariable->validationErrors as $customVariableValidationError) {
-                    if (isset($customVariableValidationError['value'])) {
-                        $this->set('customVariableValidationErrorValue', current($customVariableValidationError['value']));
-                    }
-                }
-
-                //Refil data that was loaded by ajax due to selected container id
-                if ($ContainersTable->existsById($this->request->data('Servicetemplate.container_id'))) {
-                    $container_id = $this->request->data('Servicetemplate.container_id');
-                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
-
-                    $_timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
-                    $_contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-                    $_contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
-                    $_servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
-                }
             }
+            $this->set('servicetemplate', $servicetemplateEntity);
+            $this->set('_serialize', ['servicetemplate']);
         }
-        $this->set(compact(['_timeperiods', '_contacts', '_contactgroups', '_servicegroups']));
     }
+
 
     /**
      * @param null $id
@@ -1715,10 +1104,10 @@ class ServicetemplatesController extends AppController {
      ****************************/
 
     /**
-     * @param int|null $hosttemplateId
+     * @param int|null $servicetemplateId
      * @throws Exception
      */
-    public function loadContainers($hosttemplateId = null) {
+    public function loadContainers($servicetemplateId = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -1733,24 +1122,24 @@ class ServicetemplatesController extends AppController {
         }
 
         $areContainersRestricted = false;
-        if (is_numeric($hosttemplateId)) {
+        if (is_numeric($servicetemplateId)) {
             //Edit mode
 
-            /** @var $HosttemplatesTable HosttemplatesTable */
-            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-            /** @var $HostsTable HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            /** @var $ServicetemplatesTable ServicetemplatesTable */
+            $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-            $hosttemplatesContainerId = $HosttemplatesTable->getContainerIdById($hosttemplateId);
-            $usedContainerIds = $HostsTable->getHostPrimaryContainerIdsByHosttemplateId($hosttemplateId);
+            $servicetemplatesContainerId = $ServicetemplatesTable->getContainerIdById($servicetemplateId);
+            $usedContainerIds = $ServicesTable->getHostPrimaryContainerIdsByServicetemplateId($servicetemplateId);
 
             if (!empty($usedContainerIds)) {
-                //This host template is used by some hosts.
-                //Container options needs to be needs to be restricted if the hosts are using some sub containers...
+                //This service template is used by some some.
+                //Container options needs to be needs to be restricted if the services/hosts are using some sub containers...
                 $restrictedContainers = [];
                 foreach ($containers as $containerId => $path) {
                     $containerId = (int)$containerId;
-                    if (in_array($containerId, [ROOT_CONTAINER, $hosttemplatesContainerId], true)) {
+                    if (in_array($containerId, [ROOT_CONTAINER, $servicetemplatesContainerId], true)) {
                         $restrictedContainers[$containerId] = $path;
                     } else {
                         $areContainersRestricted = true;
@@ -1781,7 +1170,7 @@ class ServicetemplatesController extends AppController {
 
         //Use foreach because of arra_merge remove the keys and adding None after getCommandByTypeAsList()
         //will display "None" as the last element in the select box
-        foreach($CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND) as $eventhandlerCommndId => $eventhandlerCommandName){
+        foreach ($CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND) as $eventhandlerCommndId => $eventhandlerCommandName) {
             $eventhandlerCommands[$eventhandlerCommndId] = $eventhandlerCommandName;
         }
 

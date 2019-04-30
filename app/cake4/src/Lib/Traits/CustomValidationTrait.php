@@ -27,6 +27,10 @@ namespace App\Lib\Traits;
 
 trait CustomValidationTrait {
 
+    /***************************************
+     *       MACRO VALIDATION METHODS       *
+     ***************************************/
+
     /**
      * @param string $value
      * @param array $context
@@ -49,6 +53,10 @@ trait CustomValidationTrait {
 
         return true;
     }
+
+    /***************************************
+     *       HOST VALIDATION METHODS       *
+     ***************************************/
 
     /**
      * @param mixed $value
@@ -123,4 +131,86 @@ trait CustomValidationTrait {
         }
         return false;
     }
+
+    /***************************************
+     *      SERVICE VALIDATION METHODS     *
+     ***************************************/
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for contacts and or contact groups
+     */
+    public function checkFlapDetectionOptionsService($value, $context) {
+        $flapDetectionOptions = [
+            'flap_detection_on_ok',
+            'flap_detection_on_warning',
+            'flap_detection_on_critical',
+            'flap_detection_on_unknown'
+        ];
+
+        if (!isset($context['data']['flap_detection_enabled']) || $context['data']['flap_detection_enabled'] == 0) {
+            return true;
+        }
+
+        foreach ($flapDetectionOptions as $flapDetectionOption) {
+            if (isset($context['data'][$flapDetectionOption]) && $context['data'][$flapDetectionOption] == 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for notify options (host)
+     */
+    public function checkNotificationOptionsService($value, $context) {
+        $notificationOptions = [
+            'notify_on_recovery',
+            'notify_on_warning',
+            'notify_on_critical',
+            'notify_on_unknown',
+            'notify_on_flapping',
+            'notify_on_downtime'
+        ];
+
+        foreach ($notificationOptions as $notificationOption) {
+            if (isset($context['data'][$notificationOption]) && $context['data'][$notificationOption] == 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for escalate options (host escalations)
+     */
+    public function checkEscalateOptionsServiceEscalation($value, $context) {
+        $escalateOptions = [
+            'escalate_on_recovery',
+            'escalate_on_warning',
+            'escalate_on_critical',
+            'escalate_on_unknown'
+        ];
+
+        foreach ($escalateOptions as $escalateOption) {
+            if (isset($context['data'][$escalateOption]) && $context['data'][$escalateOption] == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
