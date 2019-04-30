@@ -1,15 +1,15 @@
 angular.module('openITCOCKPIT')
-    .controller('ContainersIndexController', function($scope, $http, $timeout, $stateParams, $filter){
+    .controller('ContainersIndexController', function($scope, $http, $timeout, $stateParams, NotyService){
 
         $scope.init = true;
+        $scope.selectedContainerTypeId = null;
 
         var clearForm = function(){
             $scope.post = {
                 Container: {
                     parent_id: null,
                     name: null,
-                    containertype_id: null
-                },
+               },
                 Location: {
                     description: '',
                     latitude: null,
@@ -17,17 +17,19 @@ angular.module('openITCOCKPIT')
                     timezone: null
                 },
                 Tenant: {
-                    description: null,
-                    firstname: null,
-                    lastname: null,
-                    street: null,
+                    description: '',
+                    firstname: '',
+                    lastname: '',
+                    street: '',
                     zipcode: null,
-                    city: null,
-                    is_active: 1,
-                    max_users: 0
+                    city: '',
+                    container: {
+                        name: ''
+                    }
                 }
             };
         };
+
         clearForm();
 
         //Objects gets passed as reference.
@@ -82,10 +84,10 @@ angular.module('openITCOCKPIT')
             $http.post("/containers/add.json?angular=true", $scope.post).then(
                 function(result){
                     $('#angularAddNodeModal').modal('hide');
-                    clearForm();
                     //$scope.post = {};
+                    clearForm();
                     NotyService.genericSuccess();
-                    $scope.callback();
+                    $scope.load();
                 }, function errorCallback(result){
                     if(result.data.hasOwnProperty('error')){
                         $scope.errors = result.data.error;
@@ -96,13 +98,12 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.saveTenant = function(){
-            $http.post("/tenants/add.json?angular=true", $scope.post).then(
+            $http.post("/tenants/add.json?angular=true", $scope.post.Tenant).then(
                 function(result){
                     $('#angularAddNodeModal').modal('hide');
                     clearForm();
-                    //$scope.post = {};
                     NotyService.genericSuccess();
-                    $scope.callback();
+                    $scope.load();
                 }, function errorCallback(result){
                     if(result.data.hasOwnProperty('error')){
                         $scope.errors = result.data.error;
@@ -113,13 +114,14 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.saveLocation = function(){
+            console.log($scope.post);
+            return;
             $http.post("/locations/add.json?angular=true", $scope.post).then(
                 function(result){
                     $('#angularAddNodeModal').modal('hide');
                     clearForm();
-                    //$scope.post = {};
                     NotyService.genericSuccess();
-                    $scope.callback();
+                    $scope.load();
                 }, function errorCallback(result){
                     if(result.data.hasOwnProperty('error')){
                         $scope.errors = result.data.error;
@@ -134,7 +136,7 @@ angular.module('openITCOCKPIT')
                 function(result){
                     $('#angularEditNodeModal').modal('hide');
                     NotyService.genericSuccess();
-                    $scope.callback();
+                    //$scope.callback();
                 }, function errorCallback(result){
                     if(result.data.hasOwnProperty('error')){
                         $scope.errors = result.data.error;
@@ -146,7 +148,10 @@ angular.module('openITCOCKPIT')
 
         $scope.openAddNodeModal = function(container){
             clearForm();
-            $scope.post.Container.parent_id = parseInt(container.parent_id);
+            $scope.selectedContainerTypeId = parseInt(container.containertype_id, 10);
+            //Set init value for select box 2 ==> Tenant ; 5 ==> Node
+            $scope.post.Container.containertype_id = ($scope.selectedContainerTypeId ===  1)?'2':'5';
+            $scope.post.Container.parent_id = parseInt(container.id, 10);
             $('#angularAddNodeModal').modal('show');
         };
 
@@ -162,7 +167,7 @@ angular.module('openITCOCKPIT')
                 function(result){
                     $('#angularEditNodeModal').modal('hide');
                     NotyService.genericSuccess();
-                    $scope.callback();
+                    //$scope.callback();
                 }, function errorCallback(result){
                     if(result.data.hasOwnProperty('error')){
                         $scope.errors = result.data.error;

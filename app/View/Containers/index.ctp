@@ -74,51 +74,38 @@ $timezones = CakeTime::listTimezones();
                 <div class="row">
                     <div class="col-sm-12 col-lg-12">
                         <div class="jarviswidget" id="wid-id-0">
-
-                            <header>
-                                <span class="widget-icon"> <i class="fa fa-book"></i> </span>
-                                <h2><?php echo __('Legend'); ?></h2>
-                            </header>
-
-                            <div class="padding-bottom-10">
-                                <div class="col col-xs-12 col-md-2 col-lg-3">
-                                    <i class="fa fa-globe"></i> <?php echo __('Global'); ?>
-                                </div>
-                                <div class="col col-xs-12 col-md-2 col-lg-3">
-                                    <i class="fa fa-home"></i> <?php echo __('Tenant'); ?>
-                                </div>
-                                <div class="col col-xs-12 col-md-2 col-lg-3">
-                                    <i class="fa fa-location-arrow"></i> <?php echo __('Location'); ?>
-                                </div>
-                                <div class="col col-xs-12 col-md-2 col-lg-3">
-                                    <i class="fa fa-link"></i> <?php echo __('Node'); ?>
-                                </div>
-                                <div class="col col-xs-12 col-md-2 col-lg-3">
-                                    <i class="fa fa-users"></i> <?php echo __('Contactgroup'); ?>
-                                </div>
-                                <div class="col col-xs-12 col-md-2 col-lg-3">
-                                    <i class="fa fa-sitemap"></i> <?php echo __('Hostgroup'); ?>
-                                </div>
-                                <div class="col col-xs-12 col-md-2 col-lg-3">
-                                    <i class="fa fa-cogs"></i> <?php echo __('Servicegroup'); ?>
-                                </div>
-                                <div class="col col-xs-12 col-md-2 col-lg-3">
-                                    <i class="fa fa-pencil-square-o"></i> <?php echo __('Servicetemplategroup'); ?>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12 col-lg-12">
-                        <div class="jarviswidget" id="wid-id-0">
                             <header>
                                 <span class="widget-icon"> <i class="fa fa-link"></i> </span>
                                 <h2><?php echo __('Tree'); ?></h2>
                             </header>
 
                             <div class="widget-body">
+                                <div class="padding-bottom-10">
+                                    <div class="col col-xs-12 col-md-2 col-lg-3">
+                                        <i class="fa fa-globe"></i> <?php echo __('Global'); ?>
+                                    </div>
+                                    <div class="col col-xs-12 col-md-2 col-lg-3">
+                                        <i class="fa fa-home"></i> <?php echo __('Tenant'); ?>
+                                    </div>
+                                    <div class="col col-xs-12 col-md-2 col-lg-3">
+                                        <i class="fa fa-location-arrow"></i> <?php echo __('Location'); ?>
+                                    </div>
+                                    <div class="col col-xs-12 col-md-2 col-lg-3">
+                                        <i class="fa fa-link"></i> <?php echo __('Node'); ?>
+                                    </div>
+                                    <div class="col col-xs-12 col-md-2 col-lg-3">
+                                        <i class="fa fa-users"></i> <?php echo __('Contactgroup'); ?>
+                                    </div>
+                                    <div class="col col-xs-12 col-md-2 col-lg-3">
+                                        <i class="fa fa-sitemap"></i> <?php echo __('Hostgroup'); ?>
+                                    </div>
+                                    <div class="col col-xs-12 col-md-2 col-lg-3">
+                                        <i class="fa fa-cogs"></i> <?php echo __('Servicegroup'); ?>
+                                    </div>
+                                    <div class="col col-xs-12 col-md-2 col-lg-3">
+                                        <i class="fa fa-pencil-square-o"></i> <?php echo __('Servicetemplategroup'); ?>
+                                    </div>
+                                </div>
                                 <div ng-if="subcontainers" ng-nestable ng-model="subcontainers">
                                     <div>
                                         <i class="fa fa-globe"
@@ -202,7 +189,8 @@ $timezones = CakeTime::listTimezones();
             <form onsubmit="return false;">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title"><?php echo __('Add new container'); ?></h4>
+                    <h4 class="modal-title"><?php echo __('Add new container'); ?>
+                        *** </h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -210,24 +198,24 @@ $timezones = CakeTime::listTimezones();
                             <label class="col-xs-12 control-label">
                                 <?php echo __('Select container type'); ?>
                             </label>
-                            <div class="col-xs-12">TEST {{$Container}}
-                                <select class="form-control" ng-init="post.Container.containertype_id='5'"
-                                        ng-model="post.Container.containertype_id">
+                            <div class="col-xs-12" ng-show="selectedContainerTypeId == <?php echo CT_GLOBAL; ?>">
+                                <select class="form-control" ng-model="post.Container.containertype_id">
                                     <?php if ($this->Acl->hasPermission('add', 'tenants')): ?>
-                                        <option value="<?php echo CT_TENANT; ?>"
-                                                ng-show="$Container.containertype_id == 1">
+                                        <option value="<?php echo CT_TENANT; ?>">
                                             <?php echo __('Tenant'); ?>
                                         </option>
                                     <?php endif; ?>
+                                </select>
+                            </div>
+                            <div class="col-xs-12" ng-show="selectedContainerTypeId !== <?php echo CT_GLOBAL; ?>">
+                                <select class="form-control" ng-model="post.Container.containertype_id">
                                     <?php if ($this->Acl->hasPermission('add', 'locations')): ?>
-                                        <option value="<?php echo CT_LOCATION; ?>"
-                                            ng-show="$Container.containertype_id !== 1">
+                                        <option value="<?php echo CT_LOCATION; ?>">
                                             <?php echo __('Location'); ?>
                                         </option>
                                     <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
-                                        <option value="<?php echo CT_NODE; ?>"
-                                            ng-show="$Container.containertype_id !== 1">
+                                        <option value="<?php echo CT_NODE; ?>" selected="selected">
                                             <?php echo __('Node'); ?>
                                         </option>
                                     <?php endif; ?>
@@ -235,7 +223,7 @@ $timezones = CakeTime::listTimezones();
                             </div>
                         </div>
                     </div>
-                    <div class="row" ng-class="{'has-error': errors.Container.name || errors.name}">
+                    <div class="row" ng-class="{'has-error': errors.Container.name || errors.name}" ng-show="post.Container.containertype_id==5">
                         <label class="col-xs-12 control-label">
                             <?php echo __('Name'); ?>
                         </label>
@@ -256,6 +244,26 @@ $timezones = CakeTime::listTimezones();
                         </div>
                     </div>
                     <fieldset class="margin-top-10" ng-show="post.Container.containertype_id==3">
+                        <div class="row" ng-class="{'has-error': errors.Container.name || errors.name}">
+                            <label class="col-xs-12 control-label">
+                                <?php echo __('Name'); ?>
+                            </label>
+                            <div class="col-xs-12">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-folder-open"></i>
+                                        <input type="text" class="input-sm"
+                                               placeholder="<?php echo __('Container name'); ?>"
+                                               ng-model="post.Container.name">
+                                    </label>
+                                    <div ng-repeat="error in errors.Container.name">
+                                        <div class="help-block font-xs text-danger">{{ error }}</div>
+                                    </div>
+                                    <div ng-repeat="error in errors.name">
+                                        <div class="help-block font-xs text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <legend><?php echo __('Optional fields for location'); ?></legend>
                         <div class="row">
                             <label class="col-xs-12 control-label">
@@ -331,6 +339,26 @@ $timezones = CakeTime::listTimezones();
                         </div>
                     </fieldset>
                     <fieldset class="margin-top-10" ng-show="post.Container.containertype_id==2">
+                        <div class="row" ng-class="{'has-error': errors.container.name || errors.name}">
+                            <label class="col-xs-12 control-label">
+                                <?php echo __('Name'); ?>
+                            </label>
+                            <div class="col-xs-12">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-folder-open"></i>
+                                        <input type="text" class="input-sm"
+                                               placeholder="<?php echo __('Container name'); ?>"
+                                               ng-model="post.Tenant.container.name">
+                                    </label>
+                                    <div ng-repeat="error in errors.container.name">
+                                        <div class="help-block font-xs text-danger">{{ error }}</div>
+                                    </div>
+                                    <div ng-repeat="error in errors.name">
+                                        <div class="help-block font-xs text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <legend><?php echo __('Optional fields for tenant'); ?></legend>
                         <div class="row">
                             <label class="col-xs-12 control-label">
@@ -423,16 +451,16 @@ $timezones = CakeTime::listTimezones();
                         <div class="help-block text-danger">{{ error }}</div>
                     </div>
                     <button type="submit" class="btn btn-primary" ng-click="saveNode()"
-                            ng-show="post.Container.containertype_id==5">
+                            ng-show="post.Container.containertype_id==<?php echo CT_NODE; ?>">
                         <?php echo __('Create new node'); ?>
                     </button>
                     <button type="submit" class="btn btn-primary" ng-click="saveTenant()"
-                            ng-show="post.Container.containertype_id==2">
-                        <?php echo __('Create new node'); ?>
+                            ng-show="post.Container.containertype_id==<?php echo CT_TENANT; ?>">
+                        <?php echo __('Create new tenant'); ?>
                     </button>
                     <button type="submit" class="btn btn-primary" ng-click="saveLocation()"
-                            ng-show="post.Container.containertype_id==3">
-                        <?php echo __('Create new node'); ?>
+                            ng-show="post.Container.containertype_id==<?php echo CT_LOCATION; ?>">
+                        <?php echo __('Create new location'); ?>
                     </button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">
                         <?php echo __('Cancel'); ?>
