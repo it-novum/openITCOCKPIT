@@ -309,9 +309,9 @@ $config = [
                 'edit'  => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
             ],
             'Servicetemplates'      => [
-                'index' => ['view', 'loadUsersByContainerId', 'loadServicetemplatesByContainerId', 'assignGroup'],
+                'index' => ['view', 'loadServicetemplatesByContainerId', 'assignGroup'],
                 'add'   => ['loadContainers', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments', 'loadElementsByContainerId'],
-                'edit'  => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
+                'edit'  => ['loadContainers', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments', 'loadElementsByContainerId'],
             ],
             'Users'                 => [
                 'index' => ['view', 'loadUsersByContainerId'],
