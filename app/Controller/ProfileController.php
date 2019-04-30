@@ -40,7 +40,7 @@ class ProfileController extends AppController {
         'Systemsetting'
     ];
 
-    public $components = ['Upload'];
+    public $components = ['Upload', 'Session'];
 
     public function edit() {
         $this->layout = 'blank';
@@ -132,11 +132,17 @@ class ProfileController extends AppController {
                             unlink($path . $oldFilename);
                         }
 
+
+                        $this->response->statusCode(200);
+                        $this->set('error', __('File Upload success!'));
+                        $this->set('_serialize', ['error']);
+
                         /* $this->set('user', $userToSave);
                          $this->set('_serialize', ['user']);
                         */
                     }
-                    $this->set('error', 'Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif');
+                    $this->response->statusCode(400);
+                    $this->set('error', __('Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif'));
                     $this->set('_serialize', ['error']);
                     return;
                 }
@@ -232,7 +238,6 @@ class ProfileController extends AppController {
     }
 
     public function create_apikey() {
-
         $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -245,6 +250,13 @@ class ProfileController extends AppController {
         if ($this->request->is('get')) {
             //Generate new API key
             $apikey = $ApikeysTable->generateApiKey();
+
+            $newApiKey = [
+                'key'  => $apikey,
+                'time' => time()
+            ];
+            $this->Session->write('latest_api_key', $newApiKey);
+
             $this->set('apikey', $apikey);
             $this->set('_serialize', ['apikey']);
             return;
@@ -253,8 +265,23 @@ class ProfileController extends AppController {
         if ($this->request->is('post')) {
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             //Save new API key
-            $apikey = $this->request->data['Apikey'];
-            $apikey['user_id'] = $User->getId();
+            //Resolve ITC-2170
+            $newApiKey = $this->Session->read('latest_api_key');
+            $this->Session->delete('latest_api_key');
+            $this->Session->delete('latest_api_key');
+            if (!isset($newApiKey['key']) || !$newApiKey['time']) {
+                throw new BadRequestException();
+            }
+            //Is API-Key older than 5 minutes?
+            if ($newApiKey['time'] < (time() - 5 * 60)) {
+                throw new BadRequestException('API key expired');
+            }
+
+            $apikey = [
+                'apikey'      => $newApiKey['key'],
+                'description' => $this->request->data('Apikey.description'),
+                'user_id'     => $User->getId()
+            ];
 
             $apikeyEntity = $ApikeysTable->newEntity();
             $apikeyEntity = $ApikeysTable->patchEntity($apikeyEntity, $apikey);

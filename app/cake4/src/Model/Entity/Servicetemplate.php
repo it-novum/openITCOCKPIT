@@ -19,7 +19,6 @@ use Cake\ORM\Entity;
  * @property int $command_id
  * @property string $check_command_args
  * @property string $checkcommand_info
- * @property int $eventhandler_command_id
  * @property int|null $timeperiod_id
  * @property int $check_interval
  * @property int $retry_interval
@@ -61,15 +60,16 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Timeperiod $check_period
  * @property \App\Model\Entity\Timeperiod $notify_period
  * @property \App\Model\Entity\Command $command
- * @property \App\Model\Entity\EventhandlerCommand $eventhandler_command
+ * @property \App\Model\Entity\Command $eventhandler_command_id
  * @property \App\Model\Entity\Timeperiod $timeperiod
- * @property \App\Model\Entity\Contactgroup[] $contactgroups_to_servicetemplates
- * @property \App\Model\Entity\Contact[] $contacts_to_servicetemplates
+ * @property \App\Model\Entity\Contactgroup[] $contactgroups
+ * @property \App\Model\Entity\Contact[] $contacts
  * @property \App\Model\Entity\DeletedService[] $deleted_services
  * @property \App\Model\Entity\Servicetemplatecommandargumentvalue[] $servicetemplatecommandargumentvalues
  * @property \App\Model\Entity\Servicetemplateeventcommandargumentvalue[] $servicetemplateeventcommandargumentvalues
- * @property \App\Model\Entity\ServicetemplatesToServicegroup[] $servicetemplates_to_servicegroups
- * @property \App\Model\Entity\ServicetemplatesToServicetemplategroup[] $servicetemplates_to_servicetemplategroups
+ * @property \App\Model\Entity\Servicegroup[] $servicegroups
+ * @property \App\Model\Entity\Servicetemplategroup[] $servicetemplategroups
+ * @property \App\Model\Entity\Customvariable[] $customvariables
  */
 class Servicetemplate extends Entity {
 
@@ -137,11 +137,12 @@ class Servicetemplate extends Entity {
         'command'                                   => true,
         'eventhandler_command'                      => true,
         'timeperiod'                                => true,
-        'contactgroups_to_servicetemplates'         => true,
-        'contacts_to_servicetemplates'              => true,
         'servicetemplatecommandargumentvalues'      => true,
         'servicetemplateeventcommandargumentvalues' => true,
-        'servicetemplates_to_servicegroups'         => true,
-        'servicetemplates_to_servicetemplategroups' => true
+        'contacts'                                  => true,
+        'contactgroups'                             => true,
+        'servicegroups'                             => true,
+        'servicetemplategroups'                     => true,
+        'customvariables'                           => true
     ];
 }

@@ -64,6 +64,8 @@ class ServicesTable extends Table {
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+
+        $this->belongsTo('Hosts');
     }
 
 
@@ -270,5 +272,39 @@ class ServicesTable extends Table {
         $rules->add($rules->existsIn(['check_period_id'], 'CheckPeriods'));
 
         return $rules;
+    }
+
+    /**
+     * @param int $servicetemplateId
+     * @return array
+     */
+    public function getHostPrimaryContainerIdsByServicetemplateId($servicetemplateId) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Hosts.id',
+                'Hosts.container_id',
+            ])
+            ->contain([
+                'Hosts'
+            ])
+            ->where([
+                'Services.servicetemplate_id' => $servicetemplateId
+            ])
+            ->disableHydration()
+            ->all();
+
+        $query = $query->toArray();
+
+        if (empty($query)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($query as $row) {
+            $result[$row['id']] = (int)$row['host']['container_id'];
+        }
+
+        return $result;
     }
 }

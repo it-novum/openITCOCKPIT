@@ -7,6 +7,8 @@ use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
@@ -119,7 +121,8 @@ class ServicetemplatesTable extends Table {
         ])->setDependent(true);
 
         $this->hasMany('Servicetemplateeventcommandargumentvalues', [
-            'foreignKey' => 'servicetemplate_id'
+            'foreignKey' => 'servicetemplate_id',
+            'saveStrategy' => 'replace'
         ]);
 
         /*
@@ -213,7 +216,6 @@ class ServicetemplatesTable extends Table {
         $validator
             ->integer('eventhandler_command_id')
             ->requirePresence('eventhandler_command_id', false)
-            ->greaterThan('eventhandler_command_id', 0, __('Please select a event handler'))
             ->allowEmptyString('eventhandler_command_id', true);
 
         $validator
@@ -227,25 +229,34 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_recovery', 'create')
             ->allowEmptyString('notify_on_recovery', false)
             ->add('notify_on_recovery', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
         $validator
-            ->boolean('notify_on_down')
-            ->requirePresence('notify_on_down', 'create')
-            ->allowEmptyString('notify_on_down', false)
-            ->add('notify_on_down', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+            ->boolean('notify_on_warning')
+            ->requirePresence('notify_on_warning', 'create')
+            ->allowEmptyString('notify_on_warning', false)
+            ->add('notify_on_warning', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
         $validator
-            ->boolean('notify_on_unreachable')
-            ->requirePresence('notify_on_unreachable', 'create')
-            ->allowEmptyString('notify_on_unreachable', false)
-            ->add('notify_on_unreachable', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+            ->boolean('notify_on_critical')
+            ->requirePresence('notify_on_critical', 'create')
+            ->allowEmptyString('notify_on_critical', false)
+            ->add('notify_on_critical', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one notification option.')
+            ]);
+
+        $validator
+            ->boolean('notify_on_unknown')
+            ->requirePresence('notify_on_unknown', 'create')
+            ->allowEmptyString('notify_on_unknown', false)
+            ->add('notify_on_unknown', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -254,7 +265,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_flapping', 'create')
             ->allowEmptyString('notify_on_flapping', false)
             ->add('notify_on_flapping', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -263,7 +274,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('notify_on_downtime', 'create')
             ->allowEmptyString('notify_on_downtime', false)
             ->add('notify_on_downtime', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -273,29 +284,38 @@ class ServicetemplatesTable extends Table {
             ->allowEmptyString('flap_detection_enabled', false);
 
         $validator
-            ->boolean('flap_detection_on_up')
-            ->requirePresence('flap_detection_on_up', 'create')
-            ->allowEmptyString('flap_detection_on_up', false)
-            ->add('flap_detection_on_up', 'custom', [
-                'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+            ->boolean('flap_detection_on_ok')
+            ->requirePresence('flap_detection_on_ok', 'create')
+            ->allowEmptyString('flap_detection_on_ok', false)
+            ->add('flap_detection_on_ok', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
         $validator
-            ->boolean('flap_detection_on_down')
-            ->requirePresence('flap_detection_on_down', 'create')
-            ->allowEmptyString('flap_detection_on_down', false)
-            ->add('flap_detection_on_down', 'custom', [
-                'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+            ->boolean('flap_detection_on_warning')
+            ->requirePresence('flap_detection_on_warning', 'create')
+            ->allowEmptyString('flap_detection_on_warning', false)
+            ->add('flap_detection_on_warning', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
         $validator
-            ->boolean('flap_detection_on_unreachable')
-            ->requirePresence('flap_detection_on_unreachable', 'create')
-            ->allowEmptyString('flap_detection_on_unreachable', false)
-            ->add('flap_detection_on_unreachable', 'custom', [
-                'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+            ->boolean('flap_detection_on_critical')
+            ->requirePresence('flap_detection_on_critical', 'create')
+            ->allowEmptyString('flap_detection_on_critical', false)
+            ->add('flap_detection_on_critical', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one flap detection option.')
+            ]);
+
+        $validator
+            ->boolean('flap_detection_on_unknown')
+            ->requirePresence('flap_detection_on_unknown', 'create')
+            ->allowEmptyString('flap_detection_on_unknown', false)
+            ->add('flap_detection_on_unknown', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
@@ -342,22 +362,10 @@ class ServicetemplatesTable extends Table {
             ->maxLength('tags', 255);
 
         $validator
-            ->scalar('host_url')
-            ->requirePresence('host_url', false)
-            ->allowEmptyString('host_url', true)
-            ->maxLength('host_url', 255);
-
-        $validator
-            ->add('contacts', 'custom', [
-                'rule'    => [$this, 'atLeastOne'],
-                'message' => __('You must specify at least one contact or contact group.')
-            ]);
-
-        $validator
-            ->add('contactgroups', 'custom', [
-                'rule'    => [$this, 'atLeastOne'],
-                'message' => __('You must specify at least one contact or contact group.')
-            ]);
+            ->scalar('service_url')
+            ->requirePresence('service_url', false)
+            ->allowEmptyString('service_url', true)
+            ->maxLength('service_url', 255);
 
         $validator
             ->allowEmptyString('customvariables', true)
@@ -378,8 +386,10 @@ class ServicetemplatesTable extends Table {
 
         $validator
             ->integer('freshness_threshold')
+            ->greaterThan('check_period_id', 0, __('This field cannot be 0'))
             ->allowEmptyString('freshness_threshold');
 
+        return $validator;
     }
 
     /**
@@ -433,4 +443,172 @@ class ServicetemplatesTable extends Table {
         $rules->add($rules->isUnique(['uuid']));
         return $rules;
     }
+
+    /**
+     * @param array $dataToParse
+     * @return array
+     */
+    public function resolveDataForChangelog($dataToParse = []) {
+        $extDataForChangelog = [
+            'Contact'      => [],
+            'Contactgroup' => [],
+            'Servicegroup' => [],
+            'CheckPeriod',
+            'NotifyPeriod',
+            'CheckCommand',
+            'EventhandlerCommand'
+        ];
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+        if (!empty($dataToParse['Servicetemplate']['contacts']['_ids'])) {
+            foreach ($ContactsTable->getContactsAsList($dataToParse['Servicetemplate']['contacts']['_ids']) as $contactId => $contactName) {
+                $extDataForChangelog['Contact'][] = [
+                    'id'   => $contactId,
+                    'name' => $contactName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Servicetemplate']['contactgroups']['_ids'])) {
+            foreach ($ContactgroupsTable->getContactgroupsAsList($dataToParse['Servicetemplate']['contactgroups']['_ids']) as $contactgroupId => $contactgroupName) {
+                $extDataForChangelog['Contactgroup'][] = [
+                    'id'   => $contactgroupId,
+                    'name' => $contactgroupName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Servicetemplate']['servicegroups']['_ids'])) {
+            foreach ($ServicegroupsTable->getServicegroupsAsList($dataToParse['Servicetemplate']['servicegroups']['_ids']) as $servicegroupId => $servicegroupName) {
+                $extDataForChangelog['Servicegroup'][] = [
+                    'id'   => $servicegroupId,
+                    'name' => $servicegroupName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Servicetemplate']['check_period_id'])) {
+            foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Servicetemplate']['check_period_id']) as $timeperiodId => $timeperiodName) {
+                $extDataForChangelog['CheckPeriod'] = [
+                    'id'   => $timeperiodId,
+                    'name' => $timeperiodName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Servicetemplate']['notify_period_id'])) {
+            foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Servicetemplate']['notify_period_id']) as $timeperiodId => $timeperiodName) {
+                $extDataForChangelog['NotifyPeriod'] = [
+                    'id'   => $timeperiodId,
+                    'name' => $timeperiodName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Servicetemplate']['command_id'])) {
+            foreach ($CommandsTable->getCommandByIdAsList($dataToParse['Servicetemplate']['command_id']) as $commandId => $commandName) {
+                $extDataForChangelog['CheckCommand'] = [
+                    'id'   => $commandId,
+                    'name' => $commandName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Servicetemplate']['eventhandler_command_id'])) {
+            foreach ($CommandsTable->getCommandByIdAsList($dataToParse['Servicetemplate']['eventhandler_command_id']) as $commandId => $commandName) {
+                $extDataForChangelog['EventhandlerCommand'] = [
+                    'id'   => $commandId,
+                    'name' => $commandName
+                ];
+            }
+        }
+
+        return $extDataForChangelog;
+    }
+
+    /**
+     * @param int $id
+     * @param array $contain
+     * @return array
+     */
+    public function getServicetemplateById($id, $contain = ['Containers']) {
+        $query = $this->find()
+            ->where([
+                'Servicetemplates.id' => $id
+            ])
+            ->contain($contain)
+            ->disableHydration()
+            ->first();
+
+        return $this->formatFirstResultAsCake2($query, true);
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getServicetemplateForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Servicetemplates.id' => $id
+            ])
+            ->contain([
+                'Contactgroups',
+                'Contacts',
+                'Servicegroups',
+                'Customvariables',
+                'Servicetemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ],
+                'Servicetemplateeventcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+        $servicetemplate = $query;
+        $servicetemplate['servicegroups'] = [
+            '_ids' => Hash::extract($query, 'servicegroups.{n}.id')
+        ];
+        $servicetemplate['contacts'] = [
+            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+        ];
+        $servicetemplate['contactgroups'] = [
+            '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
+        ];
+
+        return [
+            'Servicetemplate' => $servicetemplate
+        ];
+    }
+
+    /**
+     * @param int $id
+     * @return int
+     */
+    public function getContainerIdById($id) {
+        $query = $this->find()
+            ->select([
+                'Servicetemplates.id',
+                'Servicetemplates.container_id'
+            ])
+            ->where([
+                'Servicetemplates.id' => $id
+            ])
+            ->firstOrFail();
+
+        return (int)$query->get('container_id');
+    }
+
 }

@@ -718,12 +718,12 @@ class HosttemplatesTable extends Table {
      */
     public function resolveDataForChangelog($dataToParse = []) {
         $extDataForChangelog = [
-            'Contact' => [],
-            'Contactgroup',
+            'Contact'      => [],
+            'Contactgroup' => [],
+            'Hostgroup'    => [],
             'CheckPeriod',
             'NotifyPeriod',
             'CheckCommand',
-
         ];
 
         /** @var $CommandsTable CommandsTable */
@@ -732,6 +732,8 @@ class HosttemplatesTable extends Table {
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
@@ -749,6 +751,15 @@ class HosttemplatesTable extends Table {
                 $extDataForChangelog['Contactgroup'][] = [
                     'id'   => $contactgroupId,
                     'name' => $contactgroupName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Hosttemplate']['hostgroups']['_ids'])) {
+            foreach ($HostgroupsTable->getHostgroupsAsList($dataToParse['Hosttemplate']['hostgroups']['_ids']) as $hostgroupId => $hostgroupName) {
+                $extDataForChangelog['Hostgroup'][] = [
+                    'id'   => $hostgroupId,
+                    'name' => $hostgroupName
                 ];
             }
         }
@@ -841,7 +852,7 @@ class HosttemplatesTable extends Table {
      * @param int $id
      * @return array|\Cake\Datasource\EntityInterface|null
      */
-    public function getHostgroupsByHosttemplateId($id){
+    public function getHostgroupsByHosttemplateId($id) {
         $query = $this->find()
             ->select([
                 'Hosttemplates.id'
