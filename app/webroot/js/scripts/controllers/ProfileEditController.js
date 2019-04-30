@@ -76,9 +76,11 @@ angular.module('openITCOCKPIT')
                 acceptedFiles: 'image/*', //mimetypes
                 paramName: "file",
                 success: function(obj){
+                    console.log(obj);
                     var $previewElement = $(obj.previewElement);
 
                     var response = JSON.parse(obj.xhr.response);
+
                     if(response.response.success){
                         $previewElement.removeClass('dz-processing');
                         $previewElement.addClass('dz-success');
@@ -152,6 +154,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submitPicture = function(){
+            /*
             $http.post("/profile/edit.json?angular=true",
                 {Picture: $scope.post.Picture}
             ).then(function(result){
@@ -162,7 +165,7 @@ angular.module('openITCOCKPIT')
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
-            });
+            });*/
         };
 
         $scope.submitPassword = function(){

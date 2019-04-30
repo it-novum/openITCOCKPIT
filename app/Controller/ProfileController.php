@@ -132,11 +132,17 @@ class ProfileController extends AppController {
                             unlink($path . $oldFilename);
                         }
 
+
+                        $this->response->statusCode(200);
+                        $this->set('error', __('File Upload success!'));
+                        $this->set('_serialize', ['error']);
+
                         /* $this->set('user', $userToSave);
                          $this->set('_serialize', ['user']);
                         */
                     }
-                    $this->set('error', 'Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif');
+                    $this->response->statusCode(400);
+                    $this->set('error', __('Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif'));
                     $this->set('_serialize', ['error']);
                     return;
                 }

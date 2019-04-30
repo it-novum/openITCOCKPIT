@@ -267,7 +267,7 @@
                             </div>
                             <div class="col-xs-4">
                                 <div class="profileImg-dropzone dropzone dropzoneStyle"
-                                     action="/profile/edit.json">
+                                     action="/profile/edit.json?angular=true">
                                 </div>
                             </div>
                             <div ng-repeat="error in errors.User.dateformat">
