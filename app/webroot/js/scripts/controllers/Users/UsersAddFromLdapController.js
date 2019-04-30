@@ -160,6 +160,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.$watch('data.selectedSamAccountName', function(){
+            console.log($scope.data.selectedSamAccountName);
             $scope.post.User.firstname = $scope.data.selectedSamAccountName.givenname;
             $scope.post.User.lastname = $scope.data.selectedSamAccountName.sn;
             $scope.post.User.samaccountname = $scope.data.selectedSamAccountName.samaccountname;
