@@ -2902,7 +2902,7 @@ class ServicesController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
+        $this->Service->virtualFields['servicename'] = 'CONCAT(Host.name,"/",IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name))';
         $containerId = $this->request->query('containerId');
         $selected = $this->request->query('selected');
         $ServiceFilter = new ServiceFilter($this->request);
