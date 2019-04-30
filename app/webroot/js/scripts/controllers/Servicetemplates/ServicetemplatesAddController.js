@@ -13,24 +13,26 @@ angular.module('openITCOCKPIT')
                     description: '',
                     command_id: 0,
                     eventhandler_command_id: 0,
-                    check_interval: 3600,
+                    check_interval: 60,
                     retry_interval: 60,
                     max_check_attempts: 3,
                     first_notification_delay: 0,
                     notification_interval: 7200,
-                    notify_on_down: 1,
-                    notify_on_unreachable: 1,
                     notify_on_recovery: 1,
+                    notify_on_warning: 1,
+                    notify_on_critical: 1,
+                    notify_on_unknown: 1,
                     notify_on_flapping: 0,
                     notify_on_downtime: 0,
                     flap_detection_enabled: 0,
-                    flap_detection_on_up: 0,
-                    flap_detection_on_down: 0,
-                    flap_detection_on_unreachable: 0,
+                    flap_detection_on_ok: 0,
+                    flap_detection_on_warning: 0,
+                    flap_detection_on_critical: 0,
+                    flap_detection_on_unknown: 0,
                     low_flap_threshold: 0,
                     high_flap_threshold: 0,
                     process_performance_data: 1,
-                    freshness_threshold: 0,
+                    freshness_threshold: 3600,
                     passive_checks_enabled: 1,
                     event_handler_enabled: 0,
                     active_checks_enabled: 1,
@@ -99,6 +101,12 @@ angular.module('openITCOCKPIT')
             };
 
             var commandId = $scope.post.Servicetemplate.command_id;
+
+            //May be triggered by watch from "Create another"
+            if(commandId === 0){
+                return;
+            }
+
             $http.get("/servicetemplates/loadCommandArguments/" + commandId + ".json", {
                 params: params
             }).then(function(result){
@@ -113,6 +121,12 @@ angular.module('openITCOCKPIT')
             };
 
             var eventHandlerCommandId = $scope.post.Servicetemplate.eventhandler_command_id;
+
+            //May be triggered by watch from "Create another"
+            if(eventHandlerCommandId === 0){
+                return;
+            }
+
             $http.get("/servicetemplates/loadEventhandlerCommandArguments/" + eventHandlerCommandId + ".json", {
                 params: params
             }).then(function(result){
@@ -123,6 +137,12 @@ angular.module('openITCOCKPIT')
 
         $scope.loadElements = function(){
             var containerId = $scope.post.Servicetemplate.container_id;
+
+            //May be triggered by watch from "Create another"
+            if(containerId === 0){
+                return;
+            }
+
             $http.post("/servicetemplates/loadElementsByContainerId/" + containerId + ".json?angular=true", {}).then(function(result){
                 $scope.timeperiods = result.data.timeperiods;
                 $scope.checkperiods = result.data.checkperiods;

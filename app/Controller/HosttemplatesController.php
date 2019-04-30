@@ -224,7 +224,7 @@ class HosttemplatesController extends AppController {
         }
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
-            //Return contact information
+            //Return host template information
             $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
             $this->set('commands', Api::makeItJavaScriptAble($commands));
             $this->set('hosttemplate', $hosttemplate);
@@ -233,7 +233,7 @@ class HosttemplatesController extends AppController {
         }
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            //Update contact data
+            //Update host template data
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             
             $hosttemplateEntity = $HosttemplatesTable->get($id);

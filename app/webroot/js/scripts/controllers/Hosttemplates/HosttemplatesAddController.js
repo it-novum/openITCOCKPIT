@@ -95,6 +95,12 @@ angular.module('openITCOCKPIT')
             };
 
             var commandId = $scope.post.Hosttemplate.command_id;
+
+            //May be triggered by watch from "Create another"
+            if(commandId === 0){
+                return;
+            }
+
             $http.get("/hosttemplates/loadCommandArguments/" + commandId + ".json", {
                 params: params
             }).then(function(result){
@@ -105,6 +111,12 @@ angular.module('openITCOCKPIT')
 
         $scope.loadElements = function(){
             var containerId = $scope.post.Hosttemplate.container_id;
+
+            //May be triggered by watch from "Create another"
+            if(containerId === 0){
+                return;
+            }
+
             $http.post("/hosttemplates/loadElementsByContainerId/" + containerId + ".json?angular=true", {}).then(function(result){
                 $scope.timeperiods = result.data.timeperiods;
                 $scope.checkperiods = result.data.checkperiods;

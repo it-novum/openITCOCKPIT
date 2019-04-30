@@ -193,4 +193,49 @@ class ServicegroupsTable extends Table {
                 return $return;
         }
     }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getServicegroupsAsList($ids = [], $MY_RIGHTS = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->select([
+                'Servicegroups.id',
+                'Containers.name'
+            ])
+            ->contain(['Containers'])
+            ->disableHydration();
+
+        $where = [];
+        if (!empty($ids)) {
+            $where = [
+                'Servicegroups.id IN'            => $ids,
+                'Containers.containertype_id' => CT_SERVICEGROUP
+            ];
+        }
+
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+
+        if (!empty($where)) {
+            $query->where($where);
+        }
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row['id']] = $row['container']['name'];
+        }
+
+        return $list;
+    }
 }

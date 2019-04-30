@@ -51,14 +51,14 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
- * @property \App\Model\Entity\EventhandlerCommand $eventhandler_command
+ * @property \App\Model\Entity\Command $eventhandler_command
  * @property \App\Model\Entity\Container $container
- * @property \App\Model\Entity\Contacts[] $contats
- * @property \App\Model\Entity\Contactgroups[] $contactgroups
+ * @property \App\Model\Entity\Contact[] $contats
+ * @property \App\Model\Entity\Contactgroup[] $contactgroups
  * @property \App\Model\Entity\Host[] $hosts
  * @property \App\Model\Entity\Hosttemplatecommandargumentvalue[] $hosttemplatecommandargumentvalues
- * @property \App\Model\Entity\Hostgroups[] $hostgroups
- * @property \App\Model\Entity\Customvariables[] $customvariables
+ * @property \App\Model\Entity\Hostgroup[] $hostgroups
+ * @property \App\Model\Entity\Customvariable[] $customvariables
  */
 class Hosttemplate extends Entity {
 
