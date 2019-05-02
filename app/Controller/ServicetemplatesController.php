@@ -287,14 +287,14 @@ class ServicetemplatesController extends AppController {
      * @deprecated
      */
     public function delete($id = null) {
-        $userId = $this->Auth->user('id');
         if (!$this->Servicetemplate->exists($id)) {
-            throw new NotFoundException(__('Invalid servicetemplate'));
+            throw new NotFoundException(__('Invalid service template'));
         }
 
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
+
         $servicetemplate = $this->Servicetemplate->find('first', [
             'recursive'  => -1,
             'contain'    => [
@@ -311,12 +311,9 @@ class ServicetemplatesController extends AppController {
         }
 
         $this->Servicetemplate->id = $id;
-        $redirect = $this->Servicetemplate->redirect($this->request->params, ['action' => 'index']);
-        $flashHref = $this->Servicetemplate->flashRedirect($this->request->params, ['action' => 'usedBy']);
-        $flashHref[] = $this->Servicetemplate->id;
-        $flashHref[] = $servicetemplate['Servicetemplate']['servicetemplatetype_id'];
 
         if ($this->Servicetemplate->__allowDelete($id)) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             if ($this->Servicetemplate->delete()) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -324,7 +321,7 @@ class ServicetemplatesController extends AppController {
                     $id,
                     OBJECT_SERVICETEMPLATE,
                     $servicetemplate['Servicetemplate']['container_id'],
-                    $userId,
+                    $User->getId(),
                     $servicetemplate['Servicetemplate']['name'],
                     $servicetemplate
                 );
@@ -349,113 +346,30 @@ class ServicetemplatesController extends AppController {
                 foreach ($services as $service) {
                     $this->Service->__delete($service, $this->Auth->user('id'));
                 }
-                $this->setFlash(__('Servicetemplate deleted'));
-                $this->redirect($redirect);
+
+                $this->set('success', true);
+                $this->set('message', __('Service template successfully deleted'));
+                $this->set('_serialize', ['success']);
+                return;
             }
-            $this->setFlash(__('Could not delete servicetemplate'), false);
-            $this->redirect($redirect);
+
+            $usedBy = [
+                [
+                    'baseUrl' => '#',
+                    'state'   => 'ServicetemplatesUsedBy',
+                    'message' => __('Used by other objects'),
+                    'module'  => 'Core'
+                ]
+            ];
+
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('message', __('Issue while deleting service template'));
+            $this->set('usedBy', $usedBy);
+            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
         }
-        $this->setFlash(__('Could not delete servicetemplate: <a href="' . Router::url($flashHref) . '">') . $servicetemplate['Servicetemplate']['template_name'] . '</a>', false);
-        $this->redirect($redirect);
     }
 
-    /**
-     * @param null $id
-     * @deprecated
-     */
-    public function mass_delete($id = null) {
-
-        $userId = $this->Auth->user('id');
-
-        $datasource = $this->Servicetemplate->getDataSource();
-        try {
-            $datasource->begin();
-            $deletedServicetemplates = [];
-
-            // $counter = 0;
-            foreach (func_get_args() as $serviceTemplateId) {
-                // if(++$counter == 3)
-                // throw new Exception('Invalid servicetemplate test', 1);
-                if (!$this->Servicetemplate->exists($serviceTemplateId)) {
-                    throw new Exception('Invalid servicetemplate', 1);
-                }
-
-                $servicetemplate = $this->Servicetemplate->findById($serviceTemplateId);
-                $containerIdsToCheck = Hash::extract($servicetemplate, 'Servicetemplate.container_id');
-                if (!$this->allowedByContainerId($containerIdsToCheck)) {
-                    throw new Exception('', 403);
-                }
-
-                $this->Servicetemplate->id = $serviceTemplateId;
-                if (!$this->Servicetemplate->__allowDelete($serviceTemplateId)) {
-                    throw new Exception('Some of the Servicetemplates could not be deleted', 1);
-                }
-
-                if (!$this->Servicetemplate->delete()) {
-                    throw new Exception('Some of the Servicetemplates could not be deleted', 1);
-                }
-
-                //Delete Documentation record if exists
-                $documentation = $this->Documentation->findByUuid($servicetemplate['Servicetemplate']['uuid']);
-                if (isset($documentation['Documentation']['id'])) {
-                    $this->Documentation->delete($documentation['Documentation']['id']);
-                    unset($documentation);
-                }
-
-
-                //Servicetemplate deleted, now we need to delete all services that are using this template
-                $this->loadModel('Service');
-                $services = $this->Service->find('all', [
-                    'conditions' => [
-                        'Service.servicetemplate_id' => $serviceTemplateId,
-                    ],
-                ]);
-                foreach ($services as $service) {
-                    if (!$this->Service->__delete($service, $this->Auth->user('id'))) {
-                        throw new Exception('Some of the Servicetemplates could not be deleted', 1);
-                    }
-                }
-
-                $deletedServicetemplates[] = $servicetemplate;
-
-            }
-
-            foreach ($deletedServicetemplates as $deletedServicetemplate) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $deletedServicetemplate['Servicetemplate']['id'],
-                    OBJECT_SERVICETEMPLATE,
-                    $deletedServicetemplate['Servicetemplate']['container_id'],
-                    $userId,
-                    $deletedServicetemplate['Servicetemplate']['name'],
-                    $deletedServicetemplate
-                );
-                if ($changelog_data) {
-                    if (!CakeLog::write('log', serialize($changelog_data))) {
-                        throw new Exception('Cannot write logs. Servicetemplates was not deleted.', 1);
-                    }
-                }
-            }
-
-            $datasource->commit();
-
-            $this->setFlash(__('Servicetemplates deleted'));
-            $this->redirect(['action' => 'index']);
-
-        } catch (Exception $e) {
-            $datasource->rollback();
-            switch ($e->getCode()) {
-                case 403:
-                    $this->render403();
-                    break;
-                default:
-                    $this->setFlash(__($e->getMessage()), false);
-                    $this->redirect(['action' => 'index']);
-            }
-        }
-
-    }
 
     /**
      * @param null $id
