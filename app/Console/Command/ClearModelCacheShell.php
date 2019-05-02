@@ -43,8 +43,10 @@ class ClearModelCacheShell extends AppShell {
                     $fs->remove($dir);
                     $this->out('<success>done!</success>');
                 }
-
             }
+            $this->out('<info>Reset Permissions</info>');
+            $this->dispatchShell('rights');
+            $this->out('<success>finished!</success>');
         } catch (IOExceptionInterface $e) {
             $this->out('<error>an error occurred at ' . $e->getPath() . ' </error>');
         }
