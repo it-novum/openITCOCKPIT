@@ -8,19 +8,32 @@ angular.module('openITCOCKPIT')
         var clearForm = function(){
             $scope.post = {
                 id: 0,
-                parent_id: '',
                 description: '',
                 latitude: '',
                 longitude: '',
                 timezone: null,
                 container: {
-                    name: ''
+                    name: '',
+                    parent_id: null
                 }
             };
         };
         clearForm();
 
+        $scope.load = function(){
+            $http.get("/locations/loadContainers.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.containers = result.data.containers;
+                $scope.init = false;
+            });
+        };
+
         $scope.submit = function(){
+            console.log($scope.post);
+            //return;
             $http.post("/locations/add.json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -48,4 +61,7 @@ angular.module('openITCOCKPIT')
                 }
             });
         };
+
+        $scope.load();
+
     });

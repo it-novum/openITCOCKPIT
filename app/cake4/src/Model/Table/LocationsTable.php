@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -30,6 +31,7 @@ class LocationsTable extends Table {
 
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
+    use CustomValidationTrait;
 
     /**
      * Initialize method
@@ -62,7 +64,13 @@ class LocationsTable extends Table {
         $validator
             ->integer('id')
             ->allowEmptyString('id', 'create');
-
+/*
+        $validator
+            ->integer('parent_id')
+            ->greaterThan('parent_id', 0)
+            ->requirePresence('parent_id')
+            ->allowEmptyString('parent_id', false);
+*/
         $validator
             ->scalar('uuid')
             ->maxLength('uuid', 37)
@@ -76,18 +84,26 @@ class LocationsTable extends Table {
             ->allowEmptyString('description');
 
         $validator
-            ->scalar('longitude')
-            ->longitude('longitude', [
-                'message' => 'Invalid longitude. Value must be numeric.'
-            ])
-            ->allowEmptyString('longitude');
+            ->scalar('latitude')
+            ->longitude('latitude',
+                'The provided value is invalid. Latitude must be a number between -90 and 90 degree inclusive.')
+            ->allowEmptyString('latitude')
+            ->add('latitude', 'custom', [
+                'rule'    => [$this, 'checkGeoCoordinate'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('It is required to specify valid values for longitude and latitude')
+            ]);
 
         $validator
-            ->scalar('latitude')
-            ->longitude('latitude', [
-                'message' => 'Invalid latitude. Value must be numeric.'
-            ])
-            ->allowEmptyString('latitude');
+            ->scalar('longitude')
+            ->longitude('longitude',
+                'The provided value is invalid. Longitude must be a number -180 and 180 degree inclusive.')
+            ->allowEmptyString('longitude')
+            ->add('longitude', 'custom', [
+                'rule'    => [$this, 'checkGeoCoordinate'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('It is required to specify valid values for longitude and latitude')
+            ]);
+
+
 
         return $validator;
     }

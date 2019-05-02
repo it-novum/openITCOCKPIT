@@ -58,6 +58,25 @@ $timezones = CakeTime::listTimezones();
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
 
                         <div class="row">
+                            <div class="form-group required" ng-class="{'has-error': errors.container.parent_id}">
+                                <label class="col col-md-2 control-label">
+                                    <?php echo __('Container'); ?>
+                                </label>
+                                <div class="col col-xs-10">
+                                    <select
+                                            id="LocationParentContainer"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="containers"
+                                            ng-options="container.key as container.value for container in containers"
+                                            ng-model="post.parent_id">
+                                    </select>
+
+                                    <div ng-repeat="error in errors.container.parent_id">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="form-group required" ng-class="{'has-error': errors.container.name}">
                                 <label class="col-xs-12 col-lg-2 control-label">
@@ -100,8 +119,9 @@ $timezones = CakeTime::listTimezones();
                                 <div class="col-xs-12 col-lg-10">
                                     <div class="input-group" style="width: 100%;">
                                         <input class="form-control"
-                                            type="text"
-                                            ng-model="post.latitude">
+                                               type="text"
+                                               ng-model="post.latitude"
+                                               placeholder="<?php echo '50.5558095'; ?>">
                                     </div>
                                     <div ng-repeat="error in errors.latitude">
                                         <div class="help-block text-danger">{{ error }}</div>
@@ -116,15 +136,15 @@ $timezones = CakeTime::listTimezones();
                                 <div class="col-xs-12 col-lg-10">
                                     <div class="input-group" style="width: 100%;">
                                         <input class="form-control"
-                                            type="text"
-                                            ng-model="post.longitude">
+                                               type="text"
+                                               ng-model="post.longitude"
+                                               placeholder="<?php echo '9.6808449'; ?>">
                                     </div>
                                     <div ng-repeat="error in errors.longitude">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                 </div>
                             </div>
-
 
                             <div class="form-group">
                                 <label class="col-xs-12 col-lg-2 control-label">
@@ -133,8 +153,8 @@ $timezones = CakeTime::listTimezones();
                                 <div class="col-xs-12 col-lg-10">
                                     <select class="form-control"
                                             chosen="{}"
-                                            ng-init="post.Location.timezone = post.Location.timezone || 'Europe/Berlin'"
-                                            ng-model="post.Location.timezone">
+                                            ng-init="post.timezone = post.timezone || 'Europe/Berlin'"
+                                            ng-model="post.timezone">
                                         <?php foreach ($timezones as $continent => $continentTimezons): ?>
                                             <optgroup label="<?php echo h($continent); ?>">
                                                 <?php foreach ($continentTimezons as $timezoneKey => $timezoneName): ?>
@@ -146,10 +166,8 @@ $timezones = CakeTime::listTimezones();
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
-
 
                 <div class="col-xs-12 margin-top-10 margin-bottom-10">
                     <div class="well formactions ">
