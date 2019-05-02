@@ -374,7 +374,6 @@ class ServicetemplatesController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
      */
     public function copy($id = null) {
         if (!$this->isAngularJsRequest()) {
