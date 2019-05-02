@@ -25,11 +25,14 @@
 
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\LocationsTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\LocationFilter;
 
 class LocationsController extends AppController {
     public $uses = ['Location', 'Container'];
-    public $layout = 'Admin.default';
+    public $layout = 'blank';
     public $components = ['ListFilter.ListFilter', 'RequestHandler'];
     public $helpers = ['ListFilter.ListFilter'];
     public $listFilters = [
@@ -42,34 +45,34 @@ class LocationsController extends AppController {
     ];
 
     public function index() {
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        if ($this->hasRootPrivileges === true) {
-            $container = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_LOCATION, [], $this->hasRootPrivileges);
-        } else {
-            $container = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_LOCATION, [], $this->hasRootPrivileges);
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
         }
-        $options = [
-            'order'      => [
-                'Container.name' => 'asc',
-            ],
-            'conditions' => [
-                'Container.parent_id' => $this->MY_RIGHTS,
-            ],
-        ];
 
-        $query = Hash::merge($this->Paginator->settings, $options);
+        /** @var $LocationsTable LocationsTable */
+        $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
+        $LocationFilter = new LocationFilter($this->request);
 
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_locations = $this->Location->find('all', $query);
-        } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_locations = $this->Paginator->paginate();
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $LocationFilter->getPage());
+        $all_locations = $LocationsTable->getLocationsIndex($LocationFilter, $PaginateOMat);
+
+        foreach ($all_locations as $key => $location) {
+            $all_locations[$key]['Location']['allowEdit'] = false;
+            $locationContainerId = $location['Location']['container_id'];
+            if (isset($this->MY_RIGHTS_LEVEL[$locationContainerId])) {
+                if ((int)$this->MY_RIGHTS_LEVEL[$locationContainerId] === WRITE_RIGHT) {
+                    $all_locations[$key]['Location']['allowEdit'] = true;
+                }
+            }
         }
-        $this->set(compact(['all_locations', 'container']));
-        $this->set('_serialize', ['all_locations']);
+
+        $this->set('all_locations', $all_locations);
+        $toJson = ['all_locations', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_locations', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function view($id = null) {
