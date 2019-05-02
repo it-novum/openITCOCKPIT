@@ -666,4 +666,43 @@ class ServicetemplatesTable extends Table {
         return $servicetemplates;
     }
 
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getServicetemplatesForCopy($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->select([
+                'Servicetemplates.id',
+                'Servicetemplates.name',
+                'Servicetemplates.template_name',
+                'Servicetemplates.description',
+                'Servicetemplates.command_id',
+                'Servicetemplates.active_checks_enabled'
+            ])
+            ->contain([
+                'Servicetemplatecommandargumentvalues'      => [
+                    'Commandarguments'
+                ],
+                'Servicetemplateeventcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->where(['Servicetemplates.id IN' => $ids])
+            ->order(['Servicetemplates.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+
+        $query = $query->toArray();
+
+        if ($query === null) {
+            return [];
+        }
+
+        return $query;
+    }
+
 }
