@@ -221,15 +221,10 @@ trait CustomValidationTrait {
      ***************************************/
 
     public function checkGeoCoordinate($value, $context) {
-        if (empty($context['data']['latitude']) xor empty($context['data']['latitude'])) {
-            return false;
-        }elseif (!empty($context['data']['latitude']) && !empty($context['data']['latitude'])){
-            //Supported formats:  `<latitude>, <longitude>` Example: `-25.274398, 133.775136`
-            return Validation::geoCoordinate(implode(',', [
-                $context['data']['latitude'],
-                $context['data']['longitude']
-            ]));
-        }
-        return true;
+        //Supported formats:  `<latitude>, <longitude>` Example: `-25.274398, 133.775136`
+        return Validation::geoCoordinate(implode(',', [
+            $context['data']['latitude'],
+            $context['data']['longitude']
+        ]));
     }
 }

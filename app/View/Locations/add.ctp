@@ -112,7 +112,7 @@ $timezones = CakeTime::listTimezones();
                                 </div>
                             </div>
 
-                            <div class="form-group" ng-class="{'has-error': errors.latitude}">
+                            <div class="form-group" ng-class="{'has-error': (errors.latitude || errors.longitude.custom)}">
                                 <label class="col-xs-12 col-lg-2 control-label">
                                     <?php echo __('Latitude'); ?>
                                 </label>
@@ -126,10 +126,13 @@ $timezones = CakeTime::listTimezones();
                                     <div ng-repeat="error in errors.latitude">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
+                                    <div ng-show="(!errors.latitude.custom && errors.longitude.custom)">
+                                        <div class="help-block text-danger">{{ errors.longitude.custom }}</div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="form-group" ng-class="{'has-error': errors.longitude}">
+                            <div class="form-group" ng-class="{'has-error': (errors.longitude || errors.latitude.custom)}">
                                 <label class="col-xs-12 col-lg-2 control-label">
                                     <?php echo __('Longitude'); ?>
                                 </label>
@@ -142,6 +145,9 @@ $timezones = CakeTime::listTimezones();
                                     </div>
                                     <div ng-repeat="error in errors.longitude">
                                         <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                    <div ng-show="(!errors.longitude.custom && errors.latitude.custom)">
+                                        <div class="help-block text-danger">{{ errors.latitude.custom }}</div>
                                     </div>
                                 </div>
                             </div>
