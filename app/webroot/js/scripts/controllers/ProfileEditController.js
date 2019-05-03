@@ -74,25 +74,24 @@ angular.module('openITCOCKPIT')
                 method: 'post',
                 maxFilesize: $scope.maxUploadLimit.value, //MB
                 acceptedFiles: 'image/*', //mimetypes
-                paramName: "file",
+                paramName: "Picture",
                 success: function(obj){
-                    console.log(obj);
+                    console.log(obj.xhr.response);
                     var $previewElement = $(obj.previewElement);
 
                     var response = JSON.parse(obj.xhr.response);
-
-                    if(response.response.success){
+                    if(response.success){
                         $previewElement.removeClass('dz-processing');
                         $previewElement.addClass('dz-success');
-
-                        NotyService.genericSuccess({message: response.response.message});
+                        $scope.loadUserimage();
+                        NotyService.genericSuccess({message: response.message});
                         return;
                     }
 
                     $previewElement.removeClass('dz-processing');
                     $previewElement.addClass('dz-error');
 
-                    NotyService.genericError({message: response.response.message});
+                    NotyService.genericError({message: response.message});
                 },
                 error: function(obj, errorMessage, xhr){
                     var $previewElement = $(obj.previewElement);
@@ -103,7 +102,7 @@ angular.module('openITCOCKPIT')
                         NotyService.genericError({message: errorMessage});
                     }else{
                         var response = JSON.parse(obj.xhr.response);
-                        NotyService.genericError({message: response.response.message});
+                        NotyService.genericError({message: response.message});
                     }
                 }
             });
@@ -153,25 +152,39 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.submitPicture = function(){
-            /*
-            $http.post("/profile/edit.json?angular=true",
-                {Picture: $scope.post.Picture}
-            ).then(function(result){
-                NotyService.genericSuccess();
-                $scope.load();
-            }, function errorCallback(result){
-                NotyService.genericError({message: result.error});
-                if(result.data.hasOwnProperty('error')){
-                    $scope.errors = result.data.error;
-                }
-            });*/
-        };
-
         $scope.submitPassword = function(){
             $http.post("/profile/edit.json?angular=true",
                 {Password: $scope.post.Password}
             ).then(function(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: $scope.errors});
+                }else{
+                    NotyService.genericSuccess();
+                    $scope.load();
+                }
+            }, function errorCallback(result){
+                NotyService.genericError();
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+            });
+        };
+
+        $scope.loadUserimage = function(){
+            $http.get("/profile/loadUserimage.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.post.User.image = result.data.image;
+                $scope.init = false;
+            });
+        };
+
+        $scope.deleteUserImage = function(){
+            $http.post("/profile/deleteImage.json?angular=true").then(function(result){
+                console.log(result);
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                     NotyService.genericError({message: $scope.errors});
