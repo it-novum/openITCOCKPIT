@@ -26,6 +26,10 @@
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 
+/**
+ * Class Location
+ * @deprecated
+ */
 class Location extends AppModel {
     var $belongsTo = [
         'Container' => [
@@ -48,6 +52,12 @@ class Location extends AppModel {
         ],
     ];
 
+    /**
+     * @param $location
+     * @param $userId
+     * @return bool
+     * @deprecated
+     */
     public function __delete($location, $userId) {
         if (is_numeric($location)) {
             $location = $this->find('first', [
@@ -100,6 +110,11 @@ class Location extends AppModel {
         return false;
     }
 
+    /**
+     * @param $hostIds
+     * @return bool
+     * @deprecated
+     */
     public function __allowDelete($hostIds) {
         //check if the hosts are used somwhere
         if (CakePlugin::loaded('EventcorrelationModule')) {

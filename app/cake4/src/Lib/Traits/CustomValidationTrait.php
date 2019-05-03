@@ -25,6 +25,8 @@
 namespace App\Lib\Traits;
 
 
+use Cake\Validation\Validation;
+
 trait CustomValidationTrait {
 
     /***************************************
@@ -195,7 +197,7 @@ trait CustomValidationTrait {
      * @param array $context
      * @return bool
      *
-     * Custom validation rule for escalate options (host escalations)
+     * Custom validation rule for escalate options (service escalations)
      */
     public function checkEscalateOptionsServiceEscalation($value, $context) {
         $escalateOptions = [
@@ -213,4 +215,21 @@ trait CustomValidationTrait {
         return false;
     }
 
+
+    /***************************************
+     *       LOCATION VALIDATION METHODS       *
+     ***************************************/
+
+    public function checkGeoCoordinate($value, $context) {
+        if (empty($context['data']['latitude']) xor empty($context['data']['latitude'])) {
+            return false;
+        }elseif (!empty($context['data']['latitude']) && !empty($context['data']['latitude'])){
+            //Supported formats:  `<latitude>, <longitude>` Example: `-25.274398, 133.775136`
+            return Validation::geoCoordinate(implode(',', [
+                $context['data']['latitude'],
+                $context['data']['longitude']
+            ]));
+        }
+        return true;
+    }
 }
