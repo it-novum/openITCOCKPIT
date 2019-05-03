@@ -486,115 +486,12 @@ class ServicetemplatesController extends AppController {
         return;
     }
 
-    /**
-     * @param null $id
-     * @throws Exception
-     * @deprecated
-     */
-    public function assignGroup($id = null) {
-        $servicetmpl = $this->Servicetemplate->find('all', [
-            'conditions' => [
-                'Servicetemplate.id' => func_get_args(),
-            ],
-            'contain'    => [
-                'Contact'      => [
-                    'fields' => [
-                        'Contact.id',
-                    ],
-                ],
-                'Contactgroup' => [
-                    'fields' => [
-                        'Contactgroup.id',
-                    ],
-                ],
-            ],
-        ]);
-
-        $servicetemplates = Hash::combine($servicetmpl, '{n}.Servicetemplate.id', '{n}');
-
-        $myServiceTemplates = [];
-        $checkedContanerId = null;
-        $sameContaner = true;
-        foreach ($servicetemplates as $servicetemplate) {
-            if (isset($servicetemplate['Servicetemplate']['id'])) {
-                if (is_null($checkedContanerId)) {
-                    $checkedContanerId = $servicetemplate['Servicetemplate']['container_id'];
-                } else if ($checkedContanerId != $servicetemplate['Servicetemplate']['container_id']) {
-                    $sameContaner = false;
-                    break;
-                }
-                $myServiceTemplates[$servicetemplate['Servicetemplate']['id']] = $servicetemplate['Servicetemplate']['name'];
-            }
-        }
-        if (is_null($checkedContanerId)) {
-            $this->setFlash(__('Please choose at least one Servicetemplate'), false);
-            $this->redirect(['action' => 'index']);
-        }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $resolvedPathContainerName = $ContainersTable->easyPath([$checkedContanerId], OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
-        if (!isset($resolvedPathContainerName[$checkedContanerId])) {
-            $this->setFlash(__('Please choose at least one Servicetemplate'), false);
-            $this->redirect(['action' => 'index']);
-        }
-        $checkedContanerName = $resolvedPathContainerName[$checkedContanerId];
-        if (!$sameContaner) {
-            $this->setFlash(__('Servicetemplates must belong to the same container'), false);
-            $this->redirect(['action' => 'index']);
-        }
-        if (!in_array($checkedContanerId, $this->MY_RIGHTS)) {
-            $this->setFlash(__('You have no permission to view these servicetemplates'), false);
-            $this->redirect(['action' => 'index']);
-        }
-
-        $myContainerId = $ContainersTable->resolveChildrenOfContainerIds($checkedContanerId);
-        $allServicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
-        $allServicetemplateGroups = $this->Servicetemplategroup->find('all', [
-            'conditions' => ['Container.parent_id' => $checkedContanerId],
-        ]);
-        $servicetemplateGroupList = [];
-        foreach ($allServicetemplateGroups as $servicetemplateGroup) {
-            $servicetemplateGroupList[$servicetemplateGroup['Servicetemplategroup']['id']] = $servicetemplateGroup['Container']['name'];
-        }
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Servicetemplate'] = $this->request->data['Servicetemplategroup']['Servicetemplate'];
-            $this->request->data['Container']['containertype_id'] = CT_SERVICETEMPLATEGROUP;
-            if ($this->request->data['service-form']['new'] === '1') {
-                unset($this->request->data['Servicetemplategroup']['id']);
-                App::uses('UUID', 'Lib');
-                $this->request->data['Servicetemplategroup']['uuid'] = UUID::v4();
-            } else {
-                foreach ($allServicetemplateGroups as $myServicetemplateGroup) {
-                    if ($myServicetemplateGroup['Servicetemplategroup']['id'] == $this->request->data['Servicetemplategroup']['id']) {
-                        foreach ($myServicetemplateGroup['Servicetemplate'] as $myServiceTemlate) {
-                            if (!in_array($myServiceTemlate['id'], $this->request->data['Servicetemplate'])) {
-                                $this->request->data['Servicetemplate'][] = $myServiceTemlate['id'];
-                            }
-                        }
-                    }
-                }
-                unset($this->request->data['Container']);
-            }
-            unset($this->request->data['service-form']);
-
-            if ($this->Servicetemplategroup->saveAll($this->request->data)) {
-                $this->setFlash(__('All Servicetemplates were successfully allocated'));
-                $this->redirect(['action' => 'index']);
-            }
-        }
-        $this->set(compact('servicetemplates', 'myServiceTemplates', 'allServicetemplates', 'servicetemplateGroupList', 'checkedContanerName', 'checkedContanerId'));
-        $this->set('back_url', $this->referer());
-    }
 
     /**
      * @param null $id
      * @deprecated
      */
     public function usedBy($id = null) {
-
         $this->layout = 'angularjs';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
