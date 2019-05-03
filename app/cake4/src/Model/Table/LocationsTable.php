@@ -88,9 +88,9 @@ class LocationsTable extends Table {
             ->longitude('latitude',
                 'The provided value is invalid. Latitude must be a number between -90 and 90 degree inclusive.')
             ->allowEmptyString('latitude')
-            ->add('latitude', 'custom', [
+            ->add('longitude', 'custom', [
                 'rule'    => [$this, 'checkGeoCoordinate'], //\App\Lib\Traits\CustomValidationTrait
-                'message' => __('It is required to specify valid values for longitude and latitude')
+                'message' => __('It is required to specify valid values for LONGITUDE and LATITUDE')
             ]);
 
         $validator
@@ -98,9 +98,9 @@ class LocationsTable extends Table {
             ->longitude('longitude',
                 'The provided value is invalid. Longitude must be a number -180 and 180 degree inclusive.')
             ->allowEmptyString('longitude')
-            ->add('longitude', 'custom', [
+            ->add('latitude', 'custom', [
                 'rule'    => [$this, 'checkGeoCoordinate'], //\App\Lib\Traits\CustomValidationTrait
-                'message' => __('It is required to specify valid values for longitude and latitude')
+                'message' => __('It is required to specify valid values for LONGITUDE and LATITUDE')
             ]);
 
 
