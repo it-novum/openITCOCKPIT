@@ -481,6 +481,11 @@ class ServicetemplatesController extends AppController {
         $this->set('_serialize', ['result']);
     }
 
+    public function addServicetemplatesToServicetemplategroup(){
+        //Only ship HTML Template
+        return;
+    }
+
     /**
      * @param null $id
      * @throws Exception

@@ -305,11 +305,11 @@ $config = [
             ],
             'Servicetemplategroups' => [
                 'index' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId', 'view', 'allocateToMatchingHostgroup'],
-                'add'   => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
+                'add'   => ['loadContainers', 'loadServicetemplatesByContainerId'],
                 'edit'  => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
             ],
             'Servicetemplates'      => [
-                'index' => ['view', 'loadServicetemplatesByContainerId', 'assignGroup'],
+                'index' => ['view', 'loadServicetemplatesByContainerId', 'assignGroup', 'addServicetemplatesToServicetemplategroup'],
                 'add'   => ['loadContainers', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments', 'loadElementsByContainerId'],
                 'edit'  => ['loadContainers', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments', 'loadElementsByContainerId'],
             ],

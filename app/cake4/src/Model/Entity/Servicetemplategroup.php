@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -14,11 +15,9 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $modified
  *
  * @property \App\Model\Entity\Container $container
- * @property \App\Model\Entity\IdoitLinklist[] $idoit_linklists
- * @property \App\Model\Entity\ServicetemplatesToServicetemplategroup[] $servicetemplates_to_servicetemplategroups
+ * @property \App\Model\Entity\Servicetemplate[] $servicetemplates
  */
-class Servicetemplategroup extends Entity
-{
+class Servicetemplategroup extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -29,13 +28,12 @@ class Servicetemplategroup extends Entity
      * @var array
      */
     protected $_accessible = [
-        'uuid' => true,
-        'container_id' => true,
-        'description' => true,
-        'created' => true,
-        'modified' => true,
-        'container' => true,
-        'idoit_linklists' => true,
-        'servicetemplates_to_servicetemplategroups' => true
+        'uuid'             => true,
+        'container_id'     => true,
+        'description'      => true,
+        'created'          => true,
+        'modified'         => true,
+        'container'        => true,
+        'servicetemplates' => true
     ];
 }

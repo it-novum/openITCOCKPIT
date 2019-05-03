@@ -23,8 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\ContainersTable;
+use App\Model\Table\ServicetemplategroupsTable;
+use App\Model\Table\ServicetemplatesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\ServicetemplategroupsFilter;
 
 
 /**
@@ -33,14 +38,10 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
  * @property Container $Container
  * @property Host $Host
  * @property Hostgroup $Hostgroup
+ * @property AppPaginatorComponent $Paginator
  */
 class ServicetemplategroupsController extends AppController {
-    public $layout = 'Admin.default';
-
-    public $components = [
-        'ListFilter.ListFilter',
-    ];
-    public $helpers = ['ListFilter.ListFilter'];
+    public $layout = 'blank';
 
     public $uses = [
         'Servicetemplategroup',
@@ -49,52 +50,59 @@ class ServicetemplategroupsController extends AppController {
         'Changelog',
     ];
 
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Container.name' => ['label' => 'Servicetemplategroup name', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
 
     public function index() {
-        $options = [
-            'order'      => [
-                'Container.name' => 'asc',
-            ],
-            'conditions' => [
-                'Container.parent_id' => $this->MY_RIGHTS,
-            ],
-        ];
-
-        $query = Hash::merge($this->Paginator->settings, $options);
-
-        $this->Servicetemplategroup->unbindModel([
-            'hasAndBelongsToMany' => ['Servicetemplate'],
-        ]);
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_servicetemplategroups = $this->Servicetemplategroup->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $all_servicetemplategroups = $this->Paginator->paginate();
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
         }
-        $this->set(compact('all_servicetemplategroups'));
-        $this->set('_serialize', ['all_servicetemplategroups']);
+
+        /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+        $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+
+        $ServicetemplategroupsFilter = new ServicetemplategroupsFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicetemplategroupsFilter->getPage());
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+        $servicetemplategroups = $ServicetemplategroupsTable->getServicetemplategroupsIndex($ServicetemplategroupsFilter, $PaginateOMat, $MY_RIGHTS);
+
+        foreach ($servicetemplategroups as $index => $servicetemplategroup) {
+            $servicetemplategroups[$index]['Servicetemplategroup']['allow_edit'] = true;
+            if ($this->hasRootPrivileges === false) {
+                $servicetemplategroups[$index]['Servicetemplategroup']['allow_edit'] = $this->isWritableContainer($servicetemplategroup['Servicetemplategroup']['container_id']);
+            }
+        }
+
+
+        $this->set('all_servicetemplategroups', $servicetemplategroups);
+        $toJson = ['all_servicetemplategroups', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_servicetemplategroups', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
+    /**
+     * @param int|null $id
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Servicetemplategroup->exists($id)) {
-            throw new NotFoundException(__('Invalid Servicetemplategroup'));
+
+        /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+        $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+
+        if (!$ServicetemplategroupsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid service template group'));
         }
 
-        $servicetemplategroup = $this->Servicetemplategroup->findById($id);
-        if (!$this->allowedByContainerId(Hash::extract($servicetemplategroup, 'Container.parent_id'))) {
+        $servicetemplategroup = $ServicetemplategroupsTable->getServicetemplategroupForView($id);
+        if (!$this->allowedByContainerId($servicetemplategroup->get('Containers')['parent_id'])) {
             $this->render403();
-
             return;
         }
 
@@ -102,7 +110,63 @@ class ServicetemplategroupsController extends AppController {
         $this->set('_serialize', ['servicetemplategroup']);
     }
 
+    /**
+     * @throws Exception
+     * @deprecated
+     */
     public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+        $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+        $this->request->data['Servicetemplategroup']['uuid'] = UUID::v4();
+
+        $servicetemplategroup = $ServicetemplategroupsTable->newEntity();
+        $servicetemplategroup = $ServicetemplategroupsTable->patchEntity($servicetemplategroup, $this->request->data('Servicetemplategroup'));
+
+        $ServicetemplategroupsTable->save($servicetemplategroup);
+        if ($servicetemplategroup->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $servicetemplategroup->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
+        } else {
+            //No errors
+
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+            $extDataForChangelog = $ServicetemplategroupsTable->resolveDataForChangelog($this->request->data);
+            FileDebugger::dump(array_merge($this->request->data, $extDataForChangelog));
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                'add',
+                'servicetemplategroups',
+                $servicetemplategroup->get('id'),
+                OBJECT_SERVICETEMPLATEGROUP,
+                $servicetemplategroup->get('container')->get('parent_id'),
+                $User->getId(),
+                $servicetemplategroup->get('container')->get('name'),
+                array_merge($this->request->data, $extDataForChangelog)
+            );
+
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+
+
+            if ($this->request->ext == 'json') {
+                $this->serializeCake4Id($servicetemplategroup); // REST API ID serialization
+                return;
+            }
+        }
+        $this->set('servicetemplategroup', $servicetemplategroup);
+        $this->set('_serialize', ['servicetemplategroup']);
+
+        /****** OLD CODE *******/
+        return;
+
         $userId = $this->Auth->user('id');
 
         /** @var $ContainersTable ContainersTable */
@@ -177,6 +241,11 @@ class ServicetemplategroupsController extends AppController {
         $this->set(compact(['containers', 'servicetemplates']));
     }
 
+    /**
+     * @param null $id
+     * @throws Exception
+     * @deprecated
+     */
     public function edit($id = null) {
         if (!$this->Servicetemplategroup->exists($id)) {
             throw new NotFoundException(__('Invalid servicetemplategroup'));
@@ -272,6 +341,10 @@ class ServicetemplategroupsController extends AppController {
         $this->set(compact(['containers', 'servicetemplates', 'servicetemplategroup']));
     }
 
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
     public function allocateToHost($id = null) {
         if (!$this->Servicetemplategroup->exists($id)) {
             throw new NotFoundException(__('Invalid servicetemplategroup'));
@@ -348,6 +421,10 @@ class ServicetemplategroupsController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
     public function allocateToHostgroup($id = null) {
         $this->loadModel('Hostgroup');
 
@@ -426,7 +503,10 @@ class ServicetemplategroupsController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
-
+    /**
+     * @param $servicetemplategroup_id
+     * @deprecated
+     */
     public function allocateToMatchingHostgroup($servicetemplategroup_id) {
         if (!$this->Servicetemplategroup->exists($servicetemplategroup_id)) {
             throw new NotFoundException(__('Invalid service template group'));
@@ -599,6 +679,11 @@ class ServicetemplategroupsController extends AppController {
         $this->redirect(['action' => 'index']);
     }
 
+    /**
+     * @param $id_hostgroup
+     * @param $servicetemplategroup_id
+     * @deprecated
+     */
     public function getHostsByHostgroupByAjax($id_hostgroup, $servicetemplategroup_id) {
         $this->loadModel('Hostgroup');
         $this->loadModel('Host');
@@ -677,6 +762,10 @@ class ServicetemplategroupsController extends AppController {
         $this->set('_serialize', ['servicetemplategroup', 'hosts']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function delete($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->Servicetemplategroup->exists($id)) {
@@ -719,21 +808,55 @@ class ServicetemplategroupsController extends AppController {
         $this->redirect(['action' => 'index']);
     }
 
-    public function loadServicetemplatesByContainerId($containerId = null) {
-        $this->allowOnlyAjaxRequests();
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+    /**
+     * @throws Exception
+     */
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
+        }
+
+        $this->set('containers', Api::makeItJavaScriptAble($containers));
+        $this->set('_serialize', ['containers']);
+    }
+
+    /**
+     * @param null $containerId
+     * @deprecated
+     */
+    public function loadServicetemplatesByContainerId($containerId = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
         if (!$ContainersTable->existsById($containerId)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
+            throw new NotFoundException(__('Invalid container id'));
         }
 
         $containerId = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerId, 'list');
+        $servicetemplates = $ServicetemplatesTable->getServicetemplatesByContainerId($containerId, 'list');
         $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
 
-        $this->set(compact(['servicetemplates']));
+        $this->set('servicetemplates', $servicetemplates);
         $this->set('_serialize', ['servicetemplates']);
     }
 }
