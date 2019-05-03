@@ -69,7 +69,7 @@ $timezones = CakeTime::listTimezones();
                                             class="form-control"
                                             chosen="containers"
                                             ng-options="container.key as container.value for container in containers"
-                                            ng-model="post.parent_id">
+                                            ng-model="post.container.parent_id">
                                     </select>
 
                                     <div ng-repeat="error in errors.container.parent_id">
@@ -123,6 +123,9 @@ $timezones = CakeTime::listTimezones();
                                                ng-model="post.latitude"
                                                placeholder="<?php echo '50.5558095'; ?>">
                                     </div>
+                                    <div class="info-block-helptext">
+                                        <?php echo __(' Latitude must be a number between -90 and 90 degree inclusive.'); ?>
+                                    </div>
                                     <div ng-repeat="error in errors.latitude">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
@@ -142,6 +145,9 @@ $timezones = CakeTime::listTimezones();
                                                type="text"
                                                ng-model="post.longitude"
                                                placeholder="<?php echo '9.6808449'; ?>">
+                                    </div>
+                                    <div class="info-block-helptext">
+                                        <?php echo __('Longitude must be a number -180 and 180 degree inclusive.'); ?>
                                     </div>
                                     <div ng-repeat="error in errors.longitude">
                                         <div class="help-block text-danger">{{ error }}</div>
