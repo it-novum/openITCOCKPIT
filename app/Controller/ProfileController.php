@@ -34,7 +34,7 @@ use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
  * @property Systemsetting Systemsetting
  */
 class ProfileController extends AppController {
-    public $layout = 'angularjs';
+    public $layout = 'blank';
     public $uses = [
         'User',
         'Systemsetting'
@@ -43,7 +43,6 @@ class ProfileController extends AppController {
     public $components = ['Upload', 'Session'];
 
     public function edit() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -122,7 +121,6 @@ class ProfileController extends AppController {
     }
 
     public function upload_profile_icon() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -247,7 +245,6 @@ class ProfileController extends AppController {
     }
 
     public function create_apikey() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -309,7 +306,6 @@ class ProfileController extends AppController {
     }
 
     public function delete_apikey($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -351,7 +347,6 @@ class ProfileController extends AppController {
     }
 
     public function deleteImage() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -388,7 +383,6 @@ class ProfileController extends AppController {
     }
 
     public function edit_apikey() {
-        $this->layout = 'blank';
         //Only ship HTML template
         return;
     }
