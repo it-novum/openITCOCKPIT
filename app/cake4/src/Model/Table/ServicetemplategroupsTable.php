@@ -8,6 +8,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicetemplategroupsFilter;
@@ -205,5 +206,39 @@ class ServicetemplategroupsTable extends Table {
         }
 
         return $extDataForChangelog;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getServicetemplategroupForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Servicetemplategroups.id' => $id
+            ])
+            ->contain([
+                'Containers',
+                'Servicetemplates' => function (Query $query) {
+                    $query->enableAutoFields(false)
+                        ->select([
+                            'Servicetemplates.id'
+                        ]);
+                    return $query;
+                }
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $servicetemplategroup = $query;
+        $servicetemplategroup['servicetemplates'] = [
+            '_ids' => Hash::extract($query, 'servicetemplates.{n}.id')
+        ];
+
+        return [
+            'Servicetemplategroup' => $servicetemplategroup
+        ];
+
     }
 }

@@ -163,183 +163,137 @@ class ServicetemplategroupsController extends AppController {
         }
         $this->set('servicetemplategroup', $servicetemplategroup);
         $this->set('_serialize', ['servicetemplategroup']);
+    }
 
-        /****** OLD CODE *******/
-        return;
-
-        $userId = $this->Auth->user('id');
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
+    /**
+     * @param int|null $id
+     * @throws Exception
+     */
+    public function edit($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
         }
 
-        $servicetemplates = [];
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $ext_data_for_changelog = [];
-            App::uses('UUID', 'Lib');
-            if ($this->request->data('Servicetemplategroup.Servicetemplate')) {
-                foreach ($this->request->data['Servicetemplategroup']['Servicetemplate'] as $servicetemplate_id) {
-                    $servicetemplate = $this->Servicetemplate->find('first', [
-                        'recursive'  => -1,
-                        'fields'     => [
-                            'Servicetemplate.id',
-                            'Servicetemplate.template_name',
-                        ],
-                        'conditions' => [
-                            'Servicetemplate.id' => $servicetemplate_id,
-                        ],
-                    ]);
-                    $ext_data_for_changelog['Servicetemplate'][] = [
-                        'id'            => $servicetemplate_id,
-                        'template_name' => $servicetemplate['Servicetemplate']['template_name'],
-                    ];
-                }
-            }
-            $this->request->data['Servicetemplategroup']['uuid'] = UUID::v4();
-            $this->request->data['Container']['containertype_id'] = CT_SERVICETEMPLATEGROUP;
-            $this->request->data['Servicetemplate'] = $this->request->data['Servicetemplategroup']['Servicetemplate'];
+        /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+        $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
 
-            if ($this->Servicetemplategroup->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
+        if (!$ServicetemplategroupsTable->existsById($id)) {
+            throw new NotFoundException(__('Service template group not found'));
+        }
+
+        $servicetemplategroup = $ServicetemplategroupsTable->getServicetemplategroupForEdit($id);
+        $servicetemplategroupForChangeLog = $servicetemplategroup;
+
+        if (!$this->isWritableContainer($servicetemplategroup['Servicetemplategroup']['container']['parent_id'])) {
+            $this->render403();
+            return;
+        }
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return service template group information
+            $this->set('servicetemplategroup', $servicetemplategroup);
+            $this->set('_serialize', ['servicetemplategroup']);
+            return;
+        }
+
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            //Update service template group data
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+            $servicetemplategroupEntity = $ServicetemplategroupsTable->get($id, [
+                'contain' => [
+                    'Containers'
+                ]
+            ]);
+            $servicetemplategroupEntity->setAccess('uuid', false);
+            $servicetemplategroupEntity = $ServicetemplategroupsTable->patchEntity($servicetemplategroupEntity, $this->request->data('Servicetemplategroup'));
+            $servicetemplategroupEntity->id = $id;
+
+            $ServicetemplategroupsTable->save($servicetemplategroupEntity);
+            if ($servicetemplategroupEntity->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $servicetemplategroupEntity->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+
                 $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $this->Servicetemplategroup->id,
+                    'edit',
+                    'servicetemplategroups',
+                    $servicetemplategroupEntity->get('id'),
                     OBJECT_SERVICETEMPLATEGROUP,
-                    $this->request->data('Container.parent_id'),
-                    $userId,
-                    $this->request->data['Container']['name'],
-                    array_merge($this->request->data, $ext_data_for_changelog)
+                    $servicetemplategroupEntity->get('container')->get('parent_id'),
+                    $User->getId(),
+                    $servicetemplategroupEntity->get('container')->get('name'),
+                    array_merge($ServicetemplategroupsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ServicetemplategroupsTable->resolveDataForChangelog($servicetemplategroupForChangeLog), $servicetemplategroupForChangeLog)
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
+
                 if ($this->request->ext == 'json') {
-                    $this->serializeId();
+                    $this->serializeCake4Id($servicetemplategroupEntity); // REST API ID serialization
                     return;
                 }
-                $this->setFlash(__('<a href="/servicetemplategroups/edit/%s">Servicetemplategroup</a> successfully saved', $this->Servicetemplategroup->id));
-                $this->redirect(['action' => 'index']);
             }
-            if ($this->request->ext == 'json') {
-                $this->serializeErrorMessage();
-
-                return;
-            }
-            $this->setFlash(__('Servicetemplategroup could not be saved'), false);
-            if (isset($this->request->data['Container']['parent_id'])) {
-                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
-                $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list');
-            }
+            $this->set('servicetemplategroup', $servicetemplategroupEntity);
+            $this->set('_serialize', ['servicetemplategroup']);
         }
-
-        $this->set(compact(['containers', 'servicetemplates']));
     }
 
     /**
      * @param null $id
-     * @throws Exception
      * @deprecated
      */
-    public function edit($id = null) {
+    public function delete($id = null) {
+        $userId = $this->Auth->user('id');
         if (!$this->Servicetemplategroup->exists($id)) {
             throw new NotFoundException(__('Invalid servicetemplategroup'));
         }
-        $userId = $this->Auth->user('id');
-        $servicetemplategroup = $this->Servicetemplategroup->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.template_name',
-                        'Servicetemplate.name'
-                    ]
-                ],
-                'Container'
-            ],
-            'conditions' => [
-                'Servicetemplategroup.id' => $id,
-            ],
-        ]);
-        $ext_data_for_changelog = [];
+
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $servicetemplategroup = $this->Servicetemplategroup->findById($id);
         if (!$this->allowedByContainerId(Hash::extract($servicetemplategroup, 'Container.parent_id'))) {
             $this->render403();
+
             return;
         }
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->request->data('Servicetemplategroup.Servicetemplate')) {
-                foreach ($this->request->data['Servicetemplategroup']['Servicetemplate'] as $servicetemplate_id) {
-                    $servicetemplate = $this->Servicetemplate->find('first', [
-                        'contain'    => [],
-                        'fields'     => [
-                            'Servicetemplate.id',
-                            'Servicetemplate.template_name',
-                        ],
-                        'conditions' => [
-                            'Servicetemplate.id' => $servicetemplate_id,
-                        ],
-                    ]);
-                    $ext_data_for_changelog['Servicetemplate'][] = [
-                        'id'            => $servicetemplate_id,
-                        'template_name' => $servicetemplate['Servicetemplate']['template_name'],
-                    ];
-                }
+        if ($ContainersTable->delete($ContainersTable->get($servicetemplategroup['Servicetemplategroup']['container_id']))) {
+            Cache::clear(false, 'permissions');
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                $this->params['action'],
+                $this->params['controller'],
+                $id,
+                OBJECT_SERVICETEMPLATEGROUP,
+                $servicetemplategroup['Container']['parent_id'],
+                $userId,
+                $servicetemplategroup['Container']['name'],
+                $servicetemplategroup
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
             }
-            $this->request->data['Servicetemplate'] = $this->request->data['Servicetemplategroup']['Servicetemplate'];
-            $this->request->data['Container']['id'] = $this->request->data['Servicetemplategroup']['container_id'];
-
-            if ($this->Servicetemplategroup->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $this->Servicetemplategroup->id,
-                    OBJECT_SERVICETEMPLATEGROUP,
-                    $this->request->data('Container.parent_id'),
-                    $userId,
-                    $this->request->data['Container']['name'],
-                    array_merge($this->request->data, $ext_data_for_changelog),
-                    $servicetemplategroup
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-                $this->setFlash(__('<a href="/servicetemplategroups/edit/%s">Servicetemplategroup</a> successfully saved', $this->Servicetemplategroup->id));
-                $this->redirect(['action' => 'index']);
-            }
-            if (isset($this->request->data['Container']['parent_id'])) {
-                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
-                $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list');
-                $selectedServicetemplates = $this->request->data['Servicetemplate'];
-            }
-            $this->setFlash(__('Servicetemplategroup could not be saved'), false);
-        } else {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($servicetemplategroup['Container']['parent_id']);
-            $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list');
-            $selectedServicetemplates = Hash::extract($servicetemplategroup['Servicetemplate'], '{n}.id');
+            $this->setFlash(__('Servicetemplategroup deleted'));
+            $this->redirect(['action' => 'index']);
         }
 
-
-        if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
-        }
-        $this->request->data['Servicetemplate'] = $selectedServicetemplates;
-        $this->request->data = Hash::merge($servicetemplategroup, $this->request->data);
-
-        $this->set(compact(['containers', 'servicetemplates', 'servicetemplategroup']));
+        $this->setFlash(__('Could not delete servicetemplategroup'), false);
+        $this->redirect(['action' => 'index']);
     }
+
+
+    /********************************
+     *       ALLOCATE METHODS       *
+     ********************************/
 
     /**
      * @param int|null $id
@@ -762,51 +716,6 @@ class ServicetemplategroupsController extends AppController {
         $this->set('_serialize', ['servicetemplategroup', 'hosts']);
     }
 
-    /**
-     * @param null $id
-     * @deprecated
-     */
-    public function delete($id = null) {
-        $userId = $this->Auth->user('id');
-        if (!$this->Servicetemplategroup->exists($id)) {
-            throw new NotFoundException(__('Invalid servicetemplategroup'));
-        }
-
-        if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
-        }
-
-        $servicetemplategroup = $this->Servicetemplategroup->findById($id);
-        if (!$this->allowedByContainerId(Hash::extract($servicetemplategroup, 'Container.parent_id'))) {
-            $this->render403();
-
-            return;
-        }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        if ($ContainersTable->delete($ContainersTable->get($servicetemplategroup['Servicetemplategroup']['container_id']))) {
-            Cache::clear(false, 'permissions');
-            $changelog_data = $this->Changelog->parseDataForChangelog(
-                $this->params['action'],
-                $this->params['controller'],
-                $id,
-                OBJECT_SERVICETEMPLATEGROUP,
-                $servicetemplategroup['Container']['parent_id'],
-                $userId,
-                $servicetemplategroup['Container']['name'],
-                $servicetemplategroup
-            );
-            if ($changelog_data) {
-                CakeLog::write('log', serialize($changelog_data));
-            }
-            $this->setFlash(__('Servicetemplategroup deleted'));
-            $this->redirect(['action' => 'index']);
-        }
-
-        $this->setFlash(__('Could not delete servicetemplategroup'), false);
-        $this->redirect(['action' => 'index']);
-    }
 
 
     /****************************
