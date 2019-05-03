@@ -336,6 +336,8 @@ $config = [
             ],
             'Locations'             => [
                 'index' => ['view'],
+                'add'      => ['loadContainers'],
+                'edit'     => ['loadContainers']
             ],
             /*'Devicegroups' => [
                 'index' => ['view'],

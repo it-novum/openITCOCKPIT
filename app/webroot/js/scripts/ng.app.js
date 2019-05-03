@@ -814,6 +814,24 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ServicetemplategroupsEditController"
             })
 
+            .state('LocationsIndex', {
+                url: '/locations/index',
+                templateUrl: "/locations/index.html",
+                controller: "LocationsIndexController"
+            })
+
+            .state('LocationsAdd', {
+                url: '/locations/add',
+                templateUrl: "/locations/add.html",
+                controller: "LocationsAddController"
+            })
+
+            .state('LocationsEdit', {
+                url: '/locations/edit/:id',
+                templateUrl: "/locations/edit.html",
+                controller: "LocationsEditController"
+            })
+
     })
 
     /*

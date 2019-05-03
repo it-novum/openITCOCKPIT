@@ -249,82 +249,37 @@
     </header>
     <div>
         <div class="widget-body">
-            <form ng-submit="submitPicture();" class="form-horizontal">
-                <!-- Iconset Upload dropzone -->
-                <div class="row">
-                    <img ng-if="post.User.image == null" src="/img/fallback_user.png" alt="fallback_profile_img"
-                         width="70" height="70">
-
-                    <div class="form-group required" ng-class="{'has-error': errors.dateformat}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Select image'); ?>
-                        </label>
-                        <div class="col col-xs-10">
-                            <div class="col-xs-12 text-info">
-                                <i class="fa fa-info-circle"></i>
-                                <?php echo __('Max allowed file size: '); ?>
-                                {{ maxUploadLimit.string }}
-                            </div>
-                            <div class="col-xs-4">
-                                <div class="profileImg-dropzone dropzone dropzoneStyle"
-                                     action="/profile/edit.json?angular=true">
-                                </div>
-                            </div>
-                            <div ng-repeat="error in errors.User.dateformat">
-                                <div class="help-block text-danger">{{ error }}</div>
+            <!-- Iconset Upload dropzone -->
+            <div class="row">
+                <img ng-if="post.User.image == null" ng-src="/img/fallback_user.png" alt="fallback_profile_img"
+                     width="70" height="70">
+                <span ng-if="post.User.image == null"
+                      class="text-muted"> <?php echo __('You have no own image uploaded yet'); ?></span>
+                <img ng-if="post.User.image != null" ng-src="/userimages/{{post.User.image}}" alt="profile_img"
+                     width="70" height="70">
+                <a ng-if="post.User.image != null" class="txt-color-red"
+                   href="javascript:void(0);"
+                   class="txt-color-red"
+                   ng-click="deleteUserImage()">
+                    <i class="fa fa-trash-o"></i> <?php echo __('Delete my image'); ?></a>
+                <div class="form-group required">
+                    <label class="col col-md-2 control-label">
+                        <?php echo __('Select image'); ?>
+                    </label>
+                    <div class="col col-xs-10">
+                        <div class="col-xs-12 text-info">
+                            <i class="fa fa-info-circle"></i>
+                            <?php echo __('Max allowed file size: '); ?>
+                            {{ maxUploadLimit.string }}
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="profileImg-dropzone dropzone dropzoneStyle"
+                                 action="/profile/upload_profile_icon.json?angular=true">
                             </div>
                         </div>
                     </div>
-
                 </div>
-                <div class="col-xs-12 margin-top-10 margin-bottom-10">
-                    <div class="well formactions ">
-                        <div class="pull-right">
-                            <input class="btn btn-primary" type="submit"
-                                   value="<?php echo __('Update Profile Picture'); ?>">
-                            <a ui-sref="ProfileEdit" class="btn btn-default"><?php echo __('Cancel'); ?></a>
-                        </div>
-                    </div>
-                </div>
-                <?php
-                /*
-                if ($user['User']['image'] != null && $user['User']['image'] != ''):
-                    if (file_exists(WWW_ROOT . 'userimages' . DS . $user['User']['image'])):
-                        echo $this->html->image('/userimages' . DS . $user['User']['image'], ['height' => 70]);
-                        echo ' <a class="txt-color-red" href="/profile/deleteImage"><i class="fa fa-trash-o"></i> ' . __('Delete my image') . '</a>';
-                    else:
-                        echo $this->html->image('/img/fallback_user.png', ['width' => 70, 'height' => 70]);
-                        echo ' <span class="text-muted">' . __('You have no own image uploaded yet') . '</span>';
-                    endif;
-                else:
-                    echo $this->html->image('/img/fallback_user.png', ['width' => 70, 'height' => 70]);
-                    echo ' <span class="text-muted">' . __('You have no own image uploaded yet') . '</span>';
-                endif;
-
-                echo $this->Form->create('Picture', [
-                    'enctype' => 'multipart/form-data',
-                ]);
-
-                echo $this->Form->input('Image', [
-                    'type'   => 'file',
-                    'accept' => 'image/png,image/jpeg,image/gif',
-                    'style'  => 'padding: 0px;',
-                    'help'   => __('Allowd image types are: .jpg, .png and .gif. Best image size is 120x120px'),
-                    'label'  => __('Select image'),
-                ]);
-                ?>
-
-                <br/><br/>
-                <div class="padding-top-20"></div>
-                <?php
-                echo $this->Form->formActions(__('Upload image'), [
-                    'cancelButton' => [
-                        'title' => __('Cancel'),
-                        'url'   => '/dashboards/',
-                    ]
-                ]);
-                */ ?>
-            </form>
+            </div>
         </div>
     </div>
 </div>
