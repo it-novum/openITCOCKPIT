@@ -1,9 +1,24 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicetemplategroupsAddController', function($scope, $http, SudoService, $state, NotyService){
+    .controller('ServicetemplategroupsAddController', function($scope, $http, SudoService, $state, NotyService, $stateParams){
 
         $scope.data = {
             createAnother: false
         };
+
+        // preSelectedIds is used for "Append to service template group from /servicetemplates/index"
+        var preSelectedIds = $stateParams.ids;
+        if(preSelectedIds !== null){
+            var idsAsString = preSelectedIds.split(',');
+            preSelectedIds = [];
+            //int ids are required for AngularJS
+            for(var i in idsAsString){
+                preSelectedIds.push(parseInt(idsAsString[i], 10));
+            }
+        }
+
+        if(preSelectedIds === null){
+            preSelectedIds = [];
+        }
 
         var clearForm = function(){
             $scope.post = {
@@ -14,7 +29,7 @@ angular.module('openITCOCKPIT')
                         name: ''
                     },
                     servicetemplates: {
-                        _ids: []
+                        _ids: preSelectedIds
                     }
                 }
             };

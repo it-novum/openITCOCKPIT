@@ -803,9 +803,21 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ServicetemplategroupsAdd', {
-                url: '/servicetemplategroups/add',
+                url: '/servicetemplategroups/add/:ids',
+                params: {
+                    ids: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 templateUrl: "/servicetemplategroups/add.html",
-                controller: "ServicetemplategroupsAddController"
+                controller: "ServicetemplategroupsAddController",
+            })
+
+            .state('ServicetemplategroupsAppend', {
+                url: '/servicetemplategroups/append/:ids',
+                templateUrl: "/servicetemplategroups/append.html",
+                controller: "ServicetemplategroupsAppendController"
             })
 
             .state('ServicetemplategroupsEdit', {

@@ -10,6 +10,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\ServicetemplategroupsConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicetemplategroupsFilter;
 
@@ -239,6 +240,82 @@ class ServicetemplategroupsTable extends Table {
         return [
             'Servicetemplategroup' => $servicetemplategroup
         ];
+    }
 
+    /**
+     * @param ServicetemplategroupsConditions $ServicetemplategroupsConditions
+     * @param array|int $selected
+     * @return array|null
+     */
+    public function getServicetemplategroupsForAngular(ServicetemplategroupsConditions $ServicetemplategroupsConditions, $selected = []) {
+        if (!is_array($selected)) {
+            $selected = [$selected];
+        }
+        $selected = array_filter($selected);
+
+
+        $where = $ServicetemplategroupsConditions->getConditionsForFind();
+
+        if (!empty($selected)) {
+            $where['NOT'] = [
+                'Servicetemplategroups.id IN' => $selected
+            ];
+        }
+
+        $query = $this->find()
+            ->contain([
+                'containers'
+            ])
+            ->select([
+                'Containers.name',
+                'Servicetemplategroups.id'
+            ])
+            ->where(
+                $where
+            )
+            ->order([
+                'Containers.name' => 'asc'
+            ])
+            ->limit(ITN_AJAX_LIMIT)
+            ->disableHydration()
+            ->all();
+
+        $groupsWithLimit = [];
+        $result = $this->emptyArrayIfNull($query->toArray());
+        foreach ($result as $row) {
+            $groupsWithLimit[$row['id']] = $row['Containers']['name'];
+        }
+
+        $selectedGroups = [];
+        if (!empty($selected)) {
+            $query = $this->find()
+                ->contain([
+                    'containers'
+                ])
+                ->select([
+                    'Containers.name',
+                    'Servicetemplategroups.id'
+                ])
+                ->where([
+                    'Servicetemplategroups.id IN' => $selected
+                ])
+                ->order([
+                    'Containers.name' => 'asc'
+                ])
+                ->limit(ITN_AJAX_LIMIT)
+                ->disableHydration()
+                ->all();
+
+            $selectedGroups = [];
+            $result = $this->emptyArrayIfNull($query->toArray());
+            foreach ($result as $row) {
+                $selectedGroups[$row['id']] = $row['Containers']['name'];
+            }
+        }
+
+        $groups = $groupsWithLimit + $selectedGroups;
+        asort($groups, SORT_FLAG_CASE | SORT_NATURAL);
+
+        return $groups;
     }
 }
