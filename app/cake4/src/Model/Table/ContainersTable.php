@@ -93,6 +93,11 @@ class ContainersTable extends Table {
             'cascadeCallbacks' => true
         ])->setDependent(true);
 
+        $this->hasMany('Servicetemplategroups', [
+            'foreignKey'       => 'container_id',
+            'cascadeCallbacks' => true
+        ])->setDependent(true);
+
         //$this->belongsTo('ParentContainers', [
         //    'className' => 'Containers',
         //    'foreignKey' => 'parent_id'

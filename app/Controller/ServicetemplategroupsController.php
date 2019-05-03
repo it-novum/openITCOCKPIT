@@ -112,7 +112,6 @@ class ServicetemplategroupsController extends AppController {
 
     /**
      * @throws Exception
-     * @deprecated
      */
     public function add() {
         if (!$this->isApiRequest()) {
@@ -123,6 +122,8 @@ class ServicetemplategroupsController extends AppController {
         /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
         $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
         $this->request->data['Servicetemplategroup']['uuid'] = UUID::v4();
+        $this->request->data['Servicetemplategroup']['container']['containertype_id'] = CT_SERVICETEMPLATEGROUP;
+
 
         $servicetemplategroup = $ServicetemplategroupsTable->newEntity();
         $servicetemplategroup = $ServicetemplategroupsTable->patchEntity($servicetemplategroup, $this->request->data('Servicetemplategroup'));
@@ -245,49 +246,65 @@ class ServicetemplategroupsController extends AppController {
     }
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param int|null $id
      */
     public function delete($id = null) {
-        $userId = $this->Auth->user('id');
-        if (!$this->Servicetemplategroup->exists($id)) {
-            throw new NotFoundException(__('Invalid servicetemplategroup'));
-        }
-
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        $servicetemplategroup = $this->Servicetemplategroup->findById($id);
-        if (!$this->allowedByContainerId(Hash::extract($servicetemplategroup, 'Container.parent_id'))) {
-            $this->render403();
+        /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+        $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
 
+        if (!$ServicetemplategroupsTable->existsById($id)) {
+            throw new NotFoundException(__('Service template group not found'));
+        }
+
+        $servicetemplategroupEntity = $ServicetemplategroupsTable->get($id, [
+            'contain' => [
+                'Containers'
+            ]
+        ]);
+
+        if (!$this->isWritableContainer($servicetemplategroupEntity->get('container')->get('parent_id'))) {
+            $this->render403();
             return;
         }
 
+
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        if ($ContainersTable->delete($ContainersTable->get($servicetemplategroup['Servicetemplategroup']['container_id']))) {
+        $container = $ContainersTable->get($servicetemplategroupEntity->get('container')->get('id'), [
+            'contain' => [
+                'Servicetemplategroups'
+            ]
+        ]);
+
+        if ($ContainersTable->delete($container)) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             Cache::clear(false, 'permissions');
             $changelog_data = $this->Changelog->parseDataForChangelog(
-                $this->params['action'],
-                $this->params['controller'],
+                'delete',
+                'servicetemplategroups',
                 $id,
                 OBJECT_SERVICETEMPLATEGROUP,
-                $servicetemplategroup['Container']['parent_id'],
-                $userId,
-                $servicetemplategroup['Container']['name'],
-                $servicetemplategroup
+                $servicetemplategroupEntity->get('container')->get('parent_id'),
+                $User->getId(),
+                $servicetemplategroupEntity->get('container')->get('name'),
+                $servicetemplategroupEntity->toArray()
             );
             if ($changelog_data) {
                 CakeLog::write('log', serialize($changelog_data));
             }
-            $this->setFlash(__('Servicetemplategroup deleted'));
-            $this->redirect(['action' => 'index']);
+
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
         }
 
-        $this->setFlash(__('Could not delete servicetemplategroup'), false);
-        $this->redirect(['action' => 'index']);
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
     }
 
 
@@ -744,8 +761,7 @@ class ServicetemplategroupsController extends AppController {
     }
 
     /**
-     * @param null $containerId
-     * @deprecated
+     * @param int|null $containerId
      */
     public function loadServicetemplatesByContainerId($containerId = null) {
         if (!$this->isAngularJsRequest()) {
