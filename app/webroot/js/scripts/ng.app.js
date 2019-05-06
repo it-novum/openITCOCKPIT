@@ -256,7 +256,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ServicesAdd', {
-                url: '/services/add,
+                url: '/services/add',
                 templateUrl: "/services/add.html",
                 controller: "ServicesAddController"
             })
