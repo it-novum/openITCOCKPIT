@@ -79,7 +79,7 @@
                             <td>
                                 <div class="btn-group">
                                     <?php if ($this->Acl->hasPermission('edit', 'locations')): ?>
-                                        <a href="/locations/edit/{{containerlocation.Location[0].id}}"
+                                        <a ui-sref="LocationsEdit({id:containerlocation.Location[0].id})"
                                            class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
                                         </a>
                                     <?php else: ?>
@@ -94,14 +94,14 @@
                                         id="menuHack-location-{{containerlocation.id}}">
                                         <?php if ($this->Acl->hasPermission('edit', 'locations')): ?>
                                             <li>
-                                                <a href="/locations/edit/{{containerlocation.Location[0].id}}">
+                                                <a ui-sref="LocationsEdit({id:containerlocation.Location[0].id})">
                                                     <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                 </a>
                                             </li>
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
                                             <li>
-                                                <a href="/containers/showDetails/{{containerlocation.id}}">
+                                                <a ui-sref="ContainersShowDetails({id:containerlocation.id})">
                                                     <i class="fa fa-info-circle"></i> <?php echo __('Show details'); ?>
                                                 </a>
                                             </li>
