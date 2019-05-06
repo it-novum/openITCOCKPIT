@@ -232,6 +232,7 @@ $config = [
                 ],
                 [
                     'url'   => ['controller' => 'locations', 'action' => 'index'],
+                    'state' => 'LocationsIndex',
                     'title' => 'Locations',
                     'icon'  => 'location-arrow',
                 ],

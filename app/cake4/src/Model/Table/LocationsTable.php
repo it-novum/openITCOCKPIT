@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -64,13 +65,13 @@ class LocationsTable extends Table {
         $validator
             ->integer('id')
             ->allowEmptyString('id', 'create');
-/*
-        $validator
-            ->integer('parent_id')
-            ->greaterThan('parent_id', 0)
-            ->requirePresence('parent_id')
-            ->allowEmptyString('parent_id', false);
-*/
+        /*
+                $validator
+                    ->integer('parent_id')
+                    ->greaterThan('parent_id', 0)
+                    ->requirePresence('parent_id')
+                    ->allowEmptyString('parent_id', false);
+        */
         $validator
             ->scalar('uuid')
             ->maxLength('uuid', 37)
@@ -102,7 +103,6 @@ class LocationsTable extends Table {
                 'rule'    => [$this, 'checkGeoCoordinate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('It is required to specify valid values for LONGITUDE and LATITUDE')
             ]);
-
 
 
         return $validator;
@@ -157,11 +157,16 @@ class LocationsTable extends Table {
                 'Locations.id' => $id
             ])
             ->contain([
-                'Containers'
+                'Containers' => function (Query $q) {
+                    return $q->disableAutoFields()
+                        ->select([
+                            'Containers.id',
+                            'Containers.parent_id',
+                            'Containers.name'
+                        ]);
+                }
             ])
-            ->disableHydration()
             ->firstOrFail();
-
         return $query;
     }
 

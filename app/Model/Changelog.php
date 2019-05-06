@@ -131,6 +131,9 @@ class Changelog extends AppModel {
             'tenant'               => [
                 'tenant' => '{(container.name|description|firstname|lastname|street|zipcode|city)}',
             ],
+            'location'             => [
+                'location' => '{(container.name|description|latitude|longitude|timezone)}',
+            ],
         ];
 
         return $_objectDefaults;
