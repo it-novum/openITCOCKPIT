@@ -55,4 +55,14 @@ class ServicetemplateFilter extends Filter {
         return $this->getConditionsByFilters($filters);
     }
 
+    public function usedByFilter() {
+        $filters = [
+            'bool' => [
+                'Services.disabled',
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
 }

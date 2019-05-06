@@ -1,18 +1,22 @@
 angular.module('openITCOCKPIT')
-    .controller('HosttemplatesUsedByController', function($scope, $http, QueryStringService, MassChangeService, $state){
+    .controller('HosttemplatesUsedByController', function($scope, $http, QueryStringService, MassChangeService, $state, $stateParams){
 
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
         $scope.total = 0;
         $scope.hosttemplate = null;
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/hosts/delete/';
 
+        $scope.filter = {
+            includeDisabled: true
+        };
 
         $scope.load = function(){
             $http.get("/hosttemplates/usedBy/" + $scope.id + ".json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'filter[Hosts.disabled]': $scope.filter.includeDisabled
                 }
             }).then(function(result){
                 $scope.allHosts = result.data.all_hosts;
@@ -60,10 +64,19 @@ angular.module('openITCOCKPIT')
             return objects;
         };
 
+        $scope.getObjectForDelete = function(host){
+            var object = {};
+            object[host.Host.id] = host.Host.hostname;
+            return object;
+        };
+
         $scope.$watch('massChange', function(){
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
 
-        $scope.load();
+        $scope.$watch('filter', function(){
+            $scope.undoSelection();
+            $scope.load();
+        }, true);
     });

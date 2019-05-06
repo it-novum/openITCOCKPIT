@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\PluginManagerTableTrait;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -65,7 +66,15 @@ class ServicesTable extends Table {
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Hosts');
+        $this->belongsTo('Hosts', [
+            'foreignKey' => 'host_id',
+            'joinType'   => 'INNER'
+        ]);
+
+        $this->belongsTo('Servicetemplates', [
+            'foreignKey' => 'servicetemplate_id',
+            'joinType'   => 'INNER'
+        ]);
     }
 
 
@@ -303,6 +312,66 @@ class ServicesTable extends Table {
         $result = [];
         foreach ($query as $row) {
             $result[$row['id']] = (int)$row['host']['container_id'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int $servicetemplateId
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServicesWithHostForServicetemplateUsedBy($servicetemplateId, $MY_RIGHTS = [], $includeDisabled = false) {
+        $where = [
+            'Services.servicetemplate_id' => $servicetemplateId
+        ];
+        if ($includeDisabled === false) {
+            $where['Services.disabled'] = 0;
+        }
+
+        $query = $this->find('all');
+        $query->select([
+            'Services.id',
+            'Services.name',
+            'Services.disabled',
+        ])
+            ->contain([
+                'Hosts'            => function (Query $query) use ($MY_RIGHTS) {
+                    $query->enableAutoFields(false)
+                        ->select([
+                            'Hosts.name',
+                            'Hosts.id',
+                            'Hosts.uuid',
+                            'Hosts.address'
+                        ])
+                        ->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                            if (!empty($MY_RIGHTS)) {
+                                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+                            }
+                            return $q;
+                        });
+
+                    return $query;
+                },
+                'Servicetemplates' => function (Query $query) {
+                    $query->enableAutoFields(false)
+                        ->select([
+                            'Servicetemplates.id',
+                            'Servicetemplates.name',
+                        ]);
+                    return $query;
+                }
+            ])
+            ->where($where)
+            ->group([
+                'Services.id'
+            ])
+            ->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
         }
 
         return $result;

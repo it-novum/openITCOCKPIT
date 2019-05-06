@@ -490,7 +490,15 @@ class HosttemplatesController extends AppController {
             $MY_RIGHTS = $this->MY_RIGHTS;
         }
 
-        $hosts = $HostsTable->getHostsForHosttemplateUsedBy($id, $MY_RIGHTS);
+        $HosttemplateFilter = new HosttemplateFilter($this->request);
+        $filter = $HosttemplateFilter->usedByFilter();
+
+        $includeDisabled = true;
+        if(isset($filter['Hosts.disabled']) && $filter['Hosts.disabled'] === 0){
+            $includeDisabled = false;
+        }
+
+        $hosts = $HostsTable->getHostsForHosttemplateUsedBy($id, $MY_RIGHTS, $includeDisabled);
 
         $all_hosts = [];
         foreach ($hosts as $host) {

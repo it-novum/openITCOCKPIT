@@ -104,6 +104,7 @@ trait PaginationAndScrollIndexTrait {
         $query->offset($ScrollIndex->getOffset());
         $query->limit($ScrollIndex->getLimit());
 
+        $query->all();
         $result = $query->toArray();
         if ($result === null) {
             $result = [];

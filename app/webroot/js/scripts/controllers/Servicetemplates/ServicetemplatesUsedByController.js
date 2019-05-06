@@ -1,77 +1,26 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicetemplatesUsedByController', function($scope, $http, QueryStringService, MassChangeService, $state){
-        $scope.id = QueryStringService.getCakeId();
-        $scope.total = 0;
-        $scope.servicetemplate = null;
+    .controller('ServicetemplatesUsedByController', function($scope, $http, QueryStringService, MassChangeService, $state, $stateParams){
+        $scope.id = $stateParams.id;
+
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/services/delete/';
-        $scope.serverResult = [];
 
-        var forTemplate = function(serverResponse){
-            var services = [];
-            var hosts = [];
-            var saved_hostuuids = [];
-            var result = [];
-            var lastendhost = "";
-            var tmp_hostservicegroup = null;
-
-            serverResponse.forEach(function(record){
-                services.push(record.Service);
-                if(saved_hostuuids.indexOf(record.Host.uuid) < 0){
-                    hosts.push(record.Host);
-                    saved_hostuuids.push(record.Host.uuid);
-                }
-            });
-
-            services.forEach(function(service){
-                //Notice, API return some IDs as string :/
-                if(lastendhost != service.host_id){
-                    if(tmp_hostservicegroup !== null){
-                        result.push(tmp_hostservicegroup);
-                    }
-
-                    tmp_hostservicegroup = {};
-                    var host = null;
-                    hosts.forEach(function(hostelem){
-                        //Notice, API return some IDs as string :/
-                        if(hostelem.id == service.host_id){
-                            host = hostelem;
-                        }
-                    });
-
-                    tmp_hostservicegroup = {
-                        Host: host,
-                        Services: []
-                    };
-                    lastendhost = service.host_id;
-                }
-
-                tmp_hostservicegroup.Services.push({
-                    Service: service
-                });
-
-            });
-
-            if(tmp_hostservicegroup !== null){
-                result.push(tmp_hostservicegroup);
-            }
-
-            return result;
+        $scope.filter = {
+            includeDisabled: true
         };
 
         $scope.load = function(){
             $http.get("/servicetemplates/usedBy/" + $scope.id + ".json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'filter[Services.disabled]': $scope.filter.includeDisabled
                 }
             }).then(function(result){
-                $scope.serverResult = result.data.all_services;
-                if($scope.serverResult){
-                    $scope.services = forTemplate(result.data.all_services);
-                    $scope.total = result.data.all_services.length;
-                }
                 $scope.servicetemplate = result.data.servicetemplate;
+                $scope.hostsWithServices = result.data.hostsWithServices;
+                $scope.count = result.data.count;
+
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
@@ -84,11 +33,13 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.selectAll = function(){
-            if($scope.services){
-                for(var key in $scope.serverResult){
-                    if($scope.serverResult[key].Service.allow_edit){
-                        var id = $scope.serverResult[key].Service.id;
-                        $scope.massChange[id] = true;
+            if($scope.hostsWithServices){
+                for(var hostId in $scope.hostsWithServices){
+                    if($scope.hostsWithServices[hostId].allow_edit){
+                        for(var key in $scope.hostsWithServices[hostId].services){
+                            var serviceId = $scope.hostsWithServices[hostId].services[key].id;
+                            $scope.massChange[serviceId] = true;
+                        }
                     }
                 }
             }
@@ -100,26 +51,27 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
-        /*  $scope.getObjectForDelete = function(host, service){
-              var object = {};
-              object[service.Service.id] = host.Host.hostname + '/' + service.Service.servicename;
-              return object;
-          };
-  */
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.serverResult){
+            for(var hostId in $scope.hostsWithServices){
                 for(var id in selectedObjects){
-                    if(id == $scope.serverResult[key].Service.id){
-                        objects[id] =
-                            $scope.serverResult[key].Host.hostname + '/' +
-                            $scope.serverResult[key].Service.servicename;
+                    for(var key in $scope.hostsWithServices[hostId].services){
+                        if(id == $scope.hostsWithServices[hostId].services[key].id){
+                            objects[id] =
+                                $scope.hostsWithServices[hostId].name + '/' +
+                                $scope.hostsWithServices[hostId].services[key].servicename;
+                        }
                     }
-
                 }
             }
             return objects;
+        };
+
+        $scope.getObjectForDelete = function(host, service){
+            var object = {};
+            object[service.id] = service.servicename;
+            return object;
         };
 
         $scope.$watch('massChange', function(){
@@ -127,5 +79,8 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
 
-        $scope.load();
+        $scope.$watch('filter', function(){
+            $scope.undoSelection();
+            $scope.load();
+        }, true);
     });
