@@ -140,6 +140,9 @@ class ServicesController extends AppController {
         MONITORING_NOTIFICATION_SERVICE
     ];
 
+    /**
+     * @deprecated
+     */
     public function index() {
         $this->layout = 'blank';
         $User = new User($this->Auth);
@@ -298,6 +301,10 @@ class ServicesController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -327,6 +334,9 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['service']);
     }
 
+    /**
+     * @deprecated
+     */
     public function notMonitored() {
         $this->layout = 'blank';
         $User = new User($this->Auth);
@@ -451,6 +461,9 @@ class ServicesController extends AppController {
 
     }
 
+    /**
+     * @deprecated
+     */
     public function disabled() {
         $this->layout = 'blank';
 
@@ -549,6 +562,9 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['all_services', 'paging']);
     }
 
+    /**
+     * @deprecated
+     */
     public function deleted() {
         $this->layout = 'blank';
         if (!$this->isApiRequest()) {
@@ -580,6 +596,9 @@ class ServicesController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
+    /**
+     * @deprecated
+     */
     public function add() {
         $userId = $this->Auth->user('id');
         $Customvariable = [];
@@ -817,6 +836,10 @@ class ServicesController extends AppController {
         }
     }
 
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
     public function edit($id = null) {
         $userId = $this->Auth->user('id');
         $this->Service->id = $id;
@@ -1250,6 +1273,10 @@ class ServicesController extends AppController {
         }
     }
 
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -1301,6 +1328,10 @@ class ServicesController extends AppController {
     }
 
 
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
     public function copy($id = null) {
         if ($id === null && $this->request->is('get')) {
             $this->redirect([
@@ -1672,6 +1703,10 @@ class ServicesController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
     public function deactivate($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -1696,6 +1731,10 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['success', 'id', 'message']);
     }
 
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
     public function enable($id = null) {
         if (!$this->request->is('post')) {
             //throw new MethodNotAllowedException();
@@ -1748,6 +1787,10 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['success', 'id', 'message']);
     }
 
+    /**
+     * @param int|null $container_id
+     * @deprecated
+     */
     public function loadContactsAndContactgroups($container_id = null) {
         $this->allowOnlyAjaxRequests();
 
@@ -1782,6 +1825,11 @@ class ServicesController extends AppController {
 
     }
 
+    /**
+     * @param int|null $command_id
+     * @param int|null $servicetemplate_id
+     * @deprecated
+     */
     public function loadParametersByCommandId($command_id = null, $servicetemplate_id = null) {
         $this->allowOnlyAjaxRequests();
 
@@ -1817,6 +1865,11 @@ class ServicesController extends AppController {
         $this->set(compact('commandarguments'));
     }
 
+    /**
+     * @param null $command_id
+     * @param null $servicetemplate_id
+     * @deprecated
+     */
     public function loadNagParametersByCommandId($command_id = null, $servicetemplate_id = null) {
         $this->allowOnlyAjaxRequests();
 
@@ -1853,6 +1906,10 @@ class ServicesController extends AppController {
         $this->set(compact('commandarguments'));
     }
 
+    /**
+     * @param null $command_id
+     * @deprecated
+     */
     public function loadArgumentsAdd($command_id = null) {
         $this->allowOnlyAjaxRequests();
 
@@ -1865,6 +1922,10 @@ class ServicesController extends AppController {
         $this->render('load_arguments');
     }
 
+    /**
+     * @param null $servicetemplate_id
+     * @deprecated
+     */
     public function loadServicetemplatesArguments($servicetemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -1896,6 +1957,10 @@ class ServicesController extends AppController {
         $this->render('load_arguments');
     }
 
+    /**
+     * @param null $servicetemplate_id
+     * @deprecated
+     */
     public function loadTemplateData($servicetemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -1922,6 +1987,10 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['servicetemplate']);
     }
 
+    /**
+     * @param $counter
+     * @deprecated
+     */
     public function addCustomMacro($counter) {
         $this->allowOnlyAjaxRequests();
 
@@ -1929,6 +1998,10 @@ class ServicesController extends AppController {
         $this->set('counter', $counter);
     }
 
+    /**
+     * @param $host_id
+     * @deprecated
+     */
     public function loadServices($host_id) {
         /* $this->allowOnlyAjaxRequests(); */
 
@@ -1938,6 +2011,10 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['services']);
     }
 
+    /**
+     * @param null $servicetemplate_id
+     * @deprecated
+     */
     public function loadTemplateMacros($servicetemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -1971,7 +2048,11 @@ class ServicesController extends AppController {
         $this->set('servicetemplate', $servicetemplate);
     }
 
-
+    /**
+     * @param int|string|null $idOrUuid
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @deprecated
+     */
     public function browser($idOrUuid = null) {
         $this->layout = 'blank';
 
@@ -2393,6 +2474,10 @@ class ServicesController extends AppController {
 	debug(Set::classicExtract($hosttemplate, 'Customvariable.{n}.{(name|value)}'));	//Hosttemplate
 	*/
 
+    /**
+     * @param null $host_id
+     * @deprecated
+     */
     public function servicesByHostId($host_id = null) {
         $this->autoRender = false;
         if (!$this->request->is('ajax')) {
@@ -2424,6 +2509,10 @@ class ServicesController extends AppController {
         $this->render('load_services');
     }
 
+    /**
+     * @param int|null $host_id
+     * @deprecated
+     */
     public function serviceList($host_id = null) {
         $this->layout = 'blank';
         $User = new User($this->Auth);
@@ -2484,6 +2573,7 @@ class ServicesController extends AppController {
      * @param bool $nl2br If you want to replace \n with <br>
      *
      * @return string
+     * @deprecated
      */
     function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true) {
         $this->autoRender = false;
@@ -2517,6 +2607,11 @@ class ServicesController extends AppController {
         return '';
     }
 
+    /**
+     * @param $ids
+     * @return array
+     * @deprecated
+     */
     public function getSelectedServices($ids) {
         $servicestatus = $this->Service->find('all', [
             'recursive'  => -1,
@@ -2613,6 +2708,9 @@ class ServicesController extends AppController {
         return $ret;
     }
 
+    /**
+     * @deprecated
+     */
     public function listToPdf() {
         $ServiceFilter = new ServiceFilter($this->request);
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
@@ -2684,6 +2782,7 @@ class ServicesController extends AppController {
     /**
      * $service is from prepareForView() but ther are no names in the service contact, only ids
      * $_service is from $this->Service->findById, because of contact names
+     * @deprecated
      */
     protected function __inheritContactsAndContactgroups($service, $serviceContactsAndContactgroups) {
         if (empty($serviceContactsAndContactgroups['Contact']) && empty($serviceContactsAndContactgroups['Contactgroup'])) {
@@ -2730,6 +2829,7 @@ class ServicesController extends AppController {
 
     /**
      * @return array
+     * @deprecated
      */
     protected function getChangelogDataForAdd() {
         /** @var $ContactsTable ContactsTable */
@@ -2867,28 +2967,49 @@ class ServicesController extends AppController {
         return $changelogData;
     }
 
-    //Acl
+    /**
+     *
+     * For ACL only
+     *
+     * @return null
+     * @deprecated
+     */
     public function checkcommand() {
         return null;
     }
 
-    //Only for ACLs
+    /**
+     *
+     * For ACL only
+     *
+     * @return null
+     * @deprecated
+     */
     public function externalcommands() {
         return null;
     }
 
+    /**
+     * @deprecated
+     */
     public function icon() {
         $this->layout = 'blank';
         //Only ship HTML Template
         return;
     }
 
+    /**
+     * @deprecated
+     */
     public function servicecumulatedstatusicon() {
         $this->layout = 'blank';
         //Only ship HTML Template
         return;
     }
 
+    /**
+     * @deprecated
+     */
     public function details() {
         $this->layout = 'blank';
         //Only ship HTML Template
@@ -2898,6 +3019,9 @@ class ServicesController extends AppController {
         return;
     }
 
+    /**
+     * @deprecated
+     */
     public function loadServicesByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -2928,6 +3052,9 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['services']);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadServicesByString() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -2952,6 +3079,10 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['services']);
     }
 
+    /**
+     * @param int|null $id
+     * @deprecated
+     */
     public function timeline($id = null) {
         session_write_close();
         if (!$this->isApiRequest()) {
@@ -3208,6 +3339,10 @@ class ServicesController extends AppController {
         ]);
     }
 
+    /**
+     * @param int $id
+     * @deprecated
+     */
     public function serviceBrowserMenu($id) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3297,6 +3432,10 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['service', 'servicestatus', 'docuExists']);
     }
 
+    /**
+     * @param $hostId
+     * @deprecated
+     */
     public function loadElementsByHostId($hostId) {
         $host = $this->Host->find('first', [
             'recursive'  => -1,
