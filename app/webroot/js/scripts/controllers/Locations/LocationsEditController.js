@@ -2,6 +2,18 @@ angular.module('openITCOCKPIT')
     .controller('LocationsEditController', function($scope, $http, $state, NotyService, $stateParams){
 
         $scope.id = $stateParams.id;
+        $scope.containers = {};
+
+        $scope.post = {
+            description: '',
+            latitude: null,
+            longitude: null,
+            timezone: null,
+            container: {
+                name: '',
+                parent_id: null
+            }
+        };
 
         $scope.load = function(){
             $http.get("/locations/edit/" + $scope.id + ".json", {
@@ -21,6 +33,7 @@ angular.module('openITCOCKPIT')
                     $state.go('404');
                 }
             });
+            $scope.loadContainer();
         };
 
         $scope.submit = function(){
@@ -42,6 +55,19 @@ angular.module('openITCOCKPIT')
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
+            });
+        };
+
+        $scope.loadContainer = function(){
+            var params = {
+                'angular': true
+            };
+
+            $http.get("/locations/loadContainers.json", {
+                params: params
+            }).then(function(result){
+                $scope.containers = result.data.containers;
+                $scope.init = false;
             });
         };
 
