@@ -251,18 +251,26 @@
         <div class="widget-body">
             <!-- Iconset Upload dropzone -->
             <div class="row">
-                <img ng-if="post.User.image == null" ng-src="/img/fallback_user.png" alt="fallback_profile_img"
-                     width="70" height="70">
-                <span ng-if="post.User.image == null"
-                      class="text-muted"> <?php echo __('You have no own image uploaded yet'); ?></span>
-                <img ng-if="post.User.image != null" ng-src="/userimages/{{post.User.image}}" alt="profile_img"
-                     width="70" height="70">
-                <a ng-if="post.User.image != null" class="txt-color-red"
-                   href="javascript:void(0);"
-                   class="txt-color-red"
-                   ng-click="deleteUserImage()">
-                    <i class="fa fa-trash-o"></i> <?php echo __('Delete my image'); ?></a>
-                <div class="form-group required">
+
+                <div class="form-group">
+                    <label class="col col-md-2 control-label">
+                        <?php echo __('Current image'); ?>
+                    </label>
+                    <div class="col col-xs-10">
+                        <img ng-if="post.User.image == null" ng-src="/img/fallback_user.png" alt="fallback_profile_img"
+                             width="70" height="70">
+                        <span ng-if="post.User.image == null"
+                              class="text-muted"> <?php echo __('You have no own image uploaded yet'); ?></span>
+                        <img ng-if="post.User.image != null" ng-src="/userimages/{{post.User.image}}" alt="profile_img"
+                             width="70" height="70">
+                        <a ng-if="post.User.image != null" class="txt-color-red"
+                           href="javascript:void(0);"
+                           class="txt-color-red"
+                           ng-click="deleteUserImage()">
+                            <i class="fa fa-trash-o"></i> <?php echo __('Delete my image'); ?></a>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="col col-md-2 control-label">
                         <?php echo __('Select image'); ?>
                     </label>
