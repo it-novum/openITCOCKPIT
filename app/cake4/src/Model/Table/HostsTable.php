@@ -146,7 +146,7 @@ class HostsTable extends Table {
         ])->setDependent(true);
 
         $this->hasMany('Services', [
-            'foreignKey'   => 'host_id',
+            'foreignKey' => 'host_id',
         ])->setDependent(true);
 
     }
@@ -441,6 +441,31 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param int|array $ids
+     * @return array
+     */
+    public function getHostsByIds($ids, $useHydration = true) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $query = $this->find()
+            ->where([
+                'Hosts.id IN' => $ids
+            ])
+            ->contain('HostsToContainersSharing')
+            ->enableHydration($useHydration)
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        return $result;
+    }
+
+    /**
      * @param int $hosttemplateId
      * @return array
      */
@@ -476,7 +501,7 @@ class HostsTable extends Table {
      * @param array $MY_RIGHTS
      * @return array
      */
-    public function getHostsForHosttemplateUsedBy($hosttemplateId, $MY_RIGHTS = []) {
+    public function getHostsForHosttemplateUsedBy($hosttemplateId, $MY_RIGHTS = [], $includeDisabled = false) {
         $query = $this->find('all');
         $query->select([
             'Hosts.id',
@@ -484,11 +509,17 @@ class HostsTable extends Table {
             'Hosts.uuid',
             'Hosts.name',
             'Hosts.address',
+            'Hosts.disabled'
         ]);
 
-        $query->where([
+        $where = [
             'Hosts.hosttemplate_id' => $hosttemplateId
-        ]);
+        ];
+        if ($includeDisabled === false) {
+            $where['Hosts.disabled'] = 0;
+        }
+
+        $query->where($where);
         $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
                 return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);

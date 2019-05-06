@@ -28,6 +28,10 @@ use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 
+/**
+ * Class Service
+ * @deprecated
+ */
 class Service extends AppModel {
 
     public $hasAndBelongsToMany = [
@@ -330,6 +334,14 @@ class Service extends AppModel {
      */
     private $LastDeletedId = null;
 
+    /**
+     * Service constructor.
+     * @param bool $id
+     * @param null $table
+     * @param null $ds
+     * @param bool $useDynamicAssociations
+     * @deprecated
+     */
     function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
         App::uses('UUID', 'Lib');
@@ -371,13 +383,24 @@ class Service extends AppModel {
 
     }
 
-    /*
-    Custom validation rule for contact and/or contactgroup fields
-    */
+    /**
+     *
+     *  Custom validation rule for contact and/or contactgroup fields
+     *
+     * @param $data
+     * @return bool
+     * @deprecated
+     */
     public function atLeastOne($data) {
         return !empty($this->data[$this->name]['Contact']) || !empty($this->data[$this->name]['Contactgroup']);
     }
 
+    /**
+     * @param $data
+     * @param $notification_type
+     * @return bool
+     * @deprecated
+     */
     function checkNotificationOptions($data, $notification_type) {
         foreach ($this->data as $request) {
             foreach ($request as $request_key => $request_value) {
@@ -390,6 +413,12 @@ class Service extends AppModel {
         return false;
     }
 
+    /**
+     * @param $data
+     * @param $flapdetection_type
+     * @return bool
+     * @deprecated
+     */
     function checkFlapDetectionOptions($data, $flapdetection_type) {
         if (isset($this->data['Servicetemplate']['flap_detection_enabled']) && (boolean)$this->data['Servicetemplate']['flap_detection_enabled'] === true) {
             foreach ($this->data as $request) {
@@ -406,6 +435,12 @@ class Service extends AppModel {
         return true;
     }
 
+    /**
+     * @param array $service_values
+     * @param array $servicetemplate_values
+     * @return array
+     * @deprecated
+     */
     public function getDiffAsArray($service_values = [], $servicetemplate_values = []) {
         $service_values = ($service_values === null) ? [] : $service_values;
         $servicetemplate_values = ($servicetemplate_values === null) ? [] : $servicetemplate_values;
@@ -413,6 +448,12 @@ class Service extends AppModel {
         return Hash::diff($service_values, $servicetemplate_values);
     }
 
+    /**
+     * @param array $prepare_array
+     * @param bool $prepare
+     * @return array
+     * @deprecated
+     */
     public function prepareForCompare($prepare_array = [], $prepare = false) {
         $keysForArraySort = ['Contact', 'Contactgroup', 'Servicegroup']; //sort array for array diff
         //if prepare_for_compare => false, nothing to do $prepare_array[0] => 'Template.{n}, $prepare_array[1] => true/false'
@@ -438,6 +479,13 @@ class Service extends AppModel {
         return $new_array;
     }
 
+    /**
+     * @param array $diff_array
+     * @param array $request_data
+     * @param string $save_mode
+     * @return array
+     * @deprecated
+     */
     public function prepareForSave($diff_array = [], $request_data = [], $save_mode = 'add') {
         $tmp_keys = [];
         //Check differences for notification settings
@@ -602,6 +650,11 @@ class Service extends AppModel {
         return $diff_array;
     }
 
+    /**
+     * @param null $id
+     * @return array|null
+     * @deprecated
+     */
     public function prepareForView($id = null) {
         if (!$this->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
@@ -818,6 +871,7 @@ class Service extends AppModel {
      * @param array $var Array to filter.
      *
      * @return boolean
+     * @deprecated
      */
     public static function filterNullValues($var) {
         if ($var != null || $var === '0' || $var === '') {
@@ -827,6 +881,13 @@ class Service extends AppModel {
         return false;
     }
 
+    /**
+     * @param array $containerIds
+     * @param array $conditions
+     * @param array $servicesIncluding
+     * @return array
+     * @deprecated
+     */
     public function getAjaxServices($containerIds = [], $conditions = [], $servicesIncluding = []) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
@@ -919,6 +980,14 @@ class Service extends AppModel {
         return $returnValue;
     }
 
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @param array $conditions
+     * @param null $limit
+     * @return array|null
+     * @deprecated
+     */
     public function servicesByHostContainerIds($containerIds = [], $type = 'all', $conditions = [], $limit = null) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
@@ -1000,6 +1069,12 @@ class Service extends AppModel {
         return $result;
     }
 
+    /**
+     * @param $service
+     * @param $servicetemplate
+     * @return array
+     * @deprecated
+     */
     public function diffWithTemplate($service, $servicetemplate) {
         $diff_array = [];
         //Service-/Servicetemplate fields
@@ -1094,6 +1169,12 @@ class Service extends AppModel {
         return $diff_array;
     }
 
+    /**
+     * @param $service
+     * @param $servicetemplate
+     * @return array
+     * @deprecated
+     */
     public function dataForChangelogCopy($service, $servicetemplate) {
         $servicecommandargumentvalue = [];
         if (!empty($service['Servicecommandargumentvalue'])) {
@@ -1128,6 +1209,11 @@ class Service extends AppModel {
         return $service;
     }
 
+    /**
+     * @param $task
+     * @return array
+     * @deprecated
+     */
     public function serviceTypes($task) {
         switch ($task) {
             case 'copy':
@@ -1140,6 +1226,12 @@ class Service extends AppModel {
         }
     }
 
+    /**
+     * @param $host_id
+     * @param $servicetemplate_id
+     * @return bool
+     * @deprecated
+     */
     public function hostHasServiceByServicetemplateId($host_id, $servicetemplate_id) {
         $this->unbindModel([
             'hasAndBelongsToMany' => ['Contactgroup', 'Contact', 'Servicegroup'],
@@ -1157,7 +1249,12 @@ class Service extends AppModel {
         return !empty($result);
     }
 
-
+    /**
+     * @param $id
+     * @param $userId
+     * @return bool
+     * @deprecated
+     */
     public function __delete($id, $userId) {
         if (is_numeric($id)) {
             $service = $this->findById($id);
@@ -1234,10 +1331,12 @@ class Service extends AppModel {
         return false;
     }
 
-    /*
+    /**
      * Check if the service was part of an servicegroup, serviceescalation or servicedependency
      * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
      * Nagios don't relay like this so we need to check this and delete the serviceescalation/servicegroup or service dependency if empty
+     *
+     * @deprecated
      */
     public function _clenupServiceEscalationDependencyAndGroup($service) {
         if (!empty($service['ServiceEscalationServiceMembership'])) {
@@ -1274,6 +1373,7 @@ class Service extends AppModel {
      * @param $service
      * @param $moduleConstants
      * @return array
+     * @deprecated
      */
     public function isUsedByModules($service, $moduleConstants) {
         $usedBy = [];
@@ -1288,6 +1388,7 @@ class Service extends AppModel {
     /**
      * @param $name
      * @return mixed
+     * @deprecated
      */
     public function humanizeModuleConstantName($name) {
         return str_replace('_MODULE', '', $name);
@@ -1297,6 +1398,7 @@ class Service extends AppModel {
      * @param int $serviceId
      * @param int $moduleValue
      * @return bool
+     * @deprecated
      */
     public function checkUsageFlag($serviceId, $moduleValue) {
         $result = $this->find('first', [
@@ -1320,16 +1422,25 @@ class Service extends AppModel {
         }
     }
 
+    /**
+     * @deprecated
+     */
     public function virtualFieldsForIndexAndServiceList() {
         $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
         $this->virtualFields['keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
         $this->virtualFields['not_keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
     }
 
+    /**
+     * @deprecated
+     */
     public function virtualFieldsForNotMonitored() {
         $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
     }
 
+    /**
+     * @deprecated
+     */
     public function virtualFieldsForDisabled() {
         $this->virtualFieldsForNotMonitored();
     }
@@ -1338,6 +1449,7 @@ class Service extends AppModel {
      * @param ServiceConditions $ServiceConditions
      * @param array $conditions
      * @return array
+     * @deprecated
      */
     public function getServiceIndexQuery(ServiceConditions $ServiceConditions, $conditions = []) {
         $query = [
@@ -1447,6 +1559,7 @@ class Service extends AppModel {
      * @param ServiceConditions $ServiceConditions
      * @param array $conditions
      * @return array
+     * @deprecated
      */
     public function getServiceIndexQueryStatusengine3(ServiceConditions $ServiceConditions, $conditions = []) {
         $query = [
@@ -1564,6 +1677,7 @@ class Service extends AppModel {
      * @param ServiceConditions $ServiceConditions
      * @param array $conditions
      * @return array
+     * @deprecated
      */
     public function getServiceNotMonitoredQuery(ServiceConditions $ServiceConditions, $conditions = []) {
         $query = [
@@ -1630,6 +1744,7 @@ class Service extends AppModel {
      * @param ServiceConditions $ServiceConditions
      * @param array $conditions
      * @return array
+     * @deprecated
      */
     public function getServiceNotMonitoredQueryStatusengine3(ServiceConditions $ServiceConditions, $conditions = []) {
         $query = [
@@ -1697,6 +1812,7 @@ class Service extends AppModel {
      * @param ServiceConditions $ServiceConditions
      * @param array $conditions
      * @return array
+     * @deprecated
      */
     public function getServiceDisabledQuery(ServiceConditions $ServiceConditions, $conditions = []) {
         $query = [
@@ -1749,6 +1865,7 @@ class Service extends AppModel {
      * @param ServiceConditions $ServiceConditions
      * @param array $conditions
      * @return array
+     * @deprecated
      */
     public function getServiceDeletedQuery(ServiceConditions $ServiceConditions, $conditions = []) {
         $query = [
@@ -1772,6 +1889,7 @@ class Service extends AppModel {
      * @param ServiceConditions $ServiceConditions
      * @param array $selected
      * @return array|null
+     * @deprecated
      */
     public function getServicesForAngular(ServiceConditions $ServiceConditions, $selected = []) {
         $query = [
@@ -1917,6 +2035,7 @@ class Service extends AppModel {
     /**
      * @param int $serviceId
      * @return array
+     * @deprecated
      */
     public function getQueryForBrowser($serviceId) {
         return [
@@ -1994,6 +2113,7 @@ class Service extends AppModel {
      * @param mixed $conditions Conditions to match, true for all records
      * @return bool True on success, false on failure
      * @link https://book.cakephp.org/2.0/en/models/saving-your-data.html#model-updateall-array-fields-mixed-conditions
+     * @deprecated
      */
     public function updateAll($fields, $conditions = true) {
         $success = parent::updateAll($fields, $conditions);
@@ -2019,6 +2139,7 @@ class Service extends AppModel {
      * @param bool $created
      * @param array $options
      * @return bool|void
+     * @deprecated
      */
     public function afterSave($created, $options = []) {
         if ($this->DbBackend->isCrateDb() && isset($this->data['Service']['id'])) {
@@ -2034,11 +2155,19 @@ class Service extends AppModel {
         parent::afterSave($created, $options);
     }
 
+    /**
+     * @param bool $cascade
+     * @return bool
+     * @deprecated
+     */
     public function beforeDelete($cascade = true) {
         $this->LastDeletedId = new LastDeletedId($this->id);
         return parent::beforeDelete($cascade);
     }
 
+    /**
+     * @deprecated
+     */
     public function afterDelete() {
         if ($this->LastDeletedId !== null) {
             if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
@@ -2139,6 +2268,7 @@ class Service extends AppModel {
      * @param $MY_RIGHTS
      * @param $conditions
      * @return array
+     * @deprecated
      */
     public function getServicestatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
         $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
@@ -2214,6 +2344,7 @@ class Service extends AppModel {
      * @param $MY_RIGHTS
      * @param $conditions
      * @return array
+     * @deprecated
      */
     public function getServicestatusBySelectedStatusStatusengine3($MY_RIGHTS, $conditions) {
         $query = [

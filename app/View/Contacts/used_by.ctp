@@ -30,7 +30,7 @@
             <i class="fa fa-code-fork fa-fw "></i>
             <?php echo __('Contacts'); ?>
             <span>>
-                <?php echo __('used by...'); ?>
+                <?php echo __('Used by...'); ?>
             </span>
         </h1>
     </div>
@@ -40,7 +40,7 @@
 
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <div class="jarviswidget">
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <a back-button fallback-state='ContactsIndex' class="btn btn-default btn-xs">
@@ -52,10 +52,13 @@
                     </div>
                     <span class="widget-icon"> <i class="fa fa-code-fork"></i> </span>
                     <h2><?php echo __('Contact'); ?>
-                        <strong>{{ contactWithRelations.Contact.name
-                            }}</strong> <?php echo __('is used by the following objects'); ?>
-                        ({{total}}):</h2>
-
+                        <strong>
+                            »{{ contactWithRelations.Contact.name }}«
+                        </strong>
+                        <?php echo __('is used by'); ?>
+                        {{ total }}
+                        <?php echo __('objects.'); ?>
+                    </h2>
                 </header>
                 <div>
                     <div class="widget-body no-padding">
