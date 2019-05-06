@@ -175,6 +175,7 @@ $config = [
                 [
                     'url'   => ['controller' => 'servicetemplategroups', 'action' => 'index'],
                     'title' => 'Service Template Grps.',
+                    'state' => 'ServicetemplategroupsIndex',
                     'icon'  => 'pencil-square-o',
                 ],
                 [

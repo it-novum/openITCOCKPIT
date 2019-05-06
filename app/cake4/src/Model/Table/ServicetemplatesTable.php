@@ -666,4 +666,138 @@ class ServicetemplatesTable extends Table {
         return $servicetemplates;
     }
 
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getServicetemplatesForCopy($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->select([
+                'Servicetemplates.id',
+                'Servicetemplates.name',
+                'Servicetemplates.template_name',
+                'Servicetemplates.description',
+                'Servicetemplates.command_id',
+                'Servicetemplates.active_checks_enabled'
+            ])
+            ->contain([
+                'Servicetemplatecommandargumentvalues'      => [
+                    'Commandarguments'
+                ],
+                'Servicetemplateeventcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->where(['Servicetemplates.id IN' => $ids])
+            ->order(['Servicetemplates.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+
+        $query = $query->toArray();
+
+        if ($query === null) {
+            return [];
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @param int $servicetemplateType
+     * @param bool $ignoreType
+     * @return array
+     */
+    public function getServicetemplatesByContainerId($containerIds = [], $type = 'all', $servicetemplateType = GENERIC_SERVICE, $ignoreType = false) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        //Lookup for the tenant container of $container_id
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $tenantContainerIds = [];
+
+        foreach ($containerIds as $containerId) {
+            if ($containerId != ROOT_CONTAINER) {
+
+                // Get container id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load service templates
+                $path = $ContainersTable->getPathByIdAndCacheResult($containerId, 'ServicetemplatesByContainerId');
+
+                // Tenant service templates are available for all users of a tenant (oITC V2 legacy)
+                if (isset($path[1])) {
+                    $tenantContainerIds[] = $path[1]['id'];
+                }
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+        $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
+
+
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        $where = [
+            'Servicetemplates.container_id IN' => $containerIds,
+        ];
+        if (!$ignoreType) {
+            $conditions['Servicetemplates.servicetemplatetype_id'] = $servicetemplateType;
+        }
+
+
+        $query = $this->find()
+            ->contain(['Containers'])
+            ->where($where)
+            ->disableHydration()
+            ->all();
+
+        $records = $query->toArray();
+        if (empty($records) || is_null($records)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $records;
+        }
+
+        $list = [];
+        foreach ($records as $record) {
+            $list[$record['id']] = $record['template_name'];
+        }
+        return $list;
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getServicetemplatesAsList($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Servicetemplates.id',
+                'Servicetemplates.template_name'
+            ])
+            ->disableHydration();
+        if (!empty($ids)) {
+            $query->where([
+                'Servicetemplates.id IN' => $ids
+            ]);
+        }
+
+        return $this->formatListAsCake2($query->toArray(), 'id', 'template_name');
+    }
+
 }

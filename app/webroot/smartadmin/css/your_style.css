@@ -2491,6 +2491,6 @@ input[type=text]:focus + .input-group-addon-no-focus {
     border-radius: 7px;
 }
 .dropzoneStyle{
-    height:100px;
+    min-height:175px;
     padding: 15px;
 }

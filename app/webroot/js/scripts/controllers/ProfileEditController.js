@@ -18,9 +18,6 @@ angular.module('openITCOCKPIT')
                 dateformat: '',
                 timezone: '',
             },
-            Picture: {
-                picture: ''
-            },
             Password: {
                 current_password: null,
                 password: null,
@@ -76,9 +73,7 @@ angular.module('openITCOCKPIT')
                 acceptedFiles: 'image/*', //mimetypes
                 paramName: "Picture",
                 success: function(obj){
-                    console.log(obj.xhr.response);
                     var $previewElement = $(obj.previewElement);
-
                     var response = JSON.parse(obj.xhr.response);
                     if(response.success){
                         $previewElement.removeClass('dz-processing');
@@ -87,10 +82,8 @@ angular.module('openITCOCKPIT')
                         NotyService.genericSuccess({message: response.message});
                         return;
                     }
-
                     $previewElement.removeClass('dz-processing');
                     $previewElement.addClass('dz-error');
-
                     NotyService.genericError({message: response.message});
                 },
                 error: function(obj, errorMessage, xhr){
@@ -184,7 +177,6 @@ angular.module('openITCOCKPIT')
 
         $scope.deleteUserImage = function(){
             $http.post("/profile/deleteImage.json?angular=true").then(function(result){
-                console.log(result);
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                     NotyService.genericError({message: $scope.errors});
@@ -204,7 +196,7 @@ angular.module('openITCOCKPIT')
         $scope.loadDateformats();
         $scope.loadApiKey();
 
-        $scope.$watch('init', function(){
+        $scope.$watch('maxUploadLimit', function(){
             if($scope.maxUploadLimit != null){
                 createDropzone();
             }

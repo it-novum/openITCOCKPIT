@@ -304,14 +304,14 @@ $config = [
                 'serviceList' => ['deleted']
             ],
             'Servicetemplategroups' => [
-                'index' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId', 'view', 'allocateToMatchingHostgroup'],
-                'add'   => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
-                'edit'  => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
+                'index' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId', 'view', 'allocateToMatchingHostgroup', 'loadServicetemplategroupsByString'],
+                'add'   => ['loadContainers', 'loadServicetemplatesByContainerId', 'append', 'loadServicetemplategroupsByString'],
+                'add'   => ['loadContainers', 'loadServicetemplatesByContainerId', 'append', 'loadServicetemplategroupsByString'],
             ],
             'Servicetemplates'      => [
-                'index' => ['view', 'loadUsersByContainerId', 'loadServicetemplatesByContainerId', 'assignGroup'],
+                'index' => ['view', 'loadServicetemplatesByContainerId', 'assignGroup', 'addServicetemplatesToServicetemplategroup'],
                 'add'   => ['loadContainers', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments', 'loadElementsByContainerId'],
-                'edit'  => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
+                'edit'  => ['loadContainers', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments', 'loadElementsByContainerId'],
             ],
             'Users'                 => [
                 'index' => ['view', 'loadUsersByContainerId'],

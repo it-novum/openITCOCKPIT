@@ -64,8 +64,7 @@ class ServicetemplateeventcommandargumentvaluesTable extends Table {
         $validator
             ->scalar('value')
             ->maxLength('value', 1000)
-            ->requirePresence('value', 'create')
-            ->allowEmptyString('value', false);
+            ->allowEmptyString('value', true);
 
         return $validator;
     }

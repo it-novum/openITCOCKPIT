@@ -1,8 +1,8 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicetemplatesIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService, $state){
+    .controller('ServicetemplategroupsIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService, $state){
         $rootScope.lastObjectName = null;
 
-        SortService.setSort(QueryStringService.getValue('sort', 'Servicetemplates.name'));
+        SortService.setSort(QueryStringService.getValue('sort', 'Containers.name'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
         $scope.currentPage = 1;
 
@@ -11,9 +11,10 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Servicetemplates: {
-                    name: '',
-                    template_name: '',
+                Containers: {
+                    name: ''
+                },
+                Servicetemplategroups: {
                     description: ''
                 }
             };
@@ -21,7 +22,7 @@ angular.module('openITCOCKPIT')
         /*** Filter end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
-        $scope.deleteUrl = '/servicetemplates/delete/';
+        $scope.deleteUrl = '/servicetemplategroups/delete/';
 
         $scope.init = true;
         $scope.showFilter = false;
@@ -41,15 +42,14 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Servicetemplates.name]': $scope.filter.Servicetemplates.name,
-                'filter[Servicetemplates.template_name]': $scope.filter.Servicetemplates.template_name,
-                'filter[Servicetemplates.description]': $scope.filter.Servicetemplates.description
+                'filter[Containers.name]': $scope.filter.Containers.name,
+                'filter[Servicetemplategroups.description]': $scope.filter.Servicetemplategroups.description
             };
 
-            $http.get("/servicetemplates/index.json", {
+            $http.get("/servicetemplategroups/index.json", {
                 params: params
             }).then(function(result){
-                $scope.servicetemplates = result.data.all_servicetemplates;
+                $scope.servicetemplategroups = result.data.all_servicetemplategroups;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
@@ -66,10 +66,10 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.selectAll = function(){
-            if($scope.servicetemplates){
-                for(var key in $scope.servicetemplates){
-                    if($scope.servicetemplates[key].Servicetemplate.allow_edit === true){
-                        var id = $scope.servicetemplates[key].Servicetemplate.id;
+            if($scope.servicetemplategroups){
+                for(var key in $scope.servicetemplategroups){
+                    if($scope.servicetemplategroups[key].Servicetemplategroup.allow_edit === true){
+                        var id = $scope.servicetemplategroups[key].Servicetemplategroup.id;
                         $scope.massChange[id] = true;
                     }
                 }
@@ -82,20 +82,20 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
-        $scope.getObjectForDelete = function(servicetemplate){
+        $scope.getObjectForDelete = function(servicetemplategroup){
             var object = {};
-            object[servicetemplate.Servicetemplate.id] = servicetemplate.Servicetemplate.template_name;
+            object[servicetemplategroup.Servicetemplategroup.id] = servicetemplategroup.Servicetemplategroup.container.name;
             return object;
         };
 
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.servicetemplates){
+            for(var key in $scope.servicetemplategroups){
                 for(var id in selectedObjects){
-                    if(id == $scope.servicetemplates[key].Servicetemplate.id){
-                        if($scope.servicetemplates[key].Servicetemplate.allow_edit === true){
-                            objects[id] = $scope.servicetemplates[key].Servicetemplate.template_name;
+                    if(id == $scope.servicetemplategroups[key].Servicetemplategroup.id){
+                        if($scope.servicetemplategroups[key].Servicetemplategroup.allow_edit === true){
+                            objects[id] = $scope.servicetemplategroups[key].Servicetemplategroup.container.name;
                         }
                     }
                 }
