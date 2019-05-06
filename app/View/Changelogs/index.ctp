@@ -228,7 +228,7 @@
                                                                                                 <i class="fa fa-caret-right"></i>
                                                                                                 <span class="txt-color-green">
                                                                                     <?php
-                                                                                    echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_name, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_name][$value['after'][$field_name]] : $value['after'][$field_name]); ?>
+                                                                                    echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_name, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_name][$value['after'][$field_name]] : (!empty($value['after'][$field_name]))?$value['after'][$field_name]:''); ?>
                                                                                 </span>
                                                                                                 <?php
                                                                                                 break;

@@ -37,6 +37,7 @@ class Location extends Entity {
         'latitude'     => true,
         'longitude'    => true,
         'timezone'     => true,
+        'container'    => true,
         'created'      => true,
         'modified'     => true,
         'container'    => true
