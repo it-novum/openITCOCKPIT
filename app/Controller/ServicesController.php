@@ -86,11 +86,14 @@ use Statusengine\PerfdataParser;
  * @property AcknowledgedService $AcknowledgedService
  * @property DowntimeService $DowntimeService
  * @property BbcodeComponent $Bbcode
+ * @property Command $Command
  * @property DbBackend $DbBackend
  * @property AppPaginatorComponent $Paginator
  */
 class ServicesController extends AppController {
-    public $layout = 'Admin.default';
+
+    public $layout = 'blank';
+
     public $components = [
         'ListFilter.ListFilter',
         'RequestHandler',
