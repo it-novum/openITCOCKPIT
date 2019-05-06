@@ -690,7 +690,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                             <li>
                                                 <a ng-click="confirmAddHostsToHostgroup(getObjectsForDelete())"
                                                    class="a-clean pointer">
-                                                    <i class="fa fa-sitemap"></i> <?php echo __('Append to hostgroup'); ?>
+                                                    <i class="fa fa-sitemap"></i> <?php echo __('Add to hostgroup'); ?>
                                                 </a>
                                             </li>
                                         <?php endif; ?>

@@ -7,10 +7,9 @@ angular.module('openITCOCKPIT')
 
         var clearForm = function(){
             $scope.post = {
-                id: 0,
                 description: '',
-                latitude: '',
-                longitude: '',
+                latitude: null,
+                longitude: null,
                 timezone: null,
                 container: {
                     name: '',

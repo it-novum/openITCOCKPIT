@@ -36,6 +36,9 @@
 </div>
 
 <massdelete></massdelete>
+<?php if ($this->Acl->hasPermission('assignGroup', 'servicetemplates')): ?>
+    <add-servicetemplates-to-servicetemplategroup></add-servicetemplates-to-servicetemplategroup>
+<?php endif; ?>
 
 <section id="widget-grid" class="">
     <div class="row">
@@ -262,11 +265,30 @@
                                     <?php echo __('Copy'); ?>
                                 </a>
                             </div>
-                            <div class="col-xs-12 col-md-4 txt-color-red">
+                            <div class="col-xs-12 col-md-2 txt-color-red">
                             <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                 <i class="fa fa-lg fa-trash-o"></i>
                                 <?php echo __('Delete all'); ?>
                             </span>
+                            </div>
+                            <div class="xol-xs-12 col-md-2">
+                                <div class="btn-group">
+                                    <a href="javascript:void(0);" class="btn btn-default"><?php echo __('More'); ?></a>
+                                    <a href="javascript:void(0);" data-toggle="dropdown"
+                                       class="btn btn-default dropdown-toggle">
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <?php if ($this->Acl->hasPermission('assignGroup', 'servicetemplates')): ?>
+                                            <li>
+                                                <a ng-click="confirmAddServicetemplatessToServicetemplategroup(getObjectsForDelete())"
+                                                   class="a-clean pointer">
+                                                    <i class="fa fa-plus-circle"></i> <?php echo __('Add to service template group'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
