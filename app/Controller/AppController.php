@@ -203,10 +203,12 @@ class AppController extends Controller {
     }
 
     protected function __getUserRights() {
-        //The user is logedIn, so we need to select container permissions out of DB
-        $_user = $this->User->findById($this->Auth->user('id'));
-        $User = new User($this->Auth);
 
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+        //The user is logedIn, so we need to select container permissions out of DB
+        $_user = $Users->getUserById($this->Auth->user('id'));
+        $User = new User($this->Auth);
         $cacheKey = 'userPermissions_' . $User->getId();
 
         if (!Cache::read($cacheKey, 'permissions')) {
@@ -219,7 +221,7 @@ class AppController extends Controller {
             $rights_levels = [ROOT_CONTAINER => READ_RIGHT];
             $this->hasRootPrivileges = false;
             $this->MY_RIGHTS = [];
-            foreach ($_user['ContainerUserMembership'] as $container) {
+            foreach ($_user['_matchingData']['ContainersUsersMemberships'] as $container) {
                 $rights[] = (int)$container['container_id'];
                 $rights_levels[(int)$container['container_id']] = $container['permission_level'];
 

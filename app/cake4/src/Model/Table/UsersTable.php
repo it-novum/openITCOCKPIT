@@ -479,18 +479,15 @@ class UsersTable extends Table {
 
     /**
      * get the first user
-     * currently only used by AppController
      * @return array
      */
     public function getFirstUser(){
-        $query = $this->find('all');
+        $query = $this->find('all')->disableHydration();
         $result = $query->first();
         return $this->formatFirstResultAsCake2($result);
     }
 
-
     /**
-     *
      * @param $email
      * @return array
      */
@@ -503,5 +500,35 @@ class UsersTable extends Table {
             ]);
         $result = $query->first();
         return $this->formatFirstResultAsCake2($result);
+    }
+
+    /**
+     * @param $samaccountname
+     * @return array
+     */
+    public function findBySamaccountname($samaccountname){
+        $query = $this->find()
+            ->disableHydration()
+            ->where([
+                'Users.samaccountname' => $samaccountname,
+                'Users.is_active' => 1
+            ]);
+        $result = $query->first();
+        return $this->formatFirstResultAsCake2($result);
+    }
+
+    public function getUserById($id){
+        $query = $this->find('all')
+            ->disableHydration()
+            ->contain(['Containers'])
+            ->matching('Containers')
+            ->where([
+                'Users.id' => $id
+            ]);
+        if(is_null($query)){
+            return [];
+        }
+        return $query->first();
+
     }
 }
