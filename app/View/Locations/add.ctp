@@ -56,7 +56,6 @@ $timezones = CakeTime::listTimezones();
             {objectName : '<?php echo __('Location'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
-
                         <div class="row">
                             <div class="form-group required" ng-class="{'has-error': errors.container.parent_id}">
                                 <label class="col col-md-2 control-label">
@@ -112,7 +111,8 @@ $timezones = CakeTime::listTimezones();
                                 </div>
                             </div>
 
-                            <div class="form-group" ng-class="{'has-error': (errors.latitude || errors.longitude.custom)}">
+                            <div class="form-group"
+                                 ng-class="{'has-error': (errors.latitude || errors.longitude.custom)}">
                                 <label class="col-xs-12 col-lg-2 control-label">
                                     <?php echo __('Latitude'); ?>
                                 </label>
@@ -135,7 +135,8 @@ $timezones = CakeTime::listTimezones();
                                 </div>
                             </div>
 
-                            <div class="form-group" ng-class="{'has-error': (errors.longitude || errors.latitude.custom)}">
+                            <div class="form-group"
+                                 ng-class="{'has-error': (errors.longitude || errors.latitude.custom)}">
                                 <label class="col-xs-12 col-lg-2 control-label">
                                     <?php echo __('Longitude'); ?>
                                 </label>
@@ -176,6 +177,9 @@ $timezones = CakeTime::listTimezones();
                                         <?php endforeach;; ?>
                                     </select>
                                 </div>
+                            </div>
+                            <div class="col-xs-12 col-lg-10 col-lg-offset-2">
+                                <div id="mapDiv" class="vector-map"></div>
                             </div>
                         </div>
                     </div>
