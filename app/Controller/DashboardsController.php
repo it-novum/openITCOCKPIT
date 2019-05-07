@@ -97,13 +97,11 @@ class DashboardsController extends AppController {
 
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
-        $userRecord = $this->User->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'User.id' => $User->getId()
-            ]
-        ]);
-        $tabRotationInterval = (int)$userRecord['User']['dashboard_tab_rotation'];
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+        $user = $Users->get($User->getId());
+
+        $tabRotationInterval = (int)$user->dashboard_tab_rotation;
 
         //Check if a tab exists for the given user
         if ($this->DashboardTab->hasUserATab($User->getId()) === false) {
