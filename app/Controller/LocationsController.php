@@ -114,7 +114,6 @@ class LocationsController extends AppController {
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $this->request->data['uuid'] = UUID::v4();
-
             $location = $LocationsTable->newEntity();
             $location = $LocationsTable->patchEntity($location, $this->request->data);
             $location->container->containertype_id = CT_LOCATION;
@@ -133,7 +132,7 @@ class LocationsController extends AppController {
                     'locations',
                     $location->get('id'),
                     OBJECT_LOCATION,
-                    $location->get('container')->get('parent_id'),
+                    [$location->get('container')->get('parent_id')],
                     $User->getId(),
                     $location->container->name,
                     [
@@ -189,7 +188,9 @@ class LocationsController extends AppController {
         }
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $oldLocation = $LocationsTable->get($id);
+            $oldLocation = $LocationsTable->get($id, [
+                'contain' => ['Containers']
+            ]);
             $oldLocationForChangelog = $oldLocation->toArray();
             if (!$this->allowedByContainerId($oldLocation->get('container_id'))) {
                 $this->render403();
@@ -200,7 +201,6 @@ class LocationsController extends AppController {
 
             $location->container_id = $oldLocation->get('container_id');
             $location->container->id = $oldLocation->get('container_id');
-            $location->container->parent_id = $oldLocation->get('parent_id');
             $location->container->containertype_id = CT_LOCATION;
 
             $LocationsTable->save($location);
@@ -216,7 +216,7 @@ class LocationsController extends AppController {
                     'locations',
                     $location->get('id'),
                     OBJECT_LOCATION,
-                    $location->get('container')->get('parent_id'),
+                    [$location->get('container')->get('parent_id')],
                     $User->getId(),
                     $location->container->name,
                     [
@@ -245,64 +245,55 @@ class LocationsController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
+     * @todo allowDelete -> for eventcorrelation module
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Location->exists($id)) {
+        /** @var $LocationsTable LocationsTable */
+        $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$LocationsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid location'));
         }
 
-        $container = $this->Location->findById($id);
-
-        /** @var $LocationsTable LocationsTable */
-        $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
         $location = $LocationsTable->getLocationById($id);
-        $locationParentId = $location->get('container')->get('parent_id');
-        $locationForChangelog = $location;
+        $container = $ContainersTable->get($location->get('container')->get('id'));
 
-        if (!$this->allowedByContainerId(Hash::extract($container, 'Container.id'))) {
+        if (!$this->allowedByContainerId($location->get('container')->get('parent_id'))) {
             $this->render403();
-
             return;
         }
 
-        if ($this->Location->__allowDelete($container['Location']['container_id'])) {
-
-            /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-            if ($ContainersTable->delete($ContainersTable->get($container['Location']['container_id']))) {
-                Cache::clear(false, 'permissions');
-
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    'delete',
-                    'locations',
-                    $id,
-                    OBJECT_LOCATION,
-                    [$locationParentId],
-                    $User->getId(),
-                    $locationForChangelog['container']['name'],
-                    []
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-
-                $this->set('message', __('Location deleted successfully'));
-                $this->set('_serialize', ['message']);
-                return;
+        if ($ContainersTable->delete($container)) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                'delete',
+                'locations',
+                $id,
+                OBJECT_LOCATION,
+                $container->get('parent_id'),
+                $User->getId(),
+                $container->get('name'),
+                [
+                    'location' => $location->toArray()
+                ]
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
             }
-            $this->response->statusCode(400);
-            $this->set('message', __('Could not delete location'));
-            $this->set('_serialize', ['message']);
+
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
         }
-        $this->response->statusCode(400);
-        $this->set('message', __('Could not delete location'));
-        $this->set('_serialize', ['message']);
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
     }
 
     /****************************

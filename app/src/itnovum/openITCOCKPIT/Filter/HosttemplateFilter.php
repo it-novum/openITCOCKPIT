@@ -53,4 +53,14 @@ class HosttemplateFilter extends Filter {
         return $this->getConditionsByFilters($filters);
     }
 
+    public function usedByFilter() {
+        $filters = [
+            'bool' => [
+                'Hosts.disabled',
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
 }

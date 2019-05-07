@@ -22,11 +22,12 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+$timezones = CakeTime::listTimezones();
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-fw fa-location-arrow"></i>
+            <i class="fa fa-location-arrow "></i>
             <?php echo __('Locations'); ?>
             <span>>
                 <?php echo __('Edit'); ?>
@@ -39,10 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-location-arrow"></i> </span>
-        <h2>
-            <?php echo __('Edit location:'); ?>
-            {{location.container.name}}
-        </h2>
+        <h2><?php echo __('Update location'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'locations')): ?>
                 <a back-button fallback-state='LocationsIndex' class="btn btn-default btn-xs">
@@ -60,6 +58,25 @@
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
 
                         <div class="row">
+                            <div class="form-group required" ng-class="{'has-error': errors.container.parent_id}">
+                                <label class="col col-md-2 control-label">
+                                    <?php echo __('Container'); ?>
+                                </label>
+                                <div class="col col-xs-10">
+                                    <select
+                                            id="LocationParentContainer"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="containers"
+                                            ng-options="container.key as container.value for container in containers"
+                                            ng-model="post.container.parent_id">
+                                    </select>
+
+                                    <div ng-repeat="error in errors.container.parent_id">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="form-group required" ng-class="{'has-error': errors.container.name}">
                                 <label class="col-xs-12 col-lg-2 control-label">
@@ -95,102 +112,77 @@
                                 </div>
                             </div>
 
-                            <div class="form-group" ng-class="{'has-error': errors.firstname}">
+                            <div class="form-group" ng-class="{'has-error': (errors.latitude || errors.longitude.custom)}">
                                 <label class="col-xs-12 col-lg-2 control-label">
-                                    <?php echo __('First name'); ?>
+                                    <?php echo __('Latitude'); ?>
                                 </label>
                                 <div class="col-xs-12 col-lg-10">
                                     <div class="input-group" style="width: 100%;">
-                                        <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.firstname">
+                                        <input class="form-control"
+                                               type="text"
+                                               ng-model="post.latitude"
+                                               placeholder="<?php echo '50.5558095'; ?>">
                                     </div>
-                                    <div ng-repeat="error in errors.firstname">
+                                    <div class="info-block-helptext">
+                                        <?php echo __(' Latitude must be a number between -90 and 90 degree inclusive.'); ?>
+                                    </div>
+                                    <div ng-repeat="error in errors.latitude">
                                         <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                    <div ng-show="(!errors.latitude.custom && errors.longitude.custom)">
+                                        <div class="help-block text-danger">{{ errors.longitude.custom }}</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group" ng-class="{'has-error': errors.lastname}">
+                            <div class="form-group" ng-class="{'has-error': (errors.longitude || errors.latitude.custom)}">
                                 <label class="col-xs-12 col-lg-2 control-label">
-                                    <?php echo __('Last name'); ?>
+                                    <?php echo __('Longitude'); ?>
                                 </label>
                                 <div class="col-xs-12 col-lg-10">
                                     <div class="input-group" style="width: 100%;">
-                                        <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.lastname">
+                                        <input class="form-control"
+                                               type="text"
+                                               ng-model="post.longitude"
+                                               placeholder="<?php echo '9.6808449'; ?>">
                                     </div>
-                                    <div ng-repeat="error in errors.lastname">
+                                    <div class="info-block-helptext">
+                                        <?php echo __('Longitude must be a number -180 and 180 degree inclusive.'); ?>
+                                    </div>
+                                    <div ng-repeat="error in errors.longitude">
                                         <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                    <div ng-show="(!errors.longitude.custom && errors.latitude.custom)">
+                                        <div class="help-block text-danger">{{ errors.latitude.custom }}</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group" ng-class="{'has-error': errors.street}">
+                            <div class="form-group">
                                 <label class="col-xs-12 col-lg-2 control-label">
-                                    <?php echo __('Street'); ?>
+                                    <?php echo __('Timezone'); ?>
                                 </label>
                                 <div class="col-xs-12 col-lg-10">
-                                    <div class="input-group" style="width: 100%;">
-                                        <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.street">
-                                    </div>
-                                    <div ng-repeat="error in errors.street">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
+                                    <select class="form-control"
+                                            chosen="{}"
+                                            ng-model="post.timezone">
+                                        <?php foreach ($timezones as $continent => $continentTimezons): ?>
+                                            <optgroup label="<?php echo h($continent); ?>">
+                                                <?php foreach ($continentTimezons as $timezoneKey => $timezoneName): ?>
+                                                    <option value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
+                                                <?php endforeach; ?>
+                                            </optgroup>
+                                        <?php endforeach;; ?>
+                                    </select>
                                 </div>
                             </div>
-
-                            <div class="form-group" ng-class="{'has-error': errors.zipcode}">
-                                <label class="col-xs-12 col-lg-2 control-label">
-                                    <?php echo __('Zip code'); ?>
-                                </label>
-                                <div class="col-xs-12 col-lg-10">
-                                    <div class="input-group" style="width: 100%;">
-                                        <input
-                                                class="form-control"
-                                                type="number"
-                                                min="0"
-                                                ng-model="post.zipcode">
-                                    </div>
-                                    <div ng-repeat="error in errors.zipcode">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group" ng-class="{'has-error': errors.city}">
-                                <label class="col-xs-12 col-lg-2 control-label">
-                                    <?php echo __('City'); ?>
-                                </label>
-                                <div class="col-xs-12 col-lg-10">
-                                    <div class="input-group" style="width: 100%;">
-                                        <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.city">
-                                    </div>
-                                    <div ng-repeat="error in errors.city">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
-
                     </div>
                 </div>
-
 
                 <div class="col-xs-12 margin-top-10 margin-bottom-10">
                     <div class="well formactions ">
                         <div class="pull-right">
-
                             <button type="submit" class="btn btn-primary">
                                 <?php echo __('Update location'); ?>
                             </button>

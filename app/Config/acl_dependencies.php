@@ -306,10 +306,10 @@ $config = [
             'Servicetemplategroups' => [
                 'index' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId', 'view', 'allocateToMatchingHostgroup', 'loadServicetemplategroupsByString'],
                 'add'   => ['loadContainers', 'loadServicetemplatesByContainerId', 'append', 'loadServicetemplategroupsByString'],
-                'add'   => ['loadContainers', 'loadServicetemplatesByContainerId', 'append', 'loadServicetemplategroupsByString'],
+                'edit'  => ['loadContainers', 'loadServicetemplatesByContainerId', 'append', 'loadServicetemplategroupsByString'],
             ],
             'Servicetemplates'      => [
-                'index' => ['view', 'loadServicetemplatesByContainerId', 'assignGroup', 'addServicetemplatesToServicetemplategroup'],
+                'index' => ['view', 'loadServicetemplatesByContainerId', 'addServicetemplatesToServicetemplategroup'],
                 'add'   => ['loadContainers', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments', 'loadElementsByContainerId'],
                 'edit'  => ['loadContainers', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments', 'loadElementsByContainerId'],
             ],
@@ -336,8 +336,8 @@ $config = [
             ],
             'Locations'             => [
                 'index' => ['view'],
-                'add'      => ['loadContainers'],
-                'edit'     => ['loadContainers']
+                'add'   => ['loadContainers'],
+                'edit'  => ['loadContainers']
             ],
             /*'Devicegroups' => [
                 'index' => ['view'],

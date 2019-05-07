@@ -165,6 +165,6 @@ class Service extends Entity
         'services_to_servicedependencies' => true,
         'services_to_serviceescalations' => true,
         'services_to_servicegroups' => true,
-        'widgets' => true
+        'widgets' => true,
     ];
 }

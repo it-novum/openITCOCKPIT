@@ -36,7 +36,7 @@
 </div>
 
 <massdelete></massdelete>
-<?php if ($this->Acl->hasPermission('assignGroup', 'servicetemplates')): ?>
+<?php if ($this->Acl->hasPermission('add', 'servicetemplates')): ?>
     <add-servicetemplates-to-servicetemplategroup></add-servicetemplates-to-servicetemplategroup>
 <?php endif; ?>
 
@@ -279,7 +279,7 @@
                                         <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu">
-                                        <?php if ($this->Acl->hasPermission('assignGroup', 'servicetemplates')): ?>
+                                        <?php if ($this->Acl->hasPermission('add', 'servicetemplates')): ?>
                                             <li>
                                                 <a ng-click="confirmAddServicetemplatessToServicetemplategroup(getObjectsForDelete())"
                                                    class="a-clean pointer">

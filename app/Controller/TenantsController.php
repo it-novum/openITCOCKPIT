@@ -193,7 +193,9 @@ class TenantsController extends AppController {
         }
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $oldTenant = $TenantsTable->get($id);
+            $oldTenant = $TenantsTable->get($id, [
+                'contain' => ['Containers']
+            ]);
             $oldTenantForChangelog = $oldTenant->toArray();
             if (!$this->allowedByContainerId($oldTenant->get('container_id'))) {
                 $this->render403();

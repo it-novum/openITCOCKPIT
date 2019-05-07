@@ -27,6 +27,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatecommandargumentvaluesTable;
@@ -481,224 +482,101 @@ class ServicetemplatesController extends AppController {
         $this->set('_serialize', ['result']);
     }
 
-    public function addServicetemplatesToServicetemplategroup(){
+    public function addServicetemplatesToServicetemplategroup() {
         //Only ship HTML Template
         return;
     }
 
-    /**
-     * @param null $id
-     * @throws Exception
-     * @deprecated
-     */
-    public function assignGroup($id = null) {
-        $servicetmpl = $this->Servicetemplate->find('all', [
-            'conditions' => [
-                'Servicetemplate.id' => func_get_args(),
-            ],
-            'contain'    => [
-                'Contact'      => [
-                    'fields' => [
-                        'Contact.id',
-                    ],
-                ],
-                'Contactgroup' => [
-                    'fields' => [
-                        'Contactgroup.id',
-                    ],
-                ],
-            ],
-        ]);
-
-        $servicetemplates = Hash::combine($servicetmpl, '{n}.Servicetemplate.id', '{n}');
-
-        $myServiceTemplates = [];
-        $checkedContanerId = null;
-        $sameContaner = true;
-        foreach ($servicetemplates as $servicetemplate) {
-            if (isset($servicetemplate['Servicetemplate']['id'])) {
-                if (is_null($checkedContanerId)) {
-                    $checkedContanerId = $servicetemplate['Servicetemplate']['container_id'];
-                } else if ($checkedContanerId != $servicetemplate['Servicetemplate']['container_id']) {
-                    $sameContaner = false;
-                    break;
-                }
-                $myServiceTemplates[$servicetemplate['Servicetemplate']['id']] = $servicetemplate['Servicetemplate']['name'];
-            }
-        }
-        if (is_null($checkedContanerId)) {
-            $this->setFlash(__('Please choose at least one Servicetemplate'), false);
-            $this->redirect(['action' => 'index']);
-        }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $resolvedPathContainerName = $ContainersTable->easyPath([$checkedContanerId], OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
-        if (!isset($resolvedPathContainerName[$checkedContanerId])) {
-            $this->setFlash(__('Please choose at least one Servicetemplate'), false);
-            $this->redirect(['action' => 'index']);
-        }
-        $checkedContanerName = $resolvedPathContainerName[$checkedContanerId];
-        if (!$sameContaner) {
-            $this->setFlash(__('Servicetemplates must belong to the same container'), false);
-            $this->redirect(['action' => 'index']);
-        }
-        if (!in_array($checkedContanerId, $this->MY_RIGHTS)) {
-            $this->setFlash(__('You have no permission to view these servicetemplates'), false);
-            $this->redirect(['action' => 'index']);
-        }
-
-        $myContainerId = $ContainersTable->resolveChildrenOfContainerIds($checkedContanerId);
-        $allServicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
-        $allServicetemplateGroups = $this->Servicetemplategroup->find('all', [
-            'conditions' => ['Container.parent_id' => $checkedContanerId],
-        ]);
-        $servicetemplateGroupList = [];
-        foreach ($allServicetemplateGroups as $servicetemplateGroup) {
-            $servicetemplateGroupList[$servicetemplateGroup['Servicetemplategroup']['id']] = $servicetemplateGroup['Container']['name'];
-        }
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Servicetemplate'] = $this->request->data['Servicetemplategroup']['Servicetemplate'];
-            $this->request->data['Container']['containertype_id'] = CT_SERVICETEMPLATEGROUP;
-            if ($this->request->data['service-form']['new'] === '1') {
-                unset($this->request->data['Servicetemplategroup']['id']);
-                App::uses('UUID', 'Lib');
-                $this->request->data['Servicetemplategroup']['uuid'] = UUID::v4();
-            } else {
-                foreach ($allServicetemplateGroups as $myServicetemplateGroup) {
-                    if ($myServicetemplateGroup['Servicetemplategroup']['id'] == $this->request->data['Servicetemplategroup']['id']) {
-                        foreach ($myServicetemplateGroup['Servicetemplate'] as $myServiceTemlate) {
-                            if (!in_array($myServiceTemlate['id'], $this->request->data['Servicetemplate'])) {
-                                $this->request->data['Servicetemplate'][] = $myServiceTemlate['id'];
-                            }
-                        }
-                    }
-                }
-                unset($this->request->data['Container']);
-            }
-            unset($this->request->data['service-form']);
-
-            if ($this->Servicetemplategroup->saveAll($this->request->data)) {
-                $this->setFlash(__('All Servicetemplates were successfully allocated'));
-                $this->redirect(['action' => 'index']);
-            }
-        }
-        $this->set(compact('servicetemplates', 'myServiceTemplates', 'allServicetemplates', 'servicetemplateGroupList', 'checkedContanerName', 'checkedContanerId'));
-        $this->set('back_url', $this->referer());
-    }
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param int|null $id
      */
     public function usedBy($id = null) {
-
-        $this->layout = 'angularjs';
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
             return;
         }
 
-        if (!$this->Servicetemplate->exists($id)) {
-            throw new NotFoundException(__('Invalid servicetemplate'));
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        if (!$ServicetemplatesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid service template'));
         }
 
-        $servicetemplate = $this->Servicetemplate->findById($id);
+        $servicetemplate = $ServicetemplatesTable->get($id);
 
-        if (!$this->allowedByContainerId(Hash::extract($servicetemplate, 'Container.id'), false)) {
-            $this->render403();
+        $ServicetemplateFilter = new ServicetemplateFilter($this->request);
+        $filter = $ServicetemplateFilter->usedByFilter();
 
+        $includeDisabled = true;
+        if(isset($filter['Services.disabled']) && $filter['Services.disabled'] === 0){
+            $includeDisabled = false;
+        }
+
+        $services = $ServicesTable->getServicesWithHostForServicetemplateUsedBy($id, $this->MY_RIGHTS, $includeDisabled);
+
+
+        if (empty($services)) {
+            //No services found or no permissions
+            $this->set('servicetemplate', $servicetemplate);
+            $this->set('hostsWithServices', []);
+            $this->set('count', 0);
+            $this->set('_serialize', ['hostsWithServices', 'servicetemplate', 'count']);
             return;
         }
-        $ServiceConditions = new ServiceConditions();
-        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
-        $query = [
-            'recursive'  => -1,
-            'conditions' => [
-                'Servicetemplate.id'             => $id,
-                'HostsToContainers.container_id' => $ServiceConditions->getContainerIds()
-            ],
-            'contain'    => ['Servicetemplate', 'Host'],
-            'fields'     => [
-                'Service.id',
-                'Service.name',
 
-                'Servicetemplate.id',
-                'Servicetemplate.name',
+        $hostIds = array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.id'));
+        $tmpHosts = $HostsTable->getHostsByIds($hostIds, false);
 
-                'Host.name',
-                'Host.id',
-                'Host.uuid',
-                'Host.address',
+        foreach ($tmpHosts as $index => $host) {
+            $hostContainerIds = \Cake\Utility\Hash::extract($host['hosts_to_containers_sharing'], '{n}.id');
 
-                'HostsToContainers.container_id',
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'hosts_to_containers',
-                    'alias'      => 'HostsToContainers',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'HostsToContainers.host_id = Host.id',
-                    ],
-                ],
-            ],
-            'group'      => [
-                'Service.id',
-            ],
-        ];
-
-        $services = $this->Service->find('all', $query);
-
-        $hostContainers = [];
-        if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-            $hostIds = array_unique(Hash::extract($services, '{n}.Host.id'));
-            $_hostContainers = $this->Host->find('all', [
-                'contain'    => [
-                    'Container',
-                ],
-                'fields'     => [
-                    'Host.id',
-                    'Container.*',
-                ],
-                'conditions' => [
-                    'Host.id' => $hostIds,
-                ],
-            ]);
-            foreach ($_hostContainers as $host) {
-                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
-            }
-        }
-
-
-        foreach ($services as $service) {
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
-                $containerIds = [];
-                if (isset($hostContainers[$service['Host']['id']])) {
-                    $containerIds = $hostContainers[$service['Host']['id']];
-                }
-                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainerIds);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
-
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
-
-
-            $tmpRecord = [
-                'Service' => $Service->toArray(),
-                'Host'    => $Host->toArray(),
-            ];
-            $all_services[] = $tmpRecord;
+            $tmpHosts[$index]['allow_edit'] = $allowEdit;
         }
 
+        $hosts = [];
+        foreach ($tmpHosts as $host) {
+            $hosts[$host['id']] = $host;
+        }
 
-        $this->set(compact(['all_services', 'servicetemplate']));
-        $this->set('_serialize', ['all_services', 'servicetemplate']);
+        //Merge hosts into service array
+        foreach ($services as $index => $service) {
+            $services[$index]['servicename'] = $service['name'];
+            if ($service['name'] === '' || $service['name'] === null) {
+                $services[$index]['servicename'] = $service['servicetemplate']['name'];
+            }
+
+            $services[$index]['host'] = $hosts[$service['_matchingData']['Hosts']['id']];
+        }
+
+        $groupByHost = [];
+        foreach($services as $service){
+            $hostId = $service['host']['id'];
+            if(!isset($groupByHost[$hostId])){
+                $groupByHost[$hostId] = $service['host'];
+                $groupByHost[$hostId]['services'] = [];
+            }
+
+            unset($service['host']);
+            $groupByHost[$hostId]['services'][] = $service;
+        }
+
+        $this->set('servicetemplate', $servicetemplate);
+        $this->set('hostsWithServices', $groupByHost);
+        $this->set('count', sizeof($services));
+        $this->set('_serialize', ['hostsWithServices', 'servicetemplate', 'count']);
+        return;
     }
 
     /****************************

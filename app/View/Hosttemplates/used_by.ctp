@@ -42,10 +42,15 @@
 <div class="jarviswidget">
     <header>
         <span class="widget-icon"> <i class="fa fa-code-fork"></i> </span>
-        <h2><?php echo __('Hosttemplate'); ?>
-            <strong>{{ hosttemplate.name }}</strong>
-            <?php echo __('is used by the following'); ?> <?php echo _('hosts'); ?>
-            ({{ total }}):</h2>
+        <h2><?php echo __('Host template'); ?>
+            <strong>
+                »{{ hosttemplate.name }}«
+            </strong>
+            <?php echo __('is used by'); ?>
+            {{ total }}
+            <?php echo __('hosts.'); ?>
+        </h2>
+
         <div class="widget-toolbar" role="menu">
 
             <button type="button" class="btn btn-xs btn-default" ng-click="load()">
@@ -59,6 +64,21 @@
                 </a>
             <?php endif; ?>
         </div>
+
+        <div class="widget-toolbar">
+            <div class="form-group smart-form no-padding">
+                <label class="checkbox small-checkbox-label">
+                    <input type="checkbox" name="checkbox"
+                           ng-model="filter.includeDisabled"
+                           ng-model-options="{debounce: 500}"
+                           ng-true-value="true"
+                           ng-false-value="false">
+                    <i class="checkbox-primary"></i>
+                    <?php echo __('Include disabled hosts'); ?>
+                </label>
+            </div>
+        </div>
+
     </header>
     <div>
         <div class="widget-body no-padding">
@@ -70,7 +90,10 @@
                         <i class="fa fa-check-square-o fa-lg"></i>
                     </th>
                     <th>
-                        <?php echo __('Host Name'); ?>
+                        <?php echo __('Host name'); ?>
+                    </th>
+                    <th class="no-sort text-center editItemWidth">
+                        <i class="fa fa-gear fa-lg"></i>
                     </th>
                 </tr>
                 <tr ng-repeat="host in allHosts">
@@ -85,9 +108,16 @@
                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                             <a ui-sref="HostsBrowser({id: host.Host.id})">
                                 {{ host.Host.hostname }} ({{ host.Host.address }})
+
+                                <span ng-show="host.Host.disabled" title="<?php echo __('Disabled'); ?>">
+                                    <i class="fa fa-plug"></i>
+                                </span>
                             </a>
                         <?php else: ?>
-                            {{ host.Host.hostname }}
+                            {{ host.Host.hostname }} ({{ host.Host.address }})
+                            <span ng-show="host.Host.disabled" title="<?php echo __('Disabled'); ?>">
+                                <i class="fa fa-plug"></i>
+                            </span>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                             <a class="pull-right txt-color-blueDark"
@@ -95,6 +125,41 @@
                                 <i class="fa fa-list" title="<?php echo __('Go to Service list'); ?>"></i>
                             </a>
                         <?php endif; ?>
+                    </td>
+                    <td class="width-50">
+                        <div class="btn-group">
+                            <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                <a ui-sref="HostsEdit({id: host.Host.id})"
+                                   ng-if="host.Host.allow_edit"
+                                   class="btn btn-default">
+                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                </a>
+                            <?php else: ?>
+                                <a href="javascript:void(0);" class="btn btn-default">
+                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                            <?php endif; ?>
+                            <a href="javascript:void(0);" data-toggle="dropdown"
+                               class="btn btn-default dropdown-toggle"><span
+                                        class="caret"></span></a>
+                            <ul class="dropdown-menu pull-right" id="menuHack-{{host.Host.uuid}}">
+                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                    <li ng-if="host.Host.allow_edit">
+                                        <a ui-sref="HostsEdit({id: host.Host.id})">
+                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
+                                    <li class="divider"></li>
+                                    <li ng-if="host.Host.allow_edit">
+                                        <a href="javascript:void(0);" class="txt-color-red"
+                                           ng-click="confirmDelete(getObjectForDelete(host))">
+                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
                     </td>
                 </tr>
                 </tbody>
