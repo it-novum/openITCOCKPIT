@@ -114,7 +114,6 @@ class LocationsController extends AppController {
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $this->request->data['uuid'] = UUID::v4();
-
             $location = $LocationsTable->newEntity();
             $location = $LocationsTable->patchEntity($location, $this->request->data);
             $location->container->containertype_id = CT_LOCATION;

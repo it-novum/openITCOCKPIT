@@ -14,7 +14,11 @@ angular.module('openITCOCKPIT')
                     description: '',
                     latitude: null,
                     longitude: null,
-                    timezone: null
+                    timezone: null,
+                    container: {
+                        name: '',
+                        parent_id: null
+                    }
                 },
                 Tenant: {
                     description: '',
@@ -28,6 +32,7 @@ angular.module('openITCOCKPIT')
                     }
                 }
             };
+            $scope.errors = null;
         };
 
         clearForm();
@@ -37,7 +42,7 @@ angular.module('openITCOCKPIT')
         $scope.selectedContainer = {
             id: null
         };
-        $scope.errors = null;
+
         if($stateParams.id != null){
             $scope.selectedContainer.id = parseInt($stateParams.id, 10);
         }
@@ -114,9 +119,8 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.saveLocation = function(){
-            console.log($scope.post);
-            return;
-            $http.post("/locations/add.json?angular=true", $scope.post).then(
+            $scope.post.Location.container.parent_id = $scope.post.Container.parent_id;
+            $http.post("/locations/add.json?angular=true", $scope.post.Location).then(
                 function(result){
                     $('#angularAddNodeModal').modal('hide');
                     clearForm();
@@ -152,6 +156,7 @@ angular.module('openITCOCKPIT')
             //Set init value for select box 2 ==> Tenant ; 5 ==> Node
             $scope.post.Container.containertype_id = ($scope.selectedContainerTypeId ===  1)?'2':'5';
             $scope.post.Container.parent_id = parseInt(container.id, 10);
+            $scope.post.Location.timezone = 'Europe/Berlin'; //set initial value for timezone list
             $('#angularAddNodeModal').modal('show');
         };
 
