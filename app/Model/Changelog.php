@@ -225,7 +225,6 @@ class Changelog extends AppModel {
     function getDiffAsArray($new_values, $old_values, $field_key) {
         $new_values = ($new_values === null) ? [] : $new_values;
         $old_values = ($old_values === null || empty(Hash::filter($old_values, [$this, 'filterNullValues']))) ? [] : $old_values;
-
         // compare the value of 2 array
         // get differences that in new_values but not in old_values
         // get difference that in old_values but not in new_values
@@ -276,8 +275,8 @@ class Changelog extends AppModel {
         $diff[$field_key]['before'] = (is_null($diff[$field_key]['before'])) ? [] : $diff[$field_key]['before'];
         $diff[$field_key]['after'] = (is_null($diff[$field_key]['after'])) ? [] : $diff[$field_key]['after'];
         //Remove all "null" entries from array
-        $diff[$field_key]['before'] = Hash::filter($diff[$field_key]['before'], [$this, 'filterNullValues']);
-        $diff[$field_key]['current_data'] = Hash::filter($diff[$field_key]['current_data'], [$this, 'filterNullValues']);
+        $diff[$field_key]['before'] = $diff[$field_key]['before'];
+        $diff[$field_key]['current_data'] = $diff[$field_key]['current_data'];
         $diff[$field_key]['after'] = Hash::filter($diff[$field_key]['after'], [$this, 'filterNullValues']);
 
         return $diff;
