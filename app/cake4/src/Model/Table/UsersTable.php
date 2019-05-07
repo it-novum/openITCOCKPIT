@@ -521,7 +521,6 @@ class UsersTable extends Table {
         $query = $this->find('all')
             ->disableHydration()
             ->contain(['Containers'])
-            ->matching('Containers')
             ->where([
                 'Users.id' => $id
             ]);
@@ -529,6 +528,5 @@ class UsersTable extends Table {
             return [];
         }
         return $query->first();
-
     }
 }
