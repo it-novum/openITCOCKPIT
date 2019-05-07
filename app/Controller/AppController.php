@@ -191,7 +191,9 @@ class AppController extends Controller {
         }
 
         if (ENVIRONMENT === 'development_test') {
-            $autoLoginUserAdmin = $this->User->find('first');
+            /** @var $Users App\Model\Table\UsersTable */
+            $Users = TableRegistry::getTableLocator()->get('Users');
+            $autoLoginUserAdmin = $Users->getFirstUser();
             if (!empty($autoLoginUserAdmin)) {
                 $this->Auth->login($autoLoginUserAdmin);
                 $this->MY_RIGHTS = [1];
@@ -558,7 +560,7 @@ class AppController extends Controller {
     /**
      * Responds in the widget response format.
      *
-     * @param    string $html The action HTML
+     * @param string $html The action HTML
      *
      * @return    string    The rendered HTML
      */
@@ -604,7 +606,7 @@ class AppController extends Controller {
     /**
      * Unbind all accociations for the next find() call for every model
      *
-     * @param  String $ModelName The Name of the Model, you want to unbind all accociations
+     * @param String $ModelName The Name of the Model, you want to unbind all accociations
      *
      * @return void
      * @since 3.0

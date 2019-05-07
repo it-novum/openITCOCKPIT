@@ -292,6 +292,7 @@ class UsersTable extends Table {
      * @return array
      */
     public function getUser($userId, $rights) {
+
         $query = $this->find()
             ->disableHydration()
             ->contain(['Containers'])
@@ -334,8 +335,10 @@ class UsersTable extends Table {
             return $query->first();
         }
         return [];
-
     }
+
+
+
 
     /**
      * Saving additional data to through table
@@ -467,5 +470,38 @@ class UsersTable extends Table {
             12 => '%Y-%m-%d %H:%M',
             13 => '%Y-%m-%d %H:%M:%S'
         ];
+    }
+
+
+    /**
+     *  May deprecated functions after fully moving to cakephp 4
+     */
+
+    /**
+     * get the first user
+     * currently only used by AppController
+     * @return array
+     */
+    public function getFirstUser(){
+        $query = $this->find('all');
+        $result = $query->first();
+        return $this->formatFirstResultAsCake2($result);
+    }
+
+
+    /**
+     *
+     * @param $email
+     * @return array
+     */
+    public function getActiveUsersByEmail($email){
+        $query = $this->find()
+            ->disableHydration()
+            ->where([
+                'Users.email' => $email,
+                'Users.is_active' => 1
+            ]);
+        $result = $query->first();
+        return $this->formatFirstResultAsCake2($result);
     }
 }
