@@ -990,7 +990,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                     </button>
 
                     <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                        <a href="/services/add/{{ mergedHost.Host.id }}/_controller:hosts/_action:browser/_id:{{ mergedHost.Host.id }}/"
+                        <a ui-sref="ServicesAdd({hostId: mergedHost.Host.id})"
                            class="btn btn-xs btn-success">
                             <i class="fa fa-plus"></i>
                             <?php echo __('Add'); ?>
@@ -1241,7 +1241,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                             class="caret"></span></a>
                                                 <ul class="dropdown-menu pull-right"
                                                     id="menuHack-{{service.Service.uuid}}">
-                                                    <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                         <li ng-if="service.Service.allow_edit">
                                                             <a href="/services/edit/{{service.Service.id}}/_controller:hosts/_action:browser/_id:{{mergedHost.Host.id}}/">
                                                                 <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
@@ -1345,7 +1345,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right"
                                                 id="menuHack-{{service.Service.uuid}}">
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <a href="/services/edit/{{service.Service.id}}">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
@@ -1441,14 +1441,14 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                             class="caret"></span></a>
                                                 <ul class="dropdown-menu pull-right"
                                                     id="menuHack-{{service.Service.uuid}}">
-                                                    <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                         <li ng-if="service.Service.allow_edit">
                                                             <a href="/services/edit/{{service.Service.id}}">
                                                                 <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('enable')): ?>
+                                                    <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
                                                         <li ng-if="service.Service.allow_edit">
                                                             <a href="javascript:void(0);"
                                                                ng-click="confirmActivate(getObjectForDelete(mergedHost.Host.name, service))">

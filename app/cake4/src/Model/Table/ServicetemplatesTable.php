@@ -595,6 +595,14 @@ class ServicetemplatesTable extends Table {
 
     /**
      * @param int $id
+     * @return array
+     */
+    public function getServicetemplateForDiff($id){
+        return $this->getServicetemplateForEdit($id);
+    }
+
+    /**
+     * @param int $id
      * @return int
      */
     public function getContainerIdById($id) {

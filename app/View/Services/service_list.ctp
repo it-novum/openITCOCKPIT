@@ -101,7 +101,7 @@
                                     </a>
                                 </li>
                             <?php endif; ?>
-                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                            <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                 <li ng-if="host.Host.allow_edit">
                                     <?php echo $this->AdditionalLinks->renderAsListItems(
                                         $additionalLinksList,
@@ -126,7 +126,7 @@
                             </button>
 
                             <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                                <a href="/services/add/{{ host.Host.id }}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/"
+                                <a ui-sref="ServicesAdd({hostId: host.Host.id})"
                                    class="btn btn-xs btn-success">
                                     <i class="fa fa-plus"></i>
                                     <?php echo __('Add'); ?>
@@ -363,7 +363,7 @@
                                                                     class="caret"></span></a>
                                                         <ul class="dropdown-menu pull-right"
                                                             id="menuHack-{{service.Service.uuid}}">
-                                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                            <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                                 <li ng-if="service.Service.allow_edit">
                                                                     <a href="/services/edit/{{service.Service.id}}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/">
                                                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
@@ -572,7 +572,7 @@
                                                                 class="caret"></span></a>
                                                     <ul class="dropdown-menu pull-right"
                                                         id="menuHack-{{service.Service.uuid}}">
-                                                        <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                             <li ng-if="service.Service.allow_edit">
                                                                 <a href="/services/edit/{{service.Service.id}}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/">
                                                                     <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
@@ -708,14 +708,14 @@
                                                                     class="caret"></span></a>
                                                         <ul class="dropdown-menu pull-right"
                                                             id="menuHack-{{service.Service.uuid}}">
-                                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                            <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                                 <li ng-if="service.Service.allow_edit">
                                                                     <a href="/services/edit/{{service.Service.id}}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/">
                                                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                                     </a>
                                                                 </li>
                                                             <?php endif; ?>
-                                                            <?php if ($this->Acl->hasPermission('enable')): ?>
+                                                            <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
                                                                 <li ng-if="service.Service.allow_edit">
                                                                     <a href="javascript:void(0);"
                                                                        ng-click="confirmActivate(getObjectForDelete(host, service))">

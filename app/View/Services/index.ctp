@@ -69,8 +69,8 @@
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add')): ?>
-                            <a href="/services/add" class="btn btn-xs btn-success">
+                        <?php if ($this->Acl->hasPermission('add', 'services')): ?>
+                            <a ui-sref="ServicesAdd()" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
@@ -95,7 +95,7 @@
                                 <i class="fa fa-stethoscope"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?></span> </a>
                         </li>
-                        <?php if ($this->Acl->hasPermission('notMonitored')): ?>
+                        <?php if ($this->Acl->hasPermission('notMonitored', 'services')): ?>
                             <li class="">
                                 <a ui-sref="ServicesNotMonitored">
                                     <i class="fa fa-user-md"></i> <span
@@ -103,7 +103,7 @@
                                 </a>
                             </li>
                         <?php endif; ?>
-                        <?php if ($this->Acl->hasPermission('disabled')): ?>
+                        <?php if ($this->Acl->hasPermission('disabled', 'services')): ?>
                             <li class="">
                                 <a ui-sref="ServicesDisabled">
                                     <i class="fa fa-plug"></i> <span
@@ -441,7 +441,7 @@
                                     </td>
 
                                     <td>
-                                        <?php if ($this->Acl->hasPermission('browser')): ?>
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                             <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                 {{ service.Service.servicename }}
                                             </a>
@@ -474,7 +474,7 @@
 
                                     <td class="width-50">
                                         <div class="btn-group">
-                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                 <a href="/services/edit/{{service.Service.id}}"
                                                    ng-if="service.Service.allow_edit"
                                                    class="btn btn-default">
@@ -488,14 +488,14 @@
                                                class="btn btn-default dropdown-toggle"><span
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right" id="menuHack-{{service.Service.uuid}}">
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <a href="/services/edit/{{service.Service.id}}">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('deactivate')): ?>
+                                                <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <a href="javascript:void(0);"
                                                            ng-click="confirmDeactivate(getObjectForDelete(host, service))">
@@ -503,7 +503,7 @@
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <?php echo $this->AdditionalLinks->renderAsListItems(
                                                             $additionalLinksList,
@@ -513,7 +513,7 @@
                                                         ); ?>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('delete')): ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                     <li class="divider"></li>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <a href="javascript:void(0);" class="txt-color-red"

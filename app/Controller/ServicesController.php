@@ -31,6 +31,9 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
+use App\Model\Table\HostsTable;
+use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
@@ -565,6 +568,78 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['all_services', 'paging']);
     }
 
+    public function add(){
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $servicetemplateId = $this->request->data('Service.servicetemplate_id');
+            if ($servicetemplateId === null) {
+                throw new Exception('Service.servicetemplate_id needs to set.');
+            }
+
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            /** @var $ServicetemplatesTable ServicetemplatesTable */
+            $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+            if (!$ServicetemplatesTable->existsById($servicetemplateId)) {
+                throw new NotFoundException(__('Invalid service template'));
+            }
+
+            $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicetemplateId);
+
+            $servicename = $this->request->data['Service']['name'];
+
+            $ServiceComparisonForSave = new HostComparisonForSave($this->request->data, $servicetemplate);
+            $serviceData = $HostComparisonForSave->getDataForSaveForAllFields();
+            $serviceData['uuid'] = UUID::v4();
+
+            $service = $ServicesTable->newEntity($serviceData);
+
+            $ServicesTable->save($service);
+            if ($service->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $service->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+
+                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $host = $HostsTable->get($service->get('host_id'));
+
+                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'add',
+                    'services',
+                    $service->get('id'),
+                    OBJECT_SERVICE,
+                    $host->get('container_id'),
+                    $User->getId(),
+                    $host->get('name') . '/' . $servicename,
+                    array_merge($this->request->data, $extDataForChangelog)
+                );
+
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($host); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('host', $host);
+            $this->set('_serialize', ['host']);
+        }
+    }
+
     /**
      * @deprecated
      */
@@ -602,7 +677,7 @@ class ServicesController extends AppController {
     /**
      * @deprecated
      */
-    public function add() {
+    public function addOld() {
         $userId = $this->Auth->user('id');
         $Customvariable = [];
         $customFieldsToRefill = [
