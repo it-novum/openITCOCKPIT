@@ -41,7 +41,7 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
 
-                var url = $state.href('LocationsEdit', {id: result.data.id});
+                var url = $state.href('LocationsEdit', {id: $scope.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName

@@ -189,7 +189,9 @@ class LocationsController extends AppController {
         }
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $oldLocation = $LocationsTable->get($id);
+            $oldLocation = $LocationsTable->get($id, [
+                'contain' => ['Containers']
+            ]);
             $oldLocationForChangelog = $oldLocation->toArray();
             if (!$this->allowedByContainerId($oldLocation->get('container_id'))) {
                 $this->render403();

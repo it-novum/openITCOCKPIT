@@ -129,10 +129,12 @@ class Changelog extends AppModel {
                 'Map' => '{(name|description)}',
             ],
             'tenant'               => [
-                'tenant' => '{(container.name|description|firstname|lastname|street|zipcode|city)}',
+                'tenant' => '{(description|firstname|lastname|street|zipcode|city)}',
+                'tenant.container' => '{(name)}'
             ],
             'location'             => [
-                'location' => '{(container.name|description|latitude|longitude|timezone)}',
+                'location' => '{(description|latitude|longitude|timezone)}',
+                'location.container' => '{(name)}'
             ],
         ];
 
