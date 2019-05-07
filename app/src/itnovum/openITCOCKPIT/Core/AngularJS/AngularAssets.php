@@ -74,7 +74,9 @@ class AngularAssets implements AngularAssetsInterface {
         'vendor/angular-gridster/dist/angular-gridster.min.js',
         'js/lib/GraphDefaults.js',
         'js/lib/jqconsole.min.js',
-        'js/vendor/jquery.blockUI.js'
+        'js/vendor/jquery.blockUI.js',
+        'js/lib/jquery-jvectormap-1.2.2.min.js',
+        'js/lib/maps/jquery-jvectormap-world-mill-en.js'
     ];
 
     /**

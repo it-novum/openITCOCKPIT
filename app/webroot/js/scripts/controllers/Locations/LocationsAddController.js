@@ -4,6 +4,27 @@ angular.module('openITCOCKPIT')
         $scope.data = {
             createAnother: false
         };
+        $scope.mapDiv = $('#mapDiv');
+        $scope.mapDiv.vectorMap({
+            map: 'world_mill_en',
+            backgroundColor: '#fff',
+            regionStyle: {
+                initial: {
+                    fill: '#c4c4c4'
+                },
+                hover: {
+                    'hoverColor': '#4C4C4C'
+                }
+            },
+
+            markerStyle: {
+                initial: {
+                    fill: '#800000',
+                    stroke: '#383f47'
+                }
+            },
+        });
+        $scope.$map = $scope.mapDiv.vectorMap('get', 'mapObject');
 
         var clearForm = function(){
             $scope.post = {
@@ -31,8 +52,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            console.log($scope.post);
-            //return;
             $http.post("/locations/add.json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -59,6 +78,22 @@ angular.module('openITCOCKPIT')
                     $scope.errors = result.data.error;
                 }
             });
+        };
+
+        $scope.$watchGroup(['post.latitude', 'post.longitude'], function(){
+            if($scope.init){
+                return;
+            }
+            if(!isBlank($scope.post.latitude) && !isBlank($scope.post.longitude)){
+                $scope.$map.removeAllMarkers();
+                $scope.$map.reset();
+                $scope.$map.addMarker('markerIndex', {latLng: [$scope.post.latitude, $scope.post.longitude]});
+                $scope.$map.latLngToPoint($scope.post.latitude, $scope.post.longitude);
+            }
+        });
+
+        var isBlank = function(str){
+            return (!str || /^\s*$/.test(str));
         };
 
         $scope.load();
