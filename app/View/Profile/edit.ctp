@@ -127,6 +127,8 @@
 				'value' => $user['User']['language']
 			]); */ ?>
 
+            <?php printf('<input type="hidden" name="_csrfToken" value="%s" />', h($_csrfToken)); ?>
+
             <?php echo $this->Form->formActions(__('Save'), [
                 'cancelButton' => [
                     'title' => __('Cancel'),
@@ -226,6 +228,8 @@
                     'label'    => __('Retype password'),
                     'required' => true,
                 ]);
+
+                printf('<input type="hidden" name="_csrfToken" value="%s" />', h($_csrfToken));
 
                 echo $this->Form->formActions('Change password', [
                     'cancelButton' => [

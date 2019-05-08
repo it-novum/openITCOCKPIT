@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\Security\CSRF;
 
 /**
  * Class ProfileController
@@ -55,6 +56,9 @@ class ProfileController extends AppController {
     }*/
 
     public function edit() {
+        $CSRF = new CSRF($this->Session);
+        $_csrfToken = $CSRF->generateToken();
+
         $user = $this->User->find('first', [
             'conditions' => [
                 'User.id' => $this->Auth->user('id'),
@@ -93,6 +97,9 @@ class ProfileController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             /***** Change user data *****/
             if (isset($this->request->data['User'])) {
+                $CSRF->validateCsrfToken($this);
+                $CSRF->generateToken();
+
                 //Convert dateformat ID into real dateformat for MySQL database
                 $this->request->data['User']['dateformat'] = $dateformats[$this->request->data['User']['dateformat']];
 
@@ -154,6 +161,9 @@ class ProfileController extends AppController {
 
             /***** Change users password *****/
             if (isset($this->request->data['Password'])) {
+                $CSRF->validateCsrfToken($this);
+                $CSRF->generateToken();
+
                 if (Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']) {
                     $this->setFlash(__('The entered password is not your current password'), false);
 
@@ -185,7 +195,7 @@ class ProfileController extends AppController {
         $paginatorLength = $this->Paginator->settings['limit'];
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
         $user = $this->User->findById($this->Auth->user('id'));
-        $this->set(compact('user', 'systemsettings', 'dateformats', 'selectedUserTime', 'paginatorLength'));
+        $this->set(compact('user', 'systemsettings', 'dateformats', 'selectedUserTime', 'paginatorLength', '_csrfToken'));
     }
 
     public function apikey() {
