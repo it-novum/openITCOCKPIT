@@ -191,7 +191,9 @@ class AppController extends Controller {
         }
 
         if (ENVIRONMENT === 'development_test') {
-            $autoLoginUserAdmin = $this->User->find('first');
+            /** @var $Users App\Model\Table\UsersTable */
+            $Users = TableRegistry::getTableLocator()->get('Users');
+            $autoLoginUserAdmin = $Users->getFirstUser();
             if (!empty($autoLoginUserAdmin)) {
                 $this->Auth->login($autoLoginUserAdmin);
                 $this->MY_RIGHTS = [1];
@@ -201,23 +203,24 @@ class AppController extends Controller {
     }
 
     protected function __getUserRights() {
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
         //The user is logedIn, so we need to select container permissions out of DB
-        $_user = $this->User->findById($this->Auth->user('id'));
+        $_user = $Users->getUserById($this->Auth->user('id'));
         $User = new User($this->Auth);
 
         $cacheKey = 'userPermissions_' . $User->getId();
 
         if (!Cache::read($cacheKey, 'permissions')) {
-
             /** @var $ContainersTable ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
 
             $rights = [ROOT_CONTAINER];
             $rights_levels = [ROOT_CONTAINER => READ_RIGHT];
             $this->hasRootPrivileges = false;
             $this->MY_RIGHTS = [];
-            foreach ($_user['ContainerUserMembership'] as $container) {
+            foreach ($_user['containers'] as $container) {
+                $container = $container['_joinData'];
                 $rights[] = (int)$container['container_id'];
                 $rights_levels[(int)$container['container_id']] = $container['permission_level'];
 
@@ -558,7 +561,7 @@ class AppController extends Controller {
     /**
      * Responds in the widget response format.
      *
-     * @param    string $html The action HTML
+     * @param string $html The action HTML
      *
      * @return    string    The rendered HTML
      */
@@ -604,7 +607,7 @@ class AppController extends Controller {
     /**
      * Unbind all accociations for the next find() call for every model
      *
-     * @param  String $ModelName The Name of the Model, you want to unbind all accociations
+     * @param String $ModelName The Name of the Model, you want to unbind all accociations
      *
      * @return void
      * @since 3.0

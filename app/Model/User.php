@@ -364,6 +364,13 @@ class User extends AppModel {
     }
 
     //A user can have >= 1 tenants, due to multiple containers
+
+    /**
+     * @deprecated use cake 4 model
+     * @param null $id
+     * @param string $index
+     * @return array
+     */
     public function getTenantIds($id = null, $index = 'id') {
         if ($id === null) {
             $id = $this->id;
@@ -392,7 +399,6 @@ class User extends AppModel {
                 }
             }
         }
-
         return $tenants;
     }
 }

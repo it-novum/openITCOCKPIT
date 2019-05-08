@@ -176,6 +176,9 @@ $timezones = CakeTime::listTimezones();
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-xs-12 col-lg-10 col-lg-offset-2">
+                                <div id="mapDiv" class="vector-map"></div>
+                            </div>
                         </div>
                     </div>
                 </div>

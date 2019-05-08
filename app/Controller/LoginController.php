@@ -52,6 +52,9 @@ class LoginController extends AppController {
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
 
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+
         $disableLoginAnimation = false;
         if (isset($systemsettings['FRONTEND']['FRONTEND.DISABLE_LOGIN_ANIMATION'])) {
             $disableLoginAnimation = (bool)$systemsettings['FRONTEND']['FRONTEND.DISABLE_LOGIN_ANIMATION'];
@@ -65,7 +68,7 @@ class LoginController extends AppController {
                 $this->redirect($result['redirect']);
             }
             if (($result['success'])) {
-                $user = $this->User->find('first', ['conditions' => ['email' => $result['email'], 'status' => 1]]);
+                $user = $Users->getActiveUsersByEmail($result['email']);
                 if (empty($user)) {
                     echo $systemsettings['FRONTEND']['FRONTEND.SSO.NO_EMAIL_MESSAGE'] . $errorPostMess;
                     exit;
@@ -153,7 +156,7 @@ class LoginController extends AppController {
                 if (empty($user)) {
                     $viewerEmail = isset($systemsettings['FRONTEND']['FRONTEND.CERT.DEFAULT_USER_EMAIL']) ? $systemsettings['FRONTEND']['FRONTEND.CERT.DEFAULT_USER_EMAIL'] : '';
                     if (!empty($viewerEmail)) {
-                        $user = $this->User->find('first', ['conditions' => ['User.email' => $viewerEmail, 'status' => 1]]);
+                        $user = $Users->getActiveUsersByEmail($viewerEmail);
                     }
                 }
                 if (!empty($user) && $this->Auth->login($user)) {
@@ -179,8 +182,6 @@ class LoginController extends AppController {
             $this->Auth->logout();
             $this->request->data = ['User' => $this->data['LoginUser']];
 
-            /** @var $Users App\Model\Table\UsersTable */
-            $Users = TableRegistry::getTableLocator()->get('Users');
 
             // Allow login in with nickname or email address
             if (!empty($this->data['User']['email'])) {
@@ -192,7 +193,8 @@ class LoginController extends AppController {
 
             $__user = null;
             if (isset($this->data['User']['auth_method']) && $this->data['User']['auth_method'] == 'ldap') {
-                $__user = $this->User->findBySamaccountname(strtolower($this->data['User']['samaccountname']));
+                $__user = $Users->findBySamaccountname(strtolower($this->data['User']['samaccountname']));
+                //$__user = $this->User->findBySamaccountname(strtolower($this->data['User']['samaccountname']));
             }
 
             if (!isset($this->request->data['User']['auth_method'])) {
