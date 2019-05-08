@@ -76,13 +76,13 @@ class ServicecommandargumentvaluesTable extends Table implements PluginManagerCo
     {
         $validator
             ->integer('id')
-            ->allowEmpty('id', 'create');
+            ->allowEmptyString('id', 'create');
 
         $validator
             ->scalar('value')
             ->maxLength('value', 1000)
             ->requirePresence('value', 'create')
-            ->notEmpty('value');
+            ->allowEmptyString('value', false);
 
         return $validator;
     }

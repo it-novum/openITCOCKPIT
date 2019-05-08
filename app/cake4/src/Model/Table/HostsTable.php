@@ -1236,6 +1236,23 @@ class HostsTable extends Table {
         return $host->get('uuid');
     }
 
+    /**
+     * @param int $hostId
+     * @return int
+     */
+    public function getHostPrimaryContainerIdByHostId($hostId) {
+        $host = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.container_id',
+            ])
+            ->where([
+                'Hosts.id' => $hostId
+            ])
+            ->firstOrFail();
+
+        return $host->get('container_id');
+    }
 
     /**
      * @param int $id

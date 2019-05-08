@@ -32,9 +32,13 @@ use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
 use App\Model\Table\HostsTable;
+use App\Model\Table\ServicecommandargumentvaluesTable;
+use App\Model\Table\ServiceeventcommandargumentvaluesTable;
+use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -568,7 +572,7 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['all_services', 'paging']);
     }
 
-    public function add(){
+    public function add() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -3510,66 +3514,271 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['service', 'servicestatus', 'docuExists']);
     }
 
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+
     /**
-     * @param $hostId
-     * @deprecated
+     * @param int $hostId
+     * @param int $serviceId
+     * @throws Exception
      */
-    public function loadElementsByHostId($hostId) {
-        $host = $this->Host->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Host.id' => $hostId
-            ],
-            'fields'     => [
-                'Host.container_id'
-            ]
-        ]);
-
-        if (empty($host)) {
-            throw new NotFoundException();
+    public function loadElementsByHostId($hostId, $serviceId = 0) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
         }
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($host['Host']['container_id']);
 
-        $timeperiods = $this->Timeperiod->find('list');
-        $timeperiods = $this->Service->makeItJavaScriptAble($timeperiods);
+        $hostId = (int)$hostId;
+        $serviceId = (int)$serviceId;
 
-        $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
-        $contacts = $this->Service->makeItJavaScriptAble($contacts);
+        $servicetemplateType = GENERIC_SERVICE;
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $containerId = $HostsTable->getHostPrimaryContainerIdByHostId($hostId);
+
+        if ($serviceId != 0) {
+            try {
+                $service = $ServicesTable->get($serviceId);
+                $servicetemplateType = $service->get('service_type');
+            } catch (RecordNotFoundException $e) {
+                //Ignore error
+            }
+        }
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
 
-        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
-        $contactgroups = $this->Service->makeItJavaScriptAble($contactgroups);
+        $servicetemplates = $ServicetemplatesTable->getServicetemplatesByContainerId($containerIds, 'list', $servicetemplateType);
+        $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
 
-        $eventhandlers = $this->Command->eventhandlerCommands('list');
-        $eventhandlers = $this->Service->makeItJavaScriptAble($eventhandlers);
+        $servicegroups = $ServicegroupsTable->getServicegroupsByContainerId($containerIds, 'list', 'id');
+        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
 
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-        $servicegroups = $this->Service->makeItJavaScriptAble($servicegroups);
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
+        $checkperiods = $timeperiods;
 
-        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list', [
-            GENERIC_SERVICE,
-            EVK_SERVICE
-        ]);
-        $servicetemplates = $this->Service->makeItJavaScriptAble($servicetemplates);
+        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
+        $contacts = Api::makeItJavaScriptAble($contacts);
 
-        $this->set(compact([
-            'servicegroups',
-            'timeperiods',
-            'contacts',
-            'contactgroups',
-            'eventhandlers',
-            'Customvariable',
-            'servicetemplates'
-        ]));
+        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
+        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
+
+
+        $this->set('servicetemplates', $servicetemplates);
+        $this->set('servicegroups', $servicegroups);
+        $this->set('timeperiods', $timeperiods);
+        $this->set('checkperiods', $checkperiods);
+        $this->set('contacts', $contacts);
+        $this->set('contactgroups', $contactgroups);
 
         $this->set('_serialize', [
+            'servicetemplates',
             'servicegroups',
             'timeperiods',
+            'checkperiods',
             'contacts',
-            'contactgroups',
-            'eventhandlers',
-            'Customvariable',
-            'servicetemplates'
+            'contactgroups'
         ]);
+    }
+
+    /**
+     * @param int $servicetemplateId
+     */
+    public function loadServicetemplate($servicetemplateId) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        if (!$ServicetemplatesTable->existsById($servicetemplateId)) {
+            throw new NotFoundException(__('Invalid service template'));
+        }
+
+        $servicetemplate = $ServicetemplatesTable->getServicetemplateForEdit($servicetemplateId);
+
+
+        $this->set('servicetemplate', $servicetemplate);
+        $this->set('_serialize', ['servicetemplate']);
+    }
+
+    public function loadCommands() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
+
+        $eventhandlerCommands = [
+            0 => __('None')
+        ];
+
+        //Use foreach because of array_merge remove the keys and adding None after getCommandByTypeAsList()
+        //will display "None" as the last element in the select box
+        foreach ($CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND) as $eventhandlerCommndId => $eventhandlerCommandName) {
+            $eventhandlerCommands[$eventhandlerCommndId] = $eventhandlerCommandName;
+        }
+
+        $this->set('commands', Api::makeItJavaScriptAble($commands));
+        $this->set('eventhandlerCommands', Api::makeItJavaScriptAble($eventhandlerCommands));
+        $this->set('_serialize', ['commands', 'eventhandlerCommands']);
+    }
+
+    /**
+     * @param int|null $commandId
+     * @param int|null $serviceId
+     */
+    public function loadCommandArguments($commandId = null, $serviceId = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+
+        if (!$CommandsTable->existsById($commandId)) {
+            throw new NotFoundException(__('Invalid command'));
+        }
+
+        $servicecommandargumentvalues = [];
+
+        if ($serviceId != null) {
+            //User passed an serviceId, so we are in a non add mode!
+            //Check if the service has defined command arguments
+
+            /** @var $ServicecommandargumentvaluesTable ServicecommandargumentvaluesTable */
+            $ServicecommandargumentvaluesTable = TableRegistry::getTableLocator()->get('Servicecommandargumentvalues');
+
+            $serviceCommandArgumentValues = $ServicecommandargumentvaluesTable->getByServiceIdAndCommandId($serviceId, $commandId);
+
+            foreach ($serviceCommandArgumentValues as $serviceCommandArgumentValue) {
+                $servicecommandargumentvalues[] = [
+                    'commandargument_id' => $serviceCommandArgumentValue['commandargument_id'],
+                    'service_id'         => $serviceCommandArgumentValue['service_id'],
+                    'value'              => $serviceCommandArgumentValue['value'],
+                    'commandargument'    => [
+                        'name'       => $serviceCommandArgumentValue['commandargument']['name'],
+                        'human_name' => $serviceCommandArgumentValue['commandargument']['human_name'],
+                        'command_id' => $serviceCommandArgumentValue['commandargument']['command_id'],
+                    ]
+                ];
+            }
+        }
+
+        //Get command arguments
+        if (empty($servicecommandargumentvalues)) {
+            //Service has no command arguments defined
+            //Or we are in services/add ?
+
+            //Load command arguments of the check command
+            foreach ($CommandargumentsTable->getByCommandId($commandId) as $commandargument) {
+                $servicecommandargumentvalues[] = [
+                    'commandargument_id' => $commandargument['Commandargument']['id'],
+                    'value'              => '',
+                    'commandargument'    => [
+                        'name'       => $commandargument['Commandargument']['name'],
+                        'human_name' => $commandargument['Commandargument']['human_name'],
+                        'command_id' => $commandargument['Commandargument']['command_id'],
+                    ]
+                ];
+            }
+        };
+
+        $this->set('servicecommandargumentvalues', $servicecommandargumentvalues);
+        $this->set('_serialize', ['servicecommandargumentvalues']);
+    }
+
+    /**
+     * @param int|null $commandId
+     * @param int|null $serviceId
+     */
+    public function loadEventhandlerCommandArguments($commandId = null, $serviceId = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+
+
+        if (!$CommandsTable->existsById($commandId)) {
+            throw new NotFoundException(__('Invalid command'));
+        }
+
+        $serviceeventhandlercommandargumentvalues = [];
+
+        if ($serviceId != null) {
+            //User passed an serviceId, so we are in a non add mode!
+            //Check if the service has defined command arguments for the event handler
+
+            /** @var $ServiceeventcommandargumentvaluesTable ServiceeventcommandargumentvaluesTable */
+            $ServiceeventcommandargumentvaluesTable = TableRegistry::getTableLocator()->get('Serviceeventcommandargumentvalues');
+
+            $serviceEventhandlerCommandArgumentValues = $ServiceeventcommandargumentvaluesTable->getByServiceIdAndCommandId($serviceId, $commandId);
+
+            foreach ($serviceEventhandlerCommandArgumentValues as $serviceEventhandlerCommandArgumentValue) {
+                $serviceeventhandlercommandargumentvalues[] = [
+                    'commandargument_id' => $serviceEventhandlerCommandArgumentValue['commandargument_id'],
+                    'service_id'         => $serviceEventhandlerCommandArgumentValue['service_id'],
+                    'value'              => $serviceEventhandlerCommandArgumentValue['value'],
+                    'commandargument'    => [
+                        'name'       => $serviceEventhandlerCommandArgumentValue['commandargument']['name'],
+                        'human_name' => $serviceEventhandlerCommandArgumentValue['commandargument']['human_name'],
+                        'command_id' => $serviceEventhandlerCommandArgumentValue['commandargument']['command_id'],
+                    ]
+                ];
+            }
+        }
+
+        //Get command arguments
+        if (empty($serviceeventhandlercommandargumentvalues)) {
+            //Service has no command arguments defined
+            //Or we are in services/add ?
+
+            //Load event handler command arguments of the check command
+            foreach ($CommandargumentsTable->getByCommandId($commandId) as $commandargument) {
+                $serviceeventhandlercommandargumentvalues[] = [
+                    'commandargument_id' => $commandargument['Commandargument']['id'],
+                    'value'              => '',
+                    'commandargument'    => [
+                        'name'       => $commandargument['Commandargument']['name'],
+                        'human_name' => $commandargument['Commandargument']['human_name'],
+                        'command_id' => $commandargument['Commandargument']['command_id'],
+                    ]
+                ];
+            }
+        };
+
+        $this->set('serviceeventhandlercommandargumentvalues', $serviceeventhandlercommandargumentvalues);
+        $this->set('_serialize', ['serviceeventhandlercommandargumentvalues']);
     }
 }
