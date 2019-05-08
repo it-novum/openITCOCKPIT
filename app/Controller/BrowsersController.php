@@ -80,6 +80,7 @@ class BrowsersController extends AppController {
             return;
         }
 
+
         $tenants = $this->getTenants();
         $tenantsFiltered = [];
         foreach ($tenants as $tenantId => $tenantName) {
@@ -147,15 +148,32 @@ class BrowsersController extends AppController {
 
 
     /**
+     * should be moved into the table
      * @return mixed
      */
     private function getTenants() {
+        /** @var $Users App\Model\Table\UsersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+        $user = $Users->getTenantIds($this->Auth->user('id'));
+
+        $tenants = [];
+        foreach ($user['containers'] as $_container) {
+            $_container = $_container['_joinData'];
+            $path = $ContainersTable->getPathByIdAndCacheResult($_container['container_id'], 'UserGetTenantIds');
+            foreach ($path as $subContainer) {
+                if ($subContainer['containertype_id'] == CT_TENANT) {
+                    $tenants[$subContainer['id']] = $subContainer['name'];
+                }
+            }
+        }
+
         return $this->Tenant->tenantsByContainerId(
             array_merge(
                 $this->MY_RIGHTS, array_keys(
-                    $this->User->getTenantIds(
-                        $this->Auth->user('id')
-                    )
+                    $tenants
                 )
             ),
             'list', 'container_id');

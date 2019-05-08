@@ -232,7 +232,7 @@ class UsersTable extends Table {
      * @param $str
      * @return string
      */
-    public function getPasswordHash($str){
+    public function getPasswordHash($str) {
         return Security::hash($str, null, true);
     }
 
@@ -338,8 +338,6 @@ class UsersTable extends Table {
     }
 
 
-
-
     /**
      * Saving additional data to through table
      * table key is the main table which is associated with this model, not the 'through' table
@@ -399,7 +397,7 @@ class UsersTable extends Table {
         $query = $this->find()
             ->disableHydration()
             ->where([
-                'Users.email'  => $email,
+                'Users.email' => $email,
             ])
             ->select([
                 'Users.id',
@@ -481,7 +479,7 @@ class UsersTable extends Table {
      * get the first user
      * @return array
      */
-    public function getFirstUser(){
+    public function getFirstUser() {
         $query = $this->find('all')->disableHydration();
         $result = $query->first();
         return $this->formatFirstResultAsCake2($result);
@@ -491,11 +489,11 @@ class UsersTable extends Table {
      * @param $email
      * @return array
      */
-    public function getActiveUsersByEmail($email){
+    public function getActiveUsersByEmail($email) {
         $query = $this->find()
             ->disableHydration()
             ->where([
-                'Users.email' => $email,
+                'Users.email'     => $email,
                 'Users.is_active' => 1
             ]);
         $result = $query->first();
@@ -506,27 +504,40 @@ class UsersTable extends Table {
      * @param $samaccountname
      * @return array
      */
-    public function findBySamaccountname($samaccountname){
+    public function findBySamaccountname($samaccountname) {
         $query = $this->find()
             ->disableHydration()
             ->where([
                 'Users.samaccountname' => $samaccountname,
-                'Users.is_active' => 1
+                'Users.is_active'      => 1
             ]);
         $result = $query->first();
         return $this->formatFirstResultAsCake2($result);
     }
 
-    public function getUserById($id){
+    /**
+     * @param $id
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getUserById($id) {
         $query = $this->find('all')
             ->disableHydration()
             ->contain(['Containers'])
             ->where([
                 'Users.id' => $id
             ]);
-        if(is_null($query)){
+        if (is_null($query)) {
             return [];
         }
         return $query->first();
+    }
+
+    /**
+     * wrapper function for getUserById
+     * @param null $id
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getTenantIds($id = null) {
+        return $this->getUserById($id);
     }
 }
