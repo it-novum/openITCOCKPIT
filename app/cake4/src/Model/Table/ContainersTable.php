@@ -221,7 +221,7 @@ class ContainersTable extends Table {
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
-            ->requirePresence('name', 'create')
+            ->requirePresence('name')
             ->allowEmptyString('name', false, __('This field cannot be left blank.'))
             ->add('name', 'custom', [
                 'rule'    => function ($value, $context) {
