@@ -161,7 +161,8 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.openEditNodeModal = function(container){
-            $scope.post = container;
+            clearForm();
+            $scope.post.Container = container;
             $('#angularEditNodeModal').modal('show');
         };
 
