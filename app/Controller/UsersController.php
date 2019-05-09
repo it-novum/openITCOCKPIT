@@ -398,14 +398,15 @@ class UsersController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $this->request->data['container_ids'] = 1;
         $users = [];
         if (isset($this->request->data['container_ids'])) {
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
-            $users = $this->User->usersByContainerId($containerIds, 'list');
+            $users = $Users->usersByContainerId($containerIds, 'list');
             $users = Api::makeItJavaScriptAble($users);
         }
 

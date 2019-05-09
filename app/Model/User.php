@@ -282,6 +282,13 @@ class User extends AppModel {
         }
     }
 
+    /**
+     *
+     * @deprecated use cake 4 model usersByContainerId()
+     * @param $container_ids
+     * @param string $type
+     * @return array|null
+     */
     public function usersByContainerId($container_ids, $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -361,44 +368,5 @@ class User extends AppModel {
                 return $return;
                 break;
         }
-    }
-
-    //A user can have >= 1 tenants, due to multiple containers
-
-    /**
-     * @deprecated use cake 4 model
-     * @param null $id
-     * @param string $index
-     * @return array
-     */
-    public function getTenantIds($id = null, $index = 'id') {
-        if ($id === null) {
-            $id = $this->id;
-        }
-
-
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $user = $this->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'User.id' => $id
-            ],
-            'contain' => [
-                'ContainerUserMembership'
-            ]
-        ]);
-        $tenants = [];
-        foreach ($user['ContainerUserMembership'] as $_container) {
-            $path = $ContainersTable->getPathByIdAndCacheResult($_container['container_id'], 'UserGetTenantIds');
-            foreach ($path as $subContainer) {
-                if ($subContainer['containertype_id'] == CT_TENANT) {
-                    $tenants[$subContainer[$index]] = $subContainer['name'];
-                }
-            }
-        }
-        return $tenants;
     }
 }

@@ -470,6 +470,48 @@ class UsersTable extends Table {
         ];
     }
 
+    public function usersByContainerId($container_ids, $type = 'all'){
+        if (!is_array($container_ids)) {
+            $container_ids = [$container_ids];
+        }
+
+        $container_ids = array_unique($container_ids);
+
+        $query = $this->find('all')
+            ->disableHydration()
+            ->contain(['Containers'])
+            ->select([
+                'Users.id',
+                'Users.firstname',
+                'Users.lastname',
+                'ContainersUsersMemberships.container_id'
+            ])
+            ->where([
+                'ContainersUsersMemberships.container_id' => $container_ids
+            ])
+            ->group([
+                'Users.id'
+            ])
+            ->order([
+                'Users.lastname' => 'ASC',
+                'Users.firstname' => 'ASC'
+            ]);
+
+        $results = $query->toArray();
+
+        switch ($type) {
+            case 'all':
+                return $results;
+                break;
+            case 'list':
+                $return = [];
+                foreach ($results as $result) {
+                    $return[$result['User']['id']] = $result['User']['lastname'] . ', ' . $result['User']['firstname'];
+                }
+                break;
+        }
+    }
+
 
     /**
      *  May deprecated functions after fully moving to cakephp 4
