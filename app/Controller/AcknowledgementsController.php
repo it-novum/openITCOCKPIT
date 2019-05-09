@@ -159,8 +159,10 @@ class AcknowledgementsController extends AppController {
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
         foreach ($acknowledgements as $acknowledgement) {
             $Acknowledgement = new itnovum\openITCOCKPIT\Core\Views\AcknowledgementService($acknowledgement['AcknowledgedService'], $UserTime);
+            $acknowledgementArray = $Acknowledgement->toArray();
+            $acknowledgementArray['comment_data'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($acknowledgementArray['comment_data'], true));
             $all_acknowledgements[] = [
-                'AcknowledgedService' => $Acknowledgement->toArray()
+                'AcknowledgedService' => $acknowledgementArray
             ];
         }
 
@@ -266,8 +268,10 @@ class AcknowledgementsController extends AppController {
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
         foreach ($acknowledgements as $acknowledgement) {
             $Acknowledgement = new itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost($acknowledgement['AcknowledgedHost'], $UserTime);
+            $acknowledgementArray = $Acknowledgement->toArray();
+            $acknowledgementArray['comment_data'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($acknowledgementArray['comment_data'], true));
             $all_acknowledgements[] = [
-                'AcknowledgedHost' => $Acknowledgement->toArray()
+                'AcknowledgedHost' => $acknowledgementArray
             ];
         }
 
