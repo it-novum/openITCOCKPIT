@@ -22,13 +22,15 @@ angular.module('openITCOCKPIT').directive('templateDiff', function($http, $inter
             };
 
             $scope.$watch('value', function(){
+                if($scope.templateValue === null){
+                    return;
+                }
                 switch(typeof $scope.templateValue){
                     case "undefined":
                         break;
 
                     case "object":
                         $scope.hasDiff = false;
-
                         if(Array.isArray($scope.templateValue) === false){
                             //Compare keys for objects {}
                             for(var key in $scope.value){
@@ -47,7 +49,6 @@ angular.module('openITCOCKPIT').directive('templateDiff', function($http, $inter
                                 }
                             }
                         }
-
                         if($scope.hasDiff === false){
                             var sizeOne = Object.keys($scope.value).length;
                             var sizeTow = Object.keys($scope.templateValue).length;

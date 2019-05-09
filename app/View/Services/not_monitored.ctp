@@ -52,8 +52,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add')): ?>
-                            <a href="/services/add" class="btn btn-xs btn-success">
+                        <?php if ($this->Acl->hasPermission('add', 'services')): ?>
+                            <a ui-sref="ServicesAdd()" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
@@ -68,7 +68,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-cog"></i> </span>
                     <h2 class="hidden-mobile"><?php echo __('Services not monitored'); ?> </h2>
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                        <?php if ($this->Acl->hasPermission('index')): ?>
+                        <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                             <li class="">
                                 <a ui-sref="ServicesIndex">
                                     <i class="fa fa-stethoscope"></i> <span
@@ -82,7 +82,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?></span>
                             </a>
                         </li>
-                        <?php if ($this->Acl->hasPermission('disabled')): ?>
+                        <?php if ($this->Acl->hasPermission('disabled', 'services')): ?>
                             <li class="">
                                 <a ui-sref="ServicesDisabled">
                                     <i class="fa fa-plug"></i> <span
@@ -194,7 +194,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
 
                                     <td>
-                                        <?php if ($this->Acl->hasPermission('browser')): ?>
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                             <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                 {{ service.Service.servicename }}
                                             </a>
@@ -206,7 +206,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                     <td class="width-50">
                                         <div class="btn-group">
-                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                 <a href="/services/edit/{{service.Service.id}}/_controller:services/_action:notMonitored/"
                                                    ng-if="service.Service.allow_edit"
                                                    class="btn btn-default">
@@ -220,14 +220,14 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                class="btn btn-default dropdown-toggle"><span
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right" id="menuHack-{{service.Service.uuid}}">
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <a href="/services/edit/{{service.Service.id}}/_controller:services/_action:notMonitored/">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('deactivate')): ?>
+                                                <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <a href="javascript:void(0);"
                                                            ng-click="confirmDeactivate(getObjectForDelete(host, service))">
@@ -235,7 +235,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <?php echo $this->AdditionalLinks->renderAsListItems(
                                                             $additionalLinksList,
@@ -245,7 +245,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                         ); ?>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('delete')): ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                     <li class="divider"></li>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <a href="javascript:void(0);" class="txt-color-red"

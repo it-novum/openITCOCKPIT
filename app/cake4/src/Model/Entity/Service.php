@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -56,34 +57,12 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
- * @property \App\Model\Entity\Servicetemplate $servicetemplate
  * @property \App\Model\Entity\Host $host
- * @property \App\Model\Entity\Command $command
- * @property \App\Model\Entity\EventhandlerCommand $eventhandler_command
- * @property \App\Model\Entity\NotifyPeriod $notify_period
- * @property \App\Model\Entity\CheckPeriod $check_period
- * @property \App\Model\Entity\ContactgroupsToService[] $contactgroups_to_services
- * @property \App\Model\Entity\ContactsToService[] $contacts_to_services
- * @property \App\Model\Entity\Eventcorrelation[] $eventcorrelations
- * @property \App\Model\Entity\GrafanaUserdashboardMetric[] $grafana_userdashboard_metrics
- * @property \App\Model\Entity\GraphgenTmplConf[] $graphgen_tmpl_confs
- * @property \App\Model\Entity\InstantreportsToService[] $instantreports_to_services
- * @property \App\Model\Entity\Mkservicedata[] $mkservicedata
- * @property \App\Model\Entity\NagiosServiceContactgroup[] $nagios_service_contactgroups
- * @property \App\Model\Entity\NagiosServiceContact[] $nagios_service_contacts
- * @property \App\Model\Entity\NagiosServiceParentservice[] $nagios_service_parentservices
- * @property \App\Model\Entity\NagiosService[] $nagios_services
- * @property \App\Model\Entity\Servicecommandargumentvalue[] $servicecommandargumentvalues
- * @property \App\Model\Entity\Serviceeventcommandargumentvalue[] $serviceeventcommandargumentvalues
- * @property \App\Model\Entity\ServicesToAutoreport[] $services_to_autoreports
- * @property \App\Model\Entity\ServicesToServicedependency[] $services_to_servicedependencies
- * @property \App\Model\Entity\ServicesToServiceescalation[] $services_to_serviceescalations
- * @property \App\Model\Entity\ServicesToServicegroup[] $services_to_servicegroups
- * @property \App\Model\Entity\Widget[] $widgets
+ * @property \App\Model\Entity\Servicetemplate $servicetemplate
+ * @property \MkModule\Model\Entity\Mkservicedata $mkservicedata
+ * @property \NewModule\Model\Entity\Servicecommandargumentvalue[] $servicecommandargumentvalues
  */
-class Service extends Entity
-{
-
+class Service extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -94,77 +73,57 @@ class Service extends Entity
      * @var array
      */
     protected $_accessible = [
-        'uuid' => true,
-        'servicetemplate_id' => true,
-        'host_id' => true,
-        'name' => true,
-        'description' => true,
-        'command_id' => true,
-        'check_command_args' => true,
-        'eventhandler_command_id' => true,
-        'notify_period_id' => true,
-        'check_period_id' => true,
-        'check_interval' => true,
-        'retry_interval' => true,
-        'max_check_attempts' => true,
-        'first_notification_delay' => true,
-        'notification_interval' => true,
-        'notify_on_warning' => true,
-        'notify_on_unknown' => true,
-        'notify_on_critical' => true,
-        'notify_on_recovery' => true,
-        'notify_on_flapping' => true,
-        'notify_on_downtime' => true,
-        'is_volatile' => true,
-        'flap_detection_enabled' => true,
-        'flap_detection_on_ok' => true,
-        'flap_detection_on_warning' => true,
-        'flap_detection_on_unknown' => true,
-        'flap_detection_on_critical' => true,
-        'low_flap_threshold' => true,
-        'high_flap_threshold' => true,
-        'process_performance_data' => true,
-        'freshness_checks_enabled' => true,
-        'freshness_threshold' => true,
-        'passive_checks_enabled' => true,
-        'event_handler_enabled' => true,
-        'active_checks_enabled' => true,
-        'notifications_enabled' => true,
-        'notes' => true,
-        'priority' => true,
-        'tags' => true,
-        'own_contacts' => true,
-        'own_contactgroups' => true,
-        'own_customvariables' => true,
-        'service_url' => true,
-        'service_type' => true,
-        'disabled' => true,
-        'usage_flag' => true,
-        'created' => true,
-        'modified' => true,
-        'servicetemplate' => true,
-        'host' => true,
-        'command' => true,
-        'eventhandler_command' => true,
-        'notify_period' => true,
-        'check_period' => true,
-        'contactgroups_to_services' => true,
-        'contacts_to_services' => true,
-        'eventcorrelations' => true,
-        'grafana_userdashboard_metrics' => true,
-        'graphgen_tmpl_confs' => true,
-        'instantreports_to_services' => true,
-        'mkservicedata' => true,
-        'nagios_service_contactgroups' => true,
-        'nagios_service_contacts' => true,
-        'nagios_service_parentservices' => true,
-        'nagios_services' => true,
-        'servicecommandargumentvalues' => true,
-        'serviceeventcommandargumentvalues' => true,
-        'services_to_autoreports' => true,
-        'services_to_servicedependencies' => true,
-        'services_to_serviceescalations' => true,
-        'services_to_servicegroups' => true,
-        'widgets' => true,
+        'uuid'                         => true,
+        'servicetemplate_id'           => true,
+        'host_id'                      => true,
+        'name'                         => true,
+        'description'                  => true,
+        'command_id'                   => true,
+        'check_command_args'           => true,
+        'eventhandler_command_id'      => true,
+        'notify_period_id'             => true,
+        'check_period_id'              => true,
+        'check_interval'               => true,
+        'retry_interval'               => true,
+        'max_check_attempts'           => true,
+        'first_notification_delay'     => true,
+        'notification_interval'        => true,
+        'notify_on_warning'            => true,
+        'notify_on_unknown'            => true,
+        'notify_on_critical'           => true,
+        'notify_on_recovery'           => true,
+        'notify_on_flapping'           => true,
+        'notify_on_downtime'           => true,
+        'is_volatile'                  => true,
+        'flap_detection_enabled'       => true,
+        'flap_detection_on_ok'         => true,
+        'flap_detection_on_warning'    => true,
+        'flap_detection_on_unknown'    => true,
+        'flap_detection_on_critical'   => true,
+        'low_flap_threshold'           => true,
+        'high_flap_threshold'          => true,
+        'process_performance_data'     => true,
+        'freshness_checks_enabled'     => true,
+        'freshness_threshold'          => true,
+        'passive_checks_enabled'       => true,
+        'event_handler_enabled'        => true,
+        'active_checks_enabled'        => true,
+        'notifications_enabled'        => true,
+        'notes'                        => true,
+        'priority'                     => true,
+        'tags'                         => true,
+        'own_contacts'                 => true,
+        'own_contactgroups'            => true,
+        'own_customvariables'          => true,
+        'service_url'                  => true,
+        'service_type'                 => true,
+        'disabled'                     => true,
+        'usage_flag'                   => true,
+        'created'                      => true,
+        'modified'                     => true,
+        'host'                         => true,
+        'servicetemplate'              => true,
+        'mkservicedata'                => true,
+        'servicecommandargumentvalues' => true
     ];
 }

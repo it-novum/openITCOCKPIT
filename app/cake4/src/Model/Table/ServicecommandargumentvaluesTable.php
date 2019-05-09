@@ -7,24 +7,23 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * Servicetemplateeventcommandargumentvalues Model
+ * Servicecommandargumentvalues Model
  *
  * @property \App\Model\Table\CommandargumentsTable|\Cake\ORM\Association\BelongsTo $Commandarguments
- * @property \App\Model\Table\ServicetemplatesTable|\Cake\ORM\Association\BelongsTo $Servicetemplates
+ * @property \App\Model\Table\ServicesTable|\Cake\ORM\Association\BelongsTo $Services
  *
- * @method \App\Model\Entity\Servicetemplateeventcommandargumentvalue get($primaryKey, $options = [])
- * @method \App\Model\Entity\Servicetemplateeventcommandargumentvalue newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Servicetemplateeventcommandargumentvalue[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Servicetemplateeventcommandargumentvalue|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Servicetemplateeventcommandargumentvalue saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Servicetemplateeventcommandargumentvalue patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Servicetemplateeventcommandargumentvalue[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Servicetemplateeventcommandargumentvalue findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\Servicecommandargumentvalue get($primaryKey, $options = [])
+ * @method \App\Model\Entity\Servicecommandargumentvalue newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\Servicecommandargumentvalue[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\Servicecommandargumentvalue|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Servicecommandargumentvalue saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Servicecommandargumentvalue patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\Servicecommandargumentvalue[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\Servicecommandargumentvalue findOrCreate($search, callable $callback = null, $options = [])
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class ServicetemplateeventcommandargumentvaluesTable extends Table {
-
+class ServicecommandargumentvaluesTable extends Table {
     /**
      * Initialize method
      *
@@ -34,7 +33,7 @@ class ServicetemplateeventcommandargumentvaluesTable extends Table {
     public function initialize(array $config) {
         parent::initialize($config);
 
-        $this->setTable('servicetemplateeventcommandargumentvalues');
+        $this->setTable('servicecommandargumentvalues');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
@@ -44,8 +43,8 @@ class ServicetemplateeventcommandargumentvaluesTable extends Table {
             'foreignKey' => 'commandargument_id',
             'joinType'   => 'INNER'
         ]);
-        $this->belongsTo('Servicetemplates', [
-            'foreignKey' => 'servicetemplate_id',
+        $this->belongsTo('Services', [
+            'foreignKey' => 'service_id',
             'joinType'   => 'INNER'
         ]);
     }
@@ -78,22 +77,22 @@ class ServicetemplateeventcommandargumentvaluesTable extends Table {
      */
     public function buildRules(RulesChecker $rules) {
         $rules->add($rules->existsIn(['commandargument_id'], 'Commandarguments'));
-        $rules->add($rules->existsIn(['servicetemplate_id'], 'Servicetemplates'));
+        $rules->add($rules->existsIn(['service_id'], 'Services'));
 
         return $rules;
     }
 
     /**
-     * @param int $servicetemplateId
+     * @param int $serviceId
      * @param int $commandId
      * @return array
      */
-    public function getByServicetemplateIdAndCommandId($servicetemplateId, $commandId) {
+    public function getByServiceIdAndCommandId($serviceId, $commandId) {
         $query = $this->find()
             ->contain(['Commandarguments'])
             ->where([
-                'Servicetemplateeventcommandargumentvalues.servicetemplate_id' => $servicetemplateId,
-                'Commandarguments.command_id'                                  => $commandId
+                'Servicecommandargumentvalues.service_id' => $serviceId,
+                'Commandarguments.command_id'             => $commandId
             ])
             ->disableHydration()
             ->all();
