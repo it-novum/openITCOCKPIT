@@ -141,6 +141,9 @@
                 'disabled' => $disabled,
                 'help'     => $help,
             ]);
+
+            printf('<input type="hidden" name="_csrfToken" value="%s" />', h($_csrfToken));
+
             echo $this->Form->formActions();
             ?>
         </div>
