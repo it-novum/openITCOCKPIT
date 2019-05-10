@@ -40,6 +40,11 @@ State: <?php echo h($parameters['hoststate']); ?>
 
 Output: <?php echo h($parameters['hostoutput']); ?>
 
+<?php if(isset($parameters['hostlongoutput']) && !empty($parameters['hostlongoutput'])): ?>
+
+Long host output:
+<?php echo h(str_replace(['\n', '\r\n', '\r'], "\n", $parameters['hostlongoutput'])); ?>
+<?php endif; ?>
 
 --- BEGIN TICKET SYSTEM INFORMATION ---
 TICKET_HOSTNAME: <?php echo h($parameters['hostname']);
