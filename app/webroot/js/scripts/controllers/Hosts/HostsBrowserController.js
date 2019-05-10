@@ -60,6 +60,7 @@ angular.module('openITCOCKPIT')
         $scope.showTimelineTab = false;
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
+        $scope.lastLoadDate = Date.now();
 
         $scope.selectedGrafanaTimerange = 'now-3h';
         $scope.selectedGrafanaAutorefresh = '60s';
@@ -83,6 +84,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHost = function(){
+            $scope.lastLoadDate = Date.now();
             $http.get("/hosts/browser/" + $scope.id + ".json", {
                 params: {
                     'angular': true

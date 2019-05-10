@@ -35,6 +35,20 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col-xs-12">
+        <div class="alert alert-block alert-warning">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+            <h4 class="alert-heading">
+                <i class="fa fa-exclamation-triangle"></i>
+                <?php echo __('Security notice'); ?>
+            </h4>
+            <?php echo __('User defined macros can also be used inside of check commands. This could lead to unwanted code execution.'); ?>
+            <br />
+            <?php echo __('It is recommended to only provide access for a certain group of users to edit commands and user defined macros.'); ?>
+        </div>
+    </div>
+</div>
 
 <section id="widget-grid" class="">
     <div class="row">

@@ -550,7 +550,14 @@
                             <br/>
                             <strong><?php echo __('Output'); ?>:</strong>
                             <p class="lead"> <?php echo h($parameters['hostoutput']); ?> </p>
-                            <br/><br/>
+                            <br/>
+                            <?php if(isset($parameters['hostlongoutput']) && !empty($parameters['hostlongoutput'])): ?>
+                                <strong><?php echo __('Host long output'); ?>:</strong>
+                                <p class="lead"> <?php echo str_replace(['\n', '\r\n', '\r'], "<br/>", h($parameters['hostlongoutput'])); ?> </p>
+                                <br/>
+                            <?php endif; ?>
+
+                            <br/>
                             <?php if ($parameters['hoststate'] != 'UP'): ?>
                                 --- BEGIN ACK INFORMATION ---
                                 ACK_HOSTNAME: <?php echo h($parameters['hostname']);

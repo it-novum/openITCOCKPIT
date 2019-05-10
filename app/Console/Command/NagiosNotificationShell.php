@@ -82,6 +82,7 @@ class NagiosNotificationShell extends AppShell {
             'hoststate'         => ['help' => __d('oitc_console', 'current host state')],
             'hostaddress'       => ['help' => __d('oitc_console', 'host address')],
             'hostoutput'        => ['help' => __d('oitc_console', 'host output')],
+            'hostlongoutput'    => ['help' => __d('oitc_console', 'host long output')],
             'hostackauthor'     => ['help' => __d('oitc_console', 'host acknowledgement author')],
             'hostackcomment'    => ['help' => __d('oitc_console', 'host acknowledgement comment')],
             'contactmail'       => ['help' => __d('oitc_console', 'recivers mail address')],
@@ -89,6 +90,7 @@ class NagiosNotificationShell extends AppShell {
             'servicedesc'       => ['help' => __d('oitc_console', 'Service uuid you want to notify')],
             'servicestate'      => ['help' => __d('oitc_console', 'service state')],
             'serviceoutput'     => ['help' => __d('oitc_console', 'service output')],
+            'servicelongoutput' => ['help' => __d('oitc_console', 'service long output')],
             'serviceackauthor'  => ['help' => __d('oitc_console', 'service acknowledgement author')],
             'serviceackcomment' => ['help' => __d('oitc_console', 'service acknowledgement comment')],
             'format'            => ['help' => __d('oitc_console', 'Email type for notifications [text, html, both]')],
@@ -147,6 +149,11 @@ class NagiosNotificationShell extends AppShell {
             }
         }
 
+        $return['hostlongoutput'] = '';
+        if (array_key_exists('hostlongoutput', $this->params)) {
+            $return['hostlongoutput'] = $this->params['hostlongoutput'];
+        }
+
         if (isset($_SERVER['NAGIOS_NOTIFICATIONAUTHOR'])) {
             $return['hostackauthor'] = $_SERVER['NAGIOS_NOTIFICATIONAUTHOR'];
         } else {
@@ -201,6 +208,11 @@ class NagiosNotificationShell extends AppShell {
             if (array_key_exists('serviceoutput', $this->params)) {
                 $return['serviceoutput'] = $this->params['serviceoutput'];
             }
+        }
+
+        $return['servicelongoutput'] = '';
+        if (array_key_exists('servicelongoutput', $this->params)) {
+            $return['servicelongoutput'] = $this->params['servicelongoutput'];
         }
 
         if (isset($_SERVER['NAGIOS_NOTIFICATIONAUTHOR'])) {

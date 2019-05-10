@@ -33,7 +33,7 @@ $timezones = CakeTime::listTimezones();
             <?php echo __('Administration'); ?>
             <span>>
                 <?php echo __('Manage Users'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo __('Add'); ?></div>
         </h1>
     </div>
@@ -82,13 +82,13 @@ $timezones = CakeTime::listTimezones();
                             <legend class="no-padding font-sm text-primary">{{getContainerName(containerId)}}
                             </legend>
                             <input type="radio" value="1"
-                                    id="{{'read_'+containerId}}"
+                                   id="{{'read_'+containerId}}"
                                    name="{{'containerPermissions1_'+containerId}}"
                                    ng-model="post.User.ContainersUsersMemberships[containerId]" checked>
                             <label for="userPermissionButton"
                                    class="padding-10 font-sm"><?php echo __('read'); ?></label>
                             <input type="radio" value="2"
-                                    id="{{'write_'+containerId}}"
+                                   id="{{'write_'+containerId}}"
                                    name="{{'containerPermissions2_'+containerId}}"
                                    ng-model="post.User.ContainersUsersMemberships[containerId]">
                             <label for="userPermissionButton"

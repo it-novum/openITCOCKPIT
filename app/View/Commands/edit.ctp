@@ -29,7 +29,7 @@
             <i class="fa fa-terminal fa-fw "></i>
             <?php echo __('Commands'); ?>
             <span>>
-                <?php echo __('Edit'); ?>
+                <?php echo __('Add'); ?>
             </span>
         </h1>
     </div>
@@ -46,10 +46,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
-        <h2>
-            <?php echo __('Edit command'); ?>:
-            {{post.Command.name}}
-        </h2>
+        <h2><?php echo __('Create new command'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'macros')): ?>
                 <a ng-click="showMacros()"
@@ -60,15 +57,9 @@
                 <?php echo __('Back to list'); ?>
             </a>
         </div>
-
-        <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
-            UUID: {{command.uuid}}
-        </div>
-
     </header>
     <div>
-        <form ng-submit="submit();" class="form-horizontal" ng-init="successMessage=
-            {objectName : '<?php echo __('Command'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+        <form ng-submit="submit();" class="form-horizontal">
             <div class="widget-body">
                 <div class="row">
                     <div class="form-group">
@@ -78,6 +69,8 @@
                         <div class="col col-xs-10">
                             <select
                                     class="form-control"
+                                    chosen="commandtypes"
+                                    ng-init="post.Command.command_type='1'"
                                     ng-model="post.Command.command_type">
                                 <?php
                                 $command_types = [
@@ -156,7 +149,7 @@
                         <!-- empty because we create a new command! -->
                     </div>
 
-                    <div ng-repeat="(key, arg) in args">
+                    <div ng-repeat="arg in args">
                         <div class="col-md-12 padding-top-5">
                             <div class="col-md-1 text-primary padding-top-10">
                                 {{arg.name}}
@@ -168,7 +161,7 @@
                                 <div class="col col-md-11">
                                     <input class="form-control input-sm" type="text"
                                            placeholder="<?php echo __('Please enter a name'); ?>"
-                                           name="data[Commandargument][{{key}}][human_name]"
+                                           name="data[Commandargument][{{arg.id}}][human_name]"
                                            ng-model="arg.human_name"
                                            style="width: 100%;">
                                 </div>
@@ -176,7 +169,7 @@
                             <div class="col-md-1">
                                 <a class="btn btn-default btn-sm txt-color-red deleteCommandArg"
                                    href="javascript:void(0);"
-                                   ng-click="removeArg(key)">
+                                   ng-click="removeArg(arg)">
                                     <i class="fa fa-trash-o fa-lg"></i>
                                 </a>
                             </div>
