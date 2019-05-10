@@ -254,9 +254,11 @@ class UsersController extends AppController {
             if (isset($this->request->data['User']['ContainersUsersMemberships'])) {
                 $containerPermissions = $Users->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
                 $this->request->data['User']['containers'] = $containerPermissions;
+
+                unset($this->request->data['User']['ContainersUsersMemberships']);
             }
 
-            $this->request->data = $this->request->data('User');
+            $this->request->data = $this->request->data['User'];
 
             //remove password validation when user is imported from ldap
             $Users->getValidator()->remove('password');

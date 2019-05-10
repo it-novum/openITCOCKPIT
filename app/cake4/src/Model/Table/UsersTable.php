@@ -67,6 +67,10 @@ class UsersTable extends Table {
         ]);
         $this->belongsToMany('Containers', [
             'through' => 'ContainersUsersMemberships',
+            'className'        => 'Containers',
+            'foreignKey'       => 'user_id',
+            'targetForeignKey' => 'container_id',
+            'joinTable'        => 'users_to_containers'
         ]);
     }
 
