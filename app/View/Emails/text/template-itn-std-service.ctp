@@ -42,6 +42,13 @@ State: <?php echo h($parameters['servicestate']); ?>
 
 Output: <?php echo h($parameters['serviceoutput']); ?>
 
+<?php if(isset($parameters['servicelongoutput']) && !empty($parameters['servicelongoutput'])): ?>
+
+Long service output:
+<?php echo h(str_replace(['\n', '\r\n', '\r'], "\n", $parameters['servicelongoutput'])); ?>
+<?php endif; ?>
+
+
 
 --- BEGIN TICKET SYSTEM INFORMATION ---
 TICKET_HOSTNAME: <?php echo h($parameters['hostname']);
