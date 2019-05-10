@@ -629,6 +629,18 @@ class ServicesController extends AppController {
         if (!empty($this->request->params['pass'])) {
             $hostId = $this->request->params['pass'][0];
         }
+
+        $result = !empty($this->request->data['Service']['host_id']);
+
+
+        if (isset($this->request->data['Service']['host_id'])) {
+            if(!empty($this->request->data['Service']['host_id']) && is_numeric($this->request->data['Service']['host_id'])){
+                if($this->request->data['Service']['host_id'] > 0){
+                    $hostId = $this->request->data['Service']['host_id'];
+                }
+            }
+        }
+
         $this->Frontend->setJson('hostId', $hostId);
 
         //Fix that we dont lose any unsaved host macros, because of vaildation error
@@ -689,7 +701,7 @@ class ServicesController extends AppController {
             $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         }
 
-        $this->Frontend->set('data_placeholder', __('Please choose a contact'));
+        $this->Frontend->set('data_placeholder', __('Please choose'));
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
         $this->Frontend->setJson('lang_minutes', __('minutes'));
         $this->Frontend->setJson('lang_seconds', __('seconds'));
@@ -3229,6 +3241,7 @@ class ServicesController extends AppController {
 
         $timeperiods = $this->Timeperiod->find('list');
         $timeperiods = $this->Service->makeItJavaScriptAble($timeperiods);
+        $checkperiods = $timeperiods;
 
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
         $contacts = $this->Service->makeItJavaScriptAble($contacts);
@@ -3252,6 +3265,7 @@ class ServicesController extends AppController {
         $this->set(compact([
             'servicegroups',
             'timeperiods',
+            'checkperiods',
             'contacts',
             'contactgroups',
             'eventhandlers',
@@ -3262,6 +3276,7 @@ class ServicesController extends AppController {
         $this->set('_serialize', [
             'servicegroups',
             'timeperiods',
+            'checkperiods',
             'contacts',
             'contactgroups',
             'eventhandlers',

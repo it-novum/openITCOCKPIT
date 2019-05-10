@@ -863,7 +863,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
             data: requestParams,
             success: function(response){
                 var $selector = $(selector);
-                var list = self.buildList(response.hosts, selectedHostId);
+                var list = self.buildList(response.hosts, selectedHostId, true);
 
                 $selector.append(list);
 
@@ -878,9 +878,13 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
     },
 
 
-    buildList: function(data, selected){
+    buildList: function(data, selected, includePlaceholderOption){
 
         var html = '';
+        if(includePlaceholderOption){
+            html += '<option><!-- Empty option for placeholder --><option>';
+        }
+
         for(var i in data){
             if(data[i].key == selected && selected !== null){
                 html += '<option value="' + data[i].key + '" selected="selected">' + htmlspecialchars(data[i].value) + '</option>';

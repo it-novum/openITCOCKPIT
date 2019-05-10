@@ -25,7 +25,8 @@
 App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
     Ajaxloader: null,
 
-    callback: function(containerId){},
+    callback: function(containerId){
+    },
 
     setup: function(Ajaxloader){
         this.Ajaxloader = Ajaxloader;
@@ -136,6 +137,14 @@ App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
     },
 
     addOptionsForInputField: function($querySelect, optionKey, optionValue, selected){
+        if(this.Controller.name === 'services' && this.Controller.action === 'add'){
+            if($querySelect.selector === '#ServiceServicetemplateId'){
+                $querySelect.append(
+                    $('<option>')
+                );
+            }
+        }
+
         $querySelect.append(
             $('<option>', {
                 value: optionKey,
