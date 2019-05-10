@@ -9,7 +9,7 @@ angular.module('openITCOCKPIT')
                 Container: {
                     parent_id: null,
                     name: null,
-               },
+                },
                 Location: {
                     description: '',
                     latitude: null,
@@ -136,6 +136,15 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.updateNode = function(){
+            if(typeof $scope.post.Container.name === "undefined" || $scope.post.Container.name === ''){
+                $scope.errors = {
+                    name: [
+                        'This field cannot be left blank.'
+                    ]
+                };
+                return;
+            }
+
             $http.post("/containers/edit.json?angular=true", $scope.post).then(
                 function(result){
                     $('#angularEditNodeModal').modal('hide');
@@ -154,7 +163,7 @@ angular.module('openITCOCKPIT')
             clearForm();
             $scope.selectedContainerTypeId = parseInt(container.containertype_id, 10);
             //Set init value for select box 2 ==> Tenant ; 5 ==> Node
-            $scope.post.Container.containertype_id = ($scope.selectedContainerTypeId ===  1)?'2':'5';
+            $scope.post.Container.containertype_id = ($scope.selectedContainerTypeId === 1) ? '2' : '5';
             $scope.post.Container.parent_id = parseInt(container.id, 10);
             $scope.post.Location.timezone = 'Europe/Berlin'; //set initial value for timezone list
             $('#angularAddNodeModal').modal('show');
