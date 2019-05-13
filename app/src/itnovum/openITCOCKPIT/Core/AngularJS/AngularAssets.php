@@ -46,6 +46,7 @@ class AngularAssets implements AngularAssetsInterface {
         'js/lib/colr.js',
         'js/lib/php.js',
         'smartadmin/js/plugin/flot/jquery.flot.cust.js',
+        'smartadmin/js/plugin/flot/jquery.flot.axislabels.js',
         'smartadmin/js/plugin/flot/jquery.flot.time.js',
         //'smartadmin/js/plugin/jquery-validate/jquery.validate.min.js', //
         //'smartadmin/js/plugin/flot/jquery.flot.orderBar.js', //
