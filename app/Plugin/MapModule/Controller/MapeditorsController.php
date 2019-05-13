@@ -301,7 +301,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($servicegroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'), false)) {
+                        if (!$this->allowedByContainerId(array_unique(Hash::extract($servicegroup, 'Service.{n}.Host.Container.{n}.HostsToContainer.container_id')), false)) {
                             $allowView = false;
                             break;
                         }
@@ -1290,7 +1290,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($servicegroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Container.{n}.HostsToContainer.container_id'), false)) {
+                        if (!$this->allowedByContainerId(array_unique(Hash::extract($servicegroup, 'Service.{n}.Host.Container.{n}.HostsToContainer.container_id')), false)) {
                             $this->render403();
                             return;
                         }

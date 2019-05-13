@@ -2,10 +2,12 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
@@ -50,6 +52,7 @@ use Cake\Validation\Validator;
 class ServicesTable extends Table {
 
     use PluginManagerTableTrait;
+    use CustomValidationTrait;
 
     /**
      * Initialize method
@@ -160,6 +163,7 @@ class ServicesTable extends Table {
      * @return \Cake\Validation\Validator
      */
     public function validationDefault(Validator $validator) {
+        /*
         $validator
             ->integer('id')
             ->allowEmptyString('id', 'create');
@@ -336,6 +340,256 @@ class ServicesTable extends Table {
             ->allowEmptyString('usage_flag', false);
 
         return $validator;
+        */
+
+        $validator
+            ->integer('id')
+            ->allowEmptyString('id', 'create');
+
+        $validator
+            ->scalar('uuid')
+            ->maxLength('uuid', 37)
+            ->requirePresence('uuid', 'create')
+            ->allowEmptyString('uuid', false)
+            ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+
+        $validator
+            ->requirePresence('host_id', 'create')
+            ->integer('host_id')
+            ->allowEmptyString('host_id', false);
+
+        $validator
+            ->requirePresence('servicetemplate_id', 'create')
+            ->integer('servicetemplate_id')
+            ->allowEmptyString('servicetemplate_id', false);
+
+        $validator
+            ->scalar('name')
+            ->maxLength('name', 255)
+            ->requirePresence('name', false)
+            ->allowEmptyString('name', true);
+
+
+        $validator
+            ->integer('priority')
+            ->requirePresence('priority', false)
+            ->range('priority', [1, 5], __('This value must be between 1 and 5'))
+            ->allowEmptyString('priority', true);
+
+        $validator
+            ->integer('max_check_attempts')
+            ->requirePresence('max_check_attempts', false)
+            ->greaterThanOrEqual('max_check_attempts', 1, __('This value need to be at least 1'))
+            ->allowEmptyString('max_check_attempts', true);
+
+        $validator
+            ->numeric('notification_interval')
+            ->requirePresence('notification_interval', false)
+            ->greaterThanOrEqual('notification_interval', 0, __('This value need to be at least 0'))
+            ->allowEmptyString('notification_interval', true);
+
+        $validator
+            ->integer('check_interval')
+            ->requirePresence('check_interval', false)
+            ->greaterThanOrEqual('check_interval', 1, __('This value need to be at least 1'))
+            ->allowEmptyString('check_interval', true);
+
+        $validator
+            ->integer('retry_interval')
+            ->requirePresence('retry_interval', false)
+            ->greaterThanOrEqual('retry_interval', 1, __('This value need to be at least 1'))
+            ->allowEmptyString('retry_interval', true);
+
+        $validator
+            ->integer('check_period_id')
+            ->requirePresence('check_period_id', false)
+            ->greaterThan('check_period_id', 0, __('Please select a check period'))
+            ->allowEmptyString('check_period_id', true);
+
+        $validator
+            ->integer('command_id')
+            ->requirePresence('command_id', false)
+            ->greaterThan('command_id', 0, __('Please select a check command'))
+            ->allowEmptyString('command_id', true);
+
+        $validator
+            ->integer('eventhandler_command_id')
+            ->requirePresence('eventhandler_command_id', false)
+            ->allowEmptyString('eventhandler_command_id', true);
+
+        $validator
+            ->integer('notify_period_id')
+            ->requirePresence('notify_period_id', false)
+            ->greaterThan('notify_period_id', 0, __('Please select a notify period'))
+            ->allowEmptyString('notify_period_id', true);
+
+        $validator
+            ->boolean('notify_on_recovery')
+            ->requirePresence('notify_on_recovery', false)
+            ->allowEmptyString('notify_on_recovery', true)
+            ->add('notify_on_recovery', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one notification option.')
+            ]);
+
+        $validator
+            ->boolean('notify_on_warning')
+            ->requirePresence('notify_on_warning', false)
+            ->allowEmptyString('notify_on_warning', true)
+            ->add('notify_on_warning', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one notification option.')
+            ]);
+
+        $validator
+            ->boolean('notify_on_critical')
+            ->requirePresence('notify_on_critical', false)
+            ->allowEmptyString('notify_on_critical', true)
+            ->add('notify_on_critical', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one notification option.')
+            ]);
+
+        $validator
+            ->boolean('notify_on_unknown')
+            ->requirePresence('notify_on_unknown', false)
+            ->allowEmptyString('notify_on_unknown', true)
+            ->add('notify_on_unknown', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one notification option.')
+            ]);
+
+        $validator
+            ->boolean('notify_on_flapping')
+            ->requirePresence('notify_on_flapping', false)
+            ->allowEmptyString('notify_on_flapping', true)
+            ->add('notify_on_flapping', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one notification option.')
+            ]);
+
+        $validator
+            ->boolean('notify_on_downtime')
+            ->requirePresence('notify_on_downtime', false)
+            ->allowEmptyString('notify_on_downtime', true)
+            ->add('notify_on_downtime', 'custom', [
+                'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one notification option.')
+            ]);
+
+        $validator
+            ->boolean('flap_detection_enabled')
+            ->requirePresence('flap_detection_enabled', false)
+            ->allowEmptyString('flap_detection_enabled', true);
+
+        $validator
+            ->boolean('flap_detection_on_ok')
+            ->requirePresence('flap_detection_on_ok', false)
+            ->allowEmptyString('flap_detection_on_ok', true)
+            ->add('flap_detection_on_ok', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one flap detection option.')
+            ]);
+
+        $validator
+            ->boolean('flap_detection_on_warning')
+            ->requirePresence('flap_detection_on_warning', false)
+            ->allowEmptyString('flap_detection_on_warning', true)
+            ->add('flap_detection_on_warning', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one flap detection option.')
+            ]);
+
+        $validator
+            ->boolean('flap_detection_on_critical')
+            ->requirePresence('flap_detection_on_critical', false)
+            ->allowEmptyString('flap_detection_on_critical', true)
+            ->add('flap_detection_on_critical', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one flap detection option.')
+            ]);
+
+        $validator
+            ->boolean('flap_detection_on_unknown')
+            ->requirePresence('flap_detection_on_unknown', false)
+            ->allowEmptyString('flap_detection_on_unknown', true)
+            ->add('flap_detection_on_unknown', 'custom', [
+                'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => __('You must specify at least one flap detection option.')
+            ]);
+
+        $validator
+            ->numeric('low_flap_threshold')
+            ->requirePresence('low_flap_threshold', false)
+            ->allowEmptyString('low_flap_threshold', true);
+
+        $validator
+            ->numeric('high_flap_threshold')
+            ->requirePresence('high_flap_threshold', false)
+            ->allowEmptyString('high_flap_threshold', true);
+
+        $validator
+            ->boolean('process_performance_data')
+            ->requirePresence('process_performance_data', false)
+            ->allowEmptyString('process_performance_data', true);
+
+        $validator
+            ->boolean('passive_checks_enabled')
+            ->requirePresence('passive_checks_enabled', false)
+            ->allowEmptyString('passive_checks_enabled', true);
+
+        $validator
+            ->boolean('event_handler_enabled')
+            ->requirePresence('event_handler_enabled', false)
+            ->allowEmptyString('event_handler_enabled', true);
+
+        $validator
+            ->boolean('active_checks_enabled')
+            ->requirePresence('active_checks_enabled', false)
+            ->allowEmptyString('active_checks_enabled', true);
+
+        $validator
+            ->scalar('notes')
+            ->requirePresence('notes', false)
+            ->allowEmptyString('notes', true)
+            ->maxLength('notes', 255);
+
+        $validator
+            ->scalar('tags')
+            ->requirePresence('tags', false)
+            ->allowEmptyString('tags', true)
+            ->maxLength('tags', 255);
+
+        $validator
+            ->scalar('service_url')
+            ->requirePresence('service_url', false)
+            ->allowEmptyString('service_url', true)
+            ->maxLength('service_url', 255);
+
+        $validator
+            ->allowEmptyString('customvariables', true)
+            ->add('customvariables', 'custom', [
+                'rule'    => [$this, 'checkMacroNames'], //\App\Lib\Traits\CustomValidationTrait
+                'message' => _('Macro name needs to be unique')
+            ]);
+
+        $validator
+            ->boolean('is_volatile')
+            ->requirePresence('is_volatile', false)
+            ->allowEmptyString('is_volatile', true);
+
+        $validator
+            ->boolean('freshness_checks_enabled')
+            ->requirePresence('freshness_checks_enabled', false)
+            ->allowEmptyString('freshness_checks_enabled', true);
+
+        $validator
+            ->integer('freshness_threshold')
+            ->greaterThan('check_period_id', 0, __('This field cannot be 0'))
+            ->allowEmptyString('freshness_threshold', true);
+
+        return $validator;
+
     }
 
     /**
@@ -350,9 +604,9 @@ class ServicesTable extends Table {
         $rules->add($rules->existsIn(['servicetemplate_id'], 'Servicetemplates'));
         $rules->add($rules->existsIn(['host_id'], 'Hosts'));
         $rules->add($rules->existsIn(['command_id'], 'Commands'));
-        $rules->add($rules->existsIn(['eventhandler_command_id'], 'EventhandlerCommands'));
-        $rules->add($rules->existsIn(['notify_period_id'], 'NotifyPeriods'));
-        $rules->add($rules->existsIn(['check_period_id'], 'CheckPeriods'));
+        $rules->add($rules->existsIn(['eventhandler_command_id'], 'Commands'));
+        $rules->add($rules->existsIn(['notify_period_id'], 'Timeperiods'));
+        $rules->add($rules->existsIn(['check_period_id'], 'Timeperiods'));
 
         return $rules;
     }
@@ -450,4 +704,124 @@ class ServicesTable extends Table {
 
         return $result;
     }
+
+    /**
+     * @param array $dataToParse
+     * @return array
+     */
+    public function resolveDataForChangelog($dataToParse = []) {
+        $extDataForChangelog = [
+            'Contact'         => [],
+            'Contactgroup'    => [],
+            'CheckPeriod'     => [],
+            'NotifyPeriod'    => [],
+            'CheckCommand'    => [],
+            'Servicegroup'    => [],
+            'Servicetemplate' => [],
+        ];
+
+        /*
+         *                         $ext_data_for_changelog['Host'] = [
+                            'id'           => $hostData['id'],
+                            'name'         => $hostData['name'],
+                            'container_id' => $hostData['container_id'],
+                        ];
+
+
+                        'Service'                          => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_).*}',
+                'Host'                             => '{(id|name)}',
+                'Servicetemplate'                  => '{(id|name)}',
+                'CheckPeriod'                      => '{(id|name)}',
+                'NotifyPeriod'                     => '{(id|name)}',
+                'CheckCommand'                     => '{(id|name)}',
+                'Servicegroup'                     => '{n}.{(id|name)}',
+                'Customvariable'                   => '{n}.{(id|name|value)}',
+                'Servicecommandargumentvalue'      => '{n}.{(id|value)}',
+                'Serviceeventcommandargumentvalue' => '{n}.{(id|value)}',
+                'Contact'                          => '{n}.{(id|name)}',
+                'Contactgroup'                     => '{n}.{(id|name)}',
+         *
+         *
+         */
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+
+        if (!empty($dataToParse['Service']['contacts']['_ids'])) {
+            foreach ($ContactsTable->getContactsAsList($dataToParse['Service']['contacts']['_ids']) as $contactId => $contactName) {
+                $extDataForChangelog['Contact'][] = [
+                    'id'   => $contactId,
+                    'name' => $contactName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Service']['contactgroups']['_ids'])) {
+            foreach ($ContactgroupsTable->getContactgroupsAsList($dataToParse['Service']['contactgroups']['_ids']) as $contactgroupId => $contactgroupName) {
+                $extDataForChangelog['Contactgroup'][] = [
+                    'id'   => $contactgroupId,
+                    'name' => $contactgroupName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Service']['check_period_id'])) {
+            foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Service']['check_period_id']) as $timeperiodId => $timeperiodName) {
+                $extDataForChangelog['CheckPeriod'] = [
+                    'id'   => $timeperiodId,
+                    'name' => $timeperiodName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Service']['notify_period_id'])) {
+            foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Service']['notify_period_id']) as $timeperiodId => $timeperiodName) {
+                $extDataForChangelog['NotifyPeriod'] = [
+                    'id'   => $timeperiodId,
+                    'name' => $timeperiodName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Service']['command_id'])) {
+            foreach ($CommandsTable->getCommandByIdAsList($dataToParse['Service']['command_id']) as $commandId => $commandName) {
+                $extDataForChangelog['CheckCommand'] = [
+                    'id'   => $commandId,
+                    'name' => $commandName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Service']['servicegroups']['_ids'])) {
+            foreach ($ServicegroupsTable->getServicegroupsAsList($dataToParse['Service']['servicegroups']['_ids']) as $servicegroupId => $servicegroupName) {
+                $extDataForChangelog['Servicegroup'][] = [
+                    'id'   => $servicegroupId,
+                    'name' => $servicegroupName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Service']['servicetemplate_id'])) {
+            foreach ($ServicetemplatesTable->getServicetemplatesAsList($dataToParse['Service']['servicetemplate_id']) as $servicetemplateId => $servicetemplateName) {
+                $extDataForChangelog['Servicetemplate'][] = [
+                    'id'   => $servicetemplateId,
+                    'name' => $servicetemplateName
+                ];
+            }
+        }
+
+        return $extDataForChangelog;
+    }
+
 }

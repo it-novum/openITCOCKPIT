@@ -32,6 +32,7 @@ use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
 use App\Model\Table\HostsTable;
+use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicecommandargumentvaluesTable;
 use App\Model\Table\ServiceeventcommandargumentvaluesTable;
 use App\Model\Table\ServicegroupsTable;
@@ -42,6 +43,7 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
 use itnovum\openITCOCKPIT\Core\DbBackend;
@@ -584,6 +586,8 @@ class ServicesController extends AppController {
                 throw new Exception('Service.servicetemplate_id needs to set.');
             }
 
+            /** @var $HosttemplatesTable HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
             /** @var $HostsTable HostsTable */
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
             /** @var $ServicetemplatesTable ServicetemplatesTable */
@@ -597,10 +601,14 @@ class ServicesController extends AppController {
 
             $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicetemplateId);
 
-            $servicename = $this->request->data['Service']['name'];
 
-            $ServiceComparisonForSave = new HostComparisonForSave($this->request->data, $servicetemplate);
-            $serviceData = $HostComparisonForSave->getDataForSaveForAllFields();
+            $servicename = $this->request->data('Service.name');
+            if ($servicename === null || $servicename === '') {
+                $servicename = $servicetemplate['Servicetemplate']['name'];
+            }
+
+            $ServiceComparisonForSave = new ServiceComparisonForSave($this->request->data, $servicetemplate);
+            $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
             $serviceData['uuid'] = UUID::v4();
 
             $service = $ServicesTable->newEntity($serviceData);
@@ -614,7 +622,7 @@ class ServicesController extends AppController {
             } else {
                 //No errors
 
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $User = new User($this->Auth);
                 $host = $HostsTable->get($service->get('host_id'));
 
                 $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
