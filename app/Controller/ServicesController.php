@@ -583,7 +583,12 @@ class ServicesController extends AppController {
         if ($this->request->is('post')) {
             $servicetemplateId = $this->request->data('Service.servicetemplate_id');
             if ($servicetemplateId === null) {
-                throw new Exception('Service.servicetemplate_id needs to set.');
+                throw new BadRequestException('Service.servicetemplate_id needs to set.');
+            }
+
+            $hostId = $this->request->data('Service.host_id');
+            if ($hostId === null) {
+                throw new BadRequestException('Service.host_id needs to set.');
             }
 
             /** @var $HosttemplatesTable HosttemplatesTable */
@@ -599,6 +604,14 @@ class ServicesController extends AppController {
                 throw new NotFoundException(__('Invalid service template'));
             }
 
+            $host = $HostsTable->get($hostId);
+            $this->request->data['Host'] = [
+                [
+                    'id'   => $host->get('id'),
+                    'name' => $host->get('name')
+                ]
+            ];
+
             $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicetemplateId);
 
 
@@ -607,7 +620,12 @@ class ServicesController extends AppController {
                 $servicename = $servicetemplate['Servicetemplate']['name'];
             }
 
-            $ServiceComparisonForSave = new ServiceComparisonForSave($this->request->data, $servicetemplate);
+            $ServiceComparisonForSave = new ServiceComparisonForSave(
+                $this->request->data,
+                $servicetemplate,
+                $HostsTable->getContactsAndContactgroupsById($host->get('id')),
+                $HosttemplatesTable->getContactsAndContactgroupsById($host->get('hosttemplate_id'))
+            );
             $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
             $serviceData['uuid'] = UUID::v4();
 
@@ -623,7 +641,6 @@ class ServicesController extends AppController {
                 //No errors
 
                 $User = new User($this->Auth);
-                $host = $HostsTable->get($service->get('host_id'));
 
                 $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -643,12 +660,12 @@ class ServicesController extends AppController {
 
 
                 if ($this->request->ext == 'json') {
-                    $this->serializeCake4Id($host); // REST API ID serialization
+                    $this->serializeCake4Id($service); // REST API ID serialization
                     return;
                 }
             }
-            $this->set('host', $host);
-            $this->set('_serialize', ['host']);
+            $this->set('service', $service);
+            $this->set('_serialize', ['$service']);
         }
     }
 

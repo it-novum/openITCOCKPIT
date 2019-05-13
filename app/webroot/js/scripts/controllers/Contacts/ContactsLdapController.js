@@ -1,30 +1,51 @@
 angular.module('openITCOCKPIT')
     .controller('ContactsLdapController', function($scope, $http, SudoService, $state, NotyService){
-        $scope.post = {
-            Contact: {
-                name: '',
-                description: '',
-                email: '',
-                notify_host_recovery: 0,
-                notify_service_recovery: 0,
-                host_push_notifications_enabled: 0,
-                service_push_notifications_enabled: 0,
-                containers: {
-                    _ids: []
-                },
-                host_commands: {
-                    _ids: []
-                },
-                service_commands: {
-                    _ids: []
-                },
-                customvariables: []
-            }
+        $scope.data = {
+            selectedSamAccountNameIndex: null,
+            createAnother: false
         };
 
-        $scope.data = {
-            selectedSamAccountNameIndex: null
+        var clearForm = function(){
+            $scope.data.selectedSamAccountNameIndex = null;
+
+            $scope.post = {
+                Contact: {
+                    name: '',
+                    description: '',
+                    email: '',
+
+                    host_notifications_enabled: 1,
+                    service_notifications_enabled: 1,
+
+                    notify_host_recovery: 1,
+                    notify_host_down: 1,
+                    notify_host_unreachable: 1,
+                    notify_host_flapping: 0,
+                    notify_host_downtime: 0,
+
+                    notify_service_recovery: 1,
+                    notify_service_warning: 1,
+                    notify_service_critical: 1,
+                    notify_service_unknown: 1,
+                    notify_service_flapping: 0,
+                    notify_service_downtime: 0,
+
+                    host_push_notifications_enabled: 0,
+                    service_push_notifications_enabled: 0,
+                    containers: {
+                        _ids: []
+                    },
+                    host_commands: {
+                        _ids: []
+                    },
+                    service_commands: {
+                        _ids: []
+                    },
+                    customvariables: []
+                }
+            };
         };
+        clearForm();
 
         $scope.init = true;
 
@@ -89,31 +110,6 @@ angular.module('openITCOCKPIT')
         };
 
 
-        $scope.submit = function(){
-            var index = 0;
-            for(var i in $scope.args){
-                if(!/\S/.test($scope.args[i].human_name)){
-                    continue;
-                }
-                $scope.post.Command.commandarguments[index] = {
-                    'name': $scope.args[i].name,
-                    'human_name': $scope.args[i].human_name
-                };
-                index++;
-            }
-            $http.post("/commands/add.json?angular=true",
-                $scope.post
-            ).then(function(result){
-                NotyService.genericSuccess();
-                $state.go('CommandsIndex');
-            }, function errorCallback(result){
-                if(result.data.hasOwnProperty('error')){
-                    NotyService.genericError();
-                    $scope.errors = result.data.error;
-                }
-            });
-        };
-
         $scope.addMacro = function(){
             $scope.post.Contact.customvariables.push({
                 objecttype_id: 32,
@@ -141,8 +137,23 @@ angular.module('openITCOCKPIT')
             $http.post("/contacts/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                NotyService.genericSuccess();
-                $state.go('ContactsIndex');
+                var url = $state.href('ContactsEdit', {id: result.data.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+
+
+                if($scope.data.createAnother === false){
+                    $state.go('ContactsIndex').then(function(){
+                        NotyService.scrollTop();
+                    });
+                }else{
+                    clearForm();
+                    $scope.errors = {};
+                    NotyService.scrollTop();
+                }
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){

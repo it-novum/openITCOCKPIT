@@ -1256,6 +1256,36 @@ class HostsTable extends Table {
 
     /**
      * @param int $id
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getContactsAndContactgroupsById($id){
+        $query = $this->find()
+            ->select([
+                'Hosts.id'
+            ])
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'Contactgroups',
+                'Contacts'
+            ])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $host = $query;
+        $host['contacts'] = [
+            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+        ];
+        $host['contactgroups'] = [
+            '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
+        ];
+
+        return $host;
+    }
+
+    /**
+     * @param int $id
      * @return bool
      */
     public function existsById($id) {

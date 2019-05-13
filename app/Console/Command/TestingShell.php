@@ -23,11 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
+use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ProxiesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Comparison\HostComparison;
+use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 
 class TestingShell extends AppShell {
     /*
@@ -77,6 +78,63 @@ class TestingShell extends AppShell {
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        $service = [
+            'Service' => [
+                'contacts'      => [
+                    '_ids' => [1, 2, 3, 4]
+                ],
+                'contactgroups' => [
+                    '_ids' => [5, 6, 7, 8]
+                ]
+            ]
+        ];
+
+        $servicetemplate = [
+            'Servicetemplate' => [
+                'contacts'      => [
+                    '_ids' => []
+                ],
+                'contactgroups' => [
+                    '_ids' => []
+                ]
+            ]
+        ];
+
+        $host = [
+            'contacts'      => [
+                '_ids' => []
+            ],
+            'contactgroups' => [
+                '_ids' => []
+            ]
+        ];
+
+        $hosttemplate = [
+            'contacts'      => [
+                '_ids' => [1, 2, 3, 4]
+            ],
+            'contactgroups' => [
+                '_ids' => [5, 6, 7, 8]
+            ]
+        ];
+
+        $ServiceComparisonForSave = new ServiceComparisonForSave(
+            $service,
+            $servicetemplate,
+            $host,
+            $hosttemplate
+        );
+
+        debug($ServiceComparisonForSave->getDataForSaveForAllFields());
+
+
+        debug($HostsTable->getContactsAndContactgroupsById(34));
+
+        debug($HosttemplatesTable->getContactsAndContactgroupsById(29));
+
     }
 
     public function getOptionParser() {

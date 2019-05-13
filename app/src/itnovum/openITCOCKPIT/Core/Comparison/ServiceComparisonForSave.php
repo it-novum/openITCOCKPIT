@@ -196,6 +196,17 @@ class ServiceComparisonForSave {
      * @return array
      */
     public function getDataForContactsAndContactgroups() {
+        if (!empty($this->servicetemplate['contacts']['_ids']) || !empty($this->servicetemplate['contactgroups']['_ids'])) {
+            return $this->diffServiceContactsWithServiceTemplate();
+        }
+        if (!empty($this->hostContactAndContactgroups['contacts']['_ids']) || !empty($this->hostContactAndContactgroups['contactgroups']['_ids'])) {
+            return $this->diffServiceContactsWithHost();
+        }
+
+        return $this->diffServiceContactsWithHosttemplate();
+    }
+
+    private function diffServiceContactsWithServiceTemplate() {
         //Where contacts changed or edited?
         $contactsDiff = array_diff($this->service['contacts']['_ids'], $this->servicetemplate['contacts']['_ids']);
         if (empty($contactsDiff)) {
@@ -256,6 +267,156 @@ class ServiceComparisonForSave {
                 ],
                 'contactgroups' => [
                     '_ids' => $this->servicetemplate['contactgroups']['_ids']
+                ]
+            ];
+        }
+
+        return [
+            'contacts'      => [
+                '_ids' => []
+            ],
+            'contactgroups' => [
+                '_ids' => []
+            ]
+        ];
+    }
+
+    private function diffServiceContactsWithHost() {
+        //Where contacts changed or edited?
+        $contactsDiff = array_diff($this->service['contacts']['_ids'], $this->hostContactAndContactgroups['contacts']['_ids']);
+        if (empty($contactsDiff)) {
+            //Check if contacts got removed
+            $contactsDiff = array_diff($this->hostContactAndContactgroups['contacts']['_ids'], $this->service['contacts']['_ids']);
+        }
+        $this->hasOwnContacts = !empty($contactsDiff);
+
+        //Where contact groups changed or edited?
+        $contactgroupsDiff = array_diff($this->service['contactgroups']['_ids'], $this->hostContactAndContactgroups['contactgroups']['_ids']);
+        if (empty($contactgroupsDiff)) {
+            //Check if contact groups got removed
+            $contactgroupsDiff = array_diff($this->hostContactAndContactgroups['contactgroups']['_ids'], $this->service['contactgroups']['_ids']);
+        }
+
+        if ($this->hasOwnContacts === false) {
+            $this->hasOwnContacts = !empty($contactgroupsDiff);
+        }
+
+        if (!empty($contactsDiff) && !empty($contactgroupsDiff)) {
+            //Contacts AND contact groups where modified
+            //Due to https://github.com/naemon/naemon-core/pull/92
+            //always save contacts AND contactgroups on a diff
+
+            return [
+                'contacts'      => [
+                    '_ids' => $this->service['contacts']['_ids'],
+                ],
+                'contactgroups' => [
+                    '_ids' => $this->service['contactgroups']['_ids']
+                ]
+            ];
+        }
+
+        if (empty($contactsDiff) && !empty($contactgroupsDiff)) {
+            //Contact groups have been modified
+            //Due to https://github.com/naemon/naemon-core/pull/92
+            //always save contacts AND contactgroups on a diff
+
+            return [
+                'contacts'      => [
+                    '_ids' => $this->hostContactAndContactgroups['contacts']['_ids']
+                ],
+                'contactgroups' => [
+                    '_ids' => $this->service['contactgroups']['_ids']
+                ]
+            ];
+        }
+
+        if (empty($contactgroupsDiff) && !empty($contactsDiff)) {
+            //Contacts have been modified
+            //Due to https://github.com/naemon/naemon-core/pull/92
+            //always save contacts AND contactgroups on a diff
+
+            return [
+                'contacts'      => [
+                    '_ids' => $this->service['contacts']['_ids'],
+                ],
+                'contactgroups' => [
+                    '_ids' => $this->hostContactAndContactgroups['contactgroups']['_ids']
+                ]
+            ];
+        }
+
+        return [
+            'contacts'      => [
+                '_ids' => []
+            ],
+            'contactgroups' => [
+                '_ids' => []
+            ]
+        ];
+    }
+
+    private function diffServiceContactsWithHosttemplate() {
+        //Where contacts changed or edited?
+        $contactsDiff = array_diff($this->service['contacts']['_ids'], $this->hosttemplateContactAndContactgroups['contacts']['_ids']);
+        if (empty($contactsDiff)) {
+            //Check if contacts got removed
+            $contactsDiff = array_diff($this->hosttemplateContactAndContactgroups['contacts']['_ids'], $this->service['contacts']['_ids']);
+        }
+        $this->hasOwnContacts = !empty($contactsDiff);
+
+        //Where contact groups changed or edited?
+        $contactgroupsDiff = array_diff($this->service['contactgroups']['_ids'], $this->hosttemplateContactAndContactgroups['contactgroups']['_ids']);
+        if (empty($contactgroupsDiff)) {
+            //Check if contact groups got removed
+            $contactgroupsDiff = array_diff($this->hosttemplateContactAndContactgroups['contactgroups']['_ids'], $this->service['contactgroups']['_ids']);
+        }
+
+        if ($this->hasOwnContacts === false) {
+            $this->hasOwnContacts = !empty($contactgroupsDiff);
+        }
+
+        if (!empty($contactsDiff) && !empty($contactgroupsDiff)) {
+            //Contacts AND contact groups where modified
+            //Due to https://github.com/naemon/naemon-core/pull/92
+            //always save contacts AND contactgroups on a diff
+
+            return [
+                'contacts'      => [
+                    '_ids' => $this->service['contacts']['_ids'],
+                ],
+                'contactgroups' => [
+                    '_ids' => $this->service['contactgroups']['_ids']
+                ]
+            ];
+        }
+
+        if (empty($contactsDiff) && !empty($contactgroupsDiff)) {
+            //Contact groups have been modified
+            //Due to https://github.com/naemon/naemon-core/pull/92
+            //always save contacts AND contactgroups on a diff
+
+            return [
+                'contacts'      => [
+                    '_ids' => $this->hosttemplateContactAndContactgroups['contacts']['_ids']
+                ],
+                'contactgroups' => [
+                    '_ids' => $this->service['contactgroups']['_ids']
+                ]
+            ];
+        }
+
+        if (empty($contactgroupsDiff) && !empty($contactsDiff)) {
+            //Contacts have been modified
+            //Due to https://github.com/naemon/naemon-core/pull/92
+            //always save contacts AND contactgroups on a diff
+
+            return [
+                'contacts'      => [
+                    '_ids' => $this->service['contacts']['_ids'],
+                ],
+                'contactgroups' => [
+                    '_ids' => $this->hosttemplateContactAndContactgroups['contactgroups']['_ids']
                 ]
             ];
         }

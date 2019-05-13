@@ -11,8 +11,23 @@ angular.module('openITCOCKPIT')
                     name: '',
                     description: '',
                     email: '',
-                    notify_host_recovery: 0,
-                    notify_service_recovery: 0,
+
+                    host_notifications_enabled: 1,
+                    service_notifications_enabled: 1,
+
+                    notify_host_recovery: 1,
+                    notify_host_down: 1,
+                    notify_host_unreachable: 1,
+                    notify_host_flapping: 0,
+                    notify_host_downtime: 0,
+
+                    notify_service_recovery: 1,
+                    notify_service_warning: 1,
+                    notify_service_critical: 1,
+                    notify_service_unknown: 1,
+                    notify_service_flapping: 0,
+                    notify_service_downtime: 0,
+
                     host_push_notifications_enabled: 0,
                     service_push_notifications_enabled: 0,
                     containers: {

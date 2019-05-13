@@ -603,10 +603,10 @@ class ServicesTable extends Table {
         $rules->add($rules->isUnique(['uuid']));
         $rules->add($rules->existsIn(['servicetemplate_id'], 'Servicetemplates'));
         $rules->add($rules->existsIn(['host_id'], 'Hosts'));
-        $rules->add($rules->existsIn(['command_id'], 'Commands'));
-        $rules->add($rules->existsIn(['eventhandler_command_id'], 'Commands'));
-        $rules->add($rules->existsIn(['notify_period_id'], 'Timeperiods'));
-        $rules->add($rules->existsIn(['check_period_id'], 'Timeperiods'));
+        $rules->add($rules->existsIn(['command_id'], 'CheckCommand'));
+        $rules->add($rules->existsIn(['eventhandler_command_id'], 'CheckCommand'));
+        $rules->add($rules->existsIn(['notify_period_id'], 'NotifyPeriod'));
+        $rules->add($rules->existsIn(['check_period_id'], 'CheckPeriod'));
 
         return $rules;
     }
@@ -717,32 +717,9 @@ class ServicesTable extends Table {
             'NotifyPeriod'    => [],
             'CheckCommand'    => [],
             'Servicegroup'    => [],
-            'Servicetemplate' => [],
+            'Servicetemplate' => []
         ];
 
-        /*
-         *                         $ext_data_for_changelog['Host'] = [
-                            'id'           => $hostData['id'],
-                            'name'         => $hostData['name'],
-                            'container_id' => $hostData['container_id'],
-                        ];
-
-
-                        'Service'                          => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_).*}',
-                'Host'                             => '{(id|name)}',
-                'Servicetemplate'                  => '{(id|name)}',
-                'CheckPeriod'                      => '{(id|name)}',
-                'NotifyPeriod'                     => '{(id|name)}',
-                'CheckCommand'                     => '{(id|name)}',
-                'Servicegroup'                     => '{n}.{(id|name)}',
-                'Customvariable'                   => '{n}.{(id|name|value)}',
-                'Servicecommandargumentvalue'      => '{n}.{(id|value)}',
-                'Serviceeventcommandargumentvalue' => '{n}.{(id|value)}',
-                'Contact'                          => '{n}.{(id|name)}',
-                'Contactgroup'                     => '{n}.{(id|name)}',
-         *
-         *
-         */
 
         /** @var $CommandsTable CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');

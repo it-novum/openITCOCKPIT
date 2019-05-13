@@ -874,6 +874,36 @@ class HosttemplatesTable extends Table {
 
     /**
      * @param int $id
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getContactsAndContactgroupsById($id){
+        $query = $this->find()
+            ->select([
+                'Hosttemplates.id'
+            ])
+            ->where([
+                'Hosttemplates.id' => $id
+            ])
+            ->contain([
+                'Contactgroups',
+                'Contacts'
+            ])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $hosttemplate = $query;
+        $hosttemplate['contacts'] = [
+            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+        ];
+        $hosttemplate['contactgroups'] = [
+            '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
+        ];
+
+        return $hosttemplate;
+    }
+
+    /**
+     * @param int $id
      * @return bool
      */
     public function existsById($id) {
