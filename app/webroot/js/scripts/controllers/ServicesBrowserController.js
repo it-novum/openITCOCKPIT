@@ -476,6 +476,9 @@ angular.module('openITCOCKPIT')
             options.xaxis.min = lastGraphStart * 1000;
             options.xaxis.max = graphRenderEnd * 1000;
 
+            options.yaxis = {
+                axisLabel : performance_data.datasource.unit
+            };
 
             plot = $.plot('#graphCanvas', [graph_data], options);
 
