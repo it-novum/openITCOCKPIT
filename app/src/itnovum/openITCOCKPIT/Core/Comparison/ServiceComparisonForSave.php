@@ -57,13 +57,29 @@ class ServiceComparisonForSave {
     private $hasOwnCustomvariables = false;
 
     /**
-     * ServiceComparison constructor.
-     * @param array $service
-     * @param array $servicetemplate ServicetemplatesTable::$getServicetemplateForDiff()
+     * Contacts and contact groups of the host
+     * @var array
      */
-    public function __construct($service, $servicetemplate) {
+    private $hostContactAndContactgroups = [];
+
+    /**
+     * Contacts and contact groups of the host template
+     * @var array
+     */
+    private $hosttemplateContactAndContactgroups = [];
+
+    /**
+     * ServiceComparisonForSave constructor.
+     * @param array $service
+     * @param array $servicetemplate
+     * @param array $hostContactAndContactgroups
+     * @param array $hosttemplateContactAndContactgroups
+     */
+    public function __construct($service, $servicetemplate, $hostContactAndContactgroups = [], $hosttemplateContactAndContactgroups = []) {
         $this->service = $service['Service'];
         $this->servicetemplate = $servicetemplate['Servicetemplate'];
+        $this->hostContactAndContactgroups = $hostContactAndContactgroups;
+        $this->hosttemplateContactAndContactgroups = $hosttemplateContactAndContactgroups;
     }
 
     /**
