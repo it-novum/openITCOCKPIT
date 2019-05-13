@@ -241,6 +241,23 @@ class GraphiteLoader {
     }
 
     /**
+     * @param GraphiteMetric $GraphiteMetric
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getSeriesAsCounter(GraphiteMetric $GraphiteMetric) {
+        $options = $this->getBaseRequestOptions();
+
+        $options['target'] = sprintf(
+            'scale(nonNegativeDerivative(keepLastValue(%s.%s)), 0.125)',
+            $this->GraphiteConfig->getGraphitePrefix(),
+            $GraphiteMetric->getMetricPath()
+        );
+
+        return $this->normalizeData($this->sendRequest($options));
+    }
+
+    /**
      * @return array
      */
     private function getBaseRequestOptions() {

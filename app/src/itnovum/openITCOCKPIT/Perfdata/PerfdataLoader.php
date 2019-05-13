@@ -136,29 +136,37 @@ class PerfdataLoader {
                         'max'   => $metric['max'],
                     ];
 
-                    switch ($type) {
-                        case 'min':
-                            $performance_data[] = [
-                                'datasource' => $datasource,
-                                'data'       => $GraphiteLoader->getSeriesMin($GraphiteMetric)
-                            ];
-                            break;
+                    if($metric['unit'] === 'c'){
+                        //Counter datatype
+                        $performance_data[] = [
+                            'datasource' => $datasource,
+                            'data'       => $GraphiteLoader->getSeriesAsCounter($GraphiteMetric)
+                        ];
+                    }else{
+                        //Default Gauge
+                        switch ($type) {
+                            case 'min':
+                                $performance_data[] = [
+                                    'datasource' => $datasource,
+                                    'data'       => $GraphiteLoader->getSeriesMin($GraphiteMetric)
+                                ];
+                                break;
 
-                        case 'max':
-                            $performance_data[] = [
-                                'datasource' => $datasource,
-                                'data'       => $GraphiteLoader->getSeriesMax($GraphiteMetric)
-                            ];
-                            break;
+                            case 'max':
+                                $performance_data[] = [
+                                    'datasource' => $datasource,
+                                    'data'       => $GraphiteLoader->getSeriesMax($GraphiteMetric)
+                                ];
+                                break;
 
-                        default:
-                            $performance_data[] = [
-                                'datasource' => $datasource,
-                                'data'       => $GraphiteLoader->getSeriesAvg($GraphiteMetric)
-                            ];
-                            break;
+                            default:
+                                $performance_data[] = [
+                                    'datasource' => $datasource,
+                                    'data'       => $GraphiteLoader->getSeriesAvg($GraphiteMetric)
+                                ];
+                                break;
+                        }
                     }
-
                 }
             }
         }
