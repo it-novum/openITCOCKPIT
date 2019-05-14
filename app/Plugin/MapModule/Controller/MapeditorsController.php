@@ -153,8 +153,71 @@ class MapeditorsController extends MapModuleAppController {
             throw new RuntimeException('Invalid map id');
         }
 
+        $data = $this->_mapitem(
+            $objectId,
+            $mapId,
+            $this->request->query('type'),
+            $this->request->query('includeServiceOutput')
+        );
 
-        switch ($this->request->query('type')) {
+        $this->set('type', $this->request->query('type'));
+        $this->set('data', $data['data']);
+        $this->set('allowView', $data['allowView']);
+        $this->set('_serialize', ['type', 'allowView', 'data']);
+    }
+
+    public function mapitemMulti() {
+        if (!$this->isApiRequest()) {
+            return;
+        }
+
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $items = $this->request->data('items');
+
+        $mapitems = [];
+        foreach ($items as $item) {
+            if (isset($item['mapId']) && isset($item['objectId']) && isset($item['type']) && isset($item['uuid'])) {
+
+                try {
+                    $data = $this->_mapitem(
+                        $item['objectId'],
+                        $item['mapId'],
+                        $item['type']
+                    );
+
+                    $mapitems[$item['uuid']] = $data;
+
+                }catch (\Exception $e){
+                    throw $e;
+                }
+            }
+
+        }
+
+        $this->set('mapitems', $mapitems);
+        $this->set('_serialize', ['mapitems']);
+
+    }
+
+    /**
+     * @param $objectId
+     * @param $mapId
+     * @param $type
+     * @param string $includeServiceOutput
+     * @return array
+     */
+    private function _mapitem($objectId, $mapId, $type, $includeServiceOutput = 'true') {
+        if ($objectId <= 0) {
+            throw new RuntimeException('Invalid object id');
+        }
+        if ($mapId <= 0) {
+            throw new RuntimeException('Invalid map id');
+        }
+
+        switch ($type) {
             case 'host':
                 $host = $this->Host->find('first', [
                     'recursive'  => -1,
@@ -192,7 +255,7 @@ class MapeditorsController extends MapModuleAppController {
                 break;
 
             case 'service':
-                $includeServiceOutput = $this->request->query('includeServiceOutput') === 'true';
+                $includeServiceOutput = $includeServiceOutput === 'true';
                 $service = $this->Service->find('first', [
                     'recursive'  => -1,
                     'fields'     => [
@@ -526,10 +589,11 @@ class MapeditorsController extends MapModuleAppController {
                 break;
         }
 
-        $this->set('type', $this->request->query('type'));
-        $this->set('data', $properties);
-        $this->set('allowView', $allowView);
-        $this->set('_serialize', ['type', 'allowView', 'data']);
+        return [
+            'type'      => $type,
+            'data'      => $properties,
+            'allowView' => $allowView
+        ];
     }
 
     public function getDependendMaps($maps, $parentMapId) {
