@@ -8,7 +8,7 @@ openITCOCKPIT is an Open Source system monitoring tool built for different monit
 
 So easy that everyone can use it: create your entire monitoring configuration with a few clicks due to our smart interface written in PHP
 
-![openITCOCKPIT](screenshots/openITC_3.7.1.png "openITCOCKPIT")
+![openITCOCKPIT](screenshots/openITC_3.7.1.png?raw=true "openITCOCKPIT")
 
 # Demo
 Play around with our [Demo](https://demo.openitcockpit.io/) system. Its equipped with the majority of modules that you will get with the community license
@@ -142,18 +142,18 @@ After successful registration you can install the free community modules at Admi
 
 # Screenshots
 
-![openITCOCKPIT](screenshots/timeline_oitc.png "Timeline")
+![openITCOCKPIT](screenshots/timeline_oitc.png?raw=true "Timeline")
 
-![openITCOCKPIT](screenshots/map1.png "Maps")
+![openITCOCKPIT](screenshots/map1.png?raw=true "Maps")
 
-![openITCOCKPIT](screenshots/map2.png "Maps")
+![openITCOCKPIT](screenshots/map2.png?raw=true "Maps")
 
-![openITCOCKPIT](screenshots/event_correlation.png "Event correlation")
+![openITCOCKPIT](screenshots/event_correlation.png?raw=true "Event correlation")
 
-![openITCOCKPIT](screenshots/downtime_report.png "Downtime report")
+![openITCOCKPIT](screenshots/downtime_report.png?raw=true "Downtime report")
 
-![openITCOCKPIT](screenshots/current_state_report.png "Current state report")
-![openITCOCKPIT](screenshots/map2.png "Maps")
+![openITCOCKPIT](screenshots/current_state_report.png?raw=true "Current state report")
+
 
 # Developers welcome
 openITCOCKPIT's development is publicly available in GitHub. Everybody is welcome to join :-)
