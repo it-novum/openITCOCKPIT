@@ -9,6 +9,7 @@ angular.module('openITCOCKPIT').directive('mapSummary', function($http, $interva
                     params: {
                         'angular': true,
                         'objectId': item.object_id,
+                        'disableGlobalLoader': true,
                         'type': item.type,
                         'summary': summary
                     }

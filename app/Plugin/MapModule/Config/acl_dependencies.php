@@ -35,6 +35,7 @@ $config = [
             ],
             'Mapeditors'        => [
                 'mapitem',
+                'mapitemMulti',
                 'getDependendMaps',
                 'mapline',
                 'mapicon',

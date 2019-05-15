@@ -8,7 +8,7 @@ openITCOCKPIT is an Open Source system monitoring tool built for different monit
 
 So easy that everyone can use it: create your entire monitoring configuration with a few clicks due to our smart interface written in PHP
 
-![openITCOCKPIT](https://repo.it-novum.com/oitc/oitc.png "openITCOCKPIT")
+![openITCOCKPIT](screenshots/openITC_3.7.1.png?raw=true "openITCOCKPIT")
 
 # Demo
 Play around with our [Demo](https://demo.openitcockpit.io/) system. Its equipped with the majority of modules that you will get with the community license
@@ -124,7 +124,7 @@ Login to the webinterface of openITCOCKPIT and navigate to Administration -> Reg
 `0dc0d951-e34e-43d0-a5a5-a690738e6a49` and click Register.
 After successful registration you can install the free community modules at Administration -> Package Manager
 
-# Features
+# Main Features
 * Easy to use web interface
 * Template based configuration that will make your life easier
 * MySQL based
@@ -140,28 +140,23 @@ After successful registration you can install the free community modules at Admi
 * [Statusengine](http://statusengine.org/)
 * And much more to discover...
 
-# Vagrant box [Repository](https://github.com/it-novum/vagrantboxes)
-If you like to try openITCOCKPIT you can install our Vagrant box
-* Install [Vagrant](https://www.vagrantup.com/downloads.html) and [VirtualBox](https://www.virtualbox.org/wiki/Downloads) on your system
-````
-apt-get install vagrant virtualbox
-````
-* Download the [Vagrantfile](https://raw.githubusercontent.com/it-novum/vagrantboxes/master/openITCOCKPIT_V3/Vagrantfile)
-````
-mkdir openITCOCKPIT_V3
-cd openITCOCKPIT_V3
-wget https://raw.githubusercontent.com/it-novum/vagrantboxes/master/openITCOCKPIT_V3/Vagrantfile
-````
-* Run the Vagrant box and follow the instructions
-````
-vagrant up
-````
+# Screenshots
+
+![openITCOCKPIT](screenshots/timeline_oitc.png?raw=true "Timeline")
+
+![openITCOCKPIT](screenshots/map1.png?raw=true "Maps")
+
+![openITCOCKPIT](screenshots/map2.png?raw=true "Maps")
+
+![openITCOCKPIT](screenshots/event_correlation.png?raw=true "Event correlation")
+
+![openITCOCKPIT](screenshots/downtime_report.png?raw=true "Downtime report")
+
+![openITCOCKPIT](screenshots/current_state_report.png?raw=true "Current state report")
+
 
 # Developers welcome
 openITCOCKPIT's development is publicly available in GitHub. Everybody is welcome to join :-)
-
-### Vagrant box (nightly)
-Use [this Vagrantfile](https://raw.githubusercontent.com/it-novum/vagrantboxes/master/openITCOCKPIT_V3-nightly/Vagrantfile) to install the latest nightly build
 
 # Need help or support?
 * Join [#openitcockpit](http://webchat.freenode.net/?channels=openitcockpit) on freenode.net
