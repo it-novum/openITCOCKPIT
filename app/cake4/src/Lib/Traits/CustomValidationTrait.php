@@ -94,7 +94,7 @@ trait CustomValidationTrait {
      *
      * Custom validation rule for notify options (host)
      */
-    public function checkNotificationOptionsHost($value, $context) {
+    public function checkNotificationOptionsHosttemplate($value, $context) {
         $notificationOptions = [
             'notify_on_recovery',
             'notify_on_down',
@@ -107,6 +107,60 @@ trait CustomValidationTrait {
             if (isset($context['data'][$notificationOption]) && $context['data'][$notificationOption] == 1) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for notify options (host)
+     */
+    public function checkNotificationOptionsHost($value, $context) {
+        $notificationOptions = [
+            'notify_on_recovery',
+            'notify_on_down',
+            'notify_on_unreachable',
+            'notify_on_flapping',
+            'notify_on_downtime'
+        ];
+
+        $disabledNotificationOptionsCount = 0;
+        $nullValuesCount = 0;
+
+        foreach ($notificationOptions as $notificationOption) {
+            if (isset($context['data'][$notificationOption]) && $context['data'][$notificationOption] === 1) {
+                //At least one notification options is enabled(1) and not inherited from the host template
+                return true;
+            }
+
+            if (isset($context['data'][$notificationOption]) && $context['data'][$notificationOption] === 0) {
+                //Option is disabled(0) and NOT inherited from the host template
+                $disabledNotificationOptionsCount++;
+            }
+
+            if (isset($context['data'][$notificationOption]) && $context['data'][$notificationOption] === null) {
+                //Option is inherited from the host template
+                $nullValuesCount++;
+            }
+        }
+
+        if ($disabledNotificationOptionsCount === sizeof($notificationOptions)) {
+            //All notification options are disabled - config error!!!
+            return false;
+        }
+
+        if ($nullValuesCount === sizeof($notificationOptions)) {
+            //All notification options are inherited from the used host template
+            return true;
+        }
+
+        if($disabledNotificationOptionsCount > 0){
+            //Some notification options are inherited from the used host template and some are disabled(0)
+            return true;
         }
 
         return false;

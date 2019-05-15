@@ -208,7 +208,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('notify_on_recovery', 'create')
             ->allowEmptyString('notify_on_recovery', false)
             ->add('notify_on_recovery', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -217,7 +217,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('notify_on_down', 'create')
             ->allowEmptyString('notify_on_down', false)
             ->add('notify_on_down', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -226,7 +226,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('notify_on_unreachable', 'create')
             ->allowEmptyString('notify_on_unreachable', false)
             ->add('notify_on_unreachable', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -235,7 +235,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('notify_on_flapping', 'create')
             ->allowEmptyString('notify_on_flapping', false)
             ->add('notify_on_flapping', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
@@ -244,7 +244,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('notify_on_downtime', 'create')
             ->allowEmptyString('notify_on_downtime', false)
             ->add('notify_on_downtime', 'custom', [
-                'rule'    => [$this, 'checkNotificationOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkNotificationOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
             ]);
 
