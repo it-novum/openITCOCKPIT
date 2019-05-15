@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval, UuidService, BlinkService){
+angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval, UuidService, BlinkService, MapItemReloadService){
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors/mapitem.html',
@@ -8,15 +8,31 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval, 
         },
         controller: function($scope){
             $scope.init = true;
-            $scope.statusUpdateInterval = null;
 
 
-            var uuidForBlinkService = null;
+            var uuidForServices = null;
             var interval = null;
 
+            var updateCallback = function(result){
+                $scope.icon = result.data.data.icon;
+                $scope.icon_property = result.data.data.icon_property;
+                $scope.allowView = result.data.allowView;
+                $scope.init = false;
+
+                getLable(result.data.data);
+
+                $scope.currentIcon = $scope.icon;
+
+                if(result.data.data.isAcknowledged === true || result.data.data.isInDowntime === true){
+                    BlinkService.registerNewObject(uuidForServices, $scope.blinkServiceCallback);
+                }else{
+                    BlinkService.unregisterObject(uuidForServices);
+                }
+            };
+
             $scope.load = function(){
-                if(uuidForBlinkService === null){
-                    uuidForBlinkService = UuidService.v4();
+                if(uuidForServices === null){
+                    uuidForServices = UuidService.v4();
                 }
 
                 $http.get("/map_module/mapeditors/mapitem/.json", {
@@ -28,21 +44,7 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval, 
                         'type': $scope.item.type
                     }
                 }).then(function(result){
-                    $scope.icon = result.data.data.icon;
-                    $scope.icon_property = result.data.data.icon_property;
-                    $scope.allowView = result.data.allowView;
-                    $scope.init = false;
-
-                    getLable(result.data.data);
-
-                    $scope.currentIcon = $scope.icon;
-
-                    if(result.data.data.isAcknowledged === true || result.data.data.isInDowntime === true){
-                        BlinkService.registerNewObject(uuidForBlinkService, $scope.blinkServiceCallback);
-                    }else{
-                        BlinkService.unregisterObject(uuidForBlinkService);
-                    }
-
+                    updateCallback(result);
                 });
             };
 
@@ -88,27 +90,25 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval, 
                 interval = null;
             };
 
-            $scope.blinkServiceCallback = function(){if($scope.currentIcon === $scope.icon){
-                $scope.currentIcon = $scope.icon_property;
-            }else{
-                $scope.currentIcon = $scope.icon;
-            }};
+            $scope.blinkServiceCallback = function(){
+                if($scope.currentIcon === $scope.icon){
+                    $scope.currentIcon = $scope.icon_property;
+                }else{
+                    $scope.currentIcon = $scope.icon;
+                }
+            };
 
             $scope.stop = function(){
-                BlinkService.unregisterObject(uuidForBlinkService);
-
-                if($scope.statusUpdateInterval !== null){
-                    $interval.cancel($scope.statusUpdateInterval);
-                }
+                BlinkService.unregisterObject(uuidForServices);
+                MapItemReloadService.unregisterItem(uuidForServices);
             };
 
             $scope.load();
 
 
-            if($scope.refreshInterval > 0 && $scope.statusUpdateInterval === null){
-                $scope.statusUpdateInterval = $interval(function(){
-                    $scope.load();
-                }, $scope.refreshInterval);
+            if($scope.refreshInterval > 0){
+                MapItemReloadService.setRefreshInterval($scope.refreshInterval);
+                MapItemReloadService.registerNewItem(uuidForServices, $scope.item, updateCallback);
             }
 
             //Disable status update interval, if the object gets removed from DOM.
