@@ -266,10 +266,10 @@ class Host extends Entity {
     }
 
     /**
+     * @param Hosttemplate $hosttemplate
      * @return string
      */
-    public function getNotificationOptionsForCfg() {
-        $onlyTemplateValues = true;
+    public function getNotificationOptionsForCfg(Hosttemplate $hosttemplate) {
         $cfgValues = [];
         $fields = [
             'notify_on_recovery'    => 'r',
@@ -278,23 +278,31 @@ class Host extends Entity {
             'notify_on_flapping'    => 'f',
             'notify_on_downtime'    => 's'
         ];
+
+
+        //Does the host have own notification options?
         foreach ($fields as $field => $cfgValue) {
-            if ($this->get($field) !== null) {
-                //One value is not from host template
-                $onlyTemplateValues = false;
+            if ($this->get($field) === null) {
+                //Use the value of the host template
+                if ($hosttemplate->get($field) === 1) {
+                    $cfgValues[] = $cfgValue;
+                }
             }
 
             if ($this->get($field) === 1) {
+                //Host has defined its own value
                 $cfgValues[] = $cfgValue;
             }
         }
 
-        if (empty($cfgValues) && $onlyTemplateValues === false) {
-            //Config error! Avoid this
-            $cfgValues[] = 'r';
+        $notificationOptions = implode(',', $cfgValues);
+
+        if ($notificationOptions === $hosttemplate->getHostNotificationOptionsForCfg()) {
+            //Host has the same notification options like the host template - go for inheritance
+            return '';
         }
 
-        return implode(',', $cfgValues);
+        return $notificationOptions;
     }
 
     /**

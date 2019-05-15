@@ -540,6 +540,8 @@ class NagiosExportTask extends AppShell {
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
+        $HosttemplatesCache = new KeyValueStore();
+
         foreach ($hosts as $host) {
             /** @var $host \App\Model\Entity\Host */
 
@@ -551,8 +553,17 @@ class NagiosExportTask extends AppShell {
                 }
             }
 
+            if (!$HosttemplatesCache->has($host->get('hosttemplate_id'))) {
+                $hosttemplate = $HosttemplatesTable->get($host->get('hosttemplate_id'));
+                $HosttemplatesCache->set($host->get('hosttemplate_id'), $hosttemplate);
+            }
+
+            /** @var \App\Model\Entity\Hosttemplate $hosttemplate */
+            $hosttemplate = $HosttemplatesCache->get($host->get('hosttemplate_id'));
+
+
             $content .= $this->addContent('define host{', 0);
-            $content .= $this->addContent('use', 1, $host->get('hosttemplate')->get('uuid'));
+            $content .= $this->addContent('use', 1, $hosttemplate->get('uuid'));
             $content .= $this->addContent('host_name', 1, $host->get('uuid'));
             $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash($host->get('name')));
             $content .= $this->addContent('address', 1, $this->escapeLastBackslash($host->get('address')));
@@ -572,7 +583,7 @@ class NagiosExportTask extends AppShell {
                 if (!empty($host->get('hostcommandargumentvalues'))) {
                     if ($host->get('command_id') === null) {
                         //Host has own command arguments but uses the same command as the host template
-                        $commandId = $host->get('hosttemplate')->get('command_id');
+                        $commandId = $hosttemplate->get('command_id');
                     } else {
                         //Host has own command arguments AND own check command
                         $commandId = $host->get('command_id');
@@ -632,7 +643,7 @@ class NagiosExportTask extends AppShell {
 
             $checkInterval = $host->get('check_interval');
             if ($checkInterval === null || $checkInterval === '') {
-                $checkInterval = $host->get('hosttemplate')->get('check_interval');
+                $checkInterval = $hosttemplate->get('check_interval');
             }
 
             if ($checkInterval === 0 || $checkInterval === null) {
@@ -694,8 +705,8 @@ class NagiosExportTask extends AppShell {
                 $content .= $this->addContent('notification_period', 1, $timeperiodUuid);
             }
 
-            if (strlen($host->getNotificationOptionsForCfg()) > 0) {
-                $content .= $this->addContent('notification_options', 1, $host->getNotificationOptionsForCfg());
+            if (strlen($host->getNotificationOptionsForCfg($hosttemplate)) > 0) {
+                $content .= $this->addContent('notification_options', 1, $host->getNotificationOptionsForCfg($hosttemplate));
             }
 
             $content .= $this->nl();
@@ -760,7 +771,7 @@ class NagiosExportTask extends AppShell {
 
             if ($this->dm === true && $host->isSatelliteHost()) {
                 //Generate config file for sat nagios
-                $this->exportSatHost($host, $HosttemplatesTable);
+                $this->exportSatHost($host, $HosttemplatesTable, $HosttemplatesCache);
             }
         }
         if ($this->conf['minified']) {
@@ -778,9 +789,13 @@ class NagiosExportTask extends AppShell {
     /**
      * @param \App\Model\Entity\Host $host
      * @param HosttemplatesTable $HosttemplatesTable
+     * @param KeyValueStore $HosttemplatesCache
      */
-    private function exportSatHost(\App\Model\Entity\Host $host, HosttemplatesTable $HosttemplatesTable) {
+    private function exportSatHost(\App\Model\Entity\Host $host, HosttemplatesTable $HosttemplatesTable, KeyValueStore $HosttemplatesCache) {
         $satelliteId = $host->get('satellite_id');
+
+        /** @var \App\Model\Entity\Hosttemplate $hosttemplate */
+        $hosttemplate = $HosttemplatesCache->get($host->get('hosttemplate_id'));
 
         if (!is_dir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hosts'])) {
             mkdir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hosts']);
@@ -799,7 +814,7 @@ class NagiosExportTask extends AppShell {
         }
 
         $content .= $this->addContent('define host{', 0);
-        $content .= $this->addContent('use', 1, $host->get('hosttemplate')->get('uuid'));
+        $content .= $this->addContent('use', 1, $hosttemplate->get('uuid'));
         $content .= $this->addContent('host_name', 1, $host->get('uuid'));
         $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash($host->get('name')));
         $content .= $this->addContent('address', 1, $this->escapeLastBackslash($host->get('address')));
@@ -819,7 +834,7 @@ class NagiosExportTask extends AppShell {
         if (!empty($host->get('hostcommandargumentvalues'))) {
             if ($host->get('command_id') === null) {
                 //Host has own command arguments but uses the same command as the host template
-                $commandId = $host->get('hosttemplate')->get('command_id');
+                $commandId = $hosttemplate->get('command_id');
             } else {
                 //Host has own command arguments AND own check command
                 $commandId = $host->get('command_id');
@@ -887,8 +902,8 @@ class NagiosExportTask extends AppShell {
             $content .= $this->addContent('notification_period', 1, $timeperiodUuid);
         }
 
-        if (strlen($host->getNotificationOptionsForCfg()) > 0) {
-            $content .= $this->addContent('notification_options', 1, $host->getNotificationOptionsForCfg());
+        if (strlen($host->getNotificationOptionsForCfg($hosttemplate)) > 0) {
+            $content .= $this->addContent('notification_options', 1, $host->getNotificationOptionsForCfg($hosttemplate));
         }
 
         $content .= $this->nl();

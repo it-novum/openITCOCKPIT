@@ -80,61 +80,6 @@ class TestingShell extends AppShell {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-
-        $service = [
-            'Service' => [
-                'contacts'      => [
-                    '_ids' => [1, 2, 3, 4]
-                ],
-                'contactgroups' => [
-                    '_ids' => [5, 6, 7, 8]
-                ]
-            ]
-        ];
-
-        $servicetemplate = [
-            'Servicetemplate' => [
-                'contacts'      => [
-                    '_ids' => []
-                ],
-                'contactgroups' => [
-                    '_ids' => []
-                ]
-            ]
-        ];
-
-        $host = [
-            'contacts'      => [
-                '_ids' => []
-            ],
-            'contactgroups' => [
-                '_ids' => []
-            ]
-        ];
-
-        $hosttemplate = [
-            'contacts'      => [
-                '_ids' => [1, 2, 3, 4]
-            ],
-            'contactgroups' => [
-                '_ids' => [5, 6, 7, 8]
-            ]
-        ];
-
-        $ServiceComparisonForSave = new ServiceComparisonForSave(
-            $service,
-            $servicetemplate,
-            $host,
-            $hosttemplate
-        );
-
-        debug($ServiceComparisonForSave->getDataForSaveForAllFields());
-
-
-        debug($HostsTable->getContactsAndContactgroupsById(34));
-
-        debug($HosttemplatesTable->getContactsAndContactgroupsById(29));
-
     }
 
     public function getOptionParser() {
