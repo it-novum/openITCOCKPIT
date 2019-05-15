@@ -52,11 +52,23 @@ angular.module('openITCOCKPIT')
                         callback: callback
                     };
                 }
+
+                if(interval === null){
+                    startInterval();
+                }
             },
             unregisterItem: function(uuid){
                 if(items.hasOwnProperty(uuid)){
                     delete items[uuid];
                 }
+
+                if(Object.keys(items).length === 0){
+                    if(interval !== null){
+                        $interval.cancel(interval);
+                        interval = null;
+                    }
+                }
+
             },
             setRefreshInterval: function(value){
                 if(value > 0 && value != refreshInterval){
@@ -64,6 +76,7 @@ angular.module('openITCOCKPIT')
 
                     if(interval !== null){
                         $interval.cancel(interval);
+                        interval = null;
                     }
 
                     startInterval();
