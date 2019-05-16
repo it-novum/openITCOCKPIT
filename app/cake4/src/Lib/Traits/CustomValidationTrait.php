@@ -278,7 +278,7 @@ trait CustomValidationTrait {
      *
      * Custom validation rule for contacts and or contact groups
      */
-    public function checkFlapDetectionOptionsService($value, $context) {
+    public function checkFlapDetectionOptionsServicetemplate($value, $context) {
         $flapDetectionOptions = [
             'flap_detection_on_ok',
             'flap_detection_on_warning',
@@ -300,11 +300,92 @@ trait CustomValidationTrait {
     }
 
     /**
+     * @param null $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for service flap detection options
+     */
+    public function checkFlapDetectionOptionsService($value, $context) {
+        if (!array_key_exists('flap_detection_enabled', $context['data']) || $context['data']['flap_detection_enabled'] === 0) {
+            return true;
+        }
+
+        if (isset($context['data']['servicetemplate_flap_detection_enabled']) && array_key_exists('flap_detection_enabled', $context['data'])) {
+            if ($context['data']['flap_detection_enabled'] === null) {
+                if ($context['data']['servicetemplate_flap_detection_enabled'] === 0) {
+                    //Option is inherited from the service template and disabled(0)
+                    //We don't care about the settings because flap_detection is disabled(0).
+                    return true;
+                }
+            }
+        }
+
+        $flapDetectionOptions = [
+            'flap_detection_on_ok',
+            'flap_detection_on_warning',
+            'flap_detection_on_critical',
+            'flap_detection_on_unknown'
+        ];
+
+        $disabledFlapDetectionOptionsCount = 0;
+        $nullValuesCount = 0;
+
+        foreach ($flapDetectionOptions as $flapDetectionOption) {
+            if (isset($context['data'][$flapDetectionOption]) && $context['data'][$flapDetectionOption] === 1) {
+                //At least one flap detection options is enabled(1) and NOT inherited from the service template
+                return true;
+            }
+
+            if (isset($context['data'][$flapDetectionOption]) && $context['data'][$flapDetectionOption] === 0) {
+                //Option is disabled(0) and NOT inherited from the service template
+                $disabledFlapDetectionOptionsCount++;
+            }
+
+            if (array_key_exists($flapDetectionOption, $context['data']) && $context['data'][$flapDetectionOption] === null) {
+                //Option is inherited from the service template
+                $nullValuesCount++;
+            }
+        }
+
+        if ($disabledFlapDetectionOptionsCount === sizeof($flapDetectionOptions)) {
+            //All flap detection options are disabled - config error!!!
+            return false;
+        }
+
+        if ($nullValuesCount === sizeof($flapDetectionOptions)) {
+            //All flap detection options are inherited from the used service template
+
+            $flapDetectionOptionsServicetemplate = [
+                'servicetemplate_flap_detection_on_ok',
+                'servicetemplate_flap_detection_on_warning',
+                'servicetemplate_flap_detection_on_critical',
+                'servicetemplate_flap_detection_on_unknown'
+            ];
+
+            foreach ($flapDetectionOptionsServicetemplate as $flapDetectionOptionServicetemplate) {
+                if ($context['data'][$flapDetectionOptionServicetemplate] === 1) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        if ($disabledFlapDetectionOptionsCount > 0) {
+            //Some flap detection options are inherited from the used service template and some are disabled(0)
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * @param mixed $value
      * @param array $context
      * @return bool
      *
-     * Custom validation rule for notify options (host)
+     * Custom validation rule for notify options (service)
      */
     public function checkNotificationOptionsService($value, $context) {
         $notificationOptions = [

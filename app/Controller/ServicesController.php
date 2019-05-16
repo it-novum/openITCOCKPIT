@@ -629,6 +629,13 @@ class ServicesController extends AppController {
             $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
             $serviceData['uuid'] = UUID::v4();
 
+            //Add required fields for validation
+            $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
+            $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];
+            $serviceData['servicetemplate_flap_detection_on_warning'] = $servicetemplate['Servicetemplate']['flap_detection_on_warning'];
+            $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
+            $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
+
             $service = $ServicesTable->newEntity($serviceData);
 
             $ServicesTable->save($service);

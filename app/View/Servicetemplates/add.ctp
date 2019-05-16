@@ -671,13 +671,13 @@
 
                                         <fieldset ng-show="post.Servicetemplate.flap_detection_enabled">
                                             <legend class="font-sm"
-                                                    ng-class="{'has-error-no-form': errors.flap_detection_on_up}">
+                                                    ng-class="{'has-error-no-form': errors.flap_detection_on_ok}">
                                                 <div class="required">
                                                     <label>
                                                         <?php echo __('Flap detection options'); ?>
                                                     </label>
 
-                                                    <div ng-repeat="error in errors.flap_detection_on_up">
+                                                    <div ng-repeat="error in errors.flap_detection_on_ok">
                                                         <div class="text-danger">{{ error }}</div>
                                                     </div>
                                                 </div>

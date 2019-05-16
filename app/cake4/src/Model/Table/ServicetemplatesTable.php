@@ -288,7 +288,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('flap_detection_on_ok', 'create')
             ->allowEmptyString('flap_detection_on_ok', false)
             ->add('flap_detection_on_ok', 'custom', [
-                'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkFlapDetectionOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
@@ -297,7 +297,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('flap_detection_on_warning', 'create')
             ->allowEmptyString('flap_detection_on_warning', false)
             ->add('flap_detection_on_warning', 'custom', [
-                'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkFlapDetectionOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
@@ -306,7 +306,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('flap_detection_on_critical', 'create')
             ->allowEmptyString('flap_detection_on_critical', false)
             ->add('flap_detection_on_critical', 'custom', [
-                'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkFlapDetectionOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
@@ -315,7 +315,7 @@ class ServicetemplatesTable extends Table {
             ->requirePresence('flap_detection_on_unknown', 'create')
             ->allowEmptyString('flap_detection_on_unknown', false)
             ->add('flap_detection_on_unknown', 'custom', [
-                'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkFlapDetectionOptionsServicetemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
