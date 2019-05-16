@@ -292,33 +292,43 @@ class HostsTable extends Table {
             ->boolean('flap_detection_enabled')
             ->requirePresence('flap_detection_enabled', 'create')
             ->allowEmptyString('flap_detection_enabled', true);
+        /*
+         * $validator
+                    ->scalar('latitude')
+                    ->longitude('latitude',
+                        'The provided value is invalid.')
+                    ->allowEmptyString('latitude')
+                    ->add('longitude', 'custom', [
+                        'rule'    => [$this, 'checkGeoCoordinate'], //\App\Lib\Traits\CustomValidationTrait
+                        'message' => __('It is required to specify valid values for LONGITUDE and LATITUDE')
+                    ]);*/
 
         $validator
-            ->boolean('flap_detection_on_up')
-            ->requirePresence('flap_detection_on_up', 'create')
-            ->allowEmptyString('flap_detection_on_up', true)
+            ->allowEmptyString('flap_detection_on_up', function ($context){
+                return $this->checkFlapDetectionOptionsHost(null, $context);
+            })
             ->add('flap_detection_on_up', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
         $validator
-            ->boolean('flap_detection_on_down')
-            ->requirePresence('flap_detection_on_down', 'create')
-            ->allowEmptyString('flap_detection_on_down', true)
+            ->allowEmptyString('flap_detection_on_down', function ($context){
+                return $this->checkFlapDetectionOptionsHost(null, $context);
+            })
             ->add('flap_detection_on_down', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
-
         $validator
-            ->boolean('flap_detection_on_unreachable')
-            ->requirePresence('flap_detection_on_unreachable', 'create')
-            ->allowEmptyString('flap_detection_on_unreachable', true)
+            ->allowEmptyString('flap_detection_on_unreachable', function ($context){
+                return $this->checkFlapDetectionOptionsHost(null, $context);
+            })
             ->add('flap_detection_on_unreachable', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
+
 
         $validator
             ->numeric('low_flap_threshold')
@@ -1258,7 +1268,7 @@ class HostsTable extends Table {
      * @param int $id
      * @return array|\Cake\Datasource\EntityInterface
      */
-    public function getContactsAndContactgroupsById($id){
+    public function getContactsAndContactgroupsById($id) {
         $query = $this->find()
             ->select([
                 'Hosts.id'
