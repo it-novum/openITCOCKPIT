@@ -131,10 +131,6 @@ angular.module('openITCOCKPIT')
 
         //Fire on page load
         defaultFilter();
-        //Fire on page load
-        $scope.load();
-
-
 
         SortService.setCallback($scope.load);
 
