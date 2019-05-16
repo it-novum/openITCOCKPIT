@@ -109,6 +109,7 @@ class ServicechecksController extends AppController {
             return;
         }
 
+        session_write_close();
 
         //Service for .json requests
         $service = $this->Service->find('first', [
