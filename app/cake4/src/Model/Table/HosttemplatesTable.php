@@ -258,7 +258,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('flap_detection_on_up', 'create')
             ->allowEmptyString('flap_detection_on_up', false)
             ->add('flap_detection_on_up', 'custom', [
-                'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkFlapDetectionOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
@@ -267,7 +267,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('flap_detection_on_down', 'create')
             ->allowEmptyString('flap_detection_on_down', false)
             ->add('flap_detection_on_down', 'custom', [
-                'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkFlapDetectionOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
@@ -276,7 +276,7 @@ class HosttemplatesTable extends Table {
             ->requirePresence('flap_detection_on_unreachable', 'create')
             ->allowEmptyString('flap_detection_on_unreachable', false)
             ->add('flap_detection_on_unreachable', 'custom', [
-                'rule'    => [$this, 'checkFlapDetectionOptionsHost'], //\App\Lib\Traits\CustomValidationTrait
+                'rule'    => [$this, 'checkFlapDetectionOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 

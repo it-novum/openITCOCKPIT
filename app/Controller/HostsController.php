@@ -657,11 +657,17 @@ class HostsController extends AppController {
 
             $HostComparisonForSave = new HostComparisonForSave($this->request->data, $hosttemplate);
 
+            $dataForSave = $HostComparisonForSave->getDataForSaveForAllFields();
+            //Add required fields for validation
+            $dataForSave['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
+            $dataForSave['hosttemplate_flap_detection_on_up'] = $hosttemplate['Hosttemplate']['flap_detection_on_up'];
+            $dataForSave['hosttemplate_flap_detection_on_down'] = $hosttemplate['Hosttemplate']['flap_detection_on_down'];
+            $dataForSave['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
 
             //Update contact data
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             $hostEntity = $HostsTable->get($id);
-            $hostEntity = $HostsTable->patchEntity($hostEntity, $HostComparisonForSave->getDataForSaveForAllFields());
+            $hostEntity = $HostsTable->patchEntity($hostEntity, $dataForSave);
             $HostsTable->save($hostEntity);
             if ($hostEntity->hasErrors()) {
                 $this->response->statusCode(400);
