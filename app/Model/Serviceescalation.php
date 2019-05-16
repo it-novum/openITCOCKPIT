@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Serviceescalation
+ * @deprecated
+ */
 class Serviceescalation extends AppModel {
     var $hasAndBelongsToMany = [
         'Contactgroup' => [
@@ -147,16 +151,21 @@ class Serviceescalation extends AppModel {
         ],
     ];
 
-    /*
-    Custom validation rule for contact and/or contactgroup fields
-    */
+    /**
+     * @deprecated
+     * Custom validation rule for contact and/or contactgroup fields
+     */
     public function atLeastOne($data) {
         return !empty($this->data[$this->name]['Contact']) || !empty($this->data[$this->name]['Contactgroup']);
     }
 
-    /*
-    Custom validation rule first_notification
-    */
+    /**
+     * Custom validation rule first_notification
+     * @deprecated
+     * @param array $field
+     * @param null $compare_field
+     * @return bool
+     */
     public function firstNotificationBeforeLastNotification($field = [], $compare_field = null) {
         foreach ($field as $key => $value) {
             $v1 = $value;
@@ -171,12 +180,13 @@ class Serviceescalation extends AppModel {
         return true;
     }
 
-    /*
-    * Parse services array for serviceescalation
-    * @param Array Service-Ids
-    * @param Array Service-Ids exluded
-    * @return filtered array in format ['service_id' => 1..n, 'exluded' => 0/1]
-    */
+    /**
+     * @deprecated
+     * Parse services array for serviceescalation
+     * @param Array Service-Ids
+     * @param Array Service-Ids exluded
+     * @return filtered array in format ['service_id' => 1..n, 'exluded' => 0/1]
+     */
     public function parseServiceMembershipData($services = [], $services_exluded = []) {
         $service_memberships_for_serviceescalation = [];
         foreach ($services as $service_id) {
@@ -189,12 +199,13 @@ class Serviceescalation extends AppModel {
         return $service_memberships_for_serviceescalation;
     }
 
-    /*
-    * Parse servicegroups array for serviceescalation
-    * @param Array Servicegroup-Ids
-    * @param Array Servicegroup-Ids exluded
-    * @return filtered array in format ['servicegroup_id' => 1..n, 'exluded' => 0/1]
-    */
+    /**
+     * @deprecated
+     * Parse servicegroups array for serviceescalation
+     * @param Array Servicegroup-Ids
+     * @param Array Servicegroup-Ids exluded
+     * @return filtered array in format ['servicegroup_id' => 1..n, 'exluded' => 0/1]
+     */
     public function parseServicegroupMembershipData($servicegroups = [], $servicegroups_exluded = []) {
         $servicegroup_memberships_for_serviceescalation = [];
         foreach ($servicegroups as $servicegroup_id) {
