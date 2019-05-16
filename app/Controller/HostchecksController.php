@@ -89,6 +89,7 @@ class HostchecksController extends AppController {
             return;
         }
 
+        session_write_close();
 
         //Host for .json requests
         $host = $this->Host->find('first', [
