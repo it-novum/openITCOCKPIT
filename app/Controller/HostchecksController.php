@@ -56,6 +56,8 @@ class HostchecksController extends AppController {
             return;
         }
 
+        session_write_close();
+
         $host = $this->Host->find('first', [
             'fields'     => [
                 'Host.id',
