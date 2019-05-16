@@ -76,7 +76,7 @@
                                                        placeholder="<?php echo __('Filter by service name'); ?>"
                                                        ng-model="filter.Services.servicename"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-focus="serviceFocus=true;filter.ServicesExcluded.name='';serviceExcludeFocus=false;">
+                                                       ng-focus="serviceFocus=true;filter.ServicesExcluded.servicename='';serviceExcludeFocus=false;">
                                             </label>
                                         </div>
                                     </div>
@@ -97,9 +97,9 @@
                                         </span>
                                                 <input type="text" class="input-sm"
                                                        placeholder="<?php echo __('Filter by excluded service name'); ?>"
-                                                       ng-model="filter.ServicesExcluded.name"
+                                                       ng-model="filter.ServicesExcluded.servicename"
                                                        ng-model-options="{debounce: 500}"
-                                                       ng-focus="serviceExcludeFocus=true;filter.Services.name='';serviceFocus=false;">
+                                                       ng-focus="serviceExcludeFocus=true;filter.Services.servicename='';serviceFocus=false;">
                                             </label>
                                         </div>
                                     </div>
