@@ -2046,6 +2046,35 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['services']);
     }
 
+    public function loadServicesByStringCake4() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->query('selected');
+        $container_id = $this->request->query('container_id');
+
+        if (!$this->allowedByContainerId($container_id, false)) {
+            $this->render403();
+            return;
+        }
+
+        $ServicesFilter = new ServiceFilter($this->request);
+
+        $ServiceConditions = new ServiceConditions($ServicesFilter->indexFilter());
+        $ServiceConditions->setContainerIds($container_id);
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $services = Api::makeItJavaScriptAble(
+            $ServicesTable->getServicesForAngularCake4($ServiceConditions, $selected)
+        );
+
+        $this->set('services', $services);
+        $this->set('_serialize', ['services']);
+    }
+
     /**
      * @deprecated
      */
@@ -2064,12 +2093,15 @@ class ServicesController extends AppController {
         $ServiceCondition->setContainerIds($this->MY_RIGHTS);
         $ServiceCondition->includeDisabled();
 
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
         $services = Api::makeItJavaScriptAble(
-            $this->Service->getServicesForAngular($ServiceCondition, $selected)
+            $ServicesTable->getServicesForAngular($ServiceCondition, $selected)
         );
 
 
-        $this->set(compact(['services']));
+        $this->set('services', $services);
         $this->set('_serialize', ['services']);
     }
 

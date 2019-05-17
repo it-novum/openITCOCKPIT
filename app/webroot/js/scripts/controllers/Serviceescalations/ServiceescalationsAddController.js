@@ -1,140 +1,178 @@
 angular.module('openITCOCKPIT')
-    .controller('ServiceescalationsAddController', function($scope, $http, $state, NotyService, RedirectService) {
+    .controller('ServiceescalationsAddController', function($scope, $http, $state, NotyService, RedirectService){
 
         $scope.post = {
             Serviceescalation: {
-                uuid: null,
                 container_id: null,
+                first_notification: 1,
+                last_notification: 5,
+                notification_interval: 7200,
                 timeperiod_id: null,
-                first_notification: null,
-                last_notification: null,
-                notification_interval: null,
-                escalate_on_recovery: 0,
-                escalate_on_warning: 0,
-                escalate_on_critical: 0,
-                escalate_on_unknown: 0,
-                Service: [],
-                Service_excluded: [],
-                Servicegroup: [],
-                Servicegroup_excluded: [],
-                Contact: [],
-                Contactgroup: [],
+                escalate_on_recovery: 1,
+                escalate_on_warning: 1,
+                escalate_on_critical: 1,
+                escalate_on_unknown: 1,
+                contacts: {
+                    _ids: []
+                },
+                contactgroups: {
+                    _ids: []
+                },
+                services: {
+                    _ids: []
+                },
+                services_excluded: {
+                    _ids: []
+                },
+                servicegroups: {
+                    _ids: []
+                },
+                servicegroups_excluded: {
+                    _ids: []
+                }
             }
         };
+        $scope.containers = {};
 
-        $scope.deleteUrl = "/serviceescalations/delete/" + $scope.post.Serviceescalation.id + ".json?angular=true";
-        $scope.successState = 'ServiceescalationsIndex';
+        $scope.load = function(){
+            var params = {
+                'angular': true
+            };
 
-        $scope.load = function() {
-
-            $http.get("/serviceescalations/add.json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result) {
+            $http.get("/serviceescalations/loadContainers.json", {
+                params: params
+            }).then(function(result){
                 $scope.containers = result.data.containers;
+                $scope.init = false;
             });
-
         };
 
-        $scope.loadElementsByContainerId = function() {
+        $scope.loadElementsByContainerId = function(){
             $http.get("/serviceescalations/loadElementsByContainerId/" + $scope.post.Serviceescalation.container_id + ".json", {
                 params: {
                     'angular': true
                 }
-            }).then(function(result) {
+            }).then(function(result){
                 $scope.services = result.data.services;
-                $scope.servicesExcluded = result.data.servicesExcluded;
+                $scope.services_excluded = result.data.servicesExcluded;
                 $scope.servicegroups = result.data.servicegroups;
-                $scope.servicegroupsExcluded = result.data.servicegroupsExcluded;
+                $scope.servicegroups_excluded = result.data.servicegroupsExcluded;
                 $scope.timeperiods = result.data.timeperiods;
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
-
-                $scope.processChosenExcludedServices();
-                $scope.processChosenServices();
-                $scope.processChosenExcludedServicegroups();
-                $scope.processChosenServicegroups();
             });
         };
 
-        $scope.submit = function() {
-            $http.post("/serviceescalations/add/.json?angular=true",
-                $scope.post
-            ).then(function(result) {
-                NotyService.genericSuccess();
-                RedirectService.redirectWithFallback('ServiceescalationsIndex');
-                NotyService.scrollTop();
-            }, function errorCallback (result) {
-                NotyService.genericError();
+        $scope.loadServices = function(searchString){
+            if($scope.post.Serviceescalation.container_id != null){
+                $http.get("/services/loadServicesByStringCake4.json", {
+                    params: {
+                        'angular': true,
+                        'containerId': $scope.post.Serviceescalation.container_id,
+                        'filter[Services.servicename]': searchString,
+                        'selected[]': $scope.post.Serviceescalation.services._ids
+                    }
+                }).then(function(result){
+                    $scope.services = result.data.services;
+                });
+            }
+        };
 
-                if (result.data.hasOwnProperty('error')) {
+        $scope.loadExcludedServices = function(searchString){
+            if($scope.post.Serviceescalation.container_id != null){
+                $http.get("/services/loadServicesByStringNew.json", {
+                    params: {
+                        'angular': true,
+                        'containerId': $scope.post.Serviceescalation.container_id,
+                        'filter[Services.name]': searchString,
+                        'selected[]': $scope.post.Serviceescalation.services_excluded._ids
+                    }
+                }).then(function(result){
+                    $scope.services_excluded = result.data.services;
+                });
+            }
+        };
+
+        $scope.submit = function(){
+            $http.post("/serviceescalations/add.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                var serviceescalatingEditUrl = $state.href('ServiceescalationsEdit', {id: result.data.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + serviceescalatingEditUrl + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+                RedirectService.redirectWithFallback('ServiceescalationsIndex');
+            }, function errorCallback(result){
+                NotyService.genericError();
+                if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
             });
         };
 
 
-        $scope.processChosenServices = function() {
-            for (var key in $scope.services) {
-                if (in_array($scope.services[key].key, $scope.post.Serviceescalation.Service_excluded)) {
+        $scope.processChosenServices = function(){
+            for(var key in $scope.services){
+                if(in_array($scope.services[key].key, $scope.post.Serviceescalation.services_excluded._ids)){
                     $scope.services[key].disabled = true;
-                } else {
+                }else{
                     $scope.services[key].disabled = false;
                 }
             }
         };
 
-        $scope.processChosenExcludedServices = function() {
-            for (var key in $scope.servicesExcluded) {
-                if (in_array($scope.servicesExcluded[key].key, $scope.post.Serviceescalation.Service)) {
-                    $scope.servicesExcluded[key].disabled = true;
-                } else {
-                    $scope.servicesExcluded[key].disabled = false;
+        $scope.processChosenExcludedServices = function(){
+            for(var key in $scope.services_excluded){
+                if(in_array($scope.services_excluded[key].key, $scope.post.Serviceescalation.services._ids)){
+                    $scope.services_excluded[key].disabled = true;
+                }else{
+                    $scope.services_excluded[key].disabled = false;
                 }
             }
         };
 
-        $scope.processChosenServicegroups = function() {
-            for (var key in $scope.servicegroups) {
-                if (in_array($scope.servicegroups[key].key, $scope.post.Serviceescalation.Servicegroup_excluded)) {
+        $scope.processChosenServicegroups = function(){
+            for(var key in $scope.servicegroups){
+                if(in_array($scope.servicegroups[key].key, $scope.post.Serviceescalation.servicegroups_excluded._ids)){
                     $scope.servicegroups[key].disabled = true;
-                } else {
+                }else{
                     $scope.servicegroups[key].disabled = false;
                 }
             }
         };
 
-        $scope.processChosenExcludedServicegroups = function() {
-            for (var key in $scope.servicegroupsExcluded) {
-                if (in_array($scope.servicegroupsExcluded[key].key, $scope.post.Serviceescalation.Servicegroup)) {
-                    $scope.servicegroupsExcluded[key].disabled = true;
-                } else {
-                    $scope.servicegroupsExcluded[key].disabled = false;
+        $scope.processChosenExcludedServicegroups = function(){
+            for(var key in $scope.servicegroups_excluded){
+                if(in_array($scope.servicegroups_excluded[key].key, $scope.post.Serviceescalation.servicegroups._ids)){
+                    $scope.servicegroups_excluded[key].disabled = true;
+                }else{
+                    $scope.servicegroups_excluded[key].disabled = false;
                 }
             }
         };
 
 
-        $scope.$watch('post.Serviceescalation.container_id', function() {
-            if (typeof $scope.post.Serviceescalation != "undefined" && $scope.post.Serviceescalation.container_id != null) {
+        $scope.$watch('post.Serviceescalation.container_id', function(){
+            if($scope.post.Serviceescalation.container_id != null){
                 $scope.loadElementsByContainerId();
             }
         }, true);
 
-        $scope.$watch('post.Serviceescalation.Service', function() {
+        $scope.$watch('post.Serviceescalation.services._ids', function(){
             $scope.processChosenExcludedServices();
         }, true);
 
-        $scope.$watch('post.Serviceescalation.Service_excluded', function() {
+        $scope.$watch('post.Serviceescalation.services_excluded._ids', function(){
             $scope.processChosenServices();
         }, true);
 
-        $scope.$watch('post.Serviceescalation.Servicegroup', function() {
+        $scope.$watch('post.Serviceescalation.servicegroups._ids', function(){
             $scope.processChosenExcludedServicegroups();
         }, true);
 
-        $scope.$watch('post.Serviceescalation.Servicegroup_excluded', function() {
+        $scope.$watch('post.Serviceescalation.servicegroups_excluded._ids', function(){
             $scope.processChosenServicegroups();
         }, true);
 

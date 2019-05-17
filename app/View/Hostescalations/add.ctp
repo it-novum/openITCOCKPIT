@@ -239,7 +239,7 @@ Once a host or service escalated, contacts, contact group and notification optio
                             </label>
                             <interval-input-directive
                                     interval="post.Hostescalation.notification_interval"></interval-input-directive>
-                            <div class="col col-xs-12">
+                            <div class="col-xs-12 col-lg-offset-2">
                                 <div ng-repeat="error in errors.notification_interval">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>

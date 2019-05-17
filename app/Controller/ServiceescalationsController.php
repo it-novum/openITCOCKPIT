@@ -275,7 +275,7 @@ class ServiceescalationsController extends AppController {
         $servicegroups = Api::makeItJavaScriptAble($servicegroups);
         $servicegroupsExcluded = $servicegroups;
 
-        $services = $ServicesTable->getServicesByContainerId($containerIds, 'list');
+        $services = $ServicesTable->getServicesByContainerId($containerIds, 'all');
         $services = Api::makeItJavaScriptAble($services);
         $servicesExcluded = $services;
 

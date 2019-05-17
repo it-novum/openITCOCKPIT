@@ -356,7 +356,7 @@ div.default .chosen-container-multi .chosen-choices li.search-choice {
     border-radius: 3px;
     background-color: #adadad !important;
     border: 1px solid #a0a0a0;
-    color:#fff !important;
+    color: #fff !important;
     font-size: 14px;
     line-height: 1.428571429;
     cursor: default;
@@ -2303,7 +2303,7 @@ input[type=text]:focus + .input-group-addon-no-focus {
     font-size: 14px;
     font-weight: normal;
     line-height: 1.428571429;
-    text-align: center;
+    text-align: left;
     white-space: nowrap;
     vertical-align: middle;
     cursor: pointer;
@@ -2374,12 +2374,17 @@ input[type=text]:focus + .input-group-addon-no-focus {
     padding: 1px 2px 1px 1px;
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
+    width: 12px;
 }
 
 .label-breadcrumb .label:last-child {
     padding: 1px 5px 1px 10px;
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
+    width: 80%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .label-group .label-xs {
@@ -2422,6 +2427,7 @@ input[type=text]:focus + .input-group-addon-no-focus {
     position: relative;
     display: inline-block;
     vertical-align: middle;
+    width: 100%;
 }
 
 .label-group > .label {
@@ -2445,7 +2451,7 @@ input[type=text]:focus + .input-group-addon-no-focus {
     color: #333;
 }
 
-.label-light.has-error{
+.label-light.has-error {
     color: #a94442;
 }
 
@@ -2486,12 +2492,13 @@ input[type=text]:focus + .input-group-addon-no-focus {
     text-align: left;
 }
 
-.bordered-vertical-on-left{
-    border-left:5px inset #428bca;
+.bordered-vertical-on-left {
+    border-left: 5px inset #428bca;
     border-radius: 7px;
 }
-.dropzoneStyle{
-    min-height:175px;
+
+.dropzoneStyle {
+    min-height: 175px;
     padding: 15px;
 }
 
@@ -2503,3 +2510,4 @@ input[type=text]:focus + .input-group-addon-no-focus {
 .fake-chosen-select div {
     top: 5px!important;
 }
+

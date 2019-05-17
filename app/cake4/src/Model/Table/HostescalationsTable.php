@@ -159,6 +159,11 @@ class HostescalationsTable extends Table {
             ->requirePresence('last_notification')
             ->allowEmptyString('last_notification', false);
 
+        $validator
+            ->integer('notification_interval')
+            ->greaterThan('notification_interval', 0)
+            ->requirePresence('notification_interval')
+            ->allowEmptyString('notification_interval', false);
 
         $validator
             ->boolean('escalate_on_recovery')

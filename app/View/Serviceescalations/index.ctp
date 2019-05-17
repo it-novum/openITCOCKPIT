@@ -273,7 +273,7 @@
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="service in serviceescalation.services">
+                                            <li ng-repeat="service in serviceescalation.services" title="{{service.servicename}}">
                                                 <div class="label-group label-breadcrumb label-breadcrumb-success padding-2">
                                                     <label class="label label-success label-xs">
                                                         <i class="fa fa-plus" aria-hidden="true"></i>
@@ -297,7 +297,7 @@
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="service in serviceescalation.services_excluded">
+                                            <li ng-repeat="service in serviceescalation.services_excluded" title="{{service.servicename}}">
                                                 <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
                                                     <label class="label label-danger label-xs">
                                                         <i class="fa fa-minus" aria-hidden="true"></i>

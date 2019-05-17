@@ -247,7 +247,7 @@ $config = [
             'Hostescalations'       => [
                 'index' => ['view'],
                 'add'   => ['loadContainers', 'loadElementsByContainerId'],
-                'edit'  => ['loadContainers', 'loadElementsByContainerId'],
+                'edit'  => ['loadContainers', 'loadElementsByContainerId']
             ],
             'Hostgroups'            => [
                 'index'    => ['listToPdf', 'view', 'loadHostgroupsByString', 'loadHosgroupsByContainerId'],
@@ -285,8 +285,8 @@ $config = [
             ],
             'Serviceescalations'    => [
                 'index' => ['view'],
-                'add'   => ['loadElementsByContainerId'],
-                'edit'  => ['loadElementsByContainerId'],
+                'add'   => ['loadContainers', 'loadElementsByContainerId'],
+                'edit'  => ['loadContainers', 'loadElementsByContainerId']
             ],
             'Servicegroups'         => [
                 'index'    => ['listToPdf', 'view', 'loadServicegroupsByContainerId', 'loadServicegroupsByString'],
@@ -297,7 +297,7 @@ $config = [
             ],
             'Services'              => [
                 'deactivate'  => ['mass_deactivate'],
-                'index'       => ['serviceByHostId', 'listToPdf', 'view', 'loadServicesByContainerId', 'loadServicesByString'],
+                'index'       => ['serviceByHostId', 'listToPdf', 'view', 'loadServicesByContainerId', 'loadServicesByString', 'loadServicesByStringCake4'],
                 'browser'     => ['servicesByHostId', 'longOutputByUuid'],
                 'add'         => ['loadElementsByHostId', 'loadServicetemplate', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments'],
                 'edit'        => ['loadElementsByHostId', 'loadServicetemplate', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments'],
