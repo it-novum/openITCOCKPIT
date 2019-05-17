@@ -2340,7 +2340,7 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['services']);
     }
 
-    public function loadServicesByStringNew() {
+    public function loadServicesByStringCake4() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2362,7 +2362,7 @@ class ServicesController extends AppController {
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         $services = Api::makeItJavaScriptAble(
-            $ServicesTable->getServicesForAngular($ServiceConditions, $selected)
+            $ServicesTable->getServicesForAngularCake4($ServiceConditions, $selected)
         );
 
         $this->set('services', $services);
@@ -2387,12 +2387,15 @@ class ServicesController extends AppController {
         $ServiceCondition->setContainerIds($this->MY_RIGHTS);
         $ServiceCondition->includeDisabled();
 
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
         $services = Api::makeItJavaScriptAble(
-            $this->Service->getServicesForAngular($ServiceCondition, $selected)
+            $ServicesTable->getServicesForAngular($ServiceCondition, $selected)
         );
 
 
-        $this->set(compact(['services']));
+        $this->set('services', $services);
         $this->set('_serialize', ['services']);
     }
 
