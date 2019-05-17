@@ -327,7 +327,7 @@
                                                         <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                                     </label>
                                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                        <a href="/hosts/edit/{{host.id}}"
+                                                        <a ui-sref="HostsEdit({id:host.id})"
                                                            class="label label-light label-xs">
                                                             {{host.name}}
                                                         </a>
@@ -351,7 +351,7 @@
                                                         <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
                                                     </label>
                                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                        <a href="/hosts/edit/{{host.id}}"
+                                                        <a ui-sref="HostsEdit({id:host.id})"
                                                            class="label label-light label-xs">
                                                             {{host.name}}
                                                         </a>

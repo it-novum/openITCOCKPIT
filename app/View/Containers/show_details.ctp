@@ -206,7 +206,7 @@
                         <tr ng-repeat="host in containerDetails.Host">
                             <td>
                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                    <a href="/hosts/edit/{{ host.id }}"
+                                    <a ui-sref="HostsEdit({id:host.id})"
                                        target="_blank">
                                         {{ host.name }}
                                     </a>
@@ -218,7 +218,7 @@
                             <td>
                                 <div class="btn-group" ng-if="host.id">
                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                        <a href="/hosts/edit/{{host.id}}"
+                                        <a ui-sref="HostsEdit({id:host.id})"
                                            class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
                                         </a>
                                     <?php else: ?>
@@ -232,7 +232,7 @@
                                     <ul class="dropdown-menu pull-right" id="menuHack-host-{{host.id}}">
                                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                             <li>
-                                                <a href="/hosts/edit/{{host.id}}">
+                                                <a ui-sref="HostsEdit({id:host.id})">
                                                     <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                 </a>
                                             </li>

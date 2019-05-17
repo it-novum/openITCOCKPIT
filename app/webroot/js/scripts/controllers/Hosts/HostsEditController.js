@@ -337,9 +337,15 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                $state.go('HostsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                if($state.previous.name !== "" && $state.previous.url !== "^"){
+                    $state.go($state.previous.name, $state.previous.params).then(function(){
+                        NotyService.scrollTop();
+                    });
+                }else{
+                    $state.go('HostsIndex').then(function(){
+                        NotyService.scrollTop();
+                    });
+                }
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){

@@ -91,7 +91,7 @@
                             <tr ng-repeat="host in contactWithRelations.Host">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                        <a href="/hosts/edit/{{ host.id }}" target="_blank">
+                                        <a ui-sref="HostsEdit({id:host.id})" target="_blank">
                                             {{ host.name }} ({{ host.address }})
                                         </a>
                                     <?php else: ?>

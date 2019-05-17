@@ -63,7 +63,7 @@
    rel="tooltip" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-external-link fa-lg"></i></a>
 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
     <a ng-if="serviceBrowserMenu.allowEdit"
-       href="/hosts/edit/{{ serviceBrowserMenu.hostId }}/_controller:services/_action:browser/_id:{{ serviceBrowserMenu.hostId }}/"
+       ui-sref="HostsEdit({id:serviceBrowserMenu.hostId})"
        data-original-title="<?php echo _('Edit host'); ?>"
        data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></a>
 <?php endif; ?>

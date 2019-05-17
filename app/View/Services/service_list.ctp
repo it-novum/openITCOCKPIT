@@ -64,11 +64,11 @@
                 <div class="col col-xs-4" style="padding-left:0;">
                     <div class="btn-group pull-left" style="padding-top: 2px;">
                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                            <a href="/hosts/edit/{{ host.Host.id }}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/"
+                            <a ui-sref="HostsEdit({id:host.Host.id})"
                                ng-show="host.Host.allow_edit"
                                class="btn btn-default">
                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                            </a>
+                            </>
                         <?php else: ?>
                             <a href="javascript:void(0);" class="btn btn-default">
                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -86,7 +86,7 @@
                             <?php endif; ?>
                             <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                 <li>
-                                    <a href="/hosts/edit/{{ host.Host.id }}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/"
+                                    <a ui-sref="HostsEdit({id:host.Host.id})"
                                        ng-show="host.Host.allow_edit">
                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                     </a>

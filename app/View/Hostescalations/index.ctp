@@ -270,7 +270,7 @@
                                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                                     </label>
                                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                        <a href="/hosts/edit/{{host.id}}"
+                                                        <a ui-sref="HostsEdit({id:host.id})"
                                                            class="label label-light label-xs">
                                                             {{host.name}}
                                                         </a>
@@ -294,7 +294,7 @@
                                                         <i class="fa fa-minus" aria-hidden="true"></i>
                                                     </label>
                                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                        <a href="/hosts/edit/{{host.id}}"
+                                                        <a ui-sref="HostsEdit({id:host.id})"
                                                            class="label label-light label-xs">
                                                             {{host.name}}
                                                         </a>

@@ -66,9 +66,9 @@
 <?php /*endif;*/ ?>
 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
     <a ng-if="hostBrowserMenu.allowEdit"
-       href="/hosts/edit/{{ hostBrowserMenu.hostId }}/_controller:hosts/_action:browser/_id:{{ hostBrowserMenu.hostId }}/"
+       ui-sref="HostsEdit({id:hostBrowserMenu.hostId})"
        data-original-title="<?php echo __('Edit host'); ?>"
-       data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></a>
+       data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></>
 <?php endif; ?>
 <div class="btn-group">
     <a href="javascript:void(0);" class="btn btn-default btn-sm"><?php echo __('More'); ?></a>
