@@ -8,6 +8,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 
 /**
@@ -704,6 +705,69 @@ class ServicesTable extends Table {
 
         return $result;
     }
+
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @param string $index
+     * @param array $where
+     * @return array
+     */
+    public function getServicesByContainerId($containerIds = [], $type = 'all', $index = 'id', $where = []) {
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $containerIds = array_unique($containerIds);
+
+        $_where = [
+            'Hosts.disabled' => 0
+        ];
+
+        $where = Hash::merge($_where, $where);
+
+        $query = $this->find();
+        $query
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Servicetemplates')
+            ->select([
+            'Services.' . $index,
+                'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+                'Services.name'
+        ]);
+        print_r((string)$query);
+        die('END ');
+        return;
+        $query->where($where);
+        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($containerIds) {
+            if (!empty($containerIds)) {
+                return $q->where(['HostsToContainersSharing.id IN' => $containerIds]);
+            }
+            return $q;
+        });
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
+        $query->order([
+            'Hosts.name' => 'asc'
+        ]);
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $result;
+        }
+
+        $list = [];
+        foreach ($result as $row) {
+            $list[$row[$index]] = $row['name'];
+        }
+
+        return $list;
+    }
+
 
     /**
      * @param array $dataToParse

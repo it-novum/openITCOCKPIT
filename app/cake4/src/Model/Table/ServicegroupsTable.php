@@ -109,6 +109,17 @@ class ServicegroupsTable extends Table {
         return $rules;
     }
 
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @param string $index
+     * @return array|\Cake\ORM\Query
+     * @deprecated Use self::getServicegroupsByContainerId()
+     */
+    public function servicegroupsByContainerId($containerIds = [], $type = 'all', $index = 'container_id') {
+        return $this->getServicegroupsByContainerId($containerIds, $type, $index);
+    }
+
 
     /**
      * @param array|int $containerIds
