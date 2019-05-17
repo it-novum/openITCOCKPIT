@@ -76,18 +76,19 @@
                                                 <?php echo __('Host'); ?>
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
-                                                <select
-                                                        id="ServiceHosts"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="hosts"
-                                                        callback="loadHosts"
-                                                        ng-options="host.key as host.value for host in hosts"
-                                                        ng-model="post.Service.host_id">
-                                                </select>
-                                                <div ng-show="post.Service.host_id < 1" class="warning-glow">
-                                                    <?php echo __('Please select a host.'); ?>
+
+                                                <!-- Services can not be moved to a different host -->
+                                                <!-- For better design we use a fake select box to display the host name -->
+                                                <div class="chosen-container chosen-container-single chosen-disabled"
+                                                     style="width: 100%;">
+                                                    <a class="chosen-single fake-chosen-select">
+                                                        <span>
+                                                            {{host.Host.name}}
+                                                        </span>
+                                                        <div><b></b></div>
+                                                    </a>
                                                 </div>
+
                                                 <div ng-repeat="error in errors.host_id">
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>
@@ -101,18 +102,37 @@
                                                 <?php echo __('Service template'); ?>
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
-                                                <select
-                                                        id="ServiceServicetemplateSelect"
-                                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                                        class="form-control"
-                                                        chosen="servicetemplates"
-                                                        ng-options="servicetemplate.key as servicetemplate.value for servicetemplate in servicetemplates"
-                                                        ng-model="post.Service.servicetemplate_id">
-                                                </select>
-                                                <div ng-show="post.Service.host_id > 0 && post.Service.servicetemplate_id < 1"
-                                                     class="warning-glow">
-                                                    <?php echo __('Please select a service template.'); ?>
+
+                                                <div ng-if="post.Service.service_type !== <?php echo MK_SERVICE; ?>">
+                                                    <select
+                                                            id="ServiceServicetemplateSelect"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            chosen="servicetemplates"
+                                                            ng-options="servicetemplate.key as servicetemplate.value for servicetemplate in servicetemplates"
+                                                            ng-model="post.Service.servicetemplate_id">
+                                                    </select>
+                                                    <div ng-show="post.Service.host_id > 0 && post.Service.servicetemplate_id < 1"
+                                                         class="warning-glow">
+                                                        <?php echo __('Please select a service template.'); ?>
+                                                    </div>
                                                 </div>
+
+                                                <div ng-if="post.Service.service_type == <?php echo MK_SERVICE; ?>">
+                                                    <!-- Service template of MK_SERVICES can't be changed -->
+                                                    <!-- For better design we use a fake select box to display the service template name -->
+                                                    <div class="chosen-container chosen-container-single chosen-disabled"
+                                                         style="width: 100%;">
+                                                        <a class="chosen-single fake-chosen-select">
+                                                        <span>
+                                                            {{servicetemplate.Servicetemplate.template_name}}
+                                                        </span>
+                                                            <div><b></b></div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+
                                                 <div ng-repeat="error in errors.servicetemplate_id">
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>
@@ -124,11 +144,32 @@
                                                 <?php echo __('Service name'); ?>
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
-                                                <input
-                                                        id="ServiceName"
-                                                        class="form-control"
-                                                        type="text"
-                                                        ng-model="post.Service.name">
+                                                <div ng-if="post.Service.service_type !== <?php echo MK_SERVICE; ?>">
+                                                    <div class="input-group" style="width: 100%;">
+                                                        <input
+                                                                id="ServiceName"
+                                                                class="form-control"
+                                                                type="text"
+                                                                ng-model="post.Service.name">
+
+                                                        <template-diff ng-show="post.Service.servicetemplate_id"
+                                                                       value="post.Service.name"
+                                                                       template-value="servicetemplate.Servicetemplate.name"></template-diff>
+                                                    </div>
+                                                </div>
+
+
+                                                <div ng-if="post.Service.service_type == <?php echo MK_SERVICE; ?>">
+                                                    <div class="input-group" style="width: 100%;">
+                                                        <input class="form-control" type="text" disabled="disabled"
+                                                               readonly="readonly"
+                                                               ng-model="post.Service.name">
+                                                    </div>
+                                                    <div class="help-block">
+                                                        <?php echo __('The name of CHECK_MK services can\'t be changed.'); ?>
+                                                    </div>
+                                                </div>
+
                                                 <div ng-repeat="error in errors.name">
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>
@@ -304,7 +345,7 @@
 
 
                                         <div class="col-xs-12 col-lg-10 smart-form">
-                                            <label class="checkbox small-checkbox-label no-required">
+                                            <label class="checkbox no-required no-padding no-margin label-default-off">
                                                 <input type="checkbox" name="checkbox"
                                                        id="freshnessChecksEnabled"
                                                        ng-true-value="1"
@@ -318,9 +359,9 @@
                                                                       template-value="servicetemplate.Servicetemplate.freshness_checks_enabled">
                                                 </template-diff-button>
                                             </div>
-                                            <div class="help-block">
-                                                <?php echo __('If enabled the system will check that passive checks for this service will be received as frequently as defined.'); ?>
-                                            </div>
+                                        </div>
+                                        <div class="col col-xs-12 col-md-offset-2 help-block">
+                                            <?php echo __('If enabled the system will check that passive checks for this service will be received as frequently as defined.'); ?>
                                         </div>
                                     </div>
 
@@ -533,6 +574,66 @@
                                             <div ng-repeat="error in errors.notification_interval">
                                                 <div class="help-block text-danger">{{ error }}</div>
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group"
+                                         ng-show="data.areContactsInheritedFromHosttemplate || data.areContactsInheritedFromHost || data.areContactsInheritedFromServicetemplate">
+                                        <label class="col-xs-12 col-lg-2 control-label" for="resetContacts">
+                                            <?php echo __('Disable inheritance'); ?>
+                                        </label>
+
+                                        <div class="col-xs-12 col-lg-1 smart-form">
+                                            <label class="checkbox no-required no-padding no-margin label-default-off">
+                                                <input type="checkbox" name="checkbox"
+                                                       id="resetContacts"
+                                                       ng-model="data.disableInheritance">
+                                                <i class="checkbox-primary"></i>
+                                            </label>
+                                        </div>
+                                        <div
+                                                class="col col-xs-12 col-md-offset-2 help-block text-info"
+                                                ng-class="{'strikethrough': data.disableInheritance}">
+                                            <?php echo __('Contacts and contact groups got inherited from'); ?>
+
+                                            <span
+                                                    ng-class="{'bold': data.areContactsInheritedFromServicetemplate}">
+                                                <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                                    <a ui-sref="ServicetemplatesEdit({id: post.Service.servicetemplate_id})">
+                                                        <?php echo __('service template'); ?>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <?php echo __('service template'); ?>
+                                                <?php endif; ?>
+                                            </span>
+
+                                            <span ng-show="!data.areContactsInheritedFromServicetemplate"
+                                                  ng-class="{'bold': data.areContactsInheritedFromHost}">
+
+                                                <i class="fa fa-angle-double-right"></i>
+
+                                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                                    <a ui-sref="HostsEdit({id: host.Host.id})">
+                                                        <?php echo __('host'); ?>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <?php echo __('host'); ?>
+                                                <?php endif; ?>
+                                            </span>
+
+                                            <span ng-show="data.areContactsInheritedFromHosttemplate" class="bold">
+
+                                                <i class="fa fa-angle-double-right"></i>
+
+                                                <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                                    <a ui-sref="HosttemplatesEdit({id: host.Host.hosttemplate_id})">
+                                                        <?php echo __('host template'); ?>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <?php echo __('host template'); ?>
+                                                <?php endif; ?>
+                                            </span>
+                                            .
                                         </div>
                                     </div>
 

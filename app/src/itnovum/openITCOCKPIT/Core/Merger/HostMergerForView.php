@@ -27,7 +27,7 @@ namespace itnovum\openITCOCKPIT\Core\Merger;
 use itnovum\openITCOCKPIT\Core\CustomVariableMerger;
 
 /**
- * Class HostComparison
+ * Class HostMergerForView
  *
  * Compares a given host with a given host template
  * Replace null values in $host array with the corresponding value of $hosttemplate

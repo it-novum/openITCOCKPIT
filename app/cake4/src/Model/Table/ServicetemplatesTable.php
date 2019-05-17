@@ -758,7 +758,7 @@ class ServicetemplatesTable extends Table {
             'Servicetemplates.container_id IN' => $containerIds,
         ];
         if (!$ignoreType) {
-            $conditions['Servicetemplates.servicetemplatetype_id'] = $servicetemplateType;
+            $where['Servicetemplates.servicetemplatetype_id'] = $servicetemplateType;
         }
 
 

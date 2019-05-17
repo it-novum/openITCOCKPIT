@@ -296,9 +296,8 @@
                                             <?php echo __('Enable freshness check'); ?>
                                         </label>
 
-
                                         <div class="col-xs-12 col-lg-10 smart-form">
-                                            <label class="checkbox small-checkbox-label no-required">
+                                            <label class="checkbox no-required no-padding no-margin label-default-off">
                                                 <input type="checkbox" name="checkbox"
                                                        id="freshnessChecksEnabled"
                                                        ng-true-value="1"
@@ -312,9 +311,9 @@
                                                                       template-value="servicetemplate.Servicetemplate.freshness_checks_enabled">
                                                 </template-diff-button>
                                             </div>
-                                            <div class="help-block">
-                                                <?php echo __('If enabled the system will check that passive checks for this service will be received as frequently as defined.'); ?>
-                                            </div>
+                                        </div>
+                                        <div class="col col-xs-12 col-md-offset-2 help-block">
+                                            <?php echo __('If enabled the system will check that passive checks for this service will be received as frequently as defined.'); ?>
                                         </div>
                                     </div>
 

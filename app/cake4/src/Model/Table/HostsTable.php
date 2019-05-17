@@ -1020,6 +1020,31 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @return array
+     */
+    public function getHostForServiceEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+            ])
+            ->disableHydration()
+            ->first();
+
+        $host = $query;
+        $host['hosts_to_containers_sharing'] = [
+            '_ids' => Hash::extract($query, 'hosts_to_containers_sharing.{n}.id')
+        ];
+
+        return [
+            'Host' => $host
+        ];
+    }
+
+    /**
      * @param HostConditions $HostConditions
      * @param int|array $selected
      * @return array|null

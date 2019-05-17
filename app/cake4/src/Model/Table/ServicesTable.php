@@ -8,6 +8,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 
 /**
@@ -800,5 +801,54 @@ class ServicesTable extends Table {
 
         return $extDataForChangelog;
     }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Services.id' => $id]);
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getServiceForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Services.id' => $id
+            ])
+            ->contain([
+                'Contactgroups',
+                'Contacts',
+                'Servicegroups',
+                'Customvariables',
+                'Servicecommandargumentvalues'      => [
+                    'Commandarguments'
+                ],
+                'Serviceeventcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+        $service = $query;
+        $service['servicegroups'] = [
+            '_ids' => Hash::extract($query, 'servicegroups.{n}.id')
+        ];
+        $service['contacts'] = [
+            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+        ];
+        $service['contactgroups'] = [
+            '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
+        ];
+
+        return [
+            'Service' => $service
+        ];
+    }
+
 
 }

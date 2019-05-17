@@ -1,5 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('ServicesEditController', function($scope, $http, SudoService, $state, NotyService, $stateParams){
+        $scope.init = true;
 
         $scope.id = $stateParams.id;
 
@@ -14,8 +15,6 @@ angular.module('openITCOCKPIT')
         $scope.post = {
             Service: {}
         };
-
-        $scope.init = true;
 
         var setValuesFromServicetemplate = function(){
             var fields = [
@@ -119,7 +118,6 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.commands = result.data.commands;
                 $scope.eventhandlerCommands = result.data.eventhandlerCommands;
-                $scope.init = false;
             });
         };
 
@@ -138,7 +136,6 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.post.Service.servicecommandargumentvalues = result.data.servicecommandargumentvalues;
-                $scope.init = false;
             });
         };
 
@@ -158,18 +155,60 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.post.Service.serviceeventcommandargumentvalues = result.data.serviceeventhandlercommandargumentvalues;
-                $scope.init = false;
+            });
+        };
+
+        $scope.loadService = function(){
+            $http.get("/services/edit/" + $scope.id + ".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.post.Service = result.data.service.Service;
+                $scope.servicetemplate = result.data.servicetemplate;
+                $scope.host = result.data.host;
+
+                $scope.data.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;
+                $scope.data.areContactsInheritedFromHost = result.data.areContactsInheritedFromHost;
+                $scope.data.areContactsInheritedFromServicetemplate = result.data.areContactsInheritedFromServicetemplate;
+
+                if(
+                    $scope.data.areContactsInheritedFromHosttemplate ||
+                    $scope.data.areContactsInheritedFromHost ||
+                    $scope.data.areContactsInheritedFromServicetemplate
+                ){
+                    $('#ContactBlocker').block({
+                        message: null,
+                        overlayCSS: {
+                            opacity: 0.5,
+                            cursor: 'not-allowed',
+                            'background-color': 'rgb(255, 255, 255)'
+                        }
+                    });
+                }
+
+                jQuery(function(){
+                    $('.tagsinput').tagsinput();
+                });
+
+                $scope.loadElements();
+
+                setTimeout(function(){
+                    $scope.init = false;
+                }, 250);
+
             });
         };
 
         $scope.loadElements = function(){
             var hostId = $scope.post.Service.host_id;
+            var serviceId = $scope.id;
             //May be triggered by watch from "Create another"
             if(hostId === 0){
                 return;
             }
 
-            $http.post("/services/loadElementsByHostId/" + hostId + ".json?angular=true", {}).then(function(result){
+            $http.post("/services/loadElementsByHostId/" + hostId + "/" + serviceId + ".json?angular=true", {}).then(function(result){
                 $scope.servicetemplates = result.data.servicetemplates;
                 $scope.timeperiods = result.data.timeperiods;
                 $scope.checkperiods = result.data.checkperiods;
@@ -269,12 +308,8 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadCommands();
-
-
-        jQuery(function(){
-            $('.tagsinput').tagsinput();
-        });
-
+        $scope.loadService();
+        
         $scope.$watch('post.Service.servicetemplate_id', function(){
             if($scope.init){
                 return;
@@ -304,6 +339,35 @@ angular.module('openITCOCKPIT')
 
             $scope.loadEventHandlerCommandArguments();
         }, true);
+
+        $scope.$watch('data.disableInheritance', function(){
+            if(
+                $scope.data.areContactsInheritedFromHosttemplate === false &&
+                $scope.data.areContactsInheritedFromHost === false &&
+                $scope.data.areContactsInheritedFromServicetemplate === false){
+                return;
+            }
+
+            if($scope.data.disableInheritance === true){
+                //Overwrite with own contacts
+                $('#ContactBlocker').unblock();
+            }else{
+                //Inherit contacts
+                $('#ContactBlocker').block({
+                    message: null,
+                    overlayCSS: {
+                        opacity: 0.5,
+                        cursor: 'not-allowed',
+                        'background-color': 'rgb(255, 255, 255)'
+                    }
+                });
+
+                if(typeof $scope.hosttemplate !== "undefined"){
+                    $scope.post.Host.contacts._ids = $scope.hosttemplate.Hosttemplate.contacts._ids;
+                    $scope.post.Host.contactgroups._ids = $scope.hosttemplate.Hosttemplate.contactgroups._ids;
+                }
+            }
+        });
 
 
     });

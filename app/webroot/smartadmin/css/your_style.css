@@ -2494,3 +2494,12 @@ input[type=text]:focus + .input-group-addon-no-focus {
     min-height:175px;
     padding: 15px;
 }
+
+.fake-chosen-select{
+    height: 34px!important;
+    padding: 4px 12px!important;
+}
+
+.fake-chosen-select div {
+    top: 5px!important;
+}
