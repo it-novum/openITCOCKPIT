@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicegroupsEditController', function($scope, $http, $state, $stateParams, NotyService){
+    .controller('ServicegroupsEditController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
 
 
         $scope.post = {
@@ -106,7 +106,7 @@ angular.module('openITCOCKPIT')
             ).then(function(result){
                 console.log('Data saved successfully');
                 NotyService.genericSuccess();
-                $state.go('ServicegroupsIndex');
+                RedirectService.redirectWithFallback('ServicegroupsIndex');
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){

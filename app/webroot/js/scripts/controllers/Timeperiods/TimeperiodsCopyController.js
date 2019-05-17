@@ -1,11 +1,11 @@
 angular.module('openITCOCKPIT')
-    .controller('TimeperiodsCopyController', function($scope, $http, $state, $stateParams, NotyService){
+    .controller('TimeperiodsCopyController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
 
         var ids = $stateParams.ids.split(',');
 
         if(ids.length === 0 || ids[0] === ''){
             //No ids to copy given - redirect
-            $state.go('TimeperiodsIndex');
+            RedirectService.redirectWithFallback('TimeperiodsIndex');
             return;
         }
 
@@ -42,9 +42,7 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('TimeperiodsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('TimeperiodsIndex');
             }, function errorCallback(result){
                 //Print errors
                 NotyService.genericError();

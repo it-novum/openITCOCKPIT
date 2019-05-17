@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('CommandsEditController', function($scope, $http, SudoService, QueryStringService, $stateParams, $state, $location, NotyService){
+    .controller('CommandsEditController', function($scope, $http, SudoService, QueryStringService, $stateParams, $state, $location, NotyService, RedirectService){
         $scope.post = {
             Command: {
                 name: '',
@@ -107,7 +107,7 @@ angular.module('openITCOCKPIT')
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message
                 });
-                $state.go('CommandsIndex');
+                RedirectService.redirectWithFallback('CommandsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();

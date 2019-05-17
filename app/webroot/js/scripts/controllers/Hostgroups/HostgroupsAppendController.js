@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostgroupsAppendController', function($scope, $http, QueryStringService, $stateParams, $state, NotyService){
+    .controller('HostgroupsAppendController', function($scope, $http, QueryStringService, $stateParams, $state, NotyService, RedirectService){
 
         // preSelectedIds is used for "Append hosts to host group from /hosts/index"
         var preSelectedIds = $stateParams.ids;
@@ -58,9 +58,7 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                $state.go('HostgroupsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('HostgroupsIndex');
 
             }, function errorCallback(result){
                 NotyService.genericError();

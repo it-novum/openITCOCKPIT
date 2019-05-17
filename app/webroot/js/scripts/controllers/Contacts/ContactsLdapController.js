@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ContactsLdapController', function($scope, $http, SudoService, $state, NotyService){
+    .controller('ContactsLdapController', function($scope, $http, SudoService, $state, NotyService, RedirectService){
         $scope.data = {
             selectedSamAccountNameIndex: null,
             createAnother: false
@@ -146,9 +146,7 @@ angular.module('openITCOCKPIT')
 
 
                 if($scope.data.createAnother === false){
-                    $state.go('ContactsIndex').then(function(){
-                        NotyService.scrollTop();
-                    });
+                    RedirectService.redirectWithFallback('ContactsIndex');
                 }else{
                     clearForm();
                     $scope.errors = {};

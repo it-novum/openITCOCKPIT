@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsSharingController', function($scope, $http, SudoService, $state, $stateParams, NotyService){
+    .controller('HostsSharingController', function($scope, $http, SudoService, $state, $stateParams, NotyService, RedirectService){
 
         $scope.init = true;
 
@@ -44,9 +44,7 @@ angular.module('openITCOCKPIT')
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message
                 });
-                $state.go('HostsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('HostsIndex');
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){

@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('SystemsettingsIndexController', function($scope, $http, $state, NotyService){
+    .controller('SystemsettingsIndexController', function($scope, $http, $state, NotyService, RedirectService){
         $scope.systemsettings = {};
         $scope.dropdownOptionSequence = [];
 
@@ -42,7 +42,7 @@ angular.module('openITCOCKPIT')
             ).then(function(result){
                 NotyService.genericSuccess();
                 console.log('Data saved successfully');
-                $state.go('SystemsettingsIndex');
+                RedirectService.redirectWithFallback('SystemsettingsIndex');
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){

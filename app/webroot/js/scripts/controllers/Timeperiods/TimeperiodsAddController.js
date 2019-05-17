@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('TimeperiodsAddController', function($scope, $http, SudoService, $state, NotyService){
+    .controller('TimeperiodsAddController', function($scope, $http, SudoService, $state, NotyService, RedirectService){
         $scope.post = {
             Timeperiod: {
                 container_id: '',
@@ -104,9 +104,7 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('TimeperiodsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('TimeperiodsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();

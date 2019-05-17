@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HosttemplatesAddController', function($scope, $http, SudoService, $state, NotyService){
+    .controller('HosttemplatesAddController', function($scope, $http, SudoService, $state, NotyService, RedirectService){
 
         $scope.data = {
             createAnother: false
@@ -165,9 +165,7 @@ angular.module('openITCOCKPIT')
                 });
 
                 if($scope.data.createAnother === false){
-                    $state.go('HosttemplatesIndex').then(function(){
-                        NotyService.scrollTop();
-                    });
+                    RedirectService.redirectWithFallback('HosttemplatesIndex');
                 }else{
                     clearForm();
                     $scope.errors = {};

@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('LocationsEditController', function($scope, $http, $state, NotyService, $stateParams){
+    .controller('LocationsEditController', function($scope, $http, $state, NotyService, $stateParams, RedirectService){
 
         $scope.id = $stateParams.id;
         $scope.containers = {};
@@ -69,9 +69,8 @@ angular.module('openITCOCKPIT')
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message
                 });
-                $state.go('LocationsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+
+                RedirectService.redirectWithFallback('LocationsIndex');
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){

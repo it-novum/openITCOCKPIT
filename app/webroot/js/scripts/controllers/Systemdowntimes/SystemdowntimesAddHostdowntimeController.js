@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('SystemdowntimesAddHostdowntimeController', function($scope, $state, $http, QueryStringService, $stateParams, NotyService){
+    .controller('SystemdowntimesAddHostdowntimeController', function($scope, $state, $http, QueryStringService, $stateParams, NotyService, RedirectService){
 
         $scope.init = true;
         $scope.errors = null;
@@ -81,9 +81,9 @@ angular.module('openITCOCKPIT')
                     $scope.errors = null;
                     NotyService.genericSuccess();
                     if($scope.post.Systemdowntime.is_recurring){
-                        $state.go('SystemdowntimesHost');
+                        RedirectService.redirectWithFallback('SystemdowntimesHost');
                     }else{
-                        $state.go('DowntimesHost');
+                        RedirectService.redirectWithFallback('DowntimesHost');
                     }
                 },
                 function errorCallback(result){

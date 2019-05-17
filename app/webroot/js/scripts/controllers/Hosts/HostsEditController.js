@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsEditController', function($scope, $http, SudoService, $state, NotyService, LocalStorageService, $stateParams){
+    .controller('HostsEditController', function($scope, $http, SudoService, $state, NotyService, LocalStorageService, $stateParams, RedirectService){
 
         $scope.id = $stateParams.id;
 
@@ -342,9 +342,7 @@ angular.module('openITCOCKPIT')
                         NotyService.scrollTop();
                     });
                 }else{
-                    $state.go('HostsIndex').then(function(){
-                        NotyService.scrollTop();
-                    });
+                    RedirectService.redirectWithFallback('HostsIndex');
                 }
 
                 console.log('Data saved successfully');

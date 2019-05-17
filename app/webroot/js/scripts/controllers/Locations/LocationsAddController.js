@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('LocationsAddController', function($scope, $http, $state, NotyService){
+    .controller('LocationsAddController', function($scope, $http, $state, NotyService, RedirectService){
 
         $scope.data = {
             createAnother: false
@@ -64,9 +64,7 @@ angular.module('openITCOCKPIT')
                 });
 
                 if($scope.data.createAnother === false){
-                    $state.go('LocationsIndex').then(function(){
-                        NotyService.scrollTop();
-                    });
+                    RedirectService.redirectWithFallback('LocationsIndex');
                 }else{
                     clearForm();
                     NotyService.scrollTop();

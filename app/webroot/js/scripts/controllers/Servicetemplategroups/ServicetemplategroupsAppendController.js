@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicetemplategroupsAppendController', function($scope, $http, QueryStringService, $stateParams, $state, NotyService){
+    .controller('ServicetemplategroupsAppendController', function($scope, $http, QueryStringService, $stateParams, $state, NotyService, RedirectService){
 
         // preSelectedIds is used for "Append service templates to service template group from /servicetemplates/index"
         var preSelectedIds = $stateParams.ids;
@@ -58,9 +58,7 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                $state.go('ServicetemplategroupsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('ServicetemplategroupsIndex');
 
             }, function errorCallback(result){
                 NotyService.genericError();

@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('UsersEditFromLdapController', function($scope, $http, $state, $stateParams, NotyService){
+    .controller('UsersEditFromLdapController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
         $scope.id = $stateParams.id;
         $scope.init = true;
         $scope.errors = false;
@@ -143,9 +143,7 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('UsersIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('UsersIndex');
 
             }, function errorCallback(result){
                 NotyService.genericError();

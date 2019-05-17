@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesAddController', function($scope, $http, SudoService, $state, NotyService, $stateParams){
+    .controller('ServicesAddController', function($scope, $http, SudoService, $state, NotyService, $stateParams, RedirectService){
 
         //Pre-select a host via URL or set hostid to 0 if not numeric or empty
         var hostId = parseInt($stateParams.hostId, 10);
@@ -333,9 +333,7 @@ angular.module('openITCOCKPIT')
                 });
 
                 if($scope.data.createAnother === false){
-                    $state.go('ServicesNotMonitored').then(function(){
-                        NotyService.scrollTop();
-                    });
+                    RedirectService.redirectWithFallback('ServicesNotMonitored');
                 }else{
                     clearForm();
                     $scope.errors = {};

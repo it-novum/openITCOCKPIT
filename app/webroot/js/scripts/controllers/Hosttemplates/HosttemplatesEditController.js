@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HosttemplatesEditController', function($scope, $http, SudoService, $state, $stateParams, NotyService){
+    .controller('HosttemplatesEditController', function($scope, $http, SudoService, $state, $stateParams, NotyService, RedirectService){
 
         $scope.id = $stateParams.id;
 
@@ -113,9 +113,7 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                $state.go('HosttemplatesIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('HosttemplatesIndex');
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){

@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostgroupsEditController', function($scope, $http, QueryStringService, $stateParams, $state, NotyService){
+    .controller('HostgroupsEditController', function($scope, $http, QueryStringService, $stateParams, $state, NotyService, RedirectService){
 
 
         $scope.post = {
@@ -94,9 +94,7 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                $state.go('HostgroupsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('HostgroupsIndex');
 
             }, function errorCallback(result){
                 NotyService.genericError();

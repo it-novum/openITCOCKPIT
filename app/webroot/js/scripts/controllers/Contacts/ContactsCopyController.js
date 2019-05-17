@@ -1,11 +1,11 @@
 angular.module('openITCOCKPIT')
-    .controller('ContactsCopyController', function($scope, $http, $state, $stateParams, NotyService){
+    .controller('ContactsCopyController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
 
         var ids = $stateParams.ids.split(',');
 
         if(ids.length === 0 || ids[0] === ''){
             //No ids to copy given - redirect
-            $state.go('ContactsIndex');
+            RedirectService.redirectWithFallback('ContactsIndex');
             return;
         }
 
@@ -44,9 +44,8 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('ContactsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('ContactsIndex');
+
 
             }, function errorCallback(result){
                 //Print errors

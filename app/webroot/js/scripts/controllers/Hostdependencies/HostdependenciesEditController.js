@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostdependenciesEditController', function($scope, $http, $state, $stateParams, $location, NotyService){
+    .controller('HostdependenciesEditController', function($scope, $http, $state, $stateParams, $location, NotyService, RedirectService){
         $scope.init = true;
         $scope.id = $stateParams.id;
         $scope.post = {
@@ -152,9 +152,8 @@ angular.module('openITCOCKPIT')
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message
                 });
-                $state.go('HostdependenciesIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+
+                RedirectService.redirectWithFallback('HostdependenciesIndex');
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){

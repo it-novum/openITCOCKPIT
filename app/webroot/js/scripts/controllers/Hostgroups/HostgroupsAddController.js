@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostgroupsAddController', function($scope, $http, $state, $stateParams, NotyService){
+    .controller('HostgroupsAddController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
 
         $scope.data = {
             createAnother: false
@@ -91,9 +91,7 @@ angular.module('openITCOCKPIT')
                 });
 
                 if($scope.data.createAnother === false){
-                    $state.go('HostgroupsIndex').then(function(){
-                        NotyService.scrollTop();
-                    });
+                    RedirectService.redirectWithFallback('HostgroupsIndex');
                 }else{
                     clearForm();
                     $scope.errors = {};

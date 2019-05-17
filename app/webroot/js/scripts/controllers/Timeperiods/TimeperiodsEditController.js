@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('TimeperiodsEditController', function($scope, $http, SudoService, $state, $stateParams, $location, NotyService){
+    .controller('TimeperiodsEditController', function($scope, $http, SudoService, $state, $stateParams, $location, NotyService, RedirectService){
         $scope.post = {
             Timeperiod: {
                 container_id: '',
@@ -144,9 +144,7 @@ angular.module('openITCOCKPIT')
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message
                 });
-                $state.go('TimeperiodsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('TimeperiodsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();

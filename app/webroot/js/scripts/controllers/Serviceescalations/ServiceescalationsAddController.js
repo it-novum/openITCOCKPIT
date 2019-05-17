@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServiceescalationsAddController', function($scope, $http, $state, NotyService) {
+    .controller('ServiceescalationsAddController', function($scope, $http, $state, NotyService, RedirectService) {
 
         $scope.post = {
             Serviceescalation: {
@@ -63,7 +63,7 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result) {
                 NotyService.genericSuccess();
-                $state.go('ServiceescalationsIndex');
+                RedirectService.redirectWithFallback('ServiceescalationsIndex');
                 NotyService.scrollTop();
             }, function errorCallback (result) {
                 NotyService.genericError();

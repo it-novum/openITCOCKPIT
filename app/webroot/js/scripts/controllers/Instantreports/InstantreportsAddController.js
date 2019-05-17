@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('InstantreportsAddController', function($scope, $state, $http, NotyService){
+    .controller('InstantreportsAddController', function($scope, $state, $http, NotyService, RedirectService){
         $scope.types = {
             TYPE_HOSTGROUPS: '1',
             TYPE_HOSTS: '2',
@@ -131,7 +131,7 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('InstantreportsIndex');
+                RedirectService.redirectWithFallback('InstantreportsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;

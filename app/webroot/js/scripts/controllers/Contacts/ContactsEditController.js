@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ContactsEditController', function($scope, $http, SudoService, $state, $stateParams, NotyService){
+    .controller('ContactsEditController', function($scope, $http, SudoService, $state, $stateParams, NotyService, RedirectService){
 
         $scope.id = $stateParams.id;
 
@@ -114,9 +114,7 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                $state.go('ContactsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('ContactsIndex');
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){

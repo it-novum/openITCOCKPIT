@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('CommandsAddController', function($scope, $http, SudoService, $state, NotyService){
+    .controller('CommandsAddController', function($scope, $http, SudoService, $state, NotyService, RedirectService){
         $scope.post = {
             Command: {
                 name: '',
@@ -60,9 +60,7 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('CommandsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('CommandsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();

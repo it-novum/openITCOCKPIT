@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesEditController', function($scope, $http, SudoService, $state, NotyService, $stateParams){
+    .controller('ServicesEditController', function($scope, $http, SudoService, $state, NotyService, $stateParams, RedirectService){
         $scope.init = true;
 
         $scope.id = $stateParams.id;
@@ -278,15 +278,7 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                if($state.previous.name !== "" && $state.previous.url !== "^"){
-                    $state.go($state.previous.name, $state.previous.params).then(function(){
-                        NotyService.scrollTop();
-                    });
-                }else{
-                    $state.go('ServicesIndex').then(function(){
-                        NotyService.scrollTop();
-                    });
-                }
+                RedirectService.redirectWithFallback('ServicesIndex');
                 console.log('Data saved successfully');
             }, function errorCallback(result){
 
@@ -309,7 +301,7 @@ angular.module('openITCOCKPIT')
 
         $scope.loadCommands();
         $scope.loadService();
-        
+
         $scope.$watch('post.Service.servicetemplate_id', function(){
             if($scope.init){
                 return;

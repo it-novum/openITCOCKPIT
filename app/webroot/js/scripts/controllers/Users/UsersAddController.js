@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('UsersAddController', function($scope, $http, $rootScope, $state, NotyService){
+    .controller('UsersAddController', function($scope, $http, $rootScope, $state, NotyService, RedirectService){
         /**
          * @TODO kick old values out of ContainersUsersMemberships when the container has been deselected from the list
          */
@@ -98,9 +98,7 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('UsersIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('UsersIndex');
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){

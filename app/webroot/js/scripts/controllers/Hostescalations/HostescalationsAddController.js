@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostescalationsAddController', function($scope, $http, $state, NotyService){
+    .controller('HostescalationsAddController', function($scope, $http, $state, NotyService, RedirectService){
 
         $scope.post = {
             Hostescalation: {
@@ -102,10 +102,8 @@ angular.module('openITCOCKPIT')
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message
                 });
-                $state.go('HostescalationsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
 
+                RedirectService.redirectWithFallback('HostescalationsIndex');
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){

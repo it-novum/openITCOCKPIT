@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('TenantsEditController', function($scope, $http, $state, NotyService, $stateParams){
+    .controller('TenantsEditController', function($scope, $http, $state, NotyService, $stateParams, RedirectService){
 
         $scope.id = $stateParams.id;
 
@@ -34,9 +34,7 @@ angular.module('openITCOCKPIT')
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message
                 });
-                $state.go('TenantsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('TenantsIndex');
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){

@@ -1,11 +1,11 @@
 angular.module('openITCOCKPIT')
-    .controller('CommandsCopyController', function($scope, $http, $state, $stateParams, QueryStringService, NotyService){
+    .controller('CommandsCopyController', function($scope, $http, $state, $stateParams, QueryStringService, NotyService, RedirectService){
 
         var ids = $stateParams.ids.split(',');
 
         if(ids.length === 0 || ids[0] === ''){
             //No ids to copy given - redirect
-            $state.go('CommandsIndex');
+            RedirectService.redirectWithFallback('CommandsIndex');
             return;
         }
 
@@ -43,9 +43,7 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('CommandsIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('CommandsIndex');
             }, function errorCallback(result){
                 //Print errors
                 NotyService.genericError();

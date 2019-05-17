@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ContactsAddController', function($scope, $http, SudoService, $state, NotyService){
+    .controller('ContactsAddController', function($scope, $http, SudoService, $state, NotyService, RedirectService){
 
         $scope.data = {
             createAnother: false
@@ -132,9 +132,7 @@ angular.module('openITCOCKPIT')
 
 
                 if($scope.data.createAnother === false){
-                    $state.go('ContactsIndex').then(function(){
-                        NotyService.scrollTop();
-                    });
+                    RedirectService.redirectWithFallback('ContactsIndex');
                 }else{
                     clearForm();
                     $scope.errors = {};

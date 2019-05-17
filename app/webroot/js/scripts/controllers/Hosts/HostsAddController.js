@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsAddController', function($scope, $http, SudoService, $state, NotyService, LocalStorageService){
+    .controller('HostsAddController', function($scope, $http, SudoService, $state, NotyService, LocalStorageService, RedirectService){
 
         $scope.data = {
             createAnother: false,
@@ -366,9 +366,7 @@ angular.module('openITCOCKPIT')
                 });
 
                 if($scope.data.createAnother === false){
-                    $state.go('HostsNotMonitored').then(function(){
-                        NotyService.scrollTop();
-                    });
+                    RedirectService.redirectWithFallback('HostsNotMonitored');
                 }else{
                     clearForm();
                     $scope.errors = {};

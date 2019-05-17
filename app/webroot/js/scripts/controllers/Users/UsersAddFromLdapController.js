@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('UsersAddFromLdapController', function($scope, $http, $state, NotyService){
+    .controller('UsersAddFromLdapController', function($scope, $http, $state, NotyService, RedirectService){
         $scope.init = true;
         $scope.errors = false;
         $scope.post = {
@@ -146,9 +146,7 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('UsersIndex').then(function(){
-                    NotyService.scrollTop();
-                });
+                RedirectService.redirectWithFallback('UsersIndex');
 
             }, function errorCallback(result){
                 NotyService.genericError();
