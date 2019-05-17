@@ -65,7 +65,7 @@ angular.module('openITCOCKPIT')
 
         $scope.loadServices = function(searchString){
             if($scope.post.Serviceescalation.container_id != null){
-                $http.get("/services/loadServicesByStringNew.json", {
+                $http.get("/services/loadServicesByStringCake4.json", {
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Serviceescalation.container_id,

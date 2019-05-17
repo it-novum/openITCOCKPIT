@@ -217,10 +217,12 @@ Once a service escalated, contacts, contact group and notification options will 
                                 </div>
                                 <div class="info-block-helptext">
                                     <?php echo __('Service escalates after: More than '); ?>
-                                    {{post.Serviceescalation.first_notification ? post.Serviceescalation.first_notification :
+                                    {{post.Serviceescalation.first_notification ?
+                                    post.Serviceescalation.first_notification :
                                     '?'}}
                                     <?php echo __(' where send and less than '); ?>
-                                    {{post.Serviceescalation.last_notification ? post.Serviceescalation.last_notification :
+                                    {{post.Serviceescalation.last_notification ?
+                                    post.Serviceescalation.last_notification :
                                     '?'}}
                                 </div>
                                 <div ng-repeat="error in errors.last_notification">
@@ -236,7 +238,7 @@ Once a service escalated, contacts, contact group and notification options will 
                             </label>
                             <interval-input-directive
                                     interval="post.Serviceescalation.notification_interval"></interval-input-directive>
-                            <div class="col col-xs-12">
+                            <div class="col-xs-12 col-lg-offset-2">
                                 <div ng-repeat="error in errors.notification_interval">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
@@ -333,7 +335,8 @@ Once a service escalated, contacts, contact group and notification options will 
                                 </li>
                                 <li>
                                     <div class="margin-bottom-0">
-                                        <label for="escalate_on_warning" class="col col-md-7 control-label padding-top-0">
+                                        <label for="escalate_on_warning"
+                                               class="col col-md-7 control-label padding-top-0">
                                             <span class="label label-warning notify-label-small">
                                             <?php echo __('Warning'); ?>
                                             </span>
@@ -352,7 +355,8 @@ Once a service escalated, contacts, contact group and notification options will 
                                 </li>
                                 <li>
                                     <div class="margin-bottom-0">
-                                        <label for="escalate_on_critical" class="col col-md-7 control-label padding-top-0">
+                                        <label for="escalate_on_critical"
+                                               class="col col-md-7 control-label padding-top-0">
                                             <span class="label label-danger notify-label-small">
                                             <?php echo __('Critical'); ?>
                                             </span>
