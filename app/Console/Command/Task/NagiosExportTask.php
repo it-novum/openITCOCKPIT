@@ -715,8 +715,8 @@ class NagiosExportTask extends AppShell {
             if ($host->get('flap_detection_enabled') === 1 || $host->get('flap_detection_enabled') === 0)
                 $content .= $this->addContent('flap_detection_enabled', 1, $host->get('flap_detection_enabled'));
 
-            if ($host->get('flap_detection_enabled') === 1 && strlen($host->getFlapdetectionOptionsForCfg()) > 0) {
-                $content .= $this->addContent('flap_detection_options', 1, $host->getFlapdetectionOptionsForCfg());
+            if ($host->get('flap_detection_enabled') === 1 && strlen($host->getFlapdetectionOptionsForCfg($hosttemplate)) > 0) {
+                $content .= $this->addContent('flap_detection_options', 1, $host->getFlapdetectionOptionsForCfg($hosttemplate));
             }
 
             $content .= $this->nl();
@@ -912,8 +912,8 @@ class NagiosExportTask extends AppShell {
         if ($host->get('flap_detection_enabled') === 1 || $host->get('flap_detection_enabled') === 0)
             $content .= $this->addContent('flap_detection_enabled', 1, $host->get('flap_detection_enabled'));
 
-        if ($host->get('flap_detection_enabled') === 1 && strlen($host->getFlapdetectionOptionsForCfg()) > 0) {
-            $content .= $this->addContent('flap_detection_options', 1, $host->getFlapdetectionOptionsForCfg());
+        if ($host->get('flap_detection_enabled') === 1 && strlen($host->getFlapdetectionOptionsForCfg($hosttemplate)) > 0) {
+            $content .= $this->addContent('flap_detection_options', 1, $host->getFlapdetectionOptionsForCfg($hosttemplate));
         }
 
         $content .= $this->nl();
