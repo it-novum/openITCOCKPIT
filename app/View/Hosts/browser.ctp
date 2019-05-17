@@ -1227,7 +1227,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                         <td class="width-50">
                                             <div class="btn-group">
                                                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                    <a href="/services/edit/{{service.Service.id}}/_controller:hosts/_action:browser/_id:{{mergedHost.Host.id}}/"
+                                                    <a ui-sref="ServicesEdit({id: service.Service.id})"
                                                        ng-if="service.Service.allow_edit"
                                                        class="btn btn-default">
                                                         &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -1243,7 +1243,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                     id="menuHack-{{service.Service.uuid}}">
                                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                         <li ng-if="service.Service.allow_edit">
-                                                            <a href="/services/edit/{{service.Service.id}}/_controller:hosts/_action:browser/_id:{{mergedHost.Host.id}}/">
+                                                            <a ui-sref="ServicesEdit({id: service.Service.id})">
                                                                 <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>
@@ -1331,7 +1331,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                     <td class="width-50">
                                         <div class="btn-group">
                                             <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                <a href="/services/edit/{{service.Service.id}}"
+                                                <a ui-sref="ServicesEdit({id: service.Service.id})"
                                                    ng-if="service.Service.allow_edit"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -1347,7 +1347,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                 id="menuHack-{{service.Service.uuid}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <li ng-if="service.Service.allow_edit">
-                                                        <a href="/services/edit/{{service.Service.id}}">
+                                                        <a ui-sref="ServicesEdit({id: service.Service.id})">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
@@ -1427,7 +1427,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                         <td class="width-50">
                                             <div class="btn-group">
                                                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                    <a href="/services/edit/{{service.Service.id}}"
+                                                    <a ui-sref="ServicesEdit({id: service.Service.id})"
                                                        ng-if="service.Service.allow_edit"
                                                        class="btn btn-default">
                                                         &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -1443,7 +1443,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                     id="menuHack-{{service.Service.uuid}}">
                                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                         <li ng-if="service.Service.allow_edit">
-                                                            <a href="/services/edit/{{service.Service.id}}">
+                                                            <a ui-sref="ServicesEdit({id: service.Service.id})">
                                                                 <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>

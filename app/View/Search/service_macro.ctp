@@ -112,7 +112,7 @@
                                         <td class="width-160">
                                             <div class="btn-group">
                                                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                    <a href="/services/edit/<?php echo $service['Service']['id']; ?>"
+                                                    <a ui-sref="ServicesEdit({id: <?php echo $service['Service']['id']; ?>})"
                                                        class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                                 <?php else: ?>
                                                     <a href="javascript:void(0);"
@@ -124,8 +124,8 @@
                                                 <ul class="dropdown-menu">
                                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                         <li>
-                                                            <a href="/services/edit/<?php echo $service['Service']['id']; ?>"><i
-                                                                        class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                            <a ui-sref="ServicesEdit({id: <?php echo $service['Service']['id']; ?>})">
+                                                                <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>

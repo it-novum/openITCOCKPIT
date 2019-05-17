@@ -1,76 +1,19 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesAddController', function($scope, $http, SudoService, $state, NotyService, $stateParams){
+    .controller('ServicesEditController', function($scope, $http, SudoService, $state, NotyService, $stateParams){
 
-        //Pre-select a host via URL or set hostid to 0 if not numeric or empty
-        var hostId = parseInt($stateParams.hostId, 10);
-        if(isNaN(hostId)){
-            hostId = 0;
-        }
+        $scope.id = $stateParams.id;
 
         $scope.data = {
-            createAnother: false
+            isHostOnlyEditableDueToHostSharing: false,
+            areContactsInheritedFromHosttemplate: false,
+            areContactsInheritedFromHost: false,
+            areContactsInheritedFromServicetemplate: false,
+            disableInheritance: false
         };
 
-        var clearForm = function(){
-            $scope.post = {
-                Service: {
-                    host_id: hostId,
-                    servicetemplate_id: 0,
-                    name: '',
-                    description: '',
-                    command_id: 0,
-                    eventhandler_command_id: 0,
-                    check_interval: 60,
-                    retry_interval: 60,
-                    max_check_attempts: 3,
-                    first_notification_delay: 0,
-                    notification_interval: 7200,
-                    notify_on_recovery: 1,
-                    notify_on_warning: 1,
-                    notify_on_critical: 1,
-                    notify_on_unknown: 1,
-                    notify_on_flapping: 0,
-                    notify_on_downtime: 0,
-                    flap_detection_enabled: 0,
-                    flap_detection_on_ok: 0,
-                    flap_detection_on_warning: 0,
-                    flap_detection_on_critical: 0,
-                    flap_detection_on_unknown: 0,
-                    low_flap_threshold: 0,
-                    high_flap_threshold: 0,
-                    process_performance_data: 1,
-                    freshness_threshold: 3600,
-                    passive_checks_enabled: 1,
-                    event_handler_enabled: 0,
-                    active_checks_enabled: 1,
-                    retain_status_information: 0,
-                    retain_nonstatus_information: 0,
-                    notifications_enabled: 0,
-                    notes: '',
-                    priority: 1,
-                    check_period_id: 0,
-                    notify_period_id: 0,
-                    tags: '',
-                    container_id: 0,
-                    service_url: '',
-                    is_volatile: 0,
-                    freshness_checks_enabled: 0,
-                    contacts: {
-                        _ids: []
-                    },
-                    contactgroups: {
-                        _ids: []
-                    },
-                    servicegroups: {
-                        _ids: []
-                    },
-                    customvariables: [],
-                    servicecommandargumentvalues: [],
-                    serviceeventcommandargumentvalues: []
-                }
-            };
+        $scope.post = {
+            Service: {}
         };
-        clearForm();
 
         $scope.init = true;
 
@@ -165,37 +108,6 @@ angular.module('openITCOCKPIT')
             $('#ServiceTagsInput').tagsinput('add', $scope.post.Service.tags);
         };
 
-        $scope.loadHosts = function(searchString, selected){
-            if(typeof selected === "undefined"){
-                selected = [];
-            }
-
-            $http.get("/hosts/loadHostsByString.json", {
-                params: {
-                    'angular': true,
-                    'filter[Hosts.name]': searchString,
-                    'selected[]': selected,
-                    'includeDisabled': 'false'
-                }
-            }).then(function(result){
-                $scope.hosts = result.data.hosts;
-            });
-        };
-
-        /*
-        $scope.loadContainers = function(){
-            var params = {
-                'angular': true
-            };
-
-            $http.get("/services/loadContainers.json", {
-                params: params
-            }).then(function(result){
-                $scope.containers = result.data.containers;
-                $scope.init = false;
-            });
-        };
-        */
 
         $scope.loadCommands = function(){
             var params = {
@@ -222,7 +134,7 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            $http.get("/services/loadCommandArguments/" + commandId + ".json", {
+            $http.get("/services/loadCommandArguments/" + commandId + "/" + $scope.id + ".json", {
                 params: params
             }).then(function(result){
                 $scope.post.Service.servicecommandargumentvalues = result.data.servicecommandargumentvalues;
@@ -242,7 +154,7 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            $http.get("/services/loadEventhandlerCommandArguments/" + eventHandlerCommandId + ".json", {
+            $http.get("/services/loadEventhandlerCommandArguments/" + eventHandlerCommandId + "/" + $scope.id + ".json", {
                 params: params
             }).then(function(result){
                 $scope.post.Service.serviceeventcommandargumentvalues = result.data.serviceeventhandlercommandargumentvalues;
@@ -270,11 +182,6 @@ angular.module('openITCOCKPIT')
 
         $scope.loadServicetemplate = function(){
             var servicetemplateId = $scope.post.Service.servicetemplate_id;
-            if(servicetemplateId === 0){
-                //May be triggered by watch from "Create another"
-                $scope.init = false;
-                return;
-            }
 
             $http.post("/services/loadServicetemplate/" + servicetemplateId + ".json?angular=true", {}).then(function(result){
                 $scope.servicetemplate = result.data.servicetemplate;
@@ -322,27 +229,25 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            $http.post("/services/add.json?angular=true",
+            $http.post("/services/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-                var url = $state.href('ServicesEdit', {id: result.data.id});
+                var url = $state.href('ServicesEdit', {id: $scope.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                if($scope.data.createAnother === false){
-                    $state.go('ServicesNotMonitored').then(function(){
+                if($state.previous.name !== "" && $state.previous.url !== "^"){
+                    $state.go($state.previous.name, $state.previous.params).then(function(){
                         NotyService.scrollTop();
                     });
                 }else{
-                    clearForm();
-                    $scope.errors = {};
-                    NotyService.scrollTop();
+                    $state.go('ServicesIndex').then(function(){
+                        NotyService.scrollTop();
+                    });
                 }
-
-
                 console.log('Data saved successfully');
             }, function errorCallback(result){
 
@@ -363,20 +268,12 @@ angular.module('openITCOCKPIT')
 
         };
 
-        $scope.loadHosts();
         $scope.loadCommands();
 
 
         jQuery(function(){
             $('.tagsinput').tagsinput();
         });
-
-        $scope.$watch('post.Service.host_id', function(){
-            if($scope.init){
-                return;
-            }
-            $scope.loadElements();
-        }, true);
 
         $scope.$watch('post.Service.servicetemplate_id', function(){
             if($scope.init){

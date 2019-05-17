@@ -69,7 +69,7 @@
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
     <a ng-if="serviceBrowserMenu.allowEdit"
-       href="/services/edit/{{ serviceBrowserMenu.serviceId }}/_controller:services/_action:browser/_id:{{ serviceBrowserMenu.serviceId }}/"
+       ui-sref="ServicesEdit({id: serviceBrowserMenu.serviceId})"
        data-original-title="<?php echo _('Edit service'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-cogs fa-lg"></i></a>
 <?php endif; ?>

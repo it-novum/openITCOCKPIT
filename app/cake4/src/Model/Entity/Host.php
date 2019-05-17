@@ -308,31 +308,38 @@ class Host extends Entity {
     /**
      * @return string
      */
-    public function getFlapdetectionOptionsForCfg() {
-        $onlyTemplateValues = true;
+    public function getFlapdetectionOptionsForCfg(Hosttemplate $hosttemplate) {
         $cfgValues = [];
         $fields = [
             'flap_detection_on_up'          => 'o',
             'flap_detection_on_down'        => 'd',
             'flap_detection_on_unreachable' => 'u'
         ];
+
+
+        //Does the host have own flap detection options?
         foreach ($fields as $field => $cfgValue) {
-            if ($this->get($field) !== null) {
-                //One value is not from host template
-                $onlyTemplateValues = false;
+            if ($this->get($field) === null) {
+                //Use the value of the host template
+                if ($hosttemplate->get($field) === 1) {
+                    $cfgValues[] = $cfgValue;
+                }
             }
 
             if ($this->get($field) === 1) {
+                //Host has defined its own value
                 $cfgValues[] = $cfgValue;
             }
         }
 
-        if (empty($cfgValues) && $onlyTemplateValues === false) {
-            //Config error! Avoid this
-            $cfgValues[] = 'o';
+        $flapdetectionOptions = implode(',', $cfgValues);
+
+        if ($flapdetectionOptions === $hosttemplate->getHostNotificationOptionsForCfg()) {
+            //Host has the same flap detection options like the host template - go for inheritance
+            return '';
         }
 
-        return implode(',', $cfgValues);
+        return $flapdetectionOptions;
     }
 
     /**

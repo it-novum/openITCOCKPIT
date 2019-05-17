@@ -480,40 +480,40 @@ class ServicesTable extends Table {
 
         $validator
             ->boolean('flap_detection_enabled')
-            ->requirePresence('flap_detection_enabled', false)
+            ->requirePresence('flap_detection_enabled', 'create')
             ->allowEmptyString('flap_detection_enabled', true);
 
         $validator
-            ->boolean('flap_detection_on_ok')
-            ->requirePresence('flap_detection_on_ok', false)
-            ->allowEmptyString('flap_detection_on_ok', true)
+            ->allowEmptyString('flap_detection_on_ok', function ($context) {
+                return $this->checkFlapDetectionOptionsService(null, $context);
+            }, __('You must specify at least one flap detection option.'))
             ->add('flap_detection_on_ok', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
         $validator
-            ->boolean('flap_detection_on_warning')
-            ->requirePresence('flap_detection_on_warning', false)
-            ->allowEmptyString('flap_detection_on_warning', true)
+            ->allowEmptyString('flap_detection_on_warning', function ($context) {
+                return $this->checkFlapDetectionOptionsService(null, $context);
+            }, __('You must specify at least one flap detection option.'))
             ->add('flap_detection_on_warning', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
         $validator
-            ->boolean('flap_detection_on_critical')
-            ->requirePresence('flap_detection_on_critical', false)
-            ->allowEmptyString('flap_detection_on_critical', true)
+            ->allowEmptyString('flap_detection_on_critical', function ($context) {
+                return $this->checkFlapDetectionOptionsService(null, $context);
+            }, __('You must specify at least one flap detection option.'))
             ->add('flap_detection_on_critical', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
         $validator
-            ->boolean('flap_detection_on_unknown')
-            ->requirePresence('flap_detection_on_unknown', false)
-            ->allowEmptyString('flap_detection_on_unknown', true)
+            ->allowEmptyString('flap_detection_on_unknown', function ($context) {
+                return $this->checkFlapDetectionOptionsService(null, $context);
+            }, __('You must specify at least one flap detection option.'))
             ->add('flap_detection_on_unknown', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')

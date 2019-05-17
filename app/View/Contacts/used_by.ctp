@@ -126,7 +126,7 @@
                             <tr ng-repeat="service in contactWithRelations.Service">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                        <a href="/services/edit/{{ service.id }}" target="_blank">
+                                        <a ui-sref="ServicesEdit({id: service.id})" target="_blank">
                                             {{ service.name }}
                                         </a>
                                     <?php else: ?>
