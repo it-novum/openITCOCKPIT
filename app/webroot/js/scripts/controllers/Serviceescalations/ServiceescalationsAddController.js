@@ -64,8 +64,8 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadServices = function(searchString){
-            if($scope.post.Servicesescalation.container_id != null){
-                $http.get("/services/loadServicesByContainerId.json", {
+            if($scope.post.Serviceescalation.container_id != null){
+                $http.get("/services/loadServicesByStringNew.json", {
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Serviceescalation.container_id,
@@ -80,7 +80,7 @@ angular.module('openITCOCKPIT')
 
         $scope.loadExcludedServices = function(searchString){
             if($scope.post.Serviceescalation.container_id != null){
-                $http.get("/services/loadServicesByContainerId.json", {
+                $http.get("/services/loadServicesByStringNew.json", {
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Serviceescalation.container_id,

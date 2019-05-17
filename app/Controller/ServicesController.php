@@ -2340,6 +2340,35 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['services']);
     }
 
+    public function loadServicesByStringNew() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->query('selected');
+        $container_id = $this->request->query('container_id');
+
+        if (!$this->allowedByContainerId($container_id, false)) {
+            $this->render403();
+            return;
+        }
+
+        $ServicesFilter = new ServiceFilter($this->request);
+
+        $ServiceConditions = new ServiceConditions($ServicesFilter->indexFilter());
+        $ServiceConditions->setContainerIds($container_id);
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $services = Api::makeItJavaScriptAble(
+            $ServicesTable->getServicesForAngular($ServiceConditions, $selected)
+        );
+
+        $this->set('services', $services);
+        $this->set('_serialize', ['services']);
+    }
+
     /**
      * @deprecated
      */

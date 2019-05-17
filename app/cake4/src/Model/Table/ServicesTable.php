@@ -3,13 +3,14 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\CustomValidationTrait;
-use App\Lib\Traits\PluginManagerTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\ServiceConditions;
 
 /**
  * Services Model
@@ -52,8 +53,8 @@ use Cake\Validation\Validator;
  */
 class ServicesTable extends Table {
 
-    use PluginManagerTableTrait;
     use CustomValidationTrait;
+    use PaginationAndScrollIndexTrait;
 
     /**
      * Initialize method
@@ -729,26 +730,19 @@ class ServicesTable extends Table {
         $query = $this->find();
         $query
             ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing')
             ->innerJoinWith('Servicetemplates')
             ->select([
-            'Services.' . $index,
+                'Services.' . $index,
                 'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
-                'Services.name'
-        ]);
-        print_r((string)$query);
-        die('END ');
-        return;
-        $query->where($where);
-        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($containerIds) {
-            if (!empty($containerIds)) {
-                return $q->where(['HostsToContainersSharing.id IN' => $containerIds]);
-            }
-            return $q;
-        });
+                'Services.name',
+                'Hosts.name'
+            ]);
+
         $query->disableHydration();
-        $query->group(['Hosts.id']);
+        $query->group(['Services.id']);
         $query->order([
-            'Hosts.name' => 'asc'
+            'servicename' => 'asc'
         ]);
 
         $result = $query->toArray();
@@ -762,10 +756,93 @@ class ServicesTable extends Table {
 
         $list = [];
         foreach ($result as $row) {
-            $list[$row[$index]] = $row['name'];
+            $list[$row[$index]] = $row['servicename'];
         }
 
         return $list;
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array|int $selected
+     * @return array|null
+     */
+    public function getServicesForAngular(ServiceConditions $ServiceConditions, $selected = []) {
+        if (!is_array($selected)) {
+            $selected = [$selected];
+        }
+        $selected = array_filter($selected);
+
+
+        $where = $ServiceConditions->getConditions();
+
+        if (!empty($selected)) {
+            $where['NOT'] = [
+                'Services.id IN' => $selected
+            ];
+        }
+
+        $query = $this->find();
+        $query
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing')
+            ->innerJoinWith('Servicetemplates')
+            ->select([
+                'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+                'Services.id',
+                'Hosts.name'
+            ])
+            ->where(
+                $where
+            )
+            ->order([
+                'servicename' => 'asc'
+            ])
+            ->limit(ITN_AJAX_LIMIT)
+            ->disableHydration()
+            ->all();
+
+        $servicesWithLimit = [];
+        $selectedServices = [];
+        $results = $this->emptyArrayIfNull($query->toArray());
+        foreach ($results as $result){
+            $servicesWithLimit[$result['id']] = $result;
+        }
+        if (!empty($selected)) {
+            $query = $this->find();
+            $query
+                ->innerJoinWith('Hosts')
+                ->innerJoinWith('Hosts.HostsToContainersSharing')
+                ->innerJoinWith('Servicetemplates')
+                ->select([
+                    'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+                    'Services.id',
+                    'Hosts.name'
+                ])
+                ->where([
+                    'Services.id IN' => $selected
+                ])
+                ->order([
+                    'servicename' => 'asc'
+                ])
+                ->limit(ITN_AJAX_LIMIT)
+                ->disableHydration()
+                ->all();
+
+            $results = $this->emptyArrayIfNull($query->toArray());
+            foreach ($results as $result){
+                $selectedServices[$result['id']] = $result;
+            }
+
+        }
+        $services = $servicesWithLimit + $selectedServices;
+        $serviceIds = array_keys($services);
+
+        array_multisort(
+            array_column($services, 'servicename'), SORT_ASC, SORT_NATURAL, $services, $serviceIds
+        );
+        $services = array_combine($serviceIds, $services);
+        return $services;
     }
 
 

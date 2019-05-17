@@ -94,7 +94,7 @@ Once a service escalated, contacts, contact group and notification options will 
                                         class="form-control"
                                         chosen="services"
                                         callback="loadServices"
-                                        ng-options="service.key as service.value disable when service.disabled for service in services"
+                                        ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
                                         ng-model="post.Serviceescalation.services._ids">
                                 </select>
                                 <div ng-repeat="error in errors.services">
@@ -121,7 +121,7 @@ Once a service escalated, contacts, contact group and notification options will 
                                         class="form-control"
                                         chosen="services_excluded"
                                         callback="loadExcludedServices"
-                                        ng-options="service.key as service.value disable when service.disabled for service in services_excluded"
+                                        ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services_excluded"
                                         ng-model="post.Serviceescalation.services_excluded._ids">
                                 </select>
                             </div>
