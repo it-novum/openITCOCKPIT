@@ -140,7 +140,7 @@
                                 <td class="width-50">
                                     <div class="btn-group">
                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                            <a href="/services/edit/{{service.Service.id}}"
+                                            <a ui-sref="ServicesEdit({id: service.id})"
                                                ng-if="host.allow_edit"
                                                class="btn btn-default">
                                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -155,7 +155,7 @@
                                         <ul class="dropdown-menu pull-right" id="menuHack-{{service.uuid}}">
                                             <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                 <li ng-if="host.allow_edit">
-                                                    <a href="/services/edit/{{service.id}}">
+                                                    <a ui-sref="ServicesEdit({id: service.id})">
                                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                     </a>
                                                 </li>
