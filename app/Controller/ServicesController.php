@@ -676,6 +676,13 @@ class ServicesController extends AppController {
         }
     }
 
+    public function edit(){
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+    }
+
     /**
      * @deprecated
      */
@@ -710,251 +717,12 @@ class ServicesController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
-    /**
-     * @deprecated
-     */
-    public function addOld() {
-        $userId = $this->Auth->user('id');
-        $Customvariable = [];
-        $customFieldsToRefill = [
-            'Service'      => [
-                'notification_interval',
-                'notify_on_recovery',
-                'notify_on_warning',
-                'notify_on_unknown',
-                'notify_on_critical',
-                'notify_on_flapping',
-                'notify_on_downtime',
-                'check_interval',
-                'retry_interval',
-                'flap_detection_enabled',
-                'flap_detection_on_ok',
-                'flap_detection_on_warning',
-                'flap_detection_on_unknown',
-                'flap_detection_on_critical',
-                'priority',
-                'active_checks_enabled',
-                'process_performance_data',
-            ],
-            'Contact'      => [
-                'Contact',
-            ],
-            'Contactgroup' => [
-                'Contactgroup',
-            ],
-        ];
-
-        if (CakePlugin::loaded('MaximoModule')) {
-            $customFieldsToRefill['Maximoconfiguration'] = [
-                'type',
-                'impact_level',
-                'urgency_level',
-                'maximo_ownergroup_id',
-                'maximo_service_id'
-            ];
-        }
-
-        $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
-
-        //Check if a host was selected before adding new service (host service list)
-        $hostId = null;
-        if (!empty($this->request->params['pass'])) {
-            $hostId = $this->request->params['pass'][0];
-        }
-        $this->Frontend->setJson('hostId', $hostId);
-
-        //Fix that we dont lose any unsaved host macros, because of vaildation error
-        if (isset($this->request->data['Customvariable'])) {
-            $Customvariable = $this->request->data['Customvariable'];
-        }
-
-        $this->loadModel('Customvariable');
-
-        /** @var $CommandsTable CommandsTable */
-        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-        /** @var $ContactgroupsTable ContactgroupsTable */
-        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-
-        $userContainerId = $this->Auth->user('container_id');
-        $myContainerId = $this->MY_RIGHTS;
-        $myRights = $myContainerId;
-        if (!$this->hasRootPrivileges && ($rootKey = array_search(ROOT_CONTAINER, $myRights)) !== false) {
-            unset($myRights[$rootKey]);
-        }
-
-        $containerIds = [];
-        $selectedHostId = 0;
-        //Only load required elements by host container id
-        if ($this->request->is('post') && isset($this->request->data['Service']['host_id'])) {
-            $host = $this->Host->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Host.id' => $this->request->data['Service']['host_id']
-                ],
-                'fields'     => [
-                    'Host.container_id'
-                ]
-            ]);
-
-            if (!empty($host)) {
-                $selectedHostId = (int)$this->request->data['Service']['host_id'];
-                $containerIds = array_unique([ROOT_CONTAINER, $host['Host']['container_id']]);
-            }
-        }
-
-        $this->Frontend->setJson('selectedHostId', $selectedHostId);
-
-
-        $commands = $this->Command->serviceCommands('list');
-
-        $timeperiods = [];
-        $contacts = [];
-        $contactgroups = [];
-        $eventhandlers = [];
-        $servicegroups = [];
-        $servicetemplates = [];
-
-        if (!empty($containerIds)) {
-            //Reload data for validation errors refill
-            $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
-            $timeperiods = $TimeperiodsTable->getTimeperiodsAsList();
-            $containerIds = $this->MY_RIGHTS;
-            $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-            $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
-            $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
-            $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
-            $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-        }
-
-        $this->Frontend->set('data_placeholder', __('Please choose a contact'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
-        $this->Frontend->setJson('lang_minutes', __('minutes'));
-        $this->Frontend->setJson('lang_seconds', __('seconds'));
-        $this->Frontend->setJson('lang_and', __('and'));
-
-        $this->set(compact([
-            'hostId',
-            'servicetemplates',
-            'servicegroups',
-            'timeperiods',
-            'contacts',
-            'contactgroups',
-            'commands',
-            'eventhandlers',
-            'Customvariable',
-        ]));
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $ext_data_for_changelog = $this->getChangelogDataForAdd();
-
-            $this->Service->set($this->request->data);
-            if (isset($this->request->data['Service']['Contact'])) {
-                $this->request->data['Contact']['Contact'] = $this->request->data['Service']['Contact'];
-            }
-            if (isset($this->request->data['Service']['Contactgroup'])) {
-                $this->request->data['Contactgroup']['Contactgroup'] = $this->request->data['Service']['Contactgroup'];
-            }
-            if (isset($this->request->data['Service']['Servicegroup']) &&
-                is_array($this->request->data['Service']['Servicegroup'])
-            ) {
-                $this->request->data['Servicegroup']['Servicegroup'] = $this->request->data['Service']['Servicegroup'];
-            } else {
-                $this->request->data['Servicegroup']['Servicegroup'] = [];
-            }
-            $servicetemplate = [];
-            if (isset($this->request->data['Service']['servicetemplate_id']) &&
-                $this->Servicetemplate->exists($this->request->data['Service']['servicetemplate_id'])
-            ) {
-                $servicetemplate = $this->Servicetemplate->find('first', [
-                    'contain'    => [
-                        'Container',
-                        'CheckPeriod',
-                        'NotifyPeriod',
-                        'CheckCommand',
-                        'EventhandlerCommand',
-                        'Customvariable',
-                        'Servicetemplatecommandargumentvalue',
-                        'Servicetemplateeventcommandargumentvalue',
-                        'Contactgroup',
-                        'Contact',
-                        'Servicetemplategroup',
-                        'Servicegroup'
-                    ],
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'Servicetemplate.id' => $this->request->data['Service']['servicetemplate_id'],
-                    ],
-                ]);
-            }
-            $dataToSave = $this->Service->prepareForSave(
-                $this->Service->diffWithTemplate($this->request->data, $servicetemplate),
-                $this->request->data,
-                'add'
-            );
-
-            $dataToSave['Service']['own_customvariables'] = 0;
-            //Add Customvariables data to $dataToSave
-            $dataToSave['Customvariable'] = [];
-            if (isset($this->request->data['Customvariable'])) {
-                $customVariableDiffer = new CustomVariableDiffer($this->request->data['Customvariable'], $servicetemplate['Customvariable']);
-                $customVariablesToSaveRepository = $customVariableDiffer->getCustomVariablesToSaveAsRepository();
-                $dataToSave['Customvariable'] = $customVariablesToSaveRepository->getAllCustomVariablesAsArray();
-                if (!empty($dataToSave)) {
-                    $dataToSave['Service']['own_customvariables'] = 1;
-                }
-            }
-
-            $isJsonRequest = $this->request->ext === 'json';
-
-            if (CakePlugin::loaded('MaximoModule')) {
-                if (!empty($this->request->data['Maximoconfiguration'])) {
-                    $dataToSave['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
-                }
-            }
-
-            if ($this->Service->saveAll($dataToSave)) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $this->Service->id,
-                    OBJECT_SERVICE,
-                    $ext_data_for_changelog['Host']['container_id'], // use host container_id for user permissions
-                    $userId,
-                    $ext_data_for_changelog['Host']['name'] . '/' . $this->request->data['Service']['name'],
-                    array_merge($this->request->data, $ext_data_for_changelog)
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-
-                if ($isJsonRequest) {
-                    $this->serializeId();
-                } else {
-                    $this->setFlash(__('<a href="/services/edit/%s">Service</a> created successfully', $this->Service->id));
-                    $redirect = $this->Service->redirect($this->request->params, ['action' => 'notMonitored']);
-                    $this->redirect($redirect);
-                }
-            } else {
-                if ($isJsonRequest) {
-                    $this->serializeErrorMessage();
-                } else {
-                    $this->setFlash(__('Data could not be saved'), false);
-                }
-            }
-        }
-    }
 
     /**
      * @param int|null $id
      * @deprecated
      */
-    public function edit($id = null) {
+    public function editOld($id = null) {
         $userId = $this->Auth->user('id');
         $this->Service->id = $id;
         if (!$this->Service->exists()) {

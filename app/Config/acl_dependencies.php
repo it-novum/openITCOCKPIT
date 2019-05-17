@@ -300,7 +300,7 @@ $config = [
                 'index'       => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId', 'loadServicesByString', 'getSelectedServices'],
                 'browser'     => ['servicesByHostId', 'longOutputByUuid'],
                 'add'         => ['loadElementsByHostId', 'loadServicetemplate', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments'],
-                'edit'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros', 'loadElementsByHostId'],
+                'edit'        => ['loadElementsByHostId', 'loadServicetemplate', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments'],
                 'serviceList' => ['deleted']
             ],
             'Servicetemplategroups' => [

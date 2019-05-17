@@ -954,7 +954,7 @@
                                     <div class="row"
                                          ng-repeat="customvariable in post.Service.customvariables">
                                         <macros-directive macro="customvariable"
-                                                          macro-name="'<?php echo __('HOST'); ?>'"
+                                                          macro-name="'<?php echo __('SERVICE'); ?>'"
                                                           index="$index"
                                                           callback="deleteMacroCallback"
                                                           errors="getMacroErrors($index)"

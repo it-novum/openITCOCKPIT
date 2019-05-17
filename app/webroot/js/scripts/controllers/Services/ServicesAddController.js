@@ -323,8 +323,6 @@ angular.module('openITCOCKPIT')
             $http.post("/services/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                return;
-
                 var url = $state.href('ServicesEdit', {id: result.data.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '
