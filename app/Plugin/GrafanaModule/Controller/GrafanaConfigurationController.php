@@ -187,10 +187,32 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
             if ($client instanceof Client) {
                 $status = ['status' => true];
             } else {
-                $client = (json_decode($client)) ? json_decode($client) : ['message' => $client];
+
+                $client = (json_decode($client)) ? json_decode($client) : ['message' => (string)$client];
+
+                //Resolve: ITC-2169 RVID: 5-445b21 - Medium - Server-Side Request Forgery
+                $message = __('Error while connecting to Grafana server.');
+                $message = __('For detailed information, please uncomment line %s in %s. Detailed output is disabled due to security reasons.', (__LINE__ + 1),  __FILE__);
+                //$message = $client;
+
+                if (is_object($client) && property_exists($client, 'message')) {
+                    if ($client->message === 'Invalid API key') {
+                        $message = 'Invalid API key';
+                    }
+                }
+
+                if (is_array($client) && isset($client['message'])) {
+                    if (strpos($client['message'], 'cURL error') === 0) {
+                        $message = $client['message'];
+                    }
+                }
+
+
                 $status = [
                     'status' => false,
-                    'msg'    => $client
+                    'msg'    => [
+                        'message' => $message
+                    ]
                 ];
             }
 

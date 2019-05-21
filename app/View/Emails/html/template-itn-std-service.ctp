@@ -690,6 +690,13 @@
                             <strong><?php echo __('Output'); ?>:</strong>
                             <p class="lead"> <?php echo h($parameters['serviceoutput']); ?> </p>
                             <br/>
+                            <?php if(isset($parameters['servicelongoutput']) && !empty($parameters['servicelongoutput'])): ?>
+                                <strong><?php echo __('Service long output'); ?>:</strong>
+                                <p class="lead"> <?php echo str_replace(['\n', '\r\n', '\r'], '<br/>', h($parameters['servicelongoutput'])); ?> </p>
+                                <br/>
+                            <?php endif; ?>
+
+
                             <table class="social" width="100%">
                                 <?php if (!$parameters['no-attachments']): ?>
                                     <?php foreach ($contentIDs as $contentID): ?>

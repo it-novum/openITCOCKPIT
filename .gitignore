@@ -62,6 +62,7 @@ app/Plugin/VMWAREModule
 app/Plugin/WindowsBasicMonitoringNSCPModule
 app/Plugin/MasterSelfMonitoringModule
 app/Plugin/SatelliteSelfMonitoringModule
+app/Plugin/ServicenowModule
 app/Plugin/UCSModule
 app/Lib/AvailableVersion.php
 app/docs/en/administration/systemsettings.md

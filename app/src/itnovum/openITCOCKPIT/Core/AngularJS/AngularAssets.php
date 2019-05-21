@@ -46,6 +46,7 @@ class AngularAssets implements AngularAssetsInterface {
         'js/lib/colr.js',
         'js/lib/php.js',
         'smartadmin/js/plugin/flot/jquery.flot.cust.js',
+        'smartadmin/js/plugin/flot/jquery.flot.axislabels.js',
         'smartadmin/js/plugin/flot/jquery.flot.time.js',
         //'smartadmin/js/plugin/jquery-validate/jquery.validate.min.js', //
         //'smartadmin/js/plugin/flot/jquery.flot.orderBar.js', //
@@ -56,6 +57,7 @@ class AngularAssets implements AngularAssetsInterface {
         'smartadmin/js/plugin/flot/jquery.flot.threshold.js',
         'smartadmin/js/plugin/flot/jquery.flot.selection.js', //
         'js/lib/jquery.nestable.js',
+        'js/lib/angular-nestable.js',
         'js/lib/parseuri.js',
         'js/vendor/vis-4.21.0/dist/vis.js',
         'js/scripts/ng.app.js',

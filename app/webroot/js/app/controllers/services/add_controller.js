@@ -34,9 +34,10 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
     _initialize: function(){
         var self = this;
 
-        this.selectedHostId = this.getVar('selectedHostId');
+        this.selectedHostId = this.getVar('hostId');
 
         this.Ajaxloader.setup();
+
 
 
         this.ContainerSelectbox.setup(this.Ajaxloader);
@@ -55,7 +56,6 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
             dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
             dataPlaceholder: self.getVar('data_placeholder')
         });
-
 
         this.CustomVariables.setup({
             controller: 'Services',
@@ -840,20 +840,11 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
     },
 
 
-    loadInitialData: function(selector, selectedHostIds, callback){
+    loadInitialData: function(selector, selectedHostId, callback){
         var self = this;
-        if(selectedHostIds == null || selectedHostIds.length < 1){
-            selectedHostIds = [];
-        }else{
-            if(!Array.isArray(selectedHostIds)){
-                selectedHostIds = [selectedHostIds];
-            }
-        }
-
-        var selectedHostId = this.getVar('hostId');
         var requestParams = {
             'angular': true,
-            'selected[]': selectedHostIds //ids
+            'selected[]': selectedHostId
         };
 
         if(selectedHostId !== null){
@@ -872,16 +863,12 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
             data: requestParams,
             success: function(response){
                 var $selector = $(selector);
-                var list = self.buildList(response.hosts, selectedHostId);
+                var list = self.buildList(response.hosts, selectedHostId, true);
 
                 $selector.append(list);
-                if(selectedHostId !== null){
-                    $selector.val(selectedHostId);
-                }else{
-                    $selector.val([]);
-                }
 
                 $selector.trigger('chosen:updated');
+                $selector.change();
 
                 if(callback != undefined){
                     callback();
@@ -891,9 +878,13 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
     },
 
 
-    buildList: function(data, selected){
+    buildList: function(data, selected, includePlaceholderOption){
 
         var html = '';
+        if(includePlaceholderOption){
+            html += '<option><!-- Empty option for placeholder --><option>';
+        }
+
         for(var i in data){
             if(data[i].key == selected && selected !== null){
                 html += '<option value="' + data[i].key + '" selected="selected">' + htmlspecialchars(data[i].value) + '</option>';

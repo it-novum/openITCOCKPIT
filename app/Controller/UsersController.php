@@ -27,6 +27,7 @@
 //require_once APP . 'Model/User.php';
 
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
+use itnovum\openITCOCKPIT\Core\Security\CSRF;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 class UsersController extends AppController {
@@ -222,6 +223,8 @@ class UsersController extends AppController {
     }
 
     public function add($type = 'local') {
+        $CSRF = new CSRF($this->Session);
+        $_csrfToken = $CSRF->generateToken();
         $usergroups = $this->Usergroup->find('list');
         // Activate "Show Stats in Menu" by default for New Users
         $this->request->data['User']['showstatsinmenu'] = 0;
@@ -318,6 +321,9 @@ class UsersController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            $CSRF->validateCsrfToken($this);
+            $CSRF->generateToken();
+
             $this->User->create();
             $isJsonRequest = $this->request->ext == 'json';
             if ($this->User->saveAll($this->request->data)) {
@@ -337,13 +343,16 @@ class UsersController extends AppController {
         }
 
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
-        $this->set(compact(['containers', 'usergroups']));
+        $this->set(compact(['containers', 'usergroups', '_csrfToken']));
 
         $this->set('type', $type);
     }
 
 
     public function edit($id = null) {
+        $CSRF = new CSRF($this->Session);
+        $_csrfToken = $CSRF->generateToken();
+
         if (!$this->User->exists($id)) {
             throw new NotFoundException(__('Invalide user'));
         }
@@ -390,6 +399,9 @@ class UsersController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            $CSRF->validateCsrfToken($this);
+            $CSRF->generateToken();
+
             if ($this->request->data('ContainerUserMembership')) {
                 $this->Frontend->setJson('rights', $this->request->data('ContainerUserMembership'));
                 $this->request->data['ContainerUserMembership'] = array_map(
@@ -433,7 +445,7 @@ class UsersController extends AppController {
         if (strlen($this->request->data['User']['samaccountname']) > 0) {
             $type = 'ldap';
         }
-        $this->set(compact(['type', 'usergroups']));
+        $this->set(compact(['type', 'usergroups', '_csrfToken']));
     }
 
     public function addFromLdap() {
@@ -531,7 +543,7 @@ class UsersController extends AppController {
         $usersForSelect = $this->User->makeItJavaScriptAble($usersForSelect);
 
         $isPhp7Dot1 = $PHPVersionChecker->isVersionGreaterOrEquals7Dot1();
-        $this->set(compact(['usersForSelect', 'systemsettings', 'isPhp7Dot1']));
+        $this->set(compact(['usersForSelect', 'systemsettings', 'isPhp7Dot1', '_csrfToken']));
         $this->set('_serialize', ['usersForSelect', 'isPhp7Dot1']);
     }
 

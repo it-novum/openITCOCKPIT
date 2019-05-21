@@ -90,13 +90,10 @@ class DateRangeBehavior extends ModelBehavior {
                     ];
                     unset($timeslice_array[$next_key]);
                     $i--;
-                } else {
-                    $i = $next_key;
                 }
 
             }
         }
-
         return $timeslice_array;
     }
 

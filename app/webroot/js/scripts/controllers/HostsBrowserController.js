@@ -58,6 +58,7 @@ angular.module('openITCOCKPIT')
         $scope.showTimelineTab = false;
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
+        $scope.lastLoadDate = Date.now();
 
         $scope.selectedGrafanaTimerange = 'now-3h';
         $scope.selectedGrafanaAutorefresh = '60s';
@@ -81,6 +82,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHost = function(){
+            $scope.lastLoadDate = Date.now();
             $http.get("/hosts/browser/" + $scope.id + ".json", {
                 params: {
                     'angular': true
@@ -381,7 +383,7 @@ angular.module('openITCOCKPIT')
             $http.get("/hosts/ping.json", {
                 params: {
                     'angular': true,
-                    'address': $scope.mergedHost.Host.address
+                    'id': $scope.id
                 }
             }).then(function(result){
                 $scope.pingResult = result.data.output;

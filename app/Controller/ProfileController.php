@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\Security\CSRF;
 
 /**
  * Class ProfileController
@@ -30,6 +31,9 @@
  * @property AppAuthComponent Auth
  * @property Systemsetting Systemsetting
  * @property Apikey Apikey
+ *
+ * @property UploadComponent $Upload
+ * @property SessionComponent $Session
  */
 class ProfileController extends AppController {
     public $layout = 'angularjs';
@@ -39,7 +43,7 @@ class ProfileController extends AppController {
         'Apikey'
     ];
 
-    public $components = ['Upload'];
+    public $components = ['Upload', 'Session'];
 
     /*public function change_password() {
         if($this->request->is('post')) {
@@ -52,6 +56,9 @@ class ProfileController extends AppController {
     }*/
 
     public function edit() {
+        $CSRF = new CSRF($this->Session);
+        $_csrfToken = $CSRF->generateToken();
+
         $user = $this->User->find('first', [
             'conditions' => [
                 'User.id' => $this->Auth->user('id'),
@@ -90,6 +97,9 @@ class ProfileController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             /***** Change user data *****/
             if (isset($this->request->data['User'])) {
+                $CSRF->validateCsrfToken($this);
+                $CSRF->generateToken();
+
                 //Convert dateformat ID into real dateformat for MySQL database
                 $this->request->data['User']['dateformat'] = $dateformats[$this->request->data['User']['dateformat']];
 
@@ -151,6 +161,9 @@ class ProfileController extends AppController {
 
             /***** Change users password *****/
             if (isset($this->request->data['Password'])) {
+                $CSRF->validateCsrfToken($this);
+                $CSRF->generateToken();
+
                 if (Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']) {
                     $this->setFlash(__('The entered password is not your current password'), false);
 
@@ -182,7 +195,7 @@ class ProfileController extends AppController {
         $paginatorLength = $this->Paginator->settings['limit'];
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
         $user = $this->User->findById($this->Auth->user('id'));
-        $this->set(compact('user', 'systemsettings', 'dateformats', 'selectedUserTime', 'paginatorLength'));
+        $this->set(compact('user', 'systemsettings', 'dateformats', 'selectedUserTime', 'paginatorLength', '_csrfToken'));
     }
 
     public function apikey() {
@@ -270,6 +283,14 @@ class ProfileController extends AppController {
             //Generate new API key
             $bytes = openssl_random_pseudo_bytes(80, $cstrong);
             $apikey = bin2hex($bytes);
+
+            $newApiKey = [
+                'key'  => $apikey,
+                'time' => time()
+            ];
+
+            $this->Session->write('latest_api_key', $newApiKey);
+
             $this->set('apikey', $apikey);
             $this->set('_serialize', ['apikey']);
             return;
@@ -278,8 +299,26 @@ class ProfileController extends AppController {
         if ($this->request->is('post')) {
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             //Save new API key
-            $apikey = $this->request->data;
-            $apikey['Apikey']['user_id'] = $User->getId();
+            //Resolve ITC-2170
+            $newApiKey = $this->Session->read('latest_api_key');
+            $this->Session->delete('latest_api_key');
+
+            if (!isset($newApiKey['key']) || !isset($newApiKey['time'])) {
+                throw new BadRequestException();
+            }
+
+            //Is API-Key older than 5 minutes?
+            if ($newApiKey['time'] < (time() - 5 * 60)) {
+                throw new BadRequestException('API key expired');
+            }
+
+            $apikey = [
+                'Apikey' => [
+                    'apikey'      => $newApiKey['key'],
+                    'description' => $this->request->data('Apikey.description'),
+                    'user_id'     => $User->getId()
+                ]
+            ];
 
             $this->Apikey->create();
             if (!$this->Apikey->save($apikey)) {

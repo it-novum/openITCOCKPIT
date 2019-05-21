@@ -5,28 +5,36 @@ angular.module('openITCOCKPIT')
         $scope.selectedTenant = null;
         $scope.selectedTenantForNode = null;
         $scope.errors = null;
+        $scope.isDeleting = false;
 
+        $scope.resetAddEditFields = function(){
+            $scope.edit = {
+                Container: {
+                    id: null,
+                    containertype_id: 5,
+                    name: null,
+                    parent_id: null
+                }
+            };
 
-        $scope.post = {
-            Container: {
-                parent_id: null,
-                name: null,
-                containertype_id: '5'
-            }
+            $scope.add = {
+                Container: {
+                    parent_id: null,
+                    name: null,
+                    containertype_id: '5'
+                }
+            };
         };
 
         $scope.load = function(){
+            $scope.resetAddEditFields();
             $scope.loadContainers();
         };
 
         $scope.saveNewNode = function(){
-            $http.post("/containers/add.json?angular=true", $scope.post).then(function(result){
-                $('#nodeCreatedFlashMessage').show();
-                $scope.post.Container.name = null;
+            $http.post("/containers/add.json?angular=true", $scope.add).then(function(result){
+                $('#angularAddNodeModal').modal('hide');
                 $scope.load();
-                $timeout(function(){
-                    $('#nodeCreatedFlashMessage').hide();
-                }, 3000);
                 $scope.errors = null;
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
@@ -60,18 +68,57 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.updateNode = function(){
+            $http.post("/containers/edit.json?angular=true", $scope.edit).then(
+                function(result){
+                    $scope.load();
+                    $('#angularEditNodeModal').modal('hide');
+                }, function errorCallback(result){
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                }
+            );
+        };
+
+        $scope.deleteNode = function(){
+            $scope.isDeleting = true;
+
+            $http.post('/containers/delete/' + $scope.edit.Container.id).then(
+                function(result){
+                    $scope.load();
+                    $('#angularEditNodeModal').modal('hide');
+                    $scope.isDeleting = false;
+                }, function errorCallback(result){
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                    $scope.isDeleting = false;
+                }
+            );
+        };
+
+        $scope.openEditNode = function(container){
+            $scope.edit.Container.id = parseInt(container.id);
+            $scope.edit.Container.parent_id = parseInt(container.parent_id);
+            $scope.edit.Container.name = container.name;
+            $('#angularEditNodeModal').modal('show');
+        };
+
+        $scope.openAddNode = function(parent_id){
+            $scope.add.Container.parent_id = parseInt(parent_id);
+            $('#angularAddNodeModal').modal('show');
+        };
 
         $scope.loadTenants();
 
         $scope.$watch('selectedTenant', function(){
             if($scope.selectedTenant !== null){
-
                 for(var key in $scope.tenants){
                     if($scope.tenants[key].Tenant.container_id == $scope.selectedTenant){
                         $scope.tenant = $scope.tenants[key];
                     }
                 }
-
                 $scope.load();
             }
         });

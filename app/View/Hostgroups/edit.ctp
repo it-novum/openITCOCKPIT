@@ -155,7 +155,7 @@
                     <div class="well formactions ">
                         <div class="pull-right">
                             <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">&nbsp;
-                            <a href="/grafana_module/grafana_userdashboards/index" class="btn btn-default">
+                            <a href="/hostgroups" class="btn btn-default">
                                 <?php echo __('Cancel'); ?>
                             </a>
                         </div>
