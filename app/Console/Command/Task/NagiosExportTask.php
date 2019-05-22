@@ -34,6 +34,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
 use App\Model\Table\ServicegroupsTable;
+use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Filesystem\File;
@@ -1106,20 +1107,14 @@ class NagiosExportTask extends AppShell {
 
     }
 
-    /**
-     * @param null|string $uuid
-     * @param array $options with keys limit and offset
-     */
-    public function exportServices($uuid = null, $options = []) {
+
+    public function exportServices() {
         if (!is_dir($this->conf['path'] . $this->conf['services'])) {
             mkdir($this->conf['path'] . $this->conf['services']);
         }
 
         if ($this->conf['minified']) {
             $fileName = $this->conf['path'] . $this->conf['services'] . 'services_minified' . $this->conf['suffix'];
-            if (isset($options['limit']) && isset($options['offset'])) {
-                $fileName = $this->conf['path'] . $this->conf['services'] . 'services_minified_' . $options['limit'] . '_' . $options['offset'] . $this->conf['suffix'];
-            }
             $file = new File($fileName);
             if (!$file->exists()) {
                 $file->create();
@@ -1127,201 +1122,189 @@ class NagiosExportTask extends AppShell {
             $content = $this->fileHeader();
         }
 
-        $hosts = $this->Host->find('all', [
-            'contain'    => [],
-            'recursive'  => -1,
-            'conditions' => [
-                'Host.disabled' => 0,
-            ],
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.satellite_id',
-            ],
-        ]);
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
+        $ServicetemplatesCache = new KeyValueStore();
+
+        $hosts = $HostsTable->getHostsForServiceExport();
         foreach ($hosts as $host) {
-            $services = $this->Service->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Service.disabled' => 0,
-                    'Service.host_id'  => $host['Host']['id'],
-                ],
-                'contain'    => [
-                    'Servicetemplate'                  => [
-                        'fields'       => [
-                            'Servicetemplate.id',
-                            'Servicetemplate.uuid',
-                            'Servicetemplate.name',
-                            'Servicetemplate.check_interval',
-                            'Servicetemplate.eventhandler_command_id',
-                        ],
-                        'Servicegroup' => [
-                            'fields' => [
-                                'Servicegroup.uuid',
-                            ],
-                        ],
-                    ],
-                    'CheckPeriod',
-                    'CheckCommand',
-                    'NotifyPeriod',
-                    'Servicecommandargumentvalue'      => [
-                        'Commandargument',
-                    ],
-                    'Serviceeventcommandargumentvalue' => [
-                        'Commandargument',
-                    ],
-                    'EventhandlerCommand',
-                    'Customvariable',
-                    'Servicegroup',
-                    'Contactgroup',
-                    'Contact',
-                ],
-            ]);
+            /** @var $host \App\Model\Entity\Host */
+
+            $services = $ServicesTable->getServicesForExportByHostId($host->get('id'));
             foreach ($services as $service) {
-                /** @var $CommandsTable CommandsTable */
-                $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+                /** @var $service \App\Model\Entity\Service */
 
                 if (!$this->conf['minified']) {
-                    $file = new File($this->conf['path'] . $this->conf['services'] . $service['Service']['uuid'] . $this->conf['suffix']);
+                    $file = new File($this->conf['path'] . $this->conf['services'] . $service->get('uuid') . $this->conf['suffix']);
                     $content = $this->fileHeader();
                     if (!$file->exists()) {
                         $file->create();
                     }
                 }
 
-
-                $commandarguments = [];
-                if (!empty($service['Servicecommandargumentvalue'])) {
-                    $commandarguments = Hash::sort($service['Servicecommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
+                if (!$ServicetemplatesCache->has($service->get('servicetemplate_id'))) {
+                    $servicetemplate = $ServicetemplatesTable->getServicetemplateForServiceExport($service->get('servicetemplate_id'));
+                    $ServicetemplatesCache->set($service->get('servicetemplate_id'), $servicetemplate);
                 }
+                /** @var \App\Model\Entity\Servicetemplate $servicetemplate */
+                $servicetemplate = $ServicetemplatesCache->get($host->get('servicetemplate_id'));
+
 
                 $content .= $this->addContent('define service{', 0);
-                $content .= $this->addContent('use', 1, $service['Servicetemplate']['uuid']);
-                $content .= $this->addContent('host_name', 1, $host['Host']['uuid']);
+                $content .= $this->addContent('use', 1, $servicetemplate->get('uuid'));
+                $content .= $this->addContent('host_name', 1, $host->get('uuid'));
 
-                $content .= $this->addContent('name', 1, $service['Service']['uuid']);
-                if ($service['Service']['name'] !== null && $service['Service']['name'] !== '') {
+                $content .= $this->addContent('name', 1, $service->get('uuid'));
+
+                if ($service->get('name') !== null && $service->get('name') !== '') {
                     $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
-                        $service['Service']['name'])
-                    );
+                        $service->get('name')
+                    ));
                 } else {
                     $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
-                        $service['Servicetemplate']['name'])
-                    );
+                        $servicetemplate->get('name')
+                    ));
                 }
 
-                $content .= $this->addContent('service_description', 1, $service['Service']['uuid']);
+                $content .= $this->addContent('service_description', 1, $service->get('uuid'));
 
                 $content .= $this->nl();
                 $content .= $this->addContent(';Check settings:', 1);
 
-                $eventcommandarguments = [];
-                if (!empty($service['Serviceeventcommandargumentvalue'])) {
-                    $eventcommandarguments = Hash::sort($service['Serviceeventcommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
-                }
-
-                if ($host['Host']['satellite_id'] == 0) {
-                    if (isset($commandarguments) && !empty($commandarguments)) {
-                        if ($service['CheckCommand']['uuid'] !== null && $service['CheckCommand']['uuid'] !== '') {
-                            //The host has its own check_command and own command args
-                            $content .= $this->addContent('check_command', 1, $service['CheckCommand']['uuid'] . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
-                        } else {
-                            //The services only has its own command args, but the same command as the servicetemplate
-                            //This is not supported by nagios, so we need to select the command and create the
-                            //config with the right command uuid
-                            $command_id = Hash::extract($commandarguments, '{n}.Commandargument.command_id');
-                            if (!empty($command_id)) {
-                                $command_id = array_pop($command_id);
-                                $command = $CommandsTable->getCommandUuidByCommandId($command_id);
-                                $content .= $this->addContent('check_command', 1, $command . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
-                                unset($command);
-                            }
-                        }
-                    } else {
-                        if ($service['CheckCommand']['uuid'] !== null && $service['CheckCommand']['uuid'] !== '')
-                            $content .= $this->addContent('check_command', 1, $service['CheckCommand']['uuid']);
-                    }
-
-
-                    // Only export event handlers if the services is on the master system. for SAT event handlers see $this->exportSatService()
-                    if (isset($eventcommandarguments) && !empty($eventcommandarguments)) {
-                        if ($service['EventhandlerCommand']['uuid'] !== null && $service['EventhandlerCommand']['uuid'] !== '') {
-                            //The service has its own event_handler and own event handler args
-                            $content .= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid'] . '!' . implode('!', Hash::extract($eventcommandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($eventcommandarguments, '{n}.Commandargument.human_name')));
-                        } else {
-                            //The services only has its own event handler args, but the same event handler command as the servicetemplate
-                            //This is not supported by nagios, so we need to select the event handler command and create the
-                            //config with the right command uuid and pass the arguments of the service
-                            $command_id = Hash::extract($eventcommandarguments, '{n}.Commandargument.command_id');
-                            if (!empty($command_id)) {
-                                $command_id = array_pop($command_id);
-                                $command = $CommandsTable->getCommandUuidByCommandId($command_id);
-                                $content .= $this->addContent('event_handler', 1, $command . '!' . implode('!', Hash::extract($eventcommandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($eventcommandarguments, '{n}.Commandargument.human_name')));
-                                unset($command);
-                            }
-                        }
-                    } else {
-                        //Own event_handler without any handler args
-                        if ($service['EventhandlerCommand']['uuid'] !== null && $service['EventhandlerCommand']['uuid'] !== '')
-                            $content .= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid']);
-                    }
-
-
-                } else {
+                if ($host->isSatelliteHost() === true) {
+                    // On the master system we set the freshness check command
+                    // UNKNOWN: Service is no longer current
                     $content .= $this->addContent('check_command', 1, '2106cf0bf26a82af262c4078e6d9f94eded84d2a');
                 }
 
-
-                if ($service['Service']['check_period_id'] !== null && $service['Service']['check_period_id'] !== '')
-                    $content .= $this->addContent('check_period', 1, $service['CheckPeriod']['uuid']);
-
-                if ($service['Service']['check_interval'] !== null && $service['Service']['check_interval'] !== '')
-                    $content .= $this->addContent('check_interval', 1, $service['Service']['check_interval']);
-
-                if ($service['Service']['retry_interval'] !== null && $service['Service']['retry_interval'] !== '')
-                    $content .= $this->addContent('retry_interval', 1, $service['Service']['retry_interval']);
-
-                if ($service['Service']['max_check_attempts'] !== null && $service['Service']['max_check_attempts'] !== '')
-                    $content .= $this->addContent('max_check_attempts', 1, $service['Service']['max_check_attempts']);
-
-
-                if ($host['Host']['satellite_id'] > 0) {
-                    $content .= $this->addContent('active_checks_enabled', 1, 0);
-                    $content .= $this->addContent('passive_checks_enabled', 1, 1);
-                } else {
-                    if ($service['Service']['active_checks_enabled'] !== null && $service['Service']['active_checks_enabled'] !== '') {
-                        $content .= $this->addContent('active_checks_enabled', 1, (int)$service['Service']['active_checks_enabled']);
+                if ($host->isSatelliteHost() === false) {
+                    if (!empty($service->get('servicecommandargumentvalues'))) {
+                        if ($service->get('command_id') === null) {
+                            //Service has own command arguments but uses the same command as the service template
+                            $commandId = $servicetemplate->get('command_id');
+                        } else {
+                            //Service has own command arguments AND own check command
+                            $commandId = $service->get('command_id');
+                        }
+                        $commandUuid = $this->CommandUuidsCache->get($commandId);
+                        $commandarguments = $service->getCommandargumentValuesForCfg();
+                        $content .= $this->addContent('check_command', 1, sprintf(
+                            '%s!%s; %s',
+                            $commandUuid,
+                            implode('!', Hash::extract($commandarguments, '{n}.value')),
+                            implode('!', Hash::extract($commandarguments, '{n}.human_name'))
+                        ));
+                    } else {
+                        //May be check command without arguments
+                        if ($service->get('command_id') !== null) {
+                            //Service has own check command but this command has no arguments at all
+                            $commandId = $service->get('command_id');
+                            $commandUuid = $this->CommandUuidsCache->get($commandId);
+                            $content .= $this->addContent('check_command', 1, $commandUuid);
+                        }
                     }
 
-                    if ($service['Service']['passive_checks_enabled'] !== null && $service['Service']['passive_checks_enabled'] !== '') {
-                        $content .= $this->addContent('passive_checks_enabled', 1, (int)$service['Service']['passive_checks_enabled']);
+                    if ($servicetemplate->hasEventhandler() || $service->hasEventhandler()) {
+                        $content .= $this->nl();
+                        $content .= $this->addContent(';Event handler:', 1);
+
+                        if (!empty($service->get('serviceeventcommandargumentvalues'))) {
+                            if ($service->get('eventhandler_command_id') === null) {
+                                //Service has own command arguments but uses the same event handler command as the service template
+                                $commandId = $servicetemplate->get('eventhandler_command_id');
+                            } else {
+                                //Service has own event handler command arguments AND own event handler command
+                                $commandId = $service->get('eventhandler_command_id');
+                            }
+                            $commandUuid = $this->CommandUuidsCache->get($commandId);
+                            $eventcommandarguments = $service->getEventhandlerCommandargumentValuesForCfg();
+                            $content .= $this->addContent('event_handler', 1, sprintf(
+                                '%s!%s; %s',
+                                $commandUuid,
+                                implode('!', Hash::extract($eventcommandarguments, '{n}.value')),
+                                implode('!', Hash::extract($eventcommandarguments, '{n}.human_name'))
+                            ));
+                        } else {
+                            //May be event handler command without arguments
+                            if ($service->get('eventhandler_command_id') !== null) {
+                                //Service has own evnet handler command but this command has no arguments at all
+                                $commandId = $service->get('eventhandler_command_id');
+                                $commandUuid = $this->CommandUuidsCache->get($commandId);
+                                $content .= $this->addContent('event_handler', 1, $commandUuid);
+                            }
+                        }
                     }
                 }
 
-                if ((int)$service['Service']['freshness_checks_enabled'] > 0 || $host['Host']['satellite_id'] > 0) {
+                if ($service->get('check_period_id')) {
+                    $timeperiodUuid = $this->TimeperiodUuidsCache->get($service->get('check_period_id'));
+                    $content .= $this->addContent('check_period', 1, $timeperiodUuid);
+                }
 
-                    if ($host['Host']['satellite_id'] > 0) {
-                        //Services gets checked by a SAT-System
+                if ($service->get('check_interval') !== null && $service->get('check_interval') !== '')
+                    $content .= $this->addContent('check_interval', 1, $service->get('check_interval'));
+
+                if ($service->get('retry_interval') !== null && $service->get('retry_interval') !== '')
+                    $content .= $this->addContent('retry_interval', 1, $service->get('retry_interval'));
+
+                if ($service->get('max_check_attempts') !== null && $service->get('max_check_attempts') !== '')
+                    $content .= $this->addContent('max_check_attempts', 1, $service->get('max_check_attempts'));
+
+
+                if ($host->isSatelliteHost() === true) {
+                    $content .= $this->addContent('active_checks_enabled', 1, 0);
+                    $content .= $this->addContent('passive_checks_enabled', 1, 1);
+                }
+
+                if ($host->isSatelliteHost() === false) {
+                    if ($service->get('active_checks_enabled') !== null && $service->get('active_checks_enabled') !== '') {
+                        $content .= $this->addContent('active_checks_enabled', 1, $service->get('active_checks_enabled'));
+                    }
+
+                    if ($service->get('passive_checks_enabled') !== null && $service->get('passive_checks_enabled') !== '') {
+                        $content .= $this->addContent('passive_checks_enabled', 1, $service->get('passive_checks_enabled'));
+                    }
+                }
+
+                if ($service->get('freshness_checks_enabled') > 0 || $host->isSatelliteHost() === true) {
+                    if ($host->isSatelliteHost() === true) {
+                        // Service is checked by a satellite system
+                        // Add freshness check on the master instance
                         $content .= $this->addContent('check_freshness', 1, 1);
-
-                        $checkInterrval = null;
-                        if ($service['Service']['check_interval'] !== null && $service['Service']['check_interval'] !== '') {
-                            $checkInterrval = $service['Service']['check_interval'];
-                        } else {
-                            $checkInterrval = $service['Servicetemplate']['check_interval'];
+                        $checkInterval = $service->get('check_interval');
+                        if ($checkInterval === null || $checkInterval === '' || $checkInterval === 0) {
+                            $checkInterval = $servicetemplate->get('check_interval');
                         }
 
-                        $content .= $this->addContent('freshness_threshold', 1, (int)$service['Service']['freshness_threshold'] + $checkInterrval + $this->FRESHNESS_THRESHOLD_ADDITION);
+                        $checkInterval = (int)$checkInterval;
+                        $freshnessThreshold = (int)$service->get('freshness_threshold');
+
+                        $content .= $this->addContent('freshness_threshold', 1, ($freshnessThreshold + $checkInterval + $this->FRESHNESS_THRESHOLD_ADDITION));
                     } else {
+                        // Service is in the master instance
+
                         //Passive service on the master system
                         $content .= $this->addContent('check_freshness', 1, 1);
-                        $content .= $this->addContent('freshness_threshold', 1, (int)$service['Service']['freshness_threshold'] + $this->FRESHNESS_THRESHOLD_ADDITION);
+                        $freshnessThreshold = (int)$service->get('freshness_threshold');
+                        if ($freshnessThreshold === null || $freshnessThreshold === '' || $freshnessThreshold === 0) {
+                            $freshnessThreshold = (int)$servicetemplate->get('freshness_threshold');
+                        }
+                        $content .= $this->addContent('freshness_threshold', 1, $freshnessThreshold + $this->FRESHNESS_THRESHOLD_ADDITION);
                     }
+
                 }
 
                 $content .= $this->nl();
                 $content .= $this->addContent(';Notification settings:', 1);
+                
+                /**** FIX ME ****/
                 if ($service['Service']['notifications_enabled'] !== null && $service['Service']['notifications_enabled'] !== '')
                     $content .= $this->addContent('notifications_enabled', 1, $service['Service']['notifications_enabled']);
 
@@ -1363,33 +1346,38 @@ class NagiosExportTask extends AppShell {
                         $content .= $this->addContent('flap_detection_options', 1, $this->serviceFlapdetectionString($service['Service']));
                     }
                 }
+                /**** END FIX ME ****/
 
                 $content .= $this->nl();
                 $content .= $this->addContent(';Everything else:', 1);
-                if (isset($service['Service']['process_performance_data'])) {
-                    if ($service['Service']['process_performance_data'] == 1 || $service['Service']['process_performance_data'] == 0)
-                        $content .= $this->addContent('process_perf_data', 1, $service['Service']['process_performance_data']);
-                }
-                if (isset($service['Service']['is_volatile'])) {
-                    if ($service['Service']['is_volatile'] !== null && $service['Service']['is_volatile'] !== '')
-                        $content .= $this->addContent('is_volatile', 1, (int)$service['Service']['is_volatile']);
-                }
-                if (!empty($service['Service']['notes']))
-                    $content .= $this->addContent('notes', 1, $service['Service']['notes']);
+                if ($service->get('process_performance_data') === 1 || $service->get('process_performance_data') === 0)
+                    $content .= $this->addContent('process_perf_data', 1, $service->get('process_performance_data'));
 
+                if ($service->get('notes') && strlen($service->get('notes')) > 0) {
+                    $content .= $this->addContent('notes', 1, $this->escapeLastBackslash($service->get('notes')));
+                }
 
-                if (!empty($service['Customvariable'])) {
+                if ($service->get('is_volatile') === 1 || $service->get('is_volatile') === 0)
+                    $content .= $this->addContent('is_volatile', 1, $service->get('is_volatile'));
+
+                if (!empty($service->get('servicegroups'))) {
+                    //Use service groups of the service
+                    $content .= $this->nl();
+                    $content .= $this->addContent(';Servicegroup memberships:', 1);
+                    $content .= $this->addContent('servicegroups', 1, $service->getServicegroupsForCfg());
+                } else if (empty($service->get('servicegroups')) && !empty($servicetemplate->get('servicegroups'))) {
+                    //Use service groups of service template configuration
+                    $content .= $this->nl();
+                    $content .= $this->addContent(';Servicegroup memberships:', 1);
+                    $content .= $this->addContent('servicegroups', 1, $servicetemplate->getServicegroupsForCfg());
+                }
+
+                if ($service->hasCustomvariables()) {
                     $content .= $this->nl();
                     $content .= $this->addContent(';Custom  variables:', 1);
-                    foreach ($service['Customvariable'] as $customvariable) {
-                        $content .= $this->addContent('_' . $customvariable['name'], 1, $customvariable['value']);
+                    foreach ($service->getCustomvariablesForCfg() as $varName => $varValue) {
+                        $content .= $this->addContent($varName, 1, $varValue);
                     }
-                }
-
-                if (!empty($service['Servicegroup'])) {
-                    $content .= $this->addContent('servicegroups', 1, implode(',', Hash::extract($service['Servicegroup'], '{n}.uuid')));
-                } else if (empty($service['Servicegroup']) && !empty($service['Servicetemplate']['Servicegroup'])) {
-                    $content .= $this->addContent('servicegroups', 1, implode(',', Hash::extract($service['Servicetemplate']['Servicegroup'], '{n}.uuid')));
                 }
 
                 $content .= $this->addContent('}', 0);

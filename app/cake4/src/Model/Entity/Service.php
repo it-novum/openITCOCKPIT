@@ -3,6 +3,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use Cake\Utility\Hash;
 
 /**
  * Service Entity
@@ -61,6 +62,7 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Servicetemplate $servicetemplate
  * @property \MkModule\Model\Entity\Mkservicedata $mkservicedata
  * @property \NewModule\Model\Entity\Servicecommandargumentvalue[] $servicecommandargumentvalues
+ * @property \App\Model\Entity\Servicegroup[] $servicegroups
  */
 class Service extends Entity {
     /**
@@ -131,4 +133,79 @@ class Service extends Entity {
         'contacts'                          => true,
         'servicegroups'                     => true,
     ];
+
+    /**
+     * @return array
+     */
+    public function getCommandargumentValuesForCfg() {
+        $hostcommandargumentvaluesForCfg = [];
+        $servicecommandargumentvalues = $this->get('servicecommandargumentvalues');
+
+        foreach ($servicecommandargumentvalues as $servicecommandargumentvalue) {
+            /** @var $servicecommandargumentvalue Servicecommandargumentvalue */
+            $hostcommandargumentvaluesForCfg[] = [
+                'name'       => $servicecommandargumentvalue->get('commandargument')->get('name'),
+                'human_name' => $servicecommandargumentvalue->get('commandargument')->get('human_name'),
+                'value'      => $servicecommandargumentvalue->get('value')
+            ];
+        }
+
+        return Hash::sort($hostcommandargumentvaluesForCfg, '{n}.name', 'asc', 'natural');
+    }
+
+    /**
+     * @return array
+     */
+    public function getEventhandlerCommandargumentValuesForCfg() {
+        $hostcommandargumentvaluesForCfg = [];
+        $serviceeventcommandargumentvalues = $this->get('serviceeventcommandargumentvalues');
+
+        foreach ($serviceeventcommandargumentvalues as $serviceeventcommandargumentvalue) {
+            /** @var $serviceeventcommandargumentvalue Serviceeventcommandargumentvalue */
+            $hostcommandargumentvaluesForCfg[] = [
+                'name'       => $serviceeventcommandargumentvalue->get('commandargument')->get('name'),
+                'human_name' => $serviceeventcommandargumentvalue->get('commandargument')->get('human_name'),
+                'value'      => $serviceeventcommandargumentvalue->get('value')
+            ];
+        }
+
+        return Hash::sort($hostcommandargumentvaluesForCfg, '{n}.name', 'asc', 'natural');
+    }
+
+    public function hasEventhandler() {
+        return $this->eventhandler_command_id > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCustomvariables() {
+        return !empty($this->customvariables);
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomvariablesForCfg() {
+        $cfgValues = [];
+        foreach ($this->customvariables as $Customvariable) {
+            /** @var Customvariable $Customvariable */
+            $key = sprintf('_%s', $Customvariable->get('name'));
+            $cfgValues[$key] = $Customvariable->get('value');
+        }
+        return $cfgValues;
+    }
+
+    /**
+     * @return string
+     */
+    public function getServicegroupsForCfg() {
+        $servicegroups = [];
+        foreach ($this->servicegroups as $servicegroup) {
+            /** @var Servicegroup $servicegroup */
+            $servicegroups[] = $servicegroup->get('uuid');
+        }
+        return implode(',', $servicegroups);
+    }
+
 }

@@ -334,4 +334,16 @@ class Servicetemplate extends Entity {
     public function hasEventhandler() {
         return $this->eventhandler_command_id > 0;
     }
+
+    /**
+     * @return string
+     */
+    public function getServicegroupsForCfg() {
+        $servicegroups = [];
+        foreach ($this->servicegroups as $servicegroup) {
+            /** @var Servicegroup $servicegroup */
+            $servicegroups[] = $servicegroup->get('uuid');
+        }
+        return implode(',', $servicegroups);
+    }
 }

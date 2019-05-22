@@ -1116,4 +1116,46 @@ class ServicesTable extends Table {
         return $query;
     }
 
+    /**
+     * @param $hostId
+     * @return array
+     */
+    public function getServicesForExportByHostId($hostId) {
+        $where = [
+            'Services.host_id'  => $hostId,
+            'Services.disabled' => 0
+        ];
+
+        $query = $this->find()
+            ->where($where)
+            ->contain([
+                //'Servicetemplates'                  =>
+                //    function (Query $q) {
+                //        return $q->enableAutoFields(false)->select(['id', 'uuid', 'check_interval', 'command_id']);
+                //    },
+                'Contactgroups'                     =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id', 'uuid']);
+                    },
+                'Contacts'                          =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id', 'uuid']);
+                    },
+                'Servicegroups'                     =>
+                    function (Query $q) {
+                        return $q->enableAutoFields(false)->select(['id', 'uuid']);
+                    },
+                'Customvariables',
+                'Servicecommandargumentvalues'      => [
+                    'Commandarguments'
+                ],
+                'Serviceeventcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->all();
+
+        return $this->emptyArrayIfNull($query);
+    }
+
 }

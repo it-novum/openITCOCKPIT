@@ -1200,6 +1200,24 @@ class HostsTable extends Table {
     }
 
     /**
+     * @return Query
+     */
+    public function getHostsForServiceExport(){
+        $query = $this->find()
+            ->select([
+                'Host.id',
+                'Host.uuid',
+                'Host.satellite_id',
+            ])
+            ->where([
+                'Hosts.disabled' => 0
+            ])
+            ->all();
+
+        return $query;
+    }
+
+    /**
      * @return int|null
      */
     public function getHostsCountForExport() {

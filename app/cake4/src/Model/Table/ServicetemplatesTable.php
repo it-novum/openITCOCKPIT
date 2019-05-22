@@ -597,7 +597,7 @@ class ServicetemplatesTable extends Table {
      * @param int $id
      * @return array
      */
-    public function getServicetemplateForDiff($id){
+    public function getServicetemplateForDiff($id) {
         return $this->getServicetemplateForEdit($id);
     }
 
@@ -852,7 +852,7 @@ class ServicetemplatesTable extends Table {
                 'CheckPeriod',
                 'NotifyPeriod',
                 'CheckCommand',
-                'Servicetemplatecommandargumentvalues' => [
+                'Servicetemplatecommandargumentvalues'      => [
                     'Commandarguments'
                 ],
                 'Servicetemplateeventcommandargumentvalues' => [
@@ -869,6 +869,20 @@ class ServicetemplatesTable extends Table {
         }
         $query->all();
         return $query;
+    }
+
+    /**
+     * @param $id
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getServicetemplateForServiceExport($id) {
+        return $this->find()
+            ->contain([
+                'Servicegroups',
+            ])
+            ->where([
+                'Servicetemplates.id' => $id
+            ])->firstOrFail();
     }
 
 }
