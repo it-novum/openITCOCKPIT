@@ -150,7 +150,15 @@
 
                     <div class="form-group" ng-class="{'has-error': errors.user_id}">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('User'); ?>
+                            <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
+                                <a ui-sref="HostsEdit({id:post.Contact.user_id})"
+                                   ng-if="post.Contact.user_id > 0">
+                                    <?php echo __('User'); ?>
+                                </a>
+                                <span ng-if="!post.Contact.user_id"><?php echo __('User'); ?></span>
+                            <?php else: ?>
+                                <?php echo __('User'); ?>
+                            <?php endif; ?>
                         </label>
                         <div class="col col-xs-10">
                             <select
@@ -185,8 +193,15 @@
                                 <div class="widget-body">
                                     <div class="form-group required"
                                          ng-class="{'has-error': errors.host_timeperiod_id}">
+
                                         <label class="col col-md-4 control-label">
-                                            <?php echo __('Host time period'); ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsEdit({id:post.Contact.host_timeperiod_id})">
+                                                    <?php echo __('Host time period'); ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('Host time period'); ?>
+                                            <?php endif; ?>
                                         </label>
                                         <div class="col col-xs-8">
                                             <select
@@ -354,7 +369,13 @@
                                     <div class="form-group required"
                                          ng-class="{'has-error': errors.service_timeperiod_id}">
                                         <label class="col col-md-4 control-label">
-                                            <?php echo __('Service time period'); ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsEdit({id:post.Contact.service_timeperiod_id})">
+                                                    <?php echo __('Service time period'); ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('Service time period'); ?>
+                                            <?php endif; ?>
                                         </label>
                                         <div class="col col-xs-8">
                                             <select
