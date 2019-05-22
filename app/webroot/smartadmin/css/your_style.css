@@ -2511,3 +2511,13 @@ input[type=text]:focus + .input-group-addon-no-focus {
     top: 5px!important;
 }
 
+.fake-href {
+    color: #337ab7;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.fake-href:hover {
+    color: #23527c;
+    text-decoration: underline;
+}
