@@ -168,6 +168,9 @@ angular.module('openITCOCKPIT')
                 $scope.servicetemplate = result.data.servicetemplate;
                 $scope.host = result.data.host;
 
+                $scope.hostContactsAndContactgroups = result.data.hostContactsAndContactgroups;
+                $scope.hosttemplateContactsAndContactgroups = result.data.hosttemplateContactsAndContactgroups;
+
                 $scope.data.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;
                 $scope.data.areContactsInheritedFromHost = result.data.areContactsInheritedFromHost;
                 $scope.data.areContactsInheritedFromServicetemplate = result.data.areContactsInheritedFromServicetemplate;
@@ -354,10 +357,36 @@ angular.module('openITCOCKPIT')
                     }
                 });
 
-                if(typeof $scope.hosttemplate !== "undefined"){
-                    $scope.post.Host.contacts._ids = $scope.hosttemplate.Hosttemplate.contacts._ids;
-                    $scope.post.Host.contactgroups._ids = $scope.hosttemplate.Hosttemplate.contactgroups._ids;
+                if($scope.data.areContactsInheritedFromServicetemplate === true){
+                    if(typeof $scope.servicetemplate !== "undefined"){
+                        $scope.post.Service.contacts._ids = $scope.servicetemplate.Servicetemplate.contacts._ids;
+                        $scope.post.Service.contactgroups._ids = $scope.servicetemplate.Servicetemplate.contactgroups._ids;
+                    }
+                    return;
                 }
+
+                if($scope.data.areContactsInheritedFromServicetemplate === true){
+                    if(typeof $scope.servicetemplate !== "undefined"){
+                        $scope.post.Service.contacts._ids = $scope.servicetemplate.Servicetemplate.contacts._ids;
+                        $scope.post.Service.contactgroups._ids = $scope.servicetemplate.Servicetemplate.contactgroups._ids;
+                    }
+                    return;
+                }
+
+                if($scope.data.areContactsInheritedFromHost === true){
+                    if(typeof $scope.hostContactsAndContactgroups !== "undefined"){
+                        $scope.post.Service.contacts._ids = $scope.hostContactsAndContactgroups.contacts._ids;
+                        $scope.post.Service.contactgroups._ids = $scope.hostContactsAndContactgroups.contactgroups._ids;
+                    }
+                    return;
+                }
+
+                //Contact information got inherited from host template
+                if(typeof $scope.hosttemplateContactsAndContactgroups !== "undefined"){
+                    $scope.post.Service.contacts._ids = $scope.hosttemplateContactsAndContactgroups.contacts._ids;
+                    $scope.post.Service.contactgroups._ids = $scope.hosttemplateContactsAndContactgroups.contactgroups._ids;
+                }
+
             }
         });
 

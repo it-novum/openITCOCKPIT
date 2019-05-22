@@ -933,15 +933,15 @@ class ServicesTable extends Table {
         $serviceFormated = [];
         foreach ($services as $serviceId => $serviceData) {
             $serviceFormated[$serviceId] = [
-                'Service' => [
+                'Service'         => [
                     'id'   => $serviceData['id'],
                     'name' => $serviceData['name']
                 ],
-                'Host'    => [
-                    'id' => $serviceData['_matchingData']['Hosts']['id'],
+                'Host'            => [
+                    'id'   => $serviceData['_matchingData']['Hosts']['id'],
                     'name' => $serviceData['_matchingData']['Hosts']['name']
                 ],
-                'Servicetemplate'    => [
+                'Servicetemplate' => [
                     'name' => $serviceData['_matchingData']['Servicetemplates']['name']
                 ]
             ];
@@ -1094,5 +1094,26 @@ class ServicesTable extends Table {
         ];
     }
 
+    /**
+     * @param int $id
+     * @param bool $enableHydration
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getServiceById($id, $enableHydration = true) {
+        $query = $this->find()
+            ->where([
+                'Services.id' => $id
+            ])
+            ->contain([
+                'Hosts' => [
+                    'HostsToContainersSharing'
+                ],
+                'Servicetemplates'
+
+            ])
+            ->enableHydration($enableHydration)
+            ->first();
+        return $query;
+    }
 
 }

@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Table\CommandargumentsTable;
@@ -314,35 +315,58 @@ class ServicesController extends AppController {
 
     /**
      * @param int|null $id
-     * @deprecated
+     * @throws MissingDbBackendException
      */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
         }
-        if (!$this->Service->exists($id)) {
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$ServicesTable->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
-        $service = $this->Service->findById($id);
-        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
-            $this->render403();
 
+        /** @var \App\Model\Entity\Service $service */
+        $service = $ServicesTable->getServiceById($id);
+
+        if (!$this->allowedByContainerId($service->get('host')->getContainerIds())) {
+            $this->render403();
             return;
         }
 
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
         $ServicestatusFields->wildcard();
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+
+        if ($this->DbBackend->isNdoUtils()) {
+            /** @var $ServicestatusTable ServicestatusTableInterface */
+            $ServicestatusTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Servicestatus');
+            $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
         if (empty($servicestatus)) {
             $servicestatus = [
-                'Servicestatus' => [],
+                'Servicestatus' => []
             ];
         }
-        $service = Hash::merge($service, $servicestatus);
+        $Servicestatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($servicestatus['Servicestatus']);
 
         $this->set('service', $service);
-        $this->set('_serialize', ['service']);
+        $this->set('servicestatus', $Servicestatus->toArray());
+        $this->set('_serialize', ['service', 'servicestatus']);
     }
 
     /**
