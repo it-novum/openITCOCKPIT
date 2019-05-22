@@ -2527,18 +2527,6 @@ class NagiosExportTask extends AppShell {
     }
 
     /**
-     * @param array $hostOrHosttemplate
-     *
-     * @return string
-     * @deprecated Move to Entity
-     */
-    public function hostFlapdetectionString($hostOrHosttemplate = []) {
-        $fields = ['flap_detection_on_up' => 'o', 'flap_detection_on_down' => 'd', 'flap_detection_on_unreachable' => 'u'];
-
-        return $this->_implode($hostOrHosttemplate, $fields);
-    }
-
-    /**
      * @param array $serviceOrServicetemplate
      *
      * @return string
@@ -2550,41 +2538,6 @@ class NagiosExportTask extends AppShell {
         return $this->_implode($serviceOrServicetemplate, $fields);
     }
 
-    /**
-     * @param array $contact
-     *
-     * @return string
-     * @deprecated Move to Entity
-     */
-    public function contactHostNotificationOptions($contact = []) {
-        $fields = ['notify_host_recovery' => 'r', 'notify_host_down' => 'd', 'notify_host_unreachable' => 'u', 'notify_host_flapping' => 'f', 'notify_host_downtime' => 's'];
-
-        return $this->_implode($contact, $fields);
-    }
-
-    /**
-     * @param array $contact
-     *
-     * @return string
-     * @deprecated Move to Entity
-     */
-    public function contactServiceNotificationOptions($contact = []) {
-        $fields = ['notify_service_downtime' => 's', 'notify_service_flapping' => 'f', 'notify_service_critical' => 'c', 'notify_service_unknown' => 'u', 'notify_service_warning' => 'w', 'notify_service_recovery' => 'r'];
-
-        return $this->_implode($contact, $fields);
-    }
-
-    /**
-     * @param array $hostescalation
-     *
-     * @return string
-     * @deprecated Move to Entity
-     */
-    public function hostEscalationString($hostescalation = []) {
-        $fields = ['escalate_on_recovery' => 'r', 'escalate_on_down' => 'd', 'escalate_on_unreachable' => 'u'];
-
-        return $this->_implode($hostescalation, $fields);
-    }
 
     /**
      * @param array $hostescalation
@@ -2596,30 +2549,6 @@ class NagiosExportTask extends AppShell {
         $fields = ['escalate_on_recovery' => 'r', 'escalate_on_warning' => 'w', 'escalate_on_unknown' => 'u', 'escalate_on_critical' => 'c'];
 
         return $this->_implode($hostescalation, $fields);
-    }
-
-    /**
-     * @param array $hostdependency
-     *
-     * @return string
-     * @deprecated Move to Entity
-     */
-    public function hostDependencyExecutionString($hostdependency = []) {
-        $fields = ['execution_fail_on_up' => 'o', 'execution_fail_on_down' => 'd', 'execution_fail_on_unreachable' => 'u', 'execution_fail_on_pending' => 'p', 'execution_none' => 'n'];
-
-        return $this->_implode($hostdependency, $fields);
-    }
-
-    /**
-     * @param array $hostdependency
-     *
-     * @return string
-     * @deprecated Move to Entity
-     */
-    public function hostDependencyNotificationString($hostdependency = []) {
-        $fields = ['notification_fail_on_up' => 'o', 'notification_fail_on_down' => 'd', 'notification_fail_on_unreachable' => 'u', 'notification_fail_on_pending' => 'p', 'notification_none' => 'n'];
-
-        return $this->_implode($hostdependency, $fields);
     }
 
     /**
