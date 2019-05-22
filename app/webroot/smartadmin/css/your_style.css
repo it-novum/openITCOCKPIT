@@ -704,7 +704,7 @@ div.default .chosen-container-multi .chosen-choices li.search-choice .search-cho
 }
 
 .chosen-service .title-row {
-    /*	border-bottom: 1px solid #888;*/
+    /*  border-bottom: 1px solid #888;*/
     font-weight: bold;
     margin-top: 1em;
 }
@@ -1360,9 +1360,9 @@ a.autocomplete-items {
 
 /*
 .custom-tree li.parent_li > span:hover {
-	background-color: #4F9E4F;
-	border: 1px solid #468C46;
-	color: #ffffff;
+    background-color: #4F9E4F;
+    border: 1px solid #468C46;
+    color: #ffffff;
 }
 */
 .custom-tree li.parent_li > span:hover + ul li::before {
@@ -2025,6 +2025,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     display: inline-block;
     line-height: 1.6;
     min-width: 90px;
+    width:100%;
     margin-top: 2px;
 }
 
@@ -2374,14 +2375,13 @@ input[type=text]:focus + .input-group-addon-no-focus {
     padding: 1px 2px 1px 1px;
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
-    width: 12px;
 }
 
 .label-breadcrumb .label:last-child {
     padding: 1px 5px 1px 10px;
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
-    width: 60%;
+    width: 70%;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -2502,13 +2502,13 @@ input[type=text]:focus + .input-group-addon-no-focus {
     padding: 15px;
 }
 
-.fake-chosen-select{
-    height: 34px!important;
-    padding: 4px 12px!important;
+.fake-chosen-select {
+    height: 34px !important;
+    padding: 4px 12px !important;
 }
 
 .fake-chosen-select div {
-    top: 5px!important;
+    top: 5px !important;
 }
 
 .fake-href {

@@ -250,7 +250,7 @@
                                     <th><?php echo __('Contacts'); ?></th>
                                     <th><?php echo __('Contact groups'); ?></th>
                                     <th class="no-sort"><?php echo __('Options'); ?></th>
-                                    <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
+                                    <th class="no-sort text-center width-60"><i class="fa fa-gear fa-lg"></i></th>
                                 </tr>
                                 </thead>
                                 <tbody>

@@ -52,7 +52,7 @@
             <form class="form-horizontal" ng-init="successMessage=
             {objectName : '<?php echo __('Host dependency'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-9">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                             <label class="col col-md-2 control-label">
                                 <?php echo __('Container'); ?>
@@ -75,16 +75,16 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.hosts}">
+                        <div class="form-group" ng-class="{'has-error': errors.hosts}">
                             <label class="col col-md-2 control-label">
-                                <div class="label-group label-breadcrumb label-breadcrumb-default">
+                                <div class="label-group label-breadcrumb label-breadcrumb-default required">
                                     <label class="label label-default label-xs">
                                         <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                     </label>
-                                    <span class="label label-light label-xs no-border"
+                                    <label class="label label-light label-xs no-border"
                                           ng-class="{'has-error': errors.hosts}">
                                         <?php echo __('Hosts'); ?>
-                                    </span>
+                                    </label>
                                 </div>
                             </label>
                             <div class="col col-xs-12 col-lg-10 default">
@@ -102,16 +102,16 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.hosts_dependent}">
+                        <div class="form-group" ng-class="{'has-error': errors.hosts_dependent}">
                             <label class="col col-md-2 control-label">
-                                <div class="label-group label-breadcrumb label-breadcrumb-primary">
+                                <div class="label-group label-breadcrumb label-breadcrumb-primary required">
                                     <label class="label label-primary label-xs">
                                         <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
                                     </label>
-                                    <span class="label label-light label-xs no-border"
+                                    <label class="label label-light label-xs no-border"
                                           ng-class="{'has-error': errors.hosts_dependent}">
                                         <?php echo __('Dependent hosts'); ?>
-                                    </span>
+                                    </label>
                                 </div>
                             </label>
                             <div class="col col-xs-12 col-lg-10 info">
@@ -223,7 +223,7 @@
                                             <?php echo __('Recovery'); ?>
                                         </span>
                                         </label>
-                                        <div class="col-md-2 smart-form">
+                                        <div class="col-md-2 smart-form padding-left-5">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        ng-true-value="1"
@@ -243,7 +243,7 @@
                                             <?php echo __('Down'); ?>
                                             </span>
                                         </label>
-                                        <div class="col-md-2 smart-form">
+                                        <div class="col-md-2 smart-form padding-left-5">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        ng-true-value="1"
@@ -263,7 +263,7 @@
                                                 <?php echo __('Unreachable'); ?>
                                             </span>
                                         </label>
-                                        <div class="col-md-2 smart-form">
+                                        <div class="col-md-2 smart-form padding-left-5">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        ng-true-value="1"
@@ -283,7 +283,7 @@
                                                 <?php echo __('Pending'); ?>
                                             </span>
                                         </label>
-                                        <div class="col-md-2 smart-form">
+                                        <div class="col-md-2 smart-form padding-left-5">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        ng-true-value="1"
@@ -303,7 +303,7 @@
                                                 <?php echo __('Execution none'); ?>
                                             </span>
                                         </label>
-                                        <div class="col-md-2 smart-form">
+                                        <div class="col-md-2 smart-form padding-left-5">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        ng-true-value="1"
@@ -334,7 +334,7 @@
                                             <?php echo __('Recovery'); ?>
                                         </span>
                                         </label>
-                                        <div class="col-md-2 smart-form">
+                                        <div class="col-md-2 smart-form padding-left-5">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        ng-true-value="1"
@@ -354,7 +354,7 @@
                                             <?php echo __('Down'); ?>
                                             </span>
                                         </label>
-                                        <div class="col-md-2 smart-form">
+                                        <div class="col-md-2 smart-form padding-left-5">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        ng-true-value="1"
@@ -374,7 +374,7 @@
                                                 <?php echo __('Unreachable'); ?>
                                             </span>
                                         </label>
-                                        <div class="col-md-2 smart-form">
+                                        <div class="col-md-2 smart-form padding-left-5">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        ng-true-value="1"
@@ -394,7 +394,7 @@
                                                 <?php echo __('Pending'); ?>
                                             </span>
                                         </label>
-                                        <div class="col-md-2 smart-form">
+                                        <div class="col-md-2 smart-form padding-left-5">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        ng-true-value="1"
@@ -414,7 +414,7 @@
                                                 <?php echo __('Notification none'); ?>
                                             </span>
                                         </label>
-                                        <div class="col-md-2 smart-form">
+                                        <div class="col-md-2 smart-form padding-left-5">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        ng-true-value="1"
