@@ -177,7 +177,7 @@
 
                         <div class="form-group">
                             <label class="col col-md-2 control-label">
-                                <?php echo __('Timeperiod'); ?>
+                                <?php echo __('Time period'); ?>
                             </label>
                             <div class="col col-xs-12 col-lg-10">
                                 <select

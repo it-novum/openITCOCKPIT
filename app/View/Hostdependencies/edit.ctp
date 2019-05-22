@@ -176,7 +176,13 @@
 
                         <div class="form-group">
                             <label class="col col-md-2 control-label">
-                                <?php echo __('Timeperiod'); ?>
+                                <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                    <a ui-sref="TimeperiodsEdit({id:post.Hostdependency.timeperiod_id})">
+                                        <?php echo __('Time period'); ?>
+                                    </a>
+                                <?php else: ?>
+                                    <?php echo __('Time period'); ?>
+                                <?php endif; ?>
                             </label>
                             <div class="col col-xs-12 col-lg-10">
                                 <select
