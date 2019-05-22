@@ -2573,8 +2573,9 @@ class ServicesController extends AppController {
 
     /**
      * @param int $servicetemplateId
+     * @param int|null $hostId
      */
-    public function loadServicetemplate($servicetemplateId) {
+    public function loadServicetemplate($servicetemplateId, $hostId = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2587,10 +2588,59 @@ class ServicesController extends AppController {
         }
 
         $servicetemplate = $ServicetemplatesTable->getServicetemplateForEdit($servicetemplateId);
+        $toJson = ['servicetemplate'];
+
+
+        if ($hostId !== null) {
+            //We are in /services/add
+
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            /** @var $HosttemplatesTable HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+            if ($HostsTable->existsById($hostId)) {
+                $host = $HostsTable->get($hostId);
+
+                //We are in services/add
+                //There is no service jet, so no contacts
+                $serviceContacts = [
+                    'contacts'      => ['_ids' => []],
+                    'contactgroups' => ['_ids' => []]
+                ];
+
+                $servicetemplateContactsAndContactgroups = $ServicetemplatesTable->getContactsAndContactgroupsById($servicetemplateId);
+                $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsById($hostId);
+                $hosttemplateContactsAndContactgroups = $HosttemplatesTable->getContactsAndContactgroupsById($host->get('hosttemplate_id'));
+
+                $ServiceMergerForView = new ServiceMergerForView(
+                    ['Service' => $serviceContacts],
+                    ['Servicetemplate' => $servicetemplateContactsAndContactgroups],
+                    $hostContactsAndContactgroups,
+                    $hosttemplateContactsAndContactgroups
+                );
+
+                $contactsAndContactgroups = $ServiceMergerForView->getDataForContactsAndContactgroups();
+
+                $this->set('contactsAndContactgroups', $contactsAndContactgroups);
+                $this->set('hostContactsAndContactgroups', $hostContactsAndContactgroups);
+                $this->set('hosttemplateContactsAndContactgroups', $hosttemplateContactsAndContactgroups);
+                $this->set('servicetemplateContactsAndContactgroups', $servicetemplateContactsAndContactgroups);
+                $this->set('areContactsInheritedFromHosttemplate', $ServiceMergerForView->areContactsInheritedFromHosttemplate());
+                $this->set('areContactsInheritedFromHost', $ServiceMergerForView->areContactsInheritedFromHost());
+                $this->set('areContactsInheritedFromServicetemplate', $ServiceMergerForView->areContactsInheritedFromServicetemplate());
+                $toJson[] = 'contactsAndContactgroups';
+                $toJson[] = 'hostContactsAndContactgroups';
+                $toJson[] = 'hosttemplateContactsAndContactgroups';
+                $toJson[] = 'servicetemplateContactsAndContactgroups';
+                $toJson[] = 'areContactsInheritedFromHosttemplate';
+                $toJson[] = 'areContactsInheritedFromHost';
+                $toJson[] = 'areContactsInheritedFromServicetemplate';
+            }
+        }
 
 
         $this->set('servicetemplate', $servicetemplate);
-        $this->set('_serialize', ['servicetemplate']);
+        $this->set('_serialize', $toJson);
     }
 
     public function loadCommands() {

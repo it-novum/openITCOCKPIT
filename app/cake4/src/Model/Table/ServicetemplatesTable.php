@@ -808,4 +808,34 @@ class ServicetemplatesTable extends Table {
         return $this->formatListAsCake2($query->toArray(), 'id', 'template_name');
     }
 
+    /**
+     * @param int $id
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getContactsAndContactgroupsById($id) {
+        $query = $this->find()
+            ->select([
+                'Servicetemplates.id'
+            ])
+            ->where([
+                'Servicetemplates.id' => $id
+            ])
+            ->contain([
+                'Contactgroups',
+                'Contacts'
+            ])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $servicetemplate = $query;
+        $servicetemplate['contacts'] = [
+            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+        ];
+        $servicetemplate['contactgroups'] = [
+            '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
+        ];
+
+        return $servicetemplate;
+    }
+
 }

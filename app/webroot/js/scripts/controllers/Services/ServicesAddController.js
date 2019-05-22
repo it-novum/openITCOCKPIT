@@ -8,7 +8,11 @@ angular.module('openITCOCKPIT')
         }
 
         $scope.data = {
-            createAnother: false
+            createAnother: false,
+            areContactsInheritedFromHosttemplate: false,
+            areContactsInheritedFromHost: false,
+            areContactsInheritedFromServicetemplate: false,
+            disableInheritance: false
         };
 
         var clearForm = function(){
@@ -253,7 +257,7 @@ angular.module('openITCOCKPIT')
         $scope.loadElements = function(){
             var hostId = $scope.post.Service.host_id;
             //May be triggered by watch from "Create another"
-            if(hostId === 0){
+            if(hostId === 0 || hostId === null){
                 return;
             }
 
@@ -276,9 +280,34 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            $http.post("/services/loadServicetemplate/" + servicetemplateId + ".json?angular=true", {}).then(function(result){
+            var hostId = $scope.post.Service.host_id;
+            //May be triggered by watch from "Create another"
+            if(hostId === 0){
+                return;
+            }
+
+            $http.post("/services/loadServicetemplate/" + servicetemplateId + "/" + hostId + ".json?angular=true", {}).then(function(result){
                 $scope.servicetemplate = result.data.servicetemplate;
                 setValuesFromServicetemplate();
+
+                //Services add. At this point all contacts must be inherited from somewhere because the service does not exists jet.
+                $scope.data.disableInheritance = false;
+                $scope.data.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;
+                $scope.data.areContactsInheritedFromHost = result.data.areContactsInheritedFromHost;
+                $scope.data.areContactsInheritedFromServicetemplate = result.data.areContactsInheritedFromServicetemplate;
+
+                $scope.inheritedContactsAndContactgroups = result.data.contactsAndContactgroups;
+                $scope.post.Service.contacts._ids = result.data.contactsAndContactgroups.contacts._ids;
+                $scope.post.Service.contactgroups._ids = result.data.contactsAndContactgroups.contactgroups._ids;
+
+                $('#ContactBlocker').block({
+                    message: null,
+                    overlayCSS: {
+                        opacity: 0.5,
+                        cursor: 'not-allowed',
+                        'background-color': 'rgb(255, 255, 255)'
+                    }
+                });
             });
 
             setTimeout(function(){
@@ -405,6 +434,33 @@ angular.module('openITCOCKPIT')
 
             $scope.loadEventHandlerCommandArguments();
         }, true);
+
+        $scope.$watch('data.disableInheritance', function(){
+            if(
+                $scope.data.areContactsInheritedFromHosttemplate === false &&
+                $scope.data.areContactsInheritedFromHost === false &&
+                $scope.data.areContactsInheritedFromServicetemplate === false){
+                return;
+            }
+
+            if($scope.data.disableInheritance === true){
+                //Overwrite with own contacts
+                $('#ContactBlocker').unblock();
+            }else{
+                //Inherit contacts
+                $('#ContactBlocker').block({
+                    message: null,
+                    overlayCSS: {
+                        opacity: 0.5,
+                        cursor: 'not-allowed',
+                        'background-color': 'rgb(255, 255, 255)'
+                    }
+                });
+
+                $scope.post.Service.contacts._ids = $scope.inheritedContactsAndContactgroups.contacts._ids;
+                $scope.post.Service.contactgroups._ids = $scope.inheritedContactsAndContactgroups.contactgroups._ids;
+            }
+        });
 
 
     });
