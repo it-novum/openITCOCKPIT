@@ -223,7 +223,13 @@
                                     <div class="form-group required"
                                          ng-class="{'has-error': errors.check_period_id}">
                                         <label class="col-xs-12 col-lg-2 control-label">
-                                            <?php echo __('Check period'); ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsEdit({id:post.Servicetemplate.check_period_id})">
+                                                    <?php echo __('Check period'); ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('Check period'); ?>
+                                            <?php endif; ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10">
                                             <select
@@ -302,7 +308,13 @@
                                     <div class="form-group required"
                                          ng-class="{'has-error': errors.command_id}">
                                         <label class="col-xs-12 col-lg-2 control-label">
-                                            <?php echo __('Check command'); ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                                <a ui-sref="CommandsEdit({id:post.Servicetemplate.command_id})">
+                                                    <?php echo __('Check command'); ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('Check command'); ?>
+                                            <?php endif; ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10">
                                             <select
@@ -437,7 +449,13 @@
                                     <div class="form-group required"
                                          ng-class="{'has-error': errors.notify_period_id}">
                                         <label class="col-xs-12 col-lg-2 control-label">
-                                            <?php echo __('Notification period'); ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsEdit({id:post.Servicetemplate.notify_period_id})">
+                                                    <?php echo __('Notification period'); ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('Notification period'); ?>
+                                            <?php endif; ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10">
                                             <select
