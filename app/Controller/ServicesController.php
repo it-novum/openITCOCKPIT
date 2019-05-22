@@ -39,6 +39,7 @@ use App\Model\Table\ServiceeventcommandargumentvaluesTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
@@ -850,11 +851,7 @@ class ServicesController extends AppController {
         }
     }
 
-    /**
-     * @deprecated
-     */
     public function deleted() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
@@ -1789,41 +1786,6 @@ class ServicesController extends AppController {
         ]);
     }
 
-    /*
-	* Compare two arrays with each other
-	* @host Array
-	* @hosttemplate Array
-	* @return $diff_array
-	*
-	* *************** Contact and contactgroups check ************
-	debug(Set::classicExtract($host, '{(Contact|Contactgroup)}.{(Contact|Contactgroup)}.{n}'))); 	//Host
-	debug(Set::classicExtract($hosttemplate, '{(Contact|Contactgroup)}.{n}.id'));					//Hosttemplate
-	array(
-		'Contact' => array(
-			'Contact' => array(
-				(int) 0 => '26'
-			)
-		),
-		'Contactgroup' => array(
-			'Contactgroup' => array(
-				(int) 0 => '131',
-				(int) 1 => '132'
-			)
-		)
-	)
-	*************** Single fields in hosttemplate and host *************
-	debug(Set::classicExtract($host, 'Host.{('.implode('|', array_values(Hash::merge($fields,['name', 'description', 'address']))).')}'));	//Host
-	debug(Set::classicExtract($hosttemplate, 'Hosttemplate.{('.implode('|', array_values($fields)).')}')));	//Hosttemplate
-
-	**************** Command arguments check *************
-	debug(Set::classicExtract($host, 'Hostcommandargumentvalue.{n}.{(commandargument_id|value)}'));	//Host
-	debug(Set::classicExtract($hosttemplate, 'Hosttemplatecommandargumentvalue.{n}.{(commandargument_id|value)}')));	//Hostemplate
-
-	**************** Custom variables check *************
-	debug(Set::classicExtract($host, 'Customvariable.{n}.{(name|value)}'));	//Host
-	debug(Set::classicExtract($hosttemplate, 'Customvariable.{n}.{(name|value)}'));	//Hosttemplate
-	*/
-
     /**
      * @param int|null $host_id
      * @deprecated
@@ -1833,6 +1795,7 @@ class ServicesController extends AppController {
         $User = new User($this->Auth);
 
         if (!$this->isApiRequest() && $host_id === null) {
+            /** @var $Systemsettings SystemsettingsTable */
             $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
             $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
