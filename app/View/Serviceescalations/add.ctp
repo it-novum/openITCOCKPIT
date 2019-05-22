@@ -247,7 +247,7 @@ Once a service escalated, contacts, contact group and notification options will 
 
                         <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
                             <label class="col col-md-2 control-label">
-                                <?php echo __('Timeperiod'); ?>
+                                <?php echo __('Time period'); ?>
                             </label>
                             <div class="col col-xs-12 col-lg-10">
                                 <select

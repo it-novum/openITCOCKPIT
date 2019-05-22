@@ -243,7 +243,13 @@ Once a host or service escalated, contacts, contact group and notification optio
 
                         <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
                             <label class="col col-md-2 control-label">
-                                <?php echo __('Timeperiod'); ?>
+                                <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                    <a ui-sref="TimeperiodsEdit({id:post.Hostescalation.timeperiod_id})">
+                                        <?php echo __('Time period'); ?>
+                                    </a>
+                                <?php else: ?>
+                                    <?php echo __('Time period'); ?>
+                                <?php endif; ?>
                             </label>
                             <div class="col col-xs-12 col-lg-10">
                                 <select

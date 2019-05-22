@@ -206,7 +206,7 @@
 
                     <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('Timeperiod'); ?>
+                            <?php echo __('Time period'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <select data-placeholder="<?php echo __('Please choose a timeperiod'); ?>"
