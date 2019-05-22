@@ -2521,3 +2521,7 @@ input[type=text]:focus + .input-group-addon-no-focus {
     color: #23527c;
     text-decoration: underline;
 }
+
+.table>thead>tr>th {
+    vertical-align: top;
+}
