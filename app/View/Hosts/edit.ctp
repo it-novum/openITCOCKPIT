@@ -125,7 +125,13 @@
                                         <div class="form-group required"
                                              ng-class="{'has-error': errors.hosttemplate_id}">
                                             <label class="col-xs-12 col-lg-2 control-label">
-                                                <?php echo __('Host template'); ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                                    <a ui-sref="HosttemplatesEdit({id:post.Host.hosttemplate_id})">
+                                                        <?php echo __('Host template'); ?>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <?php echo __('Host template'); ?>
+                                                <?php endif; ?>
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
                                                 <select
@@ -312,7 +318,15 @@
 
                                             <div class="form-group" ng-class="{'has-error': errors.satellite_id}">
                                                 <label class="col-xs-12 col-lg-2 control-label">
-                                                    <?php echo __('Satellite'); ?>
+                                                    <?php if ($this->Acl->hasPermission('edit', 'satellites', 'DistributeModule')): ?>
+                                                        <a ui-sref="SatellitesEdit({id:post.Host.satellite_id})"
+                                                           ng-if="post.Host.satellite_id > 0">
+                                                            <?php echo __('Satellite'); ?>
+                                                        </a>
+                                                        <span ng-if="post.Host.satellite_id == 0"><?php echo __('Satellite'); ?></span>
+                                                    <?php else: ?>
+                                                        <?php echo __('Satellite'); ?>
+                                                    <?php endif; ?>
                                                 </label>
                                                 <div class="col-xs-12 col-lg-10">
                                                     <select
@@ -353,7 +367,13 @@
                                     <div class="form-group required"
                                          ng-class="{'has-error': errors.check_period_id}">
                                         <label class="col-xs-12 col-lg-2 control-label">
-                                            <?php echo __('Check period'); ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsEdit({id:post.Host.check_period_id})">
+                                                    <?php echo __('Check period'); ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('Check period'); ?>
+                                            <?php endif; ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10">
                                             <div class="input-group" style="width: 100%;">
@@ -404,7 +424,13 @@
                                     <div class="form-group required"
                                          ng-class="{'has-error': errors.command_id}">
                                         <label class="col-xs-12 col-lg-2 control-label">
-                                            <?php echo __('Check command'); ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                                <a ui-sref="CommandsEdit({id:post.Host.command_id})">
+                                                    <?php echo __('Check command'); ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('Check command'); ?>
+                                            <?php endif; ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10">
                                             <div class="input-group" style="width: 100%;">
@@ -558,7 +584,13 @@
                                     <div class="form-group required"
                                          ng-class="{'has-error': errors.notify_period_id}">
                                         <label class="col-xs-12 col-lg-2 control-label">
-                                            <?php echo __('Notification period'); ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsEdit({id:post.Host.notify_period_id})">
+                                                    <?php echo __('Notification period'); ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <?php echo __('Notification period'); ?>
+                                            <?php endif; ?>
                                         </label>
                                         <div class="col-xs-12 col-lg-10">
                                             <div class="input-group" style="width: 100%;">
