@@ -249,4 +249,19 @@ class ServicegroupsTable extends Table {
 
         return $list;
     }
+
+    /**
+     * @return array
+     */
+    public function getServicegroupsForExport() {
+        $query = $this->find()
+            ->select([
+                'Servicegroups.id',
+                'Servicegroups.uuid',
+                'Servicegroups.description'
+            ])
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }

@@ -33,6 +33,7 @@ use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
+use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Filesystem\File;
@@ -1690,40 +1691,31 @@ class NagiosExportTask extends AppShell {
         }
     }
 
-    /**
-     * @param null|string $uuid
-     */
-    public function exportServicegroups($uuid = null) {
-        if ($uuid !== null) {
-            $servicegroups = [];
-            $servicegroups[] = $this->Servicegroup->findByUuid($uuid);
-        } else {
-            $servicegroups = $this->Servicegroup->find('all', [
-                'recursive' => -1,
-                'fields'    => [
-                    'Servicegroup.id',
-                    'Servicegroup.uuid',
-                    'Servicegroup.description',
-                ],
-            ]);
-        }
+    public function exportServicegroups() {
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+        $servicegroups = $ServicegroupsTable->getServicegroupsForExport();
 
         if (!is_dir($this->conf['path'] . $this->conf['servicegroups'])) {
             mkdir($this->conf['path'] . $this->conf['servicegroups']);
         }
 
         foreach ($servicegroups as $servicegroup) {
-            $file = new File($this->conf['path'] . $this->conf['servicegroups'] . $servicegroup['Servicegroup']['uuid'] . $this->conf['suffix']);
+            /** @var $servicegroup \App\Model\Entity\Servicegroup */
+            $file = new File($this->conf['path'] . $this->conf['servicegroups'] . $servicegroup->get('uuid') . $this->conf['suffix']);
             $content = $this->fileHeader();
             if (!$file->exists()) {
                 $file->create();
             }
 
+            $alias = $this->escapeLastBackslash($servicegroup->get('description'));
+            if (empty($alias)) {
+                $alias = $servicegroup->get('uuid');
+            }
+
             $content .= $this->addContent('define servicegroup{', 0);
-            $content .= $this->addContent('servicegroup_name', 1, $servicegroup['Servicegroup']['uuid']);
-            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash(
-                $servicegroup['Servicegroup']['description']
-            ));
+            $content .= $this->addContent('servicegroup_name', 1, $servicegroup->get('uuid'));
+            $content .= $this->addContent('alias', 1, $alias);
 
             $content .= $this->addContent('}', 0);
             $file->write($content);
