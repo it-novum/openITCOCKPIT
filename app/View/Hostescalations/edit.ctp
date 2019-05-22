@@ -52,7 +52,7 @@
             <form class="form-horizontal" ng-init="successMessage=
             {objectName : '<?php echo __('Host escalation'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-9">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                             <label class="col col-md-2 control-label">
                                 <?php echo __('Container'); ?>
@@ -75,15 +75,16 @@ Once a host or service escalated, contacts, contact group and notification optio
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.hosts}">
+                        <div class="form-group" ng-class="{'has-error': errors.hosts}">
                             <label class="col col-md-2 control-label">
-                                <div class="label-group label-breadcrumb label-breadcrumb-success">
+                                <div class="label-group label-breadcrumb label-breadcrumb-success required">
                                     <label class="label label-success label-xs">
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </label>
-                                    <span class="label label-light label-xs no-border" ng-class="{'has-error': errors.hosts}">
+                                    <label class="label label-light label-xs no-border"
+                                          ng-class="{'has-error': errors.hosts}">
                                         <?php echo __('Hosts'); ?>
-                                    </span>
+                                    </label>
                                 </div>
                             </label>
                             <div class="col col-xs-12 col-lg-10 success">
@@ -217,9 +218,11 @@ Once a host or service escalated, contacts, contact group and notification optio
                                 </div>
                                 <div class="info-block-helptext">
                                     <?php echo __('Host escalates after: More than '); ?>
-                                    {{post.Hostescalation.first_notification ? post.Hostescalation.first_notification : '?'}}
+                                    {{post.Hostescalation.first_notification ? post.Hostescalation.first_notification :
+                                    '?'}}
                                     <?php echo __(' where send and less than '); ?>
-                                    {{post.Hostescalation.last_notification ? post.Hostescalation.last_notification : '?'}}
+                                    {{post.Hostescalation.last_notification ? post.Hostescalation.last_notification :
+                                    '?'}}
                                 </div>
                                 <div ng-repeat="error in errors.last_notification">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -314,6 +317,7 @@ Once a host or service escalated, contacts, contact group and notification optio
                                     <div class="text-danger">{{ error }}</div>
                                 </div>
                             </legend>
+
                             <ul class="config-flex-inner">
                                 <li>
                                     <div class="margin-bottom-0">
@@ -323,7 +327,7 @@ Once a host or service escalated, contacts, contact group and notification optio
                                             <?php echo __('Recovery'); ?>
                                         </span>
                                         </label>
-                                        <div class="col-md-2 smart-form">
+                                        <div class="col-md-2 smart-form padding-left-5">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        ng-true-value="1"
@@ -337,12 +341,13 @@ Once a host or service escalated, contacts, contact group and notification optio
                                 </li>
                                 <li>
                                     <div class="margin-bottom-0">
-                                        <label for="escalate_on_down" class="col col-md-7 control-label padding-top-0">
+                                        <label for="escalate_on_down"
+                                               class="col col-md-7 control-label padding-top-0">
                                             <span class="label label-danger notify-label-small">
                                             <?php echo __('Down'); ?>
                                             </span>
                                         </label>
-                                        <div class="col-md-2 smart-form">
+                                        <div class="col-md-2 smart-form padding-left-5">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        ng-true-value="1"
@@ -362,7 +367,7 @@ Once a host or service escalated, contacts, contact group and notification optio
                                                 <?php echo __('Unreachable'); ?>
                                             </span>
                                         </label>
-                                        <div class="col-md-2 smart-form">
+                                        <div class="col-md-2 smart-form padding-left-5">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        ng-true-value="1"
