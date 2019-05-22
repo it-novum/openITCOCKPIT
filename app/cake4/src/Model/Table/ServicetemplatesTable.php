@@ -838,4 +838,37 @@ class ServicetemplatesTable extends Table {
         return $servicetemplate;
     }
 
+    /**
+     * @param null $uuid
+     * @return array|\Cake\ORM\Query
+     */
+    public function getServicetemplatesForExport($uuid = null) {
+        $query = $this->find()
+            ->contain([
+                'Contactgroups',
+                'Contacts',
+                'Servicegroups',
+                'Customvariables',
+                'CheckPeriod',
+                'NotifyPeriod',
+                'CheckCommand',
+                'Servicetemplatecommandargumentvalues' => [
+                    'Commandarguments'
+                ],
+                'Servicetemplateeventcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ]);
+        if (!empty($uuid)) {
+            if (!is_array($uuid)) {
+                $uuid = [$uuid];
+            }
+            $query->where([
+                'Servicetemplates.uuid IN' => $uuid
+            ]);
+        }
+        $query->all();
+        return $query;
+    }
+
 }

@@ -33,6 +33,7 @@ use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
+use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
@@ -388,7 +389,7 @@ class NagiosExportTask extends AppShell {
     public function exportHosttemplates($uuid = null) {
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-        $hosttemplates = $HosttemplatesTable->getHosttemplatesForExport();
+        $hosttemplates = $HosttemplatesTable->getHosttemplatesForExport($uuid);
 
         if (!is_dir($this->conf['path'] . $this->conf['hosttemplates'])) {
             mkdir($this->conf['path'] . $this->conf['hosttemplates']);
@@ -971,29 +972,9 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportServicetemplates($uuid = null) {
-        if ($uuid !== null) {
-            $_servicetemplates = [];
-            $_servicetemplates[] = $this->Servicetemplate->findByUuid($uuid);
-        } else {
-            $_servicetemplates = $this->Servicetemplate->find('all', [
-                'recursive' => -1,
-                'contain'   => [
-                    'CheckPeriod',
-                    'NotifyPeriod',
-                    'CheckCommand',
-                    'EventhandlerCommand',
-                    'Customvariable',
-                    'Servicetemplatecommandargumentvalue'      => [
-                        'Commandargument',
-                    ],
-                    'Servicetemplateeventcommandargumentvalue' => [
-                        'Commandargument',
-                    ],
-                    'Contact',
-                    'Contactgroup',
-                ],
-            ]);
-        }
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        $servicetemplates = $ServicetemplatesTable->getServicetemplatesForExport($uuid);
 
         if (!is_dir($this->conf['path'] . $this->conf['servicetemplates'])) {
             mkdir($this->conf['path'] . $this->conf['servicetemplates']);
@@ -1007,55 +988,49 @@ class NagiosExportTask extends AppShell {
             $content = $this->fileHeader();
         }
 
-        foreach ($_servicetemplates as $servicetemplates) {
+        foreach ($servicetemplates as $servicetemplate) {
+            /** @var \App\Model\Entity\Servicetemplate $servicetemplate */
+
             if (!$this->conf['minified']) {
-                $file = new File($this->conf['path'] . $this->conf['servicetemplates'] . $servicetemplates['Servicetemplate']['uuid'] . $this->conf['suffix']);
+                $file = new File($this->conf['path'] . $this->conf['servicetemplates'] . $servicetemplate->get('uuid') . $this->conf['suffix']);
                 $content = $this->fileHeader();
                 if (!$file->exists()) {
                     $file->create();
                 }
             }
 
-            $commandarguments = [];
-            if (!empty($servicetemplates['Servicetemplatecommandargumentvalue'])) {
-                //Select command arguments + command, because we have arguments!
-                $commandarguments = Hash::sort($servicetemplates['Servicetemplatecommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
-            }
-
             $content .= $this->addContent('define service{', 0);
             $content .= $this->addContent('register', 1, 0);
             $content .= $this->addContent('use', 1, '689bfdd01af8a21c4a4706c5117849c2fc2c3f38');
-            $content .= $this->addContent('name', 1, $servicetemplates['Servicetemplate']['uuid']);
+            $content .= $this->addContent('name', 1, $servicetemplate->get('uuid'));
             $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
-                $servicetemplates['Servicetemplate']['name']
+                $servicetemplate->get('name')
             ));
-            $content .= $this->addContent('service_description', 1, $servicetemplates['Servicetemplate']['uuid']);
+            $content .= $this->addContent('service_description', 1, $servicetemplate->get('uuid'));
 
             $content .= $this->nl();
             $content .= $this->addContent(';Check settings:', 1);
-            if (isset($commandarguments) && !empty($commandarguments)) {
-                $content .= $this->addContent('check_command', 1, $servicetemplates['CheckCommand']['uuid'] . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+
+            if ($servicetemplate->hasServicetemplatecommandargumentvalues()) {
+                $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid') . '!' . $servicetemplate->getServicetemplatecommandargumentvaluesForCfg());
             } else {
-                $content .= $this->addContent('check_command', 1, $servicetemplates['CheckCommand']['uuid']);
+                $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid'));
             }
 
-            if (isset($commandarguments)) {
-                unset($commandarguments);
-            }
 
             $content .= $this->addContent('initial_state', 1, $this->_systemsettings['MONITORING']['MONITORING.SERVICE.INITSTATE']);
-            $content .= $this->addContent('check_period', 1, $servicetemplates['CheckPeriod']['uuid']);
-            $content .= $this->addContent('check_interval', 1, $servicetemplates['Servicetemplate']['check_interval']);
-            $content .= $this->addContent('retry_interval', 1, $servicetemplates['Servicetemplate']['retry_interval']);
-            $content .= $this->addContent('max_check_attempts', 1, $servicetemplates['Servicetemplate']['max_check_attempts']);
-            $content .= $this->addContent('active_checks_enabled', 1, $servicetemplates['Servicetemplate']['active_checks_enabled']);
+            $content .= $this->addContent('check_period', 1, $servicetemplate->get('check_period')->get('uuid'));
+            $content .= $this->addContent('check_interval', 1, $servicetemplate->get('check_interval'));
+            $content .= $this->addContent('retry_interval', 1, $servicetemplate->get('retry_interval'));
+            $content .= $this->addContent('max_check_attempts', 1, $servicetemplate->get('max_check_attempts'));
+            $content .= $this->addContent('active_checks_enabled', 1, $servicetemplate->get('active_checks_enabled'));
             $content .= $this->addContent('passive_checks_enabled', 1, 1);
 
-            if ($servicetemplates['Servicetemplate']['freshness_checks_enabled'] > 0) {
+            if ($servicetemplate->get('freshness_checks_enabled') > 0) {
                 $content .= $this->addContent('check_freshness', 1, 1);
 
-                if ((int)$servicetemplates['Servicetemplate']['freshness_threshold'] > 0) {
-                    $content .= $this->addContent('freshness_threshold', 1, (int)$servicetemplates['Servicetemplate']['freshness_threshold'] + $this->FRESHNESS_THRESHOLD_ADDITION);
+                if ((int)$servicetemplate->get('freshness_threshold') > 0) {
+                    $content .= $this->addContent('freshness_threshold', 1, (int)$servicetemplate->get('freshness_threshold') + $this->FRESHNESS_THRESHOLD_ADDITION);
                 }
             }
 
@@ -1064,68 +1039,55 @@ class NagiosExportTask extends AppShell {
             $content .= $this->addContent(';Notification settings:', 1);
             $content .= $this->addContent('notifications_enabled', 1, 1);
 
-            $contacts = Hash::extract($servicetemplates['Contact'], '{n}.uuid');
-            if (!empty($contacts))
-                $content .= $this->addContent('contacts', 1, implode(',', $contacts));
-
-            $contactgroups = Hash::extract($servicetemplates['Contactgroup'], '{n}.uuid');
-            if (!empty($contactgroups))
-                $content .= $this->addContent('contact_groups', 1, implode(',', $contactgroups));
-            $content .= $this->addContent('notification_interval', 1, $servicetemplates['Servicetemplate']['notification_interval']);
-            if ($servicetemplates['NotifyPeriod']['uuid'] !== null && $servicetemplates['NotifyPeriod']['uuid'] !== '') {
-                $content .= $this->addContent('notification_period', 1, $servicetemplates['NotifyPeriod']['uuid']);
+            if ($servicetemplate->hasContacts()) {
+                $content .= $this->addContent('contacts', 1, $servicetemplate->getContactsForCfg());
             }
 
-            $serviceNotificationString = $this->serviceNotificationString($servicetemplates['Servicetemplate']);
-            if (!empty($serviceNotificationString)) {
-                $content .= $this->addContent('notification_options', 1, $serviceNotificationString);
+            if ($servicetemplate->hasContactgroups()) {
+                $content .= $this->addContent('contact_groups', 1, $servicetemplate->getContactgroupsForCfg());
             }
+
+            $content .= $this->addContent('notification_interval', 1, $servicetemplate->get('notification_interval'));
+            $content .= $this->addContent('notification_period', 1, $servicetemplate->get('notify_period')->get('uuid'));
+
+            $content .= $this->addContent('notification_options', 1, $servicetemplate->getServiceNotificationOptionsForCfg());
 
             $content .= $this->nl();
             $content .= $this->addContent(';Flap detection settings:', 1);
-            $content .= $this->addContent('flap_detection_enabled', 1, $servicetemplates['Servicetemplate']['flap_detection_enabled']);
-            if ($servicetemplates['Servicetemplate']['flap_detection_enabled'] == 1) {
-                $content .= $this->addContent('flap_detection_options', 1, $this->serviceFlapdetectionString($servicetemplates['Servicetemplate']));
+            $content .= $this->addContent('flap_detection_enabled', 1, $servicetemplate->get('flap_detection_enabled'));
+            if ($servicetemplate->get('flap_detection_enabled') === 1) {
+                if ($servicetemplate->getServiceFlapDetectionOptionsForCfg()) {
+                    $content .= $this->addContent('flap_detection_options', 1, $servicetemplate->getServiceFlapDetectionOptionsForCfg());
+                }
             }
 
             $content .= $this->nl();
             $content .= $this->addContent(';Everything else:', 1);
-            if (isset($servicetemplates['Servicetemplate']['process_performance_data'])) {
-                $content .= $this->addContent('process_perf_data', 1, $servicetemplates['Servicetemplate']['process_performance_data']);
-            }
+            $content .= $this->addContent('process_perf_data', 1, $servicetemplate->get('process_performance_data'));
 
-            if (isset($servicetemplates['Servicetemplate']['is_volatile'])) {
-                $content .= $this->addContent('is_volatile', 1, (int)$servicetemplates['Servicetemplate']['is_volatile']);
-            }
+            $content .= $this->addContent('is_volatile', 1, (int)$servicetemplate->get('is_volatile'));
 
-            if (!empty($servicetemplates['Servicetemplate']['notes']))
-                $content .= $this->addContent('notes', 1, $servicetemplates['Servicetemplate']['notes']);
+            if (!empty($servicetemplate->get('notes')))
+                $content .= $this->addContent('notes', 1, $this->escapeLastBackslash($servicetemplate->get('notes')));
 
-            //Export event handlers to template
-            $eventarguments = [];
-            if (isset($servicetemplates['EventhandlerCommand']['id']) && $servicetemplates['EventhandlerCommand']['id'] !== null) {
+
+            if ($servicetemplate->hasEventhandler()) {
+                $content .= $this->nl();
                 $content .= $this->addContent(';Event handler:', 1);
-                if (!empty($servicetemplates['Servicetemplateeventcommandargumentvalue'])) {
-                    //Select command arguments + command, because we have arguments!
-                    $eventarguments = Hash::sort($servicetemplates['Servicetemplateeventcommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
-                }
 
-                if (isset($eventarguments) && !empty($eventarguments)) {
-                    $content .= $this->addContent('event_handler', 1, $servicetemplates['EventhandlerCommand']['uuid'] . '!' . implode('!', Hash::extract($eventarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($eventarguments, '{n}.Commandargument.human_name')));
+                if ($servicetemplate->hasServicetemplateeventcommandargumentvalues()) {
+                    $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid') . '!' . $servicetemplate->getServicetemplateeventcommandargumentvaluesForCfg());
                 } else {
-                    $content .= $this->addContent('event_handler', 1, $servicetemplates['EventhandlerCommand']['uuid']);
-                }
-
-                if (isset($eventarguments)) {
-                    unset($eventarguments);
+                    $content .= $this->addContent('check_command', 1, $servicetemplate->get('check_command')->get('uuid'));
                 }
             }
 
-            if (!empty($servicetemplates['Customvariable'])) {
+
+            if ($servicetemplate->hasCustomvariables()) {
                 $content .= $this->nl();
                 $content .= $this->addContent(';Custom  variables:', 1);
-                foreach ($servicetemplates['Customvariable'] as $customvariable) {
-                    $content .= $this->addContent('_' . $customvariable['name'], 1, $customvariable['value']);
+                foreach ($servicetemplate->getCustomvariablesForCfg() as $varName => $varValue) {
+                    $content .= $this->addContent($varName, 1, $this->escapeLastBackslash($varValue));
                 }
             }
             $content .= $this->addContent('}', 0);

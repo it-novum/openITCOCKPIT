@@ -256,8 +256,6 @@ class Hosttemplate extends Entity {
      */
     public function getHostFlapDetectionOptionsForCfg() {
         $cfgValues = [];
-        $fields = ['flap_detection_on_up' => 'o', 'flap_detection_on_down' => 'd', 'flap_detection_on_unreachable' => 'u'];
-
 
         $fields = [
             'flap_detection_on_up'          => 'o',
