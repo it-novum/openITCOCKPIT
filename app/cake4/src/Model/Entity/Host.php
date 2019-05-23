@@ -306,6 +306,7 @@ class Host extends Entity {
     }
 
     /**
+     * @param Hosttemplate $hosttemplate
      * @return string
      */
     public function getFlapdetectionOptionsForCfg(Hosttemplate $hosttemplate) {
@@ -334,7 +335,7 @@ class Host extends Entity {
 
         $flapdetectionOptions = implode(',', $cfgValues);
 
-        if ($flapdetectionOptions === $hosttemplate->getHostNotificationOptionsForCfg()) {
+        if ($flapdetectionOptions === $hosttemplate->getHostFlapDetectionOptionsForCfg()) {
             //Host has the same flap detection options like the host template - go for inheritance
             return '';
         }

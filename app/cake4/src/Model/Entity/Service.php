@@ -138,38 +138,38 @@ class Service extends Entity {
      * @return array
      */
     public function getCommandargumentValuesForCfg() {
-        $hostcommandargumentvaluesForCfg = [];
+        $servicecommandargumentvaluesForCfg = [];
         $servicecommandargumentvalues = $this->get('servicecommandargumentvalues');
 
         foreach ($servicecommandargumentvalues as $servicecommandargumentvalue) {
             /** @var $servicecommandargumentvalue Servicecommandargumentvalue */
-            $hostcommandargumentvaluesForCfg[] = [
+            $servicecommandargumentvaluesForCfg[] = [
                 'name'       => $servicecommandargumentvalue->get('commandargument')->get('name'),
                 'human_name' => $servicecommandargumentvalue->get('commandargument')->get('human_name'),
                 'value'      => $servicecommandargumentvalue->get('value')
             ];
         }
 
-        return Hash::sort($hostcommandargumentvaluesForCfg, '{n}.name', 'asc', 'natural');
+        return Hash::sort($servicecommandargumentvaluesForCfg, '{n}.name', 'asc', 'natural');
     }
 
     /**
      * @return array
      */
     public function getEventhandlerCommandargumentValuesForCfg() {
-        $hostcommandargumentvaluesForCfg = [];
+        $serviceeventcommandargumentvaluesForCfg = [];
         $serviceeventcommandargumentvalues = $this->get('serviceeventcommandargumentvalues');
 
         foreach ($serviceeventcommandargumentvalues as $serviceeventcommandargumentvalue) {
             /** @var $serviceeventcommandargumentvalue Serviceeventcommandargumentvalue */
-            $hostcommandargumentvaluesForCfg[] = [
+            $serviceeventcommandargumentvaluesForCfg[] = [
                 'name'       => $serviceeventcommandargumentvalue->get('commandargument')->get('name'),
                 'human_name' => $serviceeventcommandargumentvalue->get('commandargument')->get('human_name'),
                 'value'      => $serviceeventcommandargumentvalue->get('value')
             ];
         }
 
-        return Hash::sort($hostcommandargumentvaluesForCfg, '{n}.name', 'asc', 'natural');
+        return Hash::sort($serviceeventcommandargumentvaluesForCfg, '{n}.name', 'asc', 'natural');
     }
 
     public function hasEventhandler() {
@@ -206,6 +206,110 @@ class Service extends Entity {
             $servicegroups[] = $servicegroup->get('uuid');
         }
         return implode(',', $servicegroups);
+    }
+
+    /**
+     * @return string
+     */
+    public function getContactsforCfg() {
+        $contacts = [];
+        foreach ($this->get('contacts') as $contact) {
+            /** @var $contact Contact */
+            $contacts[] = $contact->get('uuid');
+        }
+        return implode(',', $contacts);
+    }
+
+    /**
+     * @return string
+     */
+    public function getContactgroupsforCfg() {
+        $contactgroups = [];
+        foreach ($this->get('contactgroups') as $contactgroup) {
+            /** @var $contactgroup Contactgroup */
+            $contactgroups[] = $contactgroup->get('uuid');
+        }
+        return implode(',', $contactgroups);
+    }
+
+    /**
+     * @param Servicetemplate $servicetemplate
+     * @return string
+     */
+    public function getNotificationOptionsForCfg(Servicetemplate $servicetemplate) {
+        $cfgValues = [];
+        $fields = [
+            'notify_on_recovery' => 'r',
+            'notify_on_warning'  => 'w',
+            'notify_on_critical' => 'c',
+            'notify_on_unknown'  => 'u',
+            'notify_on_flapping' => 'f',
+            'notify_on_downtime' => 's'
+        ];
+
+
+        //Does the service have own notification options?
+        foreach ($fields as $field => $cfgValue) {
+            if ($this->get($field) === null) {
+                //Use the value of the service template
+                if ($servicetemplate->get($field) === 1) {
+                    $cfgValues[] = $cfgValue;
+                }
+            }
+
+            if ($this->get($field) === 1) {
+                //Service has defined its own value
+                $cfgValues[] = $cfgValue;
+            }
+        }
+
+        $notificationOptions = implode(',', $cfgValues);
+
+        if ($notificationOptions === $servicetemplate->getServiceNotificationOptionsForCfg()) {
+            //Service has the same notification options like the service template - go for inheritance
+            return '';
+        }
+
+        return $notificationOptions;
+    }
+
+    /**
+     * @param Servicetemplate $servicetemplate
+     * @return string
+     */
+    public function getFlapdetectionOptionsForCfg(Servicetemplate $servicetemplate) {
+        $cfgValues = [];
+        $fields = [
+            'flap_detection_on_ok'       => 'o',
+            'flap_detection_on_warning'  => 'w',
+            'flap_detection_on_critical' => 'c',
+            'flap_detection_on_unknown'  => 'u'
+        ];
+
+
+        //Does the service have own flap detection options?
+        foreach ($fields as $field => $cfgValue) {
+            if ($this->get($field) === null) {
+                //Use the value of the service template
+                if ($servicetemplate->get($field) === 1) {
+                    $cfgValues[] = $cfgValue;
+                }
+            }
+
+            if ($this->get($field) === 1) {
+                //Service has defined its own value
+                $cfgValues[] = $cfgValue;
+            }
+        }
+
+        $flapdetectionOptions = implode(',', $cfgValues);
+
+        if ($flapdetectionOptions === $servicetemplate->getServiceFlapDetectionOptionsForCfg()) {
+            //Service has the same flap detection options like the service template - go for inheritance
+            return '';
+        }
+
+        return $flapdetectionOptions;
     }
 
 }

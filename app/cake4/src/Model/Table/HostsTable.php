@@ -1205,9 +1205,9 @@ class HostsTable extends Table {
     public function getHostsForServiceExport(){
         $query = $this->find()
             ->select([
-                'Host.id',
-                'Host.uuid',
-                'Host.satellite_id',
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.satellite_id',
             ])
             ->where([
                 'Hosts.disabled' => 0
