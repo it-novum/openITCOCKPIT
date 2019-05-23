@@ -348,7 +348,7 @@ Once a service escalated, contacts, contact group and notification options will 
                                                        ng-false-value="0"
                                                        id="escalate_on_warning"
                                                        ng-model="post.Serviceescalation.escalate_on_warning">
-                                                <i class="checkbox-danger"></i>
+                                                <i class="checkbox-warning"></i>
                                             </label>
                                         </div>
                                     </div>

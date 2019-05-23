@@ -168,7 +168,7 @@ class ServiceescalationsController extends AppController {
                 $this->request->data('Serviceescalation.servicegroups_excluded._ids')
             );
 
-            $data = array_merge($this->request->data('Servicescalation'), $data);
+            $data = array_merge($this->request->data('Serviceescalation'), $data);
             $serviceescalation = $ServiceescalationsTable->patchEntity($serviceescalation, $data);
             $ServiceescalationsTable->save($serviceescalation);
 

@@ -67,7 +67,7 @@
                                 </select>
                                 <div class="info-block-helptext">
                                     <?php echo __('Notification escalations could be used to notify a certain user group in case of an emergency.
-Once a host or service escalated, contacts, contact group and notification options will be overwritten by the escalation.'); ?>
+Once a host escalated, contacts, contact group and notification options will be overwritten by the escalation.'); ?>
                                 </div>
                                 <div ng-repeat="error in errors.container_id">
                                     <div class="help-block text-danger">{{ error }}</div>
