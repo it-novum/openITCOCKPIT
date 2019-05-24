@@ -243,6 +243,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="row margin-top-10 margin-bottom-10">
                             <div class="col-xs-12 col-md-2 text-muted text-center">
                                 <span ng-show="selectedElements > 0">({{selectedElements}})</span>
@@ -291,6 +292,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                         <?php echo $this->element('paginator_or_scroll'); ?>

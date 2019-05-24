@@ -91,6 +91,29 @@ class ServiceMergerForView {
     public function __construct($service, $servicetemplate, $hostContactAndContactgroups = [], $hosttemplateContactAndContactgroups = []) {
         $this->service = $service['Service'];
         $this->servicetemplate = $servicetemplate['Servicetemplate'];
+
+        if (empty($hostContactAndContactgroups)) {
+            $hostContactAndContactgroups = [
+                'contacts'      => [
+                    '_ids' => []
+                ],
+                'contactgroups' => [
+                    '_ids' => []
+                ]
+            ];
+        }
+
+        if (empty($hosttemplateContactAndContactgroups)) {
+            $hosttemplateContactAndContactgroups = [
+                'contacts'      => [
+                    '_ids' => []
+                ],
+                'contactgroups' => [
+                    '_ids' => []
+                ]
+            ];
+        }
+
         $this->hostContactAndContactgroups = $hostContactAndContactgroups;
         $this->hosttemplateContactAndContactgroups = $hosttemplateContactAndContactgroups;
     }

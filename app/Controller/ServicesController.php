@@ -49,9 +49,11 @@ use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
@@ -941,6 +943,203 @@ class ServicesController extends AppController {
      * @deprecated
      */
     public function copy($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        if ($this->request->is('get')) {
+            $services = $ServicesTable->getServicesForCopy(func_get_args());
+
+            /** @var $CommandsTable CommandsTable */
+            $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+            $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
+            $eventhandlerCommands = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
+
+            $this->set('services', $services);
+            $this->set('commands', Api::makeItJavaScriptAble($commands));
+            $this->set('eventhandlerCommands', Api::makeItJavaScriptAble($eventhandlerCommands));
+            $this->set('_serialize', ['services', 'commands', 'eventhandlerCommands']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $Cache = new KeyValueStore();
+            $ServicetemplateCache = new KeyValueStore();
+            $ServicetemplateEditCache = new KeyValueStore();
+
+            $postData = $this->request->data('data');
+            $hostId = $this->request->data('hostId');
+
+            if (!$HostsTable->existsById($hostId)) {
+                throw new NotFoundException('Invalid host');
+            }
+
+            $host = $HostsTable->getHostForServiceEdit($hostId);
+            $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsById($host['Host']['id']);
+            $hosttemplateContactsAndContactgroups = $HosttemplatesTable->getContactsAndContactgroupsById($host['Host']['hosttemplate_id']);
+
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+            foreach ($postData as $index => $serviceData) {
+                if (!isset($serviceData['Service']['id'])) {
+                    //Create/clone service
+                    $sourceServiceId = $serviceData['Source']['id'];
+                    if (!$Cache->has($sourceServiceId)) {
+                        $sourceService = $ServicesTable->getServiceForEdit($sourceServiceId);
+
+                        if (!$ServicetemplateCache->has($sourceService['Service']['servicetemplate_id'])) {
+                            $sourceServiceServicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($sourceService['Service']['servicetemplate_id']);
+                            $ServicetemplateCache->set($sourceService['Service']['servicetemplate_id'], $sourceServiceServicetemplate);
+                        }
+
+                        $sourceServiceServicetemplate = $ServicetemplateCache->get($sourceService['Service']['servicetemplate_id']);
+
+                        $ServiceMergerForView = new ServiceMergerForView(
+                            $sourceService,
+                            $sourceServiceServicetemplate
+                        );
+
+
+                        $sourceService = $ServiceMergerForView->getDataForView();
+
+                        //This service is not used - because it does not exists yet
+                        $sourceService['Service']['usage_flag'] = 0;
+
+                        unset($sourceService['Service']['id'], $sourceService['Service']['uuid'], $sourceService['Service']['host_id']);
+
+                        foreach ($sourceService['Service']['servicecommandargumentvalues'] as $i => $servicecommandargumentvalues) {
+                            unset($sourceService['Service']['servicecommandargumentvalues'][$i]['id']);
+                            if (isset($sourceService['Service']['servicecommandargumentvalues'][$i]['service_id'])) {
+                                unset($sourceService['Service']['servicecommandargumentvalues'][$i]['service_id']);
+                            }
+
+                            if (isset($sourceService['Service']['servicecommandargumentvalues'][$i]['servicetemplate_id'])) {
+                                unset($sourceService['Service']['servicecommandargumentvalues'][$i]['servicetemplate_id']);
+                            }
+                        }
+
+                        $Cache->set($sourceServiceId, $sourceService);
+                    }
+
+                    $sourceService = $Cache->get($sourceServiceId);
+
+                    $newServiceData = $sourceService;
+                    $newServiceData['Service']['host_id'] = $hostId;
+                    $newServiceData['Service']['name'] = $serviceData['Service']['name'];
+                    $newServiceData['Service']['description'] = $serviceData['Service']['description'];
+                    $newServiceData['Service']['command_id'] = $serviceData['Service']['command_id'];
+                    if (!empty($serviceData['Service']['servicecommandargumentvalues'])) {
+                        $newServiceData['Service']['servicecommandargumentvalues'] = $serviceData['Service']['servicecommandargumentvalues'];
+                    }
+                }
+
+                $action = 'copy';
+                if (isset($serviceData['Service']['id'])) {
+                    //Update existing service
+                    //This happens, if a user copy multiple services, and one run into an validation error
+                    //All services without validation errors got already saved to the database
+                    $newServiceData = $ServicesTable->getServiceForEdit($serviceData['Service']['id']);
+
+                    $newServiceData['Service']['name'] = $serviceData['Service']['name'];
+                    $newServiceData['Service']['description'] = $serviceData['Service']['description'];
+                    $newServiceData['Service']['command_id'] = $serviceData['Service']['command_id'];
+                    if (!empty($serviceData['Service']['servicecommandargumentvalues'])) {
+                        $newServiceData['Service']['servicecommandargumentvalues'] = $serviceData['Service']['servicecommandargumentvalues'];
+                    }
+
+                    $action = 'edit';
+                }
+
+                $servicename = $newServiceData['Service']['name'];
+                // Replace service template values with zero
+                if (!$ServicetemplateEditCache->has($newServiceData['Service']['servicetemplate_id'])) {
+                    $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($newServiceData['Service']['servicetemplate_id']);
+                    $ServicetemplateEditCache->set($newServiceData['Service']['servicetemplate_id'], $servicetemplate);
+                }
+                $servicetemplate = $ServicetemplateEditCache->get($newServiceData['Service']['servicetemplate_id']);
+
+                $ServiceComparisonForSave = new ServiceComparisonForSave(
+                    $newServiceData,
+                    $servicetemplate,
+                    $hostContactsAndContactgroups,
+                    $hosttemplateContactsAndContactgroups
+                );
+                $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
+
+                //Add required fields for validation
+                $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
+                $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];
+                $serviceData['servicetemplate_flap_detection_on_warning'] = $servicetemplate['Servicetemplate']['flap_detection_on_warning'];
+                $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
+                $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
+
+                FileDebugger::dump($serviceData);
+
+                if($action === 'copy'){
+                    $serviceData['uuid'] = UUID::v4();
+
+                    if($index == 0){
+                      //  $serviceData['check_interval'] = 'sfgj90esixdfhiujvgeriuhzi8iuzehkuhziofczho';
+                    }
+
+                    $newServiceEntity = $ServicesTable->newEntity($serviceData);
+                }else{
+                    $newServiceEntity = $ServicesTable->get($newServiceData['Service']['id']);
+                    $newServiceEntity->setAccess('uuid', false);
+                    $newServiceEntity->setAccess('id', false);
+                    $newServiceEntity->setAccess('host_id', false);
+                    $newServiceEntity = $ServicesTable->patchEntity($newServiceEntity, $serviceData);
+                }
+
+                $ServicesTable->save($newServiceEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newServiceEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newServiceEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Service']['id'] = $newServiceEntity->get('id');
+
+                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                        $action,
+                        'services',
+                        $postData[$index]['Service']['id'],
+                        OBJECT_SERVICE,
+                        $host['Host']['container_id'],
+                        $User->getId(),
+                        $host['Host']['name'] . '/' . $servicename,
+                        $serviceData
+                    );
+                    if ($changelog_data) {
+                        CakeLog::write('log', serialize($changelog_data));
+                    }
+                }
+            }
+        }
+
+        if ($hasErrors) {
+            $this->response->statusCode(400);
+        }
+        $this->set('result', $postData);
+        $this->set('_serialize', ['result']);
+
+
+        /***** OLD CODE *****/
+        return;
+
         if ($id === null && $this->request->is('get')) {
             $this->redirect([
                 'controller' => 'services',

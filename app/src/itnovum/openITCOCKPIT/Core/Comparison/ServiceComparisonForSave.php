@@ -155,10 +155,12 @@ class ServiceComparisonForSave {
 
         $data = [];
         foreach ($fields as $field) {
-            if ($this->service[$field] != $this->servicetemplate[$field]) {
-                $data[$field] = $this->service[$field];
-            } else {
-                $data[$field] = null;
+            if (isset($this->service[$field])) {
+                if ($this->service[$field] != $this->servicetemplate[$field]) {
+                    $data[$field] = $this->service[$field];
+                } else {
+                    $data[$field] = null;
+                }
             }
         }
 

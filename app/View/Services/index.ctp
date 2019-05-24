@@ -555,11 +555,12 @@
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
-                                <a ng-href="{{ linkForCopy() }}" class="a-clean">
+                                <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
                                     <i class="fa fa-lg fa-files-o"></i>
                                     <?php echo __('Copy'); ?>
                                 </a>
                             </div>
+
                             <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fa fa-lg fa-trash-o"></i>

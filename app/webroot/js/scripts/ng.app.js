@@ -273,6 +273,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ServicesEditController"
             })
 
+            .state('ServicesCopy', {
+                url: '/services/copy/:ids',
+                templateUrl: "/services/copy.html",
+                controller: "ServicesCopyController"
+            })
+
             .state('ServicechecksIndex', {
                 url: '/servicechecks/index/:id',
                 templateUrl: "/servicechecks/index.html",

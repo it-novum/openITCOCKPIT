@@ -392,13 +392,13 @@ class ServicesTable extends Table {
             ->allowEmptyString('notification_interval', true);
 
         $validator
-            ->integer('check_interval')
+            ->numeric('check_interval')
             ->requirePresence('check_interval', false)
             ->greaterThanOrEqual('check_interval', 1, __('This value need to be at least 1'))
             ->allowEmptyString('check_interval', true);
 
         $validator
-            ->integer('retry_interval')
+            ->numeric('retry_interval')
             ->requirePresence('retry_interval', false)
             ->greaterThanOrEqual('retry_interval', 1, __('This value need to be at least 1'))
             ->allowEmptyString('retry_interval', true);
@@ -1156,6 +1156,111 @@ class ServicesTable extends Table {
             ->all();
 
         return $this->emptyArrayIfNull($query);
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getServicesForCopy($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.name',
+                'Services.description',
+                'Services.command_id',
+                'Services.active_checks_enabled'
+            ])
+            ->contain([
+                'Servicetemplates' => function (Query $q) {
+                    return $q->disableAutoFields()
+                        ->select([
+                            'Servicetemplates.id',
+                            'Servicetemplates.name',
+                            'Servicetemplates.description',
+                            'Servicetemplates.command_id',
+                            'Servicetemplates.active_checks_enabled'
+                        ])
+                        ->contain([
+                            'Servicetemplatecommandargumentvalues' => [
+                                'Commandarguments'
+                            ]
+                        ]);
+                },
+                'Hosts' => function (Query $q) {
+                    return $q->disableAutoFields()
+                        ->select([
+                            'Hosts.id',
+                            'Hosts.name'
+                        ]);
+                },
+
+                'Servicecommandargumentvalues'      => [
+                    'Commandarguments'
+                ]
+            ])
+            ->where(['Services.id IN' => $ids])
+            ->order(['Services.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+
+        $query = $query->toArray();
+
+        if ($query === null) {
+            return [];
+        }
+
+        $result = [];
+
+        $serviceFields = [
+            'id',
+            'name',
+            'description',
+            'command_id',
+            'active_checks_enabled'
+        ];
+
+        foreach($query as $service){
+            foreach($serviceFields as $serviceField) {
+                if ($service[$serviceField] === null || $service[$serviceField] === '') {
+                    $service[$serviceField] = $service['servicetemplate'][$serviceField];
+                }
+
+                //Duplicate the name for front end to display the original service name
+                $service['_name'] =  $service['name'];
+            }
+
+            //Compare service command arguments
+            $servicecommandargumentvalues = $service['servicecommandargumentvalues'];
+            if(empty($_servicecommandargumentvalues)){
+                $servicecommandargumentvalues = $service['servicetemplate']['servicetemplatecommandargumentvalues'];
+            }
+
+            if(!empty($servicecommandargumentvalues)){
+                //Remove ids for front end
+                foreach($servicecommandargumentvalues as $index => $servicecommandargumentvalue){
+                    unset($servicecommandargumentvalues[$index]['id']);
+
+                    if(isset($servicecommandargumentvalues[$index]['service_id'])) {
+                        unset($servicecommandargumentvalues[$index]['service_id']);
+                    }
+
+                    if(isset($servicecommandargumentvalues[$index]['servicetemplate_id'])) {
+                        unset($servicecommandargumentvalues[$index]['servicetemplate_id']);
+                    }
+                }
+            }
+
+            $service['servicecommandargumentvalues'] = $servicecommandargumentvalues;
+
+            $result[] = $service;
+        }
+
+        return $result;
+
     }
 
 }
