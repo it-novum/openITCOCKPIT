@@ -33,6 +33,7 @@ use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
+use App\Model\Table\ServiceescalationsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
@@ -1799,7 +1800,104 @@ class NagiosExportTask extends AppShell {
     /**
      * @param null|string $uuid
      */
+//    public function exportServiceescalations($uuid = null) {
+//        /* @var $ServiceescalationsTable ServiceescalationsTable */
+//        /* @var $serviceescalation \App\Model\Entity\Serviceescalation */
+//        /* @var $contact \App\Model\Entity\Contact */
+//        /* @var $servicegroup \App\Model\Entity\Servicegroup */
+//        /* @var $service \App\Model\Entity\Service */
+//        /* @var $contactgroup \App\Model\Entity\Contactgroup */
+//        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+//        $serviceescalations = $ServiceescalationsTable->getServiceescalationsForExport($uuid);
+//
+//        if (!is_dir($this->conf['path'] . $this->conf['serviceescalations'])) {
+//            mkdir($this->conf['path'] . $this->conf['serviceescalations']);
+//        }
+//        foreach ($serviceescalations as $serviceescalation) {
+//
+//            $servicesForCfg = [];
+//            $excludedServicesForCfg = [];
+//            $services = $serviceescalation->get('services');
+//            $servicegroups = $serviceescalation->get('servicegroups');
+//            if (empty($services) && empty($servicegroups)) {
+//                //This service escalation is broken!
+//                $ServiceescalationsTable->delete($serviceescalation);
+//                continue;
+//            }
+//            if (!is_null($services)) {
+//                foreach ($services as $service) {
+//                    if ($service->get('_joinData')->get('excluded') === 0) {
+//                        $servicesForCfg[] = $service->get('uuid');
+//                    } else {
+//                        $excludedServicesForCfg[] = '!' . $service->get('uuid');
+//                    }
+//                }
+//            }
+//
+//            $servicegroupsForCfg = [];
+//            $excludedServicegroupsForCfg = [];
+//            $servicegroups = $serviceescalation->get('servicegroups');
+//            if (!is_null($servicegroups)) {
+//                foreach ($servicegroups as $servicegroup) {
+//                    if ($servicegroup->get('_joinData')->get('excluded') === 0) {
+//                        $servicegroupsForCfg[] = $servicegroup->get('uuid');
+//                    } else {
+//                        $excludedServicegroupsForCfg[] = '!' . $servicegroup->get('uuid');
+//                    }
+//                }
+//            }
+//            $contactUuids = [];
+//            foreach ($serviceescalation->get('contacts') as $contact) {
+//                $contactUuids[] = $contact->get('uuid');
+//            }
+//            $contactgroupUuids = [];
+//            foreach ($serviceescalation->get('contactgroups') as $contactgroup) {
+//                $contactgroupUuids[] = $contactgroup->get('uuid');
+//            }
+//            if (empty($servicesForCfg) && empty($servicegroups)) {
+//                //This service escalation is broken!
+//                $ServiceescalationsTable->delete($serviceescalation);
+//                continue;
+//            }
+//            $file = new File($this->conf['path'] . $this->conf['serviceescalations'] . $serviceescalation->get('uuid') . $this->conf['suffix']);
+//            $content = $this->fileHeader();
+//            if (!$file->exists()) {
+//                $file->create();
+//            }
+//            $content .= $this->addContent('define serviceescalation{', 0);
+//            if (!empty($hosts)) {
+//                $content .= $this->addContent('host_name', 1, implode(',', array_merge($hostsForCfg, $excludedHostsForCfg)));
+//            }
+//
+//            if (!empty($hostgroups)) {
+//                $content .= $this->addContent('hostgroup_name', 1, implode(',', array_merge($hostgroupsForCfg, $excludedHostgroupsForCfg)));
+//            }
+//            if (!empty($contactUuids)) {
+//                $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
+//            }
+//            if (!empty($contactgroupUuids)) {
+//                $content .= $this->addContent('contact_groups', 1, implode(',', $contactgroupUuids));
+//            }
+//            $content .= $this->addContent('first_notification', 1, $hostescalation->get('first_notification'));
+//            $content .= $this->addContent('last_notification', 1, $hostescalation->get('last_notification'));
+//            $content .= $this->addContent('notification_interval', 1, (int)$hostescalation->get('notification_interval') * 60);
+//            $content .= $this->addContent('escalation_period', 1, $hostescalation->get('timeperiod')->get('uuid'));
+//            $hostEscalationString = $hostescalation->getHostEscalationStringForCfg();
+//            if (!empty($hostEscalationString)) {
+//                $content .= $this->addContent('escalation_options', 1, $hostEscalationString);
+//            }
+//            $content .= $this->addContent('}', 0);
+//            $file->write($content);
+//            $file->close();
+//        }
+//    }
+    /**
+     * @param null|string $uuid
+     */
     public function exportServiceescalations($uuid = null) {
+        if (!is_dir($this->conf['path'] . $this->conf['serviceescalations'])) {
+            mkdir($this->conf['path'] . $this->conf['serviceescalations']);
+        }
         $query = [
             'recursive' => -1,
             'contain'   => [
@@ -1928,6 +2026,7 @@ class NagiosExportTask extends AppShell {
             }
         }
     }
+
 
     /**
      * @param null $uuid
