@@ -460,10 +460,15 @@ class ServiceescalationsTable extends Table {
                 'Services'      =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
+                            ->contain('Hosts')
                             ->where([
+                                'Hosts.disabled' => 0,
                                 'Services.disabled' => 0
                             ])
-                            ->select(['uuid']);
+                            ->select([
+                                'Hosts.uuid',
+                                'Services.uuid'
+                            ]);
                     },
                 'Servicegroups' =>
                     function (Query $q) {

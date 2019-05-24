@@ -1724,7 +1724,7 @@ class NagiosExportTask extends AppShell {
             $excludedHostsForCfg = [];
             $hosts = $hostescalation->get('hosts');
             $hostgroups = $hostescalation->get('hostgroups');
-            if (empty($hosts) && empty($hostgroups)) {
+            if (empty($hosts)) {
                 //This hostescalation is broken!
                 $HostescalationsTable->delete($hostescalation);
                 continue;
@@ -1751,6 +1751,13 @@ class NagiosExportTask extends AppShell {
                     }
                 }
             }
+
+            if (empty($hostsForCfg)) {
+                //This hostescalation is broken!
+                $HostescalationsTable->delete($hostescalation);
+                continue;
+            }
+
             $contactUuids = [];
             foreach ($hostescalation->get('contacts') as $contact) {
                 $contactUuids[] = $contact->get('uuid');
@@ -1759,11 +1766,7 @@ class NagiosExportTask extends AppShell {
             foreach ($hostescalation->get('contactgroups') as $contactgroup) {
                 $contactgroupUuids[] = $contactgroup->get('uuid');
             }
-            if (empty($hostsForCfg) && empty($hostgroups)) {
-                //This hostescalation is broken!
-                $HostescalationsTable->delete($hostescalation);
-                continue;
-            }
+
             $file = new File($this->conf['path'] . $this->conf['hostescalations'] . $hostescalation->get('uuid') . $this->conf['suffix']);
             $content = $this->fileHeader();
             if (!$file->exists()) {
@@ -1800,230 +1803,101 @@ class NagiosExportTask extends AppShell {
     /**
      * @param null|string $uuid
      */
-//    public function exportServiceescalations($uuid = null) {
-//        /* @var $ServiceescalationsTable ServiceescalationsTable */
-//        /* @var $serviceescalation \App\Model\Entity\Serviceescalation */
-//        /* @var $contact \App\Model\Entity\Contact */
-//        /* @var $servicegroup \App\Model\Entity\Servicegroup */
-//        /* @var $service \App\Model\Entity\Service */
-//        /* @var $contactgroup \App\Model\Entity\Contactgroup */
-//        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
-//        $serviceescalations = $ServiceescalationsTable->getServiceescalationsForExport($uuid);
-//
-//        if (!is_dir($this->conf['path'] . $this->conf['serviceescalations'])) {
-//            mkdir($this->conf['path'] . $this->conf['serviceescalations']);
-//        }
-//        foreach ($serviceescalations as $serviceescalation) {
-//
-//            $servicesForCfg = [];
-//            $excludedServicesForCfg = [];
-//            $services = $serviceescalation->get('services');
-//            $servicegroups = $serviceescalation->get('servicegroups');
-//            if (empty($services) && empty($servicegroups)) {
-//                //This service escalation is broken!
-//                $ServiceescalationsTable->delete($serviceescalation);
-//                continue;
-//            }
-//            if (!is_null($services)) {
-//                foreach ($services as $service) {
-//                    if ($service->get('_joinData')->get('excluded') === 0) {
-//                        $servicesForCfg[] = $service->get('uuid');
-//                    } else {
-//                        $excludedServicesForCfg[] = '!' . $service->get('uuid');
-//                    }
-//                }
-//            }
-//
-//            $servicegroupsForCfg = [];
-//            $excludedServicegroupsForCfg = [];
-//            $servicegroups = $serviceescalation->get('servicegroups');
-//            if (!is_null($servicegroups)) {
-//                foreach ($servicegroups as $servicegroup) {
-//                    if ($servicegroup->get('_joinData')->get('excluded') === 0) {
-//                        $servicegroupsForCfg[] = $servicegroup->get('uuid');
-//                    } else {
-//                        $excludedServicegroupsForCfg[] = '!' . $servicegroup->get('uuid');
-//                    }
-//                }
-//            }
-//            $contactUuids = [];
-//            foreach ($serviceescalation->get('contacts') as $contact) {
-//                $contactUuids[] = $contact->get('uuid');
-//            }
-//            $contactgroupUuids = [];
-//            foreach ($serviceescalation->get('contactgroups') as $contactgroup) {
-//                $contactgroupUuids[] = $contactgroup->get('uuid');
-//            }
-//            if (empty($servicesForCfg) && empty($servicegroups)) {
-//                //This service escalation is broken!
-//                $ServiceescalationsTable->delete($serviceescalation);
-//                continue;
-//            }
-//            $file = new File($this->conf['path'] . $this->conf['serviceescalations'] . $serviceescalation->get('uuid') . $this->conf['suffix']);
-//            $content = $this->fileHeader();
-//            if (!$file->exists()) {
-//                $file->create();
-//            }
-//            $content .= $this->addContent('define serviceescalation{', 0);
-//            if (!empty($hosts)) {
-//                $content .= $this->addContent('host_name', 1, implode(',', array_merge($hostsForCfg, $excludedHostsForCfg)));
-//            }
-//
-//            if (!empty($hostgroups)) {
-//                $content .= $this->addContent('hostgroup_name', 1, implode(',', array_merge($hostgroupsForCfg, $excludedHostgroupsForCfg)));
-//            }
-//            if (!empty($contactUuids)) {
-//                $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
-//            }
-//            if (!empty($contactgroupUuids)) {
-//                $content .= $this->addContent('contact_groups', 1, implode(',', $contactgroupUuids));
-//            }
-//            $content .= $this->addContent('first_notification', 1, $hostescalation->get('first_notification'));
-//            $content .= $this->addContent('last_notification', 1, $hostescalation->get('last_notification'));
-//            $content .= $this->addContent('notification_interval', 1, (int)$hostescalation->get('notification_interval') * 60);
-//            $content .= $this->addContent('escalation_period', 1, $hostescalation->get('timeperiod')->get('uuid'));
-//            $hostEscalationString = $hostescalation->getHostEscalationStringForCfg();
-//            if (!empty($hostEscalationString)) {
-//                $content .= $this->addContent('escalation_options', 1, $hostEscalationString);
-//            }
-//            $content .= $this->addContent('}', 0);
-//            $file->write($content);
-//            $file->close();
-//        }
-//    }
-    /**
-     * @param null|string $uuid
-     */
     public function exportServiceescalations($uuid = null) {
+        /* @var $ServiceescalationsTable ServiceescalationsTable */
+        /* @var $serviceescalation \App\Model\Entity\Serviceescalation */
+        /* @var $contact \App\Model\Entity\Contact */
+        /* @var $servicegroup \App\Model\Entity\Servicegroup */
+        /* @var $service \App\Model\Entity\Service */
+        /* @var $contactgroup \App\Model\Entity\Contactgroup */
+        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+        $serviceescalations = $ServiceescalationsTable->getServiceescalationsForExport($uuid);
+
         if (!is_dir($this->conf['path'] . $this->conf['serviceescalations'])) {
             mkdir($this->conf['path'] . $this->conf['serviceescalations']);
         }
-        $query = [
-            'recursive' => -1,
-            'contain'   => [
-                'ServiceescalationServiceMembership'      => [
-                    'Service' => [
-                        'conditions' => [
-                            'Service.disabled' => 0
-                        ],
-                        'fields'     => [
-                            'uuid',
-                        ],
-                        'Host'       => [
-                            'fields' => [
-                                'uuid',
-                            ],
-                        ],
-                    ],
-                ],
-                'ServiceescalationServicegroupMembership' => [
-                    'Servicegroup' => [
-                        'fields' => [
-                            'Servicegroup.uuid'
-                        ]
-                    ],
-                ],
-                'Timeperiod'                              => [
-                    'fields' => [
-                        'uuid',
-                    ],
-                ],
-            ],
-        ];
 
-        if ($uuid !== null) {
-            $serviceescalations = [];
-            $query['conditions'] = [
-                'Serviceescalation.uuid' => $uuid
-            ];
-            $serviceescalations[] = $this->Serviceescalation->find('first', $query);
-        } else {
-            $serviceescalations = $this->Serviceescalation->find('all', $query);
-        }
         foreach ($serviceescalations as $serviceescalation) {
-            if (!empty($serviceescalation['ServiceescalationServiceMembership']) || !empty($serviceescalation['ServiceescalationServicegroupMembership'])) {
-
-                $includedServices = array_filter(Hash::extract($serviceescalation['ServiceescalationServiceMembership'], '{n}[excluded=0].Service'));
-
-                $exludedServices = array_filter(Hash::extract($serviceescalation['ServiceescalationServiceMembership'], '{n}[excluded=1].Service'));
-
-                $includedServicegroups = Hash::extract($serviceescalation['ServiceescalationServicegroupMembership'], '{n}[excluded=0].Servicegroup.uuid');
-                $exludedServicegroups = Hash::extract($serviceescalation['ServiceescalationServicegroupMembership'], '{n}[excluded=1].Servicegroup.uuid');
-
-
-                $includedHosts = array_unique(Hash::extract($includedServices, '{n}.Host.uuid'));
-                $includedServices = Hash::extract($includedServices, '{n}.uuid');
-
-                $exludedHosts = array_unique(Hash::extract($exludedServices, '{n}.Host.uuid'));
-                $exludedServices = Hash::extract($exludedServices, '{n}.uuid');
-
-
-                // Prefix exluded services with an !
-                $_exludedServices = [];
-                foreach ($exludedServices as $extService) {
-                    $_exludedServices[] = '!' . $extService;
-                }
-
-                $_exludedHosts = [];
-                foreach ($exludedHosts as $extHost) {
-                    $_exludedHosts[] = '!' . $extHost;
-                }
-
-                $services = Hash::merge($includedServices, $_exludedServices);
-                $hosts = Hash::merge($includedHosts, $_exludedHosts);
-
-                // Prefix excluded servicegroups with an !
-                $_exludedServicegroups = [];
-                foreach ($exludedServicegroups as $extServicegroup) {
-                    $_exludedServicegroups[] = '!' . $extServicegroup;
-                }
-                $servicegroups = Hash::merge($includedServicegroups, $_exludedServicegroups);
-
-                if ((!empty($includedServices && !empty($hosts))) || (!empty($includedServicegroups) && !empty($hosts))) {
-                    $file = new File($this->conf['path'] . $this->conf['serviceescalations'] . $serviceescalation['Serviceescalation']['uuid'] . $this->conf['suffix']);
-                    $content = $this->fileHeader();
-                    if (!$file->exists()) {
-                        $file->create();
+            $servicesForCfg = [];
+            $services = $serviceescalation->get('services');
+            if (empty($services)) {
+                //This service escalation is broken!
+                $ServiceescalationsTable->delete($serviceescalation);
+                continue;
+            }
+            if (!is_null($services)) {
+                foreach ($services as $service) {
+                    //var_dump($service->get('host')->get('uuid'));
+                    if ($service->get('_joinData')->get('excluded') === 0) {
+                        $servicesForCfg[$service->get('host')->get('uuid')][] = $service->get('uuid');
+                    } else {
+                        $servicesForCfg[$service->get('host')->get('uuid')][] = '!' . $service->get('uuid');
                     }
+                }
+            }
+            if (empty($servicesForCfg)) {
+                //This service escalation is broken!
+                $ServiceescalationsTable->delete($serviceescalation);
+                continue;
+            }
+            $servicegroupsForCfg = [];
+            $servicegroups = $serviceescalation->get('servicegroups');
+            if (!is_null($servicegroups)) {
+                foreach ($servicegroups as $servicegroup) {
+                    if ($servicegroup->get('_joinData')->get('excluded') === 0) {
+                        $servicegroupsForCfg[] = $servicegroup->get('uuid');
+                    } else {
+                        $servicegroupsForCfg[] = '!' . $servicegroup->get('uuid');
+                    }
+                }
+            }
 
+            $file = new File($this->conf['path'] . $this->conf['serviceescalations'] . $serviceescalation->get('uuid') . $this->conf['suffix']);
+            $content = $this->fileHeader();
+            if (!$file->exists()) {
+                $file->create();
+            }
 
+            $contactUuids = [];
+            foreach ($serviceescalation->get('contacts') as $contact) {
+                $contactUuids[] = $contact->get('uuid');
+            }
+            $contactgroupUuids = [];
+            foreach ($serviceescalation->get('contactgroups') as $contactgroup) {
+                $contactgroupUuids[] = $contactgroup->get('uuid');
+            }
+
+            $serviceEscalationString = $serviceescalation->getServiceEscalationStringForCfg();
+
+            if (!empty($servicesForCfg)) {
+                foreach($servicesForCfg as $hostUuid => $serviceUuids){
                     $content .= $this->addContent('define serviceescalation{', 0);
-                    $content .= $this->addContent('host_name', 1, implode(',', $hosts));
+                    $content .= $this->addContent('host_name', 1, $hostUuid);
+                    $content .= $this->addContent('service_description', 1, implode(',', $serviceUuids));
 
-                    if (!empty($services)) {
-                        $content .= $this->addContent('service_description', 1, implode(',', $services));
-                    }
-
-                    if (!empty($servicegroups)) {
-                        $content .= $this->addContent('servicegroup_name', 1, implode(',', $servicegroups));
+                    if (!empty($servicegroupsForCfg)) {
+                        $content .= $this->addContent('servicegroup_name', 1, implode(',', $servicegroupsForCfg));
                     }
 
-                    if (!empty($serviceescalation['Contact'])) {
-                        $content .= $this->addContent('contacts', 1, implode(',', Hash::extract($serviceescalation['Contact'], '{n}.uuid')));
+                    if (!empty($contactUuids)) {
+                        $content .= $this->addContent('contacts', 1, implode(',', $contactUuids));
                     }
-                    if (!empty($serviceescalation['Contactgroup'])) {
-                        $content .= $this->addContent('contact_groups', 1, implode(',', Hash::extract($serviceescalation['Contactgroup'], '{n}.uuid')));
+                    if (!empty($contactgroupUuids)) {
+                        $content .= $this->addContent('contact_groups', 1, implode(',', $contactgroupUuids));
                     }
-                    $content .= $this->addContent('first_notification', 1, $serviceescalation['Serviceescalation']['first_notification']);
-                    $content .= $this->addContent('last_notification', 1, $serviceescalation['Serviceescalation']['last_notification']);
-                    $content .= $this->addContent('notification_interval', 1, (int)$serviceescalation['Serviceescalation']['notification_interval'] * 60);
-                    $content .= $this->addContent('escalation_period', 1, $serviceescalation['Timeperiod']['uuid']);
-                    $serviceEscalationString = $this->serviceEscalationString($serviceescalation['Serviceescalation']);
+                    $content .= $this->addContent('first_notification', 1, $serviceescalation->get('first_notification'));
+                    $content .= $this->addContent('last_notification', 1, $serviceescalation->get('last_notification'));
+                    $content .= $this->addContent('notification_interval', 1, (int)$serviceescalation->get('notification_interval') * 60);
+                    $content .= $this->addContent('escalation_period', 1, $serviceescalation->get('timeperiod')->get('uuid'));
                     if (!empty($serviceEscalationString)) {
                         $content .= $this->addContent('escalation_options', 1, $serviceEscalationString);
                     }
-
                     $content .= $this->addContent('}', 0);
-                    $file->write($content);
-                    $file->close();
-                } else {
-                    //This service escalation is broken!
-                    $this->Serviceescalation->delete($serviceescalation['Serviceescalation']['id']);
                 }
-            } else {
-                //This service escalation is broken!
-                $this->Serviceescalation->delete($serviceescalation['Serviceescalation']['id']);
             }
+
+            $file->write($content);
+            $file->close();
         }
     }
 
