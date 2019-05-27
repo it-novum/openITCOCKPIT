@@ -937,11 +937,7 @@ class ServicesController extends AppController {
     }
 
 
-    /**
-     * @param int|null $id
-     * @deprecated
-     */
-    public function copy($id = null) {
+    public function copy() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
