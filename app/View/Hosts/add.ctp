@@ -940,7 +940,7 @@
                                 <ul class="dropdown-menu pull-right" id="menuHack-sdhf98j23jr">
                                     <?php if ($this->Acl->hasPermission('add', 'services')): ?>
                                         <li>
-                                            <a ui-sref="ServicesAdd">
+                                            <a href="" ng-click="submit('ServicesAdd')">
                                                 <i class="fa fa fa-gear"></i>
                                                 <?php echo __('Save and create service'); ?>
                                             </a>

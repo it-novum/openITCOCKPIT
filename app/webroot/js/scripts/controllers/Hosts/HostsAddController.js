@@ -354,7 +354,7 @@ angular.module('openITCOCKPIT')
             $('#HostTagsInput').tagsinput('add', $scope.hosttemplate.Hosttemplate.tags);
         };
 
-        $scope.submit = function(){
+        $scope.submit = function(redirectState){
             $http.post("/hosts/add.json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -366,7 +366,16 @@ angular.module('openITCOCKPIT')
                 });
 
                 if($scope.data.createAnother === false){
-                    RedirectService.redirectWithFallback('HostsNotMonitored');
+                    if(typeof redirectState === "undefined"){
+                        RedirectService.redirectWithFallback('HostsNotMonitored');
+                    }else{
+                        $state.go(redirectState, {
+                            hostId: result.data.id
+                        }).then(function(){
+                            NotyService.scrollTop();
+                        });
+                    }
+
                 }else{
                     clearForm();
                     $scope.errors = {};

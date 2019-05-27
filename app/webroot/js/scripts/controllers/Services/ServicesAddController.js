@@ -390,7 +390,12 @@ angular.module('openITCOCKPIT')
 
         };
 
-        $scope.loadHosts();
+        if(hostId > 0){
+            $scope.loadHosts('', hostId);
+            $scope.loadElements();
+        }else{
+            $scope.loadHosts('');
+        }
         $scope.loadCommands();
 
 
