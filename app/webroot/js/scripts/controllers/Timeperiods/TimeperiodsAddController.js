@@ -103,7 +103,13 @@ angular.module('openITCOCKPIT')
             $http.post("/timeperiods/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                NotyService.genericSuccess();
+                var url = $state.href('HostsEdit', {id: result.data.timeperiod.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+
                 RedirectService.redirectWithFallback('TimeperiodsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){

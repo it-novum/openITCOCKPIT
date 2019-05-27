@@ -1160,12 +1160,18 @@ class ServicesTable extends Table {
 
     /**
      * @param array $ids
+     * @param array $containerIds
      * @return array
      */
-    public function getServicesForCopy($ids = []) {
+    public function getServicesForCopy($ids, $containerIds = []) {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
         $query = $this->find()
             ->select([
                 'Services.id',
@@ -1190,7 +1196,7 @@ class ServicesTable extends Table {
                             ]
                         ]);
                 },
-                'Hosts' => function (Query $q) {
+                'Hosts'            => function (Query $q) {
                     return $q->disableAutoFields()
                         ->select([
                             'Hosts.id',
@@ -1198,17 +1204,25 @@ class ServicesTable extends Table {
                         ]);
                 },
 
-                'Servicecommandargumentvalues'      => [
+                'Servicecommandargumentvalues' => [
                     'Commandarguments'
                 ]
-            ])
-            ->where(['Services.id IN' => $ids])
+            ]);
+
+        $where = [
+            'Services.id IN' => $ids
+        ];
+
+        if (!empty($containerIds)) {
+            $where['Servicetemplates.container_id IN'] = $containerIds;
+        }
+
+        $query
+            ->where($where)
             ->order(['Services.id' => 'asc'])
             ->disableHydration()
             ->all();
-
         $query = $query->toArray();
-
         if ($query === null) {
             return [];
         }
@@ -1223,32 +1237,32 @@ class ServicesTable extends Table {
             'active_checks_enabled'
         ];
 
-        foreach($query as $service){
-            foreach($serviceFields as $serviceField) {
+        foreach ($query as $service) {
+            foreach ($serviceFields as $serviceField) {
                 if ($service[$serviceField] === null || $service[$serviceField] === '') {
                     $service[$serviceField] = $service['servicetemplate'][$serviceField];
                 }
 
                 //Duplicate the name for front end to display the original service name
-                $service['_name'] =  $service['name'];
+                $service['_name'] = $service['name'];
             }
 
             //Compare service command arguments
             $servicecommandargumentvalues = $service['servicecommandargumentvalues'];
-            if(empty($_servicecommandargumentvalues)){
+            if (empty($_servicecommandargumentvalues)) {
                 $servicecommandargumentvalues = $service['servicetemplate']['servicetemplatecommandargumentvalues'];
             }
 
-            if(!empty($servicecommandargumentvalues)){
+            if (!empty($servicecommandargumentvalues)) {
                 //Remove ids for front end
-                foreach($servicecommandargumentvalues as $index => $servicecommandargumentvalue){
+                foreach ($servicecommandargumentvalues as $index => $servicecommandargumentvalue) {
                     unset($servicecommandargumentvalues[$index]['id']);
 
-                    if(isset($servicecommandargumentvalues[$index]['service_id'])) {
+                    if (isset($servicecommandargumentvalues[$index]['service_id'])) {
                         unset($servicecommandargumentvalues[$index]['service_id']);
                     }
 
-                    if(isset($servicecommandargumentvalues[$index]['servicetemplate_id'])) {
+                    if (isset($servicecommandargumentvalues[$index]['servicetemplate_id'])) {
                         unset($servicecommandargumentvalues[$index]['servicetemplate_id']);
                     }
                 }

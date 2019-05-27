@@ -32,6 +32,7 @@ angular.module('openITCOCKPIT')
             $http.get("/services/copy/" + ids.join('/') + ".json", {
                 params: {
                     'angular': true,
+                    'hostId': $scope.hostId
                 }
             }).then(function(result){
                 $scope.sourceServices = [];
@@ -86,9 +87,14 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.$watch('hostId',function(){
+            if($scope.hostId > 0){
+                $scope.loadServices();
+            }
+        },true);
 
         $scope.loadHosts('');
-        $scope.loadServices();
+
 
 
     });

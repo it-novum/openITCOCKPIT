@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Entity;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -426,7 +427,7 @@ class TimeperiodsTable extends Table {
 
         $query = $this->find('all');
         $query->contain(['Containers']);
-        $query->innerJoinWith('Containers', function ($q) use ($containerIds) {
+        $query->innerJoinWith('Containers', function (Query $q) use ($containerIds) {
             return $q->where(['Containers.id IN' => $containerIds]);
         });
 
@@ -438,6 +439,56 @@ class TimeperiodsTable extends Table {
         }
 
         return $this->formatListAsCake2($query->toArray());
+    }
+
+    /**
+     * @param int $timeperiodId
+     * @param int $containerId
+     * @param int $fallbackTimeperiodId
+     * @return int
+     */
+    public function checkTimeperiodIdForContainerPermissions($timeperiodId, $containerId, $fallbackTimeperiodId) {
+        $tenantContainerIds = [];
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        foreach ($containerIds as $containerId) {
+            if ($containerId != ROOT_CONTAINER) {
+                $path = $ContainersTable->getPathByIdAndCacheResult($containerId, 'TimeperiodCheckTimeperiodIdForContainerPermissions');
+                // Get container id of the tenant container
+                // Tenant timeperiods are available for all users of a tenant (oITC V2 legacy)
+                if (isset($path[1])) {
+                    $tenantContainerIds[] = $path[1]['id'];
+                }
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+
+        $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
+
+        $timeperiod = $this->find()
+            ->select([
+                'Timeperiods.id',
+                'Timeperiods.container_id'
+            ])
+            ->where([
+                'Timeperiods.id ' => $timeperiodId
+            ])
+            ->disableHydration()
+            ->first();
+
+        if ($timeperiod === null) {
+            return $fallbackTimeperiodId;
+        }
+
+        if (in_array($timeperiod['container_id'], $containerIds, true)) {
+            return $timeperiod['id'];
+        }
+
+        return $fallbackTimeperiodId;
     }
 
 }

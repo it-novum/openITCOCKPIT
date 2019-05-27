@@ -65,7 +65,7 @@ $weekdays = [
     <div>
         <div class="widget-body">
             <form ng-submit="submit();" class="form-horizontal" ng-init="successMessage=
-            {objectName : '<?php echo __('Timeperiod'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+            {objectName : '<?php echo __('Time period'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
                 <div class="row">
                     <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                         <label class="col col-md-2 control-label">
@@ -213,7 +213,7 @@ $weekdays = [
                         <div class="col-xs-12">
                             <div class="well formactions ">
                                 <div class="pull-right">
-                                    <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">
+                                    <input class="btn btn-primary" type="submit" value="<?php echo __('Update time period'); ?>">
                                     <a ui-sref="TimeperiodsIndex"
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>

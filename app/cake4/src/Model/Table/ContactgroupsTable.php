@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -462,5 +463,65 @@ class ContactgroupsTable extends Table {
      */
     public function existsById($id) {
         return $this->exists(['Contactgroups.id' => $id]);
+    }
+
+    /**
+     * @param array $contactgroupsId
+     * @param array $containerId
+     * @return array
+     */
+    public function removeContactgroupsWhichAreNotInContainer($contactgroupsId, $containerId) {
+        if (!is_array($contactgroupsId)) {
+            $contactgroupsId = [$contactgroupsId];
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        $tenantContainerIds = [];
+        foreach ($containerIds as $containerId) {
+            if ($containerId != ROOT_CONTAINER) {
+                $path = $ContainersTable->getPathByIdAndCacheResult($containerId, 'ContactgroupsRemoveContactgroupsWhichAreNotInContainer');
+                // Get container id of the tenant container
+                // Tenant contacts are available for all users of a tenant (oITC V2 legacy)
+                if (isset($path[1])) {
+                    $tenantContainerIds[] = $path[1]['id'];
+                }
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $containerIds = array_unique(array_merge($containerIds, $tenantContainerIds));
+
+        $query = $this->find()
+            ->select([
+                'Contactgroups.id',
+            ])
+            ->contain([
+                'Containers' => function (Query $q) {
+                    return $q->disableAutoFields()
+                        ->select([
+                            'Containers.parent_id'
+                        ]);
+                }
+            ])
+            ->where([
+                'Contactgroups.id IN ' => $contactgroupsId
+            ])
+            ->disableHydration()
+            ->all();
+
+        if ($query === null) {
+            return [];
+        }
+
+        $contactgroupIds = [];
+        foreach ($query->toArray() as $record) {
+            if (in_array($record['container']['parent_id'], $containerIds, true)) {
+                $contactgroupIds[] = $record['id'];
+            }
+        }
+        return $contactgroupIds;
     }
 }

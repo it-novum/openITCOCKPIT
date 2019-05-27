@@ -49,7 +49,6 @@ use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
@@ -956,9 +955,25 @@ class ServicesController extends AppController {
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->request->is('get')) {
-            $services = $ServicesTable->getServicesForCopy(func_get_args());
+            $hostId = $this->request->query('hostId');
+            if (!$HostsTable->existsById($hostId)) {
+                throw new NotFoundException('Invalid host');
+            }
+
+            $containerId = $HostsTable->getHostPrimaryContainerIdByHostId($hostId);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+            $services = $ServicesTable->getServicesForCopy(func_get_args(), $containerIds);
 
             /** @var $CommandsTable CommandsTable */
             $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
@@ -1010,7 +1025,6 @@ class ServicesController extends AppController {
                             $sourceService,
                             $sourceServiceServicetemplate
                         );
-
 
                         $sourceService = $ServiceMergerForView->getDataForView();
 
@@ -1086,11 +1100,54 @@ class ServicesController extends AppController {
                 $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
                 $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
 
-                if($action === 'copy'){
+                //Container permissions check for contacts, contact groups and time periods
+                if (!empty($serviceData['contacts']['_ids'])) {
+                    // Host can use this contacts
+                    // Contacts are different than in the service template
+                    // Check if the contacts can be used by the host
+                    $serviceData['contacts']['_ids'] = $ContactsTable->removeContactsWhichAreNotInContainer(
+                        $serviceData['contacts']['_ids'],
+                        $host['Host']['container_id']
+                    );
+                }
+
+                if (!empty($serviceData['contactgroups']['_ids'])) {
+                    // Host can use this contactgroups
+                    // Contactgroups are different than in the service template
+                    // Check if the contactgroups can be used by the host
+                    $serviceData['contactgroups']['_ids'] = $ContactgroupsTable->removeContactgroupsWhichAreNotInContainer(
+                        $serviceData['contactgroups']['_ids'],
+                        $host['Host']['container_id']
+                    );
+                }
+
+                if ($serviceData['check_period_id'] !== null) {
+                    // Host can use this template
+                    // Timeperiod is different than in the service template
+                    // Check if this time period can be used by the host
+                    $serviceData['check_period_id'] = $TimeperiodsTable->checkTimeperiodIdForContainerPermissions(
+                        $serviceData['check_period_id'],
+                        $host['Host']['container_id'],
+                        $host['Host']['check_period_id']
+                    );
+                }
+
+                if ($serviceData['notify_period_id'] !== null) {
+                    // Host can use this template
+                    // Timeperiod is different than in the service template
+                    // Check if this time period can be used by the host
+                    $serviceData['notify_period_id'] = $TimeperiodsTable->checkTimeperiodIdForContainerPermissions(
+                        $serviceData['notify_period_id'],
+                        $host['Host']['container_id'],
+                        $host['Host']['notify_period_id']
+                    );
+                }
+
+                if ($action === 'copy') {
                     $serviceData['uuid'] = UUID::v4();
 
                     $newServiceEntity = $ServicesTable->newEntity($serviceData);
-                }else{
+                } else {
                     $newServiceEntity = $ServicesTable->get($newServiceData['Service']['id']);
                     $newServiceEntity->setAccess('uuid', false);
                     $newServiceEntity->setAccess('id', false);
@@ -1108,7 +1165,7 @@ class ServicesController extends AppController {
                     //No errors
                     $postData[$index]['Service']['id'] = $newServiceEntity->get('id');
 
-                    if($action === 'copy') {
+                    if ($action === 'copy') {
                         $changelog_data = $this->Changelog->parseDataForChangelog(
                             $action,
                             'services',
@@ -1119,7 +1176,7 @@ class ServicesController extends AppController {
                             $host['Host']['name'] . '/' . $servicename,
                             $serviceData
                         );
-                    }else{
+                    } else {
                         $changelog_data = $this->Changelog->parseDataForChangelog(
                             $action,
                             'services',

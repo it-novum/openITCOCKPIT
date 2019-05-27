@@ -692,4 +692,65 @@ class ContactsTable extends Table {
         return $this->exists(['Contacts.id' => $id]);
     }
 
+    /**
+     * @param array $contactIds
+     * @param array $containerId
+     * @return array
+     */
+    public function removeContactsWhichAreNotInContainer($contactIds, $containerId) {
+        if (!is_array($contactIds)) {
+            $contactIds = [$contactIds];
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        $tenantContainerIds = [];
+        foreach ($containerIds as $containerId) {
+            if ($containerId != ROOT_CONTAINER) {
+                $path = $ContainersTable->getPathByIdAndCacheResult($containerId, 'ContactRemoveContactsWhichAreNotInContainer');
+                // Get container id of the tenant container
+                // Tenant contacts are available for all users of a tenant (oITC V2 legacy)
+                if (isset($path[1])) {
+                    $tenantContainerIds[] = $path[1]['id'];
+                }
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $containerIds = array_unique(array_merge($containerIds, $tenantContainerIds));
+
+        $query = $this->find()
+            ->select([
+                'Contacts.id'
+            ])
+            ->contain([
+                'Containers' => function (Query $q) {
+                    return $q->disableAutoFields()
+                        ->select([
+                            'Containers.id'
+                        ]);
+                }
+            ])
+            ->where([
+                'Contacts.id IN ' => $contactIds
+            ])
+            ->disableHydration()
+            ->all();
+
+        if ($query === null) {
+            return [];
+        }
+
+        $contactIds = [];
+        foreach ($query->toArray() as $record) {
+            $containersFromContact = Hash::extract($record['containers'], '{n}.id');
+            if (!empty(array_intersect($containerIds, $containersFromContact))) {
+                $contactIds[] = $record['id'];
+            }
+        }
+        return $contactIds;
+    }
+
 }

@@ -83,6 +83,22 @@
                 </div>
             </div>
 
+            <div class="row form-horizontal" ng-show="hostId > 0">
+                <div class="col-xs-12 col-md-9 col-lg-7">
+                    <div class="col col-md-2 control-label">
+                        <!-- Fancy layout -->
+                    </div>
+                    <div class="col col-xs-10">
+                        <div class="text-info">
+                            <i class="fa fa-info-circle"></i>
+                            <?php echo __('Please notice:'); ?>
+                            <?php echo __('Services which use a service template that could not be assigned to the selected host due to container permissions, will be removed automatically.'); ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             <div class="row form-horizontal" ng-repeat="sourceService in sourceServices" ng-show="hostId > 0">
                 <div class="col-xs-12 col-md-9 col-lg-7">
                     <fieldset>

@@ -171,8 +171,8 @@ angular.module('openITCOCKPIT')
             if($scope.post.Cronjob != null){
                 console.log($scope.post.Cronjob.plugin);
                 $scope.loadAvailableCronjobTasks('', $scope.post.Cronjob.plugin, function(){
-                })
+                });
             }
-        },true)
+        },true);
 
     });
