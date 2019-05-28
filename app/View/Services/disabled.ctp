@@ -170,7 +170,7 @@
 
                                         <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                             <a class="pull-right txt-color-blueDark"
-                                               href="/services/serviceList/{{host.Host.id}}">
+                                               ui-sref="ServicesServiceList({id: host.Host.id})">
                                                 <i class="fa fa-list"
                                                    title=" <?php echo __('Go to Service list'); ?>"></i>
                                             </a>
@@ -210,8 +210,13 @@
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
+                                                <a href="javascript:void(0);"
+                                                   ng-if="!service.Service.allow_edit"
+                                                   class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
                                             <?php else: ?>
-                                                <a href="javascript:void(0);" class="btn btn-default">
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                             <?php endif; ?>
                                             <a href="javascript:void(0);" data-toggle="dropdown"
