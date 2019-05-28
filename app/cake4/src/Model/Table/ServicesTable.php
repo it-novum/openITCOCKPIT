@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Service;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -11,6 +12,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
  * Services Model
@@ -1276,5 +1278,76 @@ class ServicesTable extends Table {
         return $result;
 
     }
+
+    /**
+     * @param Service $service
+     * @param User $User
+     * @return bool
+     */
+    public function __delete(Service $service, User $User) {
+        $servicename = $service->get('name');
+
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        if ($servicename === null || $servicename === '') {
+            $servicetemplate = $ServicetemplatesTable->get($service->get('servicetemplate_id'));
+            $servicename = $servicetemplate->get('name');
+        }
+
+        if (!$this->delete($service)) {
+            return false;
+        }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $DocumentationsTable DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+        /** @var $DeletedServicesTable DeletedServicesTable */
+        $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
+        /** @var $ChangelogsTable ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $host = $HostsTable->get($service->get('host_id'));
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'delete',
+            'services',
+            $service->get('id'),
+            OBJECT_SERVICE,
+            $host->get('container_id'),
+            $User->getId(),
+            $host->get('name') . '/' . $servicename,
+            [
+                'Service' => $service->toArray()
+            ]
+        );
+
+        if ($changelog_data) {
+            $ChangelogsTable->write($changelog_data);
+        }
+
+        if ($DocumentationsTable->existsByUuid($service->get('uuid'))) {
+            $DocumentationsTable->delete($DocumentationsTable->getDocumentationByUuid($service->get('uuid')));
+        }
+
+        //Save service to DeletedServicesTable
+        $data = $DeletedServicesTable->newEntity([
+            'uuid'               => $service->get('uuid'),
+            'host_uuid'          => $host->get('uuid'),
+            'servicetemplate_id' => $service->get('servicetemplate_id'),
+            'host_id'            => $service->get('host_id'),
+            'name'               => $servicename,
+            'description'        => $service->get('description'),
+            'deleted_perfdata'   => 0
+        ]);
+        $DeletedServicesTable->save($data);
+
+        // @todo implement this in cake4
+        //Service::_clenupServiceEscalationDependencyAndGroup($service);
+
+        return true;
+    }
+
 
 }

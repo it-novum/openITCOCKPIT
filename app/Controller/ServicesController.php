@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Lib\Constants;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
@@ -884,43 +885,36 @@ class ServicesController extends AppController {
 
     /**
      * @param int|null $id
-     * @deprecated
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Service->exists($id)) {
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$ServicesTable->existsById($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $this->Service->findById($id);
-        $host = $this->Host->find('first', [
-            'conditions' => [
-                'Host.id' => $service['Host']['id'],
-            ],
-            'contain'    => [
-                'Container',
-            ],
-            'fields'     => [
-                'Host.id',
-                'Host.container_id',
-                'Container.*',
-            ],
-        ]);
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck)) {
+        $service = $ServicesTable->get($id);
+        $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
             return;
         }
 
-        $modules = $this->Constants->defines['modules'];
+        $Constants = new Constants();
+        $moduleConstants = $Constants->getModuleConstants();
 
-        $usedBy = $this->Service->isUsedByModules($service, $modules);
+        $usedBy = $service->isUsedByModules($service, $moduleConstants);
+        $User = new User($this->Auth);
         if (empty($usedBy)) {
             //Not used by any module
-            if ($this->Service->__delete($service, $this->Auth->user('id'))) {
+            if ($ServicesTable->__delete($service, $User)) {
                 $this->set('success', true);
                 $this->set('message', __('Service successfully deleted'));
                 $this->set('_serialize', ['success']);

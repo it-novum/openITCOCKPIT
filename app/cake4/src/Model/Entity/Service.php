@@ -312,4 +312,19 @@ class Service extends Entity {
         return $flapdetectionOptions;
     }
 
+    /**
+     * @param $service
+     * @param $moduleConstants
+     * @return array
+     */
+    public function isUsedByModules($service, $moduleConstants) {
+        $usedBy = [];
+        foreach ($moduleConstants as $moduleName => $value) {
+            if ($this->get('usage_flag') & $value) {
+                $usedBy[$moduleName] = $value;
+            }
+        }
+        return $usedBy;
+    }
+
 }

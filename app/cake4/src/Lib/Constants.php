@@ -171,7 +171,11 @@ class Constants {
     }
 
     private function defineModules() {
-        $this->define([
+        $this->define($this->getModuleConstants());
+    }
+
+    public function getModuleConstants() {
+        return [
             'AUTOREPORT_MODULE'       => 1 << 0,
             'EVENTCORRELATION_MODULE' => 1 << 1,
             'DISTRIBUTE_MODULE'       => 1 << 2,
@@ -180,7 +184,7 @@ class Constants {
             'MK_MODULE'               => 1 << 5,
             'MASSENVERSAND_MODULE'    => 1 << 6,
             'SAP_MODULE'              => 1 << 7,
-        ]);
+        ];
     }
 
     private function attachContainerpropertiesToContainers() {
