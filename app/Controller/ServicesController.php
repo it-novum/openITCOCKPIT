@@ -1202,65 +1202,71 @@ class ServicesController extends AppController {
 
     /**
      * @param int|null $id
-     * @deprecated
      */
     public function deactivate($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->Service->exists($id)) {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$ServicesTable->existsById($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $this->Service->id = $id;
-        if ($this->Service->saveField('disabled', 1)) {
-            $this->set('success', true);
-            $this->set('message', __('Service successfully disabled'));
-            $this->set('_serialize', ['success']);
+        $service = $ServicesTable->get($id);
+        $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
+            $this->render403();
             return;
         }
 
-        $this->response->statusCode(400);
-        $this->set('success', false);
+        $service->set('disabled', 1);
+        $ServicesTable->save($service);
+
+        if ($service->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('message', __('Issue while disabling service'));
+            $this->set('error', $service->getErrors());
+            $this->set('_serialize', ['error', 'success', 'message']);
+            return;
+        }
+
+        $this->set('success', true);
         $this->set('id', $id);
-        $this->set('message', __('Issue while disabling service'));
-        $this->set('_serialize', ['success', 'id', 'message']);
+        $this->set('message', __('Service successfully disabled'));
+        $this->set('_serialize', ['success', 'message', 'id']);
     }
 
     /**
      * @param int|null $id
-     * @deprecated
      */
     public function enable($id = null) {
         if (!$this->request->is('post')) {
-            //throw new MethodNotAllowedException();
+            throw new MethodNotAllowedException();
         }
 
-        if (!$this->Service->exists($id)) {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$ServicesTable->existsById($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Service.id' => $id
-            ],
-            'contain'    => [
-                'Host' => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.disabled'
-                    ]
-                ]
-            ],
-            'fields'     => [
-                'Service.id',
-                'Service.host_id',
-            ]
-        ]);
+        $service = $ServicesTable->get($id);
+        $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
+            $this->render403();
+            return;
+        }
 
-        if ($service['Host']['disabled'] == 1) {
+        if ($host['Host']['disabled'] === 1) {
             $this->response->statusCode(400);
             $this->set('success', false);
             $this->set('id', $id);
@@ -1269,19 +1275,22 @@ class ServicesController extends AppController {
             return;
         }
 
-        $this->Service->id = $id;
-        if ($this->Service->saveField('disabled', 0)) {
-            $this->set('success', true);
-            $this->set('message', __('Service successfully enabled'));
-            $this->set('_serialize', ['success']);
+        $service->set('disabled', 0);
+        $ServicesTable->save($service);
+
+        if ($service->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('message', __('Issue while enabling service'));
+            $this->set('error', $service->getErrors());
+            $this->set('_serialize', ['error', 'success', 'message']);
             return;
         }
 
-        $this->response->statusCode(400);
-        $this->set('success', false);
+        $this->set('success', true);
         $this->set('id', $id);
-        $this->set('message', __('Issue while enabling service'));
-        $this->set('_serialize', ['success', 'id', 'message']);
+        $this->set('message', __('Service successfully enabled'));
+        $this->set('_serialize', ['success', 'message', 'id']);
     }
 
     /**
