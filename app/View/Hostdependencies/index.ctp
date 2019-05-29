@@ -47,7 +47,7 @@
                             <i class="fa fa-refresh"></i>
                             <?php echo __('Refresh'); ?>
                         </button>
-                        <?php if ($this->Acl->hasPermission('add')): ?>
+                        <?php if ($this->Acl->hasPermission('add', 'hostdependencies')): ?>
                             <a ui-sref="HostdependenciesAdd" class="btn btn-xs btn-success" icon="fa fa-plus">
                                 <i class="fa fa-plus"></i> <?php echo __('New'); ?>
                             </a>
@@ -83,7 +83,7 @@
                                 <div class="row padding-top-5 padding-bottom-5">
                                     <div class="col-xs-12 no-padding help-block helptext text-info">
                                         <i class="fa fa-info-circle text-info"></i>
-                                        <?php echo __('You can either search for  <b>"host"</b> OR <b>"dependent host"</b>. Opposing Field will be reset automatically'); ?>
+                                        <?php echo __('You can either search for  <b>"host"</b> OR <b>"dependent host"</b>. Opposing field will be reset automatically'); ?>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -122,7 +122,7 @@
                                 <div class="row padding-top-5 padding-bottom-5">
                                     <div class="col-xs-12 no-padding help-block helptext text-info">
                                         <i class="fa fa-info-circle text-info"></i>
-                                        <?php echo __('You can either search for  <b>"host group"</b> OR <b>"dependent host group"</b>.  Opposing Field will be reset automatically'); ?>
+                                        <?php echo __('You can either search for  <b>"host group"</b> OR <b>"dependent host group"</b>.  Opposing field will be reset automatically'); ?>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -303,7 +303,7 @@
                                     <th><?php echo __('Hosts'); ?></th>
                                     <th><?php echo __('Dependent hosts'); ?></th>
                                     <th><?php echo __('Host groups'); ?></th>
-                                    <th><?php echo __('Dependent hosts groups'); ?></th>
+                                    <th><?php echo __('Dependent host groups'); ?></th>
                                     <th><?php echo __('Timeperiod'); ?></th>
                                     <th class="no-sort"><?php echo __('Execution failure criteria'); ?></th>
                                     <th class="no-sort"><?php echo __('Notification failure criteria'); ?></th>

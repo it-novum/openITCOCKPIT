@@ -177,6 +177,20 @@
                                             </label>
                                         </div>
                                     </div>
+                                    <div class="col-xs-12 col-md-12 padding-left-0">
+                                        <div class="form-group smart-form">
+                                            <label class="input">
+                                                <i class="icon-prepend fa fa-clock-o"></i>
+                                                <input class="input-sm"
+                                                       type="number"
+                                                       min="0"
+                                                       step="1"
+                                                       placeholder="<?php echo __('Filter by notification interval'); ?>"
+                                                       ng-model="filter.Hostescalations.notification_interval"
+                                                       ng-model-options="{debounce: 500}">
+                                            </label>
+                                        </div>
+                                    </div>
                                 </fieldset>
                             </div>
                             <div class="col-xs-12 col-md-3">
@@ -265,7 +279,8 @@
                                     <td>
                                         <ul class="list-unstyled">
                                             <li ng-repeat="host in hostescalation.hosts">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-success padding-2">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-success padding-2"
+                                                     title="{{host.name}}">
                                                     <label class="label label-success label-xs">
                                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                                     </label>
@@ -289,7 +304,8 @@
                                     <td>
                                         <ul class="list-unstyled">
                                             <li ng-repeat="host in hostescalation.hosts_excluded">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
+                                                title="{{host.name}}">
                                                     <label class="label label-danger label-xs">
                                                         <i class="fa fa-minus" aria-hidden="true"></i>
                                                     </label>
@@ -313,7 +329,8 @@
                                     <td>
                                         <ul class="list-unstyled">
                                             <li ng-repeat="hostgroup in hostescalation.hostgroups">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-success padding-2">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-success padding-2"
+                                                     title="{{hostgroup.container.name}}">
                                                     <label class="label label-success label-xs">
                                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                                     </label>
@@ -334,7 +351,8 @@
                                     <td>
                                         <ul class="list-unstyled">
                                             <li ng-repeat="hostgroup in hostescalation.hostgroups_excluded">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
+                                                     title="{{hostgroup.container.name}}">
                                                     <label class="label label-danger label-xs">
                                                         <i class="fa fa-minus" aria-hidden="true"></i>
                                                     </label>

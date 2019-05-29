@@ -22,101 +22,62 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-use App\Lib\Constants;
+
 use App\Model\Table\ContainersTable;
+use App\Model\Table\ServicedependenciesTable;
+use App\Model\Table\TimeperiodsTable;
+use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\ServicedependenciesFilter;
 
 /**
- * @property Servicedependency $Servicedependency
- * @property Timeperiod $Timeperiod
- * @property Service $Service
- * @property Servicegroup $Servicegroup
+ * @property \App\Model\Entity\Servicedependency $Servicedependency
+ * @property \App\Model\Entity\Timeperiod $Timeperiod
+ * @property \App\Model\Entity\Service $Service
+ * @property \App\Model\Entity\Servicegroup $Servicegroup
+ * @property Contact $Contact
+ * @property Contactgroup $Contactgroup
  * @property ServicedependencyServiceMembership $ServicedependencyServiceMembership
  * @property ServicedependencyServicegroupMembership $ServicedependencyServicegroupMembership
- * @property Host $Host
  * @property Container $Container
- * @property PaginatorComponent $Paginator
- * @property ListFilterComponent $ListFilter
- * @property RequestHandlerComponent $RequestHandler
- * @property CustomValidationErrorsComponent $CustomValidationErrors
  */
 class ServicedependenciesController extends AppController {
 
-    public $uses = [
-        'Servicedependency',
-        'Timeperiod',
-        'Service',
-        'Servicegroup',
-        'ServicedependencyServiceMembership',
-        'ServicedependencyServicegroupMembership',
-        'Host',
-        'Container',
-    ];
+    public $layout = 'blank';
 
-    public $layout = 'Admin.default';
-    public $components = [
-        'ListFilter.ListFilter',
-        'RequestHandler',
-        'CustomValidationErrors',
-    ];
-    public $helpers = [
-        'ListFilter.ListFilter',
-        'CustomValidationErrors',
-    ];
 
     public function index() {
-        $options = [
-            'recursive'  => -1,
-            'conditions' => [
-                'Servicedependency.container_id' => $this->MY_RIGHTS,
-            ],
-            'contain'    => [
-                'ServicedependencyServiceMembership'      => [
-                    'Service' => [
-                        'fields'          => [
-                            'name',
-                            'disabled'
-                        ],
-                        'Servicetemplate' => [
-                            'fields' => ['name'],
-                        ],
-                        'Host'            => [
-                            'fields' => [
-                                'id',
-                                'name',
-                                'disabled'
-                            ],
-                        ],
-                    ],
-                ],
-                'ServicedependencyServicegroupMembership' => [
-                    'Servicegroup' => [
-                        'Container' => [
-                            'fields' => 'name',
-                        ],
-                    ],
-                ],
-                'Timeperiod'                              => [
-                    'fields' => 'name',
-                ],
-            ],
-        ];
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
 
-        $query = Hash::merge($this->Paginator->settings, $options);
+        /** @var $ServicedependenciesTable ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
 
-        if ($this->isApiRequest) {
-            unset($query['limit']);
-            $all_servicedependencies = $this->Servicedependency->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $all_servicedependencies = $this->Paginator->paginate();
+        $ServicedependenciesFilter = new ServicedependenciesFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicedependenciesFilter->getPage());
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        }
+        $servicedependencies = $ServicedependenciesTable->getServicedependenciesIndex($ServicedependenciesFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($servicedependencies as $index => $servicedependency) {
+            $servicedependencies[$index]['allowEdit'] = $this->isWritableContainer($servicedependency['container_id']);
         }
 
 
-        $this->set('all_servicedependencies', $all_servicedependencies);
-        $this->set('_serialize', ['all_servicedependencies']);
+        $this->set('all_servicedependencies', $servicedependencies);
+        $toJson = ['all_servicedependencies', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_servicedependencies', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function view($id = null) {
@@ -124,265 +85,214 @@ class ServicedependenciesController extends AppController {
             throw new MethodNotAllowedException();
 
         }
-        if (!$this->Servicedependency->exists($id)) {
-            throw new NotFoundException(__('Invalid servicedependency'));
+        if (!$this->Hostdependency->exists($id)) {
+            throw new NotFoundException(__('Invalid hostdependency'));
         }
-        $servicedependency = $this->Servicedependency->findById($id);
-        $serviceDependencyContainerId = $servicedependency['Servicedependency']['container_id'];
-        if (!$this->allowedByContainerId($serviceDependencyContainerId)) {
+        $hostdependency = $this->Hostdependency->find('first', [
+            'conditions' => [
+                'Hostdependency.id' => $id,
+            ],
+            'contain'    => [
+                'HostdependencyHostMembership'      => [
+                    'Host',
+                ],
+                'HostdependencyHostgroupMembership' => [
+                    'Hostgroup',
+                ],
+                'Timeperiod',
+            ],
+        ]);
+        if (!$this->allowedByContainerId($hostdependency['Hostdependency']['container_id'])) {
             $this->render403();
 
             return;
         }
 
-        $this->set('servicedependency', $servicedependency);
-        $this->set('_serialize', ['servicedependency']);
+        $this->set('hostdependency', $hostdependency);
+        $this->set('_serialize', ['hostdependency']);
     }
 
     public function edit($id = null) {
-        if (!$this->Servicedependency->exists($id)) {
-            throw new NotFoundException(__('Invalid servicedependency'));
-        }
-        $servicedependency = $this->Servicedependency->findById($id);
-        if (!$servicedependency) {
-            throw new NotFoundException(__('Invalid servicedependency'));
-        }
-
-        $serviceDependencyContainerId = $servicedependency['Servicedependency']['container_id'];
-        if (!$this->allowedByContainerId($serviceDependencyContainerId)) {
-            $this->render403();
-
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
-        $serviceDependencyContainerIds = $ContainersTable->resolveChildrenOfContainerIds($serviceDependencyContainerId);
-
-
-        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($serviceDependencyContainerIds, 'list', 'id');
-
-        $services = $this->Host->servicesByContainerIds($serviceDependencyContainerIds, 'list', [
-            'prefixHostname' => true,
-            'delimiter'      => '/',
-            'forOptiongroup' => true,
+        /** @var $HostdependenciesTable HostdependenciesTable */
+        $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+        if (!$HostdependenciesTable->existsById($id)) {
+            throw new NotFoundException('Host dependency not found');
+        }
+        $hostdependency = $HostdependenciesTable->get($id, [
+            'contain' => [
+                'hosts'         => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select(['id', 'name']);
+                },
+                'hostgroups'    => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select(['id']);
+                },
+            ]
         ]);
 
-        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($serviceDependencyContainerIds, 'list');
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $containerId = $this->request->data('Servicedependency.container_id');
-            if ($containerId > 0 && $containerId != $serviceDependencyContainerId) {
-                // If the container ID has been changed, fill the variables
-
-                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-                $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
-                    'prefixHostname' => true,
-                    'delimiter'      => '/',
-                    'forOptiongroup' => true,
-                ]);
-
-                $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-                $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
-            }
-
-            $_services = (is_array($this->request->data('Servicedependency.Service'))) ? $this->request->data['Servicedependency']['Service'] : [];
-            $dependent_services = (is_array($this->request->data('Servicedependency.ServiceDependent'))) ? $this->request->data['Servicedependency']['ServiceDependent'] : [];
-            $this->request->data['ServicedependencyServiceMembership'] = $this->Servicedependency->parseServiceMembershipData($_services, $dependent_services);
-
-            $_servicegroups = (is_array($this->request->data('Servicedependency.Servicegroup'))) ? $this->request->data['Servicedependency']['Servicegroup'] : [];
-            $dependent_servicegroups = (is_array($this->request->data('Servicedependency.ServicegroupDependent'))) ? $this->request->data['Servicedependency']['ServicegroupDependent'] : [];
-            $this->request->data['ServicedependencyServicegroupMembership'] = $this->Servicedependency->parseServicegroupMembershipData($_servicegroups, $dependent_servicegroups);
-
-
-            $this->Servicedependency->set($this->request->data);
-            $this->Servicedependency->id = $id;
-
-            if ($this->Servicedependency->validates()) {
-                $old_membership_services = $this->ServicedependencyServiceMembership->find('all', [
-                    'conditions' => [
-                        'ServicedependencyServiceMembership.servicedependency_id' => $id
-                    ],
-                ]);
-                /* Delete old service associations */
-                foreach ($old_membership_services as $old_membership_service) {
-                    $this->ServicedependencyServiceMembership->delete($old_membership_service['ServicedependencyServiceMembership']['id']);
-                }
-                $old_membership_servicegroups = $this->ServicedependencyServicegroupMembership->find('all', [
-                    'conditions' => [
-                        'ServicedependencyServicegroupMembership.servicedependency_id' => $id
-                    ],
-                ]);
-                /* Delete old servicegroup associations */
-                foreach ($old_membership_servicegroups as $old_membership_servicegroup) {
-                    $this->ServicedependencyServicegroupMembership->delete($old_membership_servicegroup['ServicedependencyServicegroupMembership']['id']);
-                }
-            }
-
-            if ($this->Servicedependency->saveAll($this->request->data)) {
-                $this->setFlash(__('Servicedependency successfully saved'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Servicedependency could not be saved'), false);
-            }
-        } else {
-            $servicedependency['Servicedependency']['Service'] = Hash::combine($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0].service_id', '{n}[dependent=0].service_id');
-            $servicedependency['Servicedependency']['ServiceDependent'] = Hash::combine($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=1].service_id', '{n}[dependent=1].service_id');
-            $servicedependency['Servicedependency']['Servicegroup'] = Hash::combine($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=0].servicegroup_id', '{n}[dependent=0].servicegroup_id');
-            $servicedependency['Servicedependency']['ServicegroupDependent'] = Hash::combine($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=1].servicegroup_id', '{n}[dependent=1].servicegroup_id');
+        if (!$this->allowedByContainerId($hostdependency->get('container_id'))) {
+            $this->render403();
+            return;
         }
+        if ($this->request->is('post')) {
+            /** @var $HostdependenciesTable HostdependenciesTable */
+            $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+            $data['hosts'] = $HostdependenciesTable->parseHostMembershipData(
+                $this->request->data('Hostdependency.hosts._ids'),
+                $this->request->data('Hostdependency.hosts_dependent._ids')
+            );
+            $data['hostgroups'] = $HostdependenciesTable->parseHostgroupMembershipData(
+                $this->request->data('Hostdependency.hostgroups._ids'),
+                $this->request->data('Hostdependency.hostgroups_dependent._ids')
+            );
 
-        $this->request->data = Hash::merge($servicedependency, $this->request->data);
-        $this->set(compact(['servicedependency', 'services', 'servicegroups', 'timeperiods', 'containers']));
+            $data = array_merge($this->request->data('Hostdependency'), $data);
+            $hostdependency = $HostdependenciesTable->patchEntity($hostdependency, $data);
+            $HostdependenciesTable->save($hostdependency);
+
+            if ($hostdependency->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $hostdependency->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($hostdependency); // REST API ID serialization
+                    return;
+                }
+            }
+        }
+        $this->set('hostdependency', $hostdependency);
+        $this->set('_serialize', ['hostdependency']);
     }
 
     public function add() {
-        $customFieldsToRefill = [
-            'Servicedependency' => [
-                'execution_fail_on_ok',
-                'execution_fail_on_warning',
-                'execution_fail_on_critical',
-                'execution_fail_on_unknown',
-                'execution_fail_on_pending',
-                'execution_none',
-                'notification_fail_on_ok',
-                'notification_fail_on_warning',
-                'notification_fail_on_critical',
-                'notification_fail_on_unknown',
-                'notification_fail_on_pending',
-                'notification_none',
-                'inherits_parent',
-            ],
-        ];
-        $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-
-        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
-        $services = [];
-        $servicegroups = [];
-        $timeperiods = [];
-        $this->Frontend->set('data_placeholder', __('Please, start typing...'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            App::uses('UUID', 'Lib');
-            $this->request->data['Servicedependency']['uuid'] = UUID::v4();
-            $_services = (is_array($this->request->data('Servicedependency.Service'))) ? $this->request->data['Servicedependency']['Service'] : [];
-            $dependent_services = (is_array($this->request->data('Servicedependency.ServiceDependent'))) ? $this->request->data['Servicedependency']['ServiceDependent'] : [];
-            $this->request->data['ServicedependencyServiceMembership'] = $this->Servicedependency->parseServiceMembershipData($_services, $dependent_services);
-
-            $_servicegroups = (is_array($this->request->data('Servicedependency.Servicegroup'))) ? $this->request->data['Servicedependency']['Servicegroup'] : [];
-            $dependent_servicegroups = (is_array($this->request->data('Servicedependency.ServicegroupDependent'))) ? $this->request->data['Servicedependency']['ServicegroupDependent'] : [];
-            $this->request->data['ServicedependencyServicegroupMembership'] = $this->Servicedependency->parseServicegroupMembershipData($_servicegroups, $dependent_servicegroups);
-
-            $isJsonRequest = $this->request->ext === 'json';
-            if ($this->Servicedependency->saveAll($this->request->data)) {
-                if ($isJsonRequest) {
-                    $this->serializeId();
-                    return;
-                } else {
-                    $this->setFlash(__('Servicedependency successfully saved'));
-                    $this->redirect(['action' => 'index']);
-                }
-            } else {
-                if ($isJsonRequest) {
-                    $this->serializeErrorMessage();
-                    return;
-                } else {
-                    $this->setFlash(__('Servicedependency could not be saved'), false);
-
-                    $containerId = $this->request->data('Servicedependency.container_id');
-                    if ($containerId > 0) {
-                        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-                        $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
-                            'forOptiongroup' => true,
-                        ]);
-                        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-                        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
-                    }
-                }
-            }
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
         }
 
-        $this->set([
-            'services'      => $services,
-            'servicegroups' => $servicegroups,
-            'timeperiods'   => $timeperiods,
-            'containers'    => $containers,
-        ]);
+        if ($this->request->is('post')) {
+            /** @var $HostdependenciesTable HostdependenciesTable */
+            $data = [];
+            $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+            $data['hosts'] = $HostdependenciesTable->parseHostMembershipData(
+                $this->request->data('Hostdependency.hosts._ids'),
+                $this->request->data('Hostdependency.hosts_dependent._ids')
+            );
+            $data['hostgroups'] = $HostdependenciesTable->parseHostgroupMembershipData(
+                $this->request->data('Hostdependency.hostgroups._ids'),
+                $this->request->data('Hostdependency.hostgroups_dependent._ids')
+            );
+
+            $data = array_merge($this->request->data('Hostdependency'), $data);
+            $hostdependency = $HostdependenciesTable->newEntity($data);
+            $hostdependency->set('uuid', UUID::v4());
+            $HostdependenciesTable->save($hostdependency);
+
+            if ($hostdependency->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $hostdependency->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($hostdependency); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('hostdependency', $hostdependency);
+            $this->set('_serialize', ['hostdependency']);
+        }
     }
 
     public function delete($id = null) {
-        if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
+        if (!$this->Hostdependency->exists($id)) {
+            throw new NotFoundException(__('Invalid host dependency'));
         }
-        if (!$this->Servicedependency->exists($id)) {
-            throw new NotFoundException(__('Invalid servicedependency'));
-        }
-        $servicedependency = $this->Servicedependency->findById($id);
-
-        if (!$this->allowedByContainerId($servicedependency['Servicedependency']['container_id'])) {
+        $hostdependency = $this->Hostdependency->findById($id);
+        if (!$this->allowedByContainerId($hostdependency['Hostdependency']['container_id'])) {
             $this->render403();
 
             return;
         }
 
-        if ($this->Servicedependency->delete($id)) {
-            $this->setFlash(__('Servicedependency deleted'));
-            $this->redirect(['action' => 'index']);
+        if ($this->Hostdependency->delete($id)) {
+            $this->set('message', __('Host dependency deleted'));
+            $this->set('_serialize', ['message']);
         }
-        $this->setFlash(__('Could not delete servicedependency'), false);
-        $this->redirect(['action' => 'index']);
+        $this->set('message', __('Could not delete host dependency'));
+        $this->set('_serialize', ['message']);
     }
 
     public function loadElementsByContainerId($containerId = null) {
-        $this->allowOnlyAjaxRequests();
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException(__('This is only allowed via API.'));
+            return;
+        }
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
         if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $Constants = new Constants();
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId,
-            false,
-            $Constants->containerProperties(OBJECT_HOST, CT_HOSTGROUP)
-        );
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-        $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
-            'forOptiongroup' => true
-        ]);
+        $hostgroups = $HostgroupsTable->hostgroupsByContainerId($containerIds, 'list', 'id');
+        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
+        $hostgroupsDependent = $hostgroups;
 
-        $timeperiodContainerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId,
-            false,
-            $Constants->containerProperties(OBJECT_TIMEPERIOD)
-        );
-        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($timeperiodContainerIds, 'list');
+        $hosts = $HostsTable->getHostsByContainerId($containerIds, 'list');
+        $hosts = Api::makeItJavaScriptAble($hosts);
+        $hostsDependent = $hosts;
 
-        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
-        $servicegroupsDependent = $servicegroups;
-        $services = Api::makeItJavaScriptAble($services);
-        $servicesDependent = $services;
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
 
-        $data = [
-            'services'               => $services,
-            'servicesDependent'      => $servicesDependent,
-            'servicegroups'          => $servicegroups,
-            'servicegroupsDependent' => $servicegroupsDependent,
-            'timeperiods'            => $timeperiods,
-        ];
-        $this->set($data);
-        $this->set('_serialize', array_keys($data));
+        $this->set('hosts', $hosts);
+        $this->set('hostsDependent', $hostsDependent);
+        $this->set('hostgroups', $hostgroups);
+        $this->set('hostgroupsDependent', $hostgroupsDependent);
+        $this->set('timeperiods', $timeperiods);
+        $this->set('_serialize', [
+            'hosts',
+            'hostsDependent',
+            'hostgroups',
+            'hostgroupsDependent',
+            'timeperiods'
+        ]);
     }
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP, CT_CONTACTGROUP]);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP, CT_CONTACTGROUP]);
+        }
+
+        $this->set('containers', Api::makeItJavaScriptAble($containers));
+        $this->set('_serialize', ['containers']);
+    }
+
 }

@@ -307,10 +307,22 @@ class HostescalationsTable extends Table {
                     },
                 ]
             ])
+            ->select([
+                'Hostescalations.id',
+                'Hostescalations.uuid',
+                'Hostescalations.container_id',
+                'Hostescalations.first_notification',
+                'Hostescalations.last_notification',
+                'Hostescalations.last_notification',
+                'Hostescalations.notification_interval',
+                'Hostescalations.escalate_on_recovery',
+                'Hostescalations.escalate_on_down',
+                'Hostescalations.escalate_on_unreachable'
+            ])
             ->group('Hostescalations.id')
             ->disableHydration();
-        $indexFilter = $HostescalationsFilter->indexFilter();
 
+        $indexFilter = $HostescalationsFilter->indexFilter();
         $containFilter = [
             'Hosts.name'              => '',
             'HostsExcluded.name'      => '',
@@ -321,8 +333,11 @@ class HostescalationsTable extends Table {
             $containFilter['Hosts.name'] = [
                 'Hosts.name LIKE' => $indexFilter['Hosts.name LIKE']
             ];
-            $query->matching('Hosts', function ($q) use ($containFilter) {
-                return $q->where($containFilter['Hosts.name']);
+            $query->innerJoinWith('Hosts', function ($q) use ($containFilter) {
+                return $q->where([
+                    'HostescalationsHostMemberships.excluded' => 0,
+                    $containFilter['Hosts.name']
+                ]);
             });
             unset($indexFilter['Hosts.name LIKE']);
         }
@@ -331,8 +346,11 @@ class HostescalationsTable extends Table {
             $containFilter['HostsExcluded.name'] = [
                 'HostsExcluded.name LIKE' => $indexFilter['HostsExcluded.name LIKE']
             ];
-            $query->matching('HostsExcluded', function ($q) use ($containFilter) {
-                return $q->where($containFilter['HostsExcluded.name']);
+            $query->innerJoinWith('HostsExcluded', function ($q) use ($containFilter) {
+                return $q->where([
+                    'HostescalationsHostMemberships.excluded' => 1,
+                    $containFilter['HostsExcluded.name']
+                ]);
             });
             unset($indexFilter['HostsExcluded.name LIKE']);
 
@@ -341,8 +359,11 @@ class HostescalationsTable extends Table {
             $containFilter['Hostgroups.name'] = [
                 'Containers.name LIKE' => $indexFilter['Hostgroups.name LIKE']
             ];
-            $query->matching('Hostgroups.Containers', function ($q) use ($containFilter) {
-                return $q->where($containFilter['Hostgroups.name']);
+            $query->innerJoinWith('Hostgroups.Containers', function ($q) use ($containFilter) {
+                return $q->where([
+                    'HostescalationsHostgroupMemberships.excluded' => 0,
+                    $containFilter['Hostgroups.name']
+                ]);
             });
             unset($indexFilter['Hostgroups.name LIKE']);
         }
@@ -351,15 +372,30 @@ class HostescalationsTable extends Table {
                 'Containers.name LIKE' => $indexFilter['HostgroupsExcluded.name LIKE']
             ];
             $query->matching('HostgroupsExcluded.Containers', function ($q) use ($containFilter) {
-                return $q->where($containFilter['HostgroupsExcluded.name']);
+                return $q->where([
+                    'HostescalationsHostgroupMemberships.excluded' => 1,
+                    $containFilter['HostgroupsExcluded.name']
+                ]);
             });
             unset($indexFilter['HostgroupsExcluded.name LIKE']);
+        }
+        if (!empty($indexFilter['HostgroupsExcluded.name LIKE'])) {
+
         }
         if(!empty($MY_RIGHTS)){
             $indexFilter['Hostescalations.container_id IN'] = $MY_RIGHTS;
         }
+
+        if (!empty($indexFilter['Hostescalations.notification_interval LIKE'])) {
+            $query->where(
+                ['Hostescalations.notification_interval LIKE' => $indexFilter['Hostescalations.notification_interval LIKE']],
+                ['Hostescalations.notification_interval' => 'string']
+            );
+            unset($indexFilter['Hostescalations.notification_interval LIKE']);
+        }
+
         $query->where($indexFilter);
-        $query->order($HostescalationsFilter->getOrderForPaginator('Hostescalations.first_notification', 'asc'));
+        $query->order($HostescalationsFilter->getOrderForPaginator('Hostescalations.id', 'asc'));
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $query->toArray();
@@ -370,7 +406,6 @@ class HostescalationsTable extends Table {
                 $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
             }
         }
-
         return $result;
     }
 

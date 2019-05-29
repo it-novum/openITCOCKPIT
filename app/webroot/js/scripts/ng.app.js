@@ -411,6 +411,24 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "RegistersIndexController"
             })
 
+            .state('ServicedependenciesIndex', {
+                url: '/servicedependencies/index',
+                templateUrl: "/servicedependencies/index.html",
+                controller: "ServicedependenciesIndexController"
+            })
+
+            .state('ServicedependenciesAdd', {
+                url: '/servicedependencies/add',
+                templateUrl: "/servicedependencies/add.html",
+                controller: "ServicedependenciesAddController"
+            })
+
+            .state('ServicedependenciesEdit', {
+                url: '/servicedependencies/edit/:id',
+                templateUrl: "/servicedependencies/edit.html",
+                controller: "ServicedependenciesEditController"
+            })
+
             .state('ServiceescalationsIndex', {
                 url: '/serviceescalations/index',
                 templateUrl: "/serviceescalations/index.html",

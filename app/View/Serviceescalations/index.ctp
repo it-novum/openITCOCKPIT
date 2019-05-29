@@ -71,7 +71,7 @@
                                 <div class="row">
                                     <div class="col-xs-12 no-padding">
                                         <div class="form-group smart-form">
-                                            <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
+                                            <label class="input"> <i class="icon-prepend fa fa-cog"></i>
                                                 <input type="text" class="input-sm"
                                                        placeholder="<?php echo __('Filter by service name'); ?>"
                                                        ng-model="filter.Services.servicename"
@@ -92,7 +92,7 @@
                                         <div class="form-group smart-form">
                                             <label class="input">
                                         <span class="icon-prepend fa-stack">
-                                            <i class="fa fa-desktop fa-stack-1x"></i>
+                                            <i class="fa fa-cog fa-stack-1x"></i>
                                             <i class="fa fa-exclamation-triangle fa-stack-1x fa-xs cornered cornered-lr text-danger"></i>
                                         </span>
                                                 <input type="text" class="input-sm"
@@ -110,7 +110,7 @@
                                     <div class="col-xs-12 no-padding">
                                         <div class="form-group smart-form">
                                             <label class="input">
-                                                <i class="icon-prepend fa fa-sitemap"></i>
+                                                <i class="icon-prepend fa fa-cogs"></i>
                                                 <input type="text" class="input-sm"
                                                        placeholder="<?php echo __('Filter by service group'); ?>"
                                                        ng-model="filter.Servicegroups.name"
@@ -131,7 +131,7 @@
                                         <div class="form-group smart-form">
                                             <label class="input">
                                         <span class="icon-prepend fa-stack">
-                                            <i class="fa fa-sitemap fa-stack-1x"></i>
+                                            <i class="fa fa-cogs fa-stack-1x"></i>
                                             <i class="fa fa-exclamation-triangle fa-stack-1x fa-xs cornered cornered-lr text-danger"></i>
                                         </span>
                                                 <input type="text" class="input-sm"
@@ -173,6 +173,20 @@
                                                        step="1"
                                                        placeholder="<?php echo __('Filter by last notification'); ?>"
                                                        ng-model="filter.Serviceescalations.last_notification"
+                                                       ng-model-options="{debounce: 500}">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 col-md-12 padding-left-0">
+                                        <div class="form-group smart-form">
+                                            <label class="input">
+                                                <i class="icon-prepend fa fa-clock-o"></i>
+                                                <input class="input-sm"
+                                                       type="number"
+                                                       min="0"
+                                                       step="1"
+                                                       placeholder="<?php echo __('Filter by notification interval'); ?>"
+                                                       ng-model="filter.Serviceescalations.notification_interval"
                                                        ng-model-options="{debounce: 500}">
                                             </label>
                                         </div>
@@ -322,7 +336,8 @@
                                     <td>
                                         <ul class="list-unstyled">
                                             <li ng-repeat="servicegroup in serviceescalation.servicegroups">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-success padding-2">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-success padding-2"
+                                                title="{{servicegroup.container.name}}">
                                                     <label class="label label-success label-xs">
                                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                                     </label>
@@ -343,7 +358,8 @@
                                     <td>
                                         <ul class="list-unstyled">
                                             <li ng-repeat="servicegroup in serviceescalation.servicegroups_excluded">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
+                                                title="{{servicegroup.container.name}}">
                                                     <label class="label label-danger label-xs">
                                                         <i class="fa fa-minus" aria-hidden="true"></i>
                                                     </label>

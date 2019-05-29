@@ -43,7 +43,8 @@ class HostescalationsFilter extends Filter {
                 'Hosts.name',
                 'HostsExcluded.name',
                 'Hostgroups.name',
-                'HostgroupsExcluded.name'
+                'HostgroupsExcluded.name',
+                'Hostescalations.notification_interval'
             ],
         ];
 

@@ -66,13 +66,13 @@ class HostdependenciesController extends AppController {
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
             $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         }
-        $hostdependencys = $HostdependenciesTable->getHostdependenciesIndex($HostdependenciesFilter, $PaginateOMat, $MY_RIGHTS);
-        foreach ($hostdependencys as $index => $hostdependency) {
-            $hostdependencys[$index]['allowEdit'] = $this->isWritableContainer($hostdependency['container_id']);
+        $hostdependencies = $HostdependenciesTable->getHostdependenciesIndex($HostdependenciesFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($hostdependencies as $index => $hostdependency) {
+            $hostdependencies[$index]['allowEdit'] = $this->isWritableContainer($hostdependency['container_id']);
         }
 
 
-        $this->set('all_hostdependencies', $hostdependencys);
+        $this->set('all_hostdependencies', $hostdependencies);
         $toJson = ['all_hostdependencies', 'paging'];
         if ($this->isScrollRequest()) {
             $toJson = ['all_hostdependencies', 'scroll'];

@@ -25,6 +25,7 @@
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostescalationsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;

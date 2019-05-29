@@ -25,7 +25,7 @@
 namespace itnovum\openITCOCKPIT\Filter;
 
 
-class ServiceescalationsFilter extends Filter {
+class ServicedependenciesFilter extends Filter {
 
     /**
      * @return array
@@ -33,19 +33,25 @@ class ServiceescalationsFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'equals' => [
-                'Serviceescalations.first_notification',
-                'Serviceescalations.last_notification',
-                'Serviceescalations.escalate_on_recovery',
-                'Serviceescalations.escalate_on_warning',
-                'Serviceescalations.escalate_on_critical',
-                'Serviceescalations.escalate_on_unknown'
+                'Servicedependencies.inherits_parent',
+                'Servicedependencies.execution_fail_on_ok',
+                'Servicedependencies.execution_fail_on_warning',
+                'Servicedependencies.execution_fail_on_critical',
+                'Servicedependencies.execution_fail_on_unknown',
+                'Servicedependencies.execution_fail_on_pending',
+                'Servicedependencies.execution_none',
+                'Servicedependencies.notification_fail_on_ok',
+                'Servicedependencies.notification_fail_on_warning',
+                'Servicedependencies.notification_fail_on_critical',
+                'Servicedependencies.notification_fail_on_unknown',
+                'Servicedependencies.notification_fail_on_pending',
+                'Servicedependencies.notification_none'
             ],
             'like'  => [
                 'Services.servicename',
-                'ServicesExcluded.servicename',
+                'ServicesDependent.servicename',
                 'Servicegroups.name',
-                'ServicegroupsExcluded.name',
-                'Serviceescalations.notification_interval'
+                'ServicegroupsDependent.name'
             ],
         ];
 

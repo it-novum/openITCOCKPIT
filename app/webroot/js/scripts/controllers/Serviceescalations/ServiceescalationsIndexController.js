@@ -21,7 +21,8 @@ angular.module('openITCOCKPIT')
                     escalate_on_recovery: '',
                     escalate_on_warning: '',
                     escalate_on_critical: '',
-                    escalate_on_unknown: ''
+                    escalate_on_unknown: '',
+                    notification_interval: null
                 },
                 Services: {
                     servicename: ''
@@ -57,6 +58,7 @@ angular.module('openITCOCKPIT')
                     'filter[Serviceescalations.escalate_on_warning]': $scope.filter.Serviceescalations.escalate_on_warning,
                     'filter[Serviceescalations.escalate_on_critical]': $scope.filter.Serviceescalations.escalate_on_critical,
                     'filter[Serviceescalations.escalate_on_unknown]': $scope.filter.Serviceescalations.escalate_on_unknown,
+                    'filter[Serviceescalations.notification_interval]': $scope.filter.Serviceescalations.notification_interval,
                     'filter[Services.servicename]': $scope.filter.Services.servicename,
                     'filter[ServicesExcluded.servicename]': $scope.filter.ServicesExcluded.servicename,
                     'filter[Servicegroups.name]': $scope.filter.Servicegroups.name,
