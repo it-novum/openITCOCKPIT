@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -324,35 +325,43 @@ class ServiceescalationsTable extends Table {
             ->disableHydration();
         $indexFilter = $ServiceescalationsFilter->indexFilter();
         $containFilter = [
-            'Servicegroups.name'              => '',
-            'ServicegroupsExcluded.name'      => ''
+            'Servicegroups.name'         => '',
+            'ServicegroupsExcluded.name' => ''
         ];
 
-        if(!empty($indexFilter['Services.servicename LIKE'])){
-            $query->innerJoinWith ('Services', function ($q) use ($containFilter) {
+        if (!empty($indexFilter['Services.servicename LIKE'])) {
+            $query->innerJoinWith('Services', function ($q) use ($indexFilter) {
                 return $q->innerJoinWith('Hosts')
-                    ->innerJoinWith('Servicetemplates')
-                    ->select([
-                        'servicename' => $q->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))')
-                    ]);
+                    ->innerJoinWith('Servicetemplates');
             });
-            $query->having([
-                'servicename LIKE ' => $indexFilter['Services.servicename LIKE']
+            $where = new Comparison(
+                'CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))',
+                $indexFilter['Services.servicename LIKE'],
+                'string',
+                'LIKE'
+            );
+            $query->where([
+                'ServiceescalationsServiceMemberships.excluded' => 0,
+                $where
             ]);
         }
 
         unset($indexFilter['Services.servicename LIKE']);
 
-        if(!empty($indexFilter['ServicesExcluded.servicename LIKE'])){
-            $query->innerJoinWith ('ServicesExcluded', function ($q) use ($containFilter) {
+        if (!empty($indexFilter['ServicesExcluded.servicename LIKE'])) {
+            $query->innerJoinWith('ServicesExcluded', function ($q) use ($indexFilter) {
                 return $q->innerJoinWith('Hosts')
-                    ->innerJoinWith('Servicetemplates')
-                    ->select([
-                        'servicename' => $q->newExpr('CONCAT(Hosts.name, "/", IF(ServicesExcluded.name IS NULL, Servicetemplates.name, ServicesExcluded.name))')
-                    ]);
+                    ->innerJoinWith('Servicetemplates');
             });
-            $query->having([
-                'servicename LIKE ' => $indexFilter['ServicesExcluded.servicename LIKE']
+            $where = new Comparison(
+                'CONCAT(Hosts.name, "/", IF(ServicesExcluded.name IS NULL, Servicetemplates.name, ServicesExcluded.name))',
+                $indexFilter['ServicesExcluded.servicename LIKE'],
+                'string',
+                'LIKE'
+            );
+            $query->where([
+                'ServiceescalationsServiceMemberships.excluded' => 1,
+                $where
             ]);
         }
 
@@ -363,8 +372,11 @@ class ServiceescalationsTable extends Table {
             $containFilter['Servicegroups.name'] = [
                 'Containers.name LIKE' => $indexFilter['Servicegroups.name LIKE']
             ];
-            $query->matching('Servicegroups.Containers', function ($q) use ($containFilter) {
-                return $q->where($containFilter['Servicegroups.name']);
+            $query->innerJoinWith('Servicegroups.Containers', function ($q) use ($containFilter) {
+                return $q->where([
+                    'ServiceescalationsServicegroupMemberships.excluded' => 0,
+                    $containFilter['Servicegroups.name']
+                ]);
             });
             unset($indexFilter['Servicegroups.name LIKE']);
         }
@@ -372,19 +384,30 @@ class ServiceescalationsTable extends Table {
             $containFilter['ServicegroupsExcluded.name'] = [
                 'Containers.name LIKE' => $indexFilter['ServicegroupsExcluded.name LIKE']
             ];
-            $query->matching('ServicegroupsExcluded.Containers', function ($q) use ($containFilter) {
-                return $q->where($containFilter['ServicegroupsExcluded.name']);
+            $query->innerJoinWith('ServicegroupsExcluded.Containers', function ($q) use ($containFilter) {
+                return $q->where([
+                    'ServiceescalationsServicegroupMemberships.excluded' => 1,
+                    $containFilter['ServicegroupsExcluded.name']
+                ]);
             });
             unset($indexFilter['ServicegroupsExcluded.name LIKE']);
         }
         if (!empty($MY_RIGHTS)) {
             $indexFilter['Serviceescalations.container_id IN'] = $MY_RIGHTS;
         }
-        //debug((string)$query);
+
+        if (!empty($indexFilter['Serviceescalations.notification_interval LIKE'])) {
+            $query->where(
+                ['Serviceescalations.notification_interval LIKE' => $indexFilter['Serviceescalations.notification_interval LIKE']],
+                ['Serviceescalations.notification_interval' => 'string']
+            );
+            unset($indexFilter['Serviceescalations.notification_interval LIKE']);
+        }
+
         $query->where($indexFilter);
 
 
-        $query->order($ServiceescalationsFilter->getOrderForPaginator('Serviceescalations.first_notification', 'asc'));
+        $query->order($ServiceescalationsFilter->getOrderForPaginator('Serviceescalations.id', 'asc'));
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $query->toArray();
@@ -462,7 +485,7 @@ class ServiceescalationsTable extends Table {
                         return $q->enableAutoFields(false)
                             ->contain('Hosts')
                             ->where([
-                                'Hosts.disabled' => 0,
+                                'Hosts.disabled'    => 0,
                                 'Services.disabled' => 0
                             ])
                             ->select([

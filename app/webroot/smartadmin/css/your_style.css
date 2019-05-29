@@ -2381,7 +2381,7 @@ input[type=text]:focus + .input-group-addon-no-focus {
     padding: 1px 5px 1px 10px;
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
-    width: 70%;
+    width: 60%;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;

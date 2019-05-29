@@ -301,6 +301,7 @@ $config = [
                 ],
                 [
                     'url'   => ['controller' => 'servicedependencies', 'action' => 'index'],
+                    'state' => 'ServicedependenciesIndex',
                     'title' => 'Service Dependencies',
                     'icon'  => 'sitemap',
                 ],

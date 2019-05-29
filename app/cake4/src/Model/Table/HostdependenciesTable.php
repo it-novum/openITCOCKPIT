@@ -221,8 +221,11 @@ class HostdependenciesTable extends Table {
             $containFilter['Hosts.name'] = [
                 'Hosts.name LIKE' => $indexFilter['Hosts.name LIKE']
             ];
-            $query->matching('Hosts', function ($q) use ($containFilter) {
-                return $q->where($containFilter['Hosts.name']);
+            $query->innerJoinWith('Hosts', function ($q) use ($containFilter) {
+                return $q->where([
+                    'HostdependenciesHostMemberships.dependent' => 0,
+                    $containFilter['Hosts.name']
+                ]);
             });
             unset($indexFilter['Hosts.name LIKE']);
         }
@@ -230,8 +233,11 @@ class HostdependenciesTable extends Table {
             $containFilter['HostsDependent.name'] = [
                 'HostsDependent.name LIKE' => $indexFilter['HostsDependent.name LIKE']
             ];
-            $query->matching('HostsDependent', function ($q) use ($containFilter) {
-                return $q->where($containFilter['HostsDependent.name']);
+            $query->innerJoinWith('HostsDependent', function ($q) use ($containFilter) {
+                return $q->where([
+                    'HostdependenciesHostMemberships.dependent' => 1,
+                    $containFilter['HostsDependent.name']
+                ]);
             });
             unset($indexFilter['HostsDependent.name LIKE']);
 
@@ -240,8 +246,11 @@ class HostdependenciesTable extends Table {
             $containFilter['Hostgroups.name'] = [
                 'Containers.name LIKE' => $indexFilter['Hostgroups.name LIKE']
             ];
-            $query->matching('Hostgroups.Containers', function ($q) use ($containFilter) {
-                return $q->where($containFilter['Hostgroups.name']);
+            $query->innerJoinWith('Hostgroups.Containers', function ($q) use ($containFilter) {
+                return $q->where([
+                    'HostdependenciesHostgroupMemberships.dependent' => 0,
+                    $containFilter['Hostgroups.name']
+                ]);
             });
             unset($indexFilter['Hostgroups.name LIKE']);
         }
@@ -249,8 +258,11 @@ class HostdependenciesTable extends Table {
             $containFilter['HostgroupsDependent.name'] = [
                 'Containers.name LIKE' => $indexFilter['HostgroupsDependent.name LIKE']
             ];
-            $query->matching('HostgroupsDependent.Containers', function ($q) use ($containFilter) {
-                return $q->where($containFilter['HostgroupsDependent.name']);
+            $query->innerJoinWith('HostgroupsDependent.Containers', function ($q) use ($containFilter) {
+                return $q->where([
+                    'HostdependenciesHostgroupMemberships.dependent' => 1,
+                    $containFilter['HostgroupsDependent.name']
+                ]);
             });
             unset($indexFilter['HostgroupsDependent.name LIKE']);
         }

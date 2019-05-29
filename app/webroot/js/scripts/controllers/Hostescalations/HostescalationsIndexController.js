@@ -20,7 +20,8 @@ angular.module('openITCOCKPIT')
                     last_notification: '',
                     escalate_on_recovery: '',
                     escalate_on_down: '',
-                    escalate_on_unreachable: ''
+                    escalate_on_unreachable: '',
+                    notification_interval: null
                 },
                 Hosts: {
                     name: ''
@@ -55,6 +56,7 @@ angular.module('openITCOCKPIT')
                     'filter[Hostescalations.escalate_on_recovery]': $scope.filter.Hostescalations.escalate_on_recovery,
                     'filter[Hostescalations.escalate_on_down]': $scope.filter.Hostescalations.escalate_on_down,
                     'filter[Hostescalations.escalate_on_unreachable]': $scope.filter.Hostescalations.escalate_on_unreachable,
+                    'filter[Hostescalations.notification_interval]': $scope.filter.Hostescalations.notification_interval,
                     'filter[Hosts.name]': $scope.filter.Hosts.name,
                     'filter[HostsExcluded.name]': $scope.filter.HostsExcluded.name,
                     'filter[Hostgroups.name]': $scope.filter.Hostgroups.name,
