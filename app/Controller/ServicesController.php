@@ -372,6 +372,27 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['service', 'servicestatus']);
     }
 
+    public function byUuid($uuid){
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        try {
+            $service = $ServicesTable->getServiceByUuid($uuid);
+
+            if (!$this->allowedByContainerId($service->get('host')->getContainerIds())) {
+                $this->render403();
+                return;
+            }
+        }catch (RecordNotFoundException $e){
+            throw new NotFoundException('Service not found');
+        }
+
+        $this->set('service', $service);
+        $this->set('_serialize', ['service']);
+    }
+
     /**
      * @deprecated
      */

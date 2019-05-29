@@ -128,7 +128,8 @@ $config = [
                 'icon',
                 'servicecumulatedstatusicon',
                 'details',
-                'serviceBrowserMenu'
+                'serviceBrowserMenu',
+                'byUuid'
             ],
             'Graphgenerators'  => [
                 'fetchGraphData',
@@ -182,7 +183,8 @@ $config = [
                 'hostservicelist',
                 'loadParentHostsByString',
                 'hoststatus',
-                'hostBrowserMenu'
+                'hostBrowserMenu',
+                'byUuid'
             ],
             'Statistics'       => [
                 'ask_anonymous_statistics'

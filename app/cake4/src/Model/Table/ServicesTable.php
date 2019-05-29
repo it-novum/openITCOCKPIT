@@ -1349,5 +1349,27 @@ class ServicesTable extends Table {
         return true;
     }
 
+    /**
+     * @param string $uuid
+     * @param bool $enableHydration
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getServiceByUuid($uuid, $enableHydration = true) {
+        $query = $this->find()
+            ->where([
+                'Services.uuid' => $uuid
+            ])
+            ->contain([
+                'Hosts' => [
+                    'HostsToContainersSharing'
+                ],
+                'Servicetemplates'
+
+            ])
+            ->enableHydration($enableHydration)
+            ->firstOrFail();
+        return $query;
+    }
+
 
 }

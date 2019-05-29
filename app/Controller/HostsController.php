@@ -374,6 +374,25 @@ class HostsController extends AppController {
         $this->set('_serialize', ['host', 'hoststatus']);
     }
 
+    public function byUuid($uuid){
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        try {
+            $host = $HostsTable->getHostByUuid($uuid);
+
+            if (!$this->allowedByContainerId($host->getContainerIds())) {
+                $this->render403();
+                return;
+            }
+        }catch (RecordNotFoundException $e){
+            throw new NotFoundException('Host not found');
+        }
+
+        $this->set('host', $host);
+        $this->set('_serialize', ['host']);
+    }
+
     public function notMonitored() {
         $this->layout = 'blank';
 
