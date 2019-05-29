@@ -29,6 +29,7 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
  * Class AngularController
@@ -732,5 +733,23 @@ class AngularController extends AppController {
     public function template_diff_button() {
         //Only ship HTML template
         return;
+    }
+
+    public function queryhandler() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $QueryHandler = new QueryHandler($Systemsettings->getQueryHandlerPath());
+
+        $this->set('QueryHandler', [
+            'exists' => $QueryHandler->exists(),
+            'path' => $QueryHandler->getPath()
+        ]);
+        $this->set('_serialize', ['QueryHandler']);
+
     }
 }
