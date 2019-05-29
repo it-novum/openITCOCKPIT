@@ -11,6 +11,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
@@ -166,7 +167,7 @@ class HostgroupsTable extends Table {
                         'Containers'
                     ])
                     ->where([
-                        'Containers.parent_id IN' => $containerIds,
+                        'Containers.parent_id IN'     => $containerIds,
                         'Containers.containertype_id' => CT_HOSTGROUP
                     ])
                     ->order([
@@ -184,7 +185,7 @@ class HostgroupsTable extends Table {
                         'Containers'
                     ])
                     ->where([
-                        'Containers.parent_id IN' => $containerIds,
+                        'Containers.parent_id IN'     => $containerIds,
                         'Containers.containertype_id' => CT_HOSTGROUP
                     ])
                     ->order([
@@ -703,6 +704,62 @@ class HostgroupsTable extends Table {
         return $hostgroup;
     }
 
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getHostIdsByHostgroupId($id) {
+        $hostgroup = $this->find()
+            ->contain([
+                // Get all hosts that are in this host group through the host template AND
+                // which does NOT have any own host groups
+                'hosttemplates' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'id',
+                        ])
+                        ->contain([
+                            'hosts' => function (Query $query) {
+                                $query->disableAutoFields()
+                                    ->select([
+                                        'Hosts.id',
+                                        'Hosts.uuid',
+                                        'Hosts.hosttemplate_id',
+                                        'Hostgroups.id'
+                                    ])
+                                    ->leftJoinWith('Hostgroups')
+                                    ->whereNull('Hostgroups.id');
+                                return $query;
+                            }
+                        ]);
+                    return $query;
+                },
+
+                // Get all hosts from this host group
+                'hosts' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Hosts.id',
+                            'Hosts.uuid',
+                        ]);
+                    return $query;
+                }
+            ])
+            ->where([
+                'Hostgroups.id' => $id
+            ])
+            ->disableHydration()
+            ->first();
+
+
+       $hostIds = array_unique(array_merge(
+           Hash::extract($hostgroup, 'hosts.{n}.id'),
+           Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}.id')
+       ));
+
+       return $hostIds;
+    }
 
     /**
      * @param int $id

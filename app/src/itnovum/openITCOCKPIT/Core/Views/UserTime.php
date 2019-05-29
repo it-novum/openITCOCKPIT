@@ -27,6 +27,7 @@ namespace itnovum\openITCOCKPIT\Core\Views;
 
 use CakeTime;
 use DateTime;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 class UserTime {
 
@@ -51,6 +52,17 @@ class UserTime {
     }
 
     /**
+     * @param User $User
+     * @return UserTime
+     */
+    public static function fromUser(User $User){
+        return new self(
+            $User->getTimezone(),
+            $User->getDateformat()
+        );
+    }
+
+    /**
      * @param int $t_time
      * @return string
      */
@@ -68,15 +80,14 @@ class UserTime {
     }
 
     /**
+     *
      * Formats a given value in seconds to a human short readable string with time units
      * Example 58536006 will return:
      * 1Y 10M 8D 12h 0m 6s
      *
-     * @param integer $seconds to format
-     *
-     * @return string $ as human date
-     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-     * @since  3.0
+     * @param int $duration
+     * @return string
+     * @throws \Exception
      */
     public function secondsInHumanShort($duration) {
 

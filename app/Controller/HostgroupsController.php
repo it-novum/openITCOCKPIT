@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
@@ -30,6 +31,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
@@ -41,16 +43,12 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
-use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
- * @property Hostgroup $Hostgroup
- * @property Container $Container
- * @property Host $Host
- * @property Hosttemplate $Hosttemplate
- * @property User $User
+ * Class HostgroupsController
  *
  * @property AppPaginatorComponent $Paginator
+ * @property DbBackend $DbBackend
  */
 class HostgroupsController extends AppController {
 
@@ -331,6 +329,51 @@ class HostgroupsController extends AppController {
      * @deprecated
      */
     public function loadHostgroupWithHostsById($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        if (!$HostgroupsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid Hostgroup'));
+        }
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = UserTime::fromUser($User);
+
+        $hostIds = $HostgroupsTable->getHostIdsByHostgroupId($id);
+
+
+        $HostFilter = new HostFilter($this->request);
+        $HostConditions = new HostConditions();
+
+        $HostConditions->setIncludeDisabled(false);
+        $HostConditions->setHostIds($hostIds);
+        $HostConditions->setContainerIds($this->MY_RIGHTS);
+
+        if($this->DbBackend->isNdoUtils()){
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            $hosts = $HostsTable->getHostsIndex($HostFilter, $HostConditions);
+
+            print_r($hosts);
+        }
+
+        if($this->DbBackend->isStatusengine3()){
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if($this->DbBackend->isCrateDb()){
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        debug($hostIds);
+
+        return;
+        /***** OLD CODE ****/
+
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }

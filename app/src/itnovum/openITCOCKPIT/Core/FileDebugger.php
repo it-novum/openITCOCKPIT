@@ -95,4 +95,14 @@ class FileDebugger {
             die('die() in ' . __CLASS__ . ' on line: ' . __LINE__);
         }
     }
+
+    public static function dieQuery(Query $query){
+        \App::uses('SqlFormatter', 'Lib');
+
+        $sql = (string)$query;
+
+        $result = \SqlFormatter::format($sql, true);
+        echo $result;
+        die();
+    }
 }

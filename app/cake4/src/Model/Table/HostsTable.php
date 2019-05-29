@@ -633,7 +633,12 @@ class HostsTable extends Table {
         $where = $HostFilter->indexFilter();
         $where['Hosts.disabled'] = (int)$HostConditions->includeDisabled();
         if ($HostConditions->getHostIds()) {
-            $where['Hosts.id'] = $HostConditions->getHostIds();
+            $hostIds = $HostConditions->getHostIds();
+            if(!is_array($hostIds)){
+                $hostIds = [$hostIds];
+            }
+
+            $where['Hosts.id IN'] = $hostIds;
         }
 
         if (isset($where['Hosts.keywords rlike'])) {

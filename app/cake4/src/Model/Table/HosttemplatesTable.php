@@ -117,7 +117,7 @@ class HosttemplatesTable extends Table {
             'saveStrategy' => 'replace'
         ])->setDependent(true);
 
-        $this->hasMany('Host', [
+        $this->hasMany('Hosts', [
             'saveStrategy' => 'replace'
         ]);
 
