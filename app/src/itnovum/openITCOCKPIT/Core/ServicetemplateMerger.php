@@ -24,7 +24,11 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
-
+/**
+ * Class ServicetemplateMerger
+ * @package itnovum\openITCOCKPIT\Core
+ * @deprecated
+ */
 class ServicetemplateMerger {
 
     /**
@@ -61,6 +65,7 @@ class ServicetemplateMerger {
      * ServicetemplateMerger constructor.
      * @param $service
      * @param $servicetemplate
+     * @deprecated
      */
     public function __construct($service, $servicetemplate) {
         $this->service = $service;

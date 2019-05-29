@@ -323,7 +323,6 @@ class ServicesController extends AppController {
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
 
         /** @var $HostsTable HostsTable */
@@ -1311,9 +1310,78 @@ class ServicesController extends AppController {
     /**
      * @param int|string|null $idOrUuid
      * @throws \App\Lib\Exceptions\MissingDbBackendException
-     * @deprecated
      */
-    public function browser($idOrUuid = null) {
+    public function browser($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship the template
+            return;
+        }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        if (!$ServicesTable->exists($id)) {
+            throw new NotFoundException(__('Invalid service'));
+        }
+
+        /** @var \App\Model\Entity\Service $service */
+        $service = $ServicesTable->getServiceById($id);
+
+        if (!$this->allowedByContainerId($service->get('host')->getContainerIds())) {
+            $this->render403();
+            return;
+        }
+
+        $service = $ServicesTable->getServiceForEdit($id);
+        $host = $HostsTable->getHostForServiceEdit($service['Service']['host_id']);
+
+        //Return service information
+        $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($service['Service']['servicetemplate_id']);
+
+        $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsById($host['Host']['id']);
+        $hosttemplateContactsAndContactgroups = $HosttemplatesTable->getContactsAndContactgroupsById($host['Host']['hosttemplate_id']);
+
+        $ServiceMergerForView = new ServiceMergerForView(
+            $service,
+            $servicetemplate,
+            $hostContactsAndContactgroups,
+            $hosttemplateContactsAndContactgroups
+        );
+        $mergedService = $ServiceMergerForView->getDataForView();
+
+        $this->set('service', $mergedService);
+        $this->set('host', $host);
+        $this->set('servicetemplate', $servicetemplate);
+        $this->set('hostContactsAndContactgroups', $hostContactsAndContactgroups);
+        $this->set('hosttemplateContactsAndContactgroups', $hosttemplateContactsAndContactgroups);
+        $this->set('areContactsInheritedFromHosttemplate', $ServiceMergerForView->areContactsInheritedFromHosttemplate());
+        $this->set('areContactsInheritedFromHost', $ServiceMergerForView->areContactsInheritedFromHost());
+        $this->set('areContactsInheritedFromServicetemplate', $ServiceMergerForView->areContactsInheritedFromServicetemplate());
+
+
+        $this->set('_serialize', [
+            'service',
+            'host',
+            'servicetemplate',
+            'hostContactsAndContactgroups',
+            'hosttemplateContactsAndContactgroups',
+            'areContactsInheritedFromHosttemplate',
+            'areContactsInheritedFromHost',
+            'areContactsInheritedFromServicetemplate'
+        ]);
+
+
+
+
+        return;
+        /**** OLD CODE *****/
+
         $this->layout = 'blank';
 
         if (!$this->isAngularJsRequest() && $idOrUuid === null) {
