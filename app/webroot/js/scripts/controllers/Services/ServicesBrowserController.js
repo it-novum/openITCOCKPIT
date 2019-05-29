@@ -2,6 +2,7 @@ angular.module('openITCOCKPIT')
     .controller('ServicesBrowserController', function($scope, $http, QueryStringService, $interval, $stateParams){
 
         $scope.id = $stateParams.id;
+
         $scope.selectedTab = 'tab1';
 
         $scope.showFlashSuccess = false;

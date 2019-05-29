@@ -37,7 +37,7 @@
     </div>
 </div>
 
-<div id="error_msg"></div>
+
 <div class="row">
     <div class="col-xs-12">
         <div class="alert alert-success alert-block" ng-show="showFlashSuccess">

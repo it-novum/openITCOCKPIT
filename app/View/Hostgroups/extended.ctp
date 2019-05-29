@@ -22,23 +22,10 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
-/**
- * @property \itnovum\openITCOCKPIT\Monitoring\QueryHandler $QueryHandler
- */
-
-
 ?>
-<div id="error_msg"></div>
 
-<?php if (!$QueryHandler->exists()): ?>
-    <div class="alert alert-danger alert-block">
-        <a href="#" data-dismiss="alert" class="close">×</a>
-        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
-        </h4>
-        <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
-    </div>
-<?php endif; ?>
+
+<query-handler-directive></query-handler-directive>
 
 <div class="alert alert-success alert-block" ng-show="showFlashSuccess">
     <a href="#" data-dismiss="alert" class="close">×</a>
@@ -284,7 +271,7 @@
                             </td>
                             <td>
                                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                    <a href="/hosts/browser/{{ host.Host.id }}">
+                                    <a ui-sref="HostsBrowser({id:host.Host.id})">
                                         {{ host.Host.hostname }}
                                     </a>
                                 <?php else: ?>

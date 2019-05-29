@@ -35,7 +35,7 @@
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 <div class="jarviswidget">
     <header>
         <span class="widget-icon"> <i class="fa fa-pencil-square-o"></i> </span>

@@ -79,7 +79,8 @@ $config = [
                 'intervalInputWithDiffer',
                 'humanTime',
                 'template_diff',
-                'template_diff_button'
+                'template_diff_button',
+                'queryhandler'
             ],
             'Automaps'         => [
                 'icon'
@@ -128,7 +129,8 @@ $config = [
                 'icon',
                 'servicecumulatedstatusicon',
                 'details',
-                'serviceBrowserMenu'
+                'serviceBrowserMenu',
+                'byUuid'
             ],
             'Graphgenerators'  => [
                 'fetchGraphData',
@@ -182,7 +184,8 @@ $config = [
                 'hostservicelist',
                 'loadParentHostsByString',
                 'hoststatus',
-                'hostBrowserMenu'
+                'hostBrowserMenu',
+                'byUuid'
             ],
             'Statistics'       => [
                 'ask_anonymous_statistics'

@@ -28,7 +28,7 @@
  */
 
 ?>
-<div id="error_msg"></div>
+
 
 <?php if (!$QueryHandler->exists()): ?>
     <div class="alert alert-danger alert-block">

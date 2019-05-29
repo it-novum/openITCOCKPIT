@@ -955,6 +955,7 @@ class AppController extends Controller {
      * @param array $usedBy
      * @param string $type
      * @return array
+     * @deprecated
      */
     protected function getUsedByForFrontend($usedBy = [], $type = 'host') {
         $result = [];

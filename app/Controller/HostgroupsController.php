@@ -60,27 +60,14 @@ class HostgroupsController extends AppController {
      */
     public $uses = [
         'Hostgroup',
-        'Container',
-        'Host',
-        'Hosttemplate',
         'Service',
-        'User',
         MONITORING_HOSTSTATUS,
-        MONITORING_SERVICESTATUS,
-        MONITORING_OBJECTS,
+        MONITORING_SERVICESTATUS
     ];
 
-    public $layout = 'angularjs';
-
-    public $components = [
-        'RequestHandler',
-    ];
-    public $helpers = [
-        'Status',
-    ];
+    public $layout = 'blank';
 
     public function index() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -147,18 +134,13 @@ class HostgroupsController extends AppController {
     }
 
     public function extended() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             $this->set('username', $User->getFullName());
         }
     }
 
     public function add() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -217,7 +199,6 @@ class HostgroupsController extends AppController {
      * @param int|null $id
      */
     public function edit($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest() && $id === null) {
             //Only ship HTML template for angular
             return;
@@ -576,13 +557,11 @@ class HostgroupsController extends AppController {
     }
 
     public function addHostsToHostgroup() {
-        $this->layout = 'blank';
         //Only ship template
         return;
     }
 
     public function append() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;

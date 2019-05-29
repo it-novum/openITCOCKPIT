@@ -24,7 +24,7 @@
 ?>
 
 <table class="table table-striped table-hover table-bordered smart-form">
-    <tr ng-if="services.length > 0">
+    <tr>
         <td colspan="6">
             <div class="form-group smart-form">
                 <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
@@ -53,8 +53,7 @@
             </div>
         </td>
     </tr>
-    <tr ng-if="services.length > 0">
-        <th></th>
+    <tr>
         <th>
             <?php echo __('Status'); ?>
         </th>
@@ -98,8 +97,12 @@
             <i class="fa fa-gear fa-lg"></i>
         </th>
     </tr>
+    <tr ng-show="services.length == 0">
+        <td colspan="11" class="text-center txt-color-red italic">
+            <?php echo __('No entries match the selection'); ?>
+        </td>
+    </tr>
     <tr ng-repeat="service in services" ng-show="servicesStateFilter[service.Servicestatus.currentState]">
-        <td></td>
         <td class="text-center">
             <servicestatusicon service="service"></servicestatusicon>
         </td>
@@ -213,4 +216,3 @@
         </td>
     </tr>
 </table>
-

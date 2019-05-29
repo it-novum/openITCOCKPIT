@@ -442,6 +442,22 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param string $uuid
+     * @param bool $enableHydration
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getHostByUuid($uuid, $enableHydration = true) {
+        $query = $this->find()
+            ->where([
+                'Hosts.uuid' => $uuid
+            ])
+            ->contain('HostsToContainersSharing')
+            ->enableHydration($enableHydration)
+            ->firstOrFail();
+        return $query;
+    }
+
+    /**
      * @param int|array $ids
      * @return array
      */
@@ -1202,7 +1218,7 @@ class HostsTable extends Table {
     /**
      * @return Query
      */
-    public function getHostsForServiceExport(){
+    public function getHostsForServiceExport() {
         $query = $this->find()
             ->select([
                 'Hosts.id',

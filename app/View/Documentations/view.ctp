@@ -67,7 +67,7 @@ echo $this->Form->create('Documentation', [
     </div>
 </div>
 
-<div id="error_msg"></div>
+
 
 <ul id="myTab1" class="nav nav-tabs bordered">
     <li class="active cursor-pointer">

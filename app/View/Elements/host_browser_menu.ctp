@@ -68,7 +68,7 @@
     <a ng-if="hostBrowserMenu.allowEdit"
        ui-sref="HostsEdit({id:hostBrowserMenu.hostId})"
        data-original-title="<?php echo __('Edit host'); ?>"
-       data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></>
+       data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></a>
 <?php endif; ?>
 <div class="btn-group">
     <a href="javascript:void(0);" class="btn btn-default btn-sm"><?php echo __('More'); ?></a>
@@ -77,7 +77,7 @@
     <ul class="dropdown-menu dropdown-menu-right">
         <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
             <li>
-                <a href="/services/serviceList/{{ hostBrowserMenu.hostId }}"><i
+                <a ui-sref="ServicesServiceList({id: hostBrowserMenu.hostId})"><i
                             class="fa fa-list"></i> <?php echo __('Service list'); ?></a>
             </li>
         <?php endif; ?>

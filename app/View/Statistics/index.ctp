@@ -14,7 +14,7 @@
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 <div class="jarviswidget">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-line-chart"></i> </span>

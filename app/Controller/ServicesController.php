@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Lib\Constants;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
@@ -322,7 +323,6 @@ class ServicesController extends AppController {
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
 
         /** @var $HostsTable HostsTable */
@@ -369,6 +369,27 @@ class ServicesController extends AppController {
         $this->set('service', $service);
         $this->set('servicestatus', $Servicestatus->toArray());
         $this->set('_serialize', ['service', 'servicestatus']);
+    }
+
+    public function byUuid($uuid){
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        try {
+            $service = $ServicesTable->getServiceByUuid($uuid);
+
+            if (!$this->allowedByContainerId($service->get('host')->getContainerIds())) {
+                $this->render403();
+                return;
+            }
+        }catch (RecordNotFoundException $e){
+            throw new NotFoundException('Service not found');
+        }
+
+        $this->set('service', $service);
+        $this->set('_serialize', ['service']);
     }
 
     /**
@@ -884,43 +905,36 @@ class ServicesController extends AppController {
 
     /**
      * @param int|null $id
-     * @deprecated
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Service->exists($id)) {
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$ServicesTable->existsById($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $this->Service->findById($id);
-        $host = $this->Host->find('first', [
-            'conditions' => [
-                'Host.id' => $service['Host']['id'],
-            ],
-            'contain'    => [
-                'Container',
-            ],
-            'fields'     => [
-                'Host.id',
-                'Host.container_id',
-                'Container.*',
-            ],
-        ]);
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck)) {
+        $service = $ServicesTable->get($id);
+        $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
             return;
         }
 
-        $modules = $this->Constants->defines['modules'];
+        $Constants = new Constants();
+        $moduleConstants = $Constants->getModuleConstants();
 
-        $usedBy = $this->Service->isUsedByModules($service, $modules);
+        $usedBy = $service->isUsedByModules($service, $moduleConstants);
+        $User = new User($this->Auth);
         if (empty($usedBy)) {
             //Not used by any module
-            if ($this->Service->__delete($service, $this->Auth->user('id'))) {
+            if ($ServicesTable->__delete($service, $User)) {
                 $this->set('success', true);
                 $this->set('message', __('Service successfully deleted'));
                 $this->set('_serialize', ['success']);
@@ -1202,65 +1216,71 @@ class ServicesController extends AppController {
 
     /**
      * @param int|null $id
-     * @deprecated
      */
     public function deactivate($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->Service->exists($id)) {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$ServicesTable->existsById($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $this->Service->id = $id;
-        if ($this->Service->saveField('disabled', 1)) {
-            $this->set('success', true);
-            $this->set('message', __('Service successfully disabled'));
-            $this->set('_serialize', ['success']);
+        $service = $ServicesTable->get($id);
+        $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
+            $this->render403();
             return;
         }
 
-        $this->response->statusCode(400);
-        $this->set('success', false);
+        $service->set('disabled', 1);
+        $ServicesTable->save($service);
+
+        if ($service->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('message', __('Issue while disabling service'));
+            $this->set('error', $service->getErrors());
+            $this->set('_serialize', ['error', 'success', 'message']);
+            return;
+        }
+
+        $this->set('success', true);
         $this->set('id', $id);
-        $this->set('message', __('Issue while disabling service'));
-        $this->set('_serialize', ['success', 'id', 'message']);
+        $this->set('message', __('Service successfully disabled'));
+        $this->set('_serialize', ['success', 'message', 'id']);
     }
 
     /**
      * @param int|null $id
-     * @deprecated
      */
     public function enable($id = null) {
         if (!$this->request->is('post')) {
-            //throw new MethodNotAllowedException();
+            throw new MethodNotAllowedException();
         }
 
-        if (!$this->Service->exists($id)) {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$ServicesTable->existsById($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Service.id' => $id
-            ],
-            'contain'    => [
-                'Host' => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.disabled'
-                    ]
-                ]
-            ],
-            'fields'     => [
-                'Service.id',
-                'Service.host_id',
-            ]
-        ]);
+        $service = $ServicesTable->get($id);
+        $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
+            $this->render403();
+            return;
+        }
 
-        if ($service['Host']['disabled'] == 1) {
+        if ($host['Host']['disabled'] === 1) {
             $this->response->statusCode(400);
             $this->set('success', false);
             $this->set('id', $id);
@@ -1269,27 +1289,99 @@ class ServicesController extends AppController {
             return;
         }
 
-        $this->Service->id = $id;
-        if ($this->Service->saveField('disabled', 0)) {
-            $this->set('success', true);
-            $this->set('message', __('Service successfully enabled'));
-            $this->set('_serialize', ['success']);
+        $service->set('disabled', 0);
+        $ServicesTable->save($service);
+
+        if ($service->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('message', __('Issue while enabling service'));
+            $this->set('error', $service->getErrors());
+            $this->set('_serialize', ['error', 'success', 'message']);
             return;
         }
 
-        $this->response->statusCode(400);
-        $this->set('success', false);
+        $this->set('success', true);
         $this->set('id', $id);
-        $this->set('message', __('Issue while enabling service'));
-        $this->set('_serialize', ['success', 'id', 'message']);
+        $this->set('message', __('Service successfully enabled'));
+        $this->set('_serialize', ['success', 'message', 'id']);
     }
 
     /**
      * @param int|string|null $idOrUuid
      * @throws \App\Lib\Exceptions\MissingDbBackendException
-     * @deprecated
      */
-    public function browser($idOrUuid = null) {
+    public function browser($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship the template
+            return;
+        }
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        if (!$ServicesTable->exists($id)) {
+            throw new NotFoundException(__('Invalid service'));
+        }
+
+        /** @var \App\Model\Entity\Service $service */
+        $service = $ServicesTable->getServiceById($id);
+
+        if (!$this->allowedByContainerId($service->get('host')->getContainerIds())) {
+            $this->render403();
+            return;
+        }
+
+        $service = $ServicesTable->getServiceForEdit($id);
+        $host = $HostsTable->getHostForServiceEdit($service['Service']['host_id']);
+
+        //Return service information
+        $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($service['Service']['servicetemplate_id']);
+
+        $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsById($host['Host']['id']);
+        $hosttemplateContactsAndContactgroups = $HosttemplatesTable->getContactsAndContactgroupsById($host['Host']['hosttemplate_id']);
+
+        $ServiceMergerForView = new ServiceMergerForView(
+            $service,
+            $servicetemplate,
+            $hostContactsAndContactgroups,
+            $hosttemplateContactsAndContactgroups
+        );
+        $mergedService = $ServiceMergerForView->getDataForView();
+
+        $this->set('service', $mergedService);
+        $this->set('host', $host);
+        $this->set('servicetemplate', $servicetemplate);
+        $this->set('hostContactsAndContactgroups', $hostContactsAndContactgroups);
+        $this->set('hosttemplateContactsAndContactgroups', $hosttemplateContactsAndContactgroups);
+        $this->set('areContactsInheritedFromHosttemplate', $ServiceMergerForView->areContactsInheritedFromHosttemplate());
+        $this->set('areContactsInheritedFromHost', $ServiceMergerForView->areContactsInheritedFromHost());
+        $this->set('areContactsInheritedFromServicetemplate', $ServiceMergerForView->areContactsInheritedFromServicetemplate());
+
+
+        $this->set('_serialize', [
+            'service',
+            'host',
+            'servicetemplate',
+            'hostContactsAndContactgroups',
+            'hosttemplateContactsAndContactgroups',
+            'areContactsInheritedFromHosttemplate',
+            'areContactsInheritedFromHost',
+            'areContactsInheritedFromServicetemplate'
+        ]);
+
+
+
+
+        return;
+        /**** OLD CODE *****/
+
         $this->layout = 'blank';
 
         if (!$this->isAngularJsRequest() && $idOrUuid === null) {
