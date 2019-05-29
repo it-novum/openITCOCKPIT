@@ -27,7 +27,7 @@
 echo $this->Html->script('lib/FlappingWorkaround.js');
 
 ?>
-<div id="error_msg"></div>
+
 <div class="alert auto-hide alert-success" id="flashSuccess"
      style="display:none"><?php echo __('Command sent successfully'); ?></div>
 <div class="alert auto-hide alert-danger" id="flashFailed"

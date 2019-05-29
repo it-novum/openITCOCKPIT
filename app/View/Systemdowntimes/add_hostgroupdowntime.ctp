@@ -34,7 +34,7 @@
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-power-off"></i> </span>

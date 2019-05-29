@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<div id="error_msg"></div>
+
 
 <query-handler-directive></query-handler-directive>
 

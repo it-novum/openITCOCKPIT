@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<div id="error_msg"></div>
+
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">

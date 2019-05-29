@@ -34,7 +34,7 @@
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 <div>
     <article class="col-sm-12 col-md-12 col-lg-12">
         <!-- Widget ID (each widget will need unique ID)-->

@@ -34,7 +34,7 @@
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 
 <confirm-delete></confirm-delete>
 
