@@ -284,7 +284,7 @@
                             </td>
                             <td>
                                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                    <a href="/hosts/browser/{{ host.Host.id }}">
+                                    <a ui-sref="HostsBrowser({id:host.Host.id})">
                                         {{ host.Host.hostname }}
                                     </a>
                                 <?php else: ?>
