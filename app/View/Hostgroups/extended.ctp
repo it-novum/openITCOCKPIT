@@ -24,6 +24,17 @@
 //	confirmation.
 ?>
 
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-sitemap fa-fw "></i>
+            <?php echo __('Host groups'); ?>
+            <span>>
+                <?php echo __('Extended overview'); ?>
+            </span>
+        </h1>
+    </div>
+</div>
 
 <query-handler-directive></query-handler-directive>
 
@@ -32,17 +43,7 @@
     <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
     <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter }} <?php echo __('seconds...'); ?>
 </div>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-sidemap fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
-            <span>>
-                <?php echo __('Host Groups'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
+
 <div class="row padding-bottom-10">
     <div class="col col-xs-11">
         <select

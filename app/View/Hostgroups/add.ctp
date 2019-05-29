@@ -36,11 +36,10 @@
 </div>
 
 
-
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-sitemap"></i> </span>
-        <h2><?php echo __('Create new Host group'); ?></h2>
+        <h2><?php echo __('Create new host group'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <a back-button fallback-state='HostgroupsIndex' class="btn btn-default btn-xs">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>

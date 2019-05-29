@@ -4,18 +4,17 @@
             <i class="fa fa-sitemap fa-fw "></i>
             <?php echo __('Host groups'); ?>
             <span>>
-                <?php echo __('edit'); ?>
+                <?php echo __('Edit'); ?>
             </span>
         </h1>
     </div>
 </div>
 
-
 <confirm-delete></confirm-delete>
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
-        <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
+        <span class="widget-icon"> <i class="fa fa-sitemap"></i> </span>
         <h2>
             <?php echo __('Edit host group:'); ?>
             {{ post.Hostgroup.container.name }}
