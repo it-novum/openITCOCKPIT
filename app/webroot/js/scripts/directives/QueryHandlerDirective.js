@@ -19,7 +19,7 @@ angular.module('openITCOCKPIT').directive('queryHandlerDirective', function($htt
                 }).then(function(result){
                     $scope.queryHandler = result.data.QueryHandler;
                 });
-            }();
+            }(); // define and call
 
         },
 
