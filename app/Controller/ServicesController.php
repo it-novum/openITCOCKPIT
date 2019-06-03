@@ -279,7 +279,8 @@ class ServicesController extends AppController {
         }
 
         $all_services = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $User = new User($this->Auth);
+        $UserTime = UserTime::fromUser($User);
         foreach ($services as $service) {
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
