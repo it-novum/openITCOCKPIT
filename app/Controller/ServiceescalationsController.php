@@ -262,8 +262,6 @@ class ServiceescalationsController extends AppController {
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
         /** @var $ServicegroupsTable ServicegroupsTable */
         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
-        /** @var $ServicesTable ServicesTable */
-        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid container'));
@@ -275,10 +273,6 @@ class ServiceescalationsController extends AppController {
         $servicegroups = Api::makeItJavaScriptAble($servicegroups);
         $servicegroupsExcluded = $servicegroups;
 
-        $services = $ServicesTable->getServicesByContainerId($containerIds, 'all');
-        $services = Api::makeItJavaScriptAble($services);
-        $servicesExcluded = $services;
-
         $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
 
@@ -288,15 +282,19 @@ class ServiceescalationsController extends AppController {
         $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
-        $this->set('services', $services);
-        $this->set('servicesExcluded', $servicesExcluded);
         $this->set('servicegroups', $servicegroups);
         $this->set('servicegroupsExcluded', $servicegroupsExcluded);
         $this->set('timeperiods', $timeperiods);
         $this->set('contacts', $contacts);
         $this->set('contactgroups', $contactgroups);
 
-        $this->set('_serialize', ['services', 'servicesExcluded', 'servicegroups', 'servicegroupsExcluded', 'timeperiods', 'contacts', 'contactgroups']);
+        $this->set('_serialize', [
+            'servicegroups',
+            'servicegroupsExcluded',
+            'timeperiods',
+            'contacts',
+            'contactgroups'
+        ]);
     }
 
     public function loadContainers() {

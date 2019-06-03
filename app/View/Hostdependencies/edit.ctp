@@ -93,6 +93,7 @@
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="hosts"
+                                        callback="loadHosts"
                                         ng-options="host.key as host.value disable when host.disabled for host in hosts"
                                         ng-model="post.Hostdependency.hosts._ids">
                                 </select>
@@ -119,6 +120,7 @@
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="hosts_dependent"
+                                        callback="loadDependentHosts"
                                         ng-options="host.key as host.value disable when host.disabled for host in hosts_dependent"
                                         ng-model="post.Hostdependency.hosts_dependent._ids">
                                 </select>

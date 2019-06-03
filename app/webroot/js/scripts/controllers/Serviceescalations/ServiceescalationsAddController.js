@@ -53,8 +53,6 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                $scope.services = result.data.services;
-                $scope.services_excluded = result.data.servicesExcluded;
                 $scope.servicegroups = result.data.servicegroups;
                 $scope.servicegroups_excluded = result.data.servicegroupsExcluded;
                 $scope.timeperiods = result.data.timeperiods;
@@ -74,21 +72,25 @@ angular.module('openITCOCKPIT')
                     }
                 }).then(function(result){
                     $scope.services = result.data.services;
+                    $scope.processChosenServices();
+                    $scope.processChosenExcludedServices();
                 });
             }
         };
 
         $scope.loadExcludedServices = function(searchString){
             if($scope.post.Serviceescalation.container_id != null){
-                $http.get("/services/loadServicesByStringNew.json", {
+                $http.get("/services/loadServicesByStringCake4.json", {
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Serviceescalation.container_id,
-                        'filter[Services.name]': searchString,
+                        'filter[Services.servicename]': searchString,
                         'selected[]': $scope.post.Serviceescalation.services_excluded._ids
                     }
                 }).then(function(result){
                     $scope.services_excluded = result.data.services;
+                    $scope.processChosenServices();
+                    $scope.processChosenExcludedServices();
                 });
             }
         };
@@ -157,6 +159,9 @@ angular.module('openITCOCKPIT')
         $scope.$watch('post.Serviceescalation.container_id', function(){
             if($scope.post.Serviceescalation.container_id != null){
                 $scope.loadElementsByContainerId();
+                $scope.loadServices();
+                $scope.loadExcludedServices();
+
             }
         }, true);
 
