@@ -29,6 +29,7 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\ServicesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
@@ -38,11 +39,13 @@ use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\CumulatedValue;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
+use Statusengine2Module\Model\Table\ServicestatusTable;
 
 /**
  * Class HostgroupsController
@@ -53,15 +56,9 @@ use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 class HostgroupsController extends AppController {
 
     /**
-     * @var array
-     * @deprecated
+     * @var boolean
      */
-    public $uses = [
-        'Hostgroup',
-        'Service',
-        MONITORING_HOSTSTATUS,
-        MONITORING_SERVICESTATUS
-    ];
+    public $uses = false;
 
     public $layout = 'blank';
 
@@ -326,7 +323,7 @@ class HostgroupsController extends AppController {
 
     /**
      * @param int|null $id
-     * @deprecated
+     * @throws MissingDbBackendException
      */
     public function loadHostgroupWithHostsById($id = null) {
         if (!$this->isAngularJsRequest()) {
@@ -335,10 +332,17 @@ class HostgroupsController extends AppController {
 
         /** @var $HostgroupsTable HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        /** @var $ServicestatusTable ServicestatusTable */
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
         if (!$HostgroupsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid Hostgroup'));
         }
+
+        $hostgroup = $HostgroupsTable->getHostgroupById($id);
 
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
         $UserTime = UserTime::fromUser($User);
@@ -353,187 +357,93 @@ class HostgroupsController extends AppController {
         $HostConditions->setHostIds($hostIds);
         $HostConditions->setContainerIds($this->MY_RIGHTS);
 
-        if($this->DbBackend->isNdoUtils()){
-            /** @var $HostsTable HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            $hosts = $HostsTable->getHostsIndex($HostFilter, $HostConditions);
-
-            print_r($hosts);
-        }
-
-        if($this->DbBackend->isStatusengine3()){
-            throw new MissingDbBackendException('MissingDbBackendException');
-        }
-
-        if($this->DbBackend->isCrateDb()){
-            throw new MissingDbBackendException('MissingDbBackendException');
-        }
-
-        debug($hostIds);
-
-        return;
-        /***** OLD CODE ****/
-
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        /** @var $HostgroupsTable HostgroupsTable */
-        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-
-        if (!$HostgroupsTable->existsById($id)) {
-            throw new NotFoundException(__('Invalid Hostgroup'));
-        }
-
-
-        $HostFilter = new HostFilter($this->request);
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        $hostContainers = [];
+        $all_hosts = [];
         $hosts = [];
 
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container',
-                'Host' => [
-                    'Container',
-                    'fields'     => [
-                        'Host.id',
-                        'Host.uuid',
-                        'Host.name',
-                        'Host.active_checks_enabled',
-                        'Host.disabled',
-                        'Host.satellite_id'
-                    ],
-                    'conditions' => [
-                        'Host.disabled' => 0
-                    ],
-                    'Service'    => [
-                        'fields' => [
-                            'Service.uuid'
-                        ]
-                    ],
-                    'order'      => [
-                        'Host.name'
-                    ]
+        if (!empty($hostIds)) {
+            if ($this->DbBackend->isNdoUtils()) {
+                /** @var $HostsTable HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $hosts = $HostsTable->getHostsIndex($HostFilter, $HostConditions);
+            }
 
-                ]
-            ],
-            'conditions' => [
-                'Hostgroup.id' => $id
-            ]
-        ];
+            if ($this->DbBackend->isStatusengine3()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
+            }
 
-        $hostFilterConditions = $HostFilter->indexFilter();
-        if (!empty($hostFilterConditions)) {
-            foreach ($hostFilterConditions as $field => $condition) {
-                $query['contain']['Host']['conditions'][$field] = $condition;
+            if ($this->DbBackend->isCrateDb()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
             }
         }
 
-        $hostgroup = $this->Hostgroup->find('first', $query);
-        $hostgroup['Hostgroup']['allowEdit'] = $this->hasPermission('edit', 'hostgroups');;
-        if ($this->hasRootPrivileges === false && $hostgroup['Hostgroup']['allowEdit'] === true) {
-            $hostgroup['Hostgroup']['allowEdit'] = $this->allowedByContainerId($hostgroup['Container']['parent_id']);
-        }
-        foreach ($hostgroup['Host'] as $host) {
-            $hosts[$host['id']] = $host['uuid'];
-            if (!empty($hosts) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts')) {
-                $hostContainers[$host['id']] = \Cake\Utility\Hash::extract($host['Container'], '{n}.id');
-            }
-        }
-
-        $HoststatusFields = new HoststatusFields($this->DbBackend);
-        $HoststatusFields->currentState()
-            ->lastStateChange()
-            ->lastCheck()
-            ->nextCheck()
-            ->problemHasBeenAcknowledged()
-            ->acknowledgementType()
-            ->scheduledDowntimeDepth()
-            ->activeChecksEnabled()
-            ->notificationsEnabled();
-
-        $hoststatus = $this->Hoststatus->byUuid($hosts, $HoststatusFields);
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
         $ServicestatusFields->currentState();
 
+        $hostgroupHoststatusOverview = [
+            0 => 0,
+            1 => 0,
+            2 => 0
+        ];
 
-        $all_hosts = [];
-        foreach ($hostgroup['Host'] as $key => $host) {
-            if ($this->hasRootPrivileges) {
-                $allowEdit = true;
-            } else {
-                $containerIds = [];
-                if (isset($hostContainers[$host['id']])) {
-                    $containerIds = $hostContainers[$host['id']];
-                }
-                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
-                $allowEdit = $ContainerPermissions->hasPermission();
-            }
-            $serviceUuids = \Cake\Utility\Hash::extract($host, 'Service.{n}.uuid');
-            $servicestatus = $this->Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
-            $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus, false);
+
+        foreach ($hosts as $host) {
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+
+            $serviceUuids = $ServicesTable->getServiceUuidsOfHostByHostId($Host->getId());
+            $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
+            $ServicestatusObjects = \itnovum\openITCOCKPIT\Core\Servicestatus::fromServicestatusByUuid($servicestatus);
+            $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
 
             $CumulatedValue = new CumulatedValue($serviceStateSummary['state']);
             $serviceStateSummary['cumulatedState'] = $CumulatedValue->getKeyFromCumulatedValue();
-            $serviceStateSummary['state'] = array_combine([
-                __('ok'),
-                __('warning'),
-                __('critical'),
-                __('unknown')
-            ], $serviceStateSummary['state']
+
+            $serviceStateSummary['state'] = array_combine(
+                [
+                    __('ok'),
+                    __('warning'),
+                    __('critical'),
+                    __('unknown')
+                ],
+                $serviceStateSummary['state']
             );
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host(['Host' => $host], $allowEdit);
-            $host['Hoststatus'] = (!empty($hoststatus[$host['uuid']])) ? $hoststatus[$host['uuid']]['Hoststatus'] : [];
-            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Hoststatus'], $UserTime);
+
+            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Host']['Hoststatus'], $UserTime);
+
+
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $Host->getContainerIds());
+                $allowEdit = $ContainerPermissions->hasPermission();
+            }
+
+            $hostgroupHoststatusOverview[$Hoststatus->currentState()]++;
 
             $tmpRecord = [
                 'Host'                 => $Host->toArray(),
                 'Hoststatus'           => $Hoststatus->toArray(),
                 'ServicestatusSummary' => $serviceStateSummary
             ];
+            $tmpRecord['Host']['allow_edit'] = $allowEdit;
+
             $all_hosts[] = $tmpRecord;
         }
 
-        $hostStatusForHostgroup = \Cake\Utility\Hash::apply(
-            $all_hosts,
-            '{n}.Hoststatus[isInMonitoring=true].currentState',
-            'array_count_values'
-        );
-        //refill missing hosts states
-        $statusOverview = array_replace(
-            [0 => 0, 1 => 0, 2 => 0],
-            $hostStatusForHostgroup
-        );
-        $statusOverview = array_combine([
+        //Merge host status count to status names
+        $hostgroupHoststatusOverview = array_combine([
             __('up'),
             __('down'),
             __('unreachable')
-        ], $statusOverview
-        );
+        ], $hostgroupHoststatusOverview);
 
-        # get a list of sort columns and their data to pass to array_multisort
-        $sortAllServices = [];
-        foreach ($all_hosts as $k => $v) {
-            $sortAllServices['Host']['hostname'][$k] = $v['Host']['hostname'];
-        }
-
-        # sort by host name asc and service name asc
-        if (!empty($all_services)) {
-            array_multisort($sortAllServices['Host']['hostname'], SORT_ASC, $all_hosts);
-        }
-
-        $selectedHostGroup = [
-            'Hostgroup'     => $hostgroup['Hostgroup'],
-            'Container'     => $hostgroup['Container'],
+        $data = [
+            'Hostgroup'     => $hostgroup->toArray(),
             'Hosts'         => $all_hosts,
-            'StatusSummary' => $statusOverview
+            'StatusSummary' => $hostgroupHoststatusOverview
         ];
 
-        $hostgroup = $selectedHostGroup;
 
-        $this->set('hostgroup', $hostgroup);
+        $this->set('hostgroup', $data);
         $this->set('_serialize', ['hostgroup']);
     }
 
