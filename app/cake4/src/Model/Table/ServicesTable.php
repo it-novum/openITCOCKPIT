@@ -711,60 +711,6 @@ class ServicesTable extends Table {
         return $result;
     }
 
-    /**
-     * @param array $containerIds
-     * @param string $type
-     * @param string $index
-     * @param array $where
-     * @return array
-     */
-    public function getServicesByContainerId($containerIds = [], $type = 'all', $index = 'id', $where = []) {
-
-        if (!is_array($containerIds)) {
-            $containerIds = [$containerIds];
-        }
-        $containerIds = array_unique($containerIds);
-
-        $_where = [
-            'Hosts.disabled' => 0
-        ];
-
-        $where = Hash::merge($_where, $where);
-
-        $query = $this->find();
-        $query
-            ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing')
-            ->innerJoinWith('Servicetemplates')
-            ->select([
-                'Services.' . $index,
-                'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
-                'Services.name',
-                'Hosts.name'
-            ]);
-
-        $query->disableHydration();
-        $query->group(['Services.id']);
-        $query->order([
-            'servicename' => 'asc'
-        ]);
-
-        $result = $query->toArray();
-        if (empty($result)) {
-            return [];
-        }
-
-        if ($type === 'all') {
-            return $result;
-        }
-
-        $list = [];
-        foreach ($result as $row) {
-            $list[$row[$index]] = $row['servicename'];
-        }
-
-        return $list;
-    }
 
     /**
      * @param ServiceConditions $ServiceConditions
@@ -777,18 +723,21 @@ class ServicesTable extends Table {
         }
         $selected = array_filter($selected);
 
+        $where = [];
 
-        $where = $ServiceConditions->getConditions();
         if (!empty($selected)) {
             $where['NOT'] = [
                 'Services.id IN' => $selected
             ];
         }
-
         $query = $this->find();
         $query
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function(Query $q) use($ServiceConditions){
+                return $q->where([
+                    'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
+                ]);
+            })
             ->innerJoinWith('Servicetemplates')
             ->select([
                 'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),

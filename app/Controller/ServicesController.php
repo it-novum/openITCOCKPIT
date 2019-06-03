@@ -1973,17 +1973,21 @@ class ServicesController extends AppController {
         }
 
         $selected = $this->request->query('selected');
-        $container_id = $this->request->query('container_id');
+        $containerId = $this->request->query('containerId');
 
-        if (!$this->allowedByContainerId($container_id, false)) {
+        if (!$this->allowedByContainerId($containerId, false)) {
             $this->render403();
             return;
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
         $ServicesFilter = new ServiceFilter($this->request);
 
         $ServiceConditions = new ServiceConditions($ServicesFilter->indexFilter());
-        $ServiceConditions->setContainerIds($container_id);
+        $ServiceConditions->setContainerIds($containerIds);
 
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
