@@ -778,7 +778,6 @@ class ServicesTable extends Table {
 
 
         $where = $ServiceConditions->getConditions();
-
         if (!empty($selected)) {
             $where['NOT'] = [
                 'Services.id IN' => $selected

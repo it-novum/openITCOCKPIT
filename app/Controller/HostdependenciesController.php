@@ -247,7 +247,7 @@ class HostdependenciesController extends AppController {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         if (!$ContainersTable->existsById($containerId)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
+            throw new NotFoundException(__('Invalid container'));
         }
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);

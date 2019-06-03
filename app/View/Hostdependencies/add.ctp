@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-sitemap"></i> </span>
-        <h2><?php echo __('Edit host dependency'); ?></h2>
+        <h2><?php echo __('Add host dependency'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <a ui-sref="HostdependenciesIndex" class="btn btn-default btn-xs" iconcolor="white">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
@@ -50,7 +50,7 @@
     <div>
         <div class="widget-body">
             <form class="form-horizontal" ng-init="successMessage=
-            {objectName : '<?php echo __('Host dependency'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
+            {objectName : '<?php echo __('Host dependency'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
                 <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <div class="form-group required" ng-class="{'has-error': errors.container_id}">
@@ -93,6 +93,7 @@
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="hosts"
+                                        callback="loadHosts"
                                         ng-options="host.key as host.value disable when host.disabled for host in hosts"
                                         ng-model="post.Hostdependency.hosts._ids">
                                 </select>
@@ -120,6 +121,7 @@
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="hosts_dependent"
+                                        callback="loadDependentHosts"
                                         ng-options="host.key as host.value disable when host.disabled for host in hosts_dependent"
                                         ng-model="post.Hostdependency.hosts_dependent._ids">
                                 </select>

@@ -340,7 +340,8 @@
                                     <td>
                                         <ul class="list-unstyled">
                                             <li ng-repeat="service in servicedependency.services">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-default padding-2">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-default padding-2"
+                                                title="{{service.servicename}}">
                                                     <label class="label label-default label-xs">
                                                         <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                                     </label>
@@ -364,7 +365,8 @@
                                     <td>
                                         <ul class="list-unstyled">
                                             <li ng-repeat="service in servicedependency.services_dependent">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2"
+                                                title="{{service.servicename}}">
                                                     <label class="label label-primary label-xs">
                                                         <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
                                                     </label>
@@ -388,7 +390,8 @@
                                     <td>
                                         <ul class="list-unstyled">
                                             <li ng-repeat="servicegroup in servicedependency.servicegroups">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-default padding-2">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-default padding-2"
+                                                title="{{servicegroup.container.name}}">
                                                     <label class="label label-default label-xs">
                                                         <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
                                                     </label>
@@ -409,7 +412,8 @@
                                     <td>
                                         <ul class="list-unstyled">
                                             <li ng-repeat="servicegroup in servicedependency.servicegroups_dependent">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2"
+                                                title="{{servicegroup.container.name}}">
                                                     <label class="label label-primary label-xs">
                                                         <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
                                                     </label>
