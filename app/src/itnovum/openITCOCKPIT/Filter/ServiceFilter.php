@@ -70,12 +70,12 @@ class ServiceFilter extends Filter {
     public function notMonitoredFilter() {
         $filters = [
             'like'   => [
-                'Host.name',
-                'Service.servicename',
+                'Hosts.name',
+                'Services.servicename',
             ],
             'equals' => [
-                'Host.id',
-                'Service.uuid'
+                'Hosts.id',
+                'Services.uuid'
             ]
         ];
 

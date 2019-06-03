@@ -12,6 +12,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
+use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
@@ -1370,7 +1371,7 @@ class ServicesTable extends Table {
         return $query;
     }
 
-    public function getServiceUuidsOfHostByHostId($hostId){
+    public function getServiceUuidsOfHostByHostId($hostId) {
         $query = $this->find('list', [
             'keyField'   => 'id',
             'valueField' => 'uuid'
@@ -1380,6 +1381,57 @@ class ServicesTable extends Table {
             ])
             ->disableHydration();
         return $query->toArray();
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param null $PaginateOMat
+     * @return array
+     */
+    public function getServicesForDisabled(ServiceConditions $ServiceConditions, $PaginateOMat = null) {
+        $where = $ServiceConditions->getConditions();
+        if($ServiceConditions->includeDisabled() === false){
+            $where['Services.disabled'] = 0;
+        }
+
+        if ($ServiceConditions->getHostId()) {
+            $where['Services.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        $query = $this->find();
+        $query
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing')
+            ->innerJoinWith('Servicetemplates')
+            ->select([
+                'Services.id',
+                'Services.uuid',
+                'Services.name',
+                'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+
+                'Servicetemplates.id',
+                'Servicetemplates.uuid',
+                'Servicetemplates.name',
+
+                'Hosts.name',
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.description',
+                'Hosts.address',
+            ]);
+
+        if(!empty($where)){
+            $query->where($where);
+        }
+
+        $query->disableHydration();
+        $query->group(['Services.id']);
+        $query->order($ServiceConditions->getOrder());
+
+        $result = $query->toArray();
+
+        debug($result);
+
     }
 
 }

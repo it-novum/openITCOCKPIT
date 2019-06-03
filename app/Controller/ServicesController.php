@@ -524,6 +524,23 @@ class ServicesController extends AppController {
      * @deprecated
      */
     public function disabled() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+
+        $ServiceFilter = new ServiceFilter($this->request);
+
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
+        $ServiceConditions = new ServiceConditions();
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Hosts.name', 'asc'));
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $all_services = $ServicesTable->getServicesForDisabled($ServiceConditions);
 
         return;
         /****** OLD CODE ****/
