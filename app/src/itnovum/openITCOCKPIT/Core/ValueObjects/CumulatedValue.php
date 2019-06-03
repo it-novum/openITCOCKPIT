@@ -42,6 +42,7 @@ class CumulatedValue {
     }
 
     /**
+     * null => blue
      * @return null|int|string
      */
     public function getKeyFromCumulatedValue() {

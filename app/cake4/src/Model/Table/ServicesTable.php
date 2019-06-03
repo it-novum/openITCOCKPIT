@@ -1371,5 +1371,16 @@ class ServicesTable extends Table {
         return $query;
     }
 
+    public function getServiceUuidsOfHostByHostId($hostId){
+        $query = $this->find('list', [
+            'keyField'   => 'id',
+            'valueField' => 'uuid'
+        ])
+            ->where([
+                'Services.host_id' => $hostId
+            ])
+            ->disableHydration();
+        return $query->toArray();
+    }
 
 }

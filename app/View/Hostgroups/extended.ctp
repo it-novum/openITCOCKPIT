@@ -145,7 +145,7 @@
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-sidemap"></i> </span>
                     <h2 class="hidden-mobile">
-                        {{(hostgroup.Container.name) && hostgroup.Container.name ||
+                        {{(hostgroup.Hostgroup.container.name) && hostgroup.Hostgroup.container.name ||
                         '<?php echo __('Host Groups (0)'); ?>'}}
                     </h2>
                     <?php if ($this->Acl->hasPermission('extended')): ?>
