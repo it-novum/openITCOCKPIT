@@ -11,6 +11,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -1410,6 +1411,163 @@ class ServicesTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param null|PaginateOMat $PaginateOMat
+     * @return array
+     */
+    public function getServiceNotMonitored(ServiceConditions $ServiceConditions, $PaginateOMat = null) {
+        $where = $ServiceConditions->getConditions();
+        $where['Services.disabled'] = 0;
+
+        $having = null;
+        if (isset($where['servicename LIKE'])) {
+            $having = [
+                'servicename LIKE' => $where['servicename LIKE']
+            ];
+            unset($where['servicename LIKE']);
+        }
+
+
+        if ($ServiceConditions->getHostId()) {
+            $where['Services.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Services.id',
+                'Services.uuid',
+                'Services.name',
+                'Services.host_id',
+                'Services.disabled',
+                'Services.active_checks_enabled',
+                'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+
+                'Servicetemplates.id',
+                'Servicetemplates.uuid',
+                'Servicetemplates.name',
+                'Servicetemplates.active_checks_enabled',
+
+                'Objects.object_id',
+
+                'Hosts.name',
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.description',
+                'Hosts.address',
+                'Hosts.disabled',
+            ])
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+                if (!empty($ServiceConditions->getContainerIds())) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
+                    ]);
+                }
+                return $q;
+            })
+            ->innerJoinWith('Servicetemplates')
+            ->leftJoin(['Objects' => 'nagios_objects'], [
+                'Objects.name2 = Services.uuid',
+                'Objects.objecttype_id' => 2
+            ])
+            ->whereNull('Objects.object_id');
+
+        if (!empty($where)) {
+            $query->where($where);
+        }
+
+        $query->disableHydration();
+        $query->group(['Services.id']);
+
+        if (!empty($having)) {
+            $query->having($having);
+        }
+
+        //FileDebugger::dieQuery($query);
+
+        $query->order($ServiceConditions->getOrder());
+        
+        debug($query->toArray());
+        die();
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+
+
+        /**** OLD CODE ****/
+
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $conditions,
+            'contain'    => ['Servicetemplate'],
+            'fields'     => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.description',
+                'Service.active_checks_enabled',
+
+                'Servicetemplate.id',
+                'Servicetemplate.uuid',
+                'Servicetemplate.name',
+                'Servicetemplate.description',
+                'Servicetemplate.active_checks_enabled',
+
+                'ServiceObject.object_id',
+
+                'Host.name',
+                'Host.id',
+                'Host.uuid',
+                'Host.description',
+                'Host.address',
+            ],
+            'order'      => $ServiceConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Service.host_id = Host.id',
+                ], [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'LEFT OUTER',
+                    'alias'      => 'ServiceObject',
+                    'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
+                ]
+            ]
+        ];
+
+        //$query['order'] = Hash::merge(['Service.id' => 'asc'], $ServiceConditions->getOrder());
+        $query['conditions'][] = [
+            "EXISTS (SELECT * FROM hosts_to_containers AS HostsToContainers WHERE HostsToContainers.container_id )" =>
+                $ServiceConditions->getContainerIds()
+        ];
+
+        $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
+        //$query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
+
+        if ($ServiceConditions->getHostId()) {
+            $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        $query['conditions'][] = 'ServiceObject.name2 IS NULL';
+
+        return $query;
+
     }
 
 }

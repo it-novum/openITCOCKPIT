@@ -23,9 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php
-$this->Paginator->options(['url' => $this->params['named']]);
-?>
+
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -104,7 +102,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
-                                                   ng-model="filter.Host.name"
+                                                   ng-model="filter.Hosts.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -114,7 +112,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <label class="input"> <i class="icon-prepend fa fa-cog"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by service name'); ?>"
-                                                   ng-model="filter.Service.name"
+                                                   ng-model="filter.Services.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -143,8 +141,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <?php echo __('Servicestatus'); ?>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Service.servicename')">
-                                        <i class="fa" ng-class="getSortClass('Service.servicename')"></i>
+                                    <th class="no-sort" ng-click="orderBy('servicename')">
+                                        <i class="fa" ng-class="getSortClass('servicename')"></i>
                                         <?php echo __('Service name'); ?>
                                     </th>
 
@@ -287,7 +285,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
-                                <a ng-href="{{ linkForCopy() }}" class="a-clean">
+                                <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
                                     <i class="fa fa-lg fa-files-o"></i>
                                     <?php echo __('Copy'); ?>
                                 </a>
