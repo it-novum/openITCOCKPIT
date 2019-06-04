@@ -33,6 +33,7 @@ use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MacrosTable;
+use App\Model\Table\ServicedependenciesTable;
 use App\Model\Table\ServiceescalationsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
@@ -1870,7 +1871,7 @@ class NagiosExportTask extends AppShell {
             $serviceEscalationString = $serviceescalation->getServiceEscalationStringForCfg();
 
             if (!empty($servicesForCfg)) {
-                foreach($servicesForCfg as $hostUuid => $serviceUuids){
+                foreach ($servicesForCfg as $hostUuid => $serviceUuids) {
                     $content .= $this->addContent('define serviceescalation{', 0);
                     $content .= $this->addContent('host_name', 1, $hostUuid);
                     $content .= $this->addContent('service_description', 1, implode(',', $serviceUuids));
@@ -2194,114 +2195,44 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportServicedependencies($uuid = null) {
-        $query = [
-            'recursive' => -1,
-            'contain'   => [
-                'ServicedependencyServiceMembership'      => [
-                    'Service' => [
-                        'conditions' => [
-                            'Service.disabled' => 0
-                        ],
-                        'fields'     => [
-                            'uuid',
-                        ],
-                        'Host'       => [
-                            'fields'     => [
-                                'uuid',
-                            ],
-                            'conditions' => [
-                                'Host.disabled' => 0
-                            ],
-                        ],
-                    ],
-                ],
-                'ServicedependencyServicegroupMembership' => [
-                    'Servicegroup' => [
-                        'fields' => [
-                            'Servicegroup.uuid'
-                        ]
-                    ],
-                ],
-                'Timeperiod'                              => [
-                    'fields' => [
-                        'uuid',
-                    ],
-                ],
-            ],
-        ];
-
-        if ($uuid !== null) {
-            $servicedependencies = [];
-            $query['conditions'] = [
-                'Servicedependency.uuid' => $uuid
-            ];
-            $servicedependencies[] = $this->Servicedependency->find('first', $query);
-        } else {
-            $servicedependencies = $this->Servicedependency->find('all', $query);
-        }
+        /** @var $ServicedependenciesTable ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+        /** @var  $servicedependency \App\Model\Entity\Servicedependency */
+        $servicedependencies = $ServicedependenciesTable->getServicedependenciesForExport($uuid);
 
         if (!is_dir($this->conf['path'] . $this->conf['servicedependencies'])) {
             mkdir($this->conf['path'] . $this->conf['servicedependencies']);
         }
+
         foreach ($servicedependencies as $servicedependency) {
-            $file = new File($this->conf['path'] . $this->conf['servicedependencies'] . $servicedependency['Servicedependency']['uuid'] . $this->conf['suffix']);
+            $file = new File($this->conf['path'] . $this->conf['servicedependencies'] . $servicedependency->get('uuid') . $this->conf['suffix']);
             $content = $this->fileHeader();
             if (!$file->exists()) {
                 $file->create();
             }
 
-            $masterServices = array_filter(Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0].Service'));
-            $dependentServices = array_filter(Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=1].Service'));
-
-            $masterServicegroups = Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=0].Servicegroup.uuid');
-            $dependentServicegroups = Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=1].Servicegroup.uuid');
-
-
-            if (!empty($masterServicegroups)) {
-                $masterServicegroups = implode(',', Hash::extract($masterServicegroups, '{n}.Servicegroup.uuid'));
-            }
-            if (!empty($dependentServicegroups)) {
-                $dependentServicegroups = implode(',', Hash::extract($dependentServicegroups, '{n}.Servicegroup.uuid'));
-            }
-
-            $hasMasterServicesAndDependentService = (!empty($masterServices) && !empty($dependentServices));
-            if ($hasMasterServicesAndDependentService === true) {
-                foreach ($masterServices as $masterService) {
-                    foreach ($dependentServices as $dependentService) {
-                        $content .= $this->addContent('define servicedependency{', 0);
-                        $content .= $this->addContent('host_name', 1, $masterService['Host']['uuid']);
-                        $content .= $this->addContent('service_description', 1, $masterService['uuid']);
-                        $content .= $this->addContent('dependent_host_name', 1, $dependentService['Host']['uuid']);
-                        $content .= $this->addContent('dependent_service_description', 1, $dependentService['uuid']);
-
-                        if (!empty($masterServicegroups)) {
-                            $content .= $this->addContent('servicegroup_name', 1, $masterServicegroups);
-                        }
-
-                        if (!empty($dependentServicegroups)) {
-                            $content .= $this->addContent('dependent_servicegroup_name', 1, $dependentServicegroups);
-                        }
-
-                        $content .= $this->addContent('inherits_parent', 1, $servicedependency['Servicedependency']['inherits_parent']);
-                        $serviceDependencyExecutionString = $this->serviceDependencyExecutionString($servicedependency['Servicedependency']);
-                        if (!empty($serviceDependencyExecutionString)) {
-                            $content .= $this->addContent('execution_failure_criteria', 1, $serviceDependencyExecutionString);
-                        }
-                        $serviceDependencyNotificationString = $this->serviceDependencyNotificationString($servicedependency['Servicedependency']);
-                        if (!empty($serviceDependencyNotificationString)) {
-                            $content .= $this->addContent('notification_failure_criteria', 1, $serviceDependencyNotificationString);
-                        }
-                        if ($servicedependency['Timeperiod']['uuid'] !== null && $servicedependency['Timeperiod']['uuid'] !== '') {
-                            $content .= $this->addContent('dependency_period', 1, $servicedependency['Timeperiod']['uuid']);
-                        }
-
-                        $content .= $this->addContent('}', 0);
-                        $content .= $this->nl();
-                    }
+            $masterServicesForCfg = [];
+            $dependentServicesForCfg = [];
+            $services = $servicedependency->get('services', [
+                'contain' => 'Hosts'
+            ]);
+            foreach ($services as $service) {
+                if ($service->get('_joinData')->get('dependent') === 0) {
+                    $masterServicesForCfg[] = [
+                        'hostUuid'    => $service->get('host')->get('uuid'),
+                        'serviceUuid' => $service->get('uuid')
+                    ];
+                } else {
+                    $dependentServicesForCfg[] = [
+                        'hostUuid'    => $service->get('host')->get('uuid'),
+                        'serviceUuid' => $service->get('uuid')
+                    ];
                 }
-            } else {
-                //This service dependency is broken, ther are no services in it
-                $this->Servicedependency->delete($servicedependency['Servicedependency']['id']);
+            }
+            //Check if the service dependency is valid
+            if (empty($masterServicesForCfg) || empty($dependentServicesForCfg)) {
+                //This service dependency is broken, there are no services or no dependent services in it!
+                $ServicedependenciesTable->delete($servicedependency);
                 $file->close();
                 if ($file->exists()) {
                     $file->delete();
@@ -2309,10 +2240,59 @@ class NagiosExportTask extends AppShell {
                 continue;
             }
 
+            $servicegroupsForCfg = [];
+            $dependentServicegroupsForCfg = [];
+            if (!is_null($servicedependency->get('servicegroups'))) {
+                $servicegroups = $servicedependency->get('servicegroups');
+                foreach ($servicegroups as $servicegroup) {
+                    if ($servicegroup->get('_joinData')->get('dependent') === 0) {
+                        $servicegroupsForCfg[] = $servicegroup->get('uuid');
+                    } else {
+                        $dependentServicegroupsForCfg[] = $servicegroup->get('uuid');
+                    }
+                }
+            }
+
+            foreach ($masterServicesForCfg as $masterServiceForCfg) {
+                foreach ($dependentServicesForCfg as $dependentServiceForCfg) {
+                    $content .= $this->addContent('define servicedependency{', 0);
+                    $content .= $this->addContent('host_name', 1, $masterServiceForCfg['hostUuid']);
+                    $content .= $this->addContent('service_description', 1, $masterServiceForCfg['serviceUuid']);
+                    $content .= $this->addContent('dependent_host_name', 1, $dependentServiceForCfg['hostUuid']);
+                    $content .= $this->addContent('dependent_service_description', 1, $dependentServiceForCfg['serviceUuid']);
+
+                    if (!empty($servicegroupsForCfg)) {
+                        $content .= $this->addContent('servicegroup_name', 1, implode(', ', $servicegroupsForCfg));
+                    }
+
+                    if (!empty($dependentServicegroupsForCfg)) {
+                        $content .= $this->addContent('dependent_servicegroup_name', 1, implode(', ' , $dependentServicegroupsForCfg));
+                    }
+
+                    $content .= $this->addContent('inherits_parent', 1, $servicedependency->get('inherits_parent'));
+                    $serviceDependencyExecutionString = $servicedependency->getExecutionFailureCriteriaForCfg();
+                    if (!empty($serviceDependencyExecutionString)) {
+                        $content .= $this->addContent('execution_failure_criteria', 1, $serviceDependencyExecutionString);
+                    }
+                    $serviceDependencyNotificationString = $servicedependency->getNotificationFailureCriteriaForCfg();
+                    if (!empty($serviceDependencyNotificationString)) {
+                        $content .= $this->addContent('notification_failure_criteria', 1, $serviceDependencyNotificationString);
+                    }
+                    $serviceDependencyTimeperiod = $servicedependency->get('timeperiod')->get('uuid');
+                    if (!is_null($serviceDependencyTimeperiod)) {
+                        $content .= $this->addContent('dependency_period', 1, $serviceDependencyTimeperiod);
+                    }
+
+                    $content .= $this->addContent('}', 0);
+                    $content .= $this->nl();
+                }
+            }
+
             $file->write($content);
             $file->close();
         }
     }
+
 
     public function exportMacros() {
         $file = new File($this->conf['path'] . $this->conf['macros'] . $this->conf['suffix']);
