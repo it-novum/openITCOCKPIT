@@ -12,8 +12,8 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
-use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
  * Services Model
@@ -733,7 +733,7 @@ class ServicesTable extends Table {
         $query = $this->find();
         $query
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function(Query $q) use($ServiceConditions){
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
                 return $q->where([
                     'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
                 ]);
@@ -1334,14 +1334,21 @@ class ServicesTable extends Table {
 
     /**
      * @param ServiceConditions $ServiceConditions
-     * @param null $PaginateOMat
+     * @param null|PaginateOMat $PaginateOMat
      * @return array
      */
     public function getServicesForDisabled(ServiceConditions $ServiceConditions, $PaginateOMat = null) {
         $where = $ServiceConditions->getConditions();
-        if($ServiceConditions->includeDisabled() === false){
-            $where['Services.disabled'] = 0;
+        $where['Services.disabled'] = 1;
+
+        $having = null;
+        if (isset($where['servicename LIKE'])) {
+            $having = [
+                'servicename LIKE' => $where['servicename LIKE']
+            ];
+            unset($where['servicename LIKE']);
         }
+
 
         if ($ServiceConditions->getHostId()) {
             $where['Services.host_id'] = $ServiceConditions->getHostId();
@@ -1349,14 +1356,13 @@ class ServicesTable extends Table {
 
         $query = $this->find();
         $query
-            ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing')
-            ->innerJoinWith('Servicetemplates')
             ->select([
                 'Services.id',
                 'Services.uuid',
                 'Services.name',
-                'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+                'Services.host_id',
+                'Services.disabled',
+                'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -1367,20 +1373,43 @@ class ServicesTable extends Table {
                 'Hosts.uuid',
                 'Hosts.description',
                 'Hosts.address',
-            ]);
+                'Hosts.disabled',
+            ])
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+                if (!empty($ServiceConditions->getContainerIds())) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
+                    ]);
+                }
+                return $q;
+            })->innerJoinWith('Servicetemplates');
 
-        if(!empty($where)){
+        if (!empty($where)) {
             $query->where($where);
         }
 
         $query->disableHydration();
         $query->group(['Services.id']);
+
+        if (!empty($having)) {
+            $query->having($having);
+        }
+
         $query->order($ServiceConditions->getOrder());
 
-        $result = $query->toArray();
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
 
-        debug($result);
-
+        return $result;
     }
 
 }

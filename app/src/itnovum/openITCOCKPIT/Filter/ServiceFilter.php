@@ -44,7 +44,7 @@ class ServiceFilter extends Filter {
             'rlike'    => [
                 'Service.keywords'
             ],
-            'notrlike'    => [
+            'notrlike' => [
                 'Service.not_keywords'
             ],
             'equals'   => [
@@ -71,7 +71,7 @@ class ServiceFilter extends Filter {
         $filters = [
             'like'   => [
                 'Hosts.name',
-                'Services.servicename',
+                'servicename',
             ],
             'equals' => [
                 'Hosts.id',

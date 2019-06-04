@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 
 
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
+
 class User {
 
     /**
@@ -105,6 +107,13 @@ class User {
      */
     public function getDateformat() {
         return $this->dateformat;
+    }
+
+    /**
+     * @return UserTime
+     */
+    public function getUserTime(){
+        return new UserTime($this->timezone, $this->dateformat);
     }
 
 

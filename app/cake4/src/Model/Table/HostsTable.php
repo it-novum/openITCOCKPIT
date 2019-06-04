@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Host;
 use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -1317,6 +1318,28 @@ class HostsTable extends Table {
             ->firstOrFail();
 
         return $host->get('container_id');
+    }
+
+    /**
+     * @param int $hostId
+     * @return array
+     */
+    public function getHostContainerIdsByHostId($hostId) {
+        /** @var Host $host */
+        $host = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.container_id'
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+            ])
+            ->where([
+                'Hosts.id' => $hostId
+            ])
+            ->firstOrFail();
+
+        return $host->getContainerIds();
     }
 
     /**

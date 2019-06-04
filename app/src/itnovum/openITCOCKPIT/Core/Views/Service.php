@@ -89,6 +89,13 @@ class Service {
         }
         $this->allow_edit = $allowEdit;
 
+        if (isset($service['id']) && isset($service['uuid'])) {
+            //Cake4 result...
+            $service = [
+                'Service' => $service
+            ];
+        }
+
         if (isset($service['Service']['id'])) {
             $this->id = $service['Service']['id'];
         }
@@ -105,6 +112,10 @@ class Service {
             if (isset($service['Servicetemplate']['name'])) {
                 $this->servicename = $service['Servicetemplate']['name'];
             }
+        }
+
+        if (isset($service['Service']['servicename'])) {
+            $this->servicename = $service['Service']['servicename'];
         }
 
         if ($servicename !== null) {

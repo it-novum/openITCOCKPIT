@@ -2,7 +2,7 @@ angular.module('openITCOCKPIT')
     .controller('ServicesDisabledController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService){
         $rootScope.lastObjectName = null;
 
-        SortService.setSort(QueryStringService.getValue('sort', 'Host.name'));
+        SortService.setSort(QueryStringService.getValue('sort', 'Hosts.name'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
         $scope.currentPage = 1;
 
@@ -16,10 +16,10 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Host: {
+                Hosts: {
                     name: ''
                 },
-                Service: {
+                Services: {
                     name: ''
                 }
             };
@@ -33,88 +33,41 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.showFilter = false;
-        $scope.serverResult = [];
-
-        var lastHostUuid = null;
-
 
         var forTemplate = function(serverResponse){
-            var services = [];
-            var hosts = [];
-            var hostsstatusArr = [];
-            var saved_hostuuids = [];
-            var result = [];
-            var lastendhost = "";
-            var tmp_hostservicegroup = null;
+            // Create a list of host with all services
 
-            serverResponse.forEach(function(record){
-                services.push(record.Service);
-                if(saved_hostuuids.indexOf(record.Host.uuid) < 0){
-                    hosts.push(record.Host);
-                    hostsstatusArr.push({
-                        host_id: record.Host.id,
-                        Hoststatus: record.Hoststatus
-                    });
-                    saved_hostuuids.push(record.Host.uuid);
-                }
-            });
+            var hostWithServices = {};
+            for(var i in serverResponse){
+                var hostId = serverResponse[i].Host.id;
 
-
-            services.forEach(function(service){
-                //Notice, API return some IDs as string :/
-                if(lastendhost != service.host_id){
-                    if(tmp_hostservicegroup !== null){
-                        result.push(tmp_hostservicegroup);
-                    }
-
-                    tmp_hostservicegroup = {};
-                    var host = null;
-                    var hoststatus = null;
-                    hosts.forEach(function(hostelem){
-                        //Notice, API return some IDs as string :/
-                        if(hostelem.id == service.host_id){
-                            host = hostelem;
-                        }
-                    });
-                    hostsstatusArr.forEach(function(hoststatelem){
-                        if(hoststatelem.host_id == service.host_id){
-                            hoststatus = hoststatelem.Hoststatus;
-                        }
-                    });
-
-
-                    tmp_hostservicegroup = {
-                        Host: host,
-                        Hoststatus: hoststatus,
+                if(!hostWithServices.hasOwnProperty(hostId)){
+                    hostWithServices[hostId] = {
+                        Host: serverResponse[i].Host,
+                        Hoststatus: serverResponse[i].Hoststatus,
                         Services: []
                     };
-                    lastendhost = service.host_id;
                 }
 
-                tmp_hostservicegroup.Services.push({
-                    Service: service
-                });
+                hostWithServices[hostId].Services.push(
+                    serverResponse[i].Service
+                );
 
-            });
-
-            if(tmp_hostservicegroup !== null){
-                result.push(tmp_hostservicegroup);
             }
 
-            return result;
+            return hostWithServices;
         };
 
 
         $scope.load = function(){
-            lastHostUuid = null;
 
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.name]': $scope.filter.Host.name,
-                'filter[Service.servicename]': $scope.filter.Service.name
+                'filter[Hosts.name]': $scope.filter.Hosts.name,
+                'filter[servicename]': $scope.filter.Services.name
             };
 
 
@@ -142,14 +95,6 @@ angular.module('openITCOCKPIT')
             $scope.undoSelection();
         };
 
-        $scope.isNextHost = function(service){
-            if(service.Host.uuid !== lastHostUuid){
-                lastHostUuid = service.Host.uuid;
-                return true;
-            }
-            return false;
-        };
-
         $scope.selectAll = function(){
             if($scope.services){
                 for(var key in $scope.serverResult){
@@ -169,7 +114,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(host, service){
             var object = {};
-            object[service.Service.id] = host.Host.hostname + '/' + service.Service.servicename;
+            object[service.id] = host.Host.hostname + '/' + service.servicename;
             return object;
         };
 
@@ -190,9 +135,8 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.linkForCopy = function(){
-            var baseUrl = '/services/copy/';
             var ids = Object.keys(MassChangeService.getSelected());
-            return baseUrl + ids.join('/');
+            return ids.join(',');
         };
 
 

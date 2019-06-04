@@ -372,7 +372,7 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['service', 'servicestatus']);
     }
 
-    public function byUuid($uuid){
+    public function byUuid($uuid) {
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicesTable ServicesTable */
@@ -385,7 +385,7 @@ class ServicesController extends AppController {
                 $this->render403();
                 return;
             }
-        }catch (RecordNotFoundException $e){
+        } catch (RecordNotFoundException $e) {
             throw new NotFoundException('Service not found');
         }
 
@@ -520,9 +520,6 @@ class ServicesController extends AppController {
 
     }
 
-    /**
-     * @deprecated
-     */
     public function disabled() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -533,95 +530,55 @@ class ServicesController extends AppController {
         $ServiceFilter = new ServiceFilter($this->request);
 
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
-        $ServiceConditions = new ServiceConditions();
+        $ServiceConditions = new ServiceConditions(
+            $ServiceFilter->disabledFilter()
+        );
         $ServiceConditions->setContainerIds($this->MY_RIGHTS);
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Hosts.name', 'asc'));
 
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-        $all_services = $ServicesTable->getServicesForDisabled($ServiceConditions);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
 
-        return;
-        /****** OLD CODE ****/
-
-        $this->layout = 'blank';
-
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template
-            return;
-        }
-
-        $ServiceFilter = new ServiceFilter($this->request);
-
-        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
-        $ServiceConditions = new ServiceConditions();
-        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
-
-
-        //Default order
-        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Host.name', 'asc'));
-
-        $query = $this->Service->getServiceDisabledQuery($ServiceConditions, $ServiceFilter->disabledFilter());
-        $this->Service->virtualFieldsForDisabled();
-        $modelName = 'Service';
-
-
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            if (isset($query['limit'])) {
-                unset($query['limit']);
-            }
-            $all_services = $this->{$modelName}->find('all', $query);
-            $this->set('all_services', $all_services);
-            $this->set('_serialize', ['all_services']);
-            return;
-        } else {
-            $this->Paginator->settings['page'] = $ServiceFilter->getPage();
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
-            //debug($this->Service->getDataSource()->getLog(false, false));
-        }
+        $services = $ServicesTable->getServicesForDisabled($ServiceConditions, $PaginateOMat);
 
         $hostContainers = [];
-        if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-            $hostIds = array_unique(Hash::extract($services, '{n}.Host.id'));
-            $_hostContainers = $this->Host->find('all', [
-                'contain'    => [
-                    'Container',
-                ],
-                'fields'     => [
-                    'Host.id',
-                    'Container.*',
-                ],
-                'conditions' => [
-                    'Host.id' => $hostIds,
-                ],
-            ]);
-            foreach ($_hostContainers as $host) {
-                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
+        if ($this->hasRootPrivileges === false) {
+            if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
+                foreach ($services as $index => $service) {
+                    $hostId = $service['_matchingData']['Hosts']['id'];
+                    if (!isset($hostContainers[$hostId])) {
+                        $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId(1);
+                    }
+
+                    $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
+                    $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
+                }
+            }
+        } else {
+            //Root user
+            foreach ($services as $index => $service) {
+                $services[$index]['allow_edit'] = $this->hasRootPrivileges;
             }
         }
 
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->currentState();
-        $hoststatusCache = $this->Hoststatus->byUuid(array_unique(Hash::extract($services, '{n}.Host.uuid')), $HoststatusFields);
+        $hoststatusCache = $this->Hoststatus->byUuid(
+            array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
+            $HoststatusFields
+        );
 
 
         $all_services = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $User = new User($this->Auth);
+        $UserTime = $User->getUserTime();
         foreach ($services as $service) {
-            if ($this->hasRootPrivileges) {
-                $allowEdit = true;
-            } else {
-                $containerIds = [];
-                if (isset($hostContainers[$service['Host']['id']])) {
-                    $containerIds = $hostContainers[$service['Host']['id']];
-                }
-                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
-                $allowEdit = $ContainerPermissions->hasPermission();
-            }
-
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
+            $allowEdit = $service['allow_edit'];
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts'], $allowEdit);
             if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
                 $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
             } else {
@@ -637,9 +594,12 @@ class ServicesController extends AppController {
             $all_services[] = $tmpRecord;
         }
 
-
         $this->set('all_services', $all_services);
-        $this->set('_serialize', ['all_services', 'paging']);
+        $toJson = ['all_services', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_services', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function add() {
@@ -1037,7 +997,7 @@ class ServicesController extends AppController {
             $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsById($host['Host']['id']);
             $hosttemplateContactsAndContactgroups = $HosttemplatesTable->getContactsAndContactgroupsById($host['Host']['hosttemplate_id']);
 
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->Auth);
 
             foreach ($postData as $index => $serviceData) {
                 if (!isset($serviceData['Service']['id'])) {
