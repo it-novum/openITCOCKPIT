@@ -368,6 +368,12 @@ class ServicedependenciesTable extends Table {
                 'services'      =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
+                            ->contain([
+                                'Hosts' => function (Query $q) {
+                                    return $q->enableAutoFields(false)
+                                        ->select(['Hosts.uuid']);
+                                }
+                            ])
                             ->where([
                                 'Services.disabled' => 0
                             ])
@@ -406,7 +412,6 @@ class ServicedependenciesTable extends Table {
                 'Servicedependencies.uuid' => $uuid
             ]);
         }
-
         $query->all();
 
         return $query;

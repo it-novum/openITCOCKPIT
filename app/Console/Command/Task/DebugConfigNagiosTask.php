@@ -130,6 +130,14 @@ class DebugConfigNagiosTask extends AppShell {
                 'recursive' => -1,
                 'fields'    => ['id', 'uuid'],
             ],
+            'Hostdependency'    => [
+                'recursive' => -1,
+                'fields'    => ['id', 'uuid'],
+            ],
+            'Servicedependency'    => [
+                'recursive' => -1,
+                'fields'    => ['id', 'uuid'],
+            ],
         ];
 
         foreach ($Models as $ModelName) {
@@ -183,8 +191,13 @@ class DebugConfigNagiosTask extends AppShell {
     public function debug($ModelName = null, $confName) {
         if ($ModelName !== null && is_array($this->uses)) {
             $ModelSchema = $this->{$ModelName}->schema();
-            $IsEscalationModel = in_array($ModelName, ['Hostescalation', 'Serviceescalation'], true); // Exclude Escalations, no name exists, get all lists
-            if (in_array('name', array_keys($ModelSchema)) && !$IsEscalationModel) {
+            $IsModelWithoutName = in_array($ModelName, [
+                'Hostescalation',
+                'Serviceescalation',
+                'Hostdependency',
+                'Servicedependency'
+            ], true); // Exclude Escalations, no name exists, get all lists
+            if (in_array('name', array_keys($ModelSchema)) && !$IsModelWithoutName) {
                 $input = $this->in(__d('oitc_console', 'Please enter the name of the ' . $ModelName . '! This is a wildcard search, for example type "default host" or just "def". Hit return to see all ' . Inflector::pluralize($ModelName)));
                 $result = $this->{$ModelName}->find('all', [
                     'conditions' => [
@@ -192,7 +205,7 @@ class DebugConfigNagiosTask extends AppShell {
                     ],
                     'contain'    => [],
                 ]);
-            } else if (in_array('container_id', array_keys($ModelSchema)) && !$IsEscalationModel) {
+            } else if (in_array('container_id', array_keys($ModelSchema)) && !$IsModelWithoutName) {
                 $input = $this->in(__d('oitc_console', 'Please enter the name of the ' . $ModelName . '! This is a wildcard search, for example type "default host" or just "def". Hit return to see all ' . Inflector::pluralize($ModelName)));
                 $result = $this->{$ModelName}->find('all', [
                     'conditions' => [
@@ -203,7 +216,7 @@ class DebugConfigNagiosTask extends AppShell {
                         'Container',
                     ],
                 ]);
-            } else if($IsEscalationModel){
+            } else if($IsModelWithoutName){
                 $result = $this->{$ModelName}->find('all', [
                     'recursive' => -1
                 ]);
