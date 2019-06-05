@@ -6,6 +6,8 @@ angular.module('openITCOCKPIT')
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
         $scope.currentPage = 1;
 
+        $scope.useScroll = true;
+
         //There is no service status for not monitored services :)
         $scope.fakeServicestatus = {
             Servicestatus: {
@@ -64,6 +66,7 @@ angular.module('openITCOCKPIT')
         $scope.load = function(){
             var params = {
                 'angular': true,
+                'scroll': $scope.useScroll,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
@@ -80,6 +83,7 @@ angular.module('openITCOCKPIT')
                 $scope.services = forTemplate(result.data.all_services);
 
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -146,6 +150,10 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
 
         //Fire on page load
         defaultFilter();
