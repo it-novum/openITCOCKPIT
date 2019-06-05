@@ -1487,12 +1487,7 @@ class ServicesTable extends Table {
             $query->having($having);
         }
 
-        //FileDebugger::dieQuery($query);
-
         $query->order($ServiceConditions->getOrder());
-        
-        debug($query->toArray());
-        die();
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -1506,68 +1501,6 @@ class ServicesTable extends Table {
         }
 
         return $result;
-
-
-        /**** OLD CODE ****/
-
-        $query = [
-            'recursive'  => -1,
-            'conditions' => $conditions,
-            'contain'    => ['Servicetemplate'],
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.description',
-                'Service.active_checks_enabled',
-
-                'Servicetemplate.id',
-                'Servicetemplate.uuid',
-                'Servicetemplate.name',
-                'Servicetemplate.description',
-                'Servicetemplate.active_checks_enabled',
-
-                'ServiceObject.object_id',
-
-                'Host.name',
-                'Host.id',
-                'Host.uuid',
-                'Host.description',
-                'Host.address',
-            ],
-            'order'      => $ServiceConditions->getOrder(),
-            'joins'      => [
-                [
-                    'table'      => 'hosts',
-                    'type'       => 'INNER',
-                    'alias'      => 'Host',
-                    'conditions' => 'Service.host_id = Host.id',
-                ], [
-                    'table'      => 'nagios_objects',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'ServiceObject',
-                    'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
-                ]
-            ]
-        ];
-
-        //$query['order'] = Hash::merge(['Service.id' => 'asc'], $ServiceConditions->getOrder());
-        $query['conditions'][] = [
-            "EXISTS (SELECT * FROM hosts_to_containers AS HostsToContainers WHERE HostsToContainers.container_id )" =>
-                $ServiceConditions->getContainerIds()
-        ];
-
-        $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
-        //$query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
-
-        if ($ServiceConditions->getHostId()) {
-            $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
-        }
-
-        $query['conditions'][] = 'ServiceObject.name2 IS NULL';
-
-        return $query;
-
     }
 
 }

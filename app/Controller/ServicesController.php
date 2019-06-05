@@ -393,15 +393,11 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['service']);
     }
 
-    /**
-     * @deprecated
-     */
     public function notMonitored() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
         }
-
 
         $ServiceFilter = new ServiceFilter($this->request);
 
@@ -476,131 +472,6 @@ class ServicesController extends AppController {
             $toJson = ['all_services', 'scroll'];
         }
         $this->set('_serialize', $toJson);
-
-        return;
-        /*** OLD CODE ****/
-
-        $this->layout = 'blank';
-        $User = new User($this->Auth);
-
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template
-            return;
-        }
-
-        $ServiceFilter = new ServiceFilter($this->request);
-
-        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
-        $ServiceConditions = new ServiceConditions();
-        $ServiceConditions->setIncludeDisabled(false);
-        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
-
-
-        //Default order
-        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Host.name', 'asc'));
-
-        if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Service->getServiceNotMonitoredQuery($ServiceConditions, $ServiceFilter->notMonitoredFilter());
-            $this->Service->virtualFieldsForNotMonitored();
-            $modelName = 'Service';
-        }
-
-        if ($this->DbBackend->isCrateDb()) {
-            $this->loadModel('CrateModule.CrateService');
-            $this->CrateService->virtualFieldsForServicesNotMonitored();
-            $query = $this->CrateService->getServiceNotMonitoredQuery($ServiceConditions, $ServiceFilter->indexFilter());
-            $modelName = 'CrateService';
-        }
-
-        if ($this->DbBackend->isStatusengine3()) {
-            $query = $this->Service->getServiceNotMonitoredQueryStatusengine3($ServiceConditions, $ServiceFilter->notMonitoredFilter());
-            $this->Service->virtualFieldsForNotMonitored();
-            $modelName = 'Service';
-        }
-
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            if (isset($query['limit'])) {
-                unset($query['limit']);
-            }
-            if ($this->DbBackend->isCrateDb()) {
-                $all_services = $this->{$modelName}->find('all', $query);
-                foreach ($all_services as $key => $record) {
-                    //Rename key from CrateService to Service
-                    $all_services[$key]['Service'] = $record['CrateService'];
-                    unset($all_services[$key]['CrateService']);
-                }
-            } else {
-                $all_services = $this->{$modelName}->find('all', $query);
-            }
-            $this->set('all_services', $all_services);
-            $this->set('_serialize', ['all_services']);
-            return;
-        } else {
-            $this->Paginator->settings['page'] = $ServiceFilter->getPage();
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
-            //debug($this->Service->getDataSource()->getLog(false, false));
-        }
-
-        $hostContainers = [];
-        if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-            $hostIds = array_unique(Hash::extract($services, '{n}.Host.id'));
-            $_hostContainers = $this->Host->find('all', [
-                'contain'    => [
-                    'Container',
-                ],
-                'fields'     => [
-                    'Host.id',
-                    'Container.*',
-                ],
-                'conditions' => [
-                    'Host.id' => $hostIds,
-                ],
-            ]);
-            foreach ($_hostContainers as $host) {
-                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
-            }
-        }
-
-        $HoststatusFields = new HoststatusFields($this->DbBackend);
-        $HoststatusFields->currentState();
-        $hoststatusCache = $this->Hoststatus->byUuid(array_unique(Hash::extract($services, '{n}.Host.uuid')), $HoststatusFields);
-
-
-        $all_services = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        foreach ($services as $service) {
-            if ($this->hasRootPrivileges) {
-                $allowEdit = true;
-            } else {
-                $containerIds = [];
-                if (isset($hostContainers[$service['Host']['id']])) {
-                    $containerIds = $hostContainers[$service['Host']['id']];
-                }
-                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
-                $allowEdit = $ContainerPermissions->hasPermission();
-            }
-
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
-            if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
-            } else {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([], $UserTime);
-            }
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
-
-            $tmpRecord = [
-                'Service'    => $Service->toArray(),
-                'Host'       => $Host->toArray(),
-                'Hoststatus' => $Hoststatus->toArray()
-            ];
-            $all_services[] = $tmpRecord;
-        }
-
-
-        $this->set('all_services', $all_services);
-        $this->set('_serialize', ['all_services', 'paging']);
-
     }
 
     public function disabled() {
@@ -614,7 +485,7 @@ class ServicesController extends AppController {
 
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions(
-            $ServiceFilter->disabledFilter()
+            $ServiceFilter->notMonitoredFilter()
         );
         $ServiceConditions->setContainerIds($this->MY_RIGHTS);
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Hosts.name', 'asc'));

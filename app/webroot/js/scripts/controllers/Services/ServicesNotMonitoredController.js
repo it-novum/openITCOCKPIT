@@ -78,6 +78,7 @@ angular.module('openITCOCKPIT')
                 $scope.services = [];
                 $scope.serverResult = result.data.all_services;
                 $scope.services = forTemplate(result.data.all_services);
+
                 $scope.paging = result.data.paging;
                 $scope.init = false;
             });
