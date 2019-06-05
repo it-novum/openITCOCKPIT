@@ -5,13 +5,13 @@ namespace App\Model\Table;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\Service;
+use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -1510,6 +1510,7 @@ class ServicesTable extends Table {
      */
     public function getServiceIndex(ServiceConditions $ServiceConditions, $PaginateOMat = null) {
         $where = $ServiceConditions->getConditions();
+
         $where['Services.disabled'] = 0;
 
         $having = null;
@@ -1586,9 +1587,30 @@ class ServicesTable extends Table {
                 'Servicestatus.service_object_id = Objects.object_id',
             ]);
 
-        if (!empty($where)) {
-            $query->where($where);
+        if(isset($where['keywords rlike'])){
+            $query->where(new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $where['keywords rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['keywords rlike']);
         }
+
+        if(isset($where['not_keywords not rlike'])){
+            $query->andWhere(new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $where['not_keywords not rlike'],
+                'string',
+                'not rlike'
+            ));
+            unset($where['not_keywords not rlike']);
+        }
+
+        if (!empty($where)) {
+            $query->andWhere($where);
+        }
+
 
         $query->disableHydration();
         $query->group(['Services.id']);

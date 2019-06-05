@@ -42,10 +42,10 @@ class ServiceFilter extends Filter {
                 'Servicestatus.output'
             ],
             'rlike'    => [
-                'Services.keywords'
+                'keywords'
             ],
             'notrlike' => [
-                'Service.not_keywords'
+                'not_keywords'
             ],
             'equals'   => [
                 'Hosts.id',

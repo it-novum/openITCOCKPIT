@@ -144,6 +144,7 @@
                                         <i class="icon-prepend fa fa-filter"></i>
                                         <input type="text" class="input-sm"
                                                data-role="tagsinput"
+                                               id="ServicesKeywordsInput"
                                                placeholder="<?php echo __('Filter by tags'); ?>"
                                                ng-model="filter.Services.keywords"
                                                ng-model-options="{debounce: 500}">
@@ -155,6 +156,7 @@
                                         <i class="icon-prepend fa fa-filter"></i>
                                         <input type="text" class="input-sm"
                                                data-role="tagsinput"
+                                               id="ServicesNotKeywordsInput"
                                                placeholder="<?php echo __('Filter by excluded tags'); ?>"
                                                ng-model="filter.Services.not_keywords"
                                                ng-model-options="{debounce: 500}">

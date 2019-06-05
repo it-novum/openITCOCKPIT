@@ -24,14 +24,14 @@ angular.module('openITCOCKPIT')
                     output: ''
                 },
                 Services: {
-                    id: QueryStringService.getIds('filter[Service.id][]', []),
-                    name: QueryStringService.getValue('filter[Service.servicename]', ''),
+                    id: QueryStringService.getIds('filter[Services.id][]', []),
+                    name: QueryStringService.getValue('filter[Services.servicename]', ''),
                     keywords: '',
                     not_keywords: ''
                 },
                 Hosts: {
-                    id: QueryStringService.getValue('filter[Host.id]', ''),
-                    name: QueryStringService.getValue('filter[Host.name]', '')
+                    id: QueryStringService.getValue('filter[Hosts.id]', ''),
+                    name: QueryStringService.getValue('filter[Hosts.name]', '')
                 }
             };
         };
@@ -118,8 +118,8 @@ angular.module('openITCOCKPIT')
                 'filter[servicename]': $scope.filter.Services.name,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
-                'filter[Services.keywords][]': $scope.filter.Services.keywords.split(','),
-                'filter[Services.not_keywords][]': $scope.filter.Services.not_keywords.split(','),
+                'filter[keywords][]': $scope.filter.Services.keywords.split(','),
+                'filter[not_keywords][]': $scope.filter.Services.not_keywords.split(','),
                 'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Servicestatus.active_checks_enabled]': passive
@@ -146,6 +146,9 @@ angular.module('openITCOCKPIT')
 
         $scope.resetFilter = function(){
             defaultFilter();
+            $('#ServicesKeywordsInput').tagsinput('removeAll');
+            $('#ServicesNotKeywordsInput').tagsinput('removeAll');
+
             $scope.undoSelection();
         };
 
