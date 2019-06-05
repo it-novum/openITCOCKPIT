@@ -23,13 +23,13 @@ angular.module('openITCOCKPIT')
                     active: QueryStringService.getValue('active', false) === '1',
                     output: ''
                 },
-                Service: {
+                Services: {
                     id: QueryStringService.getIds('filter[Service.id][]', []),
                     name: QueryStringService.getValue('filter[Service.servicename]', ''),
                     keywords: '',
                     not_keywords: ''
                 },
-                Host: {
+                Hosts: {
                     id: QueryStringService.getValue('filter[Host.id]', ''),
                     name: QueryStringService.getValue('filter[Host.name]', '')
                 }
@@ -46,85 +46,39 @@ angular.module('openITCOCKPIT')
         $scope.serverResult = [];
         $scope.isLoadingGraph = true;
 
-        var lastHostUuid = null;
-
-
         var forTemplate = function(serverResponse){
-            var services = [];
-            var servicesstatus = [];
-            var hosts = [];
-            var hostsstatusArr = [];
-            var saved_hostuuids = [];
-            var result = [];
-            var lastendhost = "";
-            var tmp_hostservicegroup = null;
-            var graphStart = 0;
-            var graphEnd = 0;
+            // Create a list of host with all services
 
-            serverResponse.forEach(function(record){
-                services.push(record.Service);
-                servicesstatus.push([record.Service.id, record.Servicestatus]);
-                if(saved_hostuuids.indexOf(record.Host.uuid) < 0){
-                    hosts.push(record.Host);
-                    hostsstatusArr.push({
-                        host_id: record.Host.id,
-                        Hoststatus: record.Hoststatus
-                    });
-                    saved_hostuuids.push(record.Host.uuid);
-                }
-            });
+            var hostWithServices = [];
 
+            var arrayIndexOfHostId = {};
 
-            services.forEach(function(service){
-                //Notice, API return some IDs as string :/
-                if(lastendhost != service.host_id){
-                    if(tmp_hostservicegroup !== null){
-                        result.push(tmp_hostservicegroup);
-                    }
+            for(var i in serverResponse){
+                var hostId = serverResponse[i].Host.id;
 
-                    tmp_hostservicegroup = {};
-                    var host = null;
-                    var hoststatus = null;
-                    hosts.forEach(function(hostelem){
-                        //Notice, API return some IDs as string :/
-                        if(hostelem.id == service.host_id){
-                            host = hostelem;
-                        }
-                    });
-                    hostsstatusArr.forEach(function(hoststatelem){
-                        if(hoststatelem.host_id == service.host_id){
-                            hoststatus = hoststatelem.Hoststatus;
-                        }
-                    });
+                var index = null;
 
+                if(!arrayIndexOfHostId.hasOwnProperty(hostId)){
+                    //We need to use an array [] because an hash map {} has no fixed order.
+                    index = hostWithServices.length; // length is automaticaly the next index :)
+                    arrayIndexOfHostId[hostId] = index;
 
-                    tmp_hostservicegroup = {
-                        Host: host,
-                        Hoststatus: hoststatus,
+                    hostWithServices.push({
+                        Host: serverResponse[i].Host,
+                        Hoststatus: serverResponse[i].Hoststatus,
                         Services: []
-                    };
-                    lastendhost = service.host_id;
+                    });
                 }
 
-                var servicestatus = null;
-                servicesstatus.forEach(function(servstatelem){
-                    if(servstatelem[0] === service.id){
-                        servicestatus = servstatelem[1];
-                    }
+                index = arrayIndexOfHostId[hostId];
+
+                hostWithServices[index].Services.push({
+                    Service: serverResponse[i].Service,
+                    Servicestatus: serverResponse[i].Servicestatus
                 });
-
-                tmp_hostservicegroup.Services.push({
-                    Service: service,
-                    Servicestatus: servicestatus
-                });
-
-            });
-
-            if(tmp_hostservicegroup !== null){
-                result.push(tmp_hostservicegroup);
             }
 
-            return result;
+            return hostWithServices;
         };
 
         $scope.loadTimezone = function(){
@@ -138,7 +92,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
-            lastHostUuid = null;
             var hasBeenAcknowledged = '';
             var inDowntime = '';
             if($scope.filter.Servicestatus.acknowledged ^ $scope.filter.Servicestatus.not_acknowledged){
@@ -159,14 +112,14 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.id]': $scope.filter.Host.id,
-                'filter[Host.name]': $scope.filter.Host.name,
-                'filter[Service.id][]': $scope.filter.Service.id,
-                'filter[Service.servicename]': $scope.filter.Service.name,
+                'filter[Hosts.id]': $scope.filter.Hosts.id,
+                'filter[Hosts.name]': $scope.filter.Hosts.name,
+                'filter[Services.id][]': $scope.filter.Services.id,
+                'filter[servicename]': $scope.filter.Services.name,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
-                'filter[Service.keywords][]': $scope.filter.Service.keywords.split(','),
-                'filter[Service.not_keywords][]': $scope.filter.Service.not_keywords.split(','),
+                'filter[Services.keywords][]': $scope.filter.Services.keywords.split(','),
+                'filter[Services.not_keywords][]': $scope.filter.Services.not_keywords.split(','),
                 'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Servicestatus.active_checks_enabled]': passive
@@ -188,24 +141,12 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.triggerFilter = function(){
-            if($scope.showFilter === true){
-                $scope.showFilter = false;
-            }else{
-                $scope.showFilter = true;
-            }
+            $scope.showFilter = !$scope.showFilter;
         };
 
         $scope.resetFilter = function(){
             defaultFilter();
             $scope.undoSelection();
-        };
-
-        $scope.isNextHost = function(service){
-            if(service.Host.uuid !== lastHostUuid){
-                lastHostUuid = service.Host.uuid;
-                return true;
-            }
-            return false;
         };
 
         $scope.selectAll = function(){
@@ -289,14 +230,14 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.id]': $scope.filter.Host.id,
-                'filter[Host.name]': $scope.filter.Host.name,
-                'filter[Service.id]': $scope.filter.Service.id,
-                'filter[Service.servicename]': $scope.filter.Service.name,
+                'filter[Hosts.id]': $scope.filter.Hosts.id,
+                'filter[Hosts.name]': $scope.filter.Hosts.name,
+                'filter[Services.id]': $scope.filter.Services.id,
+                'filter[servicename]': $scope.filter.Services.name,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
-                'filter[Service.keywords][]': $scope.filter.Service.keywords.split(','),
-                'filter[Service.not_keywords][]': $scope.filter.Service.not_keywords.split(','),
+                'filter[Services.keywords][]': $scope.filter.Services.keywords.split(','),
+                'filter[Services.not_keywords][]': $scope.filter.Services.not_keywords.split(','),
                 'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Servicestatus.active_checks_enabled]': passive

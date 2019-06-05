@@ -41,22 +41,32 @@ angular.module('openITCOCKPIT')
         var forTemplate = function(serverResponse){
             // Create a list of host with all services
 
-            var hostWithServices = {};
+            var hostWithServices = [];
+
+            var arrayIndexOfHostId = {};
+
             for(var i in serverResponse){
                 var hostId = serverResponse[i].Host.id;
 
-                if(!hostWithServices.hasOwnProperty(hostId)){
-                    hostWithServices[hostId] = {
+                var index = null;
+
+                if(!arrayIndexOfHostId.hasOwnProperty(hostId)){
+                    //We need to use an array [] because an hash map {} has no fixed order.
+                    index = hostWithServices.length; // length is automaticaly the next index :)
+                    arrayIndexOfHostId[hostId] = index;
+
+                    hostWithServices.push({
                         Host: serverResponse[i].Host,
                         Hoststatus: serverResponse[i].Hoststatus,
                         Services: []
-                    };
+                    });
                 }
 
-                hostWithServices[hostId].Services.push(
+                index = arrayIndexOfHostId[hostId];
+
+                hostWithServices[index].Services.push(
                     serverResponse[i].Service
                 );
-
             }
 
             return hostWithServices;

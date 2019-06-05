@@ -91,9 +91,18 @@ class Service {
 
         if (isset($service['id']) && isset($service['uuid'])) {
             //Cake4 result...
+
             $service = [
                 'Service' => $service
             ];
+
+            if(isset($service['Service']['_matchingData']['Servicetemplates'])){
+                $service['Servicetemplate'] = $service['Service']['_matchingData']['Servicetemplates'];
+            }
+
+            if(isset($service['Service']['_matchingData']['Hosts'])){
+                $service['Host'] = $service['Service']['_matchingData']['Hosts'];
+            }
         }
 
         if (isset($service['Service']['id'])) {

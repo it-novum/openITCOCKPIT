@@ -159,6 +159,110 @@ class ServicesController extends AppController {
      * @deprecated
      */
     public function index() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $ServiceFilter = new ServiceFilter($this->request);
+
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
+        $ServiceConditions = new ServiceConditions(
+            $ServiceFilter->indexFilter()
+        );
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
+            'Hosts.name'  => 'asc',
+            'servicename' => 'asc'
+        ]));
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+
+        if ($this->DbBackend->isNdoUtils()) {
+            $services = $ServicesTable->getServiceIndex($ServiceConditions, $PaginateOMat);
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        $hostContainers = [];
+        if ($this->hasRootPrivileges === false) {
+            if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
+                foreach ($services as $index => $service) {
+                    $hostId = $service['_matchingData']['Hosts']['id'];
+                    if (!isset($hostContainers[$hostId])) {
+                        $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId(1);
+                    }
+
+                    $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
+                    $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
+                }
+            }
+        } else {
+            //Root user
+            foreach ($services as $index => $service) {
+                $services[$index]['allow_edit'] = $this->hasRootPrivileges;
+            }
+        }
+
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields
+            ->currentState()
+            ->isFlapping()
+            ->lastHardStateChange();
+        $hoststatusCache = $this->Hoststatus->byUuid(
+            array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
+            $HoststatusFields
+        );
+
+
+        $all_services = [];
+        $User = new User($this->Auth);
+        $UserTime = $User->getUserTime();
+        foreach ($services as $service) {
+            $allowEdit = $service['allow_edit'];
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts'], $allowEdit);
+            if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
+            } else {
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([], $UserTime);
+            }
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
+            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
+            $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus);
+
+            $tmpRecord = [
+                'Service'       => $Service->toArray(),
+                'Host'          => $Host->toArray(),
+                'Hoststatus'    => $Hoststatus->toArray(),
+                'Servicestatus' => $Servicestatus->toArray()
+            ];
+            $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
+            $all_services[] = $tmpRecord;
+        }
+
+        $this->set('all_services', $all_services);
+        $toJson = ['all_services', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_services', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
+
+
+        /**** OLD CODE *****/
+        return;
+
+
         $this->layout = 'blank';
         $User = new User($this->Auth);
 
@@ -415,7 +519,17 @@ class ServicesController extends AppController {
 
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
 
-        $services = $ServicesTable->getServiceNotMonitored($ServiceConditions, $PaginateOMat);
+        if ($this->DbBackend->isNdoUtils()) {
+            $services = $ServicesTable->getServiceNotMonitored($ServiceConditions, $PaginateOMat);
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
 
         $hostContainers = [];
         if ($this->hasRootPrivileges === false) {

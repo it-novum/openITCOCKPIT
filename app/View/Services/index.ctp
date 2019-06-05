@@ -22,8 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
 ?>
+
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -36,24 +36,13 @@
     </div>
 </div>
 
-<?php echo $this->Flash->render('positive'); ?>
-
-
+<query-handler-directive></query-handler-directive>
 
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
     <a href="#" data-dismiss="alert" class="close">×</a>
     <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
     <?php echo __('Page refresh in'); ?> <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
 </div>
-
-<?php if (!$QueryHandler->exists()): ?>
-    <div class="alert alert-danger alert-block">
-        <a href="#" data-dismiss="alert" class="close">×</a>
-        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
-        </h4>
-        <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
-    </div>
-<?php endif; ?>
 
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
@@ -124,7 +113,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
-                                                   ng-model="filter.Host.name"
+                                                   ng-model="filter.Hosts.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -134,7 +123,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-cog"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by service name'); ?>"
-                                                   ng-model="filter.Service.name"
+                                                   ng-model="filter.Services.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -156,7 +145,7 @@
                                         <input type="text" class="input-sm"
                                                data-role="tagsinput"
                                                placeholder="<?php echo __('Filter by tags'); ?>"
-                                               ng-model="filter.Service.keywords"
+                                               ng-model="filter.Services.keywords"
                                                ng-model-options="{debounce: 500}">
                                     </div>
                                 </div>
@@ -167,7 +156,7 @@
                                         <input type="text" class="input-sm"
                                                data-role="tagsinput"
                                                placeholder="<?php echo __('Filter by excluded tags'); ?>"
-                                               ng-model="filter.Service.not_keywords"
+                                               ng-model="filter.Services.not_keywords"
                                                ng-model-options="{debounce: 500}">
                                     </div>
                                 </div>
@@ -328,8 +317,8 @@
                                         <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Service.servicename')">
-                                        <i class="fa" ng-class="getSortClass('Service.servicename')"></i>
+                                    <th class="no-sort" ng-click="orderBy('servicename')">
+                                        <i class="fa" ng-class="getSortClass('servicename')"></i>
                                         <?php echo __('Service name'); ?>
                                     </th>
 

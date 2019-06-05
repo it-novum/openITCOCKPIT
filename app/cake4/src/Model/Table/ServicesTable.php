@@ -1503,4 +1503,117 @@ class ServicesTable extends Table {
         return $result;
     }
 
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param null|PaginateOMat $PaginateOMat
+     * @return array
+     */
+    public function getServiceIndex(ServiceConditions $ServiceConditions, $PaginateOMat = null) {
+        $where = $ServiceConditions->getConditions();
+        $where['Services.disabled'] = 0;
+
+        $having = null;
+        if (isset($where['servicename LIKE'])) {
+            $having = [
+                'servicename LIKE' => $where['servicename LIKE']
+            ];
+            unset($where['servicename LIKE']);
+        }
+
+
+        if ($ServiceConditions->getHostId()) {
+            $where['Services.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Services.id',
+                'Services.uuid',
+                'Services.name',
+                'Services.host_id',
+                'Services.description',
+                'Services.disabled',
+                'Services.active_checks_enabled',
+                'Services.tags',
+                'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+
+                'Servicetemplates.id',
+                'Servicetemplates.uuid',
+                'Servicetemplates.name',
+                'Servicetemplates.description',
+                'Servicetemplates.active_checks_enabled',
+                'Servicetemplates.tags',
+
+                'Objects.object_id',
+
+                'Servicestatus.current_state',
+                'Servicestatus.last_check',
+                'Servicestatus.next_check',
+                'Servicestatus.last_hard_state_change',
+                'Servicestatus.last_state_change',
+                'Servicestatus.output',
+                'Servicestatus.scheduled_downtime_depth',
+                'Servicestatus.active_checks_enabled',
+                'Servicestatus.state_type',
+                'Servicestatus.problem_has_been_acknowledged',
+                'Servicestatus.acknowledgement_type',
+                'Servicestatus.is_flapping',
+                'Servicestatus.perfdata',
+
+                'Hosts.name',
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.description',
+                'Hosts.address',
+                'Hosts.disabled',
+            ])
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+                if (!empty($ServiceConditions->getContainerIds())) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
+                    ]);
+                }
+                return $q;
+            })
+            ->innerJoinWith('Servicetemplates')
+            ->innerJoin(['Objects' => 'nagios_objects'], [
+                'Objects.name2 = Services.uuid',
+                'Objects.objecttype_id' => 2
+            ])
+            ->innerJoin(['Servicestatus' => 'nagios_servicestatus'], [
+                'Servicestatus.service_object_id = Objects.object_id',
+            ]);
+
+        if (!empty($where)) {
+            $query->where($where);
+        }
+
+        $query->disableHydration();
+        $query->group(['Services.id']);
+
+        if (!empty($having)) {
+            $query->having($having);
+        }
+
+        $query->order($ServiceConditions->getOrder());
+
+        //FileDebugger::dieQuery($query);
+
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+    }
+
 }
