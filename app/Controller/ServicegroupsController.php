@@ -24,6 +24,7 @@
 //	confirmation.
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\ServicegroupsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
@@ -33,6 +34,7 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
@@ -43,7 +45,9 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  * @property Host $Host
  * @property Servicetemplate $Servicetemplate
  * @property TreeComponent $Tree
- * @deprecated
+ *
+ * @property AppPaginatorComponent $Paginator
+ *
  */
 class ServicegroupsController extends AppController {
     public $uses = [
@@ -57,64 +61,45 @@ class ServicegroupsController extends AppController {
         MONITORING_SERVICESTATUS,
         'Host',
     ];
-    //public $layout = 'Admin.default';
-    public $layout = 'angularjs';
-    public $components = [
-        'RequestHandler',
-    ];
-    public $helpers = [
-        'Status'
-    ];
+
+    public $layout = 'blank';
 
 
-    /**
-     * @deprecated
-     */
     public function index() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
         }
-        $ServicegroupFilter = new ServicegroupFilter($this->request);
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'conditions' => $ServicegroupFilter->indexFilter(),
-            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
-            'limit'      => $this->Paginator->settings['limit']
-        ];
+
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        $MY_RIGHTS = [];
         if (!$this->hasRootPrivileges) {
-            $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
+            $MY_RIGHTS = $this->MY_RIGHTS;
         }
 
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            unset($query['limit']);
-            $servicegroups = $this->Servicegroup->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $this->Paginator->settings['page'] = $ServicegroupFilter->getPage();
-            $servicegroups = $this->Paginator->paginate();
-        }
+        $ServicegroupFilter = new ServicegroupFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicegroupFilter->getPage());
+        $servicegroups = $ServicegroupsTable->getServicegroupsIndex($ServicegroupFilter, $PaginateOMat, $MY_RIGHTS);
 
-        $all_servicegroups = [];
 
-        foreach ($servicegroups as $servicegroup) {
-            $servicegroup['Servicegroup']['allowEdit'] = $this->hasPermission('edit', 'servicegroups');;
-            if ($this->hasRootPrivileges === false && $servicegroup['Servicegroup']['allowEdit'] === true) {
-                $servicegroup['Servicegroup']['allowEdit'] = $this->allowedByContainerId($servicegroup['Container']['parent_id']);
+        foreach ($servicegroups as $index =>  $servicegroup) {
+            if($this->hasRootPrivileges){
+                $servicegroups[$index]['allow_edit'] = true;
+            }else{
+                $servicegroups[$index]['allow_edit'] = $this->allowedByContainerId(
+                    $servicegroup['container']['parent_id']
+                );
             }
-
-            $all_servicegroups[] = [
-                'Servicegroup' => $servicegroup['Servicegroup'],
-                'Container'    => $servicegroup['Container']
-            ];
-
         }
-        $this->set(compact(['all_servicegroups']));
-        $this->set('_serialize', ['all_servicegroups', 'paging']);
+
+        $this->set('all_servicegroups', $servicegroups);
+        $toJson = ['all_servicegroups', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_servicegroups', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     /**
