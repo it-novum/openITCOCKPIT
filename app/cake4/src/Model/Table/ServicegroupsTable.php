@@ -3,10 +3,13 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
 
 /**
  * Servicegroups Model
@@ -224,7 +227,7 @@ class ServicegroupsTable extends Table {
         $where = [];
         if (!empty($ids)) {
             $where = [
-                'Servicegroups.id IN'            => $ids,
+                'Servicegroups.id IN'         => $ids,
                 'Containers.containertype_id' => CT_SERVICEGROUP
             ];
         }
@@ -263,5 +266,42 @@ class ServicegroupsTable extends Table {
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param ServicegroupFilter $ServicegroupFilter
+     * @param null|PaginateOMat $PaginateOMat
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServicegroupsIndex(ServicegroupFilter $ServicegroupFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+        $query = $this->find('all');
+        $query->contain(['Containers']);
+        $query->where($ServicegroupFilter->indexFilter());
+
+        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['Containers.parent_id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+
+
+        $query->disableHydration();
+        $query->order($ServicegroupFilter->getOrderForPaginator('Containers.name', 'asc'));
+
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
     }
 }

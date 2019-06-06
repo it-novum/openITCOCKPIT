@@ -1,17 +1,18 @@
 angular.module('openITCOCKPIT')
     .controller('ServicegroupsIndexController', function($scope, $http, SortService, MassChangeService){
 
-        SortService.setSort('Container.name');
+        SortService.setSort('Containers.name');
         SortService.setDirection('asc');
         $scope.currentPage = 1;
+        $scope.useScroll = true;
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                container: {
+                containers: {
                     name: ''
                 },
-                servicegroup: {
+                servicegroups: {
                     description: ''
                 }
             };
@@ -27,25 +28,23 @@ angular.module('openITCOCKPIT')
             $http.get("/servicegroups/index.json", {
                 params: {
                     'angular': true,
+                    'scroll': $scope.useScroll,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[Container.name]': $scope.filter.container.name,
-                    'filter[Servicegroup.description]': $scope.filter.servicegroup.description
+                    'filter[Containers.name]': $scope.filter.containers.name,
+                    'filter[Servicegroups.description]': $scope.filter.servicegroups.description
                 }
             }).then(function(result){
                 $scope.servicegroups = result.data.all_servicegroups;
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
 
         $scope.triggerFilter = function(){
-            if($scope.showFilter === true){
-                $scope.showFilter = false;
-            }else{
-                $scope.showFilter = true;
-            }
+            $scope.showFilter = !$scope.showFilter === true;
         };
 
         $scope.resetFilter = function(){
@@ -56,8 +55,8 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.servicegroups){
                 for(var key in $scope.servicegroups){
-                    if($scope.servicegroups[key].Servicegroup.allowEdit){
-                        var id = $scope.servicegroups[key].Servicegroup.id;
+                    if($scope.servicegroups[key].allow_edit){
+                        var id = $scope.servicegroups[key].id;
                         $scope.massChange[id] = true;
                     }
                 }
@@ -70,13 +69,19 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
+        $scope.getObjectForDelete = function(servicegroup){
+            var object = {};
+            object[servicegroup.id] = servicegroup.container.name;
+            return object;
+        };
+
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
             for(var key in $scope.servicegroups){
                 for(var id in selectedObjects){
-                    if(id == $scope.servicegroups[key].Servicegroup.id){
-                        objects[id] = $scope.servicegroups[key].Container.name;
+                    if(id == $scope.servicegroups[key].id){
+                        objects[id] = $scope.servicegroups[key].container.name;
                     }
 
                 }
@@ -86,8 +91,8 @@ angular.module('openITCOCKPIT')
 
         $scope.linkForPdf = function(){
             var baseUrl = '/servicegroups/listToPdf.pdf';
-            baseUrl += '?filter[Container.name]=' + encodeURI($scope.filter.container.name);
-            baseUrl += '&filter[Servicegroup.description]=' + encodeURI($scope.filter.servicegroup.description);
+            baseUrl += '?filter[Containers.name]=' + encodeURI($scope.filter.containers.name);
+            baseUrl += '&filter[Servicegroups.description]=' + encodeURI($scope.filter.servicegroups.description);
             return baseUrl;
         };
 
@@ -99,9 +104,9 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.deleteSelected = function(){
-            console.log('Delete');
-            console.log();
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
         };
 
 

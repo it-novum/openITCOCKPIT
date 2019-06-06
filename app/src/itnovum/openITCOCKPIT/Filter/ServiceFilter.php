@@ -37,21 +37,21 @@ class ServiceFilter extends Filter {
                 'Servicestatus.active_checks_enabled'
             ],
             'like'     => [
-                'Host.name',
-                'Service.servicename',
+                'Hosts.name',
+                'servicename',
                 'Servicestatus.output'
             ],
             'rlike'    => [
-                'Service.keywords'
+                'keywords'
             ],
             'notrlike' => [
-                'Service.not_keywords'
+                'not_keywords'
             ],
             'equals'   => [
-                'Host.id',
-                'Service.id',
-                'Service.uuid',
-                'Service.disabled',
+                'Hosts.id',
+                'Services.id',
+                'Services.uuid',
+                'Services.disabled',
             ],
             'downtime' => [
                 'Servicestatus.scheduled_downtime_depth',

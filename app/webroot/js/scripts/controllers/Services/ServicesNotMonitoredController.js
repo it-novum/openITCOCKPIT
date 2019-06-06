@@ -6,6 +6,8 @@ angular.module('openITCOCKPIT')
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
         $scope.currentPage = 1;
 
+        $scope.useScroll = true;
+
         //There is no service status for not monitored services :)
         $scope.fakeServicestatus = {
             Servicestatus: {
@@ -39,22 +41,32 @@ angular.module('openITCOCKPIT')
         var forTemplate = function(serverResponse){
             // Create a list of host with all services
 
-            var hostWithServices = {};
+            var hostWithServices = [];
+
+            var arrayIndexOfHostId = {};
+
             for(var i in serverResponse){
                 var hostId = serverResponse[i].Host.id;
 
-                if(!hostWithServices.hasOwnProperty(hostId)){
-                    hostWithServices[hostId] = {
+                var index = null;
+
+                if(!arrayIndexOfHostId.hasOwnProperty(hostId)){
+                    //We need to use an array [] because an hash map {} has no fixed order.
+                    index = hostWithServices.length; // length is automaticaly the next index :)
+                    arrayIndexOfHostId[hostId] = index;
+
+                    hostWithServices.push({
                         Host: serverResponse[i].Host,
                         Hoststatus: serverResponse[i].Hoststatus,
                         Services: []
-                    };
+                    });
                 }
 
-                hostWithServices[hostId].Services.push(
+                index = arrayIndexOfHostId[hostId];
+
+                hostWithServices[index].Services.push(
                     serverResponse[i].Service
                 );
-
             }
 
             return hostWithServices;
@@ -64,6 +76,7 @@ angular.module('openITCOCKPIT')
         $scope.load = function(){
             var params = {
                 'angular': true,
+                'scroll': $scope.useScroll,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
@@ -78,7 +91,9 @@ angular.module('openITCOCKPIT')
                 $scope.services = [];
                 $scope.serverResult = result.data.all_services;
                 $scope.services = forTemplate(result.data.all_services);
+
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -145,6 +160,10 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
 
         //Fire on page load
         defaultFilter();

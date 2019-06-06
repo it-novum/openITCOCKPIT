@@ -973,7 +973,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
     .filter('highlight', function($sce){
         return function(title, searchString){
             searchString = searchString.replace(/\s/g, "");
-            let newSearchString = "";
+            var newSearchString = "";
             for(var i = 0; i < searchString.length; i++){
                 newSearchString += searchString.charAt(i) + "\\s*";
             }
