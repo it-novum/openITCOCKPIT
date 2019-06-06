@@ -62,7 +62,7 @@ Click on <a class="btn btn-xs btn-default">Cancel</a> if you want to discard you
 #### Step 2: Test connection
 
 Test if the plugin can connect to your i-doit system and if the plugin supports the system.
-Currently i-doit systems in version 2.0 are supported.
+Currently i-doit systems in version 1.12 are supported.
 
 #### Step 3: Select object types
 
