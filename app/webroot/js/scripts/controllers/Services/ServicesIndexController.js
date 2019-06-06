@@ -239,8 +239,8 @@ angular.module('openITCOCKPIT')
                 'filter[servicename]': $scope.filter.Services.name,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
-                'filter[Services.keywords][]': $scope.filter.Services.keywords.split(','),
-                'filter[Services.not_keywords][]': $scope.filter.Services.not_keywords.split(','),
+                'filter[keywords][]': $scope.filter.Services.keywords.split(','),
+                'filter[not_keywords][]': $scope.filter.Services.not_keywords.split(','),
                 'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Servicestatus.active_checks_enabled]': passive
