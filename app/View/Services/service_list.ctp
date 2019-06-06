@@ -27,16 +27,16 @@
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-cogs fa-fw "></i>
+            <i class="fa fa-gear fa-fw "></i>
             <?php echo __('Host'); ?>
             <span>>
-                <?php echo __('Services'); ?>
+                <?php echo __('Services of host'); ?>
             </span>
         </h1>
     </div>
 </div>
 
-<?php echo $this->Flash->render('positive'); ?>
+<query-handler-directive></query-handler-directive>
 
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
@@ -46,7 +46,6 @@
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-
 
             <div class="row">
                 <div class="col col-xs-8">
@@ -221,8 +220,8 @@
                                                     </strong>
                                                 </th>
 
-                                                <th class="no-sort" ng-click="orderBy('Service.servicename')">
-                                                    <i class="fa" ng-class="getSortClass('Service.servicename')"></i>
+                                                <th class="no-sort" ng-click="orderBy('servicename')">
+                                                    <i class="fa" ng-class="getSortClass('servicename')"></i>
                                                     <?php echo __('Service name'); ?>
                                                 </th>
 
@@ -432,7 +431,7 @@
                                             </span>
                                         </div>
                                         <div class="col-xs-12 col-md-2">
-                                            <a ng-href="{{ linkForCopy() }}" class="a-clean">
+                                            <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
                                                 <i class="fa fa-lg fa-files-o"></i>
                                                 <?php echo __('Copy'); ?>
                                             </a>
@@ -462,7 +461,7 @@
                                                     <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
                                                         <li>
                                                             <a ng-href="{{ linkForAddToServicegroup() }}">
-                                                                <i class="fa fa-cogs"></i> <?php echo __('Add to servicegroup'); ?>
+                                                                <i class="fa fa-cogs"></i> <?php echo __('Add to service group'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>

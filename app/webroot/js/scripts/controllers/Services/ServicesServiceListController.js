@@ -33,7 +33,7 @@ angular.module('openITCOCKPIT')
                 $scope.activeTab = tab;
                 $scope.undoSelection();
 
-                SortService.setSort('Service.servicename');
+                SortService.setSort('servicename');
                 SortService.setDirection('asc');
                 $scope.currentPage = 1;
 
@@ -240,9 +240,8 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.linkForCopy = function(){
-            var baseUrl = '/services/copy/';
             var ids = Object.keys(MassChangeService.getSelected());
-            return baseUrl + ids.join('/');
+            return ids.join(',');
         };
 
         $scope.linkForAddToServicegroup = function(){

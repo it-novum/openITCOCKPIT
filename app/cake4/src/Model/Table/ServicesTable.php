@@ -1363,7 +1363,7 @@ class ServicesTable extends Table {
                 'Services.name',
                 'Services.host_id',
                 'Services.disabled',
-                'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+                'servicename' => $query->newExpr('IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.name, Services.name)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -1444,7 +1444,7 @@ class ServicesTable extends Table {
                 'Services.host_id',
                 'Services.disabled',
                 'Services.active_checks_enabled',
-                'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+                'servicename' => $query->newExpr('IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.name, Services.name)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
@@ -1537,7 +1537,7 @@ class ServicesTable extends Table {
                 'Services.disabled',
                 'Services.active_checks_enabled',
                 'Services.tags',
-                'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+                'servicename' => $query->newExpr('IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.name, Services.name)'),
 
                 'Servicetemplates.id',
                 'Servicetemplates.uuid',
