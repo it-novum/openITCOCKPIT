@@ -11,7 +11,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -149,14 +148,13 @@ class ServicesTable extends Table {
             'saveStrategy' => 'replace'
         ]);
 
-        /*
-        $this->hasMany('ServicesToServicedependencies', [
+        $this->hasMany('ServiceescalationsServiceMemberships', [
             'foreignKey' => 'service_id'
         ]);
-        $this->hasMany('ServicesToServiceescalations', [
+
+        $this->hasMany('ServicedependenciesServiceMemberships', [
             'foreignKey' => 'service_id'
         ]);
-        */
 
         $this->hasMany('Widgets', [
             'foreignKey' => 'service_id'
@@ -1490,7 +1488,6 @@ class ServicesTable extends Table {
         //FileDebugger::dieQuery($query);
 
         $query->order($ServiceConditions->getOrder());
-        
         debug($query->toArray());
         die();
 
@@ -1567,6 +1564,17 @@ class ServicesTable extends Table {
         $query['conditions'][] = 'ServiceObject.name2 IS NULL';
 
         return $query;
+
+    }
+
+    /**
+     * @param Service $service
+     * Check if the service was part of an serviceescalation or servicedependency
+     * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
+     * Nagios don't relay like this so we need to check this and delete the service escalation or service dependency if empty
+     *
+     */
+    public function _clenupServiceEscalationAndDependency(Service $service) {
 
     }
 
