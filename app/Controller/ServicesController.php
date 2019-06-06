@@ -76,7 +76,6 @@ use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 use Statusengine\PerfdataParser;
@@ -155,31 +154,64 @@ class ServicesController extends AppController {
         MONITORING_NOTIFICATION_SERVICE
     ];
 
-    /**
-     * @deprecated
-     */
     public function index() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
         }
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $ServiceFilter = new ServiceFilter($this->request);
+        $User = new User($this->Auth);
 
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions(
             $ServiceFilter->indexFilter()
         );
         $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+
+        if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
+            $ServiceConditions->setIncludeDisabled(false);
+            $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+        }
+
+        if ($ServiceControllerRequest->isRequestFromBrowser() === true) {
+            $browserContainerIds = $ServiceControllerRequest->getBrowserContainerIdsByRequest();
+            foreach ($browserContainerIds as $containerIdToCheck) {
+                if (!in_array($containerIdToCheck, $this->MY_RIGHTS)) {
+                    $this->render403();
+                    return;
+                }
+            }
+
+            $ServiceConditions->setIncludeDisabled(false);
+            $ServiceConditions->setContainerIds($browserContainerIds);
+
+            if ($User->isRecursiveBrowserEnabled()) {
+                //get recursive container ids
+                $containerIdToResolve = $browserContainerIds;
+                $children = $ContainersTable->getChildren($containerIdToResolve[0]);
+                $containerIds = \Cake\Utility\Hash::extract($children, '{n}.id');
+                $recursiveContainerIds = [];
+                foreach ($containerIds as $containerId) {
+                    if (in_array($containerId, $this->MY_RIGHTS)) {
+                        $recursiveContainerIds[] = $containerId;
+                    }
+                }
+                $ServiceConditions->setContainerIds(array_merge($ServiceConditions->getContainerIds(), $recursiveContainerIds));
+            }
+        }
+
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
             'Hosts.name'  => 'asc',
             'servicename' => 'asc'
         ]));
 
-        /** @var $HostsTable HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        /** @var $ServicesTable ServicesTable */
-        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
 
@@ -227,7 +259,6 @@ class ServicesController extends AppController {
 
 
         $all_services = [];
-        $User = new User($this->Auth);
         $UserTime = $User->getUserTime();
         foreach ($services as $service) {
             $allowEdit = $service['allow_edit'];
@@ -246,168 +277,6 @@ class ServicesController extends AppController {
                 'Host'          => $Host->toArray(),
                 'Hoststatus'    => $Hoststatus->toArray(),
                 'Servicestatus' => $Servicestatus->toArray()
-            ];
-            $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
-            $all_services[] = $tmpRecord;
-        }
-
-        $this->set('all_services', $all_services);
-        $toJson = ['all_services', 'paging'];
-        if ($this->isScrollRequest()) {
-            $toJson = ['all_services', 'scroll'];
-        }
-        $this->set('_serialize', $toJson);
-
-
-        /**** OLD CODE *****/
-        return;
-
-
-        $this->layout = 'blank';
-        $User = new User($this->Auth);
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        if (!$this->isApiRequest()) {
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
-            $this->set('username', $User->getFullName());
-            //Only ship HTML template
-            return;
-        }
-        $ServiceFilter = new ServiceFilter($this->request);
-        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
-        $ServiceConditions = new ServiceConditions();
-        if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
-            $ServiceConditions->setIncludeDisabled(false);
-            $ServiceConditions->setContainerIds($this->MY_RIGHTS);
-        }
-
-        if ($ServiceControllerRequest->isRequestFromBrowser() === true) {
-            $browserContainerIds = $ServiceControllerRequest->getBrowserContainerIdsByRequest();
-            foreach ($browserContainerIds as $containerIdToCheck) {
-                if (!in_array($containerIdToCheck, $this->MY_RIGHTS)) {
-                    $this->render403();
-                    return;
-                }
-            }
-
-            $ServiceConditions->setIncludeDisabled(false);
-            $ServiceConditions->setContainerIds($browserContainerIds);
-
-            if ($User->isRecursiveBrowserEnabled()) {
-                //get recursive container ids
-                $containerIdToResolve = $browserContainerIds;
-                $children = $ContainersTable->getChildren($containerIdToResolve[0]);
-                $containerIds = Hash::extract($children, '{n}.id');
-                $recursiveContainerIds = [];
-                foreach ($containerIds as $containerId) {
-                    if (in_array($containerId, $this->MY_RIGHTS)) {
-                        $recursiveContainerIds[] = $containerId;
-                    }
-                }
-                $ServiceConditions->setContainerIds(array_merge($ServiceConditions->getContainerIds(), $recursiveContainerIds));
-            }
-        }
-        //Default order
-
-
-        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
-            'Host.name'           => 'asc',
-            'Service.servicename' => 'asc'
-        ]));
-        //$ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Servicestatus.current_state', 'desc'));
-
-        if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Service->getServiceIndexQuery($ServiceConditions, $ServiceFilter->indexFilter());
-            $this->Service->virtualFieldsForIndexAndServiceList();
-            $modelName = 'Service';
-        }
-
-        if ($this->DbBackend->isCrateDb()) {
-            $this->Servicestatus->virtualFieldsForIndexAndServiceList();
-            $query = $this->Servicestatus->getServiceIndexQuery($ServiceConditions, $ServiceFilter->indexFilter());
-            $modelName = 'Servicestatus';
-        }
-
-        if ($this->DbBackend->isStatusengine3()) {
-            $query = $this->Service->getServiceIndexQueryStatusengine3($ServiceConditions, $ServiceFilter->indexFilter());
-            $this->Service->virtualFieldsForIndexAndServiceList();
-            $modelName = 'Service';
-        }
-
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            if (isset($query['limit'])) {
-                unset($query['limit']);
-            }
-            $all_services = $this->{$modelName}->find('all', $query);
-            $this->set('all_services', $all_services);
-            $this->set('_serialize', ['all_services']);
-            return;
-        } else {
-            if ($this->isScrollRequest()) {
-                $this->Paginator->settings['page'] = $ServiceFilter->getPage();
-                $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-                $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-                $services = $this->{$modelName}->find('all', array_merge($this->Paginator->settings, $query));
-                $ScrollIndex->determineHasNextPage($services);
-                $ScrollIndex->scroll();
-            } else {
-                $this->Paginator->settings['page'] = $ServiceFilter->getPage();
-                $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-                $services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
-            }
-            //debug($this->Service->getDataSource()->getLog(false, false));
-        }
-
-        $hostContainers = [];
-        if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-            $hostIds = array_unique(Hash::extract($services, '{n}.Host.id'));
-            $_hostContainers = $this->Host->find('all', [
-                'contain'    => [
-                    'Container',
-                ],
-                'fields'     => [
-                    'Host.id',
-                    'Container.*',
-                ],
-                'conditions' => [
-                    'Host.id' => $hostIds,
-                ],
-            ]);
-            foreach ($_hostContainers as $host) {
-                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
-            }
-        }
-
-        $all_services = [];
-        $User = new User($this->Auth);
-        $UserTime = UserTime::fromUser($User);
-        foreach ($services as $service) {
-            if ($this->hasRootPrivileges) {
-                $allowEdit = true;
-            } else {
-                $containerIds = [];
-                if (isset($hostContainers[$service['Host']['id']])) {
-                    $containerIds = $hostContainers[$service['Host']['id']];
-                }
-                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
-                $allowEdit = $ContainerPermissions->hasPermission();
-            }
-
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
-            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($service['Hoststatus'], $UserTime);
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
-            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
-            $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus);
-
-            $tmpRecord = [
-                'Service'       => $Service->toArray(),
-                'Host'          => $Host->toArray(),
-                'Servicestatus' => $Servicestatus->toArray(),
-                'Hoststatus'    => $Hoststatus->toArray()
             ];
             $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
             $all_services[] = $tmpRecord;
