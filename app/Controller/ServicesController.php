@@ -2655,4 +2655,39 @@ class ServicesController extends AppController {
         $this->set('services', $services);
         $this->set('_serialize', ['services']);
     }
+
+    public function loadServicesByContainerIdCake4() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->query('selected');
+        $containerId = $this->request->query('containerId');
+
+        $ServiceFilter = new ServiceFilter($this->request);
+        $containerIds = [ROOT_CONTAINER, $containerId];
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+
+        $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
+        $ServiceCondition->setContainerIds($containerIds);
+        $ServiceCondition->setIncludeDisabled(false);
+
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $services = Api::makeItJavaScriptAble(
+            $ServicesTable->getServicesForAngularCake4($ServiceCondition, $selected)
+        );
+
+        $this->set('services', $services);
+        $this->set('_serialize', ['services']);
+    }
 }

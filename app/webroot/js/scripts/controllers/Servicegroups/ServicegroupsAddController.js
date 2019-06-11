@@ -5,7 +5,7 @@ angular.module('openITCOCKPIT')
             createAnother: false
         };
 
-        // preSelectedIds is used for "Append hosts to host group from /hosts/index"
+        // preSelectedIds is used for "Append services to service group from /services/index"
         var preSelectedIds = $stateParams.ids;
         if(preSelectedIds !== null){
             var idsAsString = preSelectedIds.split(',');
@@ -30,10 +30,10 @@ angular.module('openITCOCKPIT')
                         name: '',
                         parent_id: 0
                     },
-                    hosts: {
+                    services: {
                         _ids: preSelectedIds
                     },
-                    hosttemplates: {
+                    servicetemplates: {
                         _ids: []
                     }
                 }
@@ -58,43 +58,24 @@ angular.module('openITCOCKPIT')
                 params: {
                     'angular': true,
                     'containerId': $scope.post.Servicegroup.container.parent_id,
-                    'filter[servicename]': searchString,
+                    'filter[Services.name]': searchString,
                     'selected[]': $scope.post.Servicegroup.services._ids
-                }
-            }).then(function(result){
-                $scope.hosts = result.data.hosts;
-            });
-        };
-
-        if($scope.post.Container.parent_id){
-            $http.get("/services/loadServicesByContainerId.json", {
-                params: {
-                    'angular': true,
-                    'containerId': $scope.post.Container.parent_id,
-                    'filter[Host.name]': searchString,
-                    'filter[Service.servicename]': searchString,
-                    'selected[]': $scope.post.Servicegroup.Service
                 }
             }).then(function(result){
                 $scope.services = result.data.services;
             });
-        }
+        };
 
-
-
-
-
-
-        $scope.loadHosttemplates = function(searchString){
-            $http.get("/hostgroups/loadHosttemplates.json", {
+        $scope.loadServicetemplates = function(searchString){
+            $http.get("/servicegroups/loadServicetemplates.json", {
                 params: {
                     'angular': true,
                     'containerId': $scope.post.Servicegroup.container.parent_id,
-                    'filter[Hosttemplates.name]': searchString,
-                    'selected[]': $scope.post.Servicegroup.hosttemplates._ids
+                    'filter[Servicetemplates.name]': searchString,
+                    'selected[]': $scope.post.Servicegroup.servicetemplates._ids
                 }
             }).then(function(result){
-                $scope.hosttemplates = result.data.hosttemplates;
+                $scope.servicetemplates = result.data.servicetemplates;
             });
         };
 

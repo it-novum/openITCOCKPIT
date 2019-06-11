@@ -81,7 +81,7 @@
 
                             <div class="form-group required" ng-class="{'has-error': errors.container.name}">
                                 <label class="col col-md-2 control-label">
-                                    <?php echo __('Host group name'); ?>
+                                    <?php echo __('Service group name'); ?>
                                 </label>
                                 <div class="col col-xs-10">
                                     <input
@@ -105,7 +105,7 @@
 
                             <div class="form-group" ng-class="{'has-error': errors.servicegroup_url}">
                                 <label class="col col-md-2 control-label">
-                                    <?php echo __('Host group URL'); ?>
+                                    <?php echo __('Service group URL'); ?>
                                 </label>
                                 <div class="col col-xs-10">
                                     <input class="form-control" type="text"
@@ -118,17 +118,17 @@
 
                             <div class="form-group">
                                 <label class="col col-md-2 control-label">
-                                    <?php echo __('Hosts'); ?>
+                                    <?php echo __('Services'); ?>
                                 </label>
                                 <div class="col col-xs-10">
                                     <select
-                                            id="ServicegroupHosts"
+                                            id="ServicegroupServices"
                                             multiple
                                             data-placeholder="<?php echo __('Please choose'); ?>"
                                             class="form-control"
                                             chosen="services"
                                             callback="loadServices"
-                                            ng-options="service.value.Service.id as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
+                                            ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
                                             ng-model="post.Servicegroup.services._ids">
                                     </select>
                                 </div>
