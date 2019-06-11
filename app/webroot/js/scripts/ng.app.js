@@ -454,8 +454,14 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ServicegroupsAdd', {
-                url: '/servicegroups/add',
+                url: '/servicegroups/add/:ids',
                 templateUrl: "/servicegroups/add.html",
+                params: {
+                    ids: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 controller: "ServicegroupsAddController"
             })
 
