@@ -150,6 +150,14 @@ class HostsTable extends Table {
             'foreignKey' => 'host_id',
         ])->setDependent(true);
 
+        $this->hasMany('HostescalationsHostMemberships', [
+            'foreignKey' => 'host_id'
+        ]);
+
+        $this->hasMany('HostdependenciesHostMemberships', [
+            'foreignKey' => 'host_id'
+        ]);
+
     }
 
     /**

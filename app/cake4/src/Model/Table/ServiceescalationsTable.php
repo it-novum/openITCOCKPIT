@@ -538,9 +538,9 @@ class ServiceescalationsTable extends Table {
     }
 
     /**
-     * @param null|int $id
-     * @param null|int $serviceId
-     * @return array|\Cake\Datasource\EntityInterface|null
+     * @param int|null $id
+     * @param int|null $serviceId
+     * @return bool
      */
     public function isServiceescalationBroken($id = null, $serviceId = null) {
         if (!$this->exists(['Serviceescalations.id' => $id]) && $id !== null) {
@@ -557,7 +557,8 @@ class ServiceescalationsTable extends Table {
                         }
                         return $q->enableAutoFields(false)
                             ->where([
-                                'Services.disabled' => 0
+                                'Services.disabled' => 0,
+                                'ServiceescalationsServiceMemberships.excluded' => 0
                             ])
                             ->select(['id']);
                     },
@@ -572,5 +573,4 @@ class ServiceescalationsTable extends Table {
 
         return empty($services);
     }
-
 }
