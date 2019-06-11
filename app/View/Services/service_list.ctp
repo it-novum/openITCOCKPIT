@@ -42,6 +42,9 @@
 <massdeactivate></massdeactivate>
 <massactivate></massactivate>
 
+<?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
+    <add-services-to-servicegroup></add-services-to-servicegroup>
+<?php endif; ?>
 
 <section id="widget-grid" class="">
     <div class="row">
@@ -460,8 +463,10 @@
                                                     <?php endif; ?>
                                                     <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
                                                         <li>
-                                                            <a ng-href="{{ linkForAddToServicegroup() }}">
-                                                                <i class="fa fa-cogs"></i> <?php echo __('Add to service group'); ?>
+                                                            <a href="javascript:void(0);"
+                                                               ng-click="confirmAddServicesToServicegroup(getObjectsForDelete())">
+                                                                <i class="fa fa-cogs"></i>
+                                                                <?php echo __('Add to service group'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>

@@ -7,6 +7,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
@@ -51,17 +52,20 @@ class ServicegroupsTable extends Table {
             'joinType'   => 'INNER'
         ]);
 
-        $this->hasMany('ServicegroupsToServicedependencies', [
-            'foreignKey' => 'servicegroup_id'
+        $this->belongsToMany('Services', [
+            'className'        => 'Services',
+            'foreignKey'       => 'servicegroup_id',
+            'targetForeignKey' => 'service_id',
+            'joinTable'        => 'services_to_servicegroups',
+            'saveStrategy'     => 'replace'
         ]);
-        $this->hasMany('ServicegroupsToServiceescalations', [
-            'foreignKey' => 'servicegroup_id'
-        ]);
-        $this->hasMany('ServicesToServicegroups', [
-            'foreignKey' => 'servicegroup_id'
-        ]);
-        $this->hasMany('ServicetemplatesToServicegroups', [
-            'foreignKey' => 'servicegroup_id'
+
+        $this->belongsToMany('Servicetemplates', [
+            'className'        => 'Servicetemplates',
+            'foreignKey'       => 'servicegroup_id',
+            'targetForeignKey' => 'servicetemplate_id',
+            'joinTable'        => 'servicetemplates_to_servicegroups',
+            'saveStrategy'     => 'replace'
         ]);
     }
 
@@ -87,7 +91,7 @@ class ServicegroupsTable extends Table {
             ->scalar('description')
             ->maxLength('description', 255)
             ->requirePresence('description', 'create')
-            ->allowEmptyString('description', false);
+            ->allowEmptyString('description', true);
 
         $validator
             ->scalar('servicegroup_url')
@@ -329,7 +333,7 @@ class ServicegroupsTable extends Table {
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
         if (!empty($dataToParse['Servicegroup']['services']['_ids'])) {
-            foreach ($ServicesTable->getServicesAsList($dataToParse['Servicegroup']['services']['_ids']) as $serviceId => $serviceName) {
+            foreach ($ServicesTable->getServicesAsList($dataToParse['Servicegroup']['services']['_ids'], true) as $serviceId => $serviceName) {
                 $extDataForChangelog['Service'][] = [
                     'id'   => $serviceId,
                     'name' => $serviceName
@@ -347,5 +351,35 @@ class ServicegroupsTable extends Table {
         }
 
         return $extDataForChangelog;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getServicegroupForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Servicegroups.id' => $id
+            ])
+            ->contain([
+                'Services',
+                'Servicetemplates',
+                'Containers'
+            ])
+            ->disableHydration()
+            ->first();
+
+        $hostgroup = $query;
+        $hostgroup['services'] = [
+            '_ids' => Hash::extract($query, 'services.{n}.id')
+        ];
+        $hostgroup['servicetemplates'] = [
+            '_ids' => Hash::extract($query, 'servicetemplates.{n}.id')
+        ];
+
+        return [
+            'Servicegroup' => $hostgroup
+        ];
     }
 }

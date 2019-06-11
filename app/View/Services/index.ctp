@@ -47,6 +47,10 @@
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
 
+<?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
+    <add-services-to-servicegroup></add-services-to-servicegroup>
+<?php endif; ?>
+
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -570,6 +574,17 @@
                                                 <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
                                             </a>
                                         </li>
+
+                                        <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
+                                            <li>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="confirmAddServicesToServicegroup(getObjectsForDelete())">
+                                                    <i class="fa fa-cogs"></i>
+                                                    <?php echo __('Add to service group'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+
                                         <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
                                             <li>
                                                 <a href="javascript:void(0);"

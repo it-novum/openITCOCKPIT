@@ -318,7 +318,7 @@
                                                     <li>
                                                         <a ng-click="confirmAddHostsToHostgroup(getObjectForDelete(host))"
                                                            class="a-clean pointer">
-                                                            <i class="fa fa-sitemap"></i> <?php echo __('Append to hostgroup'); ?>
+                                                            <i class="fa fa-sitemap"></i> <?php echo __('Append to host group'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
@@ -404,7 +404,7 @@
                                             <li>
                                                 <a ng-click="confirmAddHostsToHostgroup(getObjectsForDelete())"
                                                    class="a-clean pointer">
-                                                    <i class="fa fa-sitemap"></i> <?php echo __('Append to hostgroup'); ?>
+                                                    <i class="fa fa-sitemap"></i> <?php echo __('Append to host group'); ?>
                                                 </a>
                                             </li>
                                         <?php endif; ?>

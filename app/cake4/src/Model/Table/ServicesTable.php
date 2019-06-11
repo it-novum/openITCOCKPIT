@@ -58,7 +58,6 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
  */
 class ServicesTable extends Table {
 
-    use Cake2ResultTableTrait;
     use CustomValidationTrait;
     use PaginationAndScrollIndexTrait;
 
@@ -1641,9 +1640,10 @@ class ServicesTable extends Table {
 
     /**
      * @param array $ids
+     * @param bool $prefixWithHostname
      * @return array
      */
-    public function getServicesAsList($ids = []) {
+    public function getServicesAsList($ids = [], $prefixWithHostname = false) {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
@@ -1653,8 +1653,10 @@ class ServicesTable extends Table {
             ->select([
                 'Services.id',
                 'servicename' => $query->newExpr('IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.name, Services.name)'),
+                'Hosts.name'
             ])
             ->innerJoinWith('Servicetemplates')
+            ->innerJoinWith('Hosts')
             ->disableHydration();
         if (!empty($ids)) {
             $query->where([
@@ -1662,7 +1664,22 @@ class ServicesTable extends Table {
             ]);
         }
 
-        return $this->formatListAsCake2($query->toArray(), 'id', 'servicename');
+        $records = $query->toArray();
+
+        if (empty($records) || is_null($records)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($records as $row) {
+            if ($prefixWithHostname === true) {
+                $result[$row['id']] = $row['_matchingData']['Hosts']['name'] . '/' . $row['servicename'];
+            } else {
+                $result[$row['id']] = $row['servicename'];
+            }
+        }
+
+        return $result;
     }
 
     /**

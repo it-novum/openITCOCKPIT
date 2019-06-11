@@ -24,11 +24,14 @@
 //	confirmation.
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
+use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -42,26 +45,17 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 
 /**
- * @property Service $Service
- * @property Servicegroup $Servicegroup
- * @property Host $Host
- * @property Servicetemplate $Servicetemplate
- * @property TreeComponent $Tree
+ * Class ServicegroupsController
  *
  * @property AppPaginatorComponent $Paginator
- *
  */
 class ServicegroupsController extends AppController {
+
     public $uses = [
         'Servicegroup',
-        'Container',
-        'Service',
-        'Servicetemplate',
-        'User',
         MONITORING_OBJECTS,
         MONITORING_HOSTSTATUS,
         MONITORING_SERVICESTATUS,
-        'Host',
     ];
 
     public $layout = 'blank';
@@ -105,7 +99,7 @@ class ServicegroupsController extends AppController {
     }
 
     /**
-     * @param null $id
+     * @param int|null $id
      */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
@@ -192,144 +186,76 @@ class ServicegroupsController extends AppController {
 
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param int|null $id
      */
     public function edit($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest() && $id === null) {
             //Only ship HTML template for angular
             return;
         }
 
-        if (!$this->Servicegroup->exists($id)) {
-            throw new NotFoundException(__('Invalid service group'));
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        if (!$ServicegroupsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid Servicegroup'));
         }
 
-        $servicegroup = $this->Servicegroup->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Service'         => [
-                    'fields'          => [
-                        'Service.id',
-                        'Service.name'
-                    ],
-                    'conditions'      => [
-                        'Service.disabled' => 0
-                    ],
-                    'Host'            => [
-                        'fields'     => [
-                            'Host.id',
-                            'Host.name'
-                        ],
-                        'conditions' => [
-                            'Host.disabled' => 0
-                        ]
-                    ],
-                    'Servicetemplate' => [
-                        'fields' => [
-                            'Servicetemplate.id',
-                            'Servicetemplate.name'
-                        ]
-                    ],
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name'
-                    ]
-                ],
-                'Container'
-            ],
-            'conditions' => [
-                'Servicegroup.id' => $id,
-            ],
-        ]);
-        if (!$this->allowedByContainerId($servicegroup['Container']['parent_id'])) {
+        $servicegroup = $ServicegroupsTable->getServicegroupForEdit($id);
+        $servicegroupForChangelog = $servicegroup;
+
+        if (!$this->allowedByContainerId($servicegroup['Servicegroup']['container']['parent_id'])) {
             $this->render403();
             return;
         }
 
-        $ext_data_for_changelog = [];
-        $containerId = $servicegroup['Container']['parent_id'];
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Servicegroup']['id'] = $id;
-            if ($this->request->data('Servicegroup.Service')) {
-                foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
-                    $service = $this->Service->find('first', [
-                        'contain'    => [
-                            'Host.name',
-                            'Servicetemplate.name'
-                        ],
-                        'fields'     => [
-                            'Service.id',
-                            'Service.name',
-                        ],
-                        'conditions' => [
-                            'Service.id' => $service_id,
-                        ],
-                    ]);
-                    $ext_data_for_changelog['Service'][] = [
-                        'id'   => $service_id,
-                        'name' => sprintf(
-                            '%s | %s',
-                            $service['Host']['name'],
-                            ($service['Service']['name']) ? $service['Service']['name'] : $service['Servicetemplate']['name']
-                        )
-                    ];
-                }
-            }
-            if ($this->request->data('Servicegroup.Servicetemplate')) {
-                foreach ($this->request->data['Servicegroup']['Servicetemplate'] as $servicetemplate_id) {
-                    $servicetemplate = $this->Servicetemplate->find('first', [
-                        'recursive'  => -1,
-                        'fields'     => [
-                            'Servicetemplate.id',
-                            'Servicetemplate.name',
-                        ],
-                        'conditions' => [
-                            'Servicetemplate.id' => $servicetemplate_id,
-                        ],
-                    ]);
-                    $ext_data_for_changelog['Servicetemplate'][] = [
-                        'id'   => $servicetemplate_id,
-                        'name' => $servicetemplate['Servicetemplate']['name'],
-                    ];
-                }
-            }
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return host group information
+            $this->set('servicegroup', $servicegroup);
+            $this->set('_serialize', ['servicegroup']);
+            return;
         }
 
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $userId = $this->Auth->user('id');
-            $this->request->data['Service'] = (!empty($this->request->data('Servicegroup.Service'))) ? $this->request->data('Servicegroup.Service') : [];
-            //Add container id (of the service group container itself) to the request data
-            $this->request->data['Container']['id'] = $servicegroup['Servicegroup']['container_id'];
-            $this->request->data['Servicetemplate'] = (!empty($this->request->data('Servicegroup.Servicetemplate'))) ? $this->request->data('Servicegroup.Servicetemplate') : [];
-            if ($this->Servicegroup->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            //Update contact data
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $servicegroupEntity = $ServicegroupsTable->get($id);
+
+            $servicegroupEntity->setAccess('uuid', false);
+            $servicegroupEntity = $ServicegroupsTable->patchEntity($servicegroupEntity, $this->request->data('Servicegroup'));
+            $servicegroupEntity->id = $id;
+            $ServicegroupsTable->save($servicegroupEntity);
+            if ($servicegroupEntity->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $servicegroupEntity->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+
                 $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $this->Servicegroup->id,
+                    'edit',
+                    'servicegroups',
+                    $servicegroupEntity->id,
                     OBJECT_SERVICEGROUP,
-                    $this->request->data('Container.parent_id'),
-                    $userId,
-                    $this->request->data('Container.name'),
-                    array_merge($this->request->data, $ext_data_for_changelog),
-                    $servicegroup
+                    $servicegroupEntity->get('container')->get('parent_id'),
+                    $User->getId(),
+                    $servicegroupEntity->get('container')->get('name'),
+                    array_merge($ServicegroupsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ServicegroupsTable->resolveDataForChangelog($servicegroupForChangelog), $servicegroupForChangelog)
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
-            } else {
+
                 if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
+                    $this->serializeCake4Id($servicegroupEntity); // REST API ID serialization
                     return;
                 }
             }
+            $this->set('servicegroup', $servicegroupEntity);
+            $this->set('_serialize', ['servicegroup']);
         }
-        $this->set('servicegroup', $servicegroup);
-        $this->set('_serialize', ['servicegroup']);
     }
 
     /**
@@ -378,116 +304,142 @@ class ServicegroupsController extends AppController {
         $this->redirect(['action' => 'index']);
     }
 
-    /**
-     * @param null $id
-     * @deprecated
-     */
-    public function mass_delete($id = null) {
-        $userId = $this->Auth->user('id');
+    public function addServicesToServicegroup() {
+        //Only ship template
+        return;
+    }
 
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+    public function append() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
 
-        foreach (func_get_args() as $servicegroupId) {
-            if ($this->Servicegroup->exists($servicegroupId)) {
-                $servicegroup = $this->Servicegroup->find('first', [
-                    'contain'    => [
-                        'Container',
-                        'Service',
-                    ],
-                    'conditions' => [
-                        'Servicegroup.id' => $servicegroupId,
-                    ],
+        if ($this->request->is('post')) {
+            $id = $this->request->data('Servicegroup.id');
+            $serviceIds = $this->request->data('Servicegroup.services._ids');
+            if (!is_array($serviceIds)) {
+                $serviceIds = [$serviceIds];
+            }
+
+            if (empty($serviceIds)) {
+                //No services to add
+                return;
+            }
+
+            /** @var $ServicegroupsTable ServicegroupsTable */
+            $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+            if (!$ServicegroupsTable->existsById($id)) {
+                throw new NotFoundException(__('Invalid Servicegroup'));
+            }
+
+            $servicegroup = $ServicegroupsTable->getServicegroupForEdit($id);
+            $servicegroupForChangelog = $servicegroup;
+            if (!$this->allowedByContainerId($servicegroup['Servicegroup']['container']['parent_id'])) {
+                $this->render403();
+                return;
+            }
+
+            //Merge new services with existing services from service group
+            $serviceIds = array_unique(array_merge(
+                $servicegroup['Servicegroup']['services']['_ids'],
+                $serviceIds
+            ));
+
+            $containerId = $servicegroup['Servicegroup']['container']['parent_id'];
+
+            if ($containerId == ROOT_CONTAINER) {
+                //Don't panic! Only root users can edit /root objects ;)
+                //So no loss of selected services/service templates
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+                    CT_GLOBAL,
+                    CT_TENANT,
+                    CT_NODE
                 ]);
-                if ($this->allowedByContainerId(Hash::extract($servicegroup, 'Container.parent_id'))) {
-                    if ($ContainersTable->delete($ContainersTable->get($servicegroup['Servicegroup']['container_id']))) {
-                        $changelog_data = $this->Changelog->parseDataForChangelog(
-                            $this->params['action'],
-                            $this->params['controller'],
-                            $id,
-                            OBJECT_SERVICEGROUP,
-                            $servicegroup['Container']['parent_id'],
-                            $userId,
-                            $servicegroup['Container']['name'],
-                            $servicegroup
-                        );
-                        if ($changelog_data) {
-                            CakeLog::write('log', serialize($changelog_data));
-                        }
+            } else {
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
+                    CT_GLOBAL,
+                    CT_TENANT,
+                    CT_NODE
+                ]);
+            }
+
+            $serviceIdsToSave = [];
+            $HostsCache = new KeyValueStore();
+            foreach ($serviceIds as $serviceId) {
+                $service = $ServicesTable->get($serviceId);
+                $hostId = $service->get('host_id');
+
+                if (!$HostsCache->has($hostId)) {
+                    $HostsCache->set($hostId, $HostsTable->getHostSharing($hostId));
+                }
+
+                $host = $HostsCache->get($hostId);
+                foreach ($host['Host']['hosts_to_containers_sharing']['_ids'] as $hostContainerId) {
+                    if (in_array($hostContainerId, $containerIds, true)) {
+                        $serviceIdsToSave[] = $serviceId;
+                        continue 2;
                     }
                 }
             }
-        }
-        Cache::clear(false, 'permissions');
-        $this->setFlash(__('Servicegroups deleted'));
-        $this->redirect(['action' => 'index']);
-    }
 
-    /**
-     * @param null $id
-     * @deprecated
-     */
-    public function mass_add($id = null) {
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $targetServicegroup = $this->request->data('Servicegroup.id');
-            if ($this->Servicegroup->exists($targetServicegroup)) {
-                $servicegroup = $this->Servicegroup->findById($targetServicegroup);
-                //Save old services from this service group
-                $servicegroupMembers = [];
-                foreach ($servicegroup['Service'] as $service) {
-                    $servicegroupMembers[] = $service['id'];
-                }
-                foreach ($this->request->data('Service.id') as $service_id) {
-                    $servicegroupMembers[] = $service_id;
-                }
-                $servicegroup['Service'] = $servicegroupMembers;
-                $servicegroup['Servicegroup']['Service'] = $servicegroupMembers;
-                if ($this->Servicegroup->saveAll($servicegroup)) {
-                    Cache::clear(false, 'permissions');
-                    $this->setFlash(_('Servicegroup appended successfully'));
-                    $this->redirect(['action' => 'index']);
-                } else {
-                    $this->setFlash(_('Could not append Servicegroup'), false);
-                }
-            } else {
-                $this->setFlash('Servicegroup not found', false);
-            }
-        }
 
-        $servicesToAppend = [];
-        foreach (func_get_args() as $service_id) {
-            $service = $this->Service->findById($service_id);
-            $servicesToAppend[] = $service;
-        }
+            $User = new User($this->Auth);
+            $servicegroupEntity = $ServicegroupsTable->get($id);
 
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $serviceIds = func_get_args();
-        $servicesToAppend = $this->Service->find('all', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name'
-                    ]
+            $servicegroupEntity->setAccess('uuid', false);
+            $servicegroupEntity = $ServicegroupsTable->patchEntity($servicegroupEntity, [
+                'services' => [
+                    '_ids' => $serviceIdsToSave
                 ]
-            ],
-            'fields'     => [
-                'Service.id',
-                'Service.name'
-            ],
-            'conditions' => [
-                'Service.id' => $serviceIds
-            ]
-        ]);
+            ]);
+            $servicegroupEntity->id = $id;
+            $ServicegroupsTable->save($servicegroupEntity);
+            if ($servicegroupEntity->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $servicegroupEntity->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                $fakeRequest = [
+                    'Servicegroup' => [
+                        'services' => [
+                            '_ids' => $serviceIdsToSave
+                        ]
+                    ]
+                ];
 
-        $containerIds = $this->MY_RIGHTS;
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
+                //No errors
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'edit',
+                    'servicegroups',
+                    $servicegroupEntity->id,
+                    OBJECT_SERVICEGROUP,
+                    $servicegroup['Servicegroup']['container']['parent_id'],
+                    $User->getId(),
+                    $servicegroup['Servicegroup']['container']['name'],
+                    array_merge($ServicegroupsTable->resolveDataForChangelog($fakeRequest), $fakeRequest),
+                    array_merge($ServicegroupsTable->resolveDataForChangelog($servicegroupForChangelog), $servicegroupForChangelog)
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
 
-        $this->set(compact(['servicesToAppend', 'servicegroups']));
-        $this->set('back_url', $this->referer());
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($servicegroupEntity); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('servicegroup', $servicegroupEntity);
+            $this->set('_serialize', ['servicegroup']);
+        }
     }
 
     /**
