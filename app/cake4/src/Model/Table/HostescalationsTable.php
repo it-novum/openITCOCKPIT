@@ -382,7 +382,7 @@ class HostescalationsTable extends Table {
         if (!empty($indexFilter['HostgroupsExcluded.name LIKE'])) {
 
         }
-        if(!empty($MY_RIGHTS)){
+        if (!empty($MY_RIGHTS)) {
             $indexFilter['Hostescalations.container_id IN'] = $MY_RIGHTS;
         }
 
@@ -460,6 +460,7 @@ class HostescalationsTable extends Table {
         }
         return $hostgroupmembershipData;
     }
+
     /**
      * @param null|string $uuid
      * @return array
@@ -467,7 +468,7 @@ class HostescalationsTable extends Table {
     public function getHostescalationsForExport($uuid = null) {
         $query = $this->find()
             ->contain([
-                'Hosts'       =>
+                'Hosts'         =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->where([
@@ -475,22 +476,22 @@ class HostescalationsTable extends Table {
                             ])
                             ->select(['uuid']);
                     },
-                'Hostgroups'  =>
+                'Hostgroups'    =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->select(['uuid']);
                     },
-                'Timeperiods' =>
+                'Timeperiods'   =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->select(['uuid']);
                     },
-                'Contacts' =>
+                'Contacts'      =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->select(['uuid']);
                     },
-                'Contactgroups'  =>
+                'Contactgroups' =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
                             ->select(['uuid']);
@@ -514,5 +515,42 @@ class HostescalationsTable extends Table {
         }
         $query->all();
         return $query;
+    }
+
+    /**
+     * @param int|null $id
+     * @param int|null $hostId
+     * @return bool
+     */
+    public function isHostescalationBroken($id = null, $hostId = null) {
+        if (!$this->exists(['Hostescalations.id' => $id]) && $id !== null) {
+            throw new \NotFoundException();
+        }
+        $query = $this->find()
+            ->contain([
+                'hosts' =>
+                    function (Query $q) use ($hostId) {
+                        if ($hostId !== null) {
+                            $q->where([
+                                'Hosts.id !=' => $hostId
+                            ]);
+                        }
+                        return $q->enableAutoFields(false)
+                            ->where([
+                                'Hosts.disabled' => 0,
+                                'HostescalationsHostMemberships.excluded' => 0
+                            ])
+                            ->select(['id']);
+                    },
+            ])->select([
+                'id'
+            ])->where([
+                ['Hostescalations.id' => $id]
+            ])
+            ->first();
+
+        $hosts = $query->get('hosts');
+
+        return empty($hosts);
     }
 }

@@ -418,9 +418,9 @@ class ServicedependenciesTable extends Table {
     }
 
     /**
-     * @param null|int $id
-     * @param null|int $serviceId
-     * @return array|\Cake\Datasource\EntityInterface|null
+     * @param int|null $id
+     * @param int|null $serviceId
+     * @return bool
      */
     public function isServicedependencyBroken($id = null, $serviceId = null) {
         if (!$this->exists(['Servicedependencies.id' => $id]) && $id !== null) {

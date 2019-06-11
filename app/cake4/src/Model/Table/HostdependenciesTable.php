@@ -389,4 +389,49 @@ class HostdependenciesTable extends Table {
 
         return $query;
     }
+
+    /**
+     * @param int|null $id
+     * @param int|null $hostId
+     * @return bool
+     */
+    public function isHostdependencyBroken($id = null, $hostId = null) {
+        if (!$this->exists(['Hostdependencies.id' => $id]) && $id !== null) {
+            throw new \NotFoundException();
+        }
+        $query = $this->find()
+            ->contain([
+                'hosts' =>
+                    function (Query $q) use ($hostId) {
+                        if ($hostId !== null) {
+                            $q->where([
+                                'Hosts.id !=' => $hostId
+                            ]);
+                        }
+                        return $q->enableAutoFields(false)
+                            ->where([
+                                'Hosts.disabled' => 0
+                            ])
+                            ->select(['id']);
+                    },
+            ])->select([
+                'id'
+            ])->where([
+                'Hostdependencies.id' => $id
+            ])->first();
+
+        $hosts = $query->get('hosts');
+        $masterHostsForCfg = [];
+        $dependentHostsForCfg = [];
+        foreach ($hosts as $host) {
+            if ($host->get('_joinData')->get('dependent') === 0) {
+                $masterHostsForCfg[] = $host->get('id');
+            } else {
+                $dependentHostsForCfg[] = $host->get('id');
+            }
+        }
+
+        return empty($masterHostsForCfg) || empty($dependentHostsForCfg);
+    }
+
 }
