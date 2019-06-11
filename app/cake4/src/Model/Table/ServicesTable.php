@@ -2,6 +2,7 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\Service;
@@ -57,6 +58,7 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
  */
 class ServicesTable extends Table {
 
+    use Cake2ResultTableTrait;
     use CustomValidationTrait;
     use PaginationAndScrollIndexTrait;
 
@@ -1636,6 +1638,32 @@ class ServicesTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getServicesAsList($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Services.id',
+                'servicename' => $query->newExpr('IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.name, Services.name)'),
+            ])
+            ->innerJoinWith('Servicetemplates')
+            ->disableHydration();
+        if (!empty($ids)) {
+            $query->where([
+                'Services.id IN' => $ids
+            ]);
+        }
+
+        return $this->formatListAsCake2($query->toArray(), 'id', 'servicename');
     }
 
 }

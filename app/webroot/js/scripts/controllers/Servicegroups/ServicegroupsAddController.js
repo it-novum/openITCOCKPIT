@@ -54,11 +54,11 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadServices = function(searchString){
-            $http.get("/servicegroups/loadServices.json", {
+            $http.get("/services/loadServicesByContainerIdCake4.json", {
                 params: {
                     'angular': true,
                     'containerId': $scope.post.Servicegroup.container.parent_id,
-                    'filter[Services.name]': searchString,
+                    'filter[Services.servicename]': searchString,
                     'selected[]': $scope.post.Servicegroup.services._ids
                 }
             }).then(function(result){

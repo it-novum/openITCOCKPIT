@@ -304,4 +304,48 @@ class ServicegroupsTable extends Table {
 
         return $result;
     }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Servicegroups.id' => $id]);
+    }
+
+    /**
+     * @param array $dataToParse
+     * @return array
+     */
+    public function resolveDataForChangelog($dataToParse = []) {
+        $extDataForChangelog = [
+            'Service'         => [],
+            'Servicetemplate' => [],
+        ];
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        if (!empty($dataToParse['Servicegroup']['services']['_ids'])) {
+            foreach ($ServicesTable->getServicesAsList($dataToParse['Servicegroup']['services']['_ids']) as $serviceId => $serviceName) {
+                $extDataForChangelog['Service'][] = [
+                    'id'   => $serviceId,
+                    'name' => $serviceName
+                ];
+            }
+        }
+
+        if (!empty($dataToParse['Servicegroup']['servicetemplates']['_ids'])) {
+            foreach ($ServicetemplatesTable->getServicetemplatesAsList($dataToParse['Servicegroup']['servicetemplates']['_ids']) as $servicetemplateId => $servicetemplateName) {
+                $extDataForChangelog['Servicetemplate'][] = [
+                    'id'   => $servicetemplateId,
+                    'name' => $servicetemplateName
+                ];
+            }
+        }
+
+        return $extDataForChangelog;
+    }
 }

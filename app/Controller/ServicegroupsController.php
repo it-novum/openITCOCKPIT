@@ -25,6 +25,7 @@
 
 use App\Model\Table\ContainersTable;
 use App\Model\Table\ServicegroupsTable;
+use App\Model\Table\ServicetemplatesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
@@ -36,6 +37,7 @@ use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
+use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 
@@ -84,10 +86,10 @@ class ServicegroupsController extends AppController {
         $servicegroups = $ServicegroupsTable->getServicegroupsIndex($ServicegroupFilter, $PaginateOMat, $MY_RIGHTS);
 
 
-        foreach ($servicegroups as $index =>  $servicegroup) {
-            if($this->hasRootPrivileges){
+        foreach ($servicegroups as $index => $servicegroup) {
+            if ($this->hasRootPrivileges) {
                 $servicegroups[$index]['allow_edit'] = true;
-            }else{
+            } else {
                 $servicegroups[$index]['allow_edit'] = $this->allowedByContainerId(
                     $servicegroup['container']['parent_id']
                 );
@@ -104,26 +106,90 @@ class ServicegroupsController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
      */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Servicegroup->exists($id)) {
+
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        if (!$ServicegroupsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid Servicegroup'));
         }
 
-        $servicegroup = $this->Servicegroup->findById($id);
-        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Container.parent_id'))) {
-            $this->render403();
+        $servicegroup = $ServicegroupsTable->get($id, [
+            'contain' => [
+                'Containers'
+            ]
+        ]);
 
+        if (!$this->allowedByContainerId($servicegroup->get('container')->get('parent_id'))) {
+            $this->render403();
             return;
         }
 
         $this->set('servicegroup', $servicegroup);
         $this->set('_serialize', ['servicegroup']);
     }
+
+
+    public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+
+        if ($this->request->is('post')) {
+            $User = new User($this->Auth);
+
+            /** @var $ServicegroupsTable ServicegroupsTable */
+            $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+            $this->request->data['Servicegroup']['uuid'] = UUID::v4();
+            $this->request->data['Servicegroup']['container']['containertype_id'] = CT_SERVICEGROUP;
+            $servicegroup = $ServicegroupsTable->newEntity();
+            $servicegroup = $ServicegroupsTable->patchEntity($servicegroup, $this->request->data('Servicegroup'));
+
+            $ServicegroupsTable->save($servicegroup);
+            if ($servicegroup->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $servicegroup->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+
+                $extDataForChangelog = $ServicegroupsTable->resolveDataForChangelog($this->request->data);
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'add',
+                    'servicegroups',
+                    $servicegroup->get('id'),
+                    OBJECT_SERVICEGROUP,
+                    $servicegroup->get('container')->get('parent_id'),
+                    $User->getId(),
+                    $servicegroup->get('container')->get('name'),
+                    array_merge($this->request->data, $extDataForChangelog)
+                );
+
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
+                //@todo refactor with cake4
+                Cache::clear(false, 'permissions');
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($servicegroup); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('servicegroup', $servicegroup);
+            $this->set('_serialize', ['servicegroup']);
+        }
+    }
+
 
     /**
      * @param null $id
@@ -264,99 +330,6 @@ class ServicegroupsController extends AppController {
         }
         $this->set('servicegroup', $servicegroup);
         $this->set('_serialize', ['servicegroup']);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function add() {
-        $this->layout = 'blank';
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $userId = $this->Auth->user('id');
-            $ext_data_for_changelog = [];
-            App::uses('UUID', 'Lib');
-            if ($this->request->data('Servicegroup.Service')) {
-                foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
-                    $service = $this->Service->find('first', [
-                        'contain'    => [
-                            'Host.name',
-                            'Servicetemplate.name'
-                        ],
-                        'fields'     => [
-                            'Service.id',
-                            'Service.name',
-                        ],
-                        'conditions' => [
-                            'Service.id' => $service_id,
-                        ],
-                    ]);
-                    $ext_data_for_changelog['Service'][] = [
-                        'id'   => $service_id,
-                        'name' => sprintf(
-                            '%s | %s',
-                            $service['Host']['name'],
-                            ($service['Service']['name']) ? $service['Service']['name'] : $service['Servicetemplate']['name']
-                        )
-                    ];
-                }
-            }
-            if ($this->request->data('Servicegroup.Servicetemplate')) {
-                foreach ($this->request->data['Servicegroup']['Servicetemplate'] as $servicetemplate_id) {
-                    $servicetemplate = $this->Servicetemplate->find('first', [
-                        'recursive'  => -1,
-                        'fields'     => [
-                            'Servicetemplate.id',
-                            'Servicetemplate.name',
-                        ],
-                        'conditions' => [
-                            'Servicetemplate.id' => $servicetemplate_id,
-                        ],
-                    ]);
-                    $ext_data_for_changelog['Servicetemplate'][] = [
-                        'id'   => $servicetemplate_id,
-                        'name' => $servicetemplate['Servicetemplate']['name'],
-                    ];
-                }
-            }
-
-            $this->request->data['Servicegroup']['uuid'] = UUID::v4();
-            $this->request->data['Container']['containertype_id'] = CT_SERVICEGROUP;
-            $this->request->data['Service'] = (!empty($this->request->data('Servicegroup.Service'))) ? $this->request->data('Servicegroup.Service') : [];
-            $this->request->data['Servicetemplate'] = (!empty($this->request->data('Servicegroup.Servicetemplate'))) ? $this->request->data('Servicegroup.Servicetemplate') : [];
-
-
-            if ($this->Servicegroup->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $this->Servicegroup->id,
-                    OBJECT_SERVICEGROUP,
-                    $this->request->data('Container.parent_id'),
-                    $userId,
-                    $this->request->data('Container.name'),
-                    array_merge($this->request->data, $ext_data_for_changelog)
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-
-                if ($this->request->ext == 'json') {
-                    $this->serializeId();
-                    return;
-                }
-            } else {
-                if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-                    return;
-                }
-            }
-        }
     }
 
     /**
@@ -659,7 +632,6 @@ class ServicegroupsController extends AppController {
 
     /**
      * @throws Exception
-     * @deprecated
      */
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
@@ -683,19 +655,32 @@ class ServicegroupsController extends AppController {
 
     /**
      * @param null $containerId
-     * @deprecated
      */
-    public function loadServices($containerId = null) {
-        $this->allowOnlyAjaxRequests();
+    public function loadServicetemplates($containerId = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
 
-        $services = $this->Host->servicesByContainerIds([ROOT_CONTAINER, $containerId], 'list', [
-            'forOptiongroup' => true,
-        ]);
-        $services = Api::makeItJavaScriptAble($services);
+        $containerId = $this->request->query('containerId');
+        $selected = $this->request->query('selected');
+        $ServicetemplateFilter = new ServicetemplateFilter($this->request);
 
-        $data = ['services' => $services];
-        $this->set($data);
-        $this->set('_serialize', array_keys($data));
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+
+        $servicetemplates = Api::makeItJavaScriptAble(
+            $ServicetemplatesTable->getServicetemplatesForAngular($containerIds, $ServicetemplateFilter, $selected)
+        );
+
+        $this->set('servicetemplates', $servicetemplates);
+        $this->set('_serialize', ['servicetemplates']);
     }
 
     /**
@@ -865,21 +850,6 @@ class ServicegroupsController extends AppController {
 
         $this->set(compact(['servicegroup']));
         $this->set('_serialize', ['servicegroup']);
-    }
-
-    /**
-     * @param null $containerId
-     * @deprecated
-     */
-    public function loadServicetemplates($containerId = null) {
-        $this->allowOnlyAjaxRequests();
-
-        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId([ROOT_CONTAINER, $containerId], 'list');
-        $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
-
-        $data = ['servicetemplates' => $servicetemplates];
-        $this->set($data);
-        $this->set('_serialize', array_keys($data));
     }
 
     /**
