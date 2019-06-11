@@ -371,7 +371,7 @@ class HostescalationsTable extends Table {
             $containFilter['HostgroupsExcluded.name'] = [
                 'Containers.name LIKE' => $indexFilter['HostgroupsExcluded.name LIKE']
             ];
-            $query->matching('HostgroupsExcluded.Containers', function ($q) use ($containFilter) {
+            $query->innerJoinWith('HostgroupsExcluded.Containers', function ($q) use ($containFilter) {
                 return $q->where([
                     'HostescalationsHostgroupMemberships.excluded' => 1,
                     $containFilter['HostgroupsExcluded.name']
