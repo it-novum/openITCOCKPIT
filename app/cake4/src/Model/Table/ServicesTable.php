@@ -151,14 +151,13 @@ class ServicesTable extends Table {
             'saveStrategy' => 'replace'
         ]);
 
-        /*
-        $this->hasMany('ServicesToServicedependencies', [
+        $this->hasMany('ServiceescalationsServiceMemberships', [
             'foreignKey' => 'service_id'
         ]);
-        $this->hasMany('ServicesToServiceescalations', [
+
+        $this->hasMany('ServicedependenciesServiceMemberships', [
             'foreignKey' => 'service_id'
         ]);
-        */
 
         $this->hasMany('Widgets', [
             'foreignKey' => 'service_id'
@@ -1589,7 +1588,7 @@ class ServicesTable extends Table {
                 'Servicestatus.service_object_id = Objects.object_id',
             ]);
 
-        if(isset($where['keywords rlike'])){
+        if (isset($where['keywords rlike'])) {
             $query->where(new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
                 $where['keywords rlike'],
@@ -1599,7 +1598,7 @@ class ServicesTable extends Table {
             unset($where['keywords rlike']);
         }
 
-        if(isset($where['not_keywords not rlike'])){
+        if (isset($where['not_keywords not rlike'])) {
             $query->andWhere(new Comparison(
                 'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
                 $where['not_keywords not rlike'],
@@ -1666,4 +1665,15 @@ class ServicesTable extends Table {
         return $this->formatListAsCake2($query->toArray(), 'id', 'servicename');
     }
 
+    /**
+     *
+     * Check if the service was part of an serviceescalation or servicedependency
+     * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
+     * Nagios don't relay like this so we need to check this and delete the service escalation or service dependency if empty
+     *
+     * @param Service $service
+     */
+    public function _clenupServiceEscalationAndDependency(Service $service) {
+
+    }
 }

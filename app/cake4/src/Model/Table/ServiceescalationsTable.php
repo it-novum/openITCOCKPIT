@@ -10,6 +10,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Filter\ServiceescalationsFilter;
 
 /**
@@ -330,7 +331,7 @@ class ServiceescalationsTable extends Table {
         ];
 
         if (!empty($indexFilter['Services.servicename LIKE'])) {
-            $query->innerJoinWith('Services', function ($q) use ($indexFilter) {
+            $query->innerJoinWith('Services', function (Query $q) use ($indexFilter) {
                 return $q->innerJoinWith('Hosts')
                     ->innerJoinWith('Servicetemplates');
             });
@@ -344,12 +345,13 @@ class ServiceescalationsTable extends Table {
                 'ServiceescalationsServiceMemberships.excluded' => 0,
                 $where
             ]);
+
         }
 
         unset($indexFilter['Services.servicename LIKE']);
 
         if (!empty($indexFilter['ServicesExcluded.servicename LIKE'])) {
-            $query->innerJoinWith('ServicesExcluded', function ($q) use ($indexFilter) {
+            $query->innerJoinWith('ServicesExcluded', function (Query $q) use ($indexFilter) {
                 return $q->innerJoinWith('Hosts')
                     ->innerJoinWith('Servicetemplates');
             });
@@ -372,7 +374,7 @@ class ServiceescalationsTable extends Table {
             $containFilter['Servicegroups.name'] = [
                 'Containers.name LIKE' => $indexFilter['Servicegroups.name LIKE']
             ];
-            $query->innerJoinWith('Servicegroups.Containers', function ($q) use ($containFilter) {
+            $query->innerJoinWith('Servicegroups.Containers', function (Query $q) use ($containFilter) {
                 return $q->where([
                     'ServiceescalationsServicegroupMemberships.excluded' => 0,
                     $containFilter['Servicegroups.name']
@@ -384,7 +386,7 @@ class ServiceescalationsTable extends Table {
             $containFilter['ServicegroupsExcluded.name'] = [
                 'Containers.name LIKE' => $indexFilter['ServicegroupsExcluded.name LIKE']
             ];
-            $query->innerJoinWith('ServicegroupsExcluded.Containers', function ($q) use ($containFilter) {
+            $query->innerJoinWith('ServicegroupsExcluded.Containers', function (Query $q) use ($containFilter) {
                 return $q->where([
                     'ServiceescalationsServicegroupMemberships.excluded' => 1,
                     $containFilter['ServicegroupsExcluded.name']
@@ -534,4 +536,41 @@ class ServiceescalationsTable extends Table {
         $query->all();
         return $query;
     }
+
+    /**
+     * @param null|int $id
+     * @param null|int $serviceId
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function isServiceescalationBroken($id = null, $serviceId = null) {
+        if (!$this->exists(['Serviceescalations.id' => $id]) && $id !== null) {
+            throw new \NotFoundException();
+        }
+        $query = $this->find()
+            ->contain([
+                'services' =>
+                    function (Query $q) use ($serviceId) {
+                        if ($serviceId !== null) {
+                            $q->where([
+                                'Services.id !=' => $serviceId
+                            ]);
+                        }
+                        return $q->enableAutoFields(false)
+                            ->where([
+                                'Services.disabled' => 0
+                            ])
+                            ->select(['id']);
+                    },
+            ])->select([
+                'id'
+            ])->where([
+                ['Serviceescalations.id' => $id]
+            ])
+            ->first();
+
+        $services = $query->get('services');
+
+        return empty($services);
+    }
+
 }

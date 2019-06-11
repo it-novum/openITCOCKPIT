@@ -218,7 +218,7 @@ class ServicedependenciesTable extends Table {
 
         $indexFilter = $ServicedependenciesFilter->indexFilter();
         $containFilter = [
-            'Servicegroups.name'         => '',
+            'Servicegroups.name'          => '',
             'ServicegroupsDependent.name' => ''
         ];
 
@@ -415,5 +415,49 @@ class ServicedependenciesTable extends Table {
         $query->all();
 
         return $query;
+    }
+
+    /**
+     * @param null|int $id
+     * @param null|int $serviceId
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function isServicedependencyBroken($id = null, $serviceId = null) {
+        if (!$this->exists(['Servicedependencies.id' => $id]) && $id !== null) {
+            throw new \NotFoundException();
+        }
+        $query = $this->find()
+            ->contain([
+                'services' =>
+                    function (Query $q) use ($serviceId) {
+                        if ($serviceId !== null) {
+                            $q->where([
+                                'Services.id !=' => $serviceId
+                            ]);
+                        }
+                        return $q->enableAutoFields(false)
+                            ->where([
+                                'Services.disabled' => 0
+                            ])
+                            ->select(['id']);
+                    },
+            ])->select([
+                'id'
+            ])->where([
+                'Servicedependencies.id' => $id
+            ])->first();
+
+        $services = $query->get('services');
+        $masterServicesForCfg = [];
+        $dependentServicesForCfg = [];
+        foreach ($services as $service) {
+            if ($service->get('_joinData')->get('dependent') === 0) {
+                $masterServicesForCfg[] = $service->get('id');
+            } else {
+                $dependentServicesForCfg[] = $service->get('id');
+            }
+        }
+
+        return empty($masterServicesForCfg) || empty($dependentServicesForCfg);
     }
 }
