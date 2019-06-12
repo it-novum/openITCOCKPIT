@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class StatusHelper
+ * @deprecated
+ */
 class StatusHelper extends AppHelper {
 
     /**
@@ -38,6 +42,7 @@ class StatusHelper extends AppHelper {
      * @return array with host status for humans and HTML code generation
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function humanHostStatus($uuid, $href = 'javascript:void(0)', $hoststatus = null, $style = '') {
         if ($hoststatus === null) {
@@ -70,6 +75,7 @@ class StatusHelper extends AppHelper {
      * @return string with the hostoutput or error message if host not found in monitoring $hoststatus
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function hostOutput($uuid, $hoststatus = null) {
 
@@ -96,6 +102,7 @@ class StatusHelper extends AppHelper {
      * @return array with service status for humans and HTML code generation
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function humanServiceStatus($uuid, $href = 'javascript:void(0)', $servicestatus = null, $content = '', $style = '') {
         if ($servicestatus === null) {
@@ -131,6 +138,7 @@ class StatusHelper extends AppHelper {
      * @return string CSS class of the color
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     function HostStatusColor($uuid, $hoststatus = null) {
         if ($hoststatus === null) {
@@ -164,6 +172,7 @@ class StatusHelper extends AppHelper {
      * @return string CSS class of the color
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     function ServiceStatusColor($uuid, $servicestatus = null) {
         if ($servicestatus === null) {
@@ -198,6 +207,7 @@ class StatusHelper extends AppHelper {
      * @return array which contains the human state and the css class
      * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     function ServiceStatusColorSimple($state) {
         if (isset($state)) {
@@ -242,6 +252,7 @@ class StatusHelper extends AppHelper {
      * @param int $state the current status of a Host
      *
      * @return array which contains the human state and the css class
+     * @deprecated
      */
     function HostStatusBackgroundColor($state = 2) {
         $state = ($state === null) ? 2 : $state;
@@ -260,6 +271,7 @@ class StatusHelper extends AppHelper {
      * @param int $state the current status of a Service
      *
      * @return array which contains the human state and the css class
+     * @deprecated
      */
     function ServiceStatusBackgroundColor($state = 2) {
         $state = ($state === null) ? 3 : $state;
@@ -281,6 +293,7 @@ class StatusHelper extends AppHelper {
      * @return array which contains the human state and the css class
      * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     function HostStatusColorSimple($state) {
         if (isset($state)) {
@@ -325,6 +338,7 @@ class StatusHelper extends AppHelper {
      * @return string the value of the given database field from model
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function hget($uuid, $field, $default = null, $hoststatus = null) {
         return $this->get($uuid, $field, $default, 'Hoststatus', $hoststatus);
@@ -342,6 +356,7 @@ class StatusHelper extends AppHelper {
      * @return string the value of the given database field from model
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function sget($uuid, $field, $default = null, $servicestatus = null) {
         return $this->get($uuid, $field, $default, 'Servicestatus', null, $servicestatus);
@@ -360,6 +375,7 @@ class StatusHelper extends AppHelper {
      * @return string the value of the given database field from model
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function get($uuid, $field, $default = null, $ModelName = 'Hoststatus', $hoststatus = null, $servicestatus = null) {
         if ($ModelName == 'Hoststatus') {
@@ -390,6 +406,7 @@ class StatusHelper extends AppHelper {
      * @return string given state type fopr humans
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function humanServiceStateType($state_type) {
         if ($state_type === 0 || $state_type === '0' || $state_type === false) {
@@ -403,6 +420,11 @@ class StatusHelper extends AppHelper {
         return '';
     }
 
+    /**
+     * @param int $state
+     * @return string
+     * @deprecated
+     */
     function HostStatusTextColor($state = 2) {
         if ($state === null) {
             return 'txt-primary';
@@ -420,6 +442,11 @@ class StatusHelper extends AppHelper {
         }
     }
 
+    /**
+     * @param int $state
+     * @return string
+     * @deprecated
+     */
     function ServiceStatusTextColor($state = 2) {
         if ($state === null) {
             return 'txt-primary';
@@ -448,6 +475,7 @@ class StatusHelper extends AppHelper {
      * @return string host status for humans
      * @author Irina Bering <irina.bering@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function humanSimpleHostStatus($hoststatus = 0) {
         switch ($hoststatus) {
@@ -468,6 +496,7 @@ class StatusHelper extends AppHelper {
      * @return string host status for humans
      * @author Irina Bering <irina.bering@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function humanSimpleServiceStatus($servicestatus = 0) {
         switch ($servicestatus) {
@@ -482,6 +511,12 @@ class StatusHelper extends AppHelper {
         }
     }
 
+    /**
+     * @param $service
+     * @param bool $addTooltip
+     * @return string
+     * @deprecated
+     */
     public function automapIcon($service, $addTooltip = true) {
         $stateClasses = [
             0 => 'ok',

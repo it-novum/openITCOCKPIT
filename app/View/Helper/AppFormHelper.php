@@ -26,6 +26,10 @@
 App::uses('BoostCakeFormHelper', 'BoostCake.View/Helper');
 App::uses('FormHelper', 'View/Helper');
 
+/**
+ * Class AppFormHelper
+ * @deprecated
+ */
 class AppFormHelper extends BoostCakeFormHelper {
 
     /**
@@ -35,10 +39,17 @@ class AppFormHelper extends BoostCakeFormHelper {
      * @param  array $options
      *
      * @return function          parent::create()
+     * @deprecated
      */
     protected $_isHorizontal = false;
     protected $_disableFieldset = false;
 
+    /**
+     * @param null $model
+     * @param array $options
+     * @return string
+     * @deprecated
+     */
     public function create($model = null, $options = []) {
         $this->_isHorizontal = isset($options['class']) && (strpos($options['class'], 'form-horizontal') !== false);
 
@@ -75,6 +86,7 @@ class AppFormHelper extends BoostCakeFormHelper {
      * @param array $options
      *
      * @return string
+     * @deprecated
      */
     public function input($fieldName, $options = []) {
         $this->_storedInputDefaults = $this->_inputDefaults;
@@ -174,6 +186,7 @@ class AppFormHelper extends BoostCakeFormHelper {
      * @param array $options
      *
      * @return string
+     * @deprecated
      */
     public function imageChooserInput($field, array $options = []) {
         $options = Hash::merge([
@@ -233,6 +246,7 @@ class AppFormHelper extends BoostCakeFormHelper {
      * @param array $options
      *
      * @return string
+     * @deprecated
      */
     public function fileChooserInput($field, array $options = []) {
         $options = Hash::merge([
@@ -292,6 +306,7 @@ class AppFormHelper extends BoostCakeFormHelper {
      * @internal param string $cancelButton
      * @internal param string $delete
      * @return string
+     * @deprecated
      */
     public function formActions($saveText = null, array $options = []) {
 
@@ -340,6 +355,12 @@ class AppFormHelper extends BoostCakeFormHelper {
         return $out;
     }
 
+    /**
+     * @param $fieldName
+     * @param array $options
+     * @return string
+     * @deprecated
+     */
     public function fancyCheckbox($fieldName, $options = []) {
         $this->_storedInputDefaults = $this->_inputDefaults;
         $this->Html->disableFieldset = false;
@@ -396,6 +417,7 @@ class AppFormHelper extends BoostCakeFormHelper {
      * @param array $options
      *
      * @return string
+     * @deprecated
      */
     public function fancyCheckboxWithValue($fieldName, $options = []) {
         $this->_storedInputDefaults = $this->_inputDefaults;
@@ -444,6 +466,12 @@ class AppFormHelper extends BoostCakeFormHelper {
         return $html;
     }
 
+    /**
+     * @param $fieldName
+     * @param array $options
+     * @return string
+     * @deprecated
+     */
     public function hostAndServiceSelectOptiongroup($fieldName, $options = []) {
         $_options = [
             'divClass'    => 'col col-xs-10',

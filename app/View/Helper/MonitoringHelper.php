@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class MonitoringHelper
+ * @deprecated
+ */
 class MonitoringHelper extends AppHelper {
 
     /**
@@ -35,6 +39,7 @@ class MonitoringHelper extends AppHelper {
      * @return array with the flap detection settings. Array keys: 'string', 'html' and 'value'
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function checkFlapDetection($value = 0) {
         if ($value == 1) {
@@ -56,6 +61,7 @@ class MonitoringHelper extends AppHelper {
      * @return array with the flap detection settings. Array keys: 'string', 'html' and 'value'
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function compareHostFlapDetectionWithMonitoring($host, $hoststatus = null) {
         if ($hoststatus === null) {
@@ -95,6 +101,7 @@ class MonitoringHelper extends AppHelper {
      * @return array with the flap detection settings. Array keys: 'string', 'html' and 'value'
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function compareServiceFlapDetectionWithMonitoring($service, $servicestatus = null) {
         if ($servicestatus === null) {
@@ -185,6 +192,7 @@ class MonitoringHelper extends AppHelper {
      * @return bool true if exits or false if not
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function checkForHostGraph($hostUuid) {
         if (!isset($this->RRDPath)) {
@@ -207,6 +215,7 @@ class MonitoringHelper extends AppHelper {
      * @return bool true if exits or false if not
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function checkForServiceGraph($hostUuid, $serviceUuid) {
         if (!isset($this->RRDPath)) {
@@ -232,6 +241,7 @@ class MonitoringHelper extends AppHelper {
      * @return string status 'icon' as HTML for host and service notifications
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function NotificationStatusIcon($status = 3, $notification_type = 1, $href = 'javascript:void(0)') {
         if ($notification_type == 1) {
@@ -264,6 +274,13 @@ class MonitoringHelper extends AppHelper {
         }
     }
 
+    /**
+     * @param int $is_flapping
+     * @param string $class
+     * @param null $state
+     * @return string
+     * @deprecated
+     */
     public function hostFlappingIconColored($is_flapping = 0, $class = '', $state = null) {
 
         $stateColors = [
@@ -283,6 +300,13 @@ class MonitoringHelper extends AppHelper {
         return '';
     }
 
+    /**
+     * @param int $is_flapping
+     * @param string $class
+     * @param null $state
+     * @return string
+     * @deprecated
+     */
     public function serviceFlappingIconColored($is_flapping = 0, $class = '', $state = null) {
 
         $stateColors = [
@@ -303,6 +327,12 @@ class MonitoringHelper extends AppHelper {
         return '';
     }
 
+    /**
+     * @param int $is_flapping
+     * @param string $class
+     * @return string
+     * @deprecated
+     */
     public function serviceFlappingIcon($is_flapping = 0, $class = '') {
         if ($is_flapping == 1) {
             return '<span class="flapping_airport ' . $class . '"><i class="fa fa-circle"></i> <i class="fa fa-circle-o"></i></span>';
@@ -311,10 +341,21 @@ class MonitoringHelper extends AppHelper {
         return '';
     }
 
+    /**
+     * @param int $is_flapping
+     * @param string $class
+     * @return string
+     * @deprecated
+     */
     public function hostFlappingIcon($is_flapping = 0, $class = '') {
         return $this->serviceFlappingIcon($is_flapping, $class);
     }
 
+    /**
+     * @param $downtime_deep
+     * @return bool
+     * @deprecated
+     */
     public function checkForDowntime($downtime_deep) {
         if ($downtime_deep > 0) {
             return true;
@@ -323,6 +364,11 @@ class MonitoringHelper extends AppHelper {
         return false;
     }
 
+    /**
+     * @param $ack
+     * @return bool
+     * @deprecated
+     */
     public function checkForAck($ack) {
         if ($ack == 1) {
             return true;
@@ -331,10 +377,21 @@ class MonitoringHelper extends AppHelper {
         return false;
     }
 
+    /**
+     * @param $commandarguments
+     * @param $command_line
+     * @return mixed
+     * @deprecated
+     */
     public function replaceCommandArguments($commandarguments, $command_line) {
         return str_replace(array_keys($commandarguments), array_values($commandarguments), $command_line);
     }
 
+    /**
+     * @param $commandUuid
+     * @return bool
+     * @deprecated
+     */
     public function checkForGrapherTemplate($commandUuid) {
         if (file_exists(OLD_APP . 'GrapherTemplates' . DS . $commandUuid . '.php')) {
             return true;

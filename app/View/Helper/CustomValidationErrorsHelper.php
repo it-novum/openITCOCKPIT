@@ -23,12 +23,17 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class CustomValidationErrorsHelper
+ * @deprecated
+ */
 class CustomValidationErrorsHelper extends AppHelper {
 
     /**
      * Initialize the Helper and set the needed variables
      *
      * @param string $viewFile
+     * @deprecated
      */
     public function beforeRender($viewFile) {
         $this->Controller = ucfirst($this->params->params['controller']);
@@ -48,6 +53,7 @@ class CustomValidationErrorsHelper extends AppHelper {
      * @param array $options Array of options
      *
      * @return string $ with the error message of validate function
+     * @deprecated
      */
     public function errorClass($fieldName, $options = []) {
         $_options = [
@@ -78,6 +84,7 @@ class CustomValidationErrorsHelper extends AppHelper {
      * @param array $options Array of options
      *
      * @return string a `span` HTML object with the error message
+     * @deprecated
      */
     public function errorHTML($fieldName, $options = []) {
         $_options = [
@@ -107,6 +114,7 @@ class CustomValidationErrorsHelper extends AppHelper {
      * @param array $options Array of options
      *
      * @return string with the error message of validate function
+     * @deprecated
      */
     public function returnError($fieldName, $options = []) {
         $_options = [
@@ -137,6 +145,7 @@ class CustomValidationErrorsHelper extends AppHelper {
      * @param array $options Array of options
      *
      * @return Boolean
+     * @deprecated
      */
     public function hasError($fieldName, $options = []) {
         $_options = [
@@ -163,6 +172,7 @@ class CustomValidationErrorsHelper extends AppHelper {
      * @param array $options Array of options
      *
      * @return mixed value from Controller->request->data[$Model][$Field]
+     * @deprecated
      */
     public function refill($fieldName, $default = '', $options = []) {
         $_options = [
