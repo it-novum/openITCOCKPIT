@@ -615,47 +615,11 @@ class ServicegroupsController extends AppController {
         ];
     }
 
-    /**
-     * @deprecated
-     */
     public function extended() {
-        $this->layout = 'blank';
+        //Only ship template
         $User = new User($this->Auth);
-
-        if (!$this->isApiRequest()) {
-            //Only ship template for AngularJs
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
-            $this->set('username', $User->getFullName());
-            return;
-        }
-
-        $ServicegroupFilter = new ServicegroupFilter($this->request);
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container',
-            ],
-            'conditions' => $ServicegroupFilter->indexFilter(),
-            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
-            'limit'      => $this->Paginator->settings['limit']
-        ];
-        if (!$this->hasRootPrivileges) {
-            $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
-        }
-
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            unset($query['limit']);
-            $servicegroups = $this->Servicegroup->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $this->Paginator->settings['page'] = $ServicegroupFilter->getPage();
-            $servicegroups = $this->Paginator->paginate();
-        }
-
-        $this->set('servicegroups', $servicegroups);
-        $this->set('_serialize', ['servicegroups', 'username']);
+        $this->set('username', $User->getFullName());
+        $this->set('_serialize', ['username']);
     }
 
 

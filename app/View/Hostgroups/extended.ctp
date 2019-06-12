@@ -143,7 +143,7 @@
                             </a>
                         <?php endif; ?>
                     </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-sidemap"></i> </span>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-sitemap"></i> </span>
                     <h2 class="hidden-mobile">
                         {{(hostgroup.Hostgroup.container.name) && hostgroup.Hostgroup.container.name ||
                         '<?php echo __('Host Groups (0)'); ?>'}}

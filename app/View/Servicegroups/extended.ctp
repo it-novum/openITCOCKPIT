@@ -153,7 +153,7 @@
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
                     <h2 class="hidden-mobile">
-                        {{(servicegroup.Container.name) && servicegroup.Container.name ||
+                        {{(servicegroup.Servicegroup.container.name) && servicegroup.Servicegroup.container.name ||
                         '<?php echo __('Service Groups (0)'); ?>'}}
                     </h2>
                     <?php if ($this->Acl->hasPermission('extended', 'servicegroups')): ?>
