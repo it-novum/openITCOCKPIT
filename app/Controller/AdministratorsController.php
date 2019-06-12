@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\CronjobsTable;
+use App\Model\Table\RegistersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
@@ -43,9 +45,9 @@ class AdministratorsController extends AppController {
         $this->loadModel('Register');
 
 
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsetting = $Systemsettings->findAsArray();
+        /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsetting = $SystemsettingsTable->findAsArray();
         $this->set('systemsetting', $systemsetting);
 
 
@@ -64,28 +66,29 @@ class AdministratorsController extends AppController {
         }
         $this->set('isGearmanWorkerRunning', $isGearmanWorkerRunning);
 
-        /** @var CronjobsTable $Cronjobs */
-        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
+        /** @var $CronjobsTable CronjobsTable  */
+        $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
 
         //Check if load cronjob exists
-        if (!$Cronjobs->checkForCronjob('CpuLoad', 'Core')) {
+        if (!$CronjobsTable->checkForCronjob('CpuLoad', 'Core')) {
             //Cron does not exists, so we create it
-            $newCron = $Cronjobs->newEntity([
+            $newCron = $CronjobsTable->newEntity([
                 'task'     => 'CpuLoad',
                 'plugin'   => 'Core',
                 'interval' => 15,
                 'enabled'  => 1
             ]);
 
-            $Cronjobs->save($newCron);
+            $CronjobsTable->save($newCron);
 
             if ($newCron->hasErrors()) {
             }
 
         }
 
-        $Registers = TableRegistry::getTableLocator()->get('Registers');
-        $License = $Registers->getLicense();
+        /** @var $RegistersTable RegistersTable  */
+        $RegistersTable = TableRegistry::getTableLocator()->get('Registers');
+        $License = $RegistersTable->getLicense();
         $isEnterprise = false;
         if (!empty($License)) {
             $isEnterprise = true;
@@ -306,9 +309,9 @@ class AdministratorsController extends AppController {
         try {
             $this->loadModel('Systemsetting');
             $recipientAddress = $this->Auth->user('email');
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $_systemsettings = $Systemsettings->findAsArray();
+            /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $_systemsettings = $SystemsettingsTable->findAsArray();
 
             $Email = new CakeEmail();
             $Email->config('default');
