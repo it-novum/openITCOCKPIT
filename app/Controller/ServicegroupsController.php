@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
@@ -259,49 +260,60 @@ class ServicegroupsController extends AppController {
     }
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param int|null $id
      */
     public function delete($id = null) {
-        $userId = $this->Auth->user('id');
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Servicegroup->exists($id)) {
-            throw new NotFoundException(__('invalid_servicegroup'));
-        }
-        $container = $this->Servicegroup->findById($id);
 
-        if (!$this->allowedByContainerId(Hash::extract($container, 'Container.parent_id'))) {
-            $this->render403();
-
-            return;
-        }
-
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        if ($ContainersTable->delete($ContainersTable->get($container['Servicegroup']['container_id']))) {
-            Cache::clear(false, 'permissions');
+        if (!$ServicegroupsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid Servicegroup'));
+        }
+
+        $servicegroup = $ServicegroupsTable->getServicegroupById($id);
+        $container = $ContainersTable->get($servicegroup->get('container')->get('id'), [
+            'contain' => [
+                'Servicegroups'
+            ]
+        ]);
+
+        if (!$this->allowedByContainerId($servicegroup->get('container')->get('parent_id'))) {
+            $this->render403();
+            return;
+        }
+
+        if ($ContainersTable->delete($container)) {
+            $User = new User($this->Auth);
             $changelog_data = $this->Changelog->parseDataForChangelog(
-                $this->params['action'],
-                $this->params['controller'],
+                'delete',
+                'servicegroups',
                 $id,
                 OBJECT_SERVICEGROUP,
-                $container['Container']['parent_id'],
-                $userId,
-                $container['Container']['name'],
-                $container
+                $container->get('parent_id'),
+                $User->getId(),
+                $container->get('name'),
+                [
+                    'Servicegroup' => $servicegroup->toArray()
+                ]
             );
             if ($changelog_data) {
                 CakeLog::write('log', serialize($changelog_data));
             }
-            $this->setFlash(__('Servicegroup deleted'));
-            $this->redirect(['action' => 'index']);
+
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
         }
 
-        $this->setFlash(__('could not delete servicegroup'), false);
-        $this->redirect(['action' => 'index']);
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
     }
 
     public function addServicesToServicegroup() {
@@ -449,6 +461,72 @@ class ServicegroupsController extends AppController {
         $this->layout = 'Admin.default';
 
         $ServicegroupFilter = new ServicegroupFilter($this->request);
+
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        /** @var $ServicestatusTable ServicestatusTableInterface */
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+        $servicegroups = $ServicegroupsTable->getServicegroupsForPdf($ServicegroupFilter, $MY_RIGHTS);
+
+        debug($servicegroups);die();
+
+
+        $numberOfServicegroups = 0;
+        $numberOfHosts = 0;
+        $numberOfServices = 0;
+        foreach ($servicegroups as $index => $servicegroups) {
+            $hostgroupHostUuids = \Cake\Utility\Hash::extract($hostgroup, 'hosts.{n}.uuid');
+            $hostgroupHostCount += count($hostgroupHostUuids);
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->wildcard();
+            $hoststatusOfHostgroup = $HoststatusTable->byUuids($hostgroupHostUuids, $HoststatusFields);
+            $hostgroups[$index]['all_hoststatus'] = $hoststatusOfHostgroup;
+        }
+
+        $hostgroupCount = count($hostgroups);
+        $this->set('hostgroups', $hostgroups);
+        $this->set('hostgroupCount', $hostgroupCount);
+        $this->set('hostgroupHostCount', $hostgroupHostCount);
+
+
+        $filename = 'Servicegroups_' . strtotime('now') . '.pdf';
+        $binary_path = '/usr/bin/wkhtmltopdf';
+        if (file_exists('/usr/local/bin/wkhtmltopdf')) {
+            $binary_path = '/usr/local/bin/wkhtmltopdf';
+        }
+        $this->pdfConfig = [
+            'engine'             => 'CakePdf.WkHtmlToPdf',
+            'margin'             => [
+                'bottom' => 15,
+                'left'   => 0,
+                'right'  => 0,
+                'top'    => 15,
+            ],
+            'encoding'           => 'UTF-8',
+            'download'           => false,
+            'binary'             => $binary_path,
+            'orientation'        => 'portrait',
+            'filename'           => $filename,
+            'no-pdf-compression' => '*',
+            'image-dpi'          => '900',
+            'background'         => true,
+            'no-background'      => false,
+        ];
+
+        /****** OLD CODE ****/
+        return;
+
+
+
+        $this->layout = 'Admin.default';
+
+        $ServicegroupFilter = new ServicegroupFilter($this->request);
         $query = [
             'recursive'  => -1,
             'contain'    => [
@@ -523,7 +601,7 @@ class ServicegroupsController extends AppController {
                 'top'    => 15,
             ],
             'encoding'           => 'UTF-8',
-            'download'           => true,
+            'download'           => false,
             'binary'             => $binary_path,
             'orientation'        => 'portrait',
             'filename'           => $filename,
@@ -606,7 +684,7 @@ class ServicegroupsController extends AppController {
     }
 
     /**
-     * @param null $containerId
+     * @param int|null $containerId
      */
     public function loadServicetemplates($containerId = null) {
         if (!$this->isAngularJsRequest()) {

@@ -481,6 +481,7 @@ class Hoststatus {
 
     /**
      * @return array
+     * @throws \Exception
      */
     public function toArrayForBrowser() {
         $arr = $this->toArray();
@@ -489,5 +490,28 @@ class Hoststatus {
         $arr['lastCheck'] = CakeTime::timeAgoInWords($this->getLastCheck());
         $arr['nextCheck'] = CakeTime::timeAgoInWords($this->getNextCheck());
         return $arr;
+    }
+
+    /**
+     * @param string $class
+     * @return string
+     */
+    public function getFlappingIconColored($class = '') {
+
+        $stateColors = [
+            0 => 'ok',
+            1 => 'critical',
+            2 => '',
+        ];
+
+        if ($this->isFlapping) {
+            if ($this->currentState !== null && $this->currentState >= 0) {
+                return '<span class="flapping_airport ' . $class . ' ' . $stateColors[$this->currentState] . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span>';
+            }
+
+            return '<span class="flapping_airport text-primary ' . $class . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span>';
+        }
+
+        return '';
     }
 }

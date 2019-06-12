@@ -58,7 +58,9 @@ class HostgroupsController extends AppController {
     /**
      * @var boolean
      */
-    public $uses = false;
+    public $uses = [
+        'Changelog'
+    ];
 
     public $layout = 'blank';
 
@@ -453,35 +455,73 @@ class HostgroupsController extends AppController {
     public function listToPdf() {
         $this->layout = 'Admin.default';
 
-        $HostgroupFilter = new HostgroupFilter($this->request);
-
         /** @var $HostgroupsTable HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-
         /** @var $HoststatusTable HoststatusTableInterface */
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         $MY_RIGHTS = [];
-        if ($this->hasRootPrivileges === false) {
+        if(!$this->hasRootPrivileges){
             $MY_RIGHTS = $this->MY_RIGHTS;
         }
-        $hostgroups = $HostgroupsTable->getHostgroupsForPdf($HostgroupFilter, $MY_RIGHTS);
+        $HostgroupFilter = new HostgroupFilter($this->request);
+
+        $hostgroups = $HostgroupsTable->getHostgroupsIndex($HostgroupFilter, null, $MY_RIGHTS);
 
 
-        $hostgroupHostCount = 0;
-        foreach ($hostgroups as $index => $hostgroup) {
-            $hostgroupHostUuids = \Cake\Utility\Hash::extract($hostgroup, 'hosts.{n}.uuid');
-            $hostgroupHostCount += count($hostgroupHostUuids);
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $numberOfHostgroups = sizeof($hostgroups);
+        $numberOfHosts = 0;
+
+        $all_hostgroups = [];
+        foreach($hostgroups as $hostgroup) {
+            /** @var \App\Model\Entity\Hostgroup $hostgroup */
+
+            $hostIds = $HostgroupsTable->getHostIdsByHostgroupId($hostgroup->get('id'));
+
+            $HostFilter = new HostFilter($this->request);
+            $HostConditions = new HostConditions();
+
+            $HostConditions->setIncludeDisabled(false);
+            $HostConditions->setHostIds($hostIds);
+            $HostConditions->setContainerIds($this->MY_RIGHTS);
+
+            $hosts = [];
+            if (!empty($hostIds)) {
+                if ($this->DbBackend->isNdoUtils()) {
+                    $hosts = $HostsTable->getHostsIndex($HostFilter, $HostConditions);
+                }
+
+                if ($this->DbBackend->isStatusengine3()) {
+                    throw new MissingDbBackendException('MissingDbBackendException');
+                }
+
+                if ($this->DbBackend->isCrateDb()) {
+                    throw new MissingDbBackendException('MissingDbBackendException');
+                }
+            }
+
+            $numberOfHosts += sizeof($hosts);
+
+            $hostgroupHostUuids = \Cake\Utility\Hash::extract($hosts, '{n}.Host.uuid');
             $HoststatusFields = new HoststatusFields($this->DbBackend);
             $HoststatusFields->wildcard();
             $hoststatusOfHostgroup = $HoststatusTable->byUuids($hostgroupHostUuids, $HoststatusFields);
-            $hostgroups[$index]['all_hoststatus'] = $hoststatusOfHostgroup;
+
+            $all_hostgroups[] = [
+                'Hostgroup' => $hostgroup->toArray(),
+                'Hosts' => $hosts,
+                'Hoststatus' => $hoststatusOfHostgroup
+            ];
         }
 
-        $hostgroupCount = count($hostgroups);
-        $this->set('hostgroups', $hostgroups);
-        $this->set('hostgroupCount', $hostgroupCount);
-        $this->set('hostgroupHostCount', $hostgroupHostCount);
+        $this->set('hostgroups', $all_hostgroups);
+        $this->set('numberOfHostgroups', $numberOfHostgroups);
+        $this->set('numberOfHosts', $numberOfHosts);
+        $this->set('User', $User);
 
 
         $filename = 'Hostgroups_' . strtotime('now') . '.pdf';

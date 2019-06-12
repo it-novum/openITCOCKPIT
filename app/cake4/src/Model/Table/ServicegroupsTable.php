@@ -308,6 +308,32 @@ class ServicegroupsTable extends Table {
     }
 
     /**
+     * @param ServicegroupFilter $ServicegroupFilter
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServicegroupsForPdf(ServicegroupFilter $ServicegroupFilter, $MY_RIGHTS = []) {
+
+        $query = $this->find()
+            ->contain([
+                'services',
+                'Containers'
+            ]);
+
+        $where = $ServicegroupFilter->indexFilter();
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+        $query->where($where)
+            ->order(
+                $ServicegroupFilter->getOrderForPaginator('Containers.name', 'asc')
+            )->disableHydration();
+
+        $data = $query->all();
+        return $this->emptyArrayIfNull($data->toArray());
+    }
+
+    /**
      * @param int $id
      * @return bool
      */
@@ -379,5 +405,17 @@ class ServicegroupsTable extends Table {
         return [
             'Servicegroup' => $hostgroup
         ];
+    }
+
+    /**
+     * @param int $id
+     * @return \App\Model\Entity\Servicegroup
+     */
+    public function getServicegroupById($id) {
+        return $this->get($id, [
+            'contain' => [
+                'Containers'
+            ]
+        ]);
     }
 }
