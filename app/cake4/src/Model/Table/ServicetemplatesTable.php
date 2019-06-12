@@ -125,11 +125,7 @@ class ServicetemplatesTable extends Table {
             'saveStrategy' => 'replace'
         ]);
 
-        /*
-        $this->hasMany('Service', [
-            'saveStrategy' => 'replace'
-        ]);
-        */
+        $this->hasMany('Services');
     }
 
     /**

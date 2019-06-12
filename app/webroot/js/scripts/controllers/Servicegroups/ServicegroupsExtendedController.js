@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicegroupsExtendedController', function($scope, $http, $interval, QueryStringService){
+    .controller('ServicegroupsExtendedController', function($scope, $http, $interval, $stateParams){
 
         $scope.init = true;
         $scope.servicegroupsStateFilter = {};
@@ -8,31 +8,38 @@ angular.module('openITCOCKPIT')
         $scope.deactivateUrl = '/services/deactivate/';
         $scope.activateUrl = '/services/enable/';
 
+        $scope.filter = {
+            servicename: ''
+        };
+
         $scope.post = {
             Servicegroup: {
                 id: null
             }
         };
 
-        $scope.post.Servicegroup.id = QueryStringService.getCakeId().toString();
+        $scope.post.Servicegroup.id = $stateParams.id;
+        if($scope.post.Servicegroup.id !== null){
+            $scope.post.Servicegroup.id = parseInt($scope.post.Servicegroup.id, 10);
+        }
 
         var graphStart = 0;
         var graphEnd = 0;
 
         $scope.load = function(){
-            $http.get("/servicegroups/extended.json", {
+            $http.get("/servicegroups/loadServicegroupsByString.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
                 $scope.servicegroups = result.data.servicegroups;
 
-                if(isNaN($scope.post.Servicegroup.id)){
+                if($scope.post.Servicegroup.id === null){
                     if($scope.servicegroups.length > 0){
-                        $scope.post.Servicegroup.id = $scope.servicegroups[0].Servicegroup.id;
+                        $scope.post.Servicegroup.id = $scope.servicegroups[0].key;
                     }
                 }else{
-                    //ServicegroupId was passed in URL
+                    //HostgroupId was passed in URL
                     $scope.loadServicesWithStatus();
                 }
 
@@ -40,11 +47,23 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadServicegroupsCallback = function(searchString){
+            $http.get("/servicegroups/loadServicegroupsByString.json", {
+                params: {
+                    'angular': true,
+                    'filter[Containers.name]': searchString,
+                }
+            }).then(function(result){
+                $scope.servicegroups = result.data.servicegroups;
+            });
+        };
+
         $scope.loadServicesWithStatus = function(){
             if($scope.post.Servicegroup.id){
                 $http.get("/servicegroups/loadServicegroupWithServicesById/" + $scope.post.Servicegroup.id + ".json", {
                     params: {
-                        'angular': true
+                        'angular': true,
+                        'filter[servicename]': $scope.filter.servicename,
                     }
                 }).then(function(result){
                     $scope.servicegroup = result.data.servicegroup;
@@ -229,4 +248,15 @@ angular.module('openITCOCKPIT')
             }
             $scope.loadServicesWithStatus('');
         }, true);
+
+        $scope.$watch('filter', function(){
+            if($scope.init){
+                return;
+            }
+
+            if($scope.post.Servicegroup.id > 0){
+                $scope.loadServicesWithStatus('');
+            }
+        }, true);
+
     });

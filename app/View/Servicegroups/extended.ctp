@@ -22,52 +22,44 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
-/**
- * @property \itnovum\openITCOCKPIT\Monitoring\QueryHandler $QueryHandler
- */
-
 ?>
 
-
-<?php if (!$QueryHandler->exists()): ?>
-    <div class="alert alert-danger alert-block">
-        <a href="#" data-dismiss="alert" class="close">×</a>
-        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
-        </h4>
-        <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-cogs fa-fw "></i>
+            <?php echo __('Service groups'); ?>
+            <span>>
+                <?php echo __('Extended overview'); ?>
+            </span>
+        </h1>
     </div>
-<?php endif; ?>
+</div>
+
+<query-handler-directive></query-handler-directive>
+
 
 <div class="alert alert-success alert-block" ng-show="showFlashSuccess">
     <a href="#" data-dismiss="alert" class="close">×</a>
     <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
     <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter }} <?php echo __('seconds...'); ?>
 </div>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-cogs fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
-            <span>>
-                <?php echo __('Service Groups'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
+
+
 <div class="row padding-bottom-10" ng-if="servicegroups.length > 0">
     <div class="col col-xs-11">
         <select
                 ng-if="servicegroups.length > 0"
                 class="form-control"
                 chosen="servicegroups"
-                ng-options="servicegroup.Servicegroup.id as servicegroup.Container.name for servicegroup in servicegroups"
+                callback="loadServicegroupsCallback"
+                ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
                 ng-model="post.Servicegroup.id">
         </select>
     </div>
     <div class="col col-xs-1">
         <div class="btn-group">
-            <?php if ($this->Acl->hasPermission('edit')): ?>
+            <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
                 <a ui-sref="ServicegroupsEdit({id:post.Servicegroup.id})"
                    class="btn btn-default btn-md">&nbsp;<i class="fa fa-md fa-cog"></i>
                 </a>
@@ -80,7 +72,7 @@
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right" ng-if="servicegroup.Services.length > 0">
-                <?php if ($this->Acl->hasPermission('edit')): ?>
+                <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
                     <li>
                         <a ui-sref="ServicegroupsEdit({id:post.Servicegroup.id})">
                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
@@ -152,7 +144,7 @@
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add')): ?>
+                        <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
                             <a ui-sref="ServicegroupsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
@@ -164,7 +156,7 @@
                         {{(servicegroup.Container.name) && servicegroup.Container.name ||
                         '<?php echo __('Service Groups (0)'); ?>'}}
                     </h2>
-                    <?php if ($this->Acl->hasPermission('extended')): ?>
+                    <?php if ($this->Acl->hasPermission('extended', 'servicegroups')): ?>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>
                                 <a ui-sref="ServicegroupsIndex"><i class="fa fa-minus-square"></i>
@@ -180,11 +172,21 @@
                     <table class="table table-striped table-hover table-bordered smart-form" ng-if="servicegroup">
                         <thead>
                         <tr ng-if="servicegroup.Services.length > 0">
-                            <td class="no-padding text-right" colspan="13">
-                                <div class="col-md-4">
+
+                            <td colspan="6">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
+                                        <input type="text" class="input-sm"
+                                               placeholder="<?php echo __('Filter by service name'); ?>"
+                                               ng-model="filter.servicename"
+                                               ng-model-options="{debounce: 500}">
+                                    </label>
                                 </div>
+                            </td>
+
+                            <td class="no-padding text-right" colspan="6">
                                 <div ng-repeat="(state,stateCount) in servicegroup.StatusSummary"
-                                     class="col-md-2 bg-{{state}}">
+                                     class="col-md-3 bg-{{state}}">
                                     <div class="padding-5 pull-right">
                                         <label class="checkbox small-checkbox-label txt-color-white">
                                             <input type="checkbox" name="checkbox" checked="checked"
@@ -270,7 +272,7 @@
                             </td>
                             <td class="text-center">
                                 <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                    <a href="/services/browser/{{ service.Service.id }}" class="txt-color-blueDark">
+                                    <a ui-sref="ServicesBrowser({id: service.Service.id})" class="txt-color-blueDark">
                                         <i class="fa fa-lg fa-area-chart"
                                            ng-mouseenter="mouseenter($event, service.Host, service)"
                                            ng-mouseleave="mouseleave()"
@@ -293,7 +295,7 @@
                             </td>
                             <td class="table-color-{{(service.Hoststatus.currentState !== null)?service.Hoststatus.currentState:'disabled'}}">
                                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                    <a href="/hosts/browser/{{ service.Host.id }}">
+                                    <a ui-sref="HostsBrowser({id: service.Host.id})">
                                         {{ service.Host.hostname }}
                                     </a>
                                 <?php else: ?>
@@ -302,7 +304,7 @@
                             </td>
                             <td>
                                 <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                    <a href="/services/browser/{{ service.Service.id }}">
+                                    <a ui-sref="ServicesBrowser({id: service.Service.id})">
                                         {{ service.Service.servicename }}
                                     </a>
                                 <?php else: ?>

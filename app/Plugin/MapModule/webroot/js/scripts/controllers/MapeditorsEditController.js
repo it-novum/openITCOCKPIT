@@ -1295,7 +1295,7 @@ angular.module('openITCOCKPIT')
             $http.get("/servicegroups/loadServicegroupsByString.json", {
                 params: {
                     'angular': true,
-                    'filter[Container.name]': searchString,
+                    'filter[Containers.name]': searchString,
                     'selected[]': selected
                 }
             }).then(function(result){

@@ -9,6 +9,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
 
@@ -417,5 +418,143 @@ class ServicegroupsTable extends Table {
                 'Containers'
             ]
         ]);
+    }
+
+    /**
+     * @param ServicegroupConditions $ServicegroupConditions
+     * @param array $selected
+     * @return array
+     */
+    public function getServicegroupsForAngular(ServicegroupConditions $ServicegroupConditions, $selected = []) {
+
+        $query = $this->find()
+            ->contain([
+                'Containers'
+            ])
+            ->where([
+                'Containers.containertype_id' => CT_SERVICEGROUP,
+            ]);
+
+        if (!empty($ServicegroupConditions->getContainerIds())) {
+            $query->andWhere([
+                'Containers.parent_id IN' => $ServicegroupConditions->getContainerIds()
+            ]);
+        }
+
+        if (!empty($ServicegroupConditions->getConditions())) {
+            $query->andWhere(
+                $ServicegroupConditions->getConditions()
+            );
+        }
+
+        $query
+            ->order([
+                'Containers.name' => 'ASC'
+            ])
+            ->group([
+                'Containers.id'
+            ])
+            ->disableHydration()
+            ->limit(ITN_AJAX_LIMIT)
+            ->all();
+
+        $result = $query->toArray();
+
+        $resultAslist = [];
+        foreach ($result as $record) {
+            $resultAslist[$record['id']] = $record['container']['name'];
+        }
+
+        if (!empty($selected)) {
+            $query = $this->find()
+                ->contain([
+                    'Containers'
+                ])
+                ->where([
+                    'Servicegroups.id IN'         => $selected,
+                    'Containers.containertype_id' => CT_SERVICEGROUP,
+                ]);
+
+            if (!empty($ServicegroupConditions->getContainerIds())) {
+                $query->andWhere([
+                    'Containers.parent_id IN' => $ServicegroupConditions->getContainerIds()
+                ]);
+            }
+
+            $query
+                ->order([
+                    'Containers.name' => 'ASC'
+                ])
+                ->group([
+                    'Containers.id'
+                ])
+                ->disableHydration()
+                ->limit(ITN_AJAX_LIMIT)
+                ->all();
+
+
+            foreach ($query->toArray() as $selectedServicegroup) {
+                $resultAslist[$selectedServicegroup['id']] = $selectedServicegroup['container']['name'];
+            }
+
+        }
+
+        return $resultAslist;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getServiceIdsByServicegroupId($id) {
+        $servicegroup = $this->find()
+            ->contain([
+                // Get all services that are in this service group through the service template AND
+                // which does NOT have any own service groups
+                'servicetemplates' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'id',
+                        ])
+                        ->contain([
+                            'services' => function (Query $query) {
+                                $query->disableAutoFields()
+                                    ->select([
+                                        'Services.id',
+                                        'Services.uuid',
+                                        'Services.servicetemplate_id',
+                                        'Servicegroups.id'
+                                    ])
+                                    ->leftJoinWith('Servicegroups')
+                                    ->whereNull('Servicegroups.id');
+                                return $query;
+                            }
+                        ]);
+                    return $query;
+                },
+
+                // Get all services from this service group
+                'services' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Services.id',
+                            'Services.uuid',
+                        ]);
+                    return $query;
+                }
+            ])
+            ->where([
+                'Servicegroups.id' => $id
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $serviceIds = array_unique(array_merge(
+            Hash::extract($servicegroup, 'services.{n}.id'),
+            Hash::extract($servicegroup, 'servicetemplates.{n}.services.{n}.id')
+        ));
+
+        return $serviceIds;
     }
 }

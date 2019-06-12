@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostsTable;
@@ -33,6 +34,7 @@ use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -40,6 +42,7 @@ use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
@@ -714,171 +717,136 @@ class ServicegroupsController extends AppController {
     }
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param int|null $id
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     public function loadServicegroupWithServicesById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->Servicegroup->exists($id)) {
-            throw new NotFoundException(__('Invalid service group'));
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        /** @var $HoststatusTable HoststatusTableInterface */
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+
+        if (!$ServicegroupsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid Hostgroup'));
         }
 
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        $hostContainers = [];
-        $hosts = [];
+        $servicegroup = $ServicegroupsTable->getServicegroupById($id);
+
+        $User = new User($this->Auth);
+        $UserTime = UserTime::fromUser($User);
+
+        $serviceIds = $ServicegroupsTable->getServiceIdsByServicegroupId($id);
+
+        $ServiceFilter = new ServiceFilter($this->request);
+        $ServiceConditions = new ServiceConditions($ServiceFilter->indexFilter());
+
+        $ServiceConditions->setIncludeDisabled(false);
+        $ServiceConditions->setServiceIds($serviceIds);
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+
+        $all_services = [];
         $services = [];
 
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container',
-                'Service' => [
-                    'fields'          => [
-                        'Service.id',
-                        'Service.uuid',
-                        'Service.name',
-                        'Service.active_checks_enabled',
-                        'Service.disabled',
-                    ],
-                    'Servicetemplate' => [
-                        'fields' => [
-                            'Servicetemplate.name',
-                            'Servicetemplate.active_checks_enabled'
-                        ]
-                    ],
-                    'Host'            => [
-                        'Container',
-                        'fields' => [
-                            'Host.id',
-                            'Host.uuid',
-                            'Host.name',
-                            'Host.active_checks_enabled'
-                        ]
-                    ]
-                ]
-            ],
-            'conditions' => [
-                'Servicegroup.id' => $id
-            ]
-        ];
+        if (!empty($serviceIds)) {
+            if ($this->DbBackend->isNdoUtils()) {
+                /** @var $ServicesTable ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $services = $ServicesTable->getServiceIndex($ServiceConditions);
+            }
 
-        $servicegroup = $this->Servicegroup->find('first', $query);
-        $servicegroup['Servicegroup']['allowEdit'] = $this->hasPermission('edit', 'servicegroups');;
-        if ($this->hasRootPrivileges === false && $servicegroup['Servicegroup']['allowEdit'] === true) {
-            $servicegroup['Servicegroup']['allowEdit'] = $this->allowedByContainerId($servicegroup['Container']['parent_id']);
+            if ($this->DbBackend->isStatusengine3()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
+            }
+
+            if ($this->DbBackend->isCrateDb()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
+            }
         }
 
-        foreach ($servicegroup['Service'] as $service) {
-            $hosts[$service['Host']['id']] = $service['Host']['uuid'];
-            $services[$service['id']] = $service['uuid'];
-            if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-                $hostContainers[$service['Host']['id']] = Hash::extract($service['Host']['Container'], '{n}.id');
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->currentState();
+
+        $servicegroupServicestatusOverview = [
+            0 => 0,
+            1 => 0,
+            2 => 0,
+            3 => 0
+        ];
+
+        $hostContainers = [];
+        if ($this->hasRootPrivileges === false) {
+            if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
+                foreach ($services as $index => $service) {
+                    $hostId = $service['_matchingData']['Hosts']['id'];
+                    if (!isset($hostContainers[$hostId])) {
+                        $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
+                    }
+
+                    $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
+                    $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
+                }
+            }
+        } else {
+            //Root user
+            foreach ($services as $index => $service) {
+                $services[$index]['allow_edit'] = $this->hasRootPrivileges;
             }
         }
 
         $HoststatusFields = new HoststatusFields($this->DbBackend);
-        $HoststatusFields->currentState();
-        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-        $ServicestatusFields
-            ->currentState()
-            ->lastStateChange()
-            ->lastCheck()
-            ->nextCheck()
-            ->output()
-            ->problemHasBeenAcknowledged()
-            ->acknowledgementType()
-            ->scheduledDowntimeDepth()
-            ->notificationsEnabled()
-            ->perfdata();
-        $hoststatus = $this->Hoststatus->byUuid($hosts, $HoststatusFields);
-        $servicestatus = $this->Servicestatus->byUuid($services, $ServicestatusFields);
+        $HoststatusFields
+            ->currentState();
+        $hoststatusCache = $HoststatusTable->byUuid(
+            array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
+            $HoststatusFields
+        );
 
-        if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-            $hostContainers[$service['Host']['id']] = Hash::extract($service['Host']['Container'], '{n}.id');
-        }
-        $all_services = [];
-        foreach ($servicegroup['Service'] as $key => $service) {
-            if ($this->hasRootPrivileges) {
-                $allowEdit = true;
+        foreach ($services as $service) {
+            $allowEdit = $service['allow_edit'];
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts'], $allowEdit);
+            if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
             } else {
-                $containerIds = [];
-                if (isset($hostContainers[$service['Host']['id']])) {
-                    $containerIds = $hostContainers[$service['Host']['id']];
-                }
-                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
-                $allowEdit = $ContainerPermissions->hasPermission();
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([], $UserTime);
             }
-
-            $service['Hoststatus'] = (!empty($hoststatus[$service['Host']['uuid']])) ? $hoststatus[$service['Host']['uuid']]['Hoststatus'] : [];
-            $service['Servicestatus'] = (!empty($servicestatus[$service['uuid']])) ? $servicestatus[$service['uuid']]['Servicestatus'] : [];
-
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
-                'Service'         => $service,
-                'Servicetemplate' => $service['Servicetemplate'],
-                'Host'            => $service['Host']
-            ],
-                null,
-                $allowEdit
-            );
-
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
-            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($service['Hoststatus'], $UserTime);
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
             $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
             $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus);
 
             $tmpRecord = [
                 'Service'       => $Service->toArray(),
                 'Host'          => $Host->toArray(),
-                'Servicestatus' => $Servicestatus->toArray(),
-                'Hoststatus'    => $Hoststatus->toArray()
+                'Hoststatus'    => $Hoststatus->toArray(),
+                'Servicestatus' => $Servicestatus->toArray()
             ];
             $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
             $all_services[] = $tmpRecord;
+
+            $servicegroupServicestatusOverview[$Servicestatus->currentState()]++;
         }
 
-        $serviceStatusForServicegroup = Hash::apply(
-            $all_services,
-            '{n}.Servicestatus[isInMonitoring=true].currentState',
-            'array_count_values'
-        );
-        //refill missing service states
-        $statusOverview = array_replace(
-            [0 => 0, 1 => 0, 2 => 0, 3 => 0],
-            $serviceStatusForServicegroup
-        );
         $statusOverview = array_combine([
             __('ok'),
             __('warning'),
             __('critical'),
             __('unknown')
-        ], $statusOverview
+        ], $servicegroupServicestatusOverview
         );
 
-        # get a list of sort columns and their data to pass to array_multisort
-        $sortAllServices = [];
-        foreach ($all_services as $k => $v) {
-            $sortAllServices['Host']['hostname'][$k] = $v['Host']['hostname'];
-            $sortAllServices['Service']['servicename'][$k] = $v['Service']['servicename'];
-        }
-
-        # sort by host name asc and service name asc
-        if (!empty($all_services)) {
-            array_multisort($sortAllServices['Host']['hostname'], SORT_ASC, $sortAllServices['Service']['servicename'], SORT_ASC, $all_services);
-        }
-
-        $selectedServiceGroup = [
-            'Servicegroup'  => $servicegroup['Servicegroup'],
-            'Container'     => $servicegroup['Container'],
-            'Services'      => $all_services,
+        $servicegroup = [
+            'Servicegroup' => $servicegroup->toArray(),
+            'Services' => $all_services,
             'StatusSummary' => $statusOverview
         ];
 
-        $servicegroup = $selectedServiceGroup;
-
-        $this->set(compact(['servicegroup']));
+        $this->set('servicegroup', $servicegroup);
         $this->set('_serialize', ['servicegroup']);
     }
 
@@ -909,9 +877,6 @@ class ServicegroupsController extends AppController {
         $this->set('_serialize', ['servicegroups']);
     }
 
-    /**
-     * @deprecated
-     */
     public function loadServicegroupsByString() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -919,16 +884,19 @@ class ServicegroupsController extends AppController {
 
         $selected = $this->request->query('selected');
 
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
         $ServicegroupFilter = new ServicegroupFilter($this->request);
 
         $ServicegroupConditions = new ServicegroupConditions($ServicegroupFilter->indexFilter());
         $ServicegroupConditions->setContainerIds($this->MY_RIGHTS);
 
         $servicegroups = Api::makeItJavaScriptAble(
-            $this->Servicegroup->getServicegroupsForAngular($ServicegroupConditions, $selected)
+            $ServicegroupsTable->getServicegroupsForAngular($ServicegroupConditions, $selected)
         );
 
-        $this->set(compact(['servicegroups']));
+        $this->set('servicegroups', $servicegroups);
         $this->set('_serialize', ['servicegroups']);
     }
 }
