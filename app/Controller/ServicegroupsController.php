@@ -55,10 +55,7 @@ use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 class ServicegroupsController extends AppController {
 
     public $uses = [
-        'Servicegroup',
-        MONITORING_OBJECTS,
-        MONITORING_HOSTSTATUS,
-        MONITORING_SERVICESTATUS,
+        'Changelog'
     ];
 
     public $layout = 'blank';
