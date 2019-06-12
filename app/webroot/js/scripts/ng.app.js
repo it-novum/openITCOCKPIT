@@ -388,8 +388,14 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('HostgroupsExtended', {
-                url: '/hostgroups/extended',
+                url: '/hostgroups/extended/:id',
                 templateUrl: "/hostgroups/extended.html",
+                params: {
+                    id: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 controller: "HostgroupsExtendedController"
             })
 
