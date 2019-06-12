@@ -804,55 +804,30 @@ class ServicegroupsController extends AppController {
         $this->set('_serialize', ['servicegroup']);
     }
 
-    /**
-     * @deprecated
-     */
     public function loadServicegroupsByContainerId() {
         if (!$this->isApiRequest()) {
-            //Only ship template for AngularJs
-            return;
+            throw new MethodNotAllowedException();
         }
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
         $containerId = $this->request->query('containerId');
-        $selected = $this->request->query('selected');
-        $ServicegroupFilter = new ServicegroupFilter($this->request);
+        if (!is_numeric($containerId)) {
+            throw new BadRequestException('containerId is missing or not numeric');
+        }
 
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
 
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
-            'conditions' => $ServicegroupFilter->indexFilter(),
-            'limit'      => $this->Paginator->settings['limit']
-        ];
+        $servicegroups = $ServicegroupsTable->getServicegroupsByContainerId($containerIds, 'list');
+        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
 
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            unset($query['limit']);
-            $servicegroups = $this->Servicegroup->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $this->Paginator->settings['page'] = $ServicegroupFilter->getPage();
-            $servicegroups = $this->Paginator->paginate();
-        }
-
-        $servicegroups = Api::makeItJavaScriptAble(
-            Hash::combine(
-                $servicegroups,
-                '{n}.Servicegroup.id',
-                '{n}.Container.name'
-            )
-        );
-
-        $this->set(compact(['servicegroups']));
+        $this->set('servicegroups', $servicegroups);
         $this->set('_serialize', ['servicegroups']);
     }
 

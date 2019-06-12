@@ -16,9 +16,7 @@ use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
  * Servicegroups Model
  *
  * @property \App\Model\Table\ContainersTable|\Cake\ORM\Association\BelongsTo $Containers
- * @property \App\Model\Table\ServicegroupsToServicedependenciesTable|\Cake\ORM\Association\HasMany $ServicegroupsToServicedependencies
- * @property \App\Model\Table\ServicegroupsToServiceescalationsTable|\Cake\ORM\Association\HasMany $ServicegroupsToServiceescalations
- * @property \App\Model\Table\ServicesToServicegroupsTable|\Cake\ORM\Association\HasMany $ServicesToServicegroups
+ * @property \App\Model\Table\ServicesTable|\Cake\ORM\Association\HasMany $Services
  * @property \App\Model\Table\ServicetemplatesTable|\Cake\ORM\Association\HasMany $Servicetemplates
  *
  * @method \App\Model\Entity\Servicegroup get($primaryKey, $options = [])
