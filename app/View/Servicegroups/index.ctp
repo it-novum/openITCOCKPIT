@@ -176,6 +176,16 @@
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
+
+                                                <?php if ($this->Acl->hasPermission('extended', 'servicegroups')): ?>
+                                                    <li>
+                                                        <a ui-sref="ServicegroupsExtended({id: servicegroup.id})">
+                                                            <i class="fa fa-plus-square"></i>
+                                                            <?php echo __('Extended view'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+
                                                 <?php if ($this->Acl->hasPermission('delete', 'servicegroups')): ?>
                                                     <li class="divider" ng-if="servicegroup.allow_edit"></li>
                                                     <li ng-if="servicegroup.allow_edit">

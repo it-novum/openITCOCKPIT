@@ -45,7 +45,6 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
-use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 
 /**
@@ -457,138 +456,96 @@ class ServicegroupsController extends AppController {
         }
     }
 
-    /**
-     * @deprecated
-     */
     public function listToPdf() {
         $this->layout = 'Admin.default';
 
-        $ServicegroupFilter = new ServicegroupFilter($this->request);
-
         /** @var $ServicegroupsTable ServicegroupsTable */
         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
-
+        /** @var $HoststatusTable HoststatusTableInterface */
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
         /** @var $ServicestatusTable ServicestatusTableInterface */
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         $MY_RIGHTS = [];
-        if ($this->hasRootPrivileges === false) {
+        if (!$this->hasRootPrivileges) {
             $MY_RIGHTS = $this->MY_RIGHTS;
         }
-        $servicegroups = $ServicegroupsTable->getServicegroupsForPdf($ServicegroupFilter, $MY_RIGHTS);
-
-        debug($servicegroups);die();
-
-
-        $numberOfServicegroups = 0;
-        $numberOfHosts = 0;
-        $numberOfServices = 0;
-        foreach ($servicegroups as $index => $servicegroups) {
-            $hostgroupHostUuids = \Cake\Utility\Hash::extract($hostgroup, 'hosts.{n}.uuid');
-            $hostgroupHostCount += count($hostgroupHostUuids);
-            $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields->wildcard();
-            $hoststatusOfHostgroup = $HoststatusTable->byUuids($hostgroupHostUuids, $HoststatusFields);
-            $hostgroups[$index]['all_hoststatus'] = $hoststatusOfHostgroup;
-        }
-
-        $hostgroupCount = count($hostgroups);
-        $this->set('hostgroups', $hostgroups);
-        $this->set('hostgroupCount', $hostgroupCount);
-        $this->set('hostgroupHostCount', $hostgroupHostCount);
-
-
-        $filename = 'Servicegroups_' . strtotime('now') . '.pdf';
-        $binary_path = '/usr/bin/wkhtmltopdf';
-        if (file_exists('/usr/local/bin/wkhtmltopdf')) {
-            $binary_path = '/usr/local/bin/wkhtmltopdf';
-        }
-        $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
-                'bottom' => 15,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 15,
-            ],
-            'encoding'           => 'UTF-8',
-            'download'           => false,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => $filename,
-            'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
-        ];
-
-        /****** OLD CODE ****/
-        return;
-
-
-
-        $this->layout = 'Admin.default';
-
         $ServicegroupFilter = new ServicegroupFilter($this->request);
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container',
-                'Service' => [
-                    'fields'          => [
-                        'Service.id',
-                        'Service.name',
-                        'Service.uuid'
-                    ],
-                    'Host'            => [
-                        'fields' => [
-                            'Host.id',
-                            'Host.name'
-                        ],
-                    ],
-                    'Servicetemplate' => [
-                        'fields' => [
-                            'Servicetemplate.name'
-                        ],
-                    ]
-                ],
-                'Servicetemplate'
 
-            ],
-            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
-            'conditions' => $ServicegroupFilter->indexFilter(),
-        ];
+        $servicegroups = $ServicegroupsTable->getServicegroupsIndex($ServicegroupFilter, null, $MY_RIGHTS);
 
 
-        if (!$this->hasRootPrivileges) {
-            $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
-        }
-        $servicegroups = $this->Servicegroup->find('all', $query);
-        $servicegroupCount = count($servicegroups);
-        $serviceUuids = Hash::extract($servicegroups, '{n}.Service.{n}.uuid');
-        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-        $ServicestatusFields
-            ->currentState()
-            ->lastStateChange()
-            ->lastCheck()
-            ->nextCheck()
-            ->output()
-            ->problemHasBeenAcknowledged()
-            ->acknowledgementType()
-            ->scheduledDowntimeDepth()
-            ->notificationsEnabled();
-        $servicegroupstatus = $this->Servicestatus->byUuids(array_unique($serviceUuids), $ServicestatusFields);
-        $hostsArray = [];
-        $serviceCount = 0;
+        $User = new User($this->Auth);
 
+        $numberOfServicegroups = sizeof($servicegroups);
+
+        $all_servicegroups = [];
         foreach ($servicegroups as $servicegroup) {
-            foreach ($servicegroup['Service'] as $service) {
-                $serviceCount++;
-                $hostsArray[$service['Host']['id']] = $service['Host']['name'];
+            $serviceIds = $ServicegroupsTable->getServiceIdsByServicegroupId($servicegroup['id']);
+
+            $ServiceFilter = new ServiceFilter($this->request);
+            $ServiceConditions = new ServiceConditions($ServiceFilter->indexFilter());
+
+            $ServiceConditions->setIncludeDisabled(false);
+            $ServiceConditions->setServiceIds($serviceIds);
+            $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+
+            $services = [];
+            if (!empty($serviceIds)) {
+                if ($this->DbBackend->isNdoUtils()) {
+                    $services = $ServicesTable->getServiceIndex($ServiceConditions);
+                }
+
+                if ($this->DbBackend->isStatusengine3()) {
+                    throw new MissingDbBackendException('MissingDbBackendException');
+                }
+
+                if ($this->DbBackend->isCrateDb()) {
+                    throw new MissingDbBackendException('MissingDbBackendException');
+                }
             }
+
+
+            $servicegroupServiceUuids = \Cake\Utility\Hash::extract($services, '{n}.Service.uuid');
+            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+            $ServicestatusFields->wildcard();
+            $servicestatusOfServicegroup = $ServicestatusTable->byUuids($servicegroupServiceUuids, $ServicestatusFields);
+
+            $hostUuids = array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid'));
+
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields
+                ->currentState();
+            $hoststatusCache = $HoststatusTable->byUuid(
+                $hostUuids,
+                $HoststatusFields
+            );
+
+            foreach ($services as $index => $service) {
+                $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts']);
+                $hoststatus = [];
+                if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
+                    $hoststatus = $hoststatusCache[$Host->getUuid()]['Hoststatus'];
+                }
+                $services[$index]['Hoststatus'] = $hoststatus;
+            }
+
+            $all_servicegroups[] = [
+                'Servicegroup'  => $servicegroup,
+                'Services'      => $services,
+                'Servicestatus' => $servicestatusOfServicegroup
+            ];
         }
-        $hostCount = sizeof($hostsArray);
-        $this->set(compact('servicegroups', 'servicegroupstatus', 'servicegroupCount', 'hostCount', 'serviceCount'));
+        $numberOfHosts = sizeof(array_unique(\Cake\Utility\Hash::extract($all_servicegroups, '{n}.Services.{n}._matchingData.Hosts.uuid')));
+        $numberOfServices = sizeof(array_unique(\Cake\Utility\Hash::extract($all_servicegroups, '{n}.Services.{n}.uuid')));
+        $this->set('servicegroups', $all_servicegroups);
+        $this->set('numberOfServicegroups', $numberOfServicegroups);
+        $this->set('numberOfServices', $numberOfServices);
+        $this->set('numberOfHosts', $numberOfHosts);
+        $this->set('User', $User);
+
 
         $filename = 'Servicegroups_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';
@@ -604,7 +561,7 @@ class ServicegroupsController extends AppController {
                 'top'    => 15,
             ],
             'encoding'           => 'UTF-8',
-            'download'           => false,
+            'download'           => true,
             'binary'             => $binary_path,
             'orientation'        => 'portrait',
             'filename'           => $filename,
@@ -805,8 +762,8 @@ class ServicegroupsController extends AppController {
         );
 
         $servicegroup = [
-            'Servicegroup' => $servicegroup->toArray(),
-            'Services' => $all_services,
+            'Servicegroup'  => $servicegroup->toArray(),
+            'Services'      => $all_services,
             'StatusSummary' => $statusOverview
         ];
 

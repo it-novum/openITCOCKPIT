@@ -1512,6 +1512,14 @@ class ServicesTable extends Table {
         $where = $ServiceConditions->getConditions();
 
         $where['Services.disabled'] = 0;
+        if ($ServiceConditions->getServiceIds()) {
+            $serviceIds = $ServiceConditions->getServiceIds();
+            if(!is_array($serviceIds)){
+                $serviceIds = [$serviceIds];
+            }
+
+            $where['Services.id IN'] = $serviceIds;
+        }
 
         $having = null;
         if (isset($where['servicename LIKE'])) {

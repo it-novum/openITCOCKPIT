@@ -174,6 +174,16 @@
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
+
+                                                <?php if ($this->Acl->hasPermission('extended', 'hostgroups')): ?>
+                                                    <li>
+                                                        <a ui-sref="HostgroupsExtended({id: hostgroup.id})">
+                                                            <i class="fa fa-plus-square"></i>
+                                                            <?php echo __('Extended view'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+
                                                 <?php if ($this->Acl->hasPermission('delete', 'hostgroups')): ?>
                                                     <li class="divider" ng-if="hostgroup.allowEdit"></li>
                                                     <li ng-if="hostgroup.allowEdit">
