@@ -981,6 +981,10 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
     <massactivate></massactivate>
 
     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+
+        {{activeTab}}
+
         <div class="jarviswidget" role="widget">
             <header>
                 <div class="widget-toolbar" role="menu">
@@ -1032,11 +1036,10 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                 <div class="widget-body no-padding">
                     <div class="tab-content">
 
-                        <div id="serviceTab1" class="tab-pane fade active in">
+                        <div id="serviceTab1" class="tab-pane fade active in" ng-if="activeTab === 'active'">
                             <div class="mobile_table">
                                 <table id="host_list"
-                                       class="table table-striped table-hover table-bordered smart-form"
-                                       ng-if="activeTab === 'active'">
+                                       class="table table-striped table-hover table-bordered smart-form">
                                     <thead>
                                     <tr>
 
@@ -1067,8 +1070,8 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                             </strong>
                                         </th>
 
-                                        <th class="no-sort" ng-click="orderBy('Service.servicename')">
-                                            <i class="fa" ng-class="getSortClass('Service.servicename')"></i>
+                                        <th class="no-sort" ng-click="orderBy('servicename')">
+                                            <i class="fa" ng-class="getSortClass('servicename')"></i>
                                             <?php echo __('Service name'); ?>
                                         </th>
 
@@ -1292,10 +1295,9 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                         </div> <!-- close tab1 -->
 
-                        <div id="serviceTab2" class="tab-pane fade">
+                        <div id="serviceTab2" class="tab-pane fade active in" ng-if="activeTab === 'notMonitored'">
 
-                            <table class="table table-striped table-hover table-bordered smart-form"
-                                   ng-if="activeTab === 'notMonitored'">
+                            <table class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
                                     <th class="no-sort width-90">
@@ -1387,11 +1389,10 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                         </div> <!-- cloase tab2 -->
 
-                        <div id="serviceTab3" class="tab-pane fade">
+                        <div id="serviceTab3" class="tab-pane fade active in" ng-if="activeTab === 'disabled'">
 
                             <div class="mobile_table">
-                                <table class="table table-striped table-hover table-bordered smart-form"
-                                       ng-if="activeTab === 'disabled'">
+                                <table class="table table-striped table-hover table-bordered smart-form">
                                     <thead>
                                     <tr>
                                         <th class="no-sort width-90">

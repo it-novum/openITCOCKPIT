@@ -155,7 +155,7 @@ angular.module('openITCOCKPIT')
                 $scope.services = [];
                 $scope.activeTab = tab;
 
-                SortService.setSort('Service.servicename');
+                SortService.setSort('servicename');
                 SortService.setDirection('asc');
                 $scope.currentPage = 1;
 
@@ -186,7 +186,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Hosts.id]': $scope.id,
+                'filter[Host.id]': $scope.id,
                 'filter[servicename]': $scope.activeServiceFilter.Service.name,
                 'filter[Servicestatus.output]': $scope.activeServiceFilter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.activeServiceFilter.Servicestatus.current_state),
@@ -209,7 +209,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.id]': $scope.id
+                'filter[Hosts.id]': $scope.id
             };
 
             $http.get("/services/notMonitored.json", {
@@ -228,7 +228,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.id]': $scope.id
+                'filter[Hosts.id]': $scope.id
             };
 
             $http.get("/services/disabled.json", {
