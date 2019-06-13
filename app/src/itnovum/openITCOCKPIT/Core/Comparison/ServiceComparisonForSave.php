@@ -161,6 +161,13 @@ class ServiceComparisonForSave {
                 } else {
                     $data[$field] = null;
                 }
+            }else{
+                if(array_key_exists($field, $this->service)){
+                    //$this->service[$field] needs to be null from self::getServiceSkeleton() may be?
+                    if($this->service[$field] === null){
+                        $data[$field] = null;
+                    }
+                }
             }
         }
 
@@ -547,6 +554,72 @@ class ServiceComparisonForSave {
 
         //There is a diff, save all command argument values for this service
         return $this->service['serviceeventcommandargumentvalues'];
+    }
+
+    public static function getServiceSkeleton($hostId, $servicetemplateId) {
+        return [
+
+            //Static service default data
+            'host_id'             => $hostId,
+            'servicetemplate_id'  => $servicetemplateId,
+            'service_type'        => GENERIC_SERVICE,
+            'usage_flag'          => 0,
+            'own_contacts'        => 0,
+            'own_contactgroups'   => 0,
+            'own_customvariables' => 0,
+
+            'name'                              => null,
+            'description'                       => null,
+            'command_id'                        => null,
+            'eventhandler_command_id'           => null,
+            'check_interval'                    => null,
+            'retry_interval'                    => null,
+            'max_check_attempts'                => null,
+            'first_notification_delay'          => null,
+            'notification_interval'             => null,
+            'notify_on_recovery'                => null,
+            'notify_on_warning'                 => null,
+            'notify_on_critical'                => null,
+            'notify_on_unknown'                 => null,
+            'notify_on_flapping'                => null,
+            'notify_on_downtime'                => null,
+            'flap_detection_enabled'            => null,
+            'flap_detection_on_ok'              => null,
+            'flap_detection_on_warning'         => null,
+            'flap_detection_on_critical'        => null,
+            'flap_detection_on_unknown'         => null,
+            'low_flap_threshold'                => null,
+            'high_flap_threshold'               => null,
+            'process_performance_data'          => null,
+            'freshness_threshold'               => null,
+            'passive_checks_enabled'            => null,
+            'event_handler_enabled'             => null,
+            'active_checks_enabled'             => null,
+            'retain_status_information'         => null,
+            'retain_nonstatus_information'      => null,
+            'notifications_enabled'             => null,
+            'notes'                             => null,
+            'priority'                          => null,
+            'check_period_id'                   => null,
+            'notify_period_id'                  => null,
+            'tags'                              => null,
+            'container_id'                      => null,
+            'service_url'                       => null,
+            'is_volatile'                       => null,
+            'freshness_checks_enabled'          => null,
+            'contacts'                          => [
+                '_ids' => []
+            ],
+            'contactgroups'                     => [
+                '_ids' => []
+            ],
+            'servicegroups'                     => [
+                '_ids' => []
+            ],
+            'customvariables'                   => [],
+            'servicecommandargumentvalues'      => [],
+            'serviceeventcommandargumentvalues' => []
+        ];
     }
 
 }

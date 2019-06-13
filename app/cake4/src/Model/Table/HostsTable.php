@@ -643,7 +643,7 @@ class HostsTable extends Table {
         $where['Hosts.disabled'] = (int)$HostConditions->includeDisabled();
         if ($HostConditions->getHostIds()) {
             $hostIds = $HostConditions->getHostIds();
-            if(!is_array($hostIds)){
+            if (!is_array($hostIds)) {
                 $hostIds = [$hostIds];
             }
 
@@ -1378,6 +1378,58 @@ class HostsTable extends Table {
         ];
 
         return $host;
+    }
+
+    /**
+     * @param int $hostId
+     * @return array
+     */
+    public function getServicesForServicetemplateAllocation($hostId) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $hostId
+            ])
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+                'Hosts.address'
+            ])
+            ->contain([
+                'Services' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Services.id',
+                            'Services.name',
+                            'Services.host_id',
+                            'Services.servicetemplate_id',
+                            'Services.disabled'
+                        ])
+                        ->contain([
+                            'Servicetemplates' => function (Query $query) {
+                                $query->disableAutoFields()
+                                    ->select([
+                                        'Servicetemplates.id',
+                                        'Servicetemplates.name'
+                                    ]);
+                                return $query;
+                            }
+                        ]);
+                    return $query;
+                }
+            ])
+            ->disableHydration()
+            ->first();
+
+        $result = $query;
+        $result['services'] = [];
+
+        //Use servicetemplate id as array key
+        foreach($query['services'] as $service){
+            $result['services'][$service['servicetemplate_id']] = $service;
+        }
+
+        return $result;
     }
 
     /**

@@ -2183,23 +2183,6 @@ class HostsController extends AppController {
     /**
      * @deprecated
      */
-    public function getHostByAjax($id = null) {
-        if (!$this->Host->exists($id)) {
-            throw new NotFoundException(__('Invalid host'));
-        }
-
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-
-        $host = $this->Host->findById($id);
-        $this->set('host', $host);
-        $this->set('_serialize', ['host']);
-    }
-
-    /**
-     * @deprecated
-     */
     public function listToPdf() {
         $HostFilter = new HostFilter($this->request);
 

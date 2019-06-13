@@ -126,7 +126,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(host, service){
             var object = {};
-            object[service.Service.id] = host.Host.hostname + '/' + service.Service.servicename;
+            object[service.id] = host.Host.hostname + '/' + service.servicename;
             return object;
         };
 

@@ -261,7 +261,7 @@ $config = [
                 'extended' => ['loadHostgroupWithHostsById', 'listToPdf']
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup'],
+                'index'      => ['listToPdf', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid', 'getGrafanaIframeUrlForDatepicker'],

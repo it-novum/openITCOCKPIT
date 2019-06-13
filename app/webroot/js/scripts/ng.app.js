@@ -892,6 +892,18 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ServicetemplategroupsEditController"
             })
 
+            .state('ServicetemplategroupsAllocateToHost', {
+                url: '/servicetemplategroups/allocateToHost/:id',
+                templateUrl: "/servicetemplategroups/allocateToHost.html",
+                controller: "ServicetemplategroupsAllocateToHostController"
+            })
+
+            .state('ServicetemplategroupsAllocateToHostgroup', {
+                url: '/servicetemplategroups/allocateToHostgroup/:id',
+                templateUrl: "/servicetemplategroups/allocateToHostgroup.html",
+                controller: "ServicetemplategroupsAllocateToHostgroupController"
+            })
+
             .state('LocationsIndex', {
                 url: '/locations/index',
                 templateUrl: "/locations/index.html",
