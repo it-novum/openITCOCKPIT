@@ -893,7 +893,17 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('ServicetemplategroupsAllocateToHost', {
-                url: '/servicetemplategroups/allocateToHost/:id',
+                url: '/servicetemplategroups/allocateToHost/:id/:hostId',
+                params: {
+                    id: {
+                        value: null,
+                        squash: true
+                    },
+                    hostId: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 templateUrl: "/servicetemplategroups/allocateToHost.html",
                 controller: "ServicetemplategroupsAllocateToHostController"
             })

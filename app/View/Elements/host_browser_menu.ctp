@@ -83,8 +83,10 @@
         <?php endif; ?>
         <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
             <li>
-                <a href="/hosts/allocateServiceTemplateGroup/{{ hostBrowserMenu.hostId }}"><i
-                            class="fa fa-external-link"></i> <?php echo __('Allocate Servicetemplategroup'); ?></a>
+                <a ui-sref="ServicetemplategroupsAllocateToHost({id: 0, hostId: hostBrowserMenu.hostId})">
+                    <i class="fa fa-external-link"></i>
+                    <?php echo __('Allocate service template group'); ?>
+                </a>
             </li>
         <?php endif; ?>
         <?php if ($this->Acl->hasPermission('ping', 'hosts')): ?>

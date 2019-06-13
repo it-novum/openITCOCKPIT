@@ -296,9 +296,9 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
                                                     <li>
-                                                        <a href="/hosts/allocateServiceTemplateGroup/{{host.Host.id}}">
+                                                        <a ui-sref="ServicetemplategroupsAllocateToHost({id: 0, hostId: host.Host.id})">
                                                             <i class="fa fa-external-link"></i>
-                                                            <?php echo __('Allocate Service Template Group'); ?>
+                                                            <?php echo __('Allocate service template group'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>

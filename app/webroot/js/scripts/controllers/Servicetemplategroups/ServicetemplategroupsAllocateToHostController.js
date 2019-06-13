@@ -1,45 +1,64 @@
 angular.module('openITCOCKPIT')
     .controller('ServicetemplategroupsAllocateToHostController', function($scope, $http, SudoService, $state, NotyService, $stateParams, RedirectService){
 
-        $scope.id = $stateParams.id;
+        $scope.id = 0;
+        var urlId = $stateParams.id;
+        if(urlId !== null){
+            $scope.id = parseInt(urlId, 10);
+        }
 
         $scope.init = true;
 
         $scope.hostId = 0;
 
-        if($scope.id === null || $scope.id === ''){
-            //No ids to copy given - redirect
-            RedirectService.redirectWithFallback('ServicetemplategroupsIndex');
-            return;
+        var urlHostId = $stateParams.hostId;
+        if(urlHostId !== null){
+            $scope.hostId = parseInt(urlHostId, 10);
         }
 
-        $scope.id = parseInt($scope.id, 10);
+        $scope.loadServicetemplategroups = function(searchString, selected){
+            var params = {
+                'angular': true,
+                'filter[Containers.name]': searchString
+            };
 
-        var loadServicetemplategroup = function(){
-            $http.get("/servicetemplategroups/view/" + $scope.id + ".json", {
-                params: {
-                    'angular': true,
+            if(typeof selected !== "undefined"){
+                if(selected > 0){
+                    params['selected[]'] = selected;
                 }
+            }
+
+            $http.get("/servicetemplategroups/loadServicetemplategroupsByString.json", {
+                params: params
             }).then(function(result){
-                $scope.servicetemplategroup = result.data.servicetemplategroup;
+                $scope.servicetemplategroups = result.data.servicetemplategroups;
             });
         };
 
         $scope.loadHosts = function(searchString, selected){
-            if(typeof selected === "undefined"){
-                selected = [];
+            var params = {
+                'angular': true,
+                'filter[Hosts.name]': searchString,
+                'includeDisabled': 'false'
+            };
+
+            if(typeof selected !== "undefined"){
+                if(selected > 0){
+                    params['selected[]'] = selected;
+                }
             }
 
             $http.get("/hosts/loadHostsByString/1.json", {
-                params: {
-                    'angular': true,
-                    'filter[Hosts.name]': searchString,
-                    'selected[]': selected,
-                    'includeDisabled': 'false'
-                }
+                params: params
             }).then(function(result){
                 $scope.hosts = result.data.hosts;
                 $scope.init = false;
+
+                if(selected && $scope.id > 0){
+                    //A host was pre selected via URL
+                    $scope.loadServices();
+                }
+
             });
         };
 
@@ -119,13 +138,27 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        loadServicetemplategroup();
-        $scope.loadHosts();
+        $scope.loadServicetemplategroups('', $scope.id);
+        $scope.loadHosts('', $scope.hostId);
 
         $scope.$watch('hostId', function(){
             if($scope.init){
                 return;
             }
+            $scope.loadServices();
+        }, true);
+
+        $scope.$watch('id', function(){
+            if($scope.init){
+                return;
+            }
+
+            if($scope.hostId < 0){
+                return;
+            }
+
+            //Hostid was passed via URL
+            //ServicetemplategroupId was 0
             $scope.loadServices();
         }, true);
 

@@ -38,7 +38,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2><?php echo __('Allocate service template group %s to host', '<strong>»{{servicetemplategroup.Containers.name}}«</strong>'); ?></h2>
+        <h2><?php echo __('Allocate service template group to host'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'servicetemplategroups')): ?>
                 <a back-button fallback-state='ServicetemplategroupsIndex' class="btn btn-default btn-xs">
@@ -51,6 +51,30 @@
     <div>
         <div class="widget-body" ng-init="successMessage=
             {objectName : '<?php echo __('Services'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+
+            <div class="row form-horizontal">
+                <div class="col-xs-12 col-md-9 col-lg-7">
+                    <div class="form-group required">
+                        <label for="ServiceTemplateGroupsSelect" class="col col-md-2 control-label">
+                            <?php echo('Service template group'); ?>
+                        </label>
+                        <div class="col col-xs-10 required">
+                            <select
+                                    id="ServiceTemplateGroupsSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="servicetemplategroups"
+                                    callback="loadServicetemplategroups"
+                                    ng-options="servicetemplategroup.key as servicetemplategroup.value for servicetemplategroup in servicetemplategroups"
+                                    ng-model="id">
+                            </select>
+                            <div ng-show="id < 1" class="warning-glow">
+                                <?php echo __('Please select a service template group.'); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="row form-horizontal">
                 <div class="col-xs-12 col-md-9 col-lg-7">
