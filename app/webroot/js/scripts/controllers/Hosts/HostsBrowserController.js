@@ -186,8 +186,8 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.id]': $scope.id,
-                'filter[Service.servicename]': $scope.activeServiceFilter.Service.name,
+                'filter[Hosts.id]': $scope.id,
+                'filter[servicename]': $scope.activeServiceFilter.Service.name,
                 'filter[Servicestatus.output]': $scope.activeServiceFilter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.activeServiceFilter.Servicestatus.current_state),
                 'filter[Service.disabled]': false

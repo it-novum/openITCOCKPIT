@@ -839,7 +839,14 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $ServicesTable->get($id);
+        $service = $ServicesTable->find()
+            ->contain([
+                'ServiceescalationsServiceMemberships',
+                'ServicedependenciesServiceMemberships'
+            ])->where([
+                'Services.id' => $id
+            ])->first();
+
         $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();

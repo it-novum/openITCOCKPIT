@@ -2210,12 +2210,12 @@ class NagiosExportTask extends AppShell {
             if (!$file->exists()) {
                 $file->create();
             }
-
             $masterServicesForCfg = [];
             $dependentServicesForCfg = [];
             $services = $servicedependency->get('services', [
                 'contain' => 'Hosts'
             ]);
+
             foreach ($services as $service) {
                 if ($service->get('_joinData')->get('dependent') === 0) {
                     $masterServicesForCfg[] = [
@@ -2229,6 +2229,7 @@ class NagiosExportTask extends AppShell {
                     ];
                 }
             }
+
             //Check if the service dependency is valid
             if (empty($masterServicesForCfg) || empty($dependentServicesForCfg)) {
                 //This service dependency is broken, there are no services or no dependent services in it!
@@ -2252,6 +2253,14 @@ class NagiosExportTask extends AppShell {
                     }
                 }
             }
+            $serviceDependencyTimeperiod = null;
+            $dependencyTimeperiod = $servicedependency->get('timeperiod');
+            if (!is_null($dependencyTimeperiod)) {
+                $serviceDependencyTimeperiod = $dependencyTimeperiod->get('uuid');
+            }
+            $executionFailureCriteriaForCfgString = $servicedependency->getExecutionFailureCriteriaForCfg();
+            $notificationFailureCriteriaForCfgString = $servicedependency->getNotificationFailureCriteriaForCfg();
+
 
             foreach ($masterServicesForCfg as $masterServiceForCfg) {
                 foreach ($dependentServicesForCfg as $dependentServiceForCfg) {
@@ -2261,24 +2270,24 @@ class NagiosExportTask extends AppShell {
                     $content .= $this->addContent('dependent_host_name', 1, $dependentServiceForCfg['hostUuid']);
                     $content .= $this->addContent('dependent_service_description', 1, $dependentServiceForCfg['serviceUuid']);
 
+
                     if (!empty($servicegroupsForCfg)) {
                         $content .= $this->addContent('servicegroup_name', 1, implode(', ', $servicegroupsForCfg));
                     }
 
                     if (!empty($dependentServicegroupsForCfg)) {
-                        $content .= $this->addContent('dependent_servicegroup_name', 1, implode(', ' , $dependentServicegroupsForCfg));
+                        $content .= $this->addContent('dependent_servicegroup_name', 1, implode(', ', $dependentServicegroupsForCfg));
                     }
 
                     $content .= $this->addContent('inherits_parent', 1, $servicedependency->get('inherits_parent'));
-                    $serviceDependencyExecutionString = $servicedependency->getExecutionFailureCriteriaForCfg();
-                    if (!empty($serviceDependencyExecutionString)) {
-                        $content .= $this->addContent('execution_failure_criteria', 1, $serviceDependencyExecutionString);
+
+                    if (!empty($executionFailureCriteriaForCfgString)) {
+                        $content .= $this->addContent('execution_failure_criteria', 1, $executionFailureCriteriaForCfgString);
                     }
-                    $serviceDependencyNotificationString = $servicedependency->getNotificationFailureCriteriaForCfg();
-                    if (!empty($serviceDependencyNotificationString)) {
-                        $content .= $this->addContent('notification_failure_criteria', 1, $serviceDependencyNotificationString);
+                    if (!empty($notificationFailureCriteriaForCfgString)) {
+                        $content .= $this->addContent('notification_failure_criteria', 1, $notificationFailureCriteriaForCfgString);
                     }
-                    $serviceDependencyTimeperiod = $servicedependency->get('timeperiod')->get('uuid');
+
                     if (!is_null($serviceDependencyTimeperiod)) {
                         $content .= $this->addContent('dependency_period', 1, $serviceDependencyTimeperiod);
                     }
@@ -2287,7 +2296,6 @@ class NagiosExportTask extends AppShell {
                     $content .= $this->nl();
                 }
             }
-
             $file->write($content);
             $file->close();
         }
