@@ -981,10 +981,6 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
     <massactivate></massactivate>
 
     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-
-
-        {{activeTab}}
-
         <div class="jarviswidget" role="widget">
             <header>
                 <div class="widget-toolbar" role="menu">
