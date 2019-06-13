@@ -14,9 +14,7 @@ use Cake\ORM\Entity;
  * @property string|null $servicegroup_url
  *
  * @property \App\Model\Entity\Container $container
- * @property \App\Model\Entity\ServicegroupsToServicedependency[] $servicegroups_to_servicedependencies
- * @property \App\Model\Entity\ServicegroupsToServiceescalation[] $servicegroups_to_serviceescalations
- * @property \App\Model\Entity\ServicesToServicegroup[] $services_to_servicegroups
+ * @property \App\Model\Entity\Service[] $services
  * @property \App\Model\Entity\Servicetemplate[] $servicetemplates
  */
 class Servicegroup extends Entity {
@@ -30,17 +28,12 @@ class Servicegroup extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'uuid'                                 => true,
-        'container_id'                         => true,
-        'description'                          => true,
-        'servicegroup_url'                     => true,
-        'container'                            => true,
-        'instantreports_to_servicegroups'      => true,
-        'nagios_servicegroup_members'          => true,
-        'nagios_servicegroups'                 => true,
-        'servicegroups_to_servicedependencies' => true,
-        'servicegroups_to_serviceescalations'  => true,
-        'services_to_servicegroups'            => true,
-        'servicetemplates'                     => true
+        'uuid'             => true,
+        'container_id'     => true,
+        'description'      => true,
+        'servicegroup_url' => true,
+        'container'        => true,
+        'services'         => true,
+        'servicetemplates' => true
     ];
 }

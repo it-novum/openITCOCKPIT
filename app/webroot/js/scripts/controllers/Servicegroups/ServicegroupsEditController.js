@@ -1,24 +1,29 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicegroupsEditController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
+    .controller('ServicegroupsEditController', function($scope, $http, QueryStringService, $stateParams, $state, NotyService, RedirectService){
 
 
         $scope.post = {
-            Container: {
-                name: '',
-                parent_id: 0
-            },
             Servicegroup: {
                 description: '',
                 servicegroup_url: '',
-                Service: [],
-                Servicetemplate: []
+                container: {
+                    name: '',
+                    parent_id: 0
+                },
+                services: {
+                    _ids: []
+                },
+                servicetemplates: {
+                    _ids: []
+                }
             }
         };
 
+        //$scope.id = QueryStringService.getCakeId();
         $scope.id = $stateParams.id;
 
         $scope.deleteUrl = "/servicegroups/delete/" + $scope.id + ".json?angular=true";
-        $scope.sucessUrl = '/servicegroups/index';
+        $scope.successState = 'ServicegroupsIndex';
 
         $scope.init = true;
         $scope.load = function(){
@@ -27,24 +32,8 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                $scope.servicegroup = result.data.servicegroup;
+                $scope.post = result.data.servicegroup;
 
-                var selectedServices = [];
-                var selectedServicetemplates = [];
-                var key;
-                for(key in $scope.servicegroup.Service){
-                    selectedServices.push(parseInt($scope.servicegroup.Service[key].id, 10));
-                }
-                for(key in $scope.servicegroup.Servicetemplate){
-                    selectedServicetemplates.push(parseInt($scope.servicegroup.Servicetemplate[key].id, 10));
-                }
-
-                $scope.post.Servicegroup.Service = selectedServices;
-                $scope.post.Servicegroup.Servicetemplate = selectedServicetemplates;
-                $scope.post.Container.name = $scope.servicegroup.Container.name;
-                $scope.post.Container.parent_id = parseInt($scope.servicegroup.Container.parent_id, 10);
-                $scope.post.Servicegroup.description = $scope.servicegroup.Servicegroup.description;
-                $scope.post.Servicegroup.servicegroup_url = $scope.servicegroup.Servicegroup.servicegroup_url;
                 $scope.init = false;
             }, function errorCallback(result){
                 if(result.status === 403){
@@ -70,43 +59,44 @@ angular.module('openITCOCKPIT')
 
 
         $scope.loadServices = function(searchString){
-            if($scope.post.Container.parent_id){
-                $http.get("/services/loadServicesByContainerId.json", {
-                    params: {
-                        'angular': true,
-                        'containerId': $scope.post.Container.parent_id,
-                        'filter[Host.name]': searchString,
-                        'filter[Service.servicename]': searchString,
-                        'selected[]': $scope.post.Servicegroup.Service
-                    }
-                }).then(function(result){
-                    $scope.services = result.data.services;
-                });
-            }
-
+            $http.get("/services/loadServicesByContainerIdCake4.json", {
+                params: {
+                    'angular': true,
+                    'containerId': $scope.post.Servicegroup.container.parent_id,
+                    'filter[Services.servicename]': searchString,
+                    'selected[]': $scope.post.Servicegroup.services._ids
+                }
+            }).then(function(result){
+                $scope.services = result.data.services;
+            });
         };
 
         $scope.loadServicetemplates = function(searchString){
-            $http.get("/servicetemplates/loadServicetemplatesByContainerId.json", {
+            $http.get("/servicegroups/loadServicetemplates.json", {
                 params: {
                     'angular': true,
-                    'containerId': $scope.post.Container.parent_id,
+                    'containerId': $scope.post.Servicegroup.container.parent_id,
                     'filter[Servicetemplates.name]': searchString,
-                    'selected[]': $scope.post.Servicegroup.Servicetemplate
+                    'selected[]': $scope.post.Servicegroup.servicetemplates._ids
                 }
             }).then(function(result){
                 $scope.servicetemplates = result.data.servicetemplates;
             });
         };
 
-
         $scope.submit = function(){
             $http.post("/servicegroups/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-                console.log('Data saved successfully');
-                NotyService.genericSuccess();
+                var url = $state.href('ServicegroupsEdit', {id: $scope.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+
                 RedirectService.redirectWithFallback('ServicegroupsIndex');
+
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
@@ -117,12 +107,15 @@ angular.module('openITCOCKPIT')
         };
 
 
-        $scope.$watch('post.Container.parent_id', function(){
+        $scope.$watch('post.Servicegroup.container.parent_id', function(){
             if($scope.init){
                 return;
             }
             $scope.loadServices('');
             $scope.loadServicetemplates('');
         }, true);
+
+        //$scope.load();
         $scope.loadContainers();
+
     });

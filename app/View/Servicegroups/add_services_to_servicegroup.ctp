@@ -23,23 +23,23 @@
 //  confirmation.
 ?>
 
-<div id="angularAddHostsToHostgroup" class="modal" role="dialog">
+<div id="angularAddServicesToServicegroup" class="modal" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary txt-color-white">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"><?php echo __('Append host/s to host group'); ?></h4>
+                <h4 class="modal-title"><?php echo __('Append services/s to service group'); ?></h4>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-xs-12">
-                        <?php echo __('Selected hosts'); ?>
+                        <?php echo __('Selected services'); ?>
                     </div>
 
                     <div class="col-xs-12 margin-top-10">
                         <ul>
-                            <li ng-repeat="(id, hostName) in objects">
-                                {{ hostName }}
+                            <li ng-repeat="(id, serviceName) in objects">
+                                {{ serviceName }}
                             </li>
                         </ul>
                     </div>
@@ -47,14 +47,14 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" ui-sref="HostgroupsAdd({ids:hostIds})"
+                <button type="button" class="btn btn-success" ui-sref="ServicegroupsAdd({ids:serviceIds})"
                         data-dismiss="modal">
-                    <?php echo __('Create new host group'); ?>
+                    <?php echo __('Create new service group'); ?>
                 </button>
 
-                <button type="button" class="btn btn-primary" ui-sref="HostgroupsAppend({ids:hostIds})"
+                <button type="button" class="btn btn-primary" ui-sref="ServicegroupsAppend({ids:serviceIds})"
                         data-dismiss="modal">
-                    <?php echo __('Append existing host group'); ?>
+                    <?php echo __('Append existing service group'); ?>
                 </button>
 
                 <button type="button" class="btn btn-default" data-dismiss="modal">

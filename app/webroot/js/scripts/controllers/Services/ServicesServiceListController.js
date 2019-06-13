@@ -92,7 +92,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.id]': $scope.data.hostId
+                'filter[Hosts.id]': $scope.data.hostId
             };
 
             $http.get("/services/index.json", {
@@ -112,7 +112,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.id]': $scope.hostId
+                'filter[Hosts.id]': $scope.hostId
             };
 
             $http.get("/services/notMonitored.json", {
@@ -132,7 +132,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.id]': $scope.data.hostId
+                'filter[Hosts.id]': $scope.data.hostId
             };
 
             $http.get("/services/disabled.json", {
@@ -242,12 +242,6 @@ angular.module('openITCOCKPIT')
         $scope.linkForCopy = function(){
             var ids = Object.keys(MassChangeService.getSelected());
             return ids.join(',');
-        };
-
-        $scope.linkForAddToServicegroup = function(){
-            var baseUrl = '/servicegroups/mass_add/';
-            var ids = Object.keys(MassChangeService.getSelected());
-            return baseUrl + ids.join('/');
         };
 
         $scope.mouseenter = function($event, host, service){

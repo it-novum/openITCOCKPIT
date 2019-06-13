@@ -188,8 +188,9 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
                                                     <li>
-                                                        <a href="/<?php echo $this->params['controller']; ?>/allocateToHost/{{servicetemplategroup.Servicetemplategroup.id}}"><i
-                                                                    class="fa fa-external-link"></i> <?php echo __('Allocate host'); ?>
+                                                        <a ui-sref="ServicetemplategroupsAllocateToHost({id: servicetemplategroup.Servicetemplategroup.id})">
+                                                            <i class="fa fa-external-link"></i>
+                                                            <?php echo __('Allocate to host'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>

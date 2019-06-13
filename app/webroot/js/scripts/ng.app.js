@@ -388,8 +388,14 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('HostgroupsExtended', {
-                url: '/hostgroups/extended',
+                url: '/hostgroups/extended/:id',
                 templateUrl: "/hostgroups/extended.html",
+                params: {
+                    id: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 controller: "HostgroupsExtendedController"
             })
 
@@ -471,9 +477,21 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ServicegroupsEditController"
             })
 
+            .state('ServicegroupsAppend', {
+                url: '/servicegroups/append/:ids',
+                templateUrl: "/servicegroups/append.html",
+                controller: "ServicegroupsAppendController"
+            })
+
             .state('ServicegroupsExtended', {
-                url: '/servicegroups/extended',
+                url: '/servicegroups/extended/:id',
                 templateUrl: "/servicegroups/extended.html",
+                params: {
+                    id: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 controller: "ServicegroupsExtendedController"
             })
 
@@ -872,6 +890,18 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 url: '/servicetemplategroups/edit/:id',
                 templateUrl: "/servicetemplategroups/edit.html",
                 controller: "ServicetemplategroupsEditController"
+            })
+
+            .state('ServicetemplategroupsAllocateToHost', {
+                url: '/servicetemplategroups/allocateToHost/:id',
+                templateUrl: "/servicetemplategroups/allocateToHost.html",
+                controller: "ServicetemplategroupsAllocateToHostController"
+            })
+
+            .state('ServicetemplategroupsAllocateToHostgroup', {
+                url: '/servicetemplategroups/allocateToHostgroup/:id',
+                templateUrl: "/servicetemplategroups/allocateToHostgroup.html",
+                controller: "ServicetemplategroupsAllocateToHostgroupController"
             })
 
             .state('LocationsIndex', {

@@ -93,6 +93,11 @@ class ContainersTable extends Table {
             'cascadeCallbacks' => true
         ])->setDependent(true);
 
+        $this->hasMany('Servicegroups', [
+            'foreignKey'       => 'container_id',
+            'cascadeCallbacks' => true
+        ])->setDependent(true);
+
         $this->hasMany('Servicetemplategroups', [
             'foreignKey'       => 'container_id',
             'cascadeCallbacks' => true
@@ -184,9 +189,6 @@ class ContainersTable extends Table {
             'foreignKey' => 'container_id'
         ]);
         $this->hasMany('Serviceescalations', [
-            'foreignKey' => 'container_id'
-        ]);
-        $this->hasMany('Servicegroups', [
             'foreignKey' => 'container_id'
         ]);
         $this->hasMany('Servicetemplategroups', [

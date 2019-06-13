@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class CustomVariablesHelper
+ * @deprecated
+ */
 class CustomVariablesHelper extends AppHelper {
 
     /**
@@ -34,6 +38,7 @@ class CustomVariablesHelper extends AppHelper {
      * @return void
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function setup($macrotype = 'HOST', $objecttype_id = null, $customMacros = []) {
         $this->macrotype = $macrotype;
@@ -55,6 +60,7 @@ class CustomVariablesHelper extends AppHelper {
      * @return string `<div />` and `<a />` HTML objects
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function prepare($macrotype = 'HOST', $options = []) {
         $html = $this->__startWrap();
@@ -80,6 +86,7 @@ class CustomVariablesHelper extends AppHelper {
      * @return string `<a />` HTML object
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function addButton($options = []) {
         $_options = [
@@ -107,6 +114,7 @@ class CustomVariablesHelper extends AppHelper {
      * @return string $html with the scaffold in HTML for macros
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function html($counter = 0, $options = []) {
 
@@ -150,6 +158,12 @@ class CustomVariablesHelper extends AppHelper {
         return $html;
     }
 
+    /**
+     * @param $objecttype_id
+     * @param $options
+     * @return mixed
+     * @deprecated
+     */
     public function getColor($objecttype_id, $options) {
         if ($objecttype_id === null) {
             $objecttype_id = $options['objecttype_id'];
@@ -171,6 +185,7 @@ class CustomVariablesHelper extends AppHelper {
      * @return string `<div>` Object for wraping the customvariables
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function __startWrap() {
         return '<div id="customVariablesContainer">';
@@ -181,6 +196,7 @@ class CustomVariablesHelper extends AppHelper {
      * @return string `</div>` closing div
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function __endWrap() {
         return '</div>';
@@ -191,6 +207,7 @@ class CustomVariablesHelper extends AppHelper {
      * @return array $_customvariables if you dont want to use $this->customMacros and know what you are doint
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function fetchHtml($_customvariables = []) {
         $html = '';

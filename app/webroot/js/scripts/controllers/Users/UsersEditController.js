@@ -117,9 +117,27 @@ angular.module('openITCOCKPIT')
         };
 
 
+        /**
+         * sync the membership array with the containers array so we can cleanly remove a container from a user
+         */
+        $scope.syncMemberships = function(){
+            var memberships = $scope.post.User.ContainersUsersMemberships
+            for(var key in memberships){
+                key = parseInt(key, 10);
+                if($scope.post.User.containers._ids.indexOf(key) == -1){
+                    delete memberships[key];
+                }
+            }
+        };
+
+
         $scope.loadContainer();
         $scope.loadUsergroups();
         $scope.loadDateformats();
         $scope.load();
+
+        $scope.$watch('post', function(){
+            console.log($scope.post);
+        }, true);
     });
 

@@ -318,4 +318,44 @@ class ServicetemplategroupsTable extends Table {
 
         return $groups;
     }
+
+
+    /**
+     * @param $servicetemplategroupId
+     * @param array $containerIds
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getServicetemplatesforAllocation($servicetemplategroupId, $containerIds = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->where([
+                'Servicetemplategroups.id' => $servicetemplategroupId
+            ])
+            ->contain([
+                'Servicetemplates' => function (Query $query) use ($containerIds) {
+                    $query->enableAutoFields(false)
+                        ->select([
+                            'Servicetemplates.id',
+                            'Servicetemplates.name',
+                            'Servicetemplates.description'
+                        ])
+                        ->order([
+                            'Servicetemplates.name' => 'ASC'
+                        ]);
+                    if (!empty($containerIds)) {
+                        $query->where([
+                            'Servicetemplates.container_id IN' => $containerIds
+                        ]);
+                    }
+                    return $query;
+                }
+            ])
+            ->disableHydration()
+            ->first();
+
+        return $query;
+    }
 }

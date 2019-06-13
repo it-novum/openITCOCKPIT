@@ -491,6 +491,7 @@ class Servicestatus {
 
     /**
      * @return array
+     * @throws \Exception
      */
     public function toArrayForBrowser() {
         $arr = $this->toArray();
@@ -499,6 +500,29 @@ class Servicestatus {
         $arr['lastCheck'] = CakeTime::timeAgoInWords($this->getLastCheck());
         $arr['nextCheck'] = CakeTime::timeAgoInWords($this->getNextCheck());
         return $arr;
+    }
+
+    /**
+     * @param string $class
+     * @return string
+     */
+    public function getFlappingIconColored($class = '') {
+        $stateColors = [
+            0 => 'txt-color-green',
+            1 => 'warning',
+            2 => 'txt-color-red',
+            3 => 'txt-color-blueDark',
+        ];
+
+        if ($this->isFlapping()) {
+            if ($this->currentState !== null && $this->currentState >= 0) {
+                return '<span class="' . $stateColors[$this->currentState] . '"><span class="flapping_airport ' . $class . ' ' . $stateColors[$this->currentState] . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span></span>';
+            }
+
+            return '<span class="' . $stateColors[$this->currentState] . '"><span class="flapping_airport text-primary ' . $class . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span></span>';
+        }
+
+        return '';
     }
 
 }

@@ -1,7 +1,6 @@
 angular.module('openITCOCKPIT').directive('addHostsToHostgroup', function($http, $filter, $timeout){
     return {
         restrict: 'E',
-        //replace: true,
         templateUrl: '/hostgroups/addHostsToHostgroup.html',
 
         controller: function($scope){

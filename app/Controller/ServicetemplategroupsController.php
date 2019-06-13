@@ -23,10 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostsTable;
+use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServicetemplategroupsConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -439,90 +443,164 @@ class ServicetemplategroupsController extends AppController {
         $this->set('_serialize', ['success']);
     }
 
+    /**
+     * @param int|null $servicetemplategroupId
+     */
+    public function allocateToHost($servicetemplategroupId = null) {
+        $this->layout = 'blank';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+        $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$ServicetemplategroupsTable->existsById($servicetemplategroupId)) {
+            throw new NotFoundException('Invalid service template group');
+        }
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return list of services that will be created by the system
+
+            $hostId = $this->request->query('hostId');
+            if (!$HostsTable->existsById($hostId)) {
+                throw new NotFoundException('Invalid host');
+            }
+
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($HostsTable->getHostPrimaryContainerIdByHostId($hostId));
+
+            $servicetemplategroup = $ServicetemplategroupsTable->getServicetemplatesforAllocation($servicetemplategroupId, $containerIds);
+            $targetHostwithServices = $HostsTable->getServicesForServicetemplateAllocation($hostId);
+
+            $servicetemplatesForDeploy = [];
+            foreach ($servicetemplategroup['servicetemplates'] as $servicetemplate) {
+                $doesServicetemplateExistsOnTargetHost = false;
+                $doesServicetemplateExistsOnTargetHostAndIsDisabled = false;
+                $createServiceOnTargetHost = true;
+
+                $doesServicetemplateExistsOnTargetHost = isset($targetHostwithServices['services'][$servicetemplate['id']]);
+                if (isset($targetHostwithServices['services'][$servicetemplate['id']])) {
+                    $doesServicetemplateExistsOnTargetHostAndIsDisabled = (bool)$targetHostwithServices['services'][$servicetemplate['id']]['disabled'];
+                }
+
+                if ($doesServicetemplateExistsOnTargetHost || $doesServicetemplateExistsOnTargetHostAndIsDisabled) {
+                    $createServiceOnTargetHost = false;
+                }
+
+                $servicetemplatesForDeploy[] = [
+                    'servicetemplate'                                    => $servicetemplate,
+                    'doesServicetemplateExistsOnTargetHost'              => $doesServicetemplateExistsOnTargetHost,
+                    'doesServicetemplateExistsOnTargetHostAndIsDisabled' => $doesServicetemplateExistsOnTargetHostAndIsDisabled,
+                    'createServiceOnTargetHost'                          => $createServiceOnTargetHost
+                ];
+            }
+
+            $this->set('servicetemplatesForDeploy', $servicetemplatesForDeploy);
+            $this->set('_serialize', ['servicetemplatesForDeploy']);
+            return;
+        }
+
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            //Create the services out of the service template group on the selected host
+
+            $hostId = $this->request->data('Host.id');
+            if (!$HostsTable->existsById($hostId)) {
+                throw new NotFoundException('Invalid host');
+            }
+
+            $servicetemplateIds = $this->request->data('Servicetemplates._ids');
+            if (empty($servicetemplateIds)) {
+                //No service templates selected...
+                $this->set('success', false);
+                $this->set('message', __('No service template ids set'));
+                $this->set('_serialize', ['success', 'message']);
+                return;
+            }
+
+            /** @var $HosttemplatesTable HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+            /** @var $ServicetemplatesTable ServicetemplatesTable */
+            $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+            $host = $HostsTable->get($hostId);
+            $hostContactsAndContactgroupsById = $HostsTable->getContactsAndContactgroupsById($host->get('id'));
+            $hosttemplateContactsAndContactgroupsById = $HosttemplatesTable->getContactsAndContactgroupsById($host->get('hosttemplate_id'));
+
+            $newServiceIds = [];
+            $errors = [];
+            foreach ($servicetemplateIds as $servicetemplateId) {
+                $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicetemplateId);
+
+                $servicename = $servicetemplate['Servicetemplate']['name'];
+
+                $serviceData = ServiceComparisonForSave::getServiceSkeleton($hostId, $servicetemplateId);
+                $ServiceComparisonForSave = new ServiceComparisonForSave(
+                    ['Service' => $serviceData],
+                    $servicetemplate,
+                    $hostContactsAndContactgroupsById,
+                    $hosttemplateContactsAndContactgroupsById
+                );
+                $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
+                $serviceData['uuid'] = UUID::v4();
+
+                //Add required fields for validation
+                $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
+                $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];
+                $serviceData['servicetemplate_flap_detection_on_warning'] = $servicetemplate['Servicetemplate']['flap_detection_on_warning'];
+                $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
+                $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
+
+                $service = $ServicesTable->newEntity($serviceData);
+
+                $ServicesTable->save($service);
+                if ($service->hasErrors()) {
+                    $errors[] = $service->getErrors();
+                } else {
+                    //No errors
+
+                    $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
+                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                        'add',
+                        'services',
+                        $service->get('id'),
+                        OBJECT_SERVICE,
+                        $host->get('container_id'),
+                        $User->getId(),
+                        $host->get('name') . '/' . $servicename,
+                        array_merge(['Service' => $serviceData], $extDataForChangelog)
+                    );
+
+                    if ($changelog_data) {
+                        CakeLog::write('log', serialize($changelog_data));
+                    }
+
+                    $newServiceIds[] = $service->get('id');
+                }
+            }
+
+
+            $this->set('success', true);
+            $this->set('services', ['_ids' => $newServiceIds]);
+            $this->set('hostId', $hostId);
+            $this->set('errors', $errors);
+            $this->set('_serialize', ['success', 'services', 'hostId', 'errors']);
+            return;
+        }
+    }
 
     /********************************
      *       ALLOCATE METHODS       *
      ********************************/
-
-    /**
-     * @param int|null $id
-     * @deprecated
-     */
-    public function allocateToHost($id = null) {
-        if (!$this->Servicetemplategroup->exists($id)) {
-            throw new NotFoundException(__('Invalid servicetemplategroup'));
-        }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $servicetemplateCache = [];
-        $this->loadModel('Host');
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $userId = $this->Auth->user('id');
-            //Checking if target host exists
-            if ($this->Host->exists($this->request->data('Service.host_id'))) {
-                $this->loadModel('Service');
-                $this->loadModel('Servicetemplate');
-                $host = $this->Host->findById($this->request->data('Service.host_id'));
-                App::uses('UUID', 'Lib');
-                foreach ($this->request->data('Service.ServicesToAdd') as $servicetemplateIdToAdd) {
-                    if (!isset($servicetemplateCache[$servicetemplateIdToAdd])) {
-                        $servicetemplateCache[$servicetemplateIdToAdd] = $this->Servicetemplate->findById($servicetemplateIdToAdd);
-                    }
-                    $servicetemplate = $servicetemplateCache[$servicetemplateIdToAdd];
-                    $service = [];
-                    $service['Service']['uuid'] = UUID::v4();
-                    $service['Service']['host_id'] = $host['Host']['id'];
-                    $service['Service']['servicetemplate_id'] = $servicetemplate['Servicetemplate']['id'];
-                    $service['Host'] = $host;
-
-                    $service['Service']['Contact'] = $servicetemplate['Contact'];
-                    $service['Service']['Contactgroup'] = $servicetemplate['Contactgroup'];
-
-                    $service['Contact']['Contact'] = [];
-                    $service['Contactgroup']['Contactgroup'] = [];
-                    $service['Servicegroup']['Servicegroup'] = [];
-
-                    $service['Contact']['Contact'] = $service['Contact'];
-                    $service['Contactgroup']['Contactgroup'] = $service['Contactgroup'];
-
-                    $data_to_save = $this->Service->prepareForSave([], $service, 'add');
-                    $this->Service->create();
-                    if ($this->Service->saveAll($data_to_save)) {
-                        Cache::clear(false, 'permissions');
-                        $changelog_data = $this->Changelog->parseDataForChangelog(
-                            'add',
-                            'services',
-                            $this->Service->id,
-                            OBJECT_SERVICE,
-                            $host['Host']['container_id'], // use host container_id for user permissions
-                            $userId,
-                            $host['Host']['name'] . '/' . $servicetemplate['Servicetemplate']['name'],
-                            $service
-                        );
-                        if ($changelog_data) {
-                            CakeLog::write('log', serialize($changelog_data));
-                        }
-                    }
-                }
-                $this->setFlash(__('Services created successfully'));
-                $this->redirect(['controller' => 'services', 'action' => 'serviceList', $host['Host']['id']]);
-            } else {
-                $this->setFlash(__('Target host does not exist or no services selected'), false);
-            }
-        }
-        $servicetemplategroup = $this->Servicetemplategroup->findById($id);
-
-        if ($this->hasRootPrivileges === true) {
-            $containerIds = $this->MY_RIGHTS;
-            $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-        } else {
-            $hosts = $this->Host->hostsByContainerId($this->getWriteContainers(), 'list');
-        }
-        $this->set(compact(['servicetemplategroup', 'hosts']));
-        $this->set('back_url', $this->referer());
-    }
 
     /**
      * @param int|null $id
@@ -864,7 +942,6 @@ class ServicetemplategroupsController extends AppController {
         $this->set(compact(['servicetemplategroup', 'hosts']));
         $this->set('_serialize', ['servicetemplategroup', 'hosts']);
     }
-
 
 
     /****************************

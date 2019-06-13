@@ -7,7 +7,9 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
 
@@ -15,9 +17,7 @@ use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
  * Servicegroups Model
  *
  * @property \App\Model\Table\ContainersTable|\Cake\ORM\Association\BelongsTo $Containers
- * @property \App\Model\Table\ServicegroupsToServicedependenciesTable|\Cake\ORM\Association\HasMany $ServicegroupsToServicedependencies
- * @property \App\Model\Table\ServicegroupsToServiceescalationsTable|\Cake\ORM\Association\HasMany $ServicegroupsToServiceescalations
- * @property \App\Model\Table\ServicesToServicegroupsTable|\Cake\ORM\Association\HasMany $ServicesToServicegroups
+ * @property \App\Model\Table\ServicesTable|\Cake\ORM\Association\HasMany $Services
  * @property \App\Model\Table\ServicetemplatesTable|\Cake\ORM\Association\HasMany $Servicetemplates
  *
  * @method \App\Model\Entity\Servicegroup get($primaryKey, $options = [])
@@ -51,17 +51,20 @@ class ServicegroupsTable extends Table {
             'joinType'   => 'INNER'
         ]);
 
-        $this->hasMany('ServicegroupsToServicedependencies', [
-            'foreignKey' => 'servicegroup_id'
+        $this->belongsToMany('Services', [
+            'className'        => 'Services',
+            'foreignKey'       => 'servicegroup_id',
+            'targetForeignKey' => 'service_id',
+            'joinTable'        => 'services_to_servicegroups',
+            'saveStrategy'     => 'replace'
         ]);
-        $this->hasMany('ServicegroupsToServiceescalations', [
-            'foreignKey' => 'servicegroup_id'
-        ]);
-        $this->hasMany('ServicesToServicegroups', [
-            'foreignKey' => 'servicegroup_id'
-        ]);
-        $this->hasMany('ServicetemplatesToServicegroups', [
-            'foreignKey' => 'servicegroup_id'
+
+        $this->belongsToMany('Servicetemplates', [
+            'className'        => 'Servicetemplates',
+            'foreignKey'       => 'servicegroup_id',
+            'targetForeignKey' => 'servicetemplate_id',
+            'joinTable'        => 'servicetemplates_to_servicegroups',
+            'saveStrategy'     => 'replace'
         ]);
     }
 
@@ -87,7 +90,7 @@ class ServicegroupsTable extends Table {
             ->scalar('description')
             ->maxLength('description', 255)
             ->requirePresence('description', 'create')
-            ->allowEmptyString('description', false);
+            ->allowEmptyString('description', true);
 
         $validator
             ->scalar('servicegroup_url')
@@ -306,6 +309,32 @@ class ServicegroupsTable extends Table {
     }
 
     /**
+     * @param ServicegroupFilter $ServicegroupFilter
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServicegroupsForPdf(ServicegroupFilter $ServicegroupFilter, $MY_RIGHTS = []) {
+
+        $query = $this->find()
+            ->contain([
+                'services',
+                'Containers'
+            ]);
+
+        $where = $ServicegroupFilter->indexFilter();
+        if (!empty($MY_RIGHTS)) {
+            $where['Containers.parent_id IN'] = $MY_RIGHTS;
+        }
+        $query->where($where)
+            ->order(
+                $ServicegroupFilter->getOrderForPaginator('Containers.name', 'asc')
+            )->disableHydration();
+
+        $data = $query->all();
+        return $this->emptyArrayIfNull($data->toArray());
+    }
+
+    /**
      * @param int $id
      * @return bool
      */
@@ -329,7 +358,7 @@ class ServicegroupsTable extends Table {
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
         if (!empty($dataToParse['Servicegroup']['services']['_ids'])) {
-            foreach ($ServicesTable->getServicesAsList($dataToParse['Servicegroup']['services']['_ids']) as $serviceId => $serviceName) {
+            foreach ($ServicesTable->getServicesAsList($dataToParse['Servicegroup']['services']['_ids'], true) as $serviceId => $serviceName) {
                 $extDataForChangelog['Service'][] = [
                     'id'   => $serviceId,
                     'name' => $serviceName
@@ -347,5 +376,185 @@ class ServicegroupsTable extends Table {
         }
 
         return $extDataForChangelog;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getServicegroupForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Servicegroups.id' => $id
+            ])
+            ->contain([
+                'Services',
+                'Servicetemplates',
+                'Containers'
+            ])
+            ->disableHydration()
+            ->first();
+
+        $hostgroup = $query;
+        $hostgroup['services'] = [
+            '_ids' => Hash::extract($query, 'services.{n}.id')
+        ];
+        $hostgroup['servicetemplates'] = [
+            '_ids' => Hash::extract($query, 'servicetemplates.{n}.id')
+        ];
+
+        return [
+            'Servicegroup' => $hostgroup
+        ];
+    }
+
+    /**
+     * @param int $id
+     * @return \App\Model\Entity\Servicegroup
+     */
+    public function getServicegroupById($id) {
+        return $this->get($id, [
+            'contain' => [
+                'Containers'
+            ]
+        ]);
+    }
+
+    /**
+     * @param ServicegroupConditions $ServicegroupConditions
+     * @param array $selected
+     * @return array
+     */
+    public function getServicegroupsForAngular(ServicegroupConditions $ServicegroupConditions, $selected = []) {
+
+        $query = $this->find()
+            ->contain([
+                'Containers'
+            ])
+            ->where([
+                'Containers.containertype_id' => CT_SERVICEGROUP,
+            ]);
+
+        if (!empty($ServicegroupConditions->getContainerIds())) {
+            $query->andWhere([
+                'Containers.parent_id IN' => $ServicegroupConditions->getContainerIds()
+            ]);
+        }
+
+        if (!empty($ServicegroupConditions->getConditions())) {
+            $query->andWhere(
+                $ServicegroupConditions->getConditions()
+            );
+        }
+
+        $query
+            ->order([
+                'Containers.name' => 'ASC'
+            ])
+            ->group([
+                'Containers.id'
+            ])
+            ->disableHydration()
+            ->limit(ITN_AJAX_LIMIT)
+            ->all();
+
+        $result = $query->toArray();
+
+        $resultAslist = [];
+        foreach ($result as $record) {
+            $resultAslist[$record['id']] = $record['container']['name'];
+        }
+
+        if (!empty($selected)) {
+            $query = $this->find()
+                ->contain([
+                    'Containers'
+                ])
+                ->where([
+                    'Servicegroups.id IN'         => $selected,
+                    'Containers.containertype_id' => CT_SERVICEGROUP,
+                ]);
+
+            if (!empty($ServicegroupConditions->getContainerIds())) {
+                $query->andWhere([
+                    'Containers.parent_id IN' => $ServicegroupConditions->getContainerIds()
+                ]);
+            }
+
+            $query
+                ->order([
+                    'Containers.name' => 'ASC'
+                ])
+                ->group([
+                    'Containers.id'
+                ])
+                ->disableHydration()
+                ->limit(ITN_AJAX_LIMIT)
+                ->all();
+
+
+            foreach ($query->toArray() as $selectedServicegroup) {
+                $resultAslist[$selectedServicegroup['id']] = $selectedServicegroup['container']['name'];
+            }
+
+        }
+
+        return $resultAslist;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getServiceIdsByServicegroupId($id) {
+        $servicegroup = $this->find()
+            ->contain([
+                // Get all services that are in this service group through the service template AND
+                // which does NOT have any own service groups
+                'servicetemplates' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'id',
+                        ])
+                        ->contain([
+                            'services' => function (Query $query) {
+                                $query->disableAutoFields()
+                                    ->select([
+                                        'Services.id',
+                                        'Services.uuid',
+                                        'Services.servicetemplate_id',
+                                        'Servicegroups.id'
+                                    ])
+                                    ->leftJoinWith('Servicegroups')
+                                    ->whereNull('Servicegroups.id');
+                                return $query;
+                            }
+                        ]);
+                    return $query;
+                },
+
+                // Get all services from this service group
+                'services' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Services.id',
+                            'Services.uuid',
+                        ]);
+                    return $query;
+                }
+            ])
+            ->where([
+                'Servicegroups.id' => $id
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $serviceIds = array_unique(array_merge(
+            Hash::extract($servicegroup, 'services.{n}.id'),
+            Hash::extract($servicegroup, 'servicetemplates.{n}.services.{n}.id')
+        ));
+
+        return $serviceIds;
     }
 }

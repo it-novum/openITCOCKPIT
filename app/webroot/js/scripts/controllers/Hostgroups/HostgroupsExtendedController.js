@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostgroupsExtendedController', function($scope, $http, $interval, QueryStringService){
+    .controller('HostgroupsExtendedController', function($scope, $http, $interval, $stateParams){
 
         $scope.init = true;
         $scope.servicegroupsStateFilter = {};
@@ -13,7 +13,10 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.post.Hostgroup.id = QueryStringService.getCakeId();
+        $scope.post.Hostgroup.id = $stateParams.id;
+        if($scope.post.Hostgroup.id !== null){
+            $scope.post.Hostgroup.id = parseInt($scope.post.Hostgroup.id, 10);
+        }
 
         $scope.showServices = {};
 
@@ -34,12 +37,12 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.hostgroups = result.data.hostgroups;
 
-                if(isNaN($scope.post.Hostgroup.id)){
+                if($scope.post.Hostgroup.id === null){
                     if($scope.hostgroups.length > 0){
                         $scope.post.Hostgroup.id = $scope.hostgroups[0].key;
                     }
                 }else{
-                    //ServicegroupId was passed in URL
+                    //HostgroupId was passed in URL
                     $scope.loadHostsWithStatus();
                 }
 
@@ -51,7 +54,7 @@ angular.module('openITCOCKPIT')
             $http.get("/hostgroups/loadHostgroupsByString.json", {
                 params: {
                     'angular': true,
-                    'filter[Container.name]': searchString,
+                    'filter[Containers.name]': searchString,
                 }
             }).then(function(result){
                 $scope.hostgroups = result.data.hostgroups;

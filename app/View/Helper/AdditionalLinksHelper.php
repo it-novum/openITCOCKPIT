@@ -27,6 +27,7 @@
  * Renders the given additional links in different formats.
  * @author Patrick Nawracay <patrick.nawracay@it-novum.com>
  * @since  3.0
+ * @deprecated
  */
 class AdditionalLinksHelper extends AppHelper {
     public $helpers = ['Html']; // Allows to use another Helper within this Helper
@@ -42,6 +43,7 @@ class AdditionalLinksHelper extends AppHelper {
      * @param bool $angularJs
      *
      * @return string The list items (<li>) with the corresponding links (<a>)
+     * @deprecated
      */
     public function renderAsListItems($additionalLinks, $currentIndex = -1, $addArrParam = [], $angularJs = false, $ngIf = null) {
         $elements = $this->renderLinks($additionalLinks, $currentIndex, $addArrParam, $angularJs);
@@ -66,6 +68,7 @@ class AdditionalLinksHelper extends AppHelper {
      * @param int $currentIndex The current index or ID of the current item
      *
      * @return string The list of links (<a>)
+     * @deprecated
      */
     public function renderAsLinks($additionalLinks, $currentIndex = -1) {
         $links = $this->renderLinks($additionalLinks, $currentIndex);
@@ -80,6 +83,7 @@ class AdditionalLinksHelper extends AppHelper {
      * @param bool $angularJs
      *
      * @return string[] The rendered <a> tags. Each element accords to one link.
+     * @deprecated
      */
     protected function renderLinks($additionalLinks, $currentIndex = -1, $addArrParam = [], $angularJs = false) {
         $result = [];
@@ -117,6 +121,11 @@ class AdditionalLinksHelper extends AppHelper {
         return $result;
     }
 
+    /**
+     * @param $additionalElements
+     * @return string
+     * @deprecated
+     */
     public function renderElements($additionalElements) {
         $return = '';
         foreach ($additionalElements as $element) {
@@ -128,7 +137,12 @@ class AdditionalLinksHelper extends AppHelper {
         return $return;
     }
 
-
+    /**
+     * @param $additionalElements
+     * @param bool $spa
+     * @return string
+     * @deprecated
+     */
     public function renderTabs($additionalElements, $spa = false) {
 
         $htmlContent = [];
@@ -147,6 +161,13 @@ class AdditionalLinksHelper extends AppHelper {
         return implode($htmlContent);
     }
 
+    /**
+     * @param $additionalElements
+     * @param null $ngClick
+     * @param bool $spa
+     * @return string
+     * @deprecated
+     */
     public function renderTabLinks($additionalElements, $ngClick = null, $spa = false) {
         $htmlLink = [];
         foreach ($additionalElements as $element) {
@@ -169,6 +190,16 @@ class AdditionalLinksHelper extends AppHelper {
         return implode($htmlLink);
     }
 
+    /**
+     * @param $additionalLinks
+     * @param $elementId
+     * @param $type
+     * @param string $renderType
+     * @param null $ngClick
+     * @param bool $spa
+     * @return string
+     * @deprecated
+     */
     public function renderAsTabs($additionalLinks, $elementId, $type, $renderType = 'tab', $ngClick = null, $spa = false) {
         $type = lcfirst($type);
         //if elementId is null its a new Host/Service

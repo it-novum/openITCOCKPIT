@@ -66,7 +66,7 @@ class UsersTable extends Table {
             'foreignKey' => 'user_id'
         ]);
         $this->belongsToMany('Containers', [
-            'through' => 'ContainersUsersMemberships',
+            'through'          => 'ContainersUsersMemberships',
             'className'        => 'Containers',
             'foreignKey'       => 'user_id',
             'targetForeignKey' => 'container_id',
@@ -474,7 +474,7 @@ class UsersTable extends Table {
         ];
     }
 
-    public function usersByContainerId($container_ids, $type = 'all'){
+    public function usersByContainerId($container_ids, $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
         }
@@ -484,6 +484,7 @@ class UsersTable extends Table {
         $query = $this->find('all')
             ->disableHydration()
             ->contain(['Containers'])
+            ->matching('Containers')
             ->select([
                 'Users.id',
                 'Users.firstname',
@@ -491,13 +492,13 @@ class UsersTable extends Table {
                 'ContainersUsersMemberships.container_id'
             ])
             ->where([
-                'ContainersUsersMemberships.container_id' => $container_ids
+                'ContainersUsersMemberships.container_id IN' => $container_ids
             ])
             ->group([
                 'Users.id'
             ])
             ->order([
-                'Users.lastname' => 'ASC',
+                'Users.lastname'  => 'ASC',
                 'Users.firstname' => 'ASC'
             ]);
 
@@ -510,8 +511,9 @@ class UsersTable extends Table {
             case 'list':
                 $return = [];
                 foreach ($results as $result) {
-                    $return[$result['User']['id']] = $result['User']['lastname'] . ', ' . $result['User']['firstname'];
+                    $return[$result['id']] = $result['lastname'] . ', ' . $result['firstname'];
                 }
+                return $return;
                 break;
         }
     }
@@ -585,5 +587,44 @@ class UsersTable extends Table {
      */
     public function getTenantIds($id = null) {
         return $this->getUserById($id);
+    }
+
+
+    /**
+     * @param $usersByContainerId
+     * @param $containerIds
+     * @return array
+     */
+    public function getUsersToDelete($usersByContainerId, $containerIds) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $query = $this
+            ->find()
+            ->disableHydration()
+            ->contain(['Containers'])
+            ->select([
+                'Users.id',
+            ])
+            ->where(['Users.id IN' => array_keys($usersByContainerId)]);
+
+        $result = $query->toArray();
+
+        if (!empty($result) && is_array($result)) {
+            foreach ($result as $userkey => $user) {
+                if (!empty($user['containers'])) {
+                    foreach ($user['containers'] as $key => $container) {
+                        if (in_array($container['id'], $containerIds)) {
+                            unset($result[$userkey]['containers'][$key]);
+                        }
+                    }
+                }
+                if (empty($user['containers'])) {
+                    unset($userkey);
+                }
+            }
+        }
+
+        return $result;
     }
 }
