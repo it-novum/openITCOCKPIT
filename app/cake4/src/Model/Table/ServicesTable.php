@@ -6,6 +6,8 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\Service;
+use App\Model\Entity\Servicedependency;
+use App\Model\Entity\Serviceescalation;
 use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -1245,6 +1247,43 @@ class ServicesTable extends Table {
             $servicename = $servicetemplate->get('name');
         }
 
+        $servicedependencies = $service->get('servicedependencies_service_memberships');
+        $servicedependencyIdsToDelete = [];
+
+        if (!empty($servicedependencies)) {
+            /** @var $ServicedependenciesTable ServicedependenciesTable */
+            $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+            /** @var  $servicedependency Servicedependency */
+            foreach ($servicedependencies as $servicedependency) {
+                $servicedependencyId = $servicedependency->get('servicedependency_id');
+                $servicedependencyIsBroken = $ServicedependenciesTable->isServicedependencyBroken(
+                    $servicedependencyId,
+                    $service->get('id')
+                );
+                if ($servicedependencyIsBroken === true) {
+                    $servicedependencyIdsToDelete[] = $servicedependencyId;
+                }
+            }
+        }
+
+        $serviceescalations = $service->get('serviceescalations_service_memberships');
+        $serviceescalationIdsToDelete = [];
+        if (!empty($serviceescalations)) {
+            /** @var $ServiceescalationsTable ServiceescalationsTable */
+            $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+            /** @var $serviceescalation Serviceescalation */
+            foreach ($serviceescalations as $serviceescalation) {
+                $serviceescalationId = $serviceescalation->get('serviceescalation_id');
+                $serviceescalationIsBroken = $ServiceescalationsTable->isServiceescalationBroken(
+                    $serviceescalationId,
+                    $service->get('id')
+                );
+                if ($serviceescalationIsBroken === true) {
+                    $serviceescalationIdsToDelete[] = $serviceescalationId;
+                }
+            }
+        }
+
         if (!$this->delete($service)) {
             return false;
         }
@@ -1280,6 +1319,8 @@ class ServicesTable extends Table {
         if ($DocumentationsTable->existsByUuid($service->get('uuid'))) {
             $DocumentationsTable->delete($DocumentationsTable->getDocumentationByUuid($service->get('uuid')));
         }
+
+        $this->_clenupServiceEscalationAndDependency($servicedependencyIdsToDelete, $serviceescalationIdsToDelete);
 
         //Save service to DeletedServicesTable
         $data = $DeletedServicesTable->newEntity([
@@ -1691,14 +1732,28 @@ class ServicesTable extends Table {
     }
 
     /**
-     *
      * Check if the service was part of an serviceescalation or servicedependency
      * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
      * Nagios don't relay like this so we need to check this and delete the service escalation or service dependency if empty
      *
-     * @param Service $service
+     * @param array $servicedependencyIdsToDelete
+     * @param array $serviceescalationIdsToDelete
      */
-    public function _clenupServiceEscalationAndDependency(Service $service) {
+    public function _clenupServiceEscalationAndDependency($servicedependencyIdsToDelete = [], $serviceescalationIdsToDelete = []) {
+        if (!empty($servicedependencyIdsToDelete)) {
+            /** @var $ServicedependenciesTable ServicedependenciesTable */
+            $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+            foreach ($servicedependencyIdsToDelete as $servicedependency) {
+                $ServicedependenciesTable->delete($servicedependency);
+            }
+        }
 
+        if (!empty($serviceescalationIdsToDelete)) {
+            /* @var $ServiceescalationsTable ServiceescalationsTable */
+            $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+            foreach ($serviceescalationIdsToDelete as $serviceescalation) {
+                $ServiceescalationsTable->delete($serviceescalation);
+            }
+        }
     }
 }

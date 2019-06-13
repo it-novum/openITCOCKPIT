@@ -382,7 +382,9 @@ class ServicedependenciesTable extends Table {
                 'servicegroups' =>
                     function (Query $q) {
                         return $q->enableAutoFields(false)
-                            ->select(['uuid']);
+                            ->select([
+                                'uuid'
+                            ]);
                     },
                 'Timeperiods'   =>
                     function (Query $q) {
@@ -414,7 +416,7 @@ class ServicedependenciesTable extends Table {
         }
         $query->all();
 
-        return $query;
+        return $this->emptyArrayIfNull($query->toArray());
     }
 
     /**
