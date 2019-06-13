@@ -50,7 +50,7 @@
 
     <div>
         <div class="widget-body" ng-init="successMessage=
-            {objectName : '<?php echo __('Services'); ?>' , message: '<?php echo __('created successfully'); ?>'}">>
+            {objectName : '<?php echo __('Services'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
             <div class="row form-horizontal">
                 <div class="col-xs-12 col-md-9 col-lg-7">
