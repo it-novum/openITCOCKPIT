@@ -66,7 +66,8 @@ $timezones = CakeTime::listTimezones();
                                     chosen="containers"
                                     multiple
                                     ng-options="container.key as container.value for container in containers"
-                                    ng-model="post.User.containers._ids">
+                                    ng-model="post.User.containers._ids"
+                                    ng-change="syncMemberships()">
                             </select>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>

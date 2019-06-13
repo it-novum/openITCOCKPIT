@@ -259,6 +259,8 @@ class ContainersController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
         if (!$ContainersTable->existsById($id)) {
             throw new NotFoundException(__('Invalid container'));
@@ -313,34 +315,17 @@ class ContainersController extends AppController {
                         $usersToDelete = [];
 
                         //Check users to delete
-                        $User = ClassRegistry::init('User');
-                        $usersByContainerId = $this->User->usersByContainerId($containerIds, 'list');
+                        $usersByContainerId = $UsersTable->usersByContainerId($containerIds, 'list');
                         if (!empty($usersByContainerId)) {
-                            $usersToDelete = $this->User->find('all', [
-                                'recursive'  => -1,
-                                'conditions' => [
-                                    'User.id' => array_keys($usersByContainerId)
-                                ],
-                                'contain'    => [
-                                    'ContainerUserMembership' => [
-                                        'conditions' => [
-                                            'NOT' => [
-                                                'ContainerUserMembership.container_id' => $containerIds
-                                            ]
-                                        ]
-                                    ]
-                                ],
-                                'fields'     => [
-                                    'User.id'
-                                ]
-                            ]);
+                            $usersToDelete = $UsersTable->getUsersToDelete($usersByContainerId, $containerIds);
                         }
-
-                        $usersToDelete = Hash::combine($usersToDelete, '{n}.User.id', '{n}.ContainerUserMembership');
+                        $usersToDelete = Hash::combine($usersToDelete, '{n}.id', '{n}.containers');
                         if ($allowDelete) {
                             foreach ($usersByContainerId as $user => $username) {
                                 if (empty($usersToDelete[$user])) {
-                                    $User->__delete($user, $userId);
+                                    $userEntity = $UsersTable->get($user);
+                                    $UsersTable->delete($userEntity);
+
                                 }
                             }
                         }
