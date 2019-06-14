@@ -120,7 +120,7 @@ angular.module('openITCOCKPIT')
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Servicedependency.container_id,
-                        'filter[Services.servicename]': searchString,
+                        'filter[servicename]': searchString,
                         'selected[]': $scope.post.Servicedependency.services._ids
                     }
                 }).then(function(result){
@@ -137,7 +137,7 @@ angular.module('openITCOCKPIT')
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Servicedependency.container_id,
-                        'filter[Services.servicename]': searchString,
+                        'filter[servicename]': searchString,
                         'selected[]': $scope.post.Servicedependency.services_dependent._ids
                     }
                 }).then(function(result){

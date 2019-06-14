@@ -2,7 +2,6 @@
 
 namespace App\Model\Table;
 
-use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\Service;
@@ -726,13 +725,22 @@ class ServicesTable extends Table {
         }
         $selected = array_filter($selected);
 
-        $where = [];
+        $where = $ServiceConditions->getConditions();
 
         if (!empty($selected)) {
             $where['NOT'] = [
                 'Services.id IN' => $selected
             ];
         }
+
+        $having = null;
+        if (isset($where['servicename LIKE'])) {
+            $having = [
+                'servicename LIKE' => $where['servicename LIKE']
+            ];
+            unset($where['servicename LIKE']);
+        }
+
         $query = $this->find();
         $query
             ->innerJoinWith('Hosts')
@@ -749,10 +757,13 @@ class ServicesTable extends Table {
             ])
             ->where(
                 $where
-            )
-            ->order([
-                'servicename' => 'asc'
-            ])
+            );
+        if (!empty($having)) {
+            $query->having($having);
+        }
+        $query->order([
+            'servicename' => 'asc'
+        ])
             ->limit(ITN_AJAX_LIMIT)
             ->disableHydration()
             ->all();
@@ -763,6 +774,7 @@ class ServicesTable extends Table {
         foreach ($results as $result) {
             $servicesWithLimit[$result['id']] = $result;
         }
+
         if (!empty($selected)) {
             $query = $this->find();
             $query
@@ -783,7 +795,6 @@ class ServicesTable extends Table {
                 ->limit(ITN_AJAX_LIMIT)
                 ->disableHydration()
                 ->all();
-
             $results = $this->emptyArrayIfNull($query->toArray());
             foreach ($results as $result) {
                 $selectedServices[$result['id']] = $result;
@@ -1555,7 +1566,7 @@ class ServicesTable extends Table {
         $where['Services.disabled'] = 0;
         if ($ServiceConditions->getServiceIds()) {
             $serviceIds = $ServiceConditions->getServiceIds();
-            if(!is_array($serviceIds)){
+            if (!is_array($serviceIds)) {
                 $serviceIds = [$serviceIds];
             }
 
