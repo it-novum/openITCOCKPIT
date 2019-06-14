@@ -53,7 +53,7 @@
             {objectName : '<?php echo __('Services'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
             <div class="row form-horizontal">
-                <div class="col-xs-12 col-md-9 col-lg-7">
+                <div class="col-xs-12 col-md-9 col-lg-7 padding-top-15">
                     <div class="form-group required">
                         <label for="ServiceTemplateGroupsSelect" class="col col-md-2 control-label">
                             <?php echo('Service template group'); ?>
@@ -134,7 +134,10 @@
                             <input type="checkbox" ng-model="serviceToDeploy.createServiceOnTargetHost">
 
                             {{serviceToDeploy.servicetemplate.name}}
-                            <span class="text-info">({{serviceToDeploy.servicetemplate.description}})</span>
+                            <span class="text-info"
+                                  ng-show="serviceToDeploy.servicetemplate.description">
+                                ({{serviceToDeploy.servicetemplate.description}})
+                            </span>
 
                             <span class="text-info"
                                   ng-show="serviceToDeploy.doesServicetemplateExistsOnTargetHost"

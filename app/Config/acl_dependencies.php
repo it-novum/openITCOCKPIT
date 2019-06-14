@@ -309,9 +309,9 @@ $config = [
                 'serviceList' => ['deleted']
             ],
             'Servicetemplategroups' => [
-                'index' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId', 'view', 'allocateToMatchingHostgroup', 'loadServicetemplategroupsByString'],
+                'index' => ['loadServicetemplatesByContainerId', 'view', 'allocateToMatchingHostgroup', 'loadServicetemplategroupsByString', 'loadHostgroupsByString'],
                 'add'   => ['loadContainers', 'loadServicetemplatesByContainerId', 'append', 'loadServicetemplategroupsByString'],
-                'edit'  => ['loadContainers', 'loadServicetemplatesByContainerId', 'append', 'loadServicetemplategroupsByString'],
+                'edit'  => ['loadContainers', 'loadServicetemplatesByContainerId', 'append', 'loadServicetemplategroupsByString']
             ],
             'Servicetemplates'      => [
                 'index' => ['view', 'loadServicetemplatesByContainerId', 'addServicetemplatesToServicetemplategroup'],

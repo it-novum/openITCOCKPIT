@@ -174,15 +174,16 @@
                                                 <?php if ($this->Acl->hasPermission('allocateToHostgroup', 'servicetemplategroups')): ?>
                                                     <li class="divider"</li>
                                                     <li>
-                                                        <a href="/<?php echo $this->params['controller']; ?>/allocateToHostgroup/{{servicetemplategroup.Servicetemplategroup.id}}"><i
-                                                                    class="fa fa-external-link"></i> <?php echo __('Allocate host group'); ?>
+                                                        <a ui-sref="ServicetemplategroupsAllocateToHostgroup({id: servicetemplategroup.Servicetemplategroup.id})">
+                                                            <i class="fa fa-external-link"></i>
+                                                            <?php echo __('Allocate to host group'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('allocateToMatchingHostgroup', 'servicetemplategroups')): ?>
                                                     <li>
                                                         <a href="/<?php echo $this->params['controller']; ?>/allocateToMatchingHostgroup/{{servicetemplategroup.Servicetemplategroup.id}}"><i
-                                                                    class="fa fa-external-link"></i> <?php echo __('Allocate matching host group'); ?>
+                                                                    class="fa fa-external-link"></i> <?php echo __('Allocate to matching host group'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
