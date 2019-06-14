@@ -1259,7 +1259,7 @@ class ServicesTable extends Table {
         }
 
         $servicedependencies = $service->get('servicedependencies_service_memberships');
-        $servicedependencyIdsToDelete = [];
+        $servicedependenciesToDelete = [];
 
         if (!empty($servicedependencies)) {
             /** @var $ServicedependenciesTable ServicedependenciesTable */
@@ -1272,13 +1272,13 @@ class ServicesTable extends Table {
                     $service->get('id')
                 );
                 if ($servicedependencyIsBroken === true) {
-                    $servicedependencyIdsToDelete[] = $servicedependencyId;
+                    $servicedependenciesToDelete[] = $servicedependency;
                 }
             }
         }
 
         $serviceescalations = $service->get('serviceescalations_service_memberships');
-        $serviceescalationIdsToDelete = [];
+        $serviceescalationsToDelete = [];
         if (!empty($serviceescalations)) {
             /** @var $ServiceescalationsTable ServiceescalationsTable */
             $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
@@ -1290,7 +1290,7 @@ class ServicesTable extends Table {
                     $service->get('id')
                 );
                 if ($serviceescalationIsBroken === true) {
-                    $serviceescalationIdsToDelete[] = $serviceescalationId;
+                    $serviceescalationsToDelete[] = $serviceescalation;
                 }
             }
         }
@@ -1331,7 +1331,7 @@ class ServicesTable extends Table {
             $DocumentationsTable->delete($DocumentationsTable->getDocumentationByUuid($service->get('uuid')));
         }
 
-        $this->_clenupServiceEscalationAndDependency($servicedependencyIdsToDelete, $serviceescalationIdsToDelete);
+        $this->_clenupServiceEscalationAndDependency($servicedependenciesToDelete, $serviceescalationsToDelete);
 
         //Save service to DeletedServicesTable
         $data = $DeletedServicesTable->newEntity([
@@ -1747,23 +1747,29 @@ class ServicesTable extends Table {
      * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
      * Nagios don't relay like this so we need to check this and delete the service escalation or service dependency if empty
      *
-     * @param array $servicedependencyIdsToDelete
-     * @param array $serviceescalationIdsToDelete
+     * @param array $servicedependenciesMembershipToDelete
+     * @param array $serviceescalationsMembershipToDelete
      */
-    public function _clenupServiceEscalationAndDependency($servicedependencyIdsToDelete = [], $serviceescalationIdsToDelete = []) {
-        if (!empty($servicedependencyIdsToDelete)) {
+    public function _clenupServiceEscalationAndDependency($servicedependenciesMembershipToDelete = [], $serviceescalationsMembershipToDelete = []) {
+        if (!empty($servicedependenciesMembershipToDelete)) {
             /** @var $ServicedependenciesTable ServicedependenciesTable */
             $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
-            foreach ($servicedependencyIdsToDelete as $servicedependency) {
-                $ServicedependenciesTable->delete($servicedependency);
+            foreach ($servicedependenciesMembershipToDelete as $servicedependencyMembership) {
+                if ($ServicedependenciesTable->existsById($servicedependencyMembership->get('servicedependency_id'))) {
+                    $servicedependency = $ServicedependenciesTable->get($servicedependencyMembership->get('servicedependency_id'));
+                    $ServicedependenciesTable->delete($servicedependency);
+                }
             }
         }
 
-        if (!empty($serviceescalationIdsToDelete)) {
+        if (!empty($serviceescalationsMembershipToDelete)) {
             /* @var $ServiceescalationsTable ServiceescalationsTable */
             $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
-            foreach ($serviceescalationIdsToDelete as $serviceescalation) {
-                $ServiceescalationsTable->delete($serviceescalation);
+            foreach ($serviceescalationsMembershipToDelete as $serviceescalationMembership) {
+                if ($ServiceescalationsTable->existsById($serviceescalationMembership->get('serviceescalation_id'))) {
+                    $serviceescalation = $ServiceescalationsTable->get($serviceescalationMembership->get('serviceescalation_id'));
+                    $ServiceescalationsTable->delete($serviceescalation);
+                }
             }
         }
     }
