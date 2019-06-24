@@ -36,7 +36,6 @@ use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 class ProfileController extends AppController {
     public $layout = 'blank';
     public $uses = [
-        'User',
         'Systemsetting'
     ];
 

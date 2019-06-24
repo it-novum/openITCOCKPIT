@@ -25,12 +25,12 @@
 //	confirmation.
 
 
+
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 /**
  * @deprecated use cake4 model
  */
-use App\Model\Table\ContainersTable;
-use Cake\ORM\TableRegistry;
-
 class User extends AppModel {
 
     //public $actsAs = [
@@ -63,11 +63,13 @@ class User extends AppModel {
 
     /**
      * Password validation regex.
+     * @deprecated
      */
     const PASSWORD_REGEX = '/^(?=.*\d).{6,}$/i';
 
     /**
      * @var string
+     * @deprecated
      */
     public $displayField = 'full_name';
 
@@ -75,6 +77,7 @@ class User extends AppModel {
      * @param mixed $id
      * @param string $table
      * @param DataSource $ds
+     * @deprecated
      */
     public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
@@ -143,6 +146,11 @@ class User extends AppModel {
     ];
 
 
+    /**
+     * @param $user
+     * @return array
+     * @deprecated
+     */
     public function bindNode($user) {
         return [
             'model'       => 'Usergroup',
@@ -174,7 +182,7 @@ class User extends AppModel {
      * checks if given password matches hash in database
      *
      * @param  array $data
-     *
+     * @deprecated
      * @return bool
      */
     public function checkCurrentPassword($data) {
@@ -192,6 +200,7 @@ class User extends AppModel {
      *
      * @param int $userId
      * @param array $data
+     * @deprecated
      *
      * @return bool
      */
@@ -218,6 +227,7 @@ class User extends AppModel {
     /**
      * Returns a map of the available admin user statuses
      * @return void
+     * @deprecated
      */
     public static function getStates() {
         return Status::getMap(Status::ACTIVE, Status::SUSPENDED, Status::DELETED);
@@ -226,6 +236,7 @@ class User extends AppModel {
     /**
      * Returns a map of the available admin user statuses
      * @return void
+     * @deprecated
      */
     public static function getRoles() {
         return Types::getMap(
@@ -237,6 +248,7 @@ class User extends AppModel {
     /**
      * called before validating
      * @return bool
+     * @deprecated
      */
     public function beforeValidate($options = []) {
         if (!empty($this->id) && empty($this->data['User']['new_password'])) {
@@ -249,6 +261,7 @@ class User extends AppModel {
     /**
      * called before saving
      * @return true
+     * @deprecated
      */
     public function beforeSave($options = []) {
         if (!empty($this->data['User']['new_password'])) {
@@ -262,7 +275,7 @@ class User extends AppModel {
      * checks if user with given id is soft deleted
      *
      * @param  int $id
-     *
+     * @deprecated
      * @return bool
      */
     public function softDeleted($id = null) {

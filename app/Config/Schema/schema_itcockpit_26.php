@@ -1099,6 +1099,41 @@ class AppSchema extends CakeSchema {
         'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB'],
     ];
 
+    public $users_to_usercontainerroles = [
+        'id'                   => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'user_id'              => ['type' => 'integer', 'null' => false, 'default' => null],
+        'usercontainerrole_id' => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'              => [
+            'PRIMARY'              => ['column' => 'id', 'unique' => 1],
+            'user_id'              => ['column' => 'user_id', 'unique' => 0],
+            'usercontainerrole_id' => ['column' => 'usercontainerrole_id', 'unique' => 0],
+        ],
+        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+
+    public $usercontainerroles = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 10, 'key' => 'primary'],
+        'name'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'indexes'         => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $usercontainerroles_to_containers = [
+        'id'                   => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'usercontainerrole_id' => ['type' => 'integer', 'null' => false, 'default' => null],
+        'container_id'         => ['type' => 'integer', 'null' => false, 'default' => null],
+        'permission_level'     => ['type' => 'integer', 'null' => false, 'default' => 1, 'length' => 1],
+        'indexes'              => [
+            'PRIMARY'              => ['column' => 'id', 'unique' => 1],
+            'usercontainerrole_id' => ['column' => 'usercontainerrole_id', 'unique' => 0],
+            'container_id'         => ['column' => 'container_id', 'unique' => 0],
+        ],
+        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
     public $systemsettings = [
         'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'key'             => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
