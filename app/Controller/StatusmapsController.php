@@ -85,35 +85,35 @@ class StatusmapsController extends AppController {
                 'recursive' => -1,
                 'joins'     => [
                     [
-                        'table'      => 'hosts_to_parenthosts',
-                        'alias'      => 'HostToParenthost',
+                        'table'      => 'hosts',
+                        'alias'      => 'HostToParenthostParent',
                         'type'       => 'INNER',
                         'conditions' => [
-                            'HostToParenthost.parenthost_id = Parenthost.id',
+                            'Parenthost.parenthost_id = HostToParenthostParent.id',
                         ],
                     ],
                     [
                         'table'      => 'hosts',
-                        'alias'      => 'Host',
+                        'alias'      => 'HostToParenthostChild',
                         'type'       => 'INNER',
                         'conditions' => [
-                            'HostToParenthost.host_id = Host.id',
+                            'Parenthost.host_id = HostToParenthostChild.id',
                         ],
                     ]
                 ],
                 'fields'    => [
-                    'DISTINCT Parenthost.id',
-                    'Host.id'
+                    'HostToParenthostParent.id',
+                    'HostToParenthostChild.id'
                 ],
             ]);
 
 
             foreach ($parentHostWithChildIds as $parentHostWithChildId) {
-                if (!in_array($parentHostWithChildId['Parenthost']['id'], $allHostIds, true)) {
-                    $allHostIds[] = $parentHostWithChildId['Parenthost']['id'];
+                if (!in_array($parentHostWithChildId['HostToParenthostParent']['id'], $allHostIds, true)) {
+                    $allHostIds[] = $parentHostWithChildId['HostToParenthostParent']['id'];
                 }
-                if (!in_array($parentHostWithChildId['Host']['id'], $allHostIds, true)) {
-                    $allHostIds[] = $parentHostWithChildId['Host']['id'];
+                if (!in_array($parentHostWithChildId['HostToParenthostChild']['id'], $allHostIds, true)) {
+                    $allHostIds[] = $parentHostWithChildId['HostToParenthostChild']['id'];
                 }
             }
         }
