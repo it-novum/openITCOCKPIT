@@ -182,8 +182,9 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('allocateToMatchingHostgroup', 'servicetemplategroups')): ?>
                                                     <li>
-                                                        <a href="/<?php echo $this->params['controller']; ?>/allocateToMatchingHostgroup/{{servicetemplategroup.Servicetemplategroup.id}}"><i
-                                                                    class="fa fa-external-link"></i> <?php echo __('Allocate to matching host group'); ?>
+                                                        <a href="javascript:void(0);"
+                                                           ng-click="allocateToMatchingHostgroup(servicetemplategroup.Servicetemplategroup.id)">
+                                                            <i class="fa fa-external-link"></i> <?php echo __('Allocate to matching host group'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
@@ -255,3 +256,27 @@
 </section>
 
 
+<div id="loaderModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-spinner"></i>
+                    <?php echo __('Deploying services...'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-xs-12 text-center">
+                        <div class="text-center padding-top-20 padding-bottom-20">
+                            <i class="fa fa-spinner fa-4x fa-spin"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -779,13 +779,17 @@ class ServicetemplategroupsController extends AppController {
     }
 
     /**
-     * @param int $servicetemplategroupId
+     * @param int|null $servicetemplategroupId
      */
-    public function allocateToMatchingHostgroup($servicetemplategroupId) {
+    public function allocateToMatchingHostgroup($servicetemplategroupId = null) {
         $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
+        }
+
+        if(!$this->request->is('post')){
+            throw new MethodNotAllowedException();
         }
 
         /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
@@ -934,8 +938,9 @@ class ServicetemplategroupsController extends AppController {
 
         $this->set('success', true);
         $this->set('services', ['_ids' => $newServiceIds]);
+        $this->set('message', __('Created %s new services', sizeof($newServiceIds)));
         $this->set('errors', $errors);
-        $this->set('_serialize', ['success', 'services', 'errors']);
+        $this->set('_serialize', ['success', 'services', 'errors', 'message']);
     }
 
 
