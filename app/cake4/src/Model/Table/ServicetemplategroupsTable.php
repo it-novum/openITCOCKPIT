@@ -358,4 +358,26 @@ class ServicetemplategroupsTable extends Table {
 
         return $query;
     }
+
+    /**
+     * @param $id
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getServicetemplategroupNameById($id){
+        $result = $this->find()
+            ->select([
+                'Servicetemplategroups.id',
+                'Containers.name'
+            ])
+            ->contain([
+                'Containers'
+            ])
+            ->where([
+                'Servicetemplategroups.id' => $id
+            ])
+            ->firstOrFail();
+
+        $result = $result->toArray();
+        return $result['container']['name'];
+    }
 }

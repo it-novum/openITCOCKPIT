@@ -46,6 +46,7 @@ require_once OLD_APP . 'Config' . DS . 'database.php';
  */
 require CORE_PATH . 'config' . DS . 'bootstrap.php';
 
+use App\Model\Validation\AllowEmptyStringLegacyValidator;
 use Cake\Cache\Cache;
 use Cake\Console\ConsoleErrorHandler;
 use Cake\Core\App;
@@ -62,6 +63,7 @@ use Cake\Mailer\TransportFactory;
 use Cake\Utility\Inflector;
 use Cake\Utility\Security;
 use App\Lib\Constants;
+use Cake\Validation\Validator;
 
 //Define openITCOCKPIT constants
 $Constnats = new Constants();
@@ -219,3 +221,4 @@ Type::build('timestamp')
 
 //Plugins will be loaded by \App\Lib\PluginManager::addAllPlugins()
 //Plugin::load('NewModule', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);
+

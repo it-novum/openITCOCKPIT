@@ -164,7 +164,7 @@
 
                                                 <?php if ($this->Acl->hasPermission('edit', 'servicetemplategroups')): ?>
                                                     <li ng-if="servicetemplategroup.Servicetemplategroup.allow_edit">
-                                                        <a ui-sref="ServicetemplatesEdit({id:servicetemplategroup.Servicetemplategroup.id})">
+                                                        <a ui-sref="ServicetemplategroupsEdit({id:servicetemplategroup.Servicetemplategroup.id})">
                                                             <i class="fa fa-cog"></i>
                                                             <?php echo __('Edit'); ?>
                                                         </a>
@@ -172,7 +172,7 @@
                                                 <?php endif; ?>
 
                                                 <?php if ($this->Acl->hasPermission('allocateToHostgroup', 'servicetemplategroups')): ?>
-                                                    <li class="divider"</li>
+                                                    <li class="divider"></li>
                                                     <li>
                                                         <a ui-sref="ServicetemplategroupsAllocateToHostgroup({id: servicetemplategroup.Servicetemplategroup.id})">
                                                             <i class="fa fa-external-link"></i>

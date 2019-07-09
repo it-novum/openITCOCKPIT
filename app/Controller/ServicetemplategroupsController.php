@@ -29,11 +29,13 @@ use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServicetemplategroupsConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
@@ -52,9 +54,6 @@ class ServicetemplategroupsController extends AppController {
     public $layout = 'blank';
 
     public $uses = [
-        'Servicetemplategroup',
-        'Servicetemplate',
-        'Container',
         'Changelog',
     ];
 
@@ -780,179 +779,164 @@ class ServicetemplategroupsController extends AppController {
     }
 
     /**
-     * @param $servicetemplategroup_id
-     * @deprecated
+     * @param int $servicetemplategroupId
      */
-    public function allocateToMatchingHostgroup($servicetemplategroup_id) {
-        if (!$this->Servicetemplategroup->exists($servicetemplategroup_id)) {
-            throw new NotFoundException(__('Invalid service template group'));
-        }
-
-        $userId = $this->Auth->user('id');
-        $hostIds = [];
-        $servicetemplategroup = $this->Servicetemplategroup->find('first', [
-            'contain'    => [
-                'Container',
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                    ],
-                ],
-            ],
-            'conditions' => [
-                'Servicetemplategroup.id' => $servicetemplategroup_id,
-            ],
-        ]);
-
-        //Get all hostgroups to user is allowed to see
-        $this->loadModel('Hostgroup');
-        $this->loadModel('Host');
-        $this->loadModel('Service');
-        $query = [
-            'contain'    => [
-                'Container',
-                'Host'         => [
-                    'fields' => [
-                        'Host.id',
-                    ],
-                ],
-                'Hosttemplate' => [
-                    'fields' => [
-                        'Hosttemplate.id'
-                    ]
-                ],
-            ],
-            'order'      => [
-                'Container.name' => 'asc',
-            ],
-            'conditions' => [
-                'Container.parent_id' => $this->MY_RIGHTS,
-                'Container.name'      => $servicetemplategroup['Container']['name'],
-            ],
-            'fields'     => [
-                'Hostgroup.id',
-                'Hostgroup.container_id',
-                'Container.id',
-                'Container.name',
-                'Container.parent_id',
-            ],
-        ];
-        $hostgroup = $this->Hostgroup->find('first', $query);
-
-        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Container.parent_id'))) {
-            $this->render403();
+    public function allocateToMatchingHostgroup($servicetemplategroupId) {
+        $this->layout = 'blank';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
             return;
         }
 
-        if (empty($hostgroup)) {
-            $this->setFlash(__('Could not found any hostgroup matching to %s', $servicetemplategroup['Container']['name']), false);
-            $this->redirect(['action' => 'index']);
+        /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
+        $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $ServicetemplateCache = new KeyValueStore();
+
+        if (!$ServicetemplategroupsTable->existsById($servicetemplategroupId)) {
+            throw new NotFoundException('Invalid service template group');
         }
 
-        if (!empty($hostgroup['Host'])) {
-            $hostIds = Hash::Extract($hostgroup['Host'], '{n}.id');
+        $servicetemplategroupName = $ServicetemplategroupsTable->getServicetemplategroupNameById($servicetemplategroupId);
+
+        //Find matching host group
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
         }
-        $hostTemlateIds = Hash::extract($hostgroup, 'Hosttemplate.{n}.id');
-        if (!empty($hostTemlateIds)) {
-            $hostsByHosttemplateIds = $this->Host->find('all', [
-                'recursive'  => -1,
-                'contain'    => [
-                    'Hostgroup',
-                    'Hosttemplate' => [
-                        'Hostgroup' => [
-                            'conditions' => [
-                                'Hostgroup.id' => $hostgroup['Hostgroup']['id']
-                            ]
-                        ]
-                    ]
-                ],
-                'conditions' => [
-                    'Host.hosttemplate_id' => $hostTemlateIds,
-                    'NOT'                  => [
-                        'Host.id' => $hostIds
-                    ]
-                ]
-            ]);
-            foreach ($hostsByHosttemplateIds as $host) {
-                if (empty($host['Hostgroup']) && !empty($host['Hosttemplate']['Hostgroup']) && !in_array($host['Host']['id'], $hostIds, true)) {
-                    $hostIds[] = $host['Host']['id'];
-                }
+
+        try {
+            $hostgroup = $HostgroupsTable->getHostgroupByName($servicetemplategroupName, $MY_RIGHTS);
+        } catch (RecordNotFoundException $e) {
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('message', __('No matching host group "%s" found.', $servicetemplategroupName));
+            $this->set('_serialize', ['success', 'message']);
+            return;
+        }
+
+        $hostgroupId = $hostgroup->get('id');
+
+        //Gather list of services that will be created by the system
+        if (!$HostgroupsTable->existsById($hostgroupId)) {
+            throw new NotFoundException('Invalid host group');
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $hostIds = $HostgroupsTable->getHostIdsByHostgroupId($hostgroupId);
+
+        $newServiceIds = [];
+        $errors = [];
+        foreach ($hostIds as $hostId) {
+            $host = $HostsTable->get($hostId);
+            $viewHost = new \itnovum\openITCOCKPIT\Core\Views\Host($host->toArray());
+            if ($viewHost->isDisabled()) {
+                continue;
             }
-        }
-        $servicetemplateCache = [];
-        foreach ($hostIds as $_host) {
-            $host = $this->Host->find('first', [
-                'contain'    => [
-                    'Service' => [
-                        'fields' => [
-                            'Service.servicetemplate_id',
-                        ],
-                    ],
-                ],
-                'conditions' => [
-                    'Host.id'       => $_host,
-                    'Host.disabled' => 0,
-                ],
-                'fields'     => [
-                    'Host.id',
-                    'Host.uuid',
-                    'Host.name',
-                    'Host.container_id',
-                ],
-            ]);
 
-            if (!empty($host)) {
-                $existingServiceTemplates = Hash::extract($host, 'Service.{n}.servicetemplate_id');
-                foreach ($servicetemplategroup['Servicetemplate'] as $_servicetemplate) {
-                    //Check if we need to create this service
-                    if (in_array($_servicetemplate['id'], $existingServiceTemplates)) {
-                        continue;
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($viewHost->getContainerId());
+
+            $hostContactsAndContactgroupsById = $HostsTable->getContactsAndContactgroupsById($host->get('id'));
+            $hosttemplateContactsAndContactgroupsById = $HosttemplatesTable->getContactsAndContactgroupsById($host->get('hosttemplate_id'));
+
+            $servicetemplategroup = $ServicetemplategroupsTable->getServicetemplatesforAllocation($servicetemplategroupId, $containerIds);
+            $targetHostwithServices = $HostsTable->getServicesForServicetemplateAllocation($hostId);
+
+            $servicetemplatesForDeploy = [];
+            foreach ($servicetemplategroup['servicetemplates'] as $servicetemplate) {
+                $doesServicetemplateExistsOnTargetHost = false;
+                $doesServicetemplateExistsOnTargetHostAndIsDisabled = false;
+                $createServiceOnTargetHost = true;
+
+                $doesServicetemplateExistsOnTargetHost = isset($targetHostwithServices['services'][$servicetemplate['id']]);
+                if (isset($targetHostwithServices['services'][$servicetemplate['id']])) {
+                    $doesServicetemplateExistsOnTargetHostAndIsDisabled = (bool)$targetHostwithServices['services'][$servicetemplate['id']]['disabled'];
+                }
+
+                if ($doesServicetemplateExistsOnTargetHost || $doesServicetemplateExistsOnTargetHostAndIsDisabled) {
+                    $createServiceOnTargetHost = false;
+                }
+
+                if ($createServiceOnTargetHost === true) {
+                    //Create the Service
+
+                    $servicetemplateId = $servicetemplate['id'];
+
+                    if (!$ServicetemplateCache->has($servicetemplateId)) {
+                        $ServicetemplateCache->set($servicetemplateId, $ServicetemplatesTable->getServicetemplateForDiff($servicetemplateId));
                     }
 
-                    if (!isset($servicetemplateCache[$_servicetemplate['id']])) {
-                        $servicetemplateCache[$_servicetemplate['id']] = $this->Servicetemplate->findById($_servicetemplate['id']);
-                    }
-                    $servicetemplate = $servicetemplateCache[$_servicetemplate['id']];
+                    $servicetemplate = $ServicetemplateCache->get($servicetemplateId);
+                    $servicename = $servicetemplate['Servicetemplate']['name'];
 
-                    $service = [];
-                    $service['Service']['uuid'] = UUID::v4();
-                    $service['Service']['host_id'] = $host['Host']['id'];
-                    $service['Service']['servicetemplate_id'] = $servicetemplate['Servicetemplate']['id'];
-                    //$service['Host'] = $host['Host'];
+                    $serviceData = ServiceComparisonForSave::getServiceSkeleton($hostId, $servicetemplateId);
+                    $ServiceComparisonForSave = new ServiceComparisonForSave(
+                        ['Service' => $serviceData],
+                        $servicetemplate,
+                        $hostContactsAndContactgroupsById,
+                        $hosttemplateContactsAndContactgroupsById
+                    );
+                    $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
+                    $serviceData['uuid'] = UUID::v4();
 
-                    $service['Service']['Contact'] = $servicetemplate['Contact'];
-                    $service['Service']['Contactgroup'] = $servicetemplate['Contactgroup'];
+                    //Add required fields for validation
+                    $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
+                    $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];
+                    $serviceData['servicetemplate_flap_detection_on_warning'] = $servicetemplate['Servicetemplate']['flap_detection_on_warning'];
+                    $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
+                    $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
 
-                    $service['Contact']['Contact'] = [];
-                    $service['Contactgroup']['Contactgroup'] = [];
-                    $service['Servicegroup']['Servicegroup'] = [];
+                    $service = $ServicesTable->newEntity($serviceData);
 
-                    $service['Contact']['Contact'] = $service['Contact'];
-                    $service['Contactgroup']['Contactgroup'] = $service['Contactgroup'];
-                    $data_to_save = $this->Service->prepareForSave([], $service, 'add');
+                    $ServicesTable->save($service);
+                    if ($service->hasErrors()) {
+                        $errors[] = $service->getErrors();
+                    } else {
+                        //No errors
 
-                    $this->Service->create();
-                    if ($this->Service->saveAll($data_to_save)) {
+                        $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
                         $changelog_data = $this->Changelog->parseDataForChangelog(
                             'add',
                             'services',
-                            $this->Service->id,
+                            $service->get('id'),
                             OBJECT_SERVICE,
-                            $host['Host']['container_id'], // use host container_id for user permissions
-                            $userId,
-                            $host['Host']['name'] . '/' . $servicetemplate['Servicetemplate']['name'],
-                            $service
+                            $host->get('container_id'),
+                            $User->getId(),
+                            $host->get('name') . '/' . $servicename,
+                            array_merge(['Service' => $serviceData], $extDataForChangelog)
                         );
+
                         if ($changelog_data) {
                             CakeLog::write('log', serialize($changelog_data));
                         }
+
+                        $newServiceIds[] = $service->get('id');
                     }
+
+
                 }
+
             }
         }
-        Cache::clear(false, 'permissions');
-        $this->setFlash(__('Services successfully created'));
-        $this->redirect(['action' => 'index']);
+
+        $this->set('success', true);
+        $this->set('services', ['_ids' => $newServiceIds]);
+        $this->set('errors', $errors);
+        $this->set('_serialize', ['success', 'services', 'errors']);
     }
 
 

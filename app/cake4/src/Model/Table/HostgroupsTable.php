@@ -768,4 +768,34 @@ class HostgroupsTable extends Table {
     public function existsById($id) {
         return $this->exists(['Hostgroups.id' => $id]);
     }
+
+    /**
+     * @param $name
+     * @param array $MY_RIGHTS
+     * @return array|\Cake\Datasource\EntityInterface
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException
+     */
+    public function getHostgroupByName($name, $MY_RIGHTS = []){
+        if(!is_array($MY_RIGHTS)){
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
+
+        $query = $this->find()
+            ->contain([
+                'Containers'
+            ])
+            ->where([
+                'Containers.name' => $name
+            ]);
+
+        if(!empty($MY_RIGHTS)){
+            $query->andWhere([
+                'Containers.parent_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $result = $query->firstOrFail();
+
+        return $result;
+    }
 }
