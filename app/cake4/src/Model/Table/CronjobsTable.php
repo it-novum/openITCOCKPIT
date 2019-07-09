@@ -52,19 +52,19 @@ class CronjobsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('task')
             ->maxLength('task', 255)
             ->requirePresence('task', 'create')
-            ->allowEmptyString('task', false);
+            ->allowEmptyString('task', null, false);
 
         $validator
             ->scalar('plugin')
             ->maxLength('plugin', 255)
             ->requirePresence('plugin', 'create')
-            ->allowEmptyString('plugin', false);
+            ->allowEmptyString('plugin', null, false);
 
         $validator
             ->integer('interval')
@@ -73,7 +73,7 @@ class CronjobsTable extends Table {
         $validator
             ->boolean('enabled')
             ->requirePresence('enabled', 'create')
-            ->allowEmptyString('enabled', false);
+            ->allowEmptyString('enabled', null, false);
 
         return $validator;
     }
@@ -176,10 +176,10 @@ class CronjobsTable extends Table {
      * @param string $plugin
      * @return bool
      */
-    public function checkForCronjob($task, $plugin = 'Core'){
+    public function checkForCronjob($task, $plugin = 'Core') {
         $query = $this->find()
             ->where([
-                'task' => $task,
+                'task'   => $task,
                 'plugin' => $plugin
             ])
             ->first();

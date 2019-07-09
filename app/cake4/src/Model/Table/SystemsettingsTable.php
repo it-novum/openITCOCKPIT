@@ -52,7 +52,7 @@ class SystemsettingsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         return $validator;
     }
@@ -174,7 +174,7 @@ class SystemsettingsTable extends Table {
         return Cache::read('systemsettings_qh_path', 'permissions');
     }
 
-    public function isLdapAuth(){
+    public function isLdapAuth() {
         if (!Cache::read('systemsettings_is_ldap_auth', 'permissions')) {
             $settings = $this->findAsArraySection('FRONTEND');
             $value = $settings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'ldap';

@@ -112,55 +112,54 @@ class ContactsTable extends Table {
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false)
+            ->allowEmptyString('uuid', null, false)
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->scalar('name')
             ->maxLength('name', 64)
             ->requirePresence('name', 'create')
-            ->allowEmptyString('name', false);
+            ->allowEmptyString('name', null, false);
 
         $validator
             ->scalar('description')
             ->maxLength('description', 255)
             ->requirePresence('description', 'create')
-            ->allowEmptyString('description', true);
+            ->allowEmptyString('description', null, true);
 
         $validator
-            ->allowEmptyString('email', function ($context) {
+            ->allowEmptyString('email', __('You must at least specify either the email address or the phone number.'), function ($context) {
                 return !empty($context['data']['email']) || !empty($context['data']['phone']);
-            }, __('You must at least specify either the email address or the phone number.'))
+            })
             ->email('email', false, __('Invalid email address'));
 
         $validator
-            ->allowEmptyString('phone', true)
             ->maxLength('phone', 64)
-            ->allowEmptyString('email', function ($context) {
+            ->allowEmptyString('phone', __('You must at least specify either the email address or the phone number.'), function ($context) {
                 return !empty($context['data']['email']) || !empty($context['data']['phone']);
-            }, __('You must at least specify either the email address or the phone number.'))
+            })
             ->regex('phone', '/[\d\s-\+]+/');
 
         $validator
             ->integer('host_timeperiod_id')
-            ->allowEmptyString('host_timeperiod_id', false)
+            ->allowEmptyString('host_timeperiod_id', null, false)
             ->requirePresence('host_timeperiod_id')
             ->greaterThan('host_timeperiod_id', 0);
 
         $validator
             ->integer('service_timeperiod_id')
-            ->allowEmptyString('service_timeperiod_id', false)
+            ->allowEmptyString('service_timeperiod_id', null, false)
             ->requirePresence('service_timeperiod_id')
             ->greaterThan('service_timeperiod_id', 0);
 
         $validator
-            ->allowEmptyString('host_commands', false)
+            ->allowEmptyString('host_commands', null, false)
             ->multipleOptions('host_commands', [
                 'min' => 1
             ], __('You have to choose at least one command.'));
 
         $validator
-            ->allowEmptyString('service_commands', false)
+            ->allowEmptyString('service_commands', null, false)
             ->multipleOptions('service_commands', [
                 'min' => 1
             ], __('You have to choose at least one command.'));
@@ -181,13 +180,13 @@ class ContactsTable extends Table {
 
         $validator
             ->requirePresence('containers', true, __('You have to choose at least one option.'))
-            ->allowEmptyString('containers', false)
+            ->allowEmptyString('containers', null, false)
             ->multipleOptions('containers', [
                 'min' => 1
             ], __('You have to choose at least one option.'));
 
         $validator
-            ->allowEmptyString('customvariables', true)
+            ->allowEmptyString('customvariables', null, true)
             ->add('customvariables', 'custom', [
                 'rule'    => [$this, 'checkMacroNames'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => _('Macro name needs to be unique')

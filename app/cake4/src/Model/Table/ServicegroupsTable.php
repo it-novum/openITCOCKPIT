@@ -77,20 +77,20 @@ class ServicegroupsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false)
+            ->allowEmptyString('uuid', null, false)
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->scalar('description')
             ->maxLength('description', 255)
             ->requirePresence('description', 'create')
-            ->allowEmptyString('description', true);
+            ->allowEmptyString('description', null, true);
 
         $validator
             ->scalar('servicegroup_url')
@@ -534,7 +534,7 @@ class ServicegroupsTable extends Table {
                 },
 
                 // Get all services from this service group
-                'services' => function (Query $query) {
+                'services'         => function (Query $query) {
                     $query->disableAutoFields()
                         ->select([
                             'Services.id',

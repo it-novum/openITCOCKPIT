@@ -39,7 +39,7 @@ class CalendarsTable extends Table {
         $this->setPrimaryKey('id');
 
         $this->hasMany('CalendarHolidays', [
-            'foreignKey' => 'calendar_id',
+            'foreignKey'   => 'calendar_id',
             'saveStrategy' => 'replace'
         ])->setDependent(true);
 
@@ -54,7 +54,7 @@ class CalendarsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('name')
@@ -68,7 +68,7 @@ class CalendarsTable extends Table {
 
         $validator
             ->scalar('container_id')
-            ->allowEmptyString('container_id', false)
+            ->allowEmptyString('container_id', null, false)
             ->greaterThan('container_id', 0);
 
         $validator

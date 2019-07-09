@@ -77,20 +77,20 @@ class TimeperiodsTable extends Table {
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false)
+            ->allowEmptyString('uuid', null, false)
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->integer('container_id')
             ->greaterThan('container_id', 0)
             ->requirePresence('container_id')
-            ->allowEmptyString('container_id', false);
+            ->allowEmptyString('container_id', null, false);
 
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
             ->requirePresence('name')
-            ->allowEmptyString('name', false);
+            ->allowEmptyString('name', null, false);
 
         $validator
             ->scalar('description')

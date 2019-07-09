@@ -91,31 +91,31 @@ class HostdependenciesTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false)
+            ->allowEmptyString('uuid', null, false)
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->integer('container_id')
             ->greaterThan('container_id', 0)
             ->requirePresence('container_id')
-            ->allowEmptyString('container_id', false);
+            ->allowEmptyString('container_id', null, false);
 
         $validator
             ->requirePresence('hosts', true, __('You have to choose at least one host.'))
-            ->allowEmptyString('hosts', false)
+            ->allowEmptyString('hosts', null, false)
             ->multipleOptions('hosts', [
                 'min' => 1
             ], __('You have to choose at least one host.'));
 
         $validator
             ->requirePresence('hosts_dependent', true, __('You have to choose at least one dependent host.'))
-            ->allowEmptyString('hosts_dependent', false)
+            ->allowEmptyString('hosts_dependent', null, false)
             ->multipleOptions('hosts_dependent', [
                 'min' => 1
             ], __('You have to choose at least one dependent host.'));

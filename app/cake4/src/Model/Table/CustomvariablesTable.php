@@ -49,20 +49,20 @@ class CustomvariablesTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
             ->requirePresence('name', 'create')
-            ->allowEmptyString('name', false, __('Macro name cannot be left blank.'))
+            ->allowEmptyString('name', __('Macro name cannot be left blank.'), false)
             ->regex('name', '/[\d\w\_]/', __('Macro name contains illegal characters'));
 
         $validator
             ->scalar('value')
             ->maxLength('value', 255)
             ->requirePresence('value', 'create')
-            ->allowEmptyString('value', false, __('Macro value cannot be left blank.'));
+            ->allowEmptyString('value', __('Macro value cannot be left blank.'), false);
 
         return $validator;
     }

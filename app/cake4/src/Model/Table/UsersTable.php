@@ -83,11 +83,11 @@ class UsersTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->requirePresence('containers', 'create', __('You have to choose at least one option.'))
-            ->allowEmptyString('containers', false)
+            ->allowEmptyString('containers', null, false)
             ->multipleOptions('containers', [
                 'min' => 1
             ], __('You have to choose at least one option.'));
@@ -95,29 +95,29 @@ class UsersTable extends Table {
         $validator
             ->integer('usergroup_id')
             ->requirePresence('usergroup_id', 'create')
-            ->allowEmptyString('usergroup_id', false);
+            ->allowEmptyString('usergroup_id', null, false);
 
         $validator
             ->boolean('is_active')
             ->requirePresence('is_active', 'create')
-            ->allowEmptyString('is_active', false);
+            ->allowEmptyString('is_active', null, false);
 
         $validator
             ->email('email')
             ->requirePresence('email', 'create')
-            ->allowEmptyString('email', false);
+            ->allowEmptyString('email', null, false);
 
         $validator
             ->scalar('firstname')
             ->maxLength('firstname', 100)
             ->requirePresence('firstname', 'create')
-            ->allowEmptyString('firstname', false);
+            ->allowEmptyString('firstname', null, false);
 
         $validator
             ->scalar('lastname')
             ->maxLength('lastname', 100)
             ->requirePresence('lastname', 'create')
-            ->allowEmptyString('lastname', false);
+            ->allowEmptyString('lastname', null, false);
 
         $validator
             ->scalar('position')
@@ -167,28 +167,28 @@ class UsersTable extends Table {
         $validator
             ->boolean('showstatsinmenu')
             ->requirePresence('showstatsinmenu', 'create')
-            ->allowEmptyString('showstatsinmenu', false);
+            ->allowEmptyString('showstatsinmenu', null, false);
 
         $validator
             ->integer('dashboard_tab_rotation')
             ->requirePresence('dashboard_tab_rotation', 'create')
-            ->allowEmptyString('dashboard_tab_rotation', false);
+            ->allowEmptyString('dashboard_tab_rotation', null, false);
 
         $validator
             ->integer('paginatorlength')
             ->requirePresence('paginatorlength', 'create')
-            ->allowEmptyString('paginatorlength', false);
+            ->allowEmptyString('paginatorlength', null, false);
 
         $validator
             ->boolean('recursive_browser')
             ->requirePresence('recursive_browser', 'create')
-            ->allowEmptyString('recursive_browser', false);
+            ->allowEmptyString('recursive_browser', null, false);
 
         $validator
             ->scalar('password')
             ->maxLength('password', 45)
             ->requirePresence('password', 'create')
-            ->allowEmptyString('password', false)
+            ->allowEmptyString('password', null, false)
             ->regex('password', self::PASSWORD_REGEX, 'The password must consist of 6 alphanumeric characters and must contain at least one digit.');
 
         $validator->add('confirm_password',

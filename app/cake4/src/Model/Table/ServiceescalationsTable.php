@@ -10,7 +10,6 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Filter\ServiceescalationsFilter;
 
 /**
@@ -101,20 +100,20 @@ class ServiceescalationsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false)
+            ->allowEmptyString('uuid', null, false)
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->integer('container_id')
             ->greaterThan('container_id', 0)
             ->requirePresence('container_id')
-            ->allowEmptyString('container_id', false);
+            ->allowEmptyString('container_id', null, false);
 
         $validator
             ->add('contacts', 'custom', [
@@ -130,7 +129,7 @@ class ServiceescalationsTable extends Table {
 
         $validator
             ->requirePresence('services', true, __('You have to choose at least one service.'))
-            ->allowEmptyString('services', false)
+            ->allowEmptyString('services', null, false)
             ->multipleOptions('services', [
                 'min' => 1
             ], __('You have to choose at least one service.'));
@@ -139,7 +138,7 @@ class ServiceescalationsTable extends Table {
             ->integer('timeperiod_id')
             ->greaterThan('timeperiod_id', 0)
             ->requirePresence('timeperiod_id')
-            ->allowEmptyString('timeperiod_id', false);
+            ->allowEmptyString('timeperiod_id', null, false);
 
         $validator
             ->integer('first_notification')
@@ -149,7 +148,7 @@ class ServiceescalationsTable extends Table {
                     return !($context['data']['last_notification'] === 0);
                 })
             ->requirePresence('first_notification')
-            ->allowEmptyString('first_notification', false);
+            ->allowEmptyString('first_notification', null, false);
 
         $validator
             ->integer('last_notification')
@@ -159,18 +158,18 @@ class ServiceescalationsTable extends Table {
                     return !($context['data']['last_notification'] === 0);
                 })
             ->requirePresence('last_notification')
-            ->allowEmptyString('last_notification', false);
+            ->allowEmptyString('last_notification', null, false);
 
         $validator
             ->integer('notification_interval')
             ->greaterThan('notification_interval', 0)
             ->requirePresence('notification_interval')
-            ->allowEmptyString('notification_interval', false);
+            ->allowEmptyString('notification_interval', null, false);
 
         $validator
             ->boolean('escalate_on_recovery')
             ->requirePresence('escalate_on_recovery', 'create')
-            ->allowEmptyString('escalate_on_recovery', true)
+            ->allowEmptyString('escalate_on_recovery', null, true)
             ->add('escalate_on_recovery', 'custom', [
                 'rule'    => [$this, 'checkEscalateOptionsServiceEscalation'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one escalate option.')
@@ -179,7 +178,7 @@ class ServiceescalationsTable extends Table {
         $validator
             ->boolean('escalate_on_warning')
             ->requirePresence('escalate_on_warning', 'create')
-            ->allowEmptyString('escalate_on_warning', true)
+            ->allowEmptyString('escalate_on_warning', null, true)
             ->add('escalate_on_warning', 'custom', [
                 'rule'    => [$this, 'checkEscalateOptionsServiceEscalation'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one escalate option.')
@@ -188,7 +187,7 @@ class ServiceescalationsTable extends Table {
         $validator
             ->boolean('escalate_on_critical')
             ->requirePresence('escalate_on_critical', 'create')
-            ->allowEmptyString('escalate_on_critical', true)
+            ->allowEmptyString('escalate_on_critical', null, true)
             ->add('escalate_on_warning', 'custom', [
                 'rule'    => [$this, 'checkEscalateOptionsServiceEscalation'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one escalate option.')
@@ -197,7 +196,7 @@ class ServiceescalationsTable extends Table {
         $validator
             ->boolean('escalate_on_unknown')
             ->requirePresence('escalate_on_unknown', 'create')
-            ->allowEmptyString('escalate_on_unknown', true)
+            ->allowEmptyString('escalate_on_unknown', null, true)
             ->add('escalate_on_unknown', 'custom', [
                 'rule'    => [$this, 'checkEscalateOptionsServiceEscalation'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one escalate option.')
@@ -557,7 +556,7 @@ class ServiceescalationsTable extends Table {
                         }
                         return $q->enableAutoFields(false)
                             ->where([
-                                'Services.disabled' => 0,
+                                'Services.disabled'                             => 0,
                                 'ServiceescalationsServiceMemberships.excluded' => 0
                             ])
                             ->select(['id']);

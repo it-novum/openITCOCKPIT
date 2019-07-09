@@ -84,19 +84,19 @@ class CommandargumentsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('name')
             ->maxLength('name', 10)
             ->requirePresence('name', 'create')
-            ->allowEmptyString('name', false);
+            ->allowEmptyString('name', null, false);
 
         $validator
             ->scalar('human_name')
             ->maxLength('human_name', 255)
             ->requirePresence('human_name', 'create')
-            ->allowEmptyString('human_name', false);
+            ->allowEmptyString('human_name', null, false);
 
         return $validator;
     }

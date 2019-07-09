@@ -11,7 +11,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
@@ -80,25 +79,25 @@ class HostgroupsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false)
+            ->allowEmptyString('uuid', null, false)
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->scalar('description')
             ->maxLength('description', 255)
             ->requirePresence('description', false)
-            ->allowEmptyString('description', true);
+            ->allowEmptyString('description', null, true);
 
         $validator
             ->scalar('hostgroup_url')
             ->maxLength('hostgroup_url', 255)
-            ->allowEmptyString('hostgroup_url', true)
+            ->allowEmptyString('hostgroup_url', null, true)
             ->url('hostgroup_url', __('Not a valid URL.'));
 
         return $validator;
@@ -737,7 +736,7 @@ class HostgroupsTable extends Table {
                 },
 
                 // Get all hosts from this host group
-                'hosts' => function (Query $query) {
+                'hosts'         => function (Query $query) {
                     $query->disableAutoFields()
                         ->select([
                             'Hosts.id',
@@ -753,12 +752,12 @@ class HostgroupsTable extends Table {
             ->first();
 
 
-       $hostIds = array_unique(array_merge(
-           Hash::extract($hostgroup, 'hosts.{n}.id'),
-           Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}.id')
-       ));
+        $hostIds = array_unique(array_merge(
+            Hash::extract($hostgroup, 'hosts.{n}.id'),
+            Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}.id')
+        ));
 
-       return $hostIds;
+        return $hostIds;
     }
 
     /**
@@ -775,8 +774,8 @@ class HostgroupsTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface
      * @throws \Cake\Datasource\Exception\RecordNotFoundException
      */
-    public function getHostgroupByName($name, $MY_RIGHTS = []){
-        if(!is_array($MY_RIGHTS)){
+    public function getHostgroupByName($name, $MY_RIGHTS = []) {
+        if (!is_array($MY_RIGHTS)) {
             $MY_RIGHTS = [$MY_RIGHTS];
         }
 
@@ -788,7 +787,7 @@ class HostgroupsTable extends Table {
                 'Containers.name' => $name
             ]);
 
-        if(!empty($MY_RIGHTS)){
+        if (!empty($MY_RIGHTS)) {
             $query->andWhere([
                 'Containers.parent_id IN' => $MY_RIGHTS
             ]);

@@ -64,7 +64,7 @@ class HostcommandargumentvaluesTable extends Table {
         $validator
             ->scalar('value')
             ->maxLength('value', 1000)
-            ->allowEmptyString('value', true);
+            ->allowEmptyString('value', null, true);
 
         return $validator;
     }

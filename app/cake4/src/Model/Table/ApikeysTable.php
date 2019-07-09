@@ -51,19 +51,19 @@ class ApikeysTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('apikey')
             ->maxLength('apikey', 255)
             ->requirePresence('apikey', 'create')
-            ->allowEmptyString('apikey', false);
+            ->allowEmptyString('apikey', null, false);
 
         $validator
             ->scalar('description')
             ->maxLength('description', 255)
             ->requirePresence('description', 'create')
-            ->allowEmptyString('description', false);
+            ->allowEmptyString('description', null, false);
 
         $validator
             ->integer('user_id')
@@ -136,7 +136,7 @@ class ApikeysTable extends Table {
      * @param int $len
      * @return string
      */
-    public function generateApiKey($len = 80){
+    public function generateApiKey($len = 80) {
         $bytes = openssl_random_pseudo_bytes($len, $cstrong);
         $apikey = bin2hex($bytes);
         return $apikey;

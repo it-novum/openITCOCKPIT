@@ -92,31 +92,31 @@ class ServicedependenciesTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false)
+            ->allowEmptyString('uuid', null, false)
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->integer('container_id')
             ->greaterThan('container_id', 0)
             ->requirePresence('container_id')
-            ->allowEmptyString('container_id', false);
+            ->allowEmptyString('container_id', null, false);
 
         $validator
             ->requirePresence('services', true, __('You have to choose at least one service.'))
-            ->allowEmptyString('services', false)
+            ->allowEmptyString('services', null, false)
             ->multipleOptions('services', [
                 'min' => 1
             ], __('You have to choose at least one service.'));
 
         $validator
             ->requirePresence('services_dependent', true, __('You have to choose at least one dependent service.'))
-            ->allowEmptyString('services_dependent', false)
+            ->allowEmptyString('services_dependent', null, false)
             ->multipleOptions('services_dependent', [
                 'min' => 1
             ], __('You have to choose at least one dependent service.'));

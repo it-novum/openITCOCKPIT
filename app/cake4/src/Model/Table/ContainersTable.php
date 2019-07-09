@@ -218,12 +218,12 @@ class ContainersTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
-            ->allowEmptyString('name', false, __('This field cannot be left blank.'))
+            ->allowEmptyString('name', __('This field cannot be left blank.'), false)
             ->add('name', 'custom', [
                 'rule'    => function ($value, $context) {
                     if (isset($context['data']['containertype_id']) && $context['data']['containertype_id'] == CT_TENANT) {
@@ -261,7 +261,7 @@ class ContainersTable extends Table {
             ->scalar('parent_id')
             ->numeric('parent_id')
             ->greaterThan('parent_id', 0)
-            ->allowEmptyString('parent_id', false, __('This field cannot be left blank.'));
+            ->allowEmptyString('parent_id', __('This field cannot be left blank.'), false);
 
         return $validator;
     }

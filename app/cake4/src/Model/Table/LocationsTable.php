@@ -64,19 +64,19 @@ class LocationsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
         /*
                 $validator
                     ->integer('parent_id')
                     ->greaterThan('parent_id', 0)
                     ->requirePresence('parent_id')
-                    ->allowEmptyString('parent_id', false);
+                    ->allowEmptyString('parent_id', null, false);
         */
         $validator
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false)
+            ->allowEmptyString('uuid', null, false)
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator

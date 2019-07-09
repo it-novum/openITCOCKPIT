@@ -58,12 +58,12 @@ class ServicecommandargumentvaluesTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('value')
             ->maxLength('value', 1000)
-            ->allowEmptyString('value', true);
+            ->allowEmptyString('value', null, true);
 
         return $validator;
     }

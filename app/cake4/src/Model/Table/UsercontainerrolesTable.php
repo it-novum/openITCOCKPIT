@@ -1,8 +1,7 @@
 <?php
+
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -21,16 +20,14 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Usercontainerrole[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Usercontainerrole findOrCreate($search, callable $callback = null, $options = [])
  */
-class UsercontainerrolesTable extends Table
-{
+class UsercontainerrolesTable extends Table {
     /**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         parent::initialize($config);
 
         $this->setTable('usercontainerroles');
@@ -51,17 +48,16 @@ class UsercontainerrolesTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('name')
             ->maxLength('name', 100)
             ->requirePresence('name', 'create')
-            ->allowEmptyString('name', false);
+            ->allowEmptyString('name', null, false);
 
         return $validator;
     }

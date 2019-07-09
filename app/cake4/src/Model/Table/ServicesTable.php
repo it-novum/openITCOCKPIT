@@ -179,83 +179,83 @@ class ServicesTable extends Table {
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false)
+            ->allowEmptyString('uuid', null, false)
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->requirePresence('host_id', 'create')
             ->integer('host_id')
-            ->allowEmptyString('host_id', false);
+            ->allowEmptyString('host_id', null, false);
 
         $validator
             ->requirePresence('servicetemplate_id', 'create')
             ->integer('servicetemplate_id')
-            ->allowEmptyString('servicetemplate_id', false);
+            ->allowEmptyString('servicetemplate_id', null, false);
 
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
             ->requirePresence('name', false)
-            ->allowEmptyString('name', true);
+            ->allowEmptyString('name', null, true);
 
 
         $validator
             ->integer('priority')
             ->requirePresence('priority', false)
             ->range('priority', [1, 5], __('This value must be between 1 and 5'))
-            ->allowEmptyString('priority', true);
+            ->allowEmptyString('priority', null, true);
 
         $validator
             ->integer('max_check_attempts')
             ->requirePresence('max_check_attempts', false)
             ->greaterThanOrEqual('max_check_attempts', 1, __('This value need to be at least 1'))
-            ->allowEmptyString('max_check_attempts', true);
+            ->allowEmptyString('max_check_attempts', null, true);
 
         $validator
             ->numeric('notification_interval')
             ->requirePresence('notification_interval', false)
             ->greaterThanOrEqual('notification_interval', 0, __('This value need to be at least 0'))
-            ->allowEmptyString('notification_interval', true);
+            ->allowEmptyString('notification_interval', null, true);
 
         $validator
             ->numeric('check_interval')
             ->requirePresence('check_interval', false)
             ->greaterThanOrEqual('check_interval', 1, __('This value need to be at least 1'))
-            ->allowEmptyString('check_interval', true);
+            ->allowEmptyString('check_interval', null, true);
 
         $validator
             ->numeric('retry_interval')
             ->requirePresence('retry_interval', false)
             ->greaterThanOrEqual('retry_interval', 1, __('This value need to be at least 1'))
-            ->allowEmptyString('retry_interval', true);
+            ->allowEmptyString('retry_interval', null, true);
 
         $validator
             ->integer('check_period_id')
             ->requirePresence('check_period_id', false)
             ->greaterThan('check_period_id', 0, __('Please select a check period'))
-            ->allowEmptyString('check_period_id', true);
+            ->allowEmptyString('check_period_id', null, true);
 
         $validator
             ->integer('command_id')
             ->requirePresence('command_id', false)
             ->greaterThan('command_id', 0, __('Please select a check command'))
-            ->allowEmptyString('command_id', true);
+            ->allowEmptyString('command_id', null, true);
 
         $validator
             ->integer('eventhandler_command_id')
             ->requirePresence('eventhandler_command_id', false)
-            ->allowEmptyString('eventhandler_command_id', true);
+            ->allowEmptyString('eventhandler_command_id', null, true);
 
         $validator
             ->integer('notify_period_id')
             ->requirePresence('notify_period_id', false)
             ->greaterThan('notify_period_id', 0, __('Please select a notify period'))
-            ->allowEmptyString('notify_period_id', true);
+            ->allowEmptyString('notify_period_id', null, true);
 
         $validator
             ->boolean('notify_on_recovery')
             ->requirePresence('notify_on_recovery', false)
-            ->allowEmptyString('notify_on_recovery', true)
+            ->allowEmptyString('notify_on_recovery', null, true)
             ->add('notify_on_recovery', 'custom', [
                 'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
@@ -264,7 +264,7 @@ class ServicesTable extends Table {
         $validator
             ->boolean('notify_on_warning')
             ->requirePresence('notify_on_warning', false)
-            ->allowEmptyString('notify_on_warning', true)
+            ->allowEmptyString('notify_on_warning', null, true)
             ->add('notify_on_warning', 'custom', [
                 'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
@@ -273,7 +273,7 @@ class ServicesTable extends Table {
         $validator
             ->boolean('notify_on_critical')
             ->requirePresence('notify_on_critical', false)
-            ->allowEmptyString('notify_on_critical', true)
+            ->allowEmptyString('notify_on_critical', null, true)
             ->add('notify_on_critical', 'custom', [
                 'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
@@ -282,7 +282,7 @@ class ServicesTable extends Table {
         $validator
             ->boolean('notify_on_unknown')
             ->requirePresence('notify_on_unknown', false)
-            ->allowEmptyString('notify_on_unknown', true)
+            ->allowEmptyString('notify_on_unknown', null, true)
             ->add('notify_on_unknown', 'custom', [
                 'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
@@ -291,7 +291,7 @@ class ServicesTable extends Table {
         $validator
             ->boolean('notify_on_flapping')
             ->requirePresence('notify_on_flapping', false)
-            ->allowEmptyString('notify_on_flapping', true)
+            ->allowEmptyString('notify_on_flapping', null, true)
             ->add('notify_on_flapping', 'custom', [
                 'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
@@ -300,7 +300,7 @@ class ServicesTable extends Table {
         $validator
             ->boolean('notify_on_downtime')
             ->requirePresence('notify_on_downtime', false)
-            ->allowEmptyString('notify_on_downtime', true)
+            ->allowEmptyString('notify_on_downtime', null, true)
             ->add('notify_on_downtime', 'custom', [
                 'rule'    => [$this, 'checkNotificationOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
@@ -309,39 +309,39 @@ class ServicesTable extends Table {
         $validator
             ->boolean('flap_detection_enabled')
             ->requirePresence('flap_detection_enabled', 'create')
-            ->allowEmptyString('flap_detection_enabled', true);
+            ->allowEmptyString('flap_detection_enabled', null, true);
 
         $validator
-            ->allowEmptyString('flap_detection_on_ok', function ($context) {
+            ->allowEmptyString('flap_detection_on_ok', __('You must specify at least one flap detection option.'), function ($context) {
                 return $this->checkFlapDetectionOptionsService(null, $context);
-            }, __('You must specify at least one flap detection option.'))
+            })
             ->add('flap_detection_on_ok', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
         $validator
-            ->allowEmptyString('flap_detection_on_warning', function ($context) {
+            ->allowEmptyString('flap_detection_on_warning', __('You must specify at least one flap detection option.'), function ($context) {
                 return $this->checkFlapDetectionOptionsService(null, $context);
-            }, __('You must specify at least one flap detection option.'))
+            })
             ->add('flap_detection_on_warning', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
         $validator
-            ->allowEmptyString('flap_detection_on_critical', function ($context) {
+            ->allowEmptyString('flap_detection_on_critical', __('You must specify at least one flap detection option.'), function ($context) {
                 return $this->checkFlapDetectionOptionsService(null, $context);
-            }, __('You must specify at least one flap detection option.'))
+            })
             ->add('flap_detection_on_critical', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
             ]);
 
         $validator
-            ->allowEmptyString('flap_detection_on_unknown', function ($context) {
+            ->allowEmptyString('flap_detection_on_unknown', __('You must specify at least one flap detection option.'), function ($context) {
                 return $this->checkFlapDetectionOptionsService(null, $context);
-            }, __('You must specify at least one flap detection option.'))
+            })
             ->add('flap_detection_on_unknown', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsService'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
@@ -350,53 +350,53 @@ class ServicesTable extends Table {
         $validator
             ->numeric('low_flap_threshold')
             ->requirePresence('low_flap_threshold', false)
-            ->allowEmptyString('low_flap_threshold', true);
+            ->allowEmptyString('low_flap_threshold', null, true);
 
         $validator
             ->numeric('high_flap_threshold')
             ->requirePresence('high_flap_threshold', false)
-            ->allowEmptyString('high_flap_threshold', true);
+            ->allowEmptyString('high_flap_threshold', null, true);
 
         $validator
             ->boolean('process_performance_data')
             ->requirePresence('process_performance_data', false)
-            ->allowEmptyString('process_performance_data', true);
+            ->allowEmptyString('process_performance_data', null, true);
 
         $validator
             ->boolean('passive_checks_enabled')
             ->requirePresence('passive_checks_enabled', false)
-            ->allowEmptyString('passive_checks_enabled', true);
+            ->allowEmptyString('passive_checks_enabled', null, true);
 
         $validator
             ->boolean('event_handler_enabled')
             ->requirePresence('event_handler_enabled', false)
-            ->allowEmptyString('event_handler_enabled', true);
+            ->allowEmptyString('event_handler_enabled', null, true);
 
         $validator
             ->boolean('active_checks_enabled')
             ->requirePresence('active_checks_enabled', false)
-            ->allowEmptyString('active_checks_enabled', true);
+            ->allowEmptyString('active_checks_enabled', null, true);
 
         $validator
             ->scalar('notes')
             ->requirePresence('notes', false)
-            ->allowEmptyString('notes', true)
+            ->allowEmptyString('notes', null, true)
             ->maxLength('notes', 255);
 
         $validator
             ->scalar('tags')
             ->requirePresence('tags', false)
-            ->allowEmptyString('tags', true)
+            ->allowEmptyString('tags', null, true)
             ->maxLength('tags', 255);
 
         $validator
             ->scalar('service_url')
             ->requirePresence('service_url', false)
-            ->allowEmptyString('service_url', true)
+            ->allowEmptyString('service_url', null, true)
             ->maxLength('service_url', 255);
 
         $validator
-            ->allowEmptyString('customvariables', true)
+            ->allowEmptyString('customvariables', null, true)
             ->add('customvariables', 'custom', [
                 'rule'    => [$this, 'checkMacroNames'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => _('Macro name needs to be unique')
@@ -405,17 +405,17 @@ class ServicesTable extends Table {
         $validator
             ->boolean('is_volatile')
             ->requirePresence('is_volatile', false)
-            ->allowEmptyString('is_volatile', true);
+            ->allowEmptyString('is_volatile', null, true);
 
         $validator
             ->boolean('freshness_checks_enabled')
             ->requirePresence('freshness_checks_enabled', false)
-            ->allowEmptyString('freshness_checks_enabled', true);
+            ->allowEmptyString('freshness_checks_enabled', null, true);
 
         $validator
             ->integer('freshness_threshold')
             ->greaterThan('check_period_id', 0, __('This field cannot be 0'))
-            ->allowEmptyString('freshness_threshold', true);
+            ->allowEmptyString('freshness_threshold', null, true);
 
         return $validator;
 

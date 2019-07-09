@@ -57,30 +57,30 @@ class MacrosTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('name')
             ->maxLength('name', 10)
             ->requirePresence('name', 'create')
-            ->allowEmptyString('name', false);
+            ->allowEmptyString('name', null, false);
 
         $validator
             ->scalar('value')
             ->maxLength('value', 255)
             ->requirePresence('value', 'create')
-            ->allowEmptyString('value', false);
+            ->allowEmptyString('value', null, false);
 
         $validator
             ->scalar('description')
             ->maxLength('description', 255)
             ->requirePresence('description', 'create')
-            ->allowEmptyString('description', true);
+            ->allowEmptyString('description', null, true);
 
         $validator
             ->integer('password')
             ->requirePresence('password', 'create')
-            ->allowEmptyString('password', false);
+            ->allowEmptyString('password', null, false);
 
         return $validator;
     }

@@ -50,17 +50,17 @@ class TimeperiodTimerangesTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->integer('day')
             ->inList('day', [1, 2, 3, 4, 5, 6, 7])
-            ->allowEmptyString('day', false);
+            ->allowEmptyString('day', null, false);
 
         $validator
             ->scalar('start')
             ->maxLength('start', 5)
-            ->allowEmptyString('start', true)
+            ->allowEmptyString('start', null, true)
             ->regex('start', '/(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]|(24:00)$/', 'Please use HH:mm format')
             ->add('start', 'custom', [
                 'rule'    => function ($value, $context) {
@@ -75,7 +75,7 @@ class TimeperiodTimerangesTable extends Table {
         $validator
             ->scalar('end')
             ->maxLength('end', 5)
-            ->allowEmptyString('end', true)
+            ->allowEmptyString('end', null, true)
             ->regex('end', '/(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]|(24:00)$/', 'Please use HH:mm format')
             ->add('end', 'custom', [
                 'rule'    => function ($value, $context) {

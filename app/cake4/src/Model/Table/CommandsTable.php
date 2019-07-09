@@ -73,7 +73,7 @@ class CommandsTable extends Table {
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
-            ->allowEmptyString('name', false)
+            ->allowEmptyString('name', null, false)
             ->add('name', 'unique', [
                 'rule'     => 'validateUnique',
                 'provider' => 'table',
@@ -82,12 +82,12 @@ class CommandsTable extends Table {
 
         $validator
             ->scalar('command_line')
-            ->allowEmptyString('command_line', false, __('This field cannot be left blank.'));
+            ->allowEmptyString('command_line', __('This field cannot be left blank.'), false);
 
         $validator
             ->integer('command_type')
             ->requirePresence('command_type', 'create')
-            ->allowEmptyString('command_type', false);
+            ->allowEmptyString('command_type', null, false);
 
         $validator
             ->scalar('human_args')
@@ -97,7 +97,7 @@ class CommandsTable extends Table {
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false)
+            ->allowEmptyString('uuid', null, false)
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
@@ -153,7 +153,7 @@ class CommandsTable extends Table {
      * @return array
      */
     public function getCommandById($id) {
-        if($id === null){
+        if ($id === null) {
             return [];
         }
         $command = $this->find('all')

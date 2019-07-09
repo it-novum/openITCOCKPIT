@@ -70,23 +70,23 @@ class ContactgroupsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false)
+            ->allowEmptyString('uuid', null, false)
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->scalar('description')
             ->maxLength('description', 255)
-            ->allowEmptyString('description', true);
+            ->allowEmptyString('description', null, true);
 
         $validator
             ->requirePresence('contacts', true, __('You have to choose at least one contact.'))
-            ->allowEmptyString('contacts', false)
+            ->allowEmptyString('contacts', null, false)
             ->multipleOptions('contacts', [
                 'min' => 1
             ], __('You have to choose at least one contact.'));

@@ -132,23 +132,23 @@ class HosttemplatesTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false)
+            ->allowEmptyString('uuid', null, false)
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
             ->requirePresence('name', 'create')
-            ->allowEmptyString('name', false);
+            ->allowEmptyString('name', null, false);
 
         $validator
-            ->allowEmptyString('description', true);
+            ->allowEmptyString('description', null, true);
 
         $validator
             ->integer('priority')
@@ -158,55 +158,55 @@ class HosttemplatesTable extends Table {
         $validator
             ->integer('container_id')
             ->requirePresence('container_id', 'create')
-            ->allowEmptyString('container_id', false)
+            ->allowEmptyString('container_id', null, false)
             ->greaterThanOrEqual('container_id', 1);
 
         $validator
             ->integer('max_check_attempts')
             ->requirePresence('max_check_attempts', 'create')
             ->greaterThanOrEqual('max_check_attempts', 1, __('This value need to be at least 1'))
-            ->allowEmptyString('max_check_attempts', false);
+            ->allowEmptyString('max_check_attempts', null, false);
 
         $validator
             ->numeric('notification_interval')
             ->requirePresence('notification_interval', 'create')
             ->greaterThanOrEqual('notification_interval', 0, __('This value need to be at least 0'))
-            ->allowEmptyString('notification_interval', false);
+            ->allowEmptyString('notification_interval', null, false);
 
         $validator
             ->integer('check_interval')
             ->requirePresence('check_interval', 'create')
             ->greaterThanOrEqual('check_interval', 1, __('This value need to be at least 1'))
-            ->allowEmptyString('check_interval', false);
+            ->allowEmptyString('check_interval', null, false);
 
         $validator
             ->integer('retry_interval')
             ->requirePresence('retry_interval', 'create')
             ->greaterThanOrEqual('retry_interval', 1, __('This value need to be at least 1'))
-            ->allowEmptyString('retry_interval', false);
+            ->allowEmptyString('retry_interval', null, false);
 
         $validator
             ->integer('check_period_id')
             ->requirePresence('check_period_id', 'create')
             ->greaterThan('check_period_id', 0, __('Please select a check period'))
-            ->allowEmptyString('check_period_id', false);
+            ->allowEmptyString('check_period_id', null, false);
 
         $validator
             ->integer('command_id')
             ->requirePresence('command_id', 'create')
             ->greaterThan('command_id', 0, __('Please select a check command'))
-            ->allowEmptyString('command_id', false);
+            ->allowEmptyString('command_id', null, false);
 
         $validator
             ->integer('notify_period_id')
             ->requirePresence('notify_period_id', 'create')
             ->greaterThan('notify_period_id', 0, __('Please select a notify period'))
-            ->allowEmptyString('notify_period_id', false);
+            ->allowEmptyString('notify_period_id', null, false);
 
         $validator
             ->boolean('notify_on_recovery')
             ->requirePresence('notify_on_recovery', 'create')
-            ->allowEmptyString('notify_on_recovery', false)
+            ->allowEmptyString('notify_on_recovery', null, false)
             ->add('notify_on_recovery', 'custom', [
                 'rule'    => [$this, 'checkNotificationOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
@@ -215,7 +215,7 @@ class HosttemplatesTable extends Table {
         $validator
             ->boolean('notify_on_down')
             ->requirePresence('notify_on_down', 'create')
-            ->allowEmptyString('notify_on_down', false)
+            ->allowEmptyString('notify_on_down', null, false)
             ->add('notify_on_down', 'custom', [
                 'rule'    => [$this, 'checkNotificationOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
@@ -224,7 +224,7 @@ class HosttemplatesTable extends Table {
         $validator
             ->boolean('notify_on_unreachable')
             ->requirePresence('notify_on_unreachable', 'create')
-            ->allowEmptyString('notify_on_unreachable', false)
+            ->allowEmptyString('notify_on_unreachable', null, false)
             ->add('notify_on_unreachable', 'custom', [
                 'rule'    => [$this, 'checkNotificationOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
@@ -233,7 +233,7 @@ class HosttemplatesTable extends Table {
         $validator
             ->boolean('notify_on_flapping')
             ->requirePresence('notify_on_flapping', 'create')
-            ->allowEmptyString('notify_on_flapping', false)
+            ->allowEmptyString('notify_on_flapping', null, false)
             ->add('notify_on_flapping', 'custom', [
                 'rule'    => [$this, 'checkNotificationOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
@@ -242,7 +242,7 @@ class HosttemplatesTable extends Table {
         $validator
             ->boolean('notify_on_downtime')
             ->requirePresence('notify_on_downtime', 'create')
-            ->allowEmptyString('notify_on_downtime', false)
+            ->allowEmptyString('notify_on_downtime', null, false)
             ->add('notify_on_downtime', 'custom', [
                 'rule'    => [$this, 'checkNotificationOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one notification option.')
@@ -251,12 +251,12 @@ class HosttemplatesTable extends Table {
         $validator
             ->boolean('flap_detection_enabled')
             ->requirePresence('flap_detection_enabled', 'create')
-            ->allowEmptyString('flap_detection_enabled', false);
+            ->allowEmptyString('flap_detection_enabled', null, false);
 
         $validator
             ->boolean('flap_detection_on_up')
             ->requirePresence('flap_detection_on_up', 'create')
-            ->allowEmptyString('flap_detection_on_up', false)
+            ->allowEmptyString('flap_detection_on_up', null, false)
             ->add('flap_detection_on_up', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
@@ -265,7 +265,7 @@ class HosttemplatesTable extends Table {
         $validator
             ->boolean('flap_detection_on_down')
             ->requirePresence('flap_detection_on_down', 'create')
-            ->allowEmptyString('flap_detection_on_down', false)
+            ->allowEmptyString('flap_detection_on_down', null, false)
             ->add('flap_detection_on_down', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
@@ -274,7 +274,7 @@ class HosttemplatesTable extends Table {
         $validator
             ->boolean('flap_detection_on_unreachable')
             ->requirePresence('flap_detection_on_unreachable', 'create')
-            ->allowEmptyString('flap_detection_on_unreachable', false)
+            ->allowEmptyString('flap_detection_on_unreachable', null, false)
             ->add('flap_detection_on_unreachable', 'custom', [
                 'rule'    => [$this, 'checkFlapDetectionOptionsHosttemplate'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => __('You must specify at least one flap detection option.')
@@ -283,22 +283,22 @@ class HosttemplatesTable extends Table {
         $validator
             ->numeric('low_flap_threshold')
             ->requirePresence('low_flap_threshold', 'create')
-            ->allowEmptyString('low_flap_threshold', false);
+            ->allowEmptyString('low_flap_threshold', null, false);
 
         $validator
             ->numeric('high_flap_threshold')
             ->requirePresence('high_flap_threshold', 'create')
-            ->allowEmptyString('high_flap_threshold', false);
+            ->allowEmptyString('high_flap_threshold', null, false);
 
         $validator
             ->boolean('process_performance_data')
             ->requirePresence('process_performance_data', false)
-            ->allowEmptyString('process_performance_data', true);
+            ->allowEmptyString('process_performance_data', null, true);
 
         $validator
             ->boolean('freshness_checks_enabled')
             ->requirePresence('freshness_checks_enabled', false)
-            ->allowEmptyString('freshness_checks_enabled', true);
+            ->allowEmptyString('freshness_checks_enabled', null, true);
 
         $validator
             ->integer('freshness_threshold')
@@ -307,34 +307,34 @@ class HosttemplatesTable extends Table {
         $validator
             ->boolean('passive_checks_enabled')
             ->requirePresence('passive_checks_enabled', 'create')
-            ->allowEmptyString('passive_checks_enabled', false);
+            ->allowEmptyString('passive_checks_enabled', null, false);
 
         $validator
             ->boolean('event_handler_enabled')
             ->requirePresence('event_handler_enabled', 'create')
-            ->allowEmptyString('event_handler_enabled', false);
+            ->allowEmptyString('event_handler_enabled', null, false);
 
         $validator
             ->boolean('active_checks_enabled')
             ->requirePresence('active_checks_enabled', 'create')
-            ->allowEmptyString('active_checks_enabled', false);
+            ->allowEmptyString('active_checks_enabled', null, false);
 
         $validator
             ->scalar('notes')
             ->requirePresence('notes', false)
-            ->allowEmptyString('notes', true)
+            ->allowEmptyString('notes', null, true)
             ->maxLength('notes', 255);
 
         $validator
             ->scalar('tags')
             ->requirePresence('tags', false)
-            ->allowEmptyString('tags', true)
+            ->allowEmptyString('tags', null, true)
             ->maxLength('tags', 255);
 
         $validator
             ->scalar('host_url')
             ->requirePresence('host_url', false)
-            ->allowEmptyString('host_url', true)
+            ->allowEmptyString('host_url', null, true)
             ->maxLength('host_url', 255);
 
         $validator
@@ -350,7 +350,7 @@ class HosttemplatesTable extends Table {
             ]);
 
         $validator
-            ->allowEmptyString('customvariables', true)
+            ->allowEmptyString('customvariables', null, true)
             ->add('customvariables', 'custom', [
                 'rule'    => [$this, 'checkMacroNames'], //\App\Lib\Traits\CustomValidationTrait
                 'message' => _('Macro name needs to be unique')
@@ -876,7 +876,7 @@ class HosttemplatesTable extends Table {
      * @param int $id
      * @return array|\Cake\Datasource\EntityInterface
      */
-    public function getContactsAndContactgroupsById($id){
+    public function getContactsAndContactgroupsById($id) {
         $query = $this->find()
             ->select([
                 'Hosttemplates.id'

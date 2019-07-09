@@ -65,29 +65,29 @@ class ChangelogsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('model')
             ->maxLength('model', 255)
             ->requirePresence('model', 'create')
-            ->allowEmptyString('model', false);
+            ->allowEmptyString('model', null, false);
 
         $validator
             ->scalar('action')
             ->maxLength('action', 255)
             ->requirePresence('action', 'create')
-            ->allowEmptyString('action', false);
+            ->allowEmptyString('action', null, false);
 
         $validator
             ->scalar('data')
             ->requirePresence('data', 'create')
-            ->allowEmptyString('data', false);
+            ->allowEmptyString('data', null, false);
 
         $validator
             ->scalar('name')
             ->requirePresence('name', 'create')
-            ->allowEmptyString('name', false);
+            ->allowEmptyString('name', null, false);
 
         return $validator;
     }

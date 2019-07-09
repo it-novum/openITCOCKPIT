@@ -54,19 +54,19 @@ class DeletedHostsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false);
+            ->allowEmptyString('uuid', null, false);
 
         $validator
-            ->allowEmptyString('name', true);
+            ->allowEmptyString('name', null, true);
 
         $validator
-            ->allowEmptyString('description', true);
+            ->allowEmptyString('description', null, true);
 
         $validator
             ->integer('deleted_perfdata')

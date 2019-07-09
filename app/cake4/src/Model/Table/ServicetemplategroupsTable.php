@@ -74,19 +74,19 @@ class ServicetemplategroupsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false)
+            ->allowEmptyString('uuid', null, false)
             ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->scalar('description')
             ->maxLength('description', 255)
-            ->allowEmptyString('description', true);
+            ->allowEmptyString('description', null, true);
 
         $validator
             ->add('servicetemplates', 'custom', [
@@ -363,7 +363,7 @@ class ServicetemplategroupsTable extends Table {
      * @param $id
      * @return array|\Cake\Datasource\EntityInterface
      */
-    public function getServicetemplategroupNameById($id){
+    public function getServicetemplategroupNameById($id) {
         $result = $this->find()
             ->select([
                 'Servicetemplategroups.id',

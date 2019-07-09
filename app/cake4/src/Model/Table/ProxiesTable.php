@@ -43,23 +43,23 @@ class ProxiesTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null,  'create');
 
         $validator
             ->scalar('ipaddress')
             ->maxLength('ipaddress', 255)
             ->requirePresence('ipaddress', 'create')
-            ->notEmpty('ipaddress');
+            ->notEmptyString('ipaddress');
 
         $validator
             ->integer('port', 'This field needs to be numeric.')
             ->requirePresence('port', 'create')
-            ->notEmpty('port');
+            ->notEmptyString('port');
 
         $validator
             ->boolean('enabled')
             ->requirePresence('enabled', 'create')
-            ->notEmpty('enabled');
+            ->notEmptyString('enabled');
 
         return $validator;
     }
