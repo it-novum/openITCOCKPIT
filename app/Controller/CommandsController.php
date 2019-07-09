@@ -31,13 +31,18 @@ use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 
+/**
+ * Class CommandsController
+ * @property AppPaginatorComponent Paginator
+ */
 class CommandsController extends AppController {
-    public $uses = ['Command', 'Commandargument'];
-    public $layout = 'Admin.default';
+
+    public $uses = ['Command'];
+
+    public $layout = 'blank';
 
 
     public function index() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -58,7 +63,9 @@ class CommandsController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
-
+    /**
+     * @param null $id
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -76,7 +83,6 @@ class CommandsController extends AppController {
     }
 
     public function add() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -124,6 +130,9 @@ class CommandsController extends AppController {
         }
     }
 
+    /**
+     * @param null $id
+     */
     public function edit($id = null) {
         $this->layout = 'blank';
         if (!$this->isApiRequest()) {
@@ -179,6 +188,10 @@ class CommandsController extends AppController {
         $this->set('_serialize', ['command']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function delete($id = null) {
         $this->layout = 'angularjs';
 
@@ -318,7 +331,9 @@ class CommandsController extends AppController {
         return true;
     }
 
-
+    /**
+     * @deprecated
+     */
     public function getConsoleWelcome() {
         $welcomeMessage = "This is a terminal connected to your " . $this->systemname . " " .
             "Server, this is very powerful to test and debug plugins.\n" .
@@ -334,9 +349,15 @@ class CommandsController extends AppController {
         return null;
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function usedBy($id = null) {
-        if (!$this->Command->exists($id)) {
-            throw new NotFoundException(__('Invalid servicetemplate'));
+        /** @var CommandsTable $Commands */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        if (!$Commands->existsById($id)) {
+            throw new NotFoundException(__('Invalid command'));
         }
 
         $command = $this->Command->findById($id);
@@ -362,6 +383,10 @@ class CommandsController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function copy($id = null) {
         $this->layout = 'blank';
 
