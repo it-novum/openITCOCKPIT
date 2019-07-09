@@ -115,7 +115,6 @@ oitc api --model Commands --action addByUuid --ignore-errors 1 --data 'service-n
 
 #Generate documentation
 oitc docu_generator
-oitc copy_servicename
 oitc systemsettings_import
 
 for i in "$@"; do
