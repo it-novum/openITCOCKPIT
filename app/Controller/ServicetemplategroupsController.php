@@ -856,7 +856,6 @@ class ServicetemplategroupsController extends AppController {
             $servicetemplategroup = $ServicetemplategroupsTable->getServicetemplatesforAllocation($servicetemplategroupId, $containerIds);
             $targetHostwithServices = $HostsTable->getServicesForServicetemplateAllocation($hostId);
 
-            $servicetemplatesForDeploy = [];
             foreach ($servicetemplategroup['servicetemplates'] as $servicetemplate) {
                 $doesServicetemplateExistsOnTargetHost = false;
                 $doesServicetemplateExistsOnTargetHostAndIsDisabled = false;
