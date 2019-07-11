@@ -190,9 +190,11 @@
                             </tbody>
                         </table>
                         <div class="noMatch" ng-if="total == 0">
-                            <center>
-                                <span class="txt-color-red italic"><?php echo __('This contact is not used by any object'); ?></span>
-                            </center>
+                            <div class="row">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('This contact is not used by any object'); ?>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

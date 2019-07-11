@@ -845,6 +845,15 @@ class HosttemplatesTable extends Table {
             return true;
         }
 
+        $count = $this->find()
+            ->where([
+                'Hosttemplates.eventhandler_command_id' => $commandId,
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
         return false;
     }
 
@@ -908,6 +917,39 @@ class HosttemplatesTable extends Table {
      */
     public function existsById($id) {
         return $this->exists(['Hosttemplates.id' => $id]);
+    }
+
+    /**
+     * @param int $commandId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getHosttemplatesByCommandId($commandId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find()
+            ->select([
+                'Hosttemplates.id',
+                'Hosttemplates.name',
+                'Hosttemplates.uuid'
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Hosttemplates.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->andWhere([
+            'OR' => [
+                ['Hosttemplates.command_id' => $commandId],
+                ['Hosttemplates.eventhandler_command_id' => $commandId]
+            ]
+        ])
+            ->order(['Hosttemplates.name' => 'asc'])
+            ->enableHydration($enableHydration)
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
     }
 
 }

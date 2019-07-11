@@ -25,7 +25,11 @@
 
 
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContactsTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplatesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -34,6 +38,7 @@ use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 /**
  * Class CommandsController
  * @property AppPaginatorComponent Paginator
+ * @property AppAuthComponent Auth
  */
 class CommandsController extends AppController {
 
@@ -48,12 +53,12 @@ class CommandsController extends AppController {
             return;
         }
 
-        /** @var $Commands CommandsTable */
-        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        /** @var CommandsTable $CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
         $CommandFilter = new CommandsFilter($this->request);
 
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $CommandFilter->getPage());
-        $all_commands = $Commands->getCommandsIndex($CommandFilter, $PaginateOMat);
+        $all_commands = $CommandsTable->getCommandsIndex($CommandFilter, $PaginateOMat);
 
         $this->set('all_commands', $all_commands);
         $toJson = ['all_commands', 'paging'];
@@ -71,13 +76,13 @@ class CommandsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var CommandsTable $Commands */
-        $Commands = TableRegistry::getTableLocator()->get('Commands');
-        if (!$Commands->existsById($id)) {
+        /** @var CommandsTable $CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        if (!$CommandsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid command'));
         }
 
-        $command = $Commands->getCommandById($id);
+        $command = $CommandsTable->getCommandById($id);
         $this->set('command', $command);
         $this->set('_serialize', ['command']);
     }
@@ -88,16 +93,16 @@ class CommandsController extends AppController {
             return;
         }
 
-        /** @var $Commands CommandsTable */
-        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        /** @var CommandsTable $CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $command = $Commands->newEntity();
+            $command = $CommandsTable->newEntity();
 
-            $command = $Commands->patchEntity($command, $this->request->data('Command'));
+            $command = $CommandsTable->patchEntity($command, $this->request->data('Command'));
             $command->set('uuid', UUID::v4());
 
-            $Commands->save($command);
+            $CommandsTable->save($command);
             if ($command->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $command->getErrors());
@@ -105,7 +110,7 @@ class CommandsController extends AppController {
                 return;
             } else {
                 //No errors
-                $userId = $this->Auth->user('id');
+                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
                 $requestData = $this->request->data;
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'add',
@@ -113,7 +118,7 @@ class CommandsController extends AppController {
                     $command->get('id'),
                     OBJECT_COMMAND,
                     [ROOT_CONTAINER],
-                    $userId,
+                    $User->getId(),
                     $requestData['Command']['name'],
                     $requestData
                 );
@@ -134,25 +139,24 @@ class CommandsController extends AppController {
      * @param null $id
      */
     public function edit($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
 
-        /** @var $Commands CommandsTable */
-        $Commands = TableRegistry::getTableLocator()->get('Commands');
-        if (!$Commands->existsById($id)) {
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        if (!$CommandsTable->existsById($id)) {
             throw new NotFoundException('Command not found');
         }
-        $command = $Commands->get($id, [
+        $command = $CommandsTable->get($id, [
             'contain' => 'commandarguments'
         ]);
         $commandForChangeLog = $command;
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $command = $Commands->patchEntity($command, $this->request->data('Command'));
-            $Commands->save($command);
+            $command = $CommandsTable->patchEntity($command, $this->request->data('Command'));
+            $CommandsTable->save($command);
             if ($command->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $command->getErrors());
@@ -160,7 +164,7 @@ class CommandsController extends AppController {
                 return;
             } else {
                 //No errors
-                $userId = $this->Auth->user('id');
+                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
                 $requestData = $this->request->data;
 
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -169,7 +173,7 @@ class CommandsController extends AppController {
                     $command->get('id'),
                     OBJECT_COMMAND,
                     [ROOT_CONTAINER],
-                    $userId,
+                    $User->getId(),
                     $requestData['Command']['name'],
                     $requestData,
                     ['Command' => $commandForChangeLog->toArray()]
@@ -189,32 +193,25 @@ class CommandsController extends AppController {
     }
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param int|null $id
      */
     public function delete($id = null) {
-        $this->layout = 'angularjs';
-
-
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var CommandsTable $Commands */
-        $Commands = TableRegistry::getTableLocator()->get('Commands');
-        if (!$Commands->existsById($id)) {
+        /** @var CommandsTable $CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        if (!$CommandsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid command'));
         }
 
-        $command = $Commands->getCommandById($id);
-        if (!$this->__allowDelete($command)) {
+        $command = $CommandsTable->getCommandById($id);
+        if ($CommandsTable->allowDelete($id)) {
             $usedBy = [
                 [
-                    'baseUrl' => Router::url([
-                            'controller' => 'commands',
-                            'action'     => 'usedBy',
-                            'plugin'     => '',
-                        ]) . '/',
+                    'baseUrl' => '#',
+                    'state'   => 'CommandsUsedBy',
                     'message' => __('Used by other objects'),
                     'module'  => 'Core'
                 ]
@@ -230,15 +227,15 @@ class CommandsController extends AppController {
         }
 
 
-        if ($Commands->delete($Commands->get($id))) {
-            $userId = $this->Auth->user('id');
+        if ($CommandsTable->delete($CommandsTable->get($id))) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 $this->params['action'],
                 $this->params['controller'],
                 $id,
                 OBJECT_COMMAND,
                 [ROOT_CONTAINER],
-                $userId,
+                $User->getId(),
                 $command['Command']['name'],
                 $command
             );
@@ -259,81 +256,6 @@ class CommandsController extends AppController {
 
     }
 
-    /**
-     * @param $command
-     * @return bool
-     * @deprecated
-     */
-    protected function __allowDelete($command) {
-        //Check if the command is used somewere, if yes we can not delete it!
-        $this->loadModel('__ContactsToServicecommands');
-        $contactCount = $this->__ContactsToServicecommands->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                '__ContactsToServicecommands.command_id' => $command['Command']['id'],
-            ],
-        ]);
-        if ($contactCount > 0) {
-            return false;
-        }
-
-        $this->loadModel('__ContactsToHostcommands');
-        $contactCount = $this->__ContactsToHostcommands->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                '__ContactsToHostcommands.command_id' => $command['Command']['id'],
-            ],
-        ]);
-        if ($contactCount > 0) {
-            return false;
-        }
-
-        $this->loadModel('Hosttemplate');
-        /** @var $HosttemplatesTable HosttemplatesTable */
-        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-        if ($HosttemplatesTable->isCommandUsedByHosttemplate($command['Command']['id'])) {
-            return false;
-        }
-
-        $this->loadModel('Servicetemplate');
-        $serviceCount = $this->Servicetemplate->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Servicetemplate.command_id' => $command['Command']['id'],
-            ],
-        ]);
-        if ($serviceCount > 0) {
-            return false;
-        }
-
-        $this->loadModel('Host');
-        $hostCount = $this->Host->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Host.command_id' => $command['Command']['id'],
-            ],
-        ]);
-        if ($hostCount > 0) {
-            return false;
-        }
-
-        $this->loadModel('Service');
-        $serviceCount = $this->Service->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Service.command_id' => $command['Command']['id'],
-            ],
-        ]);
-        if ($serviceCount > 0) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * @deprecated
-     */
     public function getConsoleWelcome() {
         $welcomeMessage = "This is a terminal connected to your " . $this->systemname . " " .
             "Server, this is very powerful to test and debug plugins.\n" .
@@ -351,55 +273,86 @@ class CommandsController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
      */
     public function usedBy($id = null) {
-        /** @var CommandsTable $Commands */
-        $Commands = TableRegistry::getTableLocator()->get('Commands');
-        if (!$Commands->existsById($id)) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var CommandsTable $CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        if (!$CommandsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid command'));
         }
 
-        $command = $this->Command->findById($id);
-        $commandName = $command['Command']['name'];
+        $command = $CommandsTable->get($id);
+
+        $objects = [
+            'Contacts'         => [],
+            'Hosttemplates'    => [],
+            'Servicetemplates' => [],
+            'Hosts'            => [],
+            'Services'         => []
+        ];
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        //Get Contacts
+        /** @var ContactsTable $ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        $objects['Contacts'] = $ContactsTable->getContactsByCommandId($id, $MY_RIGHTS);
 
 
-        $this->loadModel('Servicetemplate');
-        $servicestemplates = $this->Servicetemplate->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Servicetemplate.container_id' => $this->MY_RIGHTS,
-                'Servicetemplate.command_id'   => $command['Command']['id'],
-            ],
-            'fields'     => [
-                'Servicetemplate.id', 'Servicetemplate.description', 'Servicetemplate.name',
-            ],
-            'order'      => [
-                'Servicetemplate.name' => 'asc',
-            ],
-        ]);
+        //Check if the command is used by host or service templates
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        $objects['Hosttemplates'] = $HosttemplatesTable->getHosttemplatesByCommandId($id, $MY_RIGHTS, false);
 
-        $this->set(compact(['servicestemplates', 'commandName']));
-        $this->set('back_url', $this->referer());
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        $objects['Servicetemplates'] = $ServicetemplatesTable->getServicetemplatesByCommandId($id, $MY_RIGHTS, false);
+
+        //Checking host and services
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        $objects['Hosts'] = $HostsTable->getHostsByCommandId($id, $MY_RIGHTS, false);
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $objects['Services'] = $ServicesTable->getServicesByCommandId($id, $MY_RIGHTS, false);
+
+        $total = 0;
+        $total += sizeof($objects['Contacts']);
+        $total += sizeof($objects['Hosttemplates']);
+        $total += sizeof($objects['Servicetemplates']);
+        $total += sizeof($objects['Hosts']);
+        $total += sizeof($objects['Services']);
+
+
+        $this->set('command', $command->toArray());
+        $this->set('objects', $objects);
+        $this->set('total', $total);
+        $this->set('_serialize', ['command', 'objects', 'total']);
     }
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param int|null $id
      */
     public function copy($id = null) {
-        $this->layout = 'blank';
-
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
         }
 
-        /** @var $Commands CommandsTable */
-        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
 
         if ($this->request->is('get')) {
-            $commands = $Commands->getCommandsForCopy(func_get_args());
+            $commands = $CommandsTable->getCommandsForCopy(func_get_args());
             $this->set('commands', $commands);
             $this->set('_serialize', ['commands']);
             return;
@@ -408,7 +361,7 @@ class CommandsController extends AppController {
         $hasErrors = false;
 
         if ($this->request->is('post')) {
-            $userId = $this->Auth->user('id');
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             $Cache = new KeyValueStore();
 
             $postData = $this->request->data('data');
@@ -418,7 +371,7 @@ class CommandsController extends AppController {
                     //Create/clone command
                     $sourceCommandId = $commandData['Source']['id'];
                     if (!$Cache->has($sourceCommandId)) {
-                        $sourceCommand = $Commands->get($sourceCommandId, [
+                        $sourceCommand = $CommandsTable->get($sourceCommandId, [
                             'contain' => [
                                 'Commandarguments'
                             ]
@@ -437,7 +390,7 @@ class CommandsController extends AppController {
                         'commandarguments' => $sourceCommand['commandarguments']
                     ];
 
-                    $newCommandEntity = $Commands->newEntity($newCommandData);
+                    $newCommandEntity = $CommandsTable->newEntity($newCommandData);
                 }
 
                 $action = 'copy';
@@ -445,12 +398,12 @@ class CommandsController extends AppController {
                     //Update existing command
                     //This happens, if a user copy multiple commands, and one run into an validation error
                     //All commands without validation errors got already saved to the database
-                    $newCommandEntity = $Commands->get($commandData['Command']['id']);
-                    $newCommandEntity = $Commands->patchEntity($newCommandEntity, $commandData['Command']);
+                    $newCommandEntity = $CommandsTable->get($commandData['Command']['id']);
+                    $newCommandEntity = $CommandsTable->patchEntity($newCommandEntity, $commandData['Command']);
                     $newCommandData = $newCommandEntity->toArray();
                     $action = 'edit';
                 }
-                $Commands->save($newCommandEntity);
+                $CommandsTable->save($newCommandEntity);
 
                 $postData[$index]['Error'] = [];
                 if ($newCommandEntity->hasErrors()) {
@@ -460,14 +413,13 @@ class CommandsController extends AppController {
                     //No errors
                     $postData[$index]['Command']['id'] = $newCommandEntity->get('id');
 
-                    $userId = $this->Auth->user('id');
                     $changelog_data = $this->Changelog->parseDataForChangelog(
                         $action,
                         $this->params['controller'],
                         $postData[$index]['Command']['id'],
                         OBJECT_COMMAND,
                         [ROOT_CONTAINER],
-                        $userId,
+                        $User->getId(),
                         $postData[$index]['Command']['name'],
                         ['Command' => $newCommandData]
                     );

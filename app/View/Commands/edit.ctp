@@ -29,7 +29,7 @@
             <i class="fa fa-terminal fa-fw "></i>
             <?php echo __('Commands'); ?>
             <span>>
-                <?php echo __('Add'); ?>
+                <?php echo __('Edit'); ?>
             </span>
         </h1>
     </div>

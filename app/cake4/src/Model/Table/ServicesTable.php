@@ -1594,4 +1594,77 @@ class ServicesTable extends Table {
             }
         }
     }
+
+    /**
+     * @param int $commandId
+     * @return bool
+     */
+    public function isCommandUsedByService($commandId) {
+        $count = $this->find()
+            ->where([
+                'Services.command_id' => $commandId,
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        $count = $this->find()
+            ->where([
+                'Services.eventhandler_command_id' => $commandId,
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $commandId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServicesByCommandId($commandId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find();
+        $query->select([
+            'Services.id',
+            'Services.name',
+            'Services.uuid',
+            'Servicetemplates.id',
+            'Servicetemplates.name',
+            'Servicetemplates.uuid',
+            'Hosts.id',
+            'Hosts.name',
+            'Hosts.uuid',
+            'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+        ])
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            })
+            ->innerJoinWith('Servicetemplates')
+            ->where([
+                'OR' => [
+                    ['Services.command_id' => $commandId],
+                    ['Services.eventhandler_command_id' => $commandId]
+                ]
+            ])
+            ->enableHydration($enableHydration)
+            ->order([
+                'Hosts.name'  => 'asc',
+                'servicename' => 'asc'
+            ])
+            ->group(['Services.id'])
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }
