@@ -581,16 +581,6 @@ class UsersTable extends Table {
     }
 
     /**
-     * wrapper function for getUserById
-     * @param null $id
-     * @return array|\Cake\Datasource\EntityInterface|null
-     */
-    public function getTenantIds($id = null) {
-        return $this->getUserById($id);
-    }
-
-
-    /**
      * @param $usersByContainerId
      * @param $containerIds
      * @return array

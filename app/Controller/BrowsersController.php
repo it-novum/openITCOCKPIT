@@ -23,8 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-//App::import('Model', 'Host');
-//App::import('Model', 'Container');
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -41,22 +39,18 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  */
 class BrowsersController extends AppController {
 
-    public $layout = 'angularjs';
+    public $layout = 'blank';
 
     public $uses = [
-        'Systemsetting',
-        'Container',
         'Browser',
         'Tenant'
     ];
 
-    public $components = [
-        'paginator',
-    ];
-
+    /**
+     * @param int|null $containerId
+     * @deprecated Refactor Satellite Model ->Satellite->
+     */
     function index($containerId = null) {
-        $this->layout = 'blank';
-
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
         if (!$this->isApiRequest()) {
@@ -71,8 +65,6 @@ class BrowsersController extends AppController {
                 $SatelliteNames[0] = $masterInstanceName;
             }
 
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
             $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
             $this->set('satellites', $SatelliteNames);
@@ -80,8 +72,13 @@ class BrowsersController extends AppController {
             return;
         }
 
+        if($containerId === null){
+            throw new BadRequestException("containerId is missing");
+        }
+        $containerId = (int)$containerId;
 
         $tenants = $this->getTenants();
+        
         $tenantsFiltered = [];
         foreach ($tenants as $tenantId => $tenantName) {
             if (in_array($tenantId, $this->MY_RIGHTS, true)) {
@@ -94,7 +91,7 @@ class BrowsersController extends AppController {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        if ((int)$containerId === ROOT_CONTAINER && !empty($tenants)) {
+        if ($containerId === ROOT_CONTAINER && !empty($tenants)) {
             //First request if tenants are not empty or ROOT_CONTAINER
 
             $this->set('containers', Api::makeItJavaScriptAble($tenants));
@@ -104,13 +101,13 @@ class BrowsersController extends AppController {
 
             if ($this->hasRootPrivileges === true) {
                 $children = $ContainersTable->getChildren($containerId);
-                $browser = Hash::extract($children, '{n}[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
+                $browser = \Cake\Utility\Hash::extract($children, '{n}[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
             } else {
                 $containerNest = $ContainersTable->getChildren($containerId, true);
                 $browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
             }
 
-            $browser = Hash::sort($browser, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
+            $browser = \Cake\Utility\Hash::sort($browser, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
 
             if ($this->hasRootPrivileges === false) {
                 foreach ($browser as $key => $containerRecord) {
@@ -150,14 +147,17 @@ class BrowsersController extends AppController {
     /**
      * should be moved into the table
      * @return mixed
+     * @deprecated
      */
     private function getTenants() {
-        /** @var $Users App\Model\Table\UsersTable */
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
-        $user = $Users->getTenantIds($this->Auth->user('id'));
+        $user = $Users->getUserById($User->getId());
 
         $tenants = [];
         foreach ($user['containers'] as $_container) {
