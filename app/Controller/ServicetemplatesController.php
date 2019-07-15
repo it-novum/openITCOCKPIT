@@ -44,6 +44,9 @@ use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
 /**
  * @property Changelog $Changelog
+ * @property Servicetemplate $Servicetemplate
+ * @property Service $Service
+ * @property Documentation $Documentation
  *
  * @property AppPaginatorComponent $Paginator
  */
