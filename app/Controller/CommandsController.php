@@ -42,7 +42,9 @@ use itnovum\openITCOCKPIT\Filter\CommandsFilter;
  */
 class CommandsController extends AppController {
 
-    public $uses = ['Command'];
+    public $uses = [
+        'Changelog'
+    ];
 
     public $layout = 'blank';
 
