@@ -54,21 +54,11 @@ use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
  * @property AppPaginatorComponent $Paginator
  */
 class HosttemplatesController extends AppController {
+
     public $uses = [
-        'Hosttemplate',
-        'Timeperiod',
-        'Command',
-        'Contact',
-        'Contactgroup',
-        'Container',
-        'Customvariable',
-        'Hosttemplatecommandargumentvalue',
-        'Hostcommandargumentvalue',
-        'Hostgroup',
-        'Documentation'
+        'Changelog'
     ];
 
-    //public $layout = 'Admin.default';
     public $layout = 'blank';
 
     public function index() {
