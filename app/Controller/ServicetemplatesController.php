@@ -44,14 +44,6 @@ use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
 /**
  * @property Changelog $Changelog
- * @property Servicetemplate $Servicetemplate
- * @property Timeperiod $Timeperiod
- * @property Contact $Contact
- * @property Contactgroup $Contactgroup
- * @property Container $Container
- * @property Customvariable $Customvariable
- * @property Servicetemplatecommandargumentvalue $Servicetemplatecommandargumentvalue
- * @property Servicetemplateeventcommandargumentvalue $Servicetemplateeventcommandargumentvalue
  *
  * @property AppPaginatorComponent $Paginator
  */
@@ -60,20 +52,10 @@ class ServicetemplatesController extends AppController {
     public $layout = 'blank';
 
     public $uses = [
-        'Servicetemplate',
-        'Service',
-        'Timeperiod',
-        'Contact',
-        'Contactgroup',
-        'Servicegroup',
-        'Container',
-        'Customvariable',
-        'Servicetemplatecommandargumentvalue',
-        'Servicetemplateeventcommandargumentvalue',
-        'Servicetemplategroup',
-        'Servicecommandargumentvalue',
-        'Serviceeventcommandargumentvalue',
-        'Documentation'
+        'Servicetemplate', //Remove me
+        'Service', //Remove me
+        'Documentation', //Remove me
+        'Changelog'
     ];
 
     public function index() {
