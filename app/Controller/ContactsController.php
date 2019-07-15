@@ -23,8 +23,15 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostescalationsTable;
+use App\Model\Table\HostsTable;
+use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\ServiceescalationsTable;
+use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -485,9 +492,7 @@ class ContactsController extends AppController {
     }
 
     /**
-     * @param null $id
-     * @todo Refactor with Cake4
-     * @deprecated
+     * @param int|null $id
      */
     public function usedBy($id = null) {
         if (!$this->isApiRequest()) {
@@ -495,138 +500,75 @@ class ContactsController extends AppController {
             return;
         }
 
-        /** @var $ContactsTable ContactsTable */
+        /** @var ContactsTable $ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-
         if (!$ContactsTable->existsById($id)) {
-            throw new NotFoundException(__('Contact not found'));
+            throw new NotFoundException(__('Invalid contact'));
         }
 
-        $this->Contact->bindModel([
-            'hasAndBelongsToMany' => [
-                'Hosttemplate'      => [
-                    'className' => 'Hosttemplate',
-                    'joinTable' => 'contacts_to_hosttemplates',
-                    'type'      => 'INNER'
-                ],
-                'Host'              => [
-                    'className' => 'Host',
-                    'joinTable' => 'contacts_to_hosts',
-                    'type'      => 'INNER'
-                ],
-                'Servicetemplate'   => [
-                    'className' => 'Servicetemplate',
-                    'joinTable' => 'contacts_to_servicetemplates',
-                    'type'      => 'INNER'
-                ],
-                'Service'           => [
-                    'className' => 'Service',
-                    'joinTable' => 'contacts_to_services',
-                    'type'      => 'INNER'
-                ],
-                'Hostescalation'    => [
-                    'className' => 'Hostescalation',
-                    'joinTable' => 'contacts_to_hostescalations',
-                    'type'      => 'INNER'
-                ],
-                'Serviceescalation' => [
-                    'className' => 'Serviceescalation',
-                    'joinTable' => 'contacts_to_serviceescalations',
-                    'type'      => 'INNER'
-                ],
-                'Contactgroup'      => [
-                    'className' => 'Contactgroup',
-                    'joinTable' => 'contacts_to_contactgroups',
-                    'type'      => 'INNER'
-                ]
-            ]
-        ]);
+        $contact = $ContactsTable->get($id);
 
-        $contactWithRelations = $this->Contact->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container',
-                'Hosttemplate'    => [
-                    'fields' => [
-                        'Hosttemplate.id',
-                        'Hosttemplate.name'
-                    ]
-                ],
-                'Host'            => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name',
-                        'Host.address'
-                    ]
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name'
-                    ]
-                ],
-                'Service'         => [
-                    'fields'          => [
-                        'Service.id',
-                        'Service.name'
-                    ],
-                    'Host'            => [
-                        'fields' => [
-                            'Host.name'
-                        ]
-                    ],
-                    'Servicetemplate' => [
-                        'fields' => [
-                            'Servicetemplate.name'
-                        ]
-                    ]
-                ],
-                'Hostescalation.id',
-                'Serviceescalation.id',
-                'Contactgroup'    => [
-                    'Container'
-                ]
-            ],
-            'conditions' => [
-                'Contact.id' => $id
-            ]
-        ]);
+        $objects = [
+            'Contactgroups'      => [],
+            'Hosttemplates'      => [],
+            'Servicetemplates'   => [],
+            'Hosts'              => [],
+            'Services'           => [],
+            'Hostescalations'    => [],
+            'Serviceescalations' => []
+        ];
 
-        if (!$this->allowedByContainerId(Hash::extract($contactWithRelations, 'Container.{n}.id'))) {
-            $this->render403();
-            return;
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
         }
 
-        if (!empty(array_diff(Hash::extract($contactWithRelations['Container'], '{n}.id'), $this->MY_RIGHTS))) {
-            $this->render403();
-            return;
-        }
+        //Get contact groups
+        /** @var ContactgroupsTable $ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        $objects['Contactgroups'] = $ContactgroupsTable->getContactgroupsByContactId($id, $MY_RIGHTS);
 
-        /* Format service name for api "hostname|Service oder Service template name" */
-        array_walk($contactWithRelations['Service'], function (&$service) {
-            $serviceName = $service['name'];
-            if (empty($service['name'])) {
-                $serviceName = $service['Servicetemplate']['name'];
-            }
-            $service['name'] = sprintf('%s|%s', $service['Host']['name'], $serviceName);
-        });
 
-        array_walk($contactWithRelations['Contactgroup'], function (&$contactgroup) {
-            $contactgroup['name'] = sprintf('%s', $contactgroup['Container']['name']);
-        });
+        //Check if the contact is used by host or service templates
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        $objects['Hosttemplates'] = $HosttemplatesTable->getHosttemplatesByContactId($id, $MY_RIGHTS, false);
 
-        //Sort host template, host, service template and service by name
-        foreach (['Hosttemplate', 'Host', 'Servicetemplate', 'Service'] as $modelName) {
-            $contactWithRelations[$modelName] = Hash::sort($contactWithRelations[$modelName], '{n}.name', 'asc', [
-                    'type'       => 'natural',
-                    'ignoreCase' => true
-                ]
-            );
-        }
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        $objects['Servicetemplates'] = $ServicetemplatesTable->getServicetemplatesByContactId($id, $MY_RIGHTS, false);
 
-        $this->set(compact(['contactWithRelations']));
-        $this->set('_serialize', ['contactWithRelations']);
-        $this->set('back_url', $this->referer());
+        //Checking host and services
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        $objects['Hosts'] = $HostsTable->getHostsByContactId($id, $MY_RIGHTS, false);
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $objects['Services'] = $ServicesTable->getServicesByContactId($id, $MY_RIGHTS, false);
+
+        //Checking host and service escalations
+        /** @var $HostescalationsTable HostescalationsTable */
+        $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
+        $objects['Hostescalations'] = $HostescalationsTable->getHostescalationsByContactId($id, $MY_RIGHTS, false);
+
+        /** @var $ServiceescalationsTable ServiceescalationsTable */
+        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+        $objects['Serviceescalations'] = $ServiceescalationsTable->getServiceescalationsByContactId($id, $MY_RIGHTS, false);
+
+        $total = 0;
+        $total += sizeof($objects['Contactgroups']);
+        $total += sizeof($objects['Hosttemplates']);
+        $total += sizeof($objects['Servicetemplates']);
+        $total += sizeof($objects['Hosts']);
+        $total += sizeof($objects['Services']);
+        $total += sizeof($objects['Hostescalations']);
+        $total += sizeof($objects['Serviceescalations']);
+
+        $this->set('contact', $contact->toArray());
+        $this->set('objects', $objects);
+        $this->set('total', $total);
+        $this->set('_serialize', ['contact', 'objects', 'total']);
     }
 
     /****************************

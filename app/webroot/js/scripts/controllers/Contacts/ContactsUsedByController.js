@@ -8,8 +8,10 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                $scope.contactWithRelations = result.data.contactWithRelations;
-                $scope.total = $scope.getTotal();
+                $scope.objects = result.data.objects;
+                $scope.total = result.data.total;
+                $scope.contact = result.data.contact;
+
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
@@ -21,18 +23,6 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.getTotal = function(){
-            var total = 0;
-            total += $scope.contactWithRelations.Hosttemplate.length;
-            total += $scope.contactWithRelations.Host.length;
-            total += $scope.contactWithRelations.Servicetemplate.length;
-            total += $scope.contactWithRelations.Service.length;
-            total += $scope.contactWithRelations.Hostescalation.length;
-            total += $scope.contactWithRelations.Serviceescalation.length;
-            total += $scope.contactWithRelations.Contactgroup.length;
-
-            return total;
-        };
 
         $scope.load();
     });

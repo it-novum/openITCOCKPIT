@@ -8,7 +8,11 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostescalationsFilter;
 
 /**
@@ -229,7 +233,7 @@ class HostescalationsTable extends Table {
 
     /**
      * @param HostescalationsFilter $HostescalationsFilter
-     * @param null $PaginateOMat
+     * @param null|PaginateOMat $PaginateOMat
      * @param array $MY_RIGHTS
      * @return array
      */
@@ -333,7 +337,7 @@ class HostescalationsTable extends Table {
             $containFilter['Hosts.name'] = [
                 'Hosts.name LIKE' => $indexFilter['Hosts.name LIKE']
             ];
-            $query->innerJoinWith('Hosts', function ($q) use ($containFilter) {
+            $query->innerJoinWith('Hosts', function (Query $q) use ($containFilter) {
                 return $q->where([
                     'HostescalationsHostMemberships.excluded' => 0,
                     $containFilter['Hosts.name']
@@ -346,7 +350,7 @@ class HostescalationsTable extends Table {
             $containFilter['HostsExcluded.name'] = [
                 'HostsExcluded.name LIKE' => $indexFilter['HostsExcluded.name LIKE']
             ];
-            $query->innerJoinWith('HostsExcluded', function ($q) use ($containFilter) {
+            $query->innerJoinWith('HostsExcluded', function (Query $q) use ($containFilter) {
                 return $q->where([
                     'HostescalationsHostMemberships.excluded' => 1,
                     $containFilter['HostsExcluded.name']
@@ -359,7 +363,7 @@ class HostescalationsTable extends Table {
             $containFilter['Hostgroups.name'] = [
                 'Containers.name LIKE' => $indexFilter['Hostgroups.name LIKE']
             ];
-            $query->innerJoinWith('Hostgroups.Containers', function ($q) use ($containFilter) {
+            $query->innerJoinWith('Hostgroups.Containers', function (Query $q) use ($containFilter) {
                 return $q->where([
                     'HostescalationsHostgroupMemberships.excluded' => 0,
                     $containFilter['Hostgroups.name']
@@ -371,7 +375,7 @@ class HostescalationsTable extends Table {
             $containFilter['HostgroupsExcluded.name'] = [
                 'Containers.name LIKE' => $indexFilter['HostgroupsExcluded.name LIKE']
             ];
-            $query->innerJoinWith('HostgroupsExcluded.Containers', function ($q) use ($containFilter) {
+            $query->innerJoinWith('HostgroupsExcluded.Containers', function (Query $q) use ($containFilter) {
                 return $q->where([
                     'HostescalationsHostgroupMemberships.excluded' => 1,
                     $containFilter['HostgroupsExcluded.name']
@@ -401,7 +405,7 @@ class HostescalationsTable extends Table {
             $result = $query->toArray();
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scrollCake4($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
                 $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
             }
@@ -552,5 +556,60 @@ class HostescalationsTable extends Table {
         $hosts = $query->get('hosts');
 
         return empty($hosts);
+    }
+
+    /**
+     * @param int $contactId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getHostescalationsByContactId($contactId, $MY_RIGHTS = [], $enableHydration = true) {
+
+        /** @var ContactsToHostescalationsTable $ContactsToHostescalationsTable */
+        $ContactsToHostescalationsTable = TableRegistry::getTableLocator()->get('ContactsToHostescalations');
+
+        $query = $ContactsToHostescalationsTable->find()
+            ->select([
+                'hostescalation_id'
+            ])
+            ->where([
+                'contact_id' => $contactId
+            ])
+            ->group([
+                'hostescalation_id'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        $hostescalationIds = Hash::extract($result, '{n}.hostescalation_id');
+
+        $query = $this->find('all');
+        $query->contain(['Containers']);
+
+        $query->where([
+            'Hostescalations.id IN' => $hostescalationIds
+        ]);
+
+        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['Hostescalations.container_id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+
+        $query->enableHydration($enableHydration);
+        $query->order([
+            'Containers.name' => 'asc'
+        ]);
+
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull($result->toArray());
     }
 }

@@ -1504,4 +1504,64 @@ class HostsTable extends Table {
         return $this->emptyArrayIfNull($query->toArray());
     }
 
+    /**
+     * @param int $contactId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getHostsByContactId($contactId, $MY_RIGHTS = [], $enableHydration = true) {
+
+        /** @var ContactsToHostsTable $ContactsToHostsTable */
+        $ContactsToHostsTable = TableRegistry::getTableLocator()->get('ContactsToHosts');
+
+        $query = $ContactsToHostsTable->find()
+            ->select([
+                'host_id'
+            ])
+            ->where([
+                'contact_id' => $contactId
+            ])
+            ->group([
+                'host_id'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        $hostIds = Hash::extract($result, '{n}.host_id');
+
+        $query = $this->find('all');
+        $where = [
+            'Hosts.id IN' => $hostIds
+        ];
+
+        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+        $query->contain([
+            'HostsToContainersSharing'
+        ]);
+
+        $query->where($where);
+        $query->enableHydration($enableHydration);
+        $query->order([
+            'Hosts.name' => 'asc'
+        ]);
+        $query->group([
+            'Hosts.id'
+        ]);
+
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull($result->toArray());
+    }
+
 }

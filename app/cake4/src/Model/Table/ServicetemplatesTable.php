@@ -940,4 +940,53 @@ class ServicetemplatesTable extends Table {
         return $this->emptyArrayIfNull($query->toArray());
     }
 
+    /**
+     * @param int $contactId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServicetemplatesByContactId($contactId, $MY_RIGHTS = [], $enableHydration = true) {
+
+        /** @var ContactsToServicetemplatesTable $ContactsToServicetemplatesTable */
+        $ContactsToServicetemplatesTable = TableRegistry::getTableLocator()->get('ContactsToServicetemplates');
+
+        $query = $ContactsToServicetemplatesTable->find()
+            ->select([
+                'servicetemplate_id'
+            ])
+            ->where([
+                'contact_id' => $contactId
+            ])
+            ->group([
+                'servicetemplate_id'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        $servicetemplateIds = Hash::extract($result, '{n}.servicetemplate_id');
+
+        $query = $this->find('all');
+        $where = [
+            'Servicetemplates.id IN' => $servicetemplateIds
+        ];
+        if (!empty($MY_RIGHTS)) {
+            $where['Servicetemplates.container_id IN'] = $MY_RIGHTS;
+        }
+        $query->where($where);
+        $query->enableHydration($enableHydration);
+        $query->order([
+            'Servicetemplates.name' => 'asc'
+        ]);
+
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull($result->toArray());
+    }
+
 }

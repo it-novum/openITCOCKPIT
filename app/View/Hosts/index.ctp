@@ -26,8 +26,6 @@
 /**
  * @property \itnovum\openITCOCKPIT\Monitoring\QueryHandler $QueryHandler
  */
-
-$this->Paginator->options(['url' => $this->params['named']]);
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">

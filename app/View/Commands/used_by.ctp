@@ -23,7 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -62,7 +61,7 @@
                 </header>
                 <div>
                     <div class="widget-body no-padding">
-                        <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
+                        <table id="usedby_list" class="table table-striped table-hover table-bordered smart-form"
                                style="">
                             <tbody>
                             <tr ng-if="objects.Contacts.length > 0">
@@ -74,7 +73,7 @@
                             <tr ng-repeat="contact in objects.Contacts">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
-                                        <a ui-sref="ContactsEdit({id: contact,id})" target="_blank">
+                                        <a ui-sref="ContactsEdit({id: contact.id})" target="_blank">
                                             {{ contact.name }}
                                         </a>
                                     <?php else: ?>

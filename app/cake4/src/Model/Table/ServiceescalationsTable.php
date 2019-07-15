@@ -9,15 +9,18 @@ use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceescalationsFilter;
 
 /**
  * Serviceescalations Model
  *
  * @property \App\Model\Table\ContainersTable|\Cake\ORM\Association\BelongsTo $Containers
- * @property \App\Model\Table\ServiceescalationTable|\Cake\ORM\Association\HasMany $Services
- * @property \App\Model\Table\ServiceescalationTable|\Cake\ORM\Association\HasMany $Servicegroups
+ * @property \App\Model\Table\ServiceescalationsTable|\Cake\ORM\Association\HasMany $Services
+ * @property \App\Model\Table\ServiceescalationsTable|\Cake\ORM\Association\HasMany $Servicegroups
  *
  * @method \App\Model\Entity\Serviceescalation get($primaryKey, $options = [])
  * @method \App\Model\Entity\Serviceescalation newEntity($data = null, array $options = [])
@@ -239,7 +242,7 @@ class ServiceescalationsTable extends Table {
 
     /**
      * @param ServiceescalationsFilter $ServiceescalationsFilter
-     * @param null $PaginateOMat
+     * @param null|PaginateOMat $PaginateOMat
      * @param array $MY_RIGHTS
      * @return array
      */
@@ -414,7 +417,7 @@ class ServiceescalationsTable extends Table {
             $result = $query->toArray();
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scrollCake4($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
                 $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
             }
@@ -571,5 +574,59 @@ class ServiceescalationsTable extends Table {
         $services = $query->get('services');
 
         return empty($services);
+    }
+
+    /**
+     * @param int $contactId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServiceescalationsByContactId($contactId, $MY_RIGHTS = [], $enableHydration = true) {
+
+        /** @var ContactsToServiceescalationsTable $ContactsToServiceescalationsTable */
+        $ContactsToServiceescalationsTable = TableRegistry::getTableLocator()->get('ContactsToServiceescalations');
+
+        $query = $ContactsToServiceescalationsTable->find()
+            ->select([
+                'serviceescalation_id'
+            ])
+            ->where([
+                'contact_id' => $contactId
+            ])
+            ->group([
+                'serviceescalation_id'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        $serviceescalationIds = Hash::extract($result, '{n}.serviceescalation_id');
+
+        $query = $this->find('all');
+        $query->contain(['Containers']);
+        $query->where([
+            'Serviceescalations.id IN' => $serviceescalationIds
+        ]);
+
+        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['Serviceescalations.container_id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+
+        $query->enableHydration($enableHydration);
+        $query->order([
+            'Containers.name' => 'asc'
+        ]);
+
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull($result->toArray());
     }
 }

@@ -119,7 +119,7 @@ class ContactgroupsTable extends Table {
         $query->contain(['Containers']);
         $query->where($ContactgroupsFilter->indexFilter());
 
-        $query->innerJoinWith('Containers', function ($q) use ($MY_RIGHTS) {
+        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
                 return $q->where(['Containers.parent_id IN' => $MY_RIGHTS]);
             }
@@ -523,5 +523,59 @@ class ContactgroupsTable extends Table {
             }
         }
         return $contactgroupIds;
+    }
+
+    /**
+     * @param int $contactId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getContactgroupsByContactId($contactId, $MY_RIGHTS = [], $enableHydration = true) {
+
+        /** @var ContactsToContactgroupsTable $ContactsToContactgroupsTable */
+        $ContactsToContactgroupsTable = TableRegistry::getTableLocator()->get('ContactsToContactgroups');
+
+        $query = $ContactsToContactgroupsTable->find()
+            ->select([
+                'contactgroup_id'
+            ])
+            ->where([
+                'contact_id' => $contactId
+            ])
+            ->group([
+                'contactgroup_id'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        $contactgroupIds = Hash::extract($result, '{n}.contactgroup_id');
+
+        $query = $this->find('all');
+        $query->contain(['Containers']);
+        $query->where([
+            'Contactgroups.id IN' => $contactgroupIds
+        ]);
+
+        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['Containers.parent_id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+
+        $query->enableHydration($enableHydration);
+        $query->order([
+            'Containers.name' => 'asc'
+        ]);
+
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull($result->toArray());
     }
 }

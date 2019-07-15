@@ -1667,4 +1667,86 @@ class ServicesTable extends Table {
 
         return $this->emptyArrayIfNull($query->toArray());
     }
+
+    /**
+     * @param int $contactId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServicesByContactId($contactId, $MY_RIGHTS = [], $enableHydration = true) {
+
+        /** @var ContactsToServicesTable $ContactsToServicesTable */
+        $ContactsToServicesTable = TableRegistry::getTableLocator()->get('ContactsToServices');
+
+        $query = $ContactsToServicesTable->find()
+            ->select([
+                'service_id'
+            ])
+            ->where([
+                'contact_id' => $contactId
+            ])
+            ->group([
+                'service_id'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        $serviceIds = Hash::extract($result, '{n}.service_id');
+
+        $query = $this->find('all');
+        $query->where([
+            'Services.id IN' => $serviceIds
+        ]);
+        $query->select([
+            'Services.id',
+            'Services.uuid',
+            'Services.name',
+            'Services.host_id',
+
+            'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+
+            'Servicetemplates.id',
+            'Servicetemplates.uuid',
+            'Servicetemplates.name',
+
+            'Hosts.name',
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.description',
+            'Hosts.address',
+            'Hosts.disabled',
+        ]);
+        $query
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            })
+            ->contain([
+                'Servicetemplates'
+            ]);
+
+
+        $query->enableHydration($enableHydration);
+        $query->order([
+            'servicename' => 'asc'
+        ]);
+        $query->group([
+            'Services.id'
+        ]);
+
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull($result->toArray());
+    }
 }
