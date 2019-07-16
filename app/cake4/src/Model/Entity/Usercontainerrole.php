@@ -26,6 +26,7 @@ class Usercontainerrole extends Entity
     protected $_accessible = [
         'name' => true,
         'usercontainerroles_to_containers' => true,
-        'users_to_usercontainerroles' => true
+        'users_to_usercontainerroles' => true,
+        'containers'              => true
     ];
 }
