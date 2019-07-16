@@ -27,9 +27,9 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-terminal fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Commands'); ?>
             <span>>
-                <?php echo __('Commands'); ?>
+                <?php echo __('Overview'); ?>
             </span>
         </h1>
     </div>
@@ -197,7 +197,7 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('usedBy', 'commands')): ?>
                                                     <li>
-                                                        <a href="/commands/usedBy/{{ command.Command.id}}">
+                                                        <a ui-sref="CommandsUsedBy({id: command.Command.id})">
                                                             <i class="fa fa-reply-all fa-flip-horizontal"></i>
                                                             <?php echo __('Used by'); ?>
                                                         </a>

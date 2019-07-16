@@ -1,16 +1,16 @@
 angular.module('openITCOCKPIT')
-    .controller('ContactsUsedByController', function($scope, $http, $stateParams, $state){
+    .controller('CommandsUsedByController', function($scope, $http, $stateParams, $state){
         $scope.id = $stateParams.id;
         $scope.total = 0;
         $scope.load = function(){
-            $http.get("/contacts/usedBy/" + $scope.id + ".json", {
+            $http.get("/commands/usedBy/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
                 $scope.objects = result.data.objects;
                 $scope.total = result.data.total;
-                $scope.contact = result.data.contact;
+                $scope.command = result.data.command;
 
             }, function errorCallback(result){
                 if(result.status === 403){

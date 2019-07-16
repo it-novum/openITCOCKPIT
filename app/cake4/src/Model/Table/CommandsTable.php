@@ -6,6 +6,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 
@@ -68,7 +69,7 @@ class CommandsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('name')
@@ -349,5 +350,57 @@ class CommandsTable extends Table {
      */
     public function existsById($id) {
         return $this->exists(['Commands.id' => $id]);
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function allowDelete($id) {
+
+        //Check if the command is used by contacts
+        $tableNames = [
+            'ContactsToHostcommands',
+            'ContactsToServicecommands',
+        ];
+
+        foreach ($tableNames as $tableName) {
+            $LinkingTable = TableRegistry::getTableLocator()->get($tableName);
+            $count = $LinkingTable->find()
+                ->where(['command_id' => $id])
+                ->count();
+
+            if ($count > 0) {
+                return false;
+            }
+        }
+
+        //Check if the command is used by host or service templates
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        if ($HosttemplatesTable->isCommandUsedByHosttemplate($id)) {
+            return false;
+        }
+
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        if ($ServicetemplatesTable->isCommandUsedByServicetemplate($id)) {
+            return false;
+        }
+
+        //Checking host and services
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        if ($HostsTable->isCommandUsedByHost($id)) {
+            return false;
+        }
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        if ($ServicesTable->isCommandUsedByService($id)) {
+            return false;
+        }
+
+        return true;
     }
 }

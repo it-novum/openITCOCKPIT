@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicetemplategroupsIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService, $state){
+    .controller('ServicetemplategroupsIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService, NotyService){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Containers.name'));
@@ -101,6 +101,38 @@ angular.module('openITCOCKPIT')
                 }
             }
             return objects;
+        };
+
+        $scope.allocateToMatchingHostgroup = function(servicetemplategroupId){
+            $('#loaderModal').modal('show');
+
+            $http.post("/servicetemplategroups/allocateToMatchingHostgroup/" + servicetemplategroupId + ".json?angular=true",
+                {}
+            ).then(function(result){
+                if(result.data.hasOwnProperty('success') && result.data.hasOwnProperty('message')){
+                    if(result.data.success){
+                        NotyService.genericSuccess({
+                            message: result.data.message
+                        });
+                        $('#loaderModal').modal('hide');
+                    }
+                }
+
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('success') && result.data.hasOwnProperty('message')){
+                    NotyService.genericWarning({
+                        message: result.data.message
+                    });
+                }else{
+                    NotyService.genericError();
+                }
+
+                if(result.data.hasOwnProperty('errors')){
+                    $scope.errors = result.data.errors;
+                }
+                $('#loaderModal').modal('hide');
+            });
+
         };
 
 

@@ -11,6 +11,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactsFilter;
 
@@ -106,7 +107,7 @@ class ContactsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('uuid')
@@ -750,6 +751,88 @@ class ContactsTable extends Table {
             }
         }
         return $contactIds;
+    }
+
+    /**
+     * @param int $commandId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getContactsByCommandId($commandId, $MY_RIGHTS = [], $enableHydration = true) {
+
+        /** @var ContactsToHostcommandsTable $ContactsToHostcommandsTable */
+        $ContactsToHostcommandsTable = TableRegistry::getTableLocator()->get('ContactsToHostcommands');
+        /** @var ContactsToServicecommandsTable $ContactsToServicecommandsTable */
+        $ContactsToServicecommandsTable = TableRegistry::getTableLocator()->get('ContactsToServicecommands');
+
+        $query = $ContactsToHostcommandsTable->find()
+            ->select([
+                'contact_id'
+            ])
+            ->where([
+                'command_id' => $commandId
+            ])
+            ->group([
+                'contact_id'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if(empty($result)){
+            $result = [];
+        }
+
+        $contactIds = Hash::extract($result, '{n}.contact_id');
+
+        $query = $ContactsToServicecommandsTable->find()
+            ->select([
+                'contact_id'
+            ])
+            ->where([
+                'command_id' => $commandId
+            ])
+            ->group([
+                'contact_id'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if(empty($result)){
+            $result = [];
+        }
+
+        $contactIds = array_unique(array_merge($contactIds, Hash::extract($result, '{n}.contact_id')));
+
+        if(empty($contactIds)){
+            return [];
+        }
+
+        $query = $this->find('all');
+        $query->contain([
+            'Containers'
+        ]);
+
+        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+
+        $query->where([
+            'Contacts.id IN' => $contactIds
+        ]);
+        $query->distinct('Contacts.id');
+        $query->enableHydration($enableHydration);
+        $query->order(['Contacts.name' => 'asc']);
+
+        $result = $query->all();
+
+
+        return $this->emptyArrayIfNull($result->toArray());
     }
 
 }

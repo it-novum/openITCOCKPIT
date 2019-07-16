@@ -5,11 +5,13 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Service;
 use Cake\Database\Expression\Comparison;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicedependenciesFilter;
 
 /**
@@ -147,7 +149,7 @@ class ServicedependenciesTable extends Table {
 
     /**
      * @param ServicedependenciesFilter $ServicedependenciesFilter
-     * @param null $PaginateOMat
+     * @param null|PaginateOMat $PaginateOMat
      * @param array $MY_RIGHTS
      * @return array
      */
@@ -223,7 +225,7 @@ class ServicedependenciesTable extends Table {
         ];
 
         if (!empty($indexFilter['Services.servicename LIKE'])) {
-            $query->innerJoinWith('Services', function ($q) use ($indexFilter) {
+            $query->innerJoinWith('Services', function (Query $q) use ($indexFilter) {
                 return $q->innerJoinWith('Hosts')
                     ->innerJoinWith('Servicetemplates');
             });
@@ -242,7 +244,7 @@ class ServicedependenciesTable extends Table {
         unset($indexFilter['Services.servicename LIKE']);
 
         if (!empty($indexFilter['ServicesDependent.servicename LIKE'])) {
-            $query->innerJoinWith('ServicesDependent', function ($q) use ($indexFilter) {
+            $query->innerJoinWith('ServicesDependent', function (Query $q) use ($indexFilter) {
                 return $q->innerJoinWith('Hosts')
                     ->innerJoinWith('Servicetemplates');
             });
@@ -265,7 +267,7 @@ class ServicedependenciesTable extends Table {
             $containFilter['Servicegroups.name'] = [
                 'Containers.name LIKE' => $indexFilter['Servicegroups.name LIKE']
             ];
-            $query->innerJoinWith('Servicegroups.Containers', function ($q) use ($containFilter) {
+            $query->innerJoinWith('Servicegroups.Containers', function (Query $q) use ($containFilter) {
                 return $q->where([
                     'ServicedependenciesServicegroupMemberships.dependent' => 0,
                     $containFilter['Servicegroups.name']
@@ -277,7 +279,7 @@ class ServicedependenciesTable extends Table {
             $containFilter['ServicegroupsDependent.name'] = [
                 'Containers.name LIKE' => $indexFilter['ServicegroupsDependent.name LIKE']
             ];
-            $query->innerJoinWith('ServicegroupsDependent.Containers', function ($q) use ($containFilter) {
+            $query->innerJoinWith('ServicegroupsDependent.Containers', function (Query $q) use ($containFilter) {
                 return $q->where([
                     'ServicedependenciesServicegroupMemberships.dependent' => 1,
                     $containFilter['ServicegroupsDependent.name']
@@ -297,7 +299,7 @@ class ServicedependenciesTable extends Table {
             $result = $query->toArray();
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scrollCake4($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
                 $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
             }
@@ -453,6 +455,7 @@ class ServicedependenciesTable extends Table {
         $masterServicesForCfg = [];
         $dependentServicesForCfg = [];
         foreach ($services as $service) {
+            /** @var Service $service */
             if ($service->get('_joinData')->get('dependent') === 0) {
                 $masterServicesForCfg[] = $service->get('id');
             } else {

@@ -1439,4 +1439,129 @@ class HostsTable extends Table {
     public function existsById($id) {
         return $this->exists(['Hosts.id' => $id]);
     }
+
+    /**
+     * @param int $commandId
+     * @return bool
+     */
+    public function isCommandUsedByHost($commandId) {
+        $count = $this->find()
+            ->where([
+                'Hosts.command_id' => $commandId,
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        $count = $this->find()
+            ->where([
+                'Hosts.eventhandler_command_id' => $commandId,
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $commandId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getHostsByCommandId($commandId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.name',
+                'Hosts.uuid'
+            ]);
+
+        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+        $query->contain([
+            'HostsToContainersSharing',
+        ]);
+
+        $query->andWhere([
+            'OR' => [
+                ['Hosts.command_id' => $commandId],
+                ['Hosts.eventhandler_command_id' => $commandId]
+            ]
+        ])
+            ->order(['Hosts.name' => 'asc'])
+            ->enableHydration($enableHydration)
+            ->group(['Hosts.id'])
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param int $contactId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getHostsByContactId($contactId, $MY_RIGHTS = [], $enableHydration = true) {
+
+        /** @var ContactsToHostsTable $ContactsToHostsTable */
+        $ContactsToHostsTable = TableRegistry::getTableLocator()->get('ContactsToHosts');
+
+        $query = $ContactsToHostsTable->find()
+            ->select([
+                'host_id'
+            ])
+            ->where([
+                'contact_id' => $contactId
+            ])
+            ->group([
+                'host_id'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        $hostIds = Hash::extract($result, '{n}.host_id');
+
+        $query = $this->find('all');
+        $where = [
+            'Hosts.id IN' => $hostIds
+        ];
+
+        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+        $query->contain([
+            'HostsToContainersSharing'
+        ]);
+
+        $query->where($where);
+        $query->enableHydration($enableHydration);
+        $query->order([
+            'Hosts.name' => 'asc'
+        ]);
+        $query->group([
+            'Hosts.id'
+        ]);
+
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull($result->toArray());
+    }
+
 }

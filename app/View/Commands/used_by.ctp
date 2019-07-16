@@ -23,14 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-code-fork fa-fw "></i>
+            <i class="fa fa-terminal fa-fw "></i>
             <?php echo __('Commands'); ?>
             <span>>
-                <?php echo __('used by...'); ?>
+                <?php echo __('Used by...'); ?>
             </span>
         </h1>
     </div>
@@ -40,61 +39,134 @@
 
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <div class="jarviswidget">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
+                        <a back-button fallback-state='CommandsIndex' class="btn btn-default btn-xs">
+                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                        </a>
                     </div>
 
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon"> <i class="fa fa-code-fork"></i> </span>
                     <h2><?php echo __('Command'); ?>
-                        <strong><?php echo h($commandName); ?></strong> <?php echo __('is used by the following service templates'); ?>
-                        (<?php echo sizeof($servicestemplates); ?>):</h2>
-
+                        <strong>
+                            »{{ command.name }}«
+                        </strong>
+                        <?php echo __('is used by'); ?>
+                        {{ total }}
+                        <?php echo __('objects.'); ?>
+                    </h2>
                 </header>
-
                 <div>
-
                     <div class="widget-body no-padding">
-                        <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
+                        <table id="usedby_list" class="table table-striped table-hover table-bordered smart-form"
                                style="">
-                            <thead>
-                            <tr>
-                                <?php $order = $this->Paginator->param('order'); ?>
-                                <th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i></th>
-                                <th class="no-sort"><?php echo __('Service template name'); ?></th>
-                            </tr>
-                            </thead>
                             <tbody>
-                            <?php foreach ($servicestemplates as $servicestemplate): ?>
-                                <tr>
-                                    <td class="text-center" style="width: 15px;">
-                                        <input type="checkbox" class="massChange"
-                                               servicename="<?php echo h($servicestemplate['Servicetemplate']['name']); ?>"
-                                               value="<?php echo $servicestemplate['Servicetemplate']['id']; ?>"/>
-                                    </td>
-                                    <td>
-                                        <a href="/servicetemplates/edit/<?php echo $servicestemplate['Servicetemplate']['id']; ?>"><?php echo h($servicestemplate['Servicetemplate']['name']); ?></a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
+                            <tr ng-if="objects.Contacts.length > 0">
+                                <th class="bg-color-lightGray">
+                                    <i class="fa fa-user"></i>
+                                    <?php echo __('Contacts'); ?> ({{objects.Contacts.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="contact in objects.Contacts">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                        <a ui-sref="ContactsEdit({id: contact.id})" target="_blank">
+                                            {{ contact.name }}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ contact.name }}
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+
+
+                            <tr ng-if="objects.Hosttemplates.length > 0">
+                                <th class="bg-color-lightGray">
+                                    <i class="fa fa-pencil-square-o"></i>
+                                    <?php echo __('Host templates'); ?> ({{objects.Hosttemplates.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="hosttemplate in objects.Hosttemplates">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                        <a ui-sref="HosttemplatesEdit({id: hosttemplate.id})" target="_blank">
+                                            {{ hosttemplate.name }}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ hosttemplate.name }}
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+
+                            <tr ng-if="objects.Servicetemplates.length > 0">
+                                <th class="bg-color-lightGray">
+                                    <i class="fa fa-pencil-square-o"></i>
+                                    <?php echo __('Service templates'); ?> ({{objects.Servicetemplates.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="servicetemplate in objects.Servicetemplates">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                        <a ui-sref="ServicetemplatesEdit({id: servicetemplate.id})" target="_blank">
+                                            {{ servicetemplate.name }}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ servicetemplate.name }}
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+
+                            <tr ng-if="objects.Hosts.length > 0">
+                                <th class="bg-color-lightGray">
+                                    <i class="fa fa-desktop"></i>
+                                    <?php echo __('Hosts'); ?> ({{objects.Hosts.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="host in objects.Hosts">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                        <a ui-sref="HostsEdit({id:host.id})" target="_blank">
+                                            {{ host.name }}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ host.name }}
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+
+                            <tr ng-if="objects.Services.length > 0">
+                                <th class="bg-color-lightGray">
+                                    <i class="fa fa-cog"></i>
+                                    <?php echo __('Services'); ?> ({{objects.Services.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="service in objects.Services">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                        <a ui-sref="ServicesEdit({id:service.id})" target="_blank">
+                                            {{ service._matchingData.Hosts.name }} / {{ service.servicename }}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ service._matchingData.Hosts.name }} / {{ service.servicename }}
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+
                             </tbody>
                         </table>
-                        <?php if (empty($servicestemplates)): ?>
-                            <div class="noMatch">
-                                <center>
-                                    <span class="txt-color-red italic"><?php echo __('This command is not used by any service template'); ?></span>
-                                </center>
+                        <div class="noMatch" ng-if="total == 0">
+                            <div class="row">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('This command is not used by any object'); ?>
+                                </div>
                             </div>
-                        <?php endif; ?>
-                        <div class="padding-top-10"></div>
-                        <?php echo $this->element('servicetemplate_mass_changes'); ?>
-                        <div class="padding-top-10"></div>
-
+                        </div>
                     </div>
                 </div>
             </div>
+        </article>
     </div>
 </section>

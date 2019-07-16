@@ -845,6 +845,15 @@ class HosttemplatesTable extends Table {
             return true;
         }
 
+        $count = $this->find()
+            ->where([
+                'Hosttemplates.eventhandler_command_id' => $commandId,
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
         return false;
     }
 
@@ -908,6 +917,88 @@ class HosttemplatesTable extends Table {
      */
     public function existsById($id) {
         return $this->exists(['Hosttemplates.id' => $id]);
+    }
+
+    /**
+     * @param int $commandId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getHosttemplatesByCommandId($commandId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find()
+            ->select([
+                'Hosttemplates.id',
+                'Hosttemplates.name',
+                'Hosttemplates.uuid'
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Hosttemplates.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->andWhere([
+            'OR' => [
+                ['Hosttemplates.command_id' => $commandId],
+                ['Hosttemplates.eventhandler_command_id' => $commandId]
+            ]
+        ])
+            ->order(['Hosttemplates.name' => 'asc'])
+            ->enableHydration($enableHydration)
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param int $contactId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getHosttemplatesByContactId($contactId, $MY_RIGHTS = [], $enableHydration = true) {
+
+        /** @var ContactsToHosttemplatesTable $ContactsToHosttemplatesTable */
+        $ContactsToHosttemplatesTable = TableRegistry::getTableLocator()->get('ContactsToHosttemplates');
+
+        $query = $ContactsToHosttemplatesTable->find()
+            ->select([
+                'hosttemplate_id'
+            ])
+            ->where([
+                'contact_id' => $contactId
+            ])
+            ->group([
+                'hosttemplate_id'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        $hosttemplateIds = Hash::extract($result, '{n}.hosttemplate_id');
+
+        $query = $this->find('all');
+        $where = [
+            'Hosttemplates.id IN' => $hosttemplateIds
+        ];
+        if (!empty($MY_RIGHTS)) {
+            $where['Hosttemplates.container_id IN'] = $MY_RIGHTS;
+        }
+        $query->where($where);
+        $query->enableHydration($enableHydration);
+        $query->order([
+            'Hosttemplates.name' => 'asc'
+        ]);
+
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull($result->toArray());
     }
 
 }

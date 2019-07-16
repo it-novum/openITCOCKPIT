@@ -59,7 +59,12 @@ angular.module('openITCOCKPIT')
             $http.post("/commands/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                NotyService.genericSuccess();
+                var url = $state.href('CommandsEdit', {id: result.data.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
                 RedirectService.redirectWithFallback('CommandsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){

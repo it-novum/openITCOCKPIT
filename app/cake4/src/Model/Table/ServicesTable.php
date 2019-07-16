@@ -173,7 +173,7 @@ class ServicesTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmptyString('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('uuid')
@@ -1593,5 +1593,160 @@ class ServicesTable extends Table {
                 }
             }
         }
+    }
+
+    /**
+     * @param int $commandId
+     * @return bool
+     */
+    public function isCommandUsedByService($commandId) {
+        $count = $this->find()
+            ->where([
+                'Services.command_id' => $commandId,
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        $count = $this->find()
+            ->where([
+                'Services.eventhandler_command_id' => $commandId,
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $commandId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServicesByCommandId($commandId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find();
+        $query->select([
+            'Services.id',
+            'Services.name',
+            'Services.uuid',
+            'Servicetemplates.id',
+            'Servicetemplates.name',
+            'Servicetemplates.uuid',
+            'Hosts.id',
+            'Hosts.name',
+            'Hosts.uuid',
+            'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+        ])
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            })
+            ->innerJoinWith('Servicetemplates')
+            ->where([
+                'OR' => [
+                    ['Services.command_id' => $commandId],
+                    ['Services.eventhandler_command_id' => $commandId]
+                ]
+            ])
+            ->enableHydration($enableHydration)
+            ->order([
+                'Hosts.name'  => 'asc',
+                'servicename' => 'asc'
+            ])
+            ->group(['Services.id'])
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param int $contactId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServicesByContactId($contactId, $MY_RIGHTS = [], $enableHydration = true) {
+
+        /** @var ContactsToServicesTable $ContactsToServicesTable */
+        $ContactsToServicesTable = TableRegistry::getTableLocator()->get('ContactsToServices');
+
+        $query = $ContactsToServicesTable->find()
+            ->select([
+                'service_id'
+            ])
+            ->where([
+                'contact_id' => $contactId
+            ])
+            ->group([
+                'service_id'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        $serviceIds = Hash::extract($result, '{n}.service_id');
+
+        $query = $this->find('all');
+        $query->where([
+            'Services.id IN' => $serviceIds
+        ]);
+        $query->select([
+            'Services.id',
+            'Services.uuid',
+            'Services.name',
+            'Services.host_id',
+
+            'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+
+            'Servicetemplates.id',
+            'Servicetemplates.uuid',
+            'Servicetemplates.name',
+
+            'Hosts.name',
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.description',
+            'Hosts.address',
+            'Hosts.disabled',
+        ]);
+        $query
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            })
+            ->contain([
+                'Servicetemplates'
+            ]);
+
+
+        $query->enableHydration($enableHydration);
+        $query->order([
+            'servicename' => 'asc'
+        ]);
+        $query->group([
+            'Services.id'
+        ]);
+
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull($result->toArray());
     }
 }

@@ -29,12 +29,23 @@ angular.module('openITCOCKPIT')
 
                 NotyMsg(options);
             },
+
             genericError: function(options){
                 options = options || {};
                 options.message = options.message || 'Error while saving data';
                 options.timeout = options.timeout || 3500;
 
                 options.type = 'error';
+
+                NotyMsg(options);
+            },
+
+            genericWarning: function(options){
+                options = options || {};
+                options.message = options.message || 'Warning - something unexpected happened';
+                options.timeout = options.timeout || 3500;
+
+                options.type = 'warning';
 
                 NotyMsg(options);
             },

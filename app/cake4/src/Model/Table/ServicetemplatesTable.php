@@ -881,4 +881,112 @@ class ServicetemplatesTable extends Table {
             ])->firstOrFail();
     }
 
+    /**
+     * @param int $commandId
+     * @return bool
+     */
+    public function isCommandUsedByServicetemplate($commandId) {
+        $count = $this->find()
+            ->where([
+                'Servicetemplates.command_id' => $commandId,
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        $count = $this->find()
+            ->where([
+                'Servicetemplates.eventhandler_command_id' => $commandId,
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $commandId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServicetemplatesByCommandId($commandId, $MY_RIGHTS = [], $enableHydration = true) {
+        $query = $this->find()
+            ->select([
+                'Servicetemplates.id',
+                'Servicetemplates.name',
+                'Servicetemplates.uuid'
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Servicetemplates.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->andWhere([
+            'OR' => [
+                ['Servicetemplates.command_id' => $commandId],
+                ['Servicetemplates.eventhandler_command_id' => $commandId]
+            ]
+        ])
+            ->order(['Servicetemplates.name' => 'asc'])
+            ->enableHydration($enableHydration)
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param int $contactId
+     * @param array $MY_RIGHTS
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getServicetemplatesByContactId($contactId, $MY_RIGHTS = [], $enableHydration = true) {
+
+        /** @var ContactsToServicetemplatesTable $ContactsToServicetemplatesTable */
+        $ContactsToServicetemplatesTable = TableRegistry::getTableLocator()->get('ContactsToServicetemplates');
+
+        $query = $ContactsToServicetemplatesTable->find()
+            ->select([
+                'servicetemplate_id'
+            ])
+            ->where([
+                'contact_id' => $contactId
+            ])
+            ->group([
+                'servicetemplate_id'
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        $servicetemplateIds = Hash::extract($result, '{n}.servicetemplate_id');
+
+        $query = $this->find('all');
+        $where = [
+            'Servicetemplates.id IN' => $servicetemplateIds
+        ];
+        if (!empty($MY_RIGHTS)) {
+            $where['Servicetemplates.container_id IN'] = $MY_RIGHTS;
+        }
+        $query->where($where);
+        $query->enableHydration($enableHydration);
+        $query->order([
+            'Servicetemplates.name' => 'asc'
+        ]);
+
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull($result->toArray());
+    }
+
 }

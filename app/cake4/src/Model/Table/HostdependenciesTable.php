@@ -5,10 +5,12 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Host;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostdependenciesFilter;
 
 /**
@@ -146,7 +148,7 @@ class HostdependenciesTable extends Table {
 
     /**
      * @param HostdependenciesFilter $HostdependenciesFilter
-     * @param null $PaginateOMat
+     * @param null|PaginateOMat $PaginateOMat
      * @param array $MY_RIGHTS
      * @return array
      */
@@ -221,7 +223,7 @@ class HostdependenciesTable extends Table {
             $containFilter['Hosts.name'] = [
                 'Hosts.name LIKE' => $indexFilter['Hosts.name LIKE']
             ];
-            $query->innerJoinWith('Hosts', function ($q) use ($containFilter) {
+            $query->innerJoinWith('Hosts', function (Query $q) use ($containFilter) {
                 return $q->where([
                     'HostdependenciesHostMemberships.dependent' => 0,
                     $containFilter['Hosts.name']
@@ -233,7 +235,7 @@ class HostdependenciesTable extends Table {
             $containFilter['HostsDependent.name'] = [
                 'HostsDependent.name LIKE' => $indexFilter['HostsDependent.name LIKE']
             ];
-            $query->innerJoinWith('HostsDependent', function ($q) use ($containFilter) {
+            $query->innerJoinWith('HostsDependent', function (Query $q) use ($containFilter) {
                 return $q->where([
                     'HostdependenciesHostMemberships.dependent' => 1,
                     $containFilter['HostsDependent.name']
@@ -246,7 +248,7 @@ class HostdependenciesTable extends Table {
             $containFilter['Hostgroups.name'] = [
                 'Containers.name LIKE' => $indexFilter['Hostgroups.name LIKE']
             ];
-            $query->innerJoinWith('Hostgroups.Containers', function ($q) use ($containFilter) {
+            $query->innerJoinWith('Hostgroups.Containers', function (Query $q) use ($containFilter) {
                 return $q->where([
                     'HostdependenciesHostgroupMemberships.dependent' => 0,
                     $containFilter['Hostgroups.name']
@@ -258,7 +260,7 @@ class HostdependenciesTable extends Table {
             $containFilter['HostgroupsDependent.name'] = [
                 'Containers.name LIKE' => $indexFilter['HostgroupsDependent.name LIKE']
             ];
-            $query->innerJoinWith('HostgroupsDependent.Containers', function ($q) use ($containFilter) {
+            $query->innerJoinWith('HostgroupsDependent.Containers', function (Query $q) use ($containFilter) {
                 return $q->where([
                     'HostdependenciesHostgroupMemberships.dependent' => 1,
                     $containFilter['HostgroupsDependent.name']
@@ -277,7 +279,7 @@ class HostdependenciesTable extends Table {
             $result = $query->toArray();
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scrollCake4($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
                 $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
             }
@@ -424,6 +426,7 @@ class HostdependenciesTable extends Table {
         $masterHostsForCfg = [];
         $dependentHostsForCfg = [];
         foreach ($hosts as $host) {
+            /** @var Host $host */
             if ($host->get('_joinData')->get('dependent') === 0) {
                 $masterHostsForCfg[] = $host->get('id');
             } else {

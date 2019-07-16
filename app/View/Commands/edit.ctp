@@ -29,7 +29,7 @@
             <i class="fa fa-terminal fa-fw "></i>
             <?php echo __('Commands'); ?>
             <span>>
-                <?php echo __('Add'); ?>
+                <?php echo __('Edit'); ?>
             </span>
         </h1>
     </div>
@@ -59,7 +59,9 @@
         </div>
     </header>
     <div>
-        <form ng-submit="submit();" class="form-horizontal">
+        <form ng-submit="submit();" class="form-horizontal"
+              ng-init="successMessage=
+            {objectName : '<?php echo __('Command'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
             <div class="widget-body">
 
                 <div class="row">
