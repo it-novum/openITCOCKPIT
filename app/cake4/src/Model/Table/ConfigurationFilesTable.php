@@ -86,4 +86,59 @@ class ConfigurationFilesTable extends Table {
 
         return $this->formatResultAsCake2($query->toArray(), false);
     }
+
+
+    /**
+     * @param $configFile
+     * @param array $records
+     * @return bool|\Cake\Datasource\EntityInterface[]|\Cake\Datasource\ResultSetInterface
+     * @throws \Exception
+     */
+    public function saveConfigurationValuesForConfigFile($configFile, $records) {
+        if (!$this->deleteAll([
+            'ConfigurationFiles.config_file' => $configFile
+        ])) {
+            return false;
+        }
+
+        //Convert Cake2 schema to cake4
+        $entities = [];
+        foreach ($records as $record) {
+            $entities[] = $this->newEntity($record['ConfigurationFile']);
+        }
+
+        return $this->saveMany($entities);
+    }
+
+    /**
+     * @param array $currentConfiguration from Cake's findAll
+     * @param array $newConfiguration for Cake's saveAll
+     * @return bool
+     */
+    public function hasChanged($currentConfiguration, $newConfiguration) {
+        $currentConfigKeyValue = [];
+        foreach ($currentConfiguration as $record) {
+            $key = $record['ConfigurationFile']['key'];
+            $value = $record['ConfigurationFile']['value'];
+            $currentConfigKeyValue[$key] = $value;
+        }
+
+        foreach ($newConfiguration as $record) {
+            $key = $record['ConfigurationFile']['key'];
+            $value = $record['ConfigurationFile']['value'];
+
+            if (!isset($currentConfigKeyValue[$key])) {
+                //Key not found in old configuration
+                //mark configuration file to rewrite
+                return true;
+            }
+
+            if ($currentConfigKeyValue[$key] != $value) {
+                //Value has changed
+                //mark configuration file to rewrite
+                return true;
+            }
+        }
+        return false;
+    }
 }

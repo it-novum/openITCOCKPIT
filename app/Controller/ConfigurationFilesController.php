@@ -31,14 +31,8 @@ use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
 /**
  * Class ConfigurationFilesController
  * @property ConfigurationFile $ConfigurationFile
- * @property ConfigurationQueue $ConfigurationQueue
  */
 class ConfigurationFilesController extends AppController {
-
-    public $uses = [
-        'ConfigurationFile',
-        'ConfigurationQueue'
-    ];
 
     public $layout = 'blank';
 
@@ -83,7 +77,7 @@ class ConfigurationFilesController extends AppController {
             if ($ConfigFileObject->getDbKey() === $configFile) {
 
                 $this->set('ConfigFile', $ConfigFileObject->toArray());
-                $this->set('_serialize',  ['ConfigFile']);
+                $this->set('_serialize', ['ConfigFile']);
                 return;
             }
         }
@@ -145,11 +139,11 @@ class ConfigurationFilesController extends AppController {
         /** @var  $ConfigurationObjectClassName ConfigInterface */
         $ConfigurationObjectClassName = new $className();
 
-        $currentConfig = $this->ConfigurationFile->getConfigValuesByConfigFile($ConfigurationObjectClassName->getDbKey());
+        $currentConfig = $ConfigurationFilesTable->getConfigValuesByConfigFile($ConfigurationObjectClassName->getDbKey());
         $config = $ConfigurationObjectClassName->convertRequestForSaveAll($ConfigurationObjectClassName->getDefaults());
 
-        if ($this->ConfigurationFile->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $config)) {
-            $configHasChanged = $this->ConfigurationFile->hasChanged($currentConfig, $config);
+        if ($ConfigurationFilesTable->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $config)) {
+            $configHasChanged = $ConfigurationFilesTable->hasChanged($currentConfig, $config);
             $configHasChanged = true;
 
             if ($configHasChanged) {
@@ -188,8 +182,11 @@ class ConfigurationFilesController extends AppController {
         $ConfigurationObjectClassName = new $ConfigurationObjectClassName();
         $this->set($ShortClassName, $ConfigurationObjectClassName);
 
+        /** @var $ConfigurationFilesTable ConfigurationFilesTable */
+        $ConfigurationFilesTable = TableRegistry::getTableLocator()->get('ConfigurationFiles');
+
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
-            $dbConfig = $this->ConfigurationFile->getConfigValuesByConfigFile($ConfigurationObjectClassName->getDbKey());
+            $dbConfig = $ConfigurationFilesTable->getConfigValuesByConfigFile($ConfigurationObjectClassName->getDbKey());
             $config = $ConfigurationObjectClassName->mergeDbResultWithDefaultConfiguration($dbConfig);
 
             $this->set('config', $config);
@@ -197,31 +194,34 @@ class ConfigurationFilesController extends AppController {
         }
 
         if ($this->request->is('post')) {
+            /** @var $ConfigurationQueueTable ConfigurationQueueTable */
+            $ConfigurationQueueTable = TableRegistry::getTableLocator()->get('ConfigurationQueue');
+
             if ($ConfigurationObjectClassName->validate($this->request->data)) {
                 //Save new config to database
                 $configFileForDatabase = $ConfigurationObjectClassName->convertRequestForSaveAll($this->request->data);
 
-                $currentConfig = $this->ConfigurationFile->getConfigValuesByConfigFile($ConfigurationObjectClassName->getDbKey());
+                $currentConfig = $ConfigurationFilesTable->getConfigValuesByConfigFile($ConfigurationObjectClassName->getDbKey());
 
-                $configHasChanged = $this->ConfigurationFile->hasChanged($currentConfig, $configFileForDatabase);
+                $configHasChanged = $ConfigurationFilesTable->hasChanged($currentConfig, $configFileForDatabase);
 
-                if ($this->ConfigurationFile->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $configFileForDatabase)) {
+                if ($ConfigurationFilesTable->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $configFileForDatabase)) {
                     $this->set('success', true);
                     $this->set('_serialize', ['success']);
 
                     if ($configHasChanged) {
                         //Require rewirte of configuration file on disk?
-                        $this->ConfigurationQueue->deleteAll([
-                            'ConfigurationQueue.task' => 'ConfigGenerator',
-                            'ConfigurationQueue.data' => $ConfigurationObjectClassName->getDbKey()
+                        $ConfigurationQueueTable->deleteAll([
+                            'task' => 'ConfigGenerator',
+                            'data' => $ConfigurationObjectClassName->getDbKey()
                         ]);
-                        $this->ConfigurationQueue->create();
-                        $this->ConfigurationQueue->save([
-                            'ConfigurationQueue' => [
-                                'task' => 'ConfigGenerator',
-                                'data' => $ConfigurationObjectClassName->getDbKey()
-                            ]
+
+                        $queueEntity = $ConfigurationQueueTable->newEntity([
+                            'task' => 'ConfigGenerator',
+                            'data' => $ConfigurationObjectClassName->getDbKey()
                         ]);
+
+                        $ConfigurationQueueTable->save($queueEntity);
                     }
 
                     return;
@@ -250,13 +250,13 @@ class ConfigurationFilesController extends AppController {
         foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
             /** @var ConfigInterface $ConfigFileObject */
 
-            if($ConfigFileObject->getAngularDirective() === $directiveName){
+            if ($ConfigFileObject->getAngularDirective() === $directiveName) {
                 $isValidDirective = true;
                 break;
             }
         }
 
-        if(!$isValidDirective){
+        if (!$isValidDirective) {
             throw new ForbiddenException();
         }
 

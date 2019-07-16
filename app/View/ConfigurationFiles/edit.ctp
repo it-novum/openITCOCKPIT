@@ -63,6 +63,7 @@
         <div class="widget-body">
             <!-- Loading used AngularJs directives dynamically -->
             <ng-include
+                    ng-if="ConfigFile.angularDirective"
                     src="'/ConfigurationFiles/dynamicDirective?directive='+ConfigFile.angularDirective"></ng-include>
         </div>
     </div>
