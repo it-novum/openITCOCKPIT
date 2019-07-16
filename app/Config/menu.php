@@ -110,7 +110,7 @@ $config = [
                 [
                     'url'   => ['controller' => 'systemfailures', 'action' => 'index'],
                     'title' => 'System Failures',
-                    'icon'  => 'medkit',
+                    'icon'  => 'exclamation-circle',
                 ],
                 [
                     'url'   => ['controller' => 'cronjobs', 'action' => 'index'],

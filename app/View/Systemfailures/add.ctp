@@ -30,7 +30,7 @@
             <?php echo __('Administration'); ?>
             <span>>
                 <?php echo __('System failure'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>

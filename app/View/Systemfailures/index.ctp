@@ -27,11 +27,11 @@
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-desktop fa-fw "></i>
+            <i class="fa fa-exclamation-circle fa-fw "></i>
             <?php echo __('Administration') ?>
             <span>>
                 <?php echo __('System Failure'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -39,7 +39,7 @@
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <div class="jarviswidget jarviswidget-color-blueDark" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <?php
@@ -58,7 +58,7 @@
                     </div>
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-desktop"></i> </span>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-exclamation-circle"></i> </span>
                     <h2 class="hidden-mobile"><?php echo __('System failure'); ?> </h2>
 
                 </header>
