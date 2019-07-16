@@ -21,11 +21,6 @@
 //  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //  License agreement and license key will be shipped with the order
 //  confirmation.
-
-use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
-
-/** @var ConfigInterface $ConfigFileObject */
-
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
@@ -48,7 +43,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
         <span class="widget-icon"> <i class="fa fa-file-text-o"></i> </span>
         <h2>
             <?php echo __('Edit configuration file'); ?>
-            <?php echo $ConfigFileObject->getLinkedOutfile(); ?>
+            {{ ConfigFile.linkedOutfile }}
         </h2>
 
         <div class="widget-toolbar" role="menu">
@@ -59,17 +54,16 @@ use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
         </div>
 
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(); ?>
+            <a back-button fallback-state='ConfigurationFilesIndex' class="btn btn-default btn-xs">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
         <div class="widget-body">
-
-            <?php
-            //Load the AngularJs Directive for the given configuration file
-            printf('<%s></%s>', $ConfigFileObject->getAngularDirective(), $ConfigFileObject->getAngularDirective());
-            ?>
-
+            <!-- Loading used AngularJs directives dynamically -->
+            <ng-include
+                    src="'/ConfigurationFiles/dynamicDirective?directive='+ConfigFile.angularDirective"></ng-include>
         </div>
     </div>
 </div>
@@ -91,7 +85,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" ng-click="restoreDefault('<?php echo $ConfigFileObject->getDbKey(); ?>')">
+                <button type="button" class="btn btn-primary" ng-click="restoreDefault(ConfigFile.dbKey)">
                     <i class="fa fa-refresh fa-spin" ng-show="isRestoring"></i>
                     <?php echo __('Restore default'); ?>
                 </button>

@@ -1,17 +1,17 @@
-angular.module('openITCOCKPIT').directive('backButton', function($http, $state) {
+angular.module('openITCOCKPIT').directive('backButton', function($http, $state){
     return {
         restrict: 'A',
         scope: {
             'fallbackState': '@',
         },
 
-        link: function($scope, element, attr) {
-            element.click(function() {
-                if ($state.previous.name !== "" && $state.previous.url !== "^") {
+        link: function($scope, element, attr){
+            element.click(function(){
+                if($state.previous.name !== "" && $state.previous.url !== "^"){
                     $state.go($state.previous.name, $state.previous.params);
-                } else if ($scope.fallbackState != null) {
+                }else if($scope.fallbackState != null){
                     $state.go($scope.fallbackState);
-                } else {
+                }else{
                     window.history.back();
                 }
             });

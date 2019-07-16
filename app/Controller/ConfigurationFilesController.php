@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ConfigurationFilesTable;
+use App\Model\Table\ConfigurationQueueTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
 use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
 
@@ -37,86 +40,90 @@ class ConfigurationFilesController extends AppController {
         'ConfigurationQueue'
     ];
 
-    public $layout = 'angularjs';
+    public $layout = 'blank';
 
     public function index() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
         }
+
+        $configFilesForFrontend = [];
+        $GeneratorRegistry = new GeneratorRegistry();
+        foreach ($GeneratorRegistry->getAllConfigFilesWithCategory() as $categoryName => $ConfigFileObjects) {
+            $category = [
+                'name'        => $categoryName,
+                'configFiles' => []
+            ];
+
+            foreach ($ConfigFileObjects as $ConfigFileObject) {
+                /** @var ConfigInterface $ConfigFileObject */
+                $category['configFiles'][] = [
+                    'linkedOutfile' => $ConfigFileObject->getLinkedOutfile(),
+                    'dbKey'         => $ConfigFileObject->getDbKey()
+                ];
+            }
+
+            $configFilesForFrontend[] = $category;
+        }
+
+        $this->set('configFileCategories', $configFilesForFrontend);
+        $this->set('_serialize', ['configFileCategories']);
     }
 
-    public function edit($configFile) {
+    public function edit($configFile = null) {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
 
         $GeneratorRegistry = new GeneratorRegistry();
         foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
             /** @var ConfigInterface $ConfigFileObject */
             if ($ConfigFileObject->getDbKey() === $configFile) {
-                $this->set('ConfigFileObject', $ConfigFileObject);
+
+                $this->set('ConfigFile', $ConfigFileObject->toArray());
+                $this->set('_serialize',  ['ConfigFile']);
                 return;
             }
         }
 
-        $this->redirect([
-            'controller' => 'Angular',
-            'action'     => 'not_found',
-            'plugin'     => ''
-        ]);
-
+        throw new NotFoundException();
     }
 
     public function NagiosCfg() {
-        $this->layout = 'blank';
-
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\NagiosCfg', 'NagiosCfg');
     }
 
     public function AfterExport() {
-        $this->layout = 'blank';
-
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\AfterExport', 'AfterExport');
     }
 
     public function NagiosModuleConfig() {
-        $this->layout = 'blank';
-
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\NagiosModuleConfig', 'NagiosModuleConfig');
     }
 
     public function phpNSTAMaster() {
-        $this->layout = 'blank';
-
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\phpNstaMaster', 'phpNstaMaster');
     }
 
     public function DbBackend() {
-        $this->layout = 'blank';
-
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\DbBackend', 'DbBackend');
     }
 
     public function PerfdataBackend() {
-        $this->layout = 'blank';
-
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\PerfdataBackend', 'PerfdataBackend');
     }
 
     public function GraphingDocker() {
-        $this->layout = 'blank';
-
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker', 'GraphingDocker');
     }
 
     public function StatusengineCfg() {
-        $this->layout = 'blank';
-
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\StatusengineCfg', 'StatusengineCfg');
     }
 
     public function GraphiteWeb() {
-        $this->layout = 'blank';
-
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\GraphiteWeb', 'GraphiteWeb');
     }
 
@@ -130,6 +137,11 @@ class ConfigurationFilesController extends AppController {
             throw new NotFoundException('Config file not found');
         }
 
+        /** @var $ConfigurationFilesTable ConfigurationFilesTable */
+        $ConfigurationFilesTable = TableRegistry::getTableLocator()->get('ConfigurationFiles');
+        /** @var $ConfigurationQueueTable ConfigurationQueueTable */
+        $ConfigurationQueueTable = TableRegistry::getTableLocator()->get('ConfigurationQueue');
+
         /** @var  $ConfigurationObjectClassName ConfigInterface */
         $ConfigurationObjectClassName = new $className();
 
@@ -138,25 +150,26 @@ class ConfigurationFilesController extends AppController {
 
         if ($this->ConfigurationFile->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $config)) {
             $configHasChanged = $this->ConfigurationFile->hasChanged($currentConfig, $config);
+            $configHasChanged = true;
 
             if ($configHasChanged) {
                 //Require rewirte of configuration file on disk?
-                $this->ConfigurationQueue->deleteAll([
-                    'ConfigurationQueue.task' => 'ConfigGenerator',
-                    'ConfigurationQueue.data' => $ConfigurationObjectClassName->getDbKey()
+                $ConfigurationQueueTable->deleteAll([
+                    'task' => 'ConfigGenerator',
+                    'data' => $ConfigurationObjectClassName->getDbKey()
                 ]);
-                $this->ConfigurationQueue->create();
-                $this->ConfigurationQueue->save([
-                    'ConfigurationQueue' => [
-                        'task' => 'ConfigGenerator',
-                        'data' => $ConfigurationObjectClassName->getDbKey()
-                    ]
+
+                $queueEntity = $ConfigurationQueueTable->newEntity([
+                    'task' => 'ConfigGenerator',
+                    'data' => $ConfigurationObjectClassName->getDbKey()
                 ]);
+
+                $ConfigurationQueueTable->save($queueEntity);
             }
 
-            $this->setFlash(__('Config restored to default successfully'));
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->set('message', __('Config successfully restored to default'));
+            $this->set('_serialize', ['success', 'message']);
             return;
         }
 
@@ -172,7 +185,6 @@ class ConfigurationFilesController extends AppController {
      * @throws Exception
      */
     private function __sharedControllerAction($ConfigurationObjectClassName, $ShortClassName) {
-        $this->layout = 'blank';
         $ConfigurationObjectClassName = new $ConfigurationObjectClassName();
         $this->set($ShortClassName, $ConfigurationObjectClassName);
 
@@ -194,7 +206,6 @@ class ConfigurationFilesController extends AppController {
                 $configHasChanged = $this->ConfigurationFile->hasChanged($currentConfig, $configFileForDatabase);
 
                 if ($this->ConfigurationFile->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $configFileForDatabase)) {
-                    $this->setFlash(__('Config saved successfully'));
                     $this->set('success', true);
                     $this->set('_serialize', ['success']);
 
@@ -229,5 +240,26 @@ class ConfigurationFilesController extends AppController {
                 return;
             }
         }
+    }
+
+    public function dynamicDirective() {
+        $directiveName = $this->request->query('directive');
+        $isValidDirective = false;
+
+        $GeneratorRegistry = new GeneratorRegistry();
+        foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
+            /** @var ConfigInterface $ConfigFileObject */
+
+            if($ConfigFileObject->getAngularDirective() === $directiveName){
+                $isValidDirective = true;
+                break;
+            }
+        }
+
+        if(!$isValidDirective){
+            throw new ForbiddenException();
+        }
+
+        $this->set('directiveName', $directiveName);
     }
 }

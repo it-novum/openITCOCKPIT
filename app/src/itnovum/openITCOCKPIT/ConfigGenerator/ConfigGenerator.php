@@ -356,5 +356,14 @@ class ConfigGenerator {
         return $result;
     }
 
+    public function toArray() {
+        return [
+            'linkedOutfile'    => $this->getLinkedOutfile(),
+            'realOutfile'      => $this->getRealOutfile(),
+            'dbKey'            => $this->getDbKey(),
+            'angularDirective' => $this->getAngularDirective()
+        ];
+    }
+
 
 }

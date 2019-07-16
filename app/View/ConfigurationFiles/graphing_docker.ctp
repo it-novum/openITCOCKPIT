@@ -290,7 +290,7 @@ $timezones = CakeTime::listTimezones();
             <div class="well formactions ">
                 <div class="pull-right">
                     <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">&nbsp;
-                    <a href="/ConfigurationFiles/index" class="btn btn-default">
+                    <a ui-sref="ConfigurationFilesIndex" class="btn btn-default">
                         <?php echo __('Cancel'); ?>
                     </a>
                 </div>
