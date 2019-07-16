@@ -1,7 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('UsersEditFromLdapController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
         $scope.id = $stateParams.id;
-        $scope.init = true;
         $scope.errors = false;
         $scope.post = {
             'User': {

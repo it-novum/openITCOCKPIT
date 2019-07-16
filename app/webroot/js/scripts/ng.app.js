@@ -778,6 +778,24 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "UsersEditFromLdapController"
             })
 
+            .state('UsercontainerrolesIndex', {
+                url: '/usercontainerroles/index',
+                templateUrl: "/usercontainerroles/index.html",
+                controller: "UsercontainerrolesIndexController"
+            })
+
+            .state('UsercontainerrolesAdd', {
+                url: '/usercontainerroles/add',
+                templateUrl: "/usercontainerroles/add.html",
+                controller: "UsercontainerrolesAddController"
+            })
+
+            .state('UsercontainerrolesEdit', {
+                url: '/usercontainerroles/edit/:id',
+                templateUrl: "/usercontainerroles/edit.html",
+                controller: "UsercontainerrolesEditController"
+            })
+
             .state('ProfileEdit', {
                 url: '/profile/edit/',
                 templateUrl: "/profile/edit.html",
