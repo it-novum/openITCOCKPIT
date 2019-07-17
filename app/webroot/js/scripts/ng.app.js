@@ -129,6 +129,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ConfigurationFilesIndexController"
             })
 
+            .state('ConfigurationFilesEdit', {
+                url: '/ConfigurationFiles/edit/:configfile',
+                templateUrl: "/ConfigurationFiles/edit.html",
+                controller: "ConfigurationFilesEditController"
+            })
+
             .state('ContainersIndex', {
                 url: '/containers/index/:id',
                 params: {

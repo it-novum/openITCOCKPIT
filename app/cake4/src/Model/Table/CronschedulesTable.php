@@ -58,12 +58,12 @@ class CronschedulesTable extends Table {
         $validator
             ->dateTime('start_time')
             ->requirePresence('start_time', 'create')
-            ->allowEmptyDateTime('start_time', false);
+            ->allowEmptyDateTime('start_time', null, false);
 
         $validator
             ->dateTime('end_time')
             ->requirePresence('end_time', 'create')
-            ->allowEmptyDateTime('end_time', false);
+            ->allowEmptyDateTime('end_time', null, false);
 
         return $validator;
     }

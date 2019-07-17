@@ -23,11 +23,16 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class ConfigurationFile
+ * @deprecated
+ */
 class ConfigurationFile extends AppModel {
 
     /**
      * @param string $configFile
      * @return array|null
+     * @deprecated
      */
     public function getConfigValuesByConfigFile($configFile) {
         return $this->find('all', [
@@ -41,6 +46,7 @@ class ConfigurationFile extends AppModel {
     /**
      * @param $configFile
      * @return bool
+     * @deprecated
      */
     public function saveConfigurationValuesForConfigFile($configFile, $records) {
         if (!$this->deleteAll([
@@ -56,6 +62,7 @@ class ConfigurationFile extends AppModel {
      * @param array $currentConfiguration from Cake's findAll
      * @param array $newConfiguration for Cake's saveAll
      * @return bool
+     * @deprecated
      */
     public function hasChanged($currentConfiguration, $newConfiguration) {
         $currentConfigKeyValue = [];

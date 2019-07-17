@@ -23,23 +23,16 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ConfigurationFilesTable;
+use App\Model\Table\ConfigurationQueueTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
 /**
  * Class ConfigGeneratorTask
- * @property Systemsetting $Systemsetting
- * @property ConfigurationFile $ConfigurationFile
- * @property ConfigurationQueue $ConfigurationQueue
  */
 class ConfigGeneratorTask extends AppShell implements CronjobInterface {
-
-    public $uses = [
-        'Systemsetting',
-        'ConfigurationFile',
-        'ConfigurationQueue'
-    ];
 
     public function generate() {
         $this->stdout->styles('green', ['text' => 'green']);
@@ -54,14 +47,20 @@ class ConfigGeneratorTask extends AppShell implements CronjobInterface {
 
         $this->out('Check for pending configuration files');
 
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsettings = $Systemsettings->findAsArray();
+        /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $SystemsettingsTable->findAsArray();
 
-        $configFilesToGenerate = $this->ConfigurationQueue->getConfigFilesToGenerate();
+        /** @var $ConfigurationQueueTable ConfigurationQueueTable */
+        $ConfigurationQueueTable = TableRegistry::getTableLocator()->get('ConfigurationQueue');
+
+        /** @var $ConfigurationFilesTable ConfigurationFilesTable */
+        $ConfigurationFilesTable = TableRegistry::getTableLocator()->get('ConfigurationFiles');
+
+        $configFilesToGenerate = $ConfigurationQueueTable->getConfigFilesToGenerate();
 
         foreach ($configFilesToGenerate as $record) {
-            $configFile = $record['ConfigurationQueue']['data'];
+            $configFile = $record['data'];
             $className = sprintf('itnovum\openITCOCKPIT\ConfigGenerator\%s', $configFile);
             if (!class_exists($className)) {
                 throw new NotFoundException('Config file not found');
@@ -69,14 +68,15 @@ class ConfigGeneratorTask extends AppShell implements CronjobInterface {
 
             /** @var  $ConfigFileObject ConfigInterface */
             $ConfigFileObject = new $className();
-            $config = $this->ConfigurationFile->getConfigValuesByConfigFile($ConfigFileObject->getDbKey());
+            $config = $ConfigurationFilesTable->getConfigValuesByConfigFile($ConfigFileObject->getDbKey());
 
             $this->out(sprintf('Generate %s   ', $ConfigFileObject->getLinkedOutfile()), false);
             $ConfigFileObject->writeToFile($config);
             $this->out('<green>Ok</green>');
 
             $this->restartByConfigFile($configFile, $systemsettings);
-            $this->ConfigurationQueue->delete($record['ConfigurationQueue']['id']);
+
+            $ConfigurationQueueTable->delete($ConfigurationQueueTable->get($record['id']));
         }
         $this->out('<green>Ok</green>');
         $this->hr();

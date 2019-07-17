@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('afterExportCfg', function($http, $state){
+angular.module('openITCOCKPIT').directive('afterExportCfg', function($http, $state, NotyService, RedirectService){
     return {
         restrict: 'E',
         templateUrl: '/ConfigurationFiles/AfterExport.html',
@@ -33,8 +33,10 @@ angular.module('openITCOCKPIT').directive('afterExportCfg', function($http, $sta
                     $scope.post
                 ).then(function(result){
                     console.log('Data saved successfully');
-                    window.location.href = '/ConfigurationFiles/index';
+                    NotyService.genericSuccess();
+                    RedirectService.redirectWithFallback('ConfigurationFilesIndex');
                 }, function errorCallback(result){
+                    NotyService.genericError();
                     if(result.data.hasOwnProperty('error')){
                         $scope.errors = result.data.error;
                     }
