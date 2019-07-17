@@ -95,13 +95,13 @@ $timezones = CakeTime::listTimezones();
                         <div class="col col-md-10">
                             <legend class="no-padding font-sm text-primary">{{getContainerName(containerId)}}
                             </legend>
-                            <input type="radio" value="1"
+                            <input type="radio" value="1" ng-value="1"
                                    id="{{'read_'+containerId}}"
                                    name="{{'containerPermissions1_'+containerId}}"
-                                   ng-model="post.Usercontainerrole.ContainersUsercontainerrolesMemberships[containerId]" checked>
+                                   ng-model="post.Usercontainerrole.ContainersUsercontainerrolesMemberships[containerId]">
                             <label for="usercontainerrolePermissionButton"
                                    class="padding-10 font-sm"><?php echo __('read'); ?></label>
-                            <input type="radio" value="2"
+                            <input type="radio" value="2" ng-value="2"
                                    id="{{'write_'+containerId}}"
                                    name="{{'containerPermissions2_'+containerId}}"
                                    ng-model="post.Usercontainerrole.ContainersUsercontainerrolesMemberships[containerId]">
