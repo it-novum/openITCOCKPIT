@@ -4,11 +4,11 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\I18n\FrozenTime;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\SystemfailuresFilter;
 
@@ -194,9 +194,9 @@ class SystemfailuresTable extends Table {
      * @param int $endTimestamp
      * @return array
      */
-    public function getSystemfailuresForReporting($startTimestamp, $endTimestamp){
-        $startDateSqlFormat = date('Y-m-d H:i:s', strtotime('01.01.2018 12:00'));
-        $endDateSqlFormat = date('Y-m-d H:i:s', strtotime('01.01.2020 12:00'));
+    public function getSystemfailuresForReporting($startTimestamp, $endTimestamp) {
+        $startDateSqlFormat = date('Y-m-d H:i:s', $startTimestamp);
+        $endDateSqlFormat = date('Y-m-d H:i:s', $endTimestamp);
 
 
         $query = $this
@@ -210,13 +210,72 @@ class SystemfailuresTable extends Table {
                 ]
             ])
             ->bind(':start1', $startDateSqlFormat, 'date')
-            ->bind(':end1',   $endDateSqlFormat, 'date')
+            ->bind(':end1', $endDateSqlFormat, 'date')
             ->bind(':start2', $startDateSqlFormat, 'date')
-            ->bind(':end2',   $endDateSqlFormat, 'date')
+            ->bind(':end2', $endDateSqlFormat, 'date')
             ->disableHydration()
             ->all();
 
         return $this->formatResultAsCake2($query->toArray(), false);
+    }
+
+    /**
+     * @param int $startTimestamp
+     * @param int $endTimestamp
+     * @return array
+     */
+    public function getSystemfailuresForReportingFormatedAsDowntime($startTimestamp, $endTimestamp) {
+        $startDateSqlFormat = date('Y-m-d H:i:s', $startTimestamp);
+        $endDateSqlFormat = date('Y-m-d H:i:s', $endTimestamp);
+
+        $query = $this
+            ->find()
+            ->where([
+                'OR' => [
+                    ['(:start1 BETWEEN Systemfailures.start_time AND Systemfailures.end_time)'],
+                    ['(:end1    BETWEEN Systemfailures.start_time AND Systemfailures.end_time)'],
+                    ['(Systemfailures.start_time BETWEEN :start2 AND :end2)'],
+
+                ]
+            ])
+            ->bind(':start1', $startDateSqlFormat, 'date')
+            ->bind(':end1', $endDateSqlFormat, 'date')
+            ->bind(':start2', $startDateSqlFormat, 'date')
+            ->bind(':end2', $endDateSqlFormat, 'date')
+            ->contain([
+                'Users' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Users.firstname',
+                            'Users.lastname'
+                        ]);
+                    return $query;
+                }
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $this->emptyArrayIfNull($query->toArray());
+
+        $fakeDowntimes = [];
+
+        foreach ($result as $record) {
+            /** @var FrozenTime $startTime */
+            $startTime = $record['start_time'];
+            /** @var FrozenTime $endTime */
+            $endTime = $record['end_time'];
+
+            $fakeDowntimes[] = [
+                'author_name'          => $record['user']['firstname'] . ' ' . $record['user']['lastname'],
+                'scheduled_start_time' => $startTime->format('Y-m-d H:i:s'),
+                'scheduled_end_time'   => $endTime->format('Y-m-d H:i:s'),
+                'comment_data'         => $record['comment']
+            ];
+        }
+
+        return [
+            'Systemfailure' => $fakeDowntimes
+        ];
     }
 
 }
