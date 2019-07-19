@@ -22,9 +22,18 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Lib\Exceptions\MissingDbBackendException;
+use App\Model\Table\HostsTable;
+use App\Model\Table\ServicesTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ServiceConditions;
+use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Filter\ServiceFilter;
+use Statusengine\PerfdataParser;
 
 
 /**
@@ -32,6 +41,7 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
  * @property Host $Host
  * @property Service $Service
  * @property Hoststatus $Hoststatus
+ * @property AppPaginatorComponent $Paginator
  */
 class CurrentstatereportsController extends AppController {
     public $layout = 'Admin.default';
@@ -45,11 +55,124 @@ class CurrentstatereportsController extends AppController {
 
     public function index() {
         $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $ServiceFilter = new ServiceFilter($this->request);
+
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
+        $ServiceConditions = new ServiceConditions(
+            $ServiceFilter->indexFilter()
+        );
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+
+
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
+            'Hosts.name'  => 'asc',
+            'servicename' => 'asc'
+        ]));
+
+
+        if ($this->DbBackend->isNdoUtils()) {
+            $services = $ServicesTable->getServiceForCurrentReport($ServiceConditions);
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        $hostContainers = [];
+        if ($this->hasRootPrivileges === false) {
+            if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
+                foreach ($services as $index => $service) {
+                    $hostId = $service['_matchingData']['Hosts']['id'];
+                    if (!isset($hostContainers[$hostId])) {
+                        $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
+                    }
+
+                    $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
+                    $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
+                }
+            }
+        } else {
+            //Root user
+            foreach ($services as $index => $service) {
+                $services[$index]['allow_edit'] = $this->hasRootPrivileges;
+            }
+        }
+
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields
+            ->currentState()
+            ->isFlapping()
+            ->isHardstate()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged()
+            ->lastHardStateChange()
+            ->currentCheckAttempt()
+            ->maxCheckAttempts()
+            ->output();
+        $hoststatusCache = $this->Hoststatus->byUuid(
+            array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
+            $HoststatusFields
+        );
+
+
+        $all_services = [];
+        $UserTime = $User->getUserTime();
+        foreach ($services as $service) {
+            $allowEdit = $service['allow_edit'];
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts'], $allowEdit);
+            if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
+            } else {
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([], $UserTime);
+            }
+            $currentHostId = $Host->getId();
+            if (!isset($all_services[$currentHostId])) {
+                $all_services[$currentHostId] = [
+                    'Host'          => $Host->toArray(),
+                    'Hoststatus'    => $Hoststatus->toArrayForBrowser()
+                ];
+            }
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
+            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
+            $currentServiceId   = $Service->getId();
+            $tmpRecord = [
+                'Service'       => $Service->toArray(),
+                'Servicestatus' => $Servicestatus->toArrayForBrowser()
+            ];
+            $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
+            $tmpRecord['Servicestatus']['perfdataArray'] = $PerfdataParser->parse();
+            $all_services[$currentHostId]['Services'][$currentServiceId] = $tmpRecord;
+        }
+       // $all_services = Hash::sort($all_services, '{n}.Host.hostname', 'asc');
+        $this->set('all_services', $all_services);
+        $toJson = ['all_services', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_services', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
+        return;
+
+        $this->layout = 'blank';
 
         if (!$this->isApiRequest()) {
             return;
         }
-
+        debug($this->request);
+        die('end !!!');
         $userContainerId = $this->Auth->user('container_id');
         $currentStateData = [];
         $serviceStatusExists = false;
@@ -57,10 +180,25 @@ class CurrentstatereportsController extends AppController {
 
         $this->set(compact(['userContainerId']));
 
+        $ServiceFilter = new ServiceFilter($this->request);
+        $ServiceConditions = new ServiceConditions($ServiceFilter->indexFilter());
 
+        $ServiceConditions->setIncludeDisabled(false);
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $services = $ServicesTable->getServiceIndex($ServiceConditions);
+        debug($services);
+        debug('test !!!');
+        debug($this->request);
+        die();
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->Currentstatereport->set($this->request->data);
             if ($this->Currentstatereport->validates()) {
+                debug('test !!!');
+                die();
+                return;
                 $services = Hash::combine($this->Service->servicesByHostContainerIds($this->MY_RIGHTS),
                     '{n}.Service.id', '{n}'
                 );
