@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\ContainersTable;
+use App\Model\Table\SystemfailuresTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
@@ -304,22 +305,14 @@ class InstantreportsController extends AppController {
             $globalDowntimes = [];
 
             if ($instantReport['Instantreport']['downtimes'] === '1') {
-                $this->loadModel('Systemfailure');
-                $globalDowntimes = $this->Systemfailure->find('all', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'OR' => [
-                            '"' . $startDateSqlFormat . '"
-                                    BETWEEN Systemfailure.start_time
-                                    AND Systemfailure.end_time',
-                            '"' . $endDateSqlFormat . '"
-                                    BETWEEN Systemfailure.start_time
-                                    AND Systemfailure.end_time',
-                            'Systemfailure.start_time BETWEEN "' . $startDateSqlFormat . '"
-                                    AND "' . $endDateSqlFormat . '"',
-                        ],
-                    ],
-                ]);
+                /** @var $SystemfailuresTable SystemfailuresTable */
+                $SystemfailuresTable = TableRegistry::getTableLocator()->get('Systemfailures');
+
+                $globalDowntimes = $SystemfailuresTable->getSystemfailuresForReporting(
+                    strtotime($startDate),
+                    strtotime($endDate)
+                );
+
                 $globalDowntimes = ['Systemfailure' => Hash::extract($globalDowntimes, '{n}.Systemfailure')];
             }
 

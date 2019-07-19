@@ -972,6 +972,18 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "LocationsEditController"
             })
 
+            .state('SystemfailuresIndex', {
+                url: '/systemfailures/index',
+                templateUrl: "/systemfailures/index.html",
+                controller: "SystemfailuresIndexController"
+            })
+
+            .state('SystemfailuresAdd', {
+                url: '/systemfailures/add',
+                templateUrl: "/systemfailures/add.html",
+                controller: "SystemfailuresAddController"
+            })
+
     })
 
     /*

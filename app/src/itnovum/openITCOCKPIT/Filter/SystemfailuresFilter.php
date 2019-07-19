@@ -22,4 +22,23 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-printf('<%s widget="widget"></%s>', $directiveName, $directiveName);
+namespace itnovum\openITCOCKPIT\Filter;
+
+
+class SystemfailuresFilter extends Filter {
+
+    /**
+     * @return array
+     */
+    public function indexFilter() {
+        $filters = [
+            'like' => [
+                'full_name',
+                'Systemfailures.comment'
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
+}
