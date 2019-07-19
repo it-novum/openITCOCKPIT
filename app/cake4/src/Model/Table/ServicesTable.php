@@ -1749,4 +1749,144 @@ class ServicesTable extends Table {
 
         return $this->emptyArrayIfNull($result->toArray());
     }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param null|PaginateOMat $PaginateOMat
+     * @return array
+     */
+    public function getServiceForCurrentReport(ServiceConditions $ServiceConditions, $PaginateOMat = null) {
+        $where = $ServiceConditions->getConditions();
+
+        $where['Services.disabled'] = 0;
+        if ($ServiceConditions->getServiceIds()) {
+            $serviceIds = $ServiceConditions->getServiceIds();
+            if (!is_array($serviceIds)) {
+                $serviceIds = [$serviceIds];
+            }
+
+            $where['Services.id IN'] = $serviceIds;
+        }
+
+        $having = null;
+        if (isset($where['servicename LIKE'])) {
+            $having = [
+                'servicename LIKE' => $where['servicename LIKE']
+            ];
+            unset($where['servicename LIKE']);
+        }
+
+
+        if ($ServiceConditions->getHostId()) {
+            $where['Services.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Services.id',
+                'Services.uuid',
+                'Services.name',
+                'Services.host_id',
+                'Services.description',
+                'Services.disabled',
+                'Services.active_checks_enabled',
+                'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+
+                'Servicetemplates.name',
+                'Servicetemplates.active_checks_enabled',
+
+                'Objects.object_id',
+
+                'Servicestatus.current_state',
+                'Servicestatus.last_check',
+                'Servicestatus.next_check',
+                'Servicestatus.last_hard_state_change',
+                'Servicestatus.last_state_change',
+                'Servicestatus.output',
+                'Servicestatus.perfdata',
+                'Servicestatus.scheduled_downtime_depth',
+                'Servicestatus.active_checks_enabled',
+                'Servicestatus.state_type',
+                'Servicestatus.problem_has_been_acknowledged',
+                'Servicestatus.acknowledgement_type',
+                'Servicestatus.is_flapping',
+                'Servicestatus.current_check_attempt',
+                'Servicestatus.max_check_attempts',
+
+                'Hosts.name',
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.description',
+                'Hosts.address',
+                'Hosts.disabled',
+            ])
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+                if (!empty($ServiceConditions->getContainerIds())) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
+                    ]);
+                }
+                return $q;
+            })
+            ->innerJoinWith('Servicetemplates')
+            ->innerJoin(['Objects' => 'nagios_objects'], [
+                'Objects.name2 = Services.uuid',
+                'Objects.objecttype_id' => 2
+            ])
+            ->innerJoin(['Servicestatus' => 'nagios_servicestatus'], [
+                'Servicestatus.service_object_id = Objects.object_id',
+            ]);
+
+        if (isset($where['keywords rlike'])) {
+            $query->where(new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $where['keywords rlike'],
+                'string',
+                'rlike'
+            ));
+            unset($where['keywords rlike']);
+        }
+
+        if (isset($where['not_keywords not rlike'])) {
+            $query->andWhere(new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $where['not_keywords not rlike'],
+                'string',
+                'not rlike'
+            ));
+            unset($where['not_keywords not rlike']);
+        }
+
+        if (!empty($where)) {
+            $query->andWhere($where);
+        }
+
+
+        $query->disableHydration();
+        $query->group(['Services.id']);
+
+        if (!empty($having)) {
+            $query->having($having);
+        }
+
+        $query->order($ServiceConditions->getOrder());
+
+        //FileDebugger::dieQuery($query);
+
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+    }
 }
