@@ -119,6 +119,8 @@ class CurrentstatereportsController extends AppController {
             ->isHardstate()
             ->scheduledDowntimeDepth()
             ->problemHasBeenAcknowledged()
+            ->activeChecksEnabled()
+            ->acknowledgementType()
             ->lastHardStateChange()
             ->currentCheckAttempt()
             ->maxCheckAttempts()
@@ -154,7 +156,9 @@ class CurrentstatereportsController extends AppController {
                 'Servicestatus' => $Servicestatus->toArrayForBrowser()
             ];
             $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
-            $tmpRecord['Servicestatus']['perfdataArray'] = $PerfdataParser->parse();
+            $parsedPerfdata = $PerfdataParser->parse();
+            $tmpRecord['Servicestatus']['perfdataArray'] = $parsedPerfdata;
+            $tmpRecord['Servicestatus']['perfdataArrayCounter'] = sizeof($parsedPerfdata);
             $all_services[$currentHostId]['Services'][$currentServiceId] = $tmpRecord;
         }
        // $all_services = Hash::sort($all_services, '{n}.Host.hostname', 'asc');

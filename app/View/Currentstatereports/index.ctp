@@ -210,7 +210,13 @@
                                 <span class="txt-color-white"
                                       style="font-size:20px;text-shadow: 2px 4px 3px rgba(0,0,0,0.3);">
                                     <i class="fa fa-lg fa-desktop"></i>
-                                    {{servicestatusObject.Host.hostname}} ({{servicestatusObject.Host.address}})
+                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                        <a ui-sref="HostsBrowser({id: servicestatusObject.Host.id})" class="txt-color-white">
+                                                {{servicestatusObject.Host.hostname}} ({{servicestatusObject.Host.address}})
+                                            </a>
+                                    <?php else: ?>
+                                        {{servicestatusObject.Host.hostname}} ({{servicestatusObject.Host.address}})
+                                    <?php endif; ?>
                                 </span>
                             </div>
                             <div class="col-lg-2 no-padding font-md txt-color-white text-right">
@@ -239,7 +245,10 @@
                                         {{servicestatusObject.Hoststatus.lastCheck}}
                                     </div>
                                     <div class="col-lg-1 no-padding">
-                                        {{servicestatusObject.Hoststatus.nextCheck}}
+                                        <span ng-if="servicestatusObject.Hoststatus.activeChecksEnabled && servicestatusObject.Host.is_satellite_host === false">{{ servicestatusObject.Hoststatus.nextCheck }}</span>
+                                        <span ng-if="servicestatusObject.Hoststatus.activeChecksEnabled === false || servicestatusObject.Host.is_satellite_host === true">
+                                                <?php echo __('n/a'); ?>
+                                            </span>
                                     </div>
                                     <div class="col-lg-1 no-padding">
                                         <div class="row" ng-show="servicestatusObject.Hoststatus.isHardstate">
@@ -251,7 +260,24 @@
                                             ({{servicestatusObject.Hoststatus.current_check_attempt}}/{{servicestatusObject.Hoststatus.max_check_attempts}})
                                         </div>
                                     </div>
-                                    <div class="col-lg-9 text-right">
+                                    <div class="col-lg-1 no-padding">
+                                        <div>
+                                            <i class="fa fa-user"
+                                               ng-show="servicestatusObject.Hoststatus.problemHasBeenAcknowledged"
+                                               ng-if="servicestatusObject.Hoststatus.acknowledgement_type == 1"></i>
+                                            <i class="fa fa-user-o"
+                                               ng-show="servicestatusObject.Hoststatus.problemHasBeenAcknowledged"
+                                               ng-if="servicestatusObject.Hoststatus.acknowledgement_type == 2"
+                                               title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                            <i class="fa fa-power-off"
+                                               ng-show="servicestatusObject.Hoststatus.scheduledDowntimeDepth > 0"></i>
+                                            <span title="<?php echo __('Passively transferred service'); ?>"
+                                                  ng-show="servicestatusObject.Host.active_checks_enabled === false || servicestatusObject.Host.is_satellite_host === true">
+                                                            P
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-8 text-right">
                                         {{servicestatusObject.Hoststatus.output}}
                                     </div>
                                 </div>
@@ -288,33 +314,68 @@
                                 </div>
                             </div>
                             <div ng-repeat="serviceDetails in servicestatusObject.Services"
+                                 ng-init="showDetails[serviceDetails.Service.id] = false"
                                  class="txt-color-white padding-2 font-sm"
                                  ng-style="{background: $index % 2 == 0 ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.15)'}">
                                 <div class="row">
                                     <div class="col-lg-12 no-padding">
                                         <div class="col-lg-1 no-padding">
-                                            <span class="fa-stack">
-                                            <i class="fa fa-gear fa-stack-2x txt-color-white"
-                                               style="text-shadow: 1px 2px 1px rgba(0,0,0,0.3);"></i>
-                                            <i class="fa fa-heartbeat fa-stack-1x cornered cornered-lr {{serviceDetails.Servicestatus.humanState}} font-sm"
-                                               style="text-shadow: 1px 2px 1px rgba(0,0,0,0.3);"></i>
-                                            </span>
-                                            <span class="label bg-{{serviceDetails.Servicestatus.humanState}} text-uppercase padding-top-2 padding-bottom-2">
-                                                {{serviceDetails.Servicestatus.humanState}}
+                                            <div class="col-lg-12 no-padding">
+                                                <div class="col-lg-9 no-padding">
+                                                    <span class="fa-stack">
+                                                        <i class="fa fa-gear fa-stack-2x txt-color-white"
+                                                           style="text-shadow: 1px 2px 1px rgba(0,0,0,0.3);"></i>
+                                                        <i class="fa fa-heartbeat fa-stack-1x cornered cornered-lr {{serviceDetails.Servicestatus.humanState}} font-sm"
+                                                           style="text-shadow: 1px 2px 1px rgba(0,0,0,0.3);"></i>
+                                                    </span>
+                                                    <span class="label bg-{{serviceDetails.Servicestatus.humanState}} text-uppercase padding-top-2 padding-bottom-2">
+                                                        {{serviceDetails.Servicestatus.humanState}}
+                                                    </span>
+                                                </div>
+                                                <div class="col-lg-3 no-padding text-left font-xs bold">
+                                                    <div class="padding-top-2">
+                                                        <i class="fa fa-user"
+                                                           ng-show="serviceDetails.Servicestatus.problemHasBeenAcknowledged"
+                                                           ng-if="serviceDetails.Servicestatus.acknowledgement_type == 1"></i>
 
-                                            </span>
+                                                        <i class="fa fa-user-o"
+                                                           ng-show="serviceDetails.Servicestatus.problemHasBeenAcknowledged"
+                                                           ng-if="serviceDetails.Servicestatus.acknowledgement_type == 2"
+                                                           title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                                        <i class="fa fa-power-off"
+                                                           ng-show="serviceDetails.Servicestatus.scheduledDowntimeDepth > 0"></i>
+                                                        <span title="<?php echo __('Passively transferred service'); ?>"
+                                                              ng-show="serviceDetails.Service.active_checks_enabled === false || servicestatusObject.Host.is_satellite_host === true">
+                                                            P
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="col-lg-2 no-padding">
-                                            {{serviceDetails.Service.servicename}}
+                                            <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                                <a ui-sref="ServicesBrowser({id:serviceDetails.Service.id})"
+                                                   class="txt-color-white">
+                                                    {{serviceDetails.Service.servicename}}
+                                                </a>
+                                            <?php else: ?>
+                                                {{serviceDetails.Service.servicename}}
+                                            <?php endif; ?>
                                         </div>
                                         <div class="col-lg-1 no-padding">
                                             {{serviceDetails.Servicestatus.lastHardStateChange}}
                                         </div>
                                         <div class="col-lg-1 no-padding">
-                                            {{serviceDetails.Servicestatus.lastCheck}}
+                                            <span ng-if="serviceDetails.Service.active_checks_enabled && servicestatusObject.Host.is_satellite_host === false">{{ serviceDetails.Servicestatus.lastCheck }}</span>
+                                            <span ng-if="serviceDetails.Service.active_checks_enabled === false">
+                                                <?php echo __('n/a'); ?>
+                                            </span>
                                         </div>
                                         <div class="col-lg-1 no-padding">
-                                            {{serviceDetails.Servicestatus.nextCheck}}
+                                            <span ng-if="serviceDetails.Service.active_checks_enabled && servicestatusObject.Host.is_satellite_host === false">{{ serviceDetails.Servicestatus.nextCheck }}</span>
+                                            <span ng-if="serviceDetails.Service.active_checks_enabled === false || servicestatusObject.Host.is_satellite_host === true">
+                                                <?php echo __('n/a'); ?>
+                                            </span>
                                         </div>
                                         <div class="col-lg-1 no-padding">
                                             <div class="row" ng-show="serviceDetails.Servicestatus.isHardstate">
@@ -330,22 +391,61 @@
                                             {{serviceDetails.Servicestatus.output}}
                                         </div>
                                         <div class="col-md-2 text-left no-padding margin-top-5">
-                                            <div class="col-md-4 no-padding font-xs">
-                                                label
-                                            </div>
-                                            <div class="col-md-7 no-padding">
-                                                <div id="text">gfdgfdg</div>
-                                                <div id="prog-bar-cont">
-                                                    <div id="prog-bar">
-                                                        <div id="background"></div>
-
+                                            <div ng-if="serviceDetails.Servicestatus.perfdataArray"
+                                                 ng-repeat="(label, perfdata) in serviceDetails.Servicestatus.perfdataArray">
+                                                <div ng-if="$index === 0" class="prog-container">
+                                                    <div class="col-md-4 no-padding font-xs ellipsis"
+                                                         title="{{label}}">
+                                                        {{label}}
+                                                    </div>
+                                                    <div class="col-md-7 no-padding">
+                                                        <div class="prog-text">
+                                                            {{perfdata.current}} {{perfdata.unit}}
+                                                        </div>
+                                                        <div class="prog-bar-cont">
+                                                            <div class="prog-bar">
+                                                                <div class="background"
+                                                                     ng-style="createBackgroundForPerfdataMeter({{perfdata}})">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1 no-padding text-center"
+                                                         ng-show="serviceDetails.Servicestatus.perfdataArrayCounter > 1">
+                                                        <i class="fa fa-plus-square-o font-md pointer"
+                                                           ng-show="showDetails[serviceDetails.Service.id]==false"
+                                                           ng-click="showDetails[serviceDetails.Service.id] = !showDetails[serviceDetails.Service.id]"></i>
+                                                        <i class=" fa fa-minus-square-o font-md pointer"
+                                                           ng-show="showDetails[serviceDetails.Service.id] == true"
+                                                           ng-click="showDetails[serviceDetails.Service.id] = !showDetails[serviceDetails.Service.id]"></i>
                                                     </div>
                                                 </div>
-
+                                                <div ng-if="$index > 0"
+                                                     ng-hide="!showDetails[serviceDetails.Service.id]"
+                                                     class="prog-container">
+                                                    <div class="col-md-4 no-padding font-xs ellipsis" title="{{label}}">
+                                                        {{label}}
+                                                    </div>
+                                                    <div class="col-md-7 no-padding">
+                                                        <div class="prog-text">
+                                                            {{perfdata.current}} {{perfdata.unit}}
+                                                        </div>
+                                                        <div class="prog-bar-cont">
+                                                            <div class="prog-bar">
+                                                                <div class="background"
+                                                                     ng-style="createBackgroundForPerfdataMeter({{perfdata}})">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-1 no-padding text-center">
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="col-md-1 no-padding text-center">
-                                                <i class="fa fa-plus-square-o font-md pointer perfdataContainerShowDetails"
-                                                   uuid="e642a75e-c833-4a03-8b45-f9c56bec134e"></i>
+                                            <div ng-if="serviceDetails.Servicestatus.perfdataArrayCounter === 0"
+                                                 class="italic font-xs">
+                                                <i class="fa fa-info-circle"></i>
+                                                <?php echo __('No performance data available'); ?>
                                             </div>
                                         </div>
                                     </div>
