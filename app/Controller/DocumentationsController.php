@@ -22,159 +22,165 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\DocumentationsTable;
+use App\Model\Table\HostsTable;
+use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\ServicesTable;
+use App\Model\Table\ServicetemplatesTable;
+use Cake\I18n\FrozenTime;
+use Cake\ORM\TableRegistry;
 
 /**
  * Class DocumentationsController
  * @property Documentation $Documentation
+ * @property AppAuthComponent $Auth
  */
 class DocumentationsController extends AppController {
 
     public $layout = 'blank';
 
-    public $uses = [
-        'Documentation',
-        'Host',
-        'Service'
-    ];
 
     /**
      * @param null $uuid
      * @param string $type
      * @throws Exception
-     * @deprecated
      */
     public function view($uuid = null, $type = 'host') {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+
         if (empty($type)) {
             throw new InvalidArgumentException();
         }
+        $type = strtolower($type);
 
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->Documentation->save($this->request->data)) {
-                if ($this->request->ext == 'json') {
-                    $this->serializeId(); // REST API ID serialization
+        /** @var $DocumentationsTable DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+        $allowEdit = false;
+
+        switch ($type) {
+            case 'host':
+                /** @var $HostsTable HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+                $host = $HostsTable->getHostByUuid($uuid);
+
+                //Can user see this object?
+                if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
+                    $this->render403();
                     return;
                 }
+
+                //Can user edit this object?
+                $allowEdit = $this->allowedByContainerId($host->getContainerIds());
+
+                break;
+
+            case 'service':
+                /** @var $ServicesTable ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $service = $ServicesTable->getServiceByUuid($uuid);
+
+                //Can user see this object?
+                if (!$this->allowedByContainerId($service->get('host')->getContainerIds(), false)) {
+                    $this->render403();
+                    return;
+                }
+
+                //Can user edit this object?
+                $allowEdit = $this->allowedByContainerId($service->get('host')->getContainerIds());
+                break;
+
+            case 'hosttemplate':
+                /** @var $HosttemplatesTable HosttemplatesTable */
+                $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+                $hosttemplate = $HosttemplatesTable->getHosttemplateByUuid($uuid);
+
+                //Can user see this object?
+                if (!$this->allowedByContainerId($hosttemplate['Hosttemplate']['container_id'], false)) {
+                    $this->render403();
+                    return;
+                }
+
+                //Can user edit this object?
+                $allowEdit = $this->allowedByContainerId($hosttemplate['Hosttemplate']['container_id']);
+                break;
+
+            case 'servicetemplate':
+                /** @var $ServicetemplatesTable ServicetemplatesTable */
+                $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+                $servicetemplate = $ServicetemplatesTable->getServicetemplateById($uuid);
+
+                //Can user see this object?
+                if (!$this->allowedByContainerId($servicetemplate['Servicetemplate']['container_id'], false)) {
+                    $this->render403();
+                    return;
+                }
+
+                //Can user edit this object?
+                $allowEdit = $this->allowedByContainerId($servicetemplate['Servicetemplate']['container_id']);
+                break;
+
+            default:
+                throw new InvalidArgumentException('Type not supported.');
+                break;
+        }
+
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $UserTime = $User->getUserTime();
+
+            $docuExists = $DocumentationsTable->existsByUuid($uuid);
+            $lastUpdate = $UserTime->format(time());
+            if ($docuExists) {
+                $documentation = $DocumentationsTable->getDocumentationByUuid($uuid);
+
+                /** @var FrozenTime $modified */
+                $modified = $documentation->get('modified');
+                $lastUpdate = $UserTime->format($modified->getTimestamp());
             }
-            $this->serializeErrorMessage();
-            return;
 
-        }
+            $this->set('lastUpdate', $lastUpdate);
+            $this->set('allowEdit', $allowEdit);
+            $this->set('docuExists', $docuExists);
+            $this->set('bbcode', $documentation->get('content'));
+            $this->set('_serialize', ['lastUpdate', 'allowEdit', 'docuExists', 'bbcode']);
 
-        if (!$this->isAngularJsRequest() && $uuid === null) {
-            //Host for .html requests
-            return;
-        }
-
-        $post = $this->Documentation->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Documentation.uuid' => $uuid
-            ]
-        ]);
-
-        if (!$this->isAngularJsRequest() && $uuid === null) {
-            //Host for .html requests
             return;
         }
 
-        $allowEdit = false;
-        $host = [];
-        if ($type == 'host') {
+        if ($this->request->is('post') || $this->request->is('put')) {
+            if ($allowEdit === false) {
+                $this->render403();
+                return;
+            }
+            $content = $this->request->data('content');
 
-            $host = $this->Host->find('first', [
-                'fields'     => [
-                    'Host.id',
-                    'Host.uuid',
-                    'Host.name',
-                    'Host.address',
-                    'Host.container_id',
-                    'Host.host_url',
-                    'Host.host_type',
-                ],
-                'conditions' => [
-                    'Host.uuid' => $uuid,
-                ],
-                'contain'    => [
-                    'Container',
-                ],
+            if ($DocumentationsTable->existsByUuid($uuid)) {
+                $entity = $DocumentationsTable->getDocumentationByUuid($uuid);
+            } else {
+                $entity = $DocumentationsTable->newEntity();
+            }
+
+            $entity = $DocumentationsTable->patchEntity($entity, [
+                'content' => $content
             ]);
 
-            if (empty($host)) {
-                throw new NotFoundException(__('invalid host'));
-            }
-
-            $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-            $containerIdsToCheck[] = $host['Host']['container_id'];
-
-            //Check if user is permitted to see this object
-            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-                $this->render403();
-
+            $DocumentationsTable->save($entity);
+            if ($entity->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $entity->getErrors());
+                $this->set('_serialize', ['error']);
                 return;
             }
 
-            //Check if user is permitted to edit this object
-            $allowEdit = false;
-            if ($this->allowedByContainerId($containerIdsToCheck)) {
-                $allowEdit = true;
-            }
+            $this->set('documentation', $entity);
+            $this->set('_serialize', ['documentation']);
+            return;
 
         }
-
-        $service = [];
-        if ($type == 'service') {
-
-            $service = $this->Service->find('first', [
-                'recursive'  => -1,
-                'contain'    => [
-                    'Host'            => [
-                        'Container',
-                    ],
-                    'Servicetemplate' => [
-                        'fields' => [
-                            'Servicetemplate.id',
-                            'Servicetemplate.name',
-                        ],
-                    ],
-                ],
-                'conditions' => [
-                    'Service.uuid' => $uuid,
-                ],
-
-            ]);
-
-            if (empty($service)) {
-                throw new NotFoundException(__('invalid service'));
-            }
-
-            $host = $this->Host->findById($service['Service']['host_id']);
-            $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-            $containerIdsToCheck[] = $host['Host']['container_id'];
-            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-                $this->render403();
-
-                return;
-            }
-
-            $allowEdit = false;
-            if ($this->allowedByContainerId($containerIdsToCheck)) {
-                $allowEdit = true;
-            }
-
-        }
-
-        if (!empty($post) && !empty($post['Documentation']['modified'])) {
-            $post['Documentation']['modified_formatted'] = CakeTime::format($post['Documentation']['modified'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'));
-        }
-
-        $docuExists = !empty($post);
-
-        $this->set('post', $post);
-        $this->set('docuExists', $docuExists);
-        $this->set('host', $host);
-        $this->set('service', $service);
-        $this->set('allowEdit', $allowEdit);
-        $this->set('_serialize', ['post', 'docuExists', 'allowEdit', 'host', 'service']);
     }
 
     /**

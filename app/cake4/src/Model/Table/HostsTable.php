@@ -453,7 +453,7 @@ class HostsTable extends Table {
     /**
      * @param string $uuid
      * @param bool $enableHydration
-     * @return array|\Cake\Datasource\EntityInterface
+     * @return array|Host
      */
     public function getHostByUuid($uuid, $enableHydration = true) {
         $query = $this->find()
