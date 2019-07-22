@@ -37,8 +37,7 @@ class ServicechecksController extends AppController {
         MONITORING_SERVICECHECK,
         MONITORING_SERVICESTATUS,
         'Host',
-        'Service',
-        'Documentation'
+        'Service'
     ];
 
 

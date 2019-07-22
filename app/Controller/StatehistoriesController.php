@@ -45,8 +45,7 @@ class StatehistoriesController extends AppController {
         MONITORING_SERVICESTATUS,
         MONITORING_HOSTSTATUS,
         'Host',
-        'Service',
-        'Documentation'
+        'Service'
     ];
 
     public $components = ['RequestHandler'];

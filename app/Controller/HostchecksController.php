@@ -36,8 +36,7 @@ class HostchecksController extends AppController {
     public $uses = [
         MONITORING_HOSTCHECK,
         MONITORING_HOSTSTATUS,
-        'Host',
-        'Documentation'
+        'Host'
     ];
 
     public $components = ['RequestHandler'];

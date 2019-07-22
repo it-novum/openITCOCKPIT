@@ -42,8 +42,7 @@ class NotificationsController extends AppController {
         'Host',
         MONITORING_HOSTSTATUS,
         'Service',
-        MONITORING_SERVICESTATUS,
-        'Documentation'
+        MONITORING_SERVICESTATUS
     ];
 
     //public $components = ['RequestHandler'];
