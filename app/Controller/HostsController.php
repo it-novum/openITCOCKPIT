@@ -32,6 +32,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostcommandargumentvaluesTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
@@ -1192,6 +1193,12 @@ class HostsController extends AppController {
         if (empty($usedBy['host']) && empty($usedBy['service'])) {
             //Not used by any module
             if ($this->Host->__delete($host, $this->Auth->user('id'))) {
+
+                /** @var $DocumentationsTable DocumentationsTable */
+                $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
+                $DocumentationsTable->deleteDocumentationByUuid($host['Host']['uuid']);
+
                 $this->set('success', true);
                 $this->set('message', __('Host successfully deleted'));
                 $this->set('_serialize', ['success']);
@@ -1929,6 +1936,10 @@ class HostsController extends AppController {
                 return;
             }
         }
+
+        /** @var $DocumentationsTable DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
         unset($idOrUuid);
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
@@ -2115,7 +2126,7 @@ class HostsController extends AppController {
         }
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
         $this->set('mergedHost', $mergedHost);
-        $this->set('docuExists', $this->Documentation->existsForUuid($rawHost['Host']['uuid']));
+        $this->set('docuExists', $DocumentationsTable->existsForUuid($rawHost['Host']['uuid']));
         $this->set('hoststatus', $hoststatus);
         $this->set('mainContainer', $mainContainer);
         $this->set('sharedContainers', $sharedContainers);
@@ -2620,7 +2631,10 @@ class HostsController extends AppController {
             return;
         }
 
-        $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
+        /** @var $DocumentationsTable DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
+        $docuExists = $DocumentationsTable->existsByUuid($host['Host']['uuid']);
 
         //Get meta data and push to front end
         $HoststatusFields = new HoststatusFields($this->DbBackend);
