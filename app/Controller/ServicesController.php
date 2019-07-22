@@ -2292,7 +2292,7 @@ class ServicesController extends AppController {
 
         /** @var $DocumentationsTable DocumentationsTable */
         $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-        $docuExists = $DocumentationsTable->existsForUuid($service['Service']['uuid']);
+        $docuExists = $DocumentationsTable->existsByUuid($service['Service']['uuid']);
 
         //Get meta data and push to front end
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);

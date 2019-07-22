@@ -38,30 +38,10 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
     <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter }} <?php echo __('seconds...'); ?>
 </div>
 
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="status_headline" ng-class="hostStatusTextClass">
-
-            <span class="flapping_airport stateClass" ng-show="hoststatus.isFlapping">
-                <i class="fa" ng-class="flappingState === 1 ? 'fa-circle' : 'fa-circle-o'"></i>
-                <i class="fa" ng-class="flappingState === 0 ? 'fa-circle' : 'fa-circle-o'"></i>
-            </span>
-
-            <i class="fa fa-desktop fa-fw"></i>
-            {{ mergedHost.Host.name }}
-            <span>
-                ({{ mergedHost.Host.address }})
-            </span>
-        </h1>
-    </div>
-    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
-        <h5>
-            <div class="pull-right">
-                <?php echo $this->element('host_browser_menu'); ?>
-            </div>
-        </h5>
-    </div>
-</div>
+<host-browser-menu
+        ng-if="hostBrowserMenuConfig"
+        config="hostBrowserMenuConfig"
+        last-load-date="lastLoadDate"></host-browser-menu>
 
 <article class="row">
     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -1487,7 +1467,6 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
         </div>
     </article>
 </article>
-
 
 
 <reschedule-host callback="showFlashMsg"></reschedule-host>

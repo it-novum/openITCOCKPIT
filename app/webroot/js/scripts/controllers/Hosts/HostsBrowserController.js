@@ -65,8 +65,6 @@ angular.module('openITCOCKPIT')
         $scope.selectedGrafanaTimerange = 'now-3h';
         $scope.selectedGrafanaAutorefresh = '60s';
 
-        var flappingInterval;
-
         var graphStart = 0;
         var graphEnd = 0;
 
@@ -81,6 +79,10 @@ angular.module('openITCOCKPIT')
                     $scope.showFlashSuccess = false;
                 }
             }, 1000);
+        };
+
+        $scope.hostBrowserMenuReschedulingCallback = function(){
+            $scope.rescheduleHost($scope.getObjectsForExternalCommand());
         };
 
         $scope.loadHost = function(){
@@ -127,13 +129,13 @@ angular.module('openITCOCKPIT')
                 $scope.load();
                 $scope.loadGrafanaIframeUrl();
 
-                $scope.hostBrowserMenu = {
+                $scope.hostBrowserMenuConfig = {
+                    autoload: true,
                     hostId: $scope.mergedHost.Host.id,
-                    hostUuid: $scope.mergedHost.Host.uuid,
-                    allowEdit: $scope.mergedHost.Host.allowEdit,
-                    hostUrl: $scope.mergedHost.Host.host_url_replaced,
-                    docuExists: result.data.docuExists,
-                    isHostBrowser: true
+                    includeHoststatus: true,
+                    showReschedulingButton: true,
+                    rescheduleCallback: $scope.hostBrowserMenuReschedulingCallback,
+                    showBackButton: false
                 };
 
                 $scope.init = false;
@@ -370,37 +372,6 @@ angular.module('openITCOCKPIT')
             return !$scope.hoststatus.isInMonitoring;
         };
 
-        $scope.startFlapping = function(){
-            $scope.stopFlapping();
-            flappingInterval = $interval(function(){
-                if($scope.flappingState === 0){
-                    $scope.flappingState = 1;
-                }else{
-                    $scope.flappingState = 0;
-                }
-            }, 750);
-        };
-
-        $scope.stopFlapping = function(){
-            if(flappingInterval){
-                $interval.cancel(flappingInterval);
-            }
-            flappingInterval = null;
-        };
-
-        $scope.ping = function(){
-            $scope.pingResult = [];
-            $scope.isPinging = true;
-            $http.get("/hosts/ping.json", {
-                params: {
-                    'angular': true,
-                    'id': $scope.id
-                }
-            }).then(function(result){
-                $scope.pingResult = result.data.output;
-                $scope.isPinging = false;
-            });
-        };
 
         var getHoststatusTextColor = function(){
             return StatusHelperService.getHoststatusTextColor($scope.hoststatus.currentState);
@@ -646,20 +617,5 @@ angular.module('openITCOCKPIT')
             $scope.currentPage = 1;
             $scope.load();
         }, true);
-
-        $scope.$watch('hoststatus.isFlapping', function(){
-            if($scope.hoststatus){
-                if($scope.hoststatus.hasOwnProperty('isFlapping')){
-                    if($scope.hoststatus.isFlapping === true){
-                        $scope.startFlapping();
-                    }
-
-                    if($scope.hoststatus.isFlapping === false){
-                        $scope.stopFlapping();
-                    }
-
-                }
-            }
-        });
 
     });

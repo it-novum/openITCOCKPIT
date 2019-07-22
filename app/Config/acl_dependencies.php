@@ -187,7 +187,6 @@ $config = [
                 'hostservicelist',
                 'loadParentHostsByString',
                 'hoststatus',
-                'hostBrowserMenu',
                 'byUuid'
             ],
             'Statistics'       => [
