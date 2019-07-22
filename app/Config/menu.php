@@ -110,6 +110,7 @@ $config = [
                 [
                     'url'   => ['controller' => 'systemfailures', 'action' => 'index'],
                     'title' => 'System Failures',
+                    'state' => 'SystemfailuresIndex',
                     'icon'  => 'exclamation-circle',
                 ],
                 [

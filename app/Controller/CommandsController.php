@@ -31,6 +31,7 @@ use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
@@ -209,7 +210,8 @@ class CommandsController extends AppController {
         }
 
         $command = $CommandsTable->getCommandById($id);
-        if ($CommandsTable->allowDelete($id)) {
+
+        if (!$CommandsTable->allowDelete($id)) {
             $usedBy = [
                 [
                     'baseUrl' => '#',

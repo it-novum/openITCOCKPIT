@@ -22,96 +22,169 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+/** @var \itnovum\openITCOCKPIT\Core\ValueObjects\User $User */
+
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-pencil-square-o fa-fw "></i>
-            <?php echo __('Administration'); ?>
+            <i class="fa fa-exclamation-circle fa-fw "></i>
+            <?php echo __('System Failure') ?>
             <span>>
-                <?php echo __('System failure'); ?>
+                <?php echo __('Add'); ?>
             </span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
 </div>
 
 
-<div class="jarviswidget" id="wid-id-0">
+<div class="jarviswidget">
     <header>
-        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Add System failure'); ?></h2>
+        <span class="widget-icon"> <i class="fa fa-exclamation-circle"></i> </span>
+        <h2><?php echo __('Create new system failure'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
+            <?php if ($this->Acl->hasPermission('index', 'systemfailures')): ?>
+                <a back-button fallback-state='SystemfailuresIndex' class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
+            <?php endif; ?>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Systemfailure', [
-                'class' => 'form-horizontal clear',
-            ]); ?>
-            <div class="row">
-                <div class="col-xs-12 col-md-12 col-lg-12">
-                    <?php
-                    echo $this->Form->input('comment', [
-                        'label'     => ['text' => __('Comment'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                        'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                    ]);
-                    ?>
-                    <!-- from -->
-                    <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('from_date'); ?>">
-                        <label class="col col-md-1 control-label" for="SystemdowntimeFromDate"><?php echo __('From'); ?>
-                            :</label>
-                        <div class="col col-xs-3 col-md-3" style="padding-right: 0px;">
-                            <input type="text" id="SystemdowntimeFromDate"
-                                   value="<?php echo $this->CustomValidationErrors->refill('from_date', date('d.m.Y')); ?>"
-                                   class="form-control" name="data[Systemfailure][from_date]">
-                            <div>
-                                <?php echo $this->CustomValidationErrors->errorHTML('from_date'); ?>
-                            </div>
-                        </div>
-                        <div class="col col-xs-4 col-md-2 <?php echo $this->CustomValidationErrors->errorClass('from_time'); ?>"
-                             style="padding-left: 0px;">
-                            <input type="text" id="SystemdowntimeFromTime" value="<?php echo date('H:m'); ?>"
-                                   class="form-control" name="data[Systemfailure][from_time]">
-                            <div>
-                                <?php echo $this->CustomValidationErrors->errorHTML('from_time'); ?>
-                            </div>
+            <form ng-submit="submit();" class="form-horizontal"
+                  ng-init="successMessage=
+            {objectName : '<?php echo __('System failure'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="alert alert-info alert-block">
+                            <a class="close" data-dismiss="alert" href="#">×</a>
+                            <h4 class="alert-heading"><?php echo __('What are "System Failures" for?'); ?></h4>
+                            <?php echo __('<i>System failures</i> are outages of the openITCOCKPIT server itself. They need to be created manually.'); ?>
+                            <br/>
+                            <?php echo __('Timeframes defined by System failures will be ignored while report generation.'); ?>
                         </div>
                     </div>
 
 
-                    <!-- to -->
-                    <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('to_date'); ?>">
-                        <label class="col col-md-1 control-label" for="SystemdowntimeToDate"><?php echo __('To'); ?>
-                            :</label>
-                        <div class="col col-xs-3 col-md-3" style="padding-right: 0px;">
-                            <input type="text" id="SystemdowntimeToDate"
-                                   value="<?php echo date('d.m.Y', strtotime('+3 days')); ?>" class="form-control"
-                                   name="data[Systemfailure][to_date]">
-                            <div>
-                                <?php echo $this->CustomValidationErrors->errorHTML('to_date'); ?>
-                            </div>
+                    <div class="form-group required" ng-class="{'has-error': errors.container_id}">
+                        <label class="col-xs-12 col-lg-2 control-label">
+                            <?php echo __('Author'); ?>
+                        </label>
+                        <div class="col-xs-12 col-lg-10">
+                            <select
+                                    id="AuthorFakeSelect"
+                                    class="form-control"
+                                    disabled="disabled"
+                                    chosen="containers">
+                                <option>
+                                    <?php echo h($User->getFullName()); ?>
+                                </option>
+                            </select>
                         </div>
-                        <div class="col col-xs-4 col-md-2 <?php echo $this->CustomValidationErrors->errorClass('to_time'); ?>"
-                             style="padding-left: 0px;">
-                            <input type="text" id="SystemdowntimeToTime" value="<?php echo date('H:m'); ?>"
-                                   class="form-control" name="data[Systemfailure][to_time]">
-                            <div>
-                                <?php echo $this->CustomValidationErrors->errorHTML('to_time'); ?>
+                    </div>
+
+
+                    <div class="form-group required" ng-class="{'has-error': errors.comment}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Comment'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Systemfailure.comment">
+                            <div ng-repeat="error in errors.comment">
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
-                    <?php //echo $this->Form->input('start_time', ['label' => __('From'), 'class' => 'chosen', 'style' => 'min-width: 65px;']); ?>
-                    <?php //echo $this->Form->input('end_time', ['label' => __('To'), 'class' => 'chosen', 'style' => 'min-width: 65px;']); ?>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.start_time}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('From'); ?>
+                        </label>
+                        <div class="col-md-10 no-padding">
+                            <div class="row">
+                                <div class="col-xs-6 col-md-3">
+                                    <input
+                                            id="SystemfailureFromDate"
+                                            class="form-control"
+                                            type="text"
+                                            placeholder="DD.MM.YYYY"
+                                            ng-model="post.Systemfailure.from_date">
+                                </div>
+                                <div class="col-xs-6 col-md-9">
+                                    <input
+                                            class="form-control"
+                                            type="text"
+                                            placeholder="hh:mm"
+                                            ng-model="post.Systemfailure.from_time">
+                                </div>
+                            </div>
+
+                            <div ng-repeat="error in errors.start_time" class="col-xs-12">
+                                <div class="help-block">
+                                    <span class="text-danger">{{ error }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.end_time}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('To'); ?>
+                        </label>
+                        <div class="col-md-10 no-padding">
+                            <div class="row">
+                                <div class="col-xs-6 col-md-3">
+                                    <input
+                                            id="SystemfailureToDate"
+                                            class="form-control"
+                                            type="text"
+                                            placeholder="DD.MM.YYYY"
+                                            ng-model="post.Systemfailure.to_date">
+                                </div>
+                                <div class="col-xs-6 col-md-9">
+                                    <input
+                                            class="form-control"
+                                            type="text"
+                                            placeholder="hh:mm"
+                                            ng-model="post.Systemfailure.to_time">
+                                </div>
+                            </div>
+
+                            <div ng-repeat="error in errors.end_time" class="col-xs-12">
+                                <div class="help-block">
+                                    <span class="text-danger">{{ error }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
 
                 </div>
 
-            </div> <!-- close col -->
-        </div> <!-- close row-->
-        <br/>
-        <?php echo $this->Form->formActions(); ?>
-    </div> <!-- close widget body -->
+                <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                    <div class="well formactions ">
+                        <div class="pull-right">
+                            <label>
+                                <input type="checkbox" ng-model="data.createAnother">
+                                <?php echo _('Create another'); ?>
+                            </label>
+
+                            <input class="btn btn-primary" type="submit"
+                                   value="<?php echo __('Create system failure'); ?>">
+
+                            <a back-button fallback-state='SystemfailuresIndex'
+                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
 </div>
-</div> <!-- end jarviswidget -->
