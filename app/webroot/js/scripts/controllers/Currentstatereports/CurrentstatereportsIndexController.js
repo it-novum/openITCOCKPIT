@@ -203,7 +203,7 @@ angular.module('openITCOCKPIT')
                             "disabled": false
                         },
                         "Servicestatus": {
-                            "currentState": 1,
+                            "currentState": 3,
                             "lastHardState": null,
                             "isFlapping": false,
                             "problemHasBeenAcknowledged": false,
@@ -226,7 +226,7 @@ angular.module('openITCOCKPIT')
                             "max_check_attempts": 3,
                             "isHardstate": true,
                             "isInMonitoring": true,
-                            "humanState": "warning",
+                            "humanState": "unknown",
                             "perfdataArray": {
                                 "users": {
                                     "current": "4",
