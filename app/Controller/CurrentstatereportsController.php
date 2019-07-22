@@ -119,6 +119,8 @@ class CurrentstatereportsController extends AppController {
             ->isHardstate()
             ->scheduledDowntimeDepth()
             ->problemHasBeenAcknowledged()
+            ->activeChecksEnabled()
+            ->acknowledgementType()
             ->lastHardStateChange()
             ->currentCheckAttempt()
             ->maxCheckAttempts()

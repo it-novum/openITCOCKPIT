@@ -210,7 +210,13 @@
                                 <span class="txt-color-white"
                                       style="font-size:20px;text-shadow: 2px 4px 3px rgba(0,0,0,0.3);">
                                     <i class="fa fa-lg fa-desktop"></i>
-                                    {{servicestatusObject.Host.hostname}} ({{servicestatusObject.Host.address}})
+                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                        <a ui-sref="HostsBrowser({id: servicestatusObject.Host.id})" class="txt-color-white">
+                                                {{servicestatusObject.Host.hostname}} ({{servicestatusObject.Host.address}})
+                                            </a>
+                                    <?php else: ?>
+                                        {{servicestatusObject.Host.hostname}} ({{servicestatusObject.Host.address}})
+                                    <?php endif; ?>
                                 </span>
                             </div>
                             <div class="col-lg-2 no-padding font-md txt-color-white text-right">
@@ -239,7 +245,10 @@
                                         {{servicestatusObject.Hoststatus.lastCheck}}
                                     </div>
                                     <div class="col-lg-1 no-padding">
-                                        {{servicestatusObject.Hoststatus.nextCheck}}
+                                        <span ng-if="servicestatusObject.Hoststatus.activeChecksEnabled && servicestatusObject.Host.is_satellite_host === false">{{ servicestatusObject.Hoststatus.nextCheck }}</span>
+                                        <span ng-if="servicestatusObject.Hoststatus.activeChecksEnabled === false || servicestatusObject.Host.is_satellite_host === true">
+                                                <?php echo __('n/a'); ?>
+                                            </span>
                                     </div>
                                     <div class="col-lg-1 no-padding">
                                         <div class="row" ng-show="servicestatusObject.Hoststatus.isHardstate">
@@ -251,7 +260,24 @@
                                             ({{servicestatusObject.Hoststatus.current_check_attempt}}/{{servicestatusObject.Hoststatus.max_check_attempts}})
                                         </div>
                                     </div>
-                                    <div class="col-lg-9 text-right">
+                                    <div class="col-lg-1 no-padding">
+                                        <div>
+                                            <i class="fa fa-user"
+                                               ng-show="servicestatusObject.Hoststatus.problemHasBeenAcknowledged"
+                                               ng-if="servicestatusObject.Hoststatus.acknowledgement_type == 1"></i>
+                                            <i class="fa fa-user-o"
+                                               ng-show="servicestatusObject.Hoststatus.problemHasBeenAcknowledged"
+                                               ng-if="servicestatusObject.Hoststatus.acknowledgement_type == 2"
+                                               title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                            <i class="fa fa-power-off"
+                                               ng-show="servicestatusObject.Hoststatus.scheduledDowntimeDepth > 0"></i>
+                                            <span title="<?php echo __('Passively transferred service'); ?>"
+                                                  ng-show="servicestatusObject.Host.active_checks_enabled === false || servicestatusObject.Host.is_satellite_host === true">
+                                                            P
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-8 text-right">
                                         {{servicestatusObject.Hoststatus.output}}
                                     </div>
                                 </div>
@@ -307,7 +333,7 @@
                                                     </span>
                                                 </div>
                                                 <div class="col-lg-3 no-padding text-left font-xs bold">
-                                                    <div>
+                                                    <div class="padding-top-2">
                                                         <i class="fa fa-user"
                                                            ng-show="serviceDetails.Servicestatus.problemHasBeenAcknowledged"
                                                            ng-if="serviceDetails.Servicestatus.acknowledgement_type == 1"></i>
@@ -319,7 +345,7 @@
                                                         <i class="fa fa-power-off"
                                                            ng-show="serviceDetails.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                                         <span title="<?php echo __('Passively transferred service'); ?>"
-                                                            ng-show="serviceDetails.Service.active_checks_enabled === false || servicestatusObject.Host.is_satellite_host === true">
+                                                              ng-show="serviceDetails.Service.active_checks_enabled === false || servicestatusObject.Host.is_satellite_host === true">
                                                             P
                                                         </span>
                                                     </div>
@@ -327,7 +353,14 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-2 no-padding">
-                                            {{serviceDetails.Service.servicename}}
+                                            <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                                <a ui-sref="ServicesBrowser({id:serviceDetails.Service.id})"
+                                                   class="txt-color-white">
+                                                    {{serviceDetails.Service.servicename}}
+                                                </a>
+                                            <?php else: ?>
+                                                {{serviceDetails.Service.servicename}}
+                                            <?php endif; ?>
                                         </div>
                                         <div class="col-lg-1 no-padding">
                                             {{serviceDetails.Servicestatus.lastHardStateChange}}
