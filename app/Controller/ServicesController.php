@@ -145,7 +145,6 @@ class ServicesController extends AppController {
         MONITORING_OBJECTS,
         'DeletedService',
         'Container',
-        'Documentation',
         'Systemsetting',
         MONITORING_DOWNTIME_HOST,
         MONITORING_DOWNTIME_SERVICE,

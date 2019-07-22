@@ -76,7 +76,6 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
  * @property Host $Host
- * @property Documentation $Documentation
  * @property Hosttemplatecommandargumentvalue $Hosttemplatecommandargumentvalue
  * @property Hostcommandargumentvalue $Hostcommandargumentvalue
  * @property Contact $Contact
@@ -119,7 +118,6 @@ class HostsController extends AppController {
         MONITORING_HOSTSTATUS, //MysqlModule.Hoststatus || CrateModule.Hoststatus
         MONITORING_SERVICESTATUS,
         MONITORING_OBJECTS,
-        'Documentation',
         'Hosttemplatecommandargumentvalue',
         'Hostcommandargumentvalue',
         'Contact',

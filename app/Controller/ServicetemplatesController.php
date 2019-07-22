@@ -47,7 +47,6 @@ use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
  * @property Changelog $Changelog
  * @property Servicetemplate $Servicetemplate
  * @property Service $Service
- * @property Documentation $Documentation
  *
  * @property AppPaginatorComponent $Paginator
  */
@@ -58,7 +57,6 @@ class ServicetemplatesController extends AppController {
     public $uses = [
         'Servicetemplate', //Remove me
         'Service', //Remove me
-        'Documentation', //Remove me
         'Changelog'
     ];
 
