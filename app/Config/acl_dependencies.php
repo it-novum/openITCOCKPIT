@@ -80,7 +80,8 @@ $config = [
                 'humanTime',
                 'template_diff',
                 'template_diff_button',
-                'queryhandler'
+                'queryhandler',
+                'hostBrowserMenu'
             ],
             'Automaps'         => [
                 'icon'

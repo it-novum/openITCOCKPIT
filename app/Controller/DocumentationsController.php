@@ -65,6 +65,8 @@ class DocumentationsController extends AppController {
                 /** @var $HostsTable HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
                 $host = $HostsTable->getHostByUuid($uuid);
+                $objectId = $host->get('id');
+                $uuid = $host->get('uuid');
 
                 //Can user see this object?
                 if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
@@ -81,6 +83,8 @@ class DocumentationsController extends AppController {
                 /** @var $ServicesTable ServicesTable */
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
                 $service = $ServicesTable->getServiceByUuid($uuid);
+                $objectId = $service->get('id');
+                $uuid = $service->get('uuid');
 
                 //Can user see this object?
                 if (!$this->allowedByContainerId($service->get('host')->getContainerIds(), false)) {
@@ -96,6 +100,8 @@ class DocumentationsController extends AppController {
                 /** @var $HosttemplatesTable HosttemplatesTable */
                 $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
                 $hosttemplate = $HosttemplatesTable->getHosttemplateByUuid($uuid);
+                $objectId = $hosttemplate['Hosttemplate']['id'];
+                $uuid = $hosttemplate['Hosttemplate']['uuid'];
 
                 //Can user see this object?
                 if (!$this->allowedByContainerId($hosttemplate['Hosttemplate']['container_id'], false)) {
@@ -111,6 +117,8 @@ class DocumentationsController extends AppController {
                 /** @var $ServicetemplatesTable ServicetemplatesTable */
                 $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
                 $servicetemplate = $ServicetemplatesTable->getServicetemplateById($uuid);
+                $objectId = $servicetemplate['Servicetemplate']['id'];
+                $uuid = $servicetemplate['Servicetemplate']['uuid'];
 
                 //Can user see this object?
                 if (!$this->allowedByContainerId($servicetemplate['Servicetemplate']['container_id'], false)) {
@@ -134,19 +142,22 @@ class DocumentationsController extends AppController {
 
             $docuExists = $DocumentationsTable->existsByUuid($uuid);
             $lastUpdate = $UserTime->format(time());
+            $content = '';
             if ($docuExists) {
                 $documentation = $DocumentationsTable->getDocumentationByUuid($uuid);
 
                 /** @var FrozenTime $modified */
                 $modified = $documentation->get('modified');
                 $lastUpdate = $UserTime->format($modified->getTimestamp());
+                $content = $documentation->get('content');
             }
 
             $this->set('lastUpdate', $lastUpdate);
             $this->set('allowEdit', $allowEdit);
             $this->set('docuExists', $docuExists);
-            $this->set('bbcode', $documentation->get('content'));
-            $this->set('_serialize', ['lastUpdate', 'allowEdit', 'docuExists', 'bbcode']);
+            $this->set('bbcode', $content);
+            $this->set('objectId', $objectId);
+            $this->set('_serialize', ['lastUpdate', 'allowEdit', 'docuExists', 'bbcode', 'objectId']);
 
             return;
         }
@@ -165,7 +176,8 @@ class DocumentationsController extends AppController {
             }
 
             $entity = $DocumentationsTable->patchEntity($entity, [
-                'content' => $content
+                'content' => $content,
+                'uuid'    => $uuid
             ]);
 
             $DocumentationsTable->save($entity);

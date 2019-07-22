@@ -1489,49 +1489,6 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 </article>
 
 
-<div id="pingmodal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
-                    <i class="fa fa-wifi"></i>
-                    <?php echo __('Ping remote host'); ?>
-                </h4>
-            </div>
-            <div class="modal-body">
-
-                <div class="row">
-                    <div class="col-xs-12">
-                        <button type="button" class="btn btn-primary btn-block" ng-click="ping()">
-                            <i class="fa fa-refresh fa-spin" ng-show="isPinging"></i>
-                            <?php echo __('Ping remote host'); ?>
-                            <b>{{mergedHost.Host.address}}</b>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="row padding-top-15" ng-show="pingResult.length">
-                    <div class="col-xs-12">
-                        <div class="well">
-                            <div><code>/bin/ping {{mergedHost.Host.address}} -c 4 -W 5</code></div>
-                            <div ng-repeat="line in pingResult"><code>{{line}}</code></div>
-                        </div>
-                    </div>
-                </div>
-
-
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Close'); ?>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 <reschedule-host callback="showFlashMsg"></reschedule-host>
 <disable-host-notifications callback="showFlashMsg"></disable-host-notifications>

@@ -31,33 +31,11 @@
             <?php echo __('Documentation'); ?>
         </h1>
     </div>
-    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
-        <h5>
-
-            <div ng-if="type == 'host'" class="pull-right">
-                <a ui-sref="HostsBrowser({id:hostBrowserMenu.hostId})" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
-                </a>
-                <?php echo $this->element('host_browser_menu'); ?>
-            </div>
-            <div ng-if="type == 'service'" class="pull-right">
-                <a ui-sref="ServicesBrowser({id:serviceBrowserMenu.serviceId})" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
-                </a>
-                <?php echo $this->element('service_browser_menu'); ?>
-            </div>
-            <div ng-if="type == 'servicetemplate'" class="pull-right">
-                <a href="/servicetemplates/index" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back')); ?>
-                </a>
-            </div>
-            <div ng-if="type == 'hosttemplate'" class="pull-right">
-                <a href="/hosttemplates/index" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back')); ?>
-                </a>
-            </div>
-
-        </h5>
+    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6 margin-top-10">
+        <host-browser-menu
+                ng-if="type === 'host' && hostBrowserMenuConfig"
+                config="hostBrowserMenuConfig"
+                class="pull-right"></host-browser-menu>
     </div>
 </div>
 

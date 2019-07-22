@@ -22,6 +22,13 @@ angular.module('openITCOCKPIT')
                 $scope.lastUpdate = result.data.lastUpdate;
                 $scope.allowEdit = result.data.allowEdit;
 
+                if($scope.type === 'host'){
+                    $scope.hostBrowserMenuConfig = {
+                        autoload: true,
+                        hostId: result.data.objectId
+                    };
+                }
+
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');

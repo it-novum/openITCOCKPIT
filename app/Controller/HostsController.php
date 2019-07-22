@@ -2247,36 +2247,6 @@ class HostsController extends AppController {
         ];
     }
 
-
-    /**
-     * @deprecated
-     */
-    public function ping() {
-        $output = [];
-        $id = $this->request->query('id');
-        if(!$this->Host->exists($id)){
-            throw new NotFoundException('Host not found');
-        }
-
-        $host = $this->Host->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Host.id' => $id,
-            ],
-            'fields' => [
-                'Host.id',
-                'Host.address'
-            ]
-        ]);
-
-        if(!empty($host)) {
-            exec('ping ' . escapeshellarg($host['Host']['address']) . ' -c 4 -W 5', $output);
-        }
-
-        $this->set('output', $output);
-        $this->set('_serialize', ['output']);
-    }
-
     //Only for ACLs
     public function checkcommand() {
         return null;

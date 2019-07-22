@@ -438,7 +438,7 @@ class HostsTable extends Table {
 
     /**
      * @param int $id
-     * @return array|\Cake\Datasource\EntityInterface|null
+     * @return array|Host|null
      */
     public function getHostById($id) {
         $query = $this->find()
@@ -463,6 +463,23 @@ class HostsTable extends Table {
             ->contain('HostsToContainersSharing')
             ->enableHydration($enableHydration)
             ->firstOrFail();
+        return $query;
+    }
+
+    /**
+     * @param int $id
+     * @return array|Host|null
+     */
+    public function getHostByIdWithHosttemplate($id) {
+        $query = $this->find()
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+                'Hosttemplates'
+            ])
+            ->first();
         return $query;
     }
 
