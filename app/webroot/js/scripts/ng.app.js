@@ -603,6 +603,18 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "DocumentationsViewController"
             })
 
+            .state('DocumentationsWiki', {
+                url: '/documentations/wiki/:documentation',
+                params: {
+                    documentation: {
+                        value: null,
+                        squash: true
+                    }
+                },
+                templateUrl: "/documentations/wiki.html",
+                controller: "DocumentationsWikiController"
+            })
+
             .state('MacrosIndex', {
                 url: '/macros/index',
                 templateUrl: "/macros/index.html",

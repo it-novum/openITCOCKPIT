@@ -965,7 +965,8 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                             <div class="widget-toolbar">
                                 <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
                             </div>
-                            <iframe-directive url="GrafanaIframeUrl" ng-if="GrafanaDashboardExists && selectedTab == 'tab5'"></iframe-directive>
+                            <iframe-directive url="GrafanaIframeUrl"
+                                              ng-if="GrafanaDashboardExists && selectedTab == 'tab5'"></iframe-directive>
                         </div>
                     </div>
 
@@ -1493,10 +1494,10 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"><h4>
-                        <i class="fa fa-wifi"></i>
-                        <?php echo __('Ping remote host'); ?>
-                    </h4>
+                <h4 class="modal-title">
+                    <i class="fa fa-wifi"></i>
+                    <?php echo __('Ping remote host'); ?>
+                </h4>
             </div>
             <div class="modal-body">
 
