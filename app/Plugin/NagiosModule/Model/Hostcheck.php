@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\HostcheckConditions;
 
+/**
+ * Class Hostcheck
+ * @deprecated
+ */
 class Hostcheck extends NagiosModuleAppModel {
     //public $useDbConfig = 'nagios';
     public $useTable = 'hostchecks';
@@ -42,6 +46,7 @@ class Hostcheck extends NagiosModuleAppModel {
      * @param HostcheckConditions $HostcheckConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(HostcheckConditions $HostcheckConditions, $paginatorConditions = []) {
         $query = [

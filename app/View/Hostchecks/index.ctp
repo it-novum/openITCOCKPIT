@@ -74,7 +74,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by output'); ?>"
-                                                   ng-model="filter.Hostcheck.output"
+                                                   ng-model="filter.Hostchecks.output"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -101,7 +101,7 @@
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Hostcheck.state.recovery"
+                                                       ng-model="filter.Hostchecks.state.recovery"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-success"></i>
                                                 <?php echo __('Up'); ?>
@@ -109,7 +109,7 @@
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Hostcheck.state.down"
+                                                       ng-model="filter.Hostchecks.state.down"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-danger"></i>
                                                 <?php echo __('Down'); ?>
@@ -117,7 +117,7 @@
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Hostcheck.state.unreachable"
+                                                       ng-model="filter.Hostchecks.state.unreachable"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-default"></i>
                                                 <?php echo __('Unreachable'); ?>
@@ -132,7 +132,7 @@
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Hostcheck.state_types.soft"
+                                                       ng-model="filter.Hostchecks.state_types.soft"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Soft'); ?>
@@ -140,7 +140,7 @@
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Hostcheck.state_types.hard"
+                                                       ng-model="filter.Hostchecks.state_types.hard"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Hard'); ?>
@@ -169,24 +169,24 @@
                                style="">
                             <thead>
                             <tr>
-                                <th class="no-sort" ng-click="orderBy('Hostcheck.state')">
-                                    <i class="fa" ng-class="getSortClass('Hostcheck.state')"></i>
+                                <th class="no-sort" ng-click="orderBy('Hostchecks.state')">
+                                    <i class="fa" ng-class="getSortClass('Hostchecks.state')"></i>
                                     <?php echo __('State'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Hostcheck.start_time')">
-                                    <i class="fa" ng-class="getSortClass('Hostcheck.start_time')"></i>
+                                <th class="no-sort" ng-click="orderBy('Hostchecks.start_time')">
+                                    <i class="fa" ng-class="getSortClass('Hostchecks.start_time')"></i>
                                     <?php echo __('Date'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Hostcheck.current_check_attempt')">
-                                    <i class="fa" ng-class="getSortClass('Hostcheck.current_check_attempt')"></i>
+                                <th class="no-sort" ng-click="orderBy('Hostchecks.current_check_attempt')">
+                                    <i class="fa" ng-class="getSortClass('Hostchecks.current_check_attempt')"></i>
                                     <?php echo __('Check attempt'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Hostcheck.state_type')">
-                                    <i class="fa" ng-class="getSortClass('Hostcheck.state_type')"></i>
+                                <th class="no-sort" ng-click="orderBy('Hostchecks.state_type')">
+                                    <i class="fa" ng-class="getSortClass('Hostchecks.state_type')"></i>
                                     <?php echo __('State type'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Hostcheck.output')">
-                                    <i class="fa" ng-class="getSortClass('Hostcheck.output')"></i>
+                                <th class="no-sort" ng-click="orderBy('Hostchecks.output')">
+                                    <i class="fa" ng-class="getSortClass('Hostchecks.output')"></i>
                                     <?php echo __('Host output'); ?>
                                 </th>
                             </tr>

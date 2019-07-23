@@ -64,6 +64,8 @@ abstract class ListSettingsConditions {
      */
     protected $to = 0;
 
+    protected $conditions = [];
+
     /**
      * @param int $limit
      */
@@ -85,6 +87,10 @@ abstract class ListSettingsConditions {
      * @return array
      */
     public function getStateTypes() {
+        if(!is_array($this->stateTypes)){
+            return [$this->stateTypes];
+        }
+
         return $this->stateTypes;
     }
 
@@ -103,6 +109,9 @@ abstract class ListSettingsConditions {
      * @return array
      */
     public function getStates() {
+        if (!is_array($this->states)) {
+            return [$this->states];
+        }
         return $this->states;
     }
 
@@ -169,6 +178,27 @@ abstract class ListSettingsConditions {
      */
     public function hasContainerIds() {
         return !empty($this->containerIds);
+    }
+
+    /**
+     * @return array
+     */
+    public function getConditions() {
+        return $this->conditions;
+    }
+
+    /**
+     * @param array $conditions
+     */
+    public function setConditions($conditions) {
+        $this->conditions = $conditions;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasConditions() {
+        return !empty($this->conditions);
     }
 
 }

@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('HostchecksIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, $stateParams){
 
-        SortService.setSort(QueryStringService.getValue('sort', 'Hostcheck.start_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'Hostchecks.start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Hostcheck: {
+                Hostchecks: {
                     state: {
                         recovery: false,
                         down: false,
@@ -45,9 +45,9 @@ angular.module('openITCOCKPIT')
         $scope.load = function(){
 
             var state_type = '';
-            if($scope.filter.Hostcheck.state_types.soft ^ $scope.filter.Hostcheck.state_types.hard){
+            if($scope.filter.Hostchecks.state_types.soft ^ $scope.filter.Hostchecks.state_types.hard){
                 state_type = 0;
-                if($scope.filter.Hostcheck.state_types.hard === true){
+                if($scope.filter.Hostchecks.state_types.hard === true){
                     state_type = 1;
                 }
             }
@@ -59,9 +59,9 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[Hostcheck.output]': $scope.filter.Hostcheck.output,
-                    'filter[Hostcheck.state][]': $rootScope.currentStateForApi($scope.filter.Hostcheck.state),
-                    'filter[Hostcheck.state_type]': state_type,
+                    'filter[Hostchecks.output]': $scope.filter.Hostchecks.output,
+                    'filter[Hostchecks.state][]': $rootScope.currentStateForApi($scope.filter.Hostchecks.state),
+                    'filter[Hostchecks.state_type]': state_type,
                     'filter[from]': $scope.filter.from,
                     'filter[to]': $scope.filter.to
                 }

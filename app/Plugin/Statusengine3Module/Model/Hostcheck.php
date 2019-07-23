@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\HostcheckConditions;
 
+/**
+ * Class Hostcheck
+ * @deprecated
+ */
 class Hostcheck extends Statusengine3ModuleAppModel {
     public $useTable = 'hostchecks';
     public $tablePrefix = 'statusengine_';
@@ -38,6 +42,7 @@ class Hostcheck extends Statusengine3ModuleAppModel {
      * @param HostcheckConditions $HostcheckConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(HostcheckConditions $HostcheckConditions, $paginatorConditions = []) {
         $query = [

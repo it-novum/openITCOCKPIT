@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\HostcheckConditions;
 
+/**
+ * Class Hostcheck
+ * @deprecated
+ */
 class Hostcheck extends CrateModuleAppModel {
     public $useDbConfig = 'Crate';
     public $useTable = 'hostchecks';
@@ -39,6 +43,7 @@ class Hostcheck extends CrateModuleAppModel {
      * @param HostcheckConditions $HostcheckConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(HostcheckConditions $HostcheckConditions, $paginatorConditions = []) {
         $query = [

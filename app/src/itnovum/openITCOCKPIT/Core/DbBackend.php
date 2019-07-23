@@ -26,6 +26,7 @@ namespace itnovum\openITCOCKPIT\Core;
 
 
 use App\Lib\Exceptions\MissingDbBackendException;
+use App\Lib\Interfaces\HostchecksTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use Cake\ORM\TableRegistry;
@@ -103,6 +104,26 @@ class DbBackend {
             /** @var $ServicestatusTable ServicestatusTableInterface */
             $ServicestatusTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Servicestatus');
             return $ServicestatusTable;
+        }
+
+        if ($this->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+    }
+
+    /**
+     * @return HostchecksTableInterface
+     * @throws MissingDbBackendException
+     */
+    public function getHostchecksTable() {
+        if ($this->isNdoUtils()) {
+            /** @var $HostchecksTable HostchecksTableInterface */
+            $HostchecksTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Hostchecks');
+            return $HostchecksTable;
         }
 
         if ($this->isCrateDb()) {
