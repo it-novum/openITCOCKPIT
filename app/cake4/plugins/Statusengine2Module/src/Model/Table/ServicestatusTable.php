@@ -14,6 +14,8 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 /**
  * Servicestatus Model
  *
+ * Bake command: bin/cake bake model -p Statusengine2Module Servicestatus
+ *
  * @property \Statusengine2Module\Model\Table\ObjectsTable|\Cake\ORM\Association\BelongsTo $Object
  *
  * @method \Statusengine2Module\Model\Entity\Servicestatus get($primaryKey, $options = [])

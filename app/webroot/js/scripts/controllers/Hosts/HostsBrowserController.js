@@ -129,14 +129,16 @@ angular.module('openITCOCKPIT')
                 $scope.load();
                 $scope.loadGrafanaIframeUrl();
 
-                $scope.hostBrowserMenuConfig = {
-                    autoload: true,
-                    hostId: $scope.mergedHost.Host.id,
-                    includeHoststatus: true,
-                    showReschedulingButton: true,
-                    rescheduleCallback: $scope.hostBrowserMenuReschedulingCallback,
-                    showBackButton: false
-                };
+                if(typeof $scope.hostBrowserMenuConfig === "undefined"){
+                    $scope.hostBrowserMenuConfig = {
+                        autoload: true,
+                        hostId: $scope.mergedHost.Host.id,
+                        includeHoststatus: true,
+                        showReschedulingButton: true,
+                        rescheduleCallback: $scope.hostBrowserMenuReschedulingCallback,
+                        showBackButton: false
+                    };
+                }
 
                 $scope.init = false;
             });

@@ -14,6 +14,8 @@ use itnovum\openITCOCKPIT\Core\HoststatusFields;
 /**
  * Hoststatus Model
  *
+ * Bake command: bin/cake bake model -p Statusengine2Module Hoststatus
+ *
  * @property \Statusengine2Module\Model\Table\ObjectsTable|\Cake\ORM\Association\BelongsTo $Object
  *
  * @method \Statusengine2Module\Model\Entity\Hoststatus get($primaryKey, $options = [])
