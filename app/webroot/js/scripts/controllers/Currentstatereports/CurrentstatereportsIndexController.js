@@ -5,9 +5,13 @@ angular.module('openITCOCKPIT')
         $scope.errors = null;
 
         $scope.post = {
-            Currentstatereport: {
-                Service: [],
-                report_format: '1'
+            services: [],
+            report_format: '1',
+            current_state: {
+                ok: true,
+                warning: true,
+                critical: true,
+                unknown: true
             }
         };
 
@@ -45,26 +49,17 @@ angular.module('openITCOCKPIT')
                 passive = !$scope.filter.Servicestatus.passive;
             }
 
-            var params = {
-                'angular': true,
-                'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
-                'filter[Services.id][]': $scope.post.Currentstatereport.Service,
-                'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
-                'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
-                'filter[Servicestatus.active_checks_enabled]': passive
-            };
-
-            $http.get("/currentstatereports/index.json", {
-                params: params
-            }).then(function(result){
+            $http.post("/currentstatereports/index.json",
+                $scope.post
+            ).then(function(result){
                 $scope.servicestatus = result.data.all_services;
                 NotyService.genericSuccess();
 
-                if($scope.post.Currentstatereport.report_format === 'pdf'){
+                if($scope.post.report_format === 'pdf'){
                     window.location = '/currentstatereports/createPdfReport.pdf';
                 }
 
-                if($scope.post.Currentstatereport.report_format === 'html'){
+                if($scope.post.report_format === 'html'){
                     window.location = '/currentstatereports/createHtmlReport';
                 }
 
@@ -84,7 +79,7 @@ angular.module('openITCOCKPIT')
                     'angular': true,
                     'filter[Host.name]': searchString,
                     'filter[Service.servicename]': searchString,
-                    'selected[]': $scope.post.Currentstatereport.Service
+                    'selected[]': $scope.post.services
                 }
             }).then(function(result){
                 $scope.services = result.data.services;

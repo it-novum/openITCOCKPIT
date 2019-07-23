@@ -22,10 +22,12 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Form\CurrentreportForm;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
@@ -59,6 +61,23 @@ class CurrentstatereportsController extends AppController {
             //Only ship HTML template
             return;
         }
+
+        $currentstatereportForm = new CurrentreportForm();
+
+        $validateResult = $currentstatereportForm->execute($this->request->data);
+
+        //FileDebugger::dump($this->request->data);
+        if (!empty($currentstatereportForm->getErrors())) {
+            $this->response->statusCode(400);
+            $this->set('error', $currentstatereportForm->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
+        } else {
+            //No errors
+
+
+        }
+
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicesTable ServicesTable */
@@ -144,13 +163,13 @@ class CurrentstatereportsController extends AppController {
             $currentHostId = $Host->getId();
             if (!isset($all_services[$currentHostId])) {
                 $all_services[$currentHostId] = [
-                    'Host'          => $Host->toArray(),
-                    'Hoststatus'    => $Hoststatus->toArrayForBrowser()
+                    'Host'       => $Host->toArray(),
+                    'Hoststatus' => $Hoststatus->toArrayForBrowser()
                 ];
             }
             $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
             $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
-            $currentServiceId   = $Service->getId();
+            $currentServiceId = $Service->getId();
             $tmpRecord = [
                 'Service'       => $Service->toArray(),
                 'Servicestatus' => $Servicestatus->toArrayForBrowser()
@@ -161,7 +180,7 @@ class CurrentstatereportsController extends AppController {
             $tmpRecord['Servicestatus']['perfdataArrayCounter'] = sizeof($parsedPerfdata);
             $all_services[$currentHostId]['Services'][$currentServiceId] = $tmpRecord;
         }
-       // $all_services = Hash::sort($all_services, '{n}.Host.hostname', 'asc');
+        // $all_services = Hash::sort($all_services, '{n}.Host.hostname', 'asc');
         $this->set('all_services', $all_services);
         $toJson = ['all_services', 'paging'];
         if ($this->isScrollRequest()) {
