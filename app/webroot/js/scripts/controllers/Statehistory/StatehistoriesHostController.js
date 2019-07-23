@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('StatehistoriesHostController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, $stateParams){
 
-        SortService.setSort(QueryStringService.getValue('sort', 'StatehistoryHost.state_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'StatehistoryHosts.state_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                StatehistoryHost: {
+                StatehistoryHosts: {
                     state: {
                         recovery: false,
                         dowm: false,
@@ -44,9 +44,9 @@ angular.module('openITCOCKPIT')
         $scope.load = function(){
 
             var state_type = '';
-            if($scope.filter.StatehistoryHost.state_types.soft ^ $scope.filter.StatehistoryHost.state_types.hard){
+            if($scope.filter.StatehistoryHosts.state_types.soft ^ $scope.filter.StatehistoryHosts.state_types.hard){
                 state_type = 0;
-                if($scope.filter.StatehistoryHost.state_types.hard === true){
+                if($scope.filter.StatehistoryHosts.state_types.hard === true){
                     state_type = 1;
                 }
             }
@@ -58,9 +58,9 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[StatehistoryHost.output]': $scope.filter.StatehistoryHost.output,
-                    'filter[StatehistoryHost.state][]': $rootScope.currentStateForApi($scope.filter.StatehistoryHost.state),
-                    'filter[StatehistoryHost.state_type]': state_type,
+                    'filter[StatehistoryHosts.output]': $scope.filter.StatehistoryHosts.output,
+                    'filter[StatehistoryHosts.state][]': $rootScope.currentStateForApi($scope.filter.StatehistoryHosts.state),
+                    'filter[StatehistoryHosts.state_type]': state_type,
                     'filter[from]': $scope.filter.from,
                     'filter[to]': $scope.filter.to
                 }

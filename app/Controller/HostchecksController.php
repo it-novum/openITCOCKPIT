@@ -55,7 +55,7 @@ class HostchecksController extends AppController {
 
         /** @var \App\Model\Entity\Host $host */
         $host = $HostsTable->getHostByIdForPermissionCheck($id);
-        if (!$this->allowedByContainerId($host->getContainerIds())) {
+        if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
             $this->render403();
             return;
         }

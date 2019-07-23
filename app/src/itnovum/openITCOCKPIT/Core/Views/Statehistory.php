@@ -24,6 +24,8 @@
 
 namespace itnovum\openITCOCKPIT\Core\Views;
 
+use Cake\I18n\FrozenTime;
+
 abstract class Statehistory {
 
 
@@ -181,9 +183,14 @@ abstract class Statehistory {
      * @return mixed
      */
     public function getStateTime() {
-        if (!is_numeric($this->state_time)) {
-            return strtotime($this->state_time);
+        if(!is_numeric($this->state_time)){
+            if($this->state_time instanceof FrozenTime){
+                $this->start_time = $this->state_time->timestamp;
+            }else{
+                $this->start_time = strtotime($this->state_time);
+            }
         }
+
         return $this->state_time;
     }
 

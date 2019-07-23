@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 
+/**
+ * Class StatehistoryHost
+ * @deprecated
+ */
 class StatehistoryHost extends Statusengine3ModuleAppModel {
     public $useTable = 'host_statehistory';
     public $tablePrefix = 'statusengine_';
@@ -39,6 +43,7 @@ class StatehistoryHost extends Statusengine3ModuleAppModel {
      * @param StatehistoryHostConditions $StatehistoryHostConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(StatehistoryHostConditions $StatehistoryHostConditions, $paginatorConditions = []) {
         $query = [
@@ -78,6 +83,7 @@ class StatehistoryHost extends Statusengine3ModuleAppModel {
     /**
      * @param StatehistoryHostConditions $StatehistoryHostConditions
      * @return array
+     * @deprecated
      */
     public function getLastRecord(StatehistoryHostConditions $StatehistoryHostConditions) {
         $query = [

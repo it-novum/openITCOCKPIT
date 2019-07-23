@@ -29,6 +29,7 @@ use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HostchecksTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
+use App\Lib\Interfaces\StatehistoryHostTableInterface;
 use Cake\ORM\TableRegistry;
 
 class DbBackend {
@@ -124,6 +125,26 @@ class DbBackend {
             /** @var $HostchecksTable HostchecksTableInterface */
             $HostchecksTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Hostchecks');
             return $HostchecksTable;
+        }
+
+        if ($this->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+    }
+
+    /**
+     * @return StatehistoryHostTableInterface
+     * @throws MissingDbBackendException
+     */
+    public function getStatehistoryHostsTable() {
+        if ($this->isNdoUtils()) {
+            /** @var $StatehistoryHostsTable StatehistoryHostTableInterface */
+            $StatehistoryHostsTable = TableRegistry::getTableLocator()->get('Statusengine2Module.StatehistoryHosts');
+            return $StatehistoryHostsTable;
         }
 
         if ($this->isCrateDb()) {
