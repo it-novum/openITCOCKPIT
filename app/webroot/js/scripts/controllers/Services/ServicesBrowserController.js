@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesBrowserController', function($scope, $http, QueryStringService, $interval, $stateParams){
+    .controller('ServicesBrowserController', function($scope, $http, QueryStringService, $interval, $stateParams, UuidService){
 
         $scope.id = $stateParams.id;
 
@@ -143,6 +143,14 @@ angular.module('openITCOCKPIT')
                 };
 
                 $scope.init = false;
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 
@@ -492,7 +500,7 @@ angular.module('openITCOCKPIT')
             options.xaxis.max = graphRenderEnd * 1000;
 
             options.yaxis = {
-                axisLabel : performance_data.datasource.unit
+                axisLabel: performance_data.datasource.unit
             };
 
             plot = $.plot('#graphCanvas', [graph_data], options);
@@ -707,6 +715,32 @@ angular.module('openITCOCKPIT')
             return (failuresDuration / totalTime * 100).toFixed(3);
         };
 
+        $scope.loadIdOrUuid = function(){
+            if(UuidService.isUuid($scope.id)){
+                // UUID was passed via URL
+                $http.get("/services/byUuid/" + $scope.id + ".json", {
+                    params: {
+                        'angular': true
+                    }
+                }).then(function(result){
+                    $scope.id = result.data.service.id;
+                    $scope.load();
+                }, function errorCallback(result){
+                    if(result.status === 403){
+                        $state.go('403');
+                    }
+
+                    if(result.status === 404){
+                        $state.go('404');
+                    }
+                });
+
+            }else{
+                // Integer id was passed via URL
+                $scope.load();
+            }
+        };
+
         var enableGraphAutorefresh = function(){
             $scope.graph.graphAutoRefresh = true;
 
@@ -741,7 +775,7 @@ angular.module('openITCOCKPIT')
             graphAutoRefreshIntervalId = null;
         };
 
-        $scope.load();
+        $scope.loadIdOrUuid();
         $scope.loadTimezone();
 
         $scope.$watch('servicestatus.isFlapping', function(){
