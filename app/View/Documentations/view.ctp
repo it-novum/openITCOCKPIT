@@ -22,12 +22,6 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
-
-echo $this->Form->create('Documentation', [
-    'class' => 'form-horizontal clear',
-    'url'   => $this->params->params['pass']
-]);
 ?>
 
 <div class="row">
@@ -37,75 +31,52 @@ echo $this->Form->create('Documentation', [
             <?php echo __('Documentation'); ?>
         </h1>
     </div>
-    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
-        <h5>
-
-            <div ng-if="type == 'host'" class="pull-right">
-                <a ui-sref="HostsBrowser({id:hostBrowserMenu.hostId})" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
-                </a>
-                <?php echo $this->element('host_browser_menu'); ?>
-            </div>
-            <div ng-if="type == 'service'" class="pull-right">
-                <a ui-sref="ServicesBrowser({id:serviceBrowserMenu.serviceId})" class="btn btn-primary btn-sm"><i
-                        class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
-                </a>
-                <?php echo $this->element('service_browser_menu'); ?>
-            </div>
-            <div ng-if="type == 'servicetemplate'" class="pull-right">
-                <a href="/servicetemplates/index" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back')); ?>
-                </a>
-            </div>
-            <div ng-if="type == 'hosttemplate'" class="pull-right">
-                <a href="/hosttemplates/index" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back')); ?>
-                </a>
-            </div>
-
-        </h5>
+    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6 margin-top-10">
+        <host-browser-menu
+                ng-if="type === 'host' && hostBrowserMenuConfig"
+                config="hostBrowserMenuConfig"
+                class="pull-right"></host-browser-menu>
     </div>
 </div>
 
-
-
-<ul id="myTab1" class="nav nav-tabs bordered">
-    <li class="active cursor-pointer">
-        <a ng-click="showView()" data-toggle="tab"><i class="fa fa-file-text-o fa-fw "></i> <?php echo __('View'); ?>
-        </a>
-    </li>
-    <li class="cursor-pointer">
-        <a ng-click="showEdit()" data-toggle="tab"><i class="fa fa-pencil-square-o"></i> <?php echo __('Edit'); ?></a>
-    </li>
-</ul>
-
-<div class="tab-content padding-10">
+<div class="tab-content">
     <div ng-show="docu.displayView" class="tab-pane active">
-        <div class="row">
-            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="row no-padding">
+            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding">
                 <div class="jarviswidget">
-                    <header ng-show="docuExists">
-                        <h2>
-                            <strong class="padding-right-10"><?php echo __('Modified:'); ?>
-                                {{ post.Documentation.modified_formatted }}
-                            </strong>
-                        </h2>
-                    </header>
-                    <div ng-show="docuExists">
-                        <div class="widget-body" ng-bind-html="docu.contentView"></div>
-                    </div>
+                    <header>
+                        <span class="widget-icon">
+                            <i class="fa fa-book"></i>
+                        </span>
+                        <h2><?php echo __('Object documentation'); ?></h2>
 
-                    <header ng-hide="docuExists">
-                        <h2><strong class="padding-right-10"><i
-                                        class="fa fa-exclamation-triangle fa-lg txt-color-red"></i> <?php echo __('Empty page'); ?>
-                            </strong></h2>
+                        <div class="widget-toolbar pull-right" role="menu" ng-show="allowEdit">
+                            <button type="button" class="btn btn-default" ng-click="showEdit()">
+                                <i class="fa fa-pencil"></i> <?php echo __('Edit'); ?>
+                            </button>
+                        </div>
+
+                        <div class="widget-toolbar text-muted cursor-default">
+                            <?php echo __('Last update'); ?>: {{ lastUpdate }}
+                        </div>
                     </header>
                     <div ng-hide="docuExists">
                         <div class="widget-body">
-                            <i class="fa fa-exclamation-triangle fa-lg txt-color-red"></i> <span
-                                    class="italic"><?php echo __('No documentation yet been written for this object. Click on "Edit" to start writing...'); ?></span>
+                            <i class="fa fa-exclamation-triangle fa-lg txt-color-red"></i>
+                            <span class="italic">
+                                <?php echo __('No documentation has been written yet for this object. Click on "Edit" to start writing.'); ?>
+                            </span>
                         </div>
                     </div>
+
+                    <div ng-show="docuExists">
+                        <div class="widget-body">
+                            <div
+                                    ng-bind-html="html | trustAsHtml"></div>
+                        </div>
+                    </div>
+
+
                 </div>
             </article>
         </div>
@@ -113,8 +84,8 @@ echo $this->Form->create('Documentation', [
 
     <!-- Tab nummer 2 -->
     <div ng-show="!docu.displayView" class="tab-pane active">
-        <div class="row">
-            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="row no-padding">
+            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding">
                 <div class="form-horizontal clear jarviswidget">
                     <header>
                         <div class="widget-toolbar pull-left" role="menu">
@@ -294,6 +265,9 @@ echo $this->Form->create('Documentation', [
                                         class="fa fa-link"></i></a>
                         </div>
                         <div class="widget-toolbar pull-right" role="menu">
+                            <button type="button" class="btn btn-default" ng-click="showView()">
+                                <i class="fa fa-times"></i> <?php echo __('Cancel'); ?>
+                            </button>
                             <button type="button" class="btn btn-success" ng-click="saveText()">
                                 <i class="fa fa-save"></i> <?php echo __('Save'); ?>
                             </button>
@@ -301,7 +275,7 @@ echo $this->Form->create('Documentation', [
                     </header>
                     <div>
                         <div class="widget-body" ng-class="{'has-error': errors.text}">
-                            <textarea class="form-control" ng-model="post.Documentation.content"
+                            <textarea class="form-control" ng-model="bbcode"
                                       style="width: 100%; height: 200px;" id="docuText"></textarea>
                         </div>
                         <div ng-repeat="error in errors.text">
@@ -313,8 +287,6 @@ echo $this->Form->create('Documentation', [
         </div>
     </div>
 </div>
-
-<?php echo $this->Form->end(); ?>
 
 <div class="modal fade" id="hyerlinkModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
      aria-hidden="true">

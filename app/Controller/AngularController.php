@@ -25,6 +25,7 @@
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
@@ -715,7 +716,7 @@ class AngularController extends AppController {
         return;
     }
 
-    public function intervalInputWithDiffer(){
+    public function intervalInputWithDiffer() {
         //Only ship HTML template
         return;
     }
@@ -747,9 +748,62 @@ class AngularController extends AppController {
 
         $this->set('QueryHandler', [
             'exists' => $QueryHandler->exists(),
-            'path' => $QueryHandler->getPath()
+            'path'   => $QueryHandler->getPath()
         ]);
         $this->set('_serialize', ['QueryHandler']);
+
+    }
+
+    public function hostBrowserMenu() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $hostId = $this->request->query('hostId');
+
+        /** @var $HostsTable App\Model\Table\HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException('Invalid host');
+        }
+        $host = $HostsTable->getHostByIdWithHosttemplate($hostId);
+
+        //Can user see this object?
+        if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
+            $this->render403();
+            return;
+        }
+
+        //Can user edit this object?
+        $allowEdit = $this->allowedByContainerId($host->getContainerIds());
+
+        /** @var $DocumentationsTable App\Model\Table\DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
+
+        $hostUrl = $host->get('host_url');
+        if ($hostUrl === null || $hostUrl === '') {
+            $hostUrl = $host->get('hosttemplate')->get('host_url');
+        }
+
+        if ($hostUrl) {
+            $HostMacroReplacer = new HostMacroReplacer($host);
+            $hostUrl = $HostMacroReplacer->replaceBasicMacros($hostUrl);
+        }
+
+        $config = [
+            'showReschedulingButton' => false,
+            'showBackButton'         => true,
+            'hostId'                 => $host->get('id'),
+            'hostUuid'               => $host->get('uuid'),
+            'docuExists'             => $DocumentationsTable->existsByUuid($host->get('uuid')),
+            'hostUrl'                => $hostUrl,
+            'allowEdit'              => $allowEdit
+        ];
+
+        $this->set('config', $config);
+        $this->set('_serialize', ['config']);
 
     }
 }

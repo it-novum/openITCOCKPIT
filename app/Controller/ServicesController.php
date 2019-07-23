@@ -33,6 +33,7 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
+use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicecommandargumentvaluesTable;
@@ -144,7 +145,6 @@ class ServicesController extends AppController {
         MONITORING_OBJECTS,
         'DeletedService',
         'Container',
-        'Documentation',
         'Systemsetting',
         MONITORING_DOWNTIME_HOST,
         MONITORING_DOWNTIME_SERVICE,
@@ -861,6 +861,12 @@ class ServicesController extends AppController {
         if (empty($usedBy)) {
             //Not used by any module
             if ($ServicesTable->__delete($service, $User)) {
+
+                /** @var $DocumentationsTable DocumentationsTable */
+                $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
+                $DocumentationsTable->deleteDocumentationByUuid($service->get('uuid'));
+
                 $this->set('success', true);
                 $this->set('message', __('Service successfully deleted'));
                 $this->set('_serialize', ['success']);
@@ -1275,6 +1281,9 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Service not found'));
         }
 
+        /** @var $DocumentationsTable DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
         $rawService = $this->Service->find('first', [
             'recursive'  => -1,
             'fields'     => [
@@ -1346,7 +1355,7 @@ class ServicesController extends AppController {
             $this->set('host', $rawHost);
             $this->set('service', $rawService);
             $this->set('allowEdit', $allowEdit);
-            $this->set('docuExists', $this->Documentation->existsForUuid($rawService['Service']['uuid']));
+            $this->set('docuExists', $DocumentationsTable->existsByUuid($rawService['Service']['uuid']));
             //Only ship template
             return;
         }
@@ -1592,7 +1601,7 @@ class ServicesController extends AppController {
             }
         }
 
-        $docuExists = $this->Documentation->existsForUuid($mergedService['Service']['uuid']);
+        $docuExists = $DocumentationsTable->existsByUuid($mergedService['Service']['uuid']);
 
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
 
@@ -2281,7 +2290,9 @@ class ServicesController extends AppController {
             return;
         }
 
-        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
+        /** @var $DocumentationsTable DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+        $docuExists = $DocumentationsTable->existsForUuid($service['Service']['uuid']);
 
         //Get meta data and push to front end
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);

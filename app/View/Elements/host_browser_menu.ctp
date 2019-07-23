@@ -23,7 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+
+
 ?>
+
+<!-- Deprecated -->
+
 <span ng-if="hostBrowserMenu.isHostBrowser" data-original-title="<?php echo __('Reset check time'); ?>"
       data-placement="bottom" rel="tooltip"
       class="btn btn-default btn-sm" ng-click="rescheduleHost(getObjectsForExternalCommand())">

@@ -42,8 +42,7 @@ class AcknowledgementsController extends AppController {
         MONITORING_SERVICESTATUS,
         'Host',
         'Service',
-        MONITORING_HOSTSTATUS,
-        'Documentation'
+        MONITORING_HOSTSTATUS
     ];
 
     public $components = ['RequestHandler', 'Bbcode'];

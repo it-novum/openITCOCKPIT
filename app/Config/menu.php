@@ -340,6 +340,7 @@ $config = [
         'documentation' => [
             'url'   => ['controller' => 'documentations', 'action' => 'wiki', 'plugin' => ''],
             'title' => 'Documentation',
+            'state' => 'DocumentationsWiki',
             'icon'  => 'book',
             'order' => 6,
         ],

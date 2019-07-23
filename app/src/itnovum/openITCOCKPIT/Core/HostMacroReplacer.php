@@ -62,6 +62,12 @@ class HostMacroReplacer {
      */
 
     public function __construct($host, $hoststatus = []) {
+        if (isset($host['id']) && isset($host['uuid'])) {
+            //Cake4 result...
+            $host = [
+                'Host' => $host
+            ];
+        }
         $this->host = $host;
         $this->hoststatus = $hoststatus;
     }

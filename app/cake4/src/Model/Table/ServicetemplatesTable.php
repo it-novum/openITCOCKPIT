@@ -551,6 +551,23 @@ class ServicetemplatesTable extends Table {
 
     /**
      * @param int $id
+     * @param array $contain
+     * @return array
+     */
+    public function getServicetemplateByUuid($uuid, $contain = ['Containers']) {
+        $query = $this->find()
+            ->where([
+                'Servicetemplates.uuid' => $uuid
+            ])
+            ->contain($contain)
+            ->disableHydration()
+            ->first();
+
+        return $this->formatFirstResultAsCake2($query, true);
+    }
+
+    /**
+     * @param int $id
      * @return array
      */
     public function getServicetemplateForEdit($id) {

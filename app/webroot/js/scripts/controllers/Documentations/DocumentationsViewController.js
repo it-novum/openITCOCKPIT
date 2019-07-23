@@ -1,84 +1,35 @@
 angular.module('openITCOCKPIT')
-    .controller('DocumentationsViewController', function($scope, $sce, $http, QueryStringService, MassChangeService, NotyService, BBParserService, $stateParams, $state) {
+    .controller('DocumentationsViewController', function($scope, $sce, $http, QueryStringService, MassChangeService, NotyService, $stateParams, $state, BBParserService){
 
         $scope.uuid = $stateParams.uuid;
         $scope.type = $stateParams.type;
 
         $scope.docu = {
-            contentView: "",
             hyperlink: "",
             hyperlinkDescription: "",
             displayView: true
         };
 
-        $scope.load = function() {
+        $scope.load = function(){
             $http.get("/documentations/view/" + $scope.uuid + "/" + $scope.type + ".json", {
                 params: {
                     'angular': true
                 }
-            }).then(function(result) {
-                $scope.host = result.data.host;
-                $scope.service = result.data.service;
-                $scope.post = result.data.post;
+            }).then(function(result){
                 $scope.docuExists = result.data.docuExists;
+                $scope.html = BBParserService.parse(result.data.bbcode);
+                $scope.bbcode = result.data.bbcode;
+                $scope.lastUpdate = result.data.lastUpdate;
+                $scope.allowEdit = result.data.allowEdit;
 
-                if ($scope.docuExists && $scope.post.Documentation.content !== null) {
-                    $scope.docu.contentView = $sce.trustAsHtml(BBParserService.parse($scope.post.Documentation.content));
-                }
-
-                if ($scope.post.length <= 0) {
-                    $scope.post = {
-                        Documentation: {
-                            uuid: $scope.uuid,
-                            content: null,
-                        }
+                if($scope.type === 'host'){
+                    $scope.hostBrowserMenuConfig = {
+                        autoload: true,
+                        hostId: result.data.objectId
                     };
                 }
 
-                if ($scope.type === "host" && $scope.host.Host.id) {
-                    $scope.id = $scope.host.Host.id;
-                    $http.get("/hosts/hostBrowserMenu/" + $scope.host.Host.id + ".json", {
-                        params: {
-                            'angular': true
-                        }
-                    }).then(function(result) {
-                        $scope.host = result.data.host;
-
-                        $scope.hostBrowserMenu = {
-                            hostId: $scope.host.Host.id,
-                            hostUuid: $scope.host.Host.uuid,
-                            allowEdit: $scope.host.Host.allowEdit,
-                            hostUrl: $scope.host.Host.host_url_replaced,
-                            docuExists: result.data.docuExists,
-                            isHostBrowser: false
-                        };
-                    });
-                }
-
-                if ($scope.type === "service" && $scope.service.Service.id) {
-                    $scope.id = $scope.service.Service.id;
-                    $http.get("/services/serviceBrowserMenu/" + $scope.service.Service.id + ".json", {
-                        params: {
-                            'angular': true
-                        }
-                    }).then(function(result) {
-                        $scope.service = result.data.service;
-
-                        $scope.serviceBrowserMenu = {
-                            hostId: $scope.service.Host.id,
-                            hostUuid: $scope.service.Host.uuid,
-                            serviceId: $scope.service.Service.id,
-                            serviceUuid: $scope.service.Service.uuid,
-                            serviceType: $scope.service.Service.service_type,
-                            allowEdit: $scope.service.Service.allowEdit,
-                            serviceUrl: $scope.service.Service.service_url_replaced,
-                            docuExists: result.data.docuExists,
-                            isServiceBrowser: false
-                        };
-                    });
-                }
-
-            }, function errorCallback (result) {
+            }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
                 }
@@ -87,81 +38,48 @@ angular.module('openITCOCKPIT')
                     $state.go('404');
                 }
             });
-
-
         };
 
-        $scope.saveText = function(action) {
-            if (typeof action === 'undefined') {
-                action = 'add_or_edit';
-            }
-            $scope.post.Documentation.content = $('#docuText').val();
 
-            if ($scope.post.Documentation.content !== null && typeof $scope.post.Documentation.content !== 'undefined') {
+        $scope.saveText = function(action){
+            //Get current value from jQuery because AngularJS get us old values...
+            $scope.bbcode = $('#docuText').val();
 
-                $http.post("/documentations/view/" + $scope.uuid + "/" + $scope.type + ".json?angular=true",
-                    $scope.post
-                ).then(function(result) {
-                    $scope.errors = {};
-                    if(result.data.id){
-                        $scope.post.Documentation.id = result.data.id;
-                    }
+            $http.post("/documentations/view/" + $scope.uuid + "/" + $scope.type + ".json?angular=true",
+                {
+                    content: $scope.bbcode
+                }
+            ).then(function(result){
+                $scope.errors = {};
 
-                    genericSuccess();
-                }, function errorCallback (result) {
-                    if (result.data.hasOwnProperty('error')) {
-                        $scope.errors = result.data.error;
-                    }
-                    genericError();
-                });
-
-                $scope.docuExists = true;
-            }
+                $scope.showView();
+                NotyService.genericSuccess();
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+                NotyService.genericError();
+            });
         };
 
-        $scope.rebuildContentView = function() {
-            var content = $('#docuText').val();
-            if (content !== null && typeof content !== 'undefined') {
-                $scope.docu.contentView = $sce.trustAsHtml(BBParserService.parse(content));
-            }
-        };
-
-        $scope.showView = function() {
+        $scope.showView = function(){
+            $scope.load();
             $scope.docu.displayView = true;
-            $scope.rebuildContentView();
         };
 
-        $scope.showEdit = function() {
+        $scope.showEdit = function(){
             $scope.docu.displayView = false;
         };
 
-        var genericSuccess = function() {
-            new Noty({
-                theme: 'metroui',
-                type: 'success',
-                text: 'Data saved successfully',
-                timeout: 3500
-            }).show();
-        };
-
-        var genericError = function() {
-            new Noty({
-                theme: 'metroui',
-                type: 'error',
-                text: 'Error while saving data',
-                timeout: 3500
-            }).show();
-        };
-
-
+        //Load data on page load
         $scope.load();
 
 
         //jQuery Bases WYSIWYG Editor
-        $("[wysiwyg='true']").click(function() {
+        $("[wysiwyg='true']").click(function(){
             var $textarea = $('#docuText');
             var task = $(this).attr('task');
-            switch (task) {
+            switch(task){
                 case 'bold':
                     $textarea.surroundSelectedText('[b]', '[/b]');
                     break;
@@ -193,34 +111,34 @@ angular.module('openITCOCKPIT')
         });
 
         // Bind click event for color selector
-        $("[select-color='true']").click(function() {
+        $("[select-color='true']").click(function(){
             var color = $(this).attr('color');
             var $textarea = $('#docuText');
             $textarea.surroundSelectedText("[color='" + color + "']", '[/color]');
         });
 
         // Bind click event for font size selector
-        $("[select-fsize='true']").click(function() {
+        $("[select-fsize='true']").click(function(){
             var fontSize = $(this).attr('fsize');
             var $textarea = $('#docuText');
             $textarea.surroundSelectedText("[text='" + fontSize + "']", "[/text]");
         });
 
-        $scope.prepareHyperlinkSelection = function() {
+        $scope.prepareHyperlinkSelection = function(){
             var $textarea = $('#docuText');
             var selection = $textarea.getSelection();
-            if (selection.length > 0) {
+            if(selection.length > 0){
                 $scope.docu.hyperlinkDescription = selection.text;
             }
         };
 
-        $scope.insertWysiwygHyperlink = function() {
+        $scope.insertWysiwygHyperlink = function(){
             var $textarea = $('#docuText');
             var selection = $textarea.getSelection();
             var newTab = $('#modalLinkNewTab').is(':checked') ? " tab" : "";
-            if (selection.length > 0) {
+            if(selection.length > 0){
                 $textarea.surroundSelectedText("[url='" + $scope.docu.hyperlink + "'" + newTab + "]", "[/url]");
-            } else {
+            }else{
                 $textarea.insertText("[url='" + $scope.docu.hyperlink + "'" + newTab + "]" + $scope.docu.hyperlinkDescription + '[/url]', selection.start, "collapseToEnd");
             }
             $scope.docu.hyperlink = "";

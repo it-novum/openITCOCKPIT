@@ -434,6 +434,23 @@ class HosttemplatesTable extends Table {
 
     /**
      * @param int $id
+     * @param array $contain
+     * @return array
+     */
+    public function getHosttemplateByUuid($uuid, $contain = ['Containers']) {
+        $query = $this->find()
+            ->where([
+                'Hosttemplates.uuid' => $uuid
+            ])
+            ->contain($contain)
+            ->disableHydration()
+            ->first();
+
+        return $this->formatFirstResultAsCake2($query, true);
+    }
+
+    /**
+     * @param int $id
      * @return array
      */
     public function getHosttemplateForEdit($id) {
