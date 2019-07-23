@@ -5,7 +5,7 @@ namespace Statusengine2Module\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * StatehistoryHost Entity
+ * StatehistoryService Entity
  *
  * @property int $statehistory_id
  * @property int $instance_id
@@ -22,10 +22,10 @@ use Cake\ORM\Entity;
  * @property string|null $output
  * @property string|null $long_output
  *
- * @property \Statusengine2Module\Model\Entity\StatehistoryHost $statehistory
+ * @property \Statusengine2Module\Model\Entity\StatehistoryService $statehistory
  * @property \Statusengine2Module\Model\Entity\ObjectEntity $object
  */
-class StatehistoryHost extends Entity {
+class StatehistoryService extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *

@@ -107,7 +107,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by output'); ?>"
-                                                   ng-model="filter.StatehistoryService.output"
+                                                   ng-model="filter.StatehistoryServices.output"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -134,7 +134,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.StatehistoryService.state.ok"
+                                                       ng-model="filter.StatehistoryServices.state.ok"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-success"></i>
                                                 <?php echo __('Ok'); ?>
@@ -142,7 +142,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.StatehistoryService.state.warning"
+                                                       ng-model="filter.StatehistoryServices.state.warning"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-warning"></i>
                                                 <?php echo __('Warning'); ?>
@@ -150,7 +150,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.StatehistoryService.state.critical"
+                                                       ng-model="filter.StatehistoryServices.state.critical"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-danger"></i>
                                                 <?php echo __('Critical'); ?>
@@ -158,7 +158,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.StatehistoryService.state.unknown"
+                                                       ng-model="filter.StatehistoryServices.state.unknown"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-default"></i>
                                                 <?php echo __('Unknown'); ?>
@@ -173,7 +173,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.StatehistoryService.state_types.soft"
+                                                       ng-model="filter.StatehistoryServices.state_types.soft"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Soft'); ?>
@@ -181,7 +181,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.StatehistoryService.state_types.hard"
+                                                       ng-model="filter.StatehistoryServices.state_types.hard"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Hard'); ?>
@@ -210,25 +210,25 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                style="">
                             <thead>
                             <tr>
-                                <th class="no-sort" ng-click="orderBy('StatehistoryService.state')">
-                                    <i class="fa" ng-class="getSortClass('StatehistoryService.state')"></i>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryServices.state')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryServices.state')"></i>
                                     <?php echo __('State'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('StatehistoryService.state_time')">
-                                    <i class="fa" ng-class="getSortClass('StatehistoryService.state_time')"></i>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryServices.state_time')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryServices.state_time')"></i>
                                     <?php echo __('Date'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('StatehistoryService.current_check_attempt')">
+                                <th class="no-sort" ng-click="orderBy('StatehistoryServices.current_check_attempt')">
                                     <i class="fa"
-                                       ng-class="getSortClass('StatehistoryService.current_check_attempt')"></i>
+                                       ng-class="getSortClass('StatehistoryServices.current_check_attempt')"></i>
                                     <?php echo __('Check attempt'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('StatehistoryService.state_type')">
-                                    <i class="fa" ng-class="getSortClass('StatehistoryService.state_type')"></i>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryServices.state_type')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryServices.state_type')"></i>
                                     <?php echo __('State type'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('StatehistoryService.output')">
-                                    <i class="fa" ng-class="getSortClass('StatehistoryService.output')"></i>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryServices.output')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryServices.output')"></i>
                                     <?php echo __('Service output'); ?>
                                 </th>
                             </tr>

@@ -9,6 +9,7 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use Statusengine2Module\Model\Entity\StatehistoryHost;
 
 /**
  * StatehistoryHost Model
@@ -137,7 +138,7 @@ class StatehistoryHostsTable extends Table implements StatehistoryHostTableInter
     /**
      * @param StatehistoryHostConditions $StatehistoryHostConditions
      * @param bool $enableHydration
-     * @return array
+     * @return array|StatehistoryHost|null
      */
     public function getLastRecord(StatehistoryHostConditions $StatehistoryHostConditions, $enableHydration = true) {
         $query = $this->find()
@@ -152,8 +153,8 @@ class StatehistoryHostsTable extends Table implements StatehistoryHostTableInter
                 'StatehistoryHosts.state_time' => 'DESC'
             ])
             ->enableHydration($enableHydration)
-            ->all();
+            ->first();
 
-        return $this->emptyArrayIfNull($query->toArray());
+        return $query;
     }
 }

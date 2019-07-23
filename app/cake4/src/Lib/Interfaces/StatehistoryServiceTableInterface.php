@@ -26,22 +26,22 @@ namespace App\Lib\Interfaces;
 
 
 use Cake\ORM\Entity;
-use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
+use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
-interface StatehistoryHostTableInterface {
+interface StatehistoryServiceTableInterface {
 
     /**
-     * @param StatehistoryHostConditions $StatehistoryHostConditions
+     * @param StatehistoryServiceConditions $StatehistoryServiceConditions
      * @param PaginateOMat|null $PaginateOMat
      * @return array
      */
-    public function getStatehistoryIndex(StatehistoryHostConditions $StatehistoryHostConditions, $PaginateOMat = null);
+    public function getStatehistoryIndex(StatehistoryServiceConditions $StatehistoryServiceConditions, $PaginateOMat = null);
 
     /**
-     * @param StatehistoryHostConditions $StatehistoryHostConditions
+     * @param StatehistoryServiceConditions $StatehistoryServiceConditions
      * @param bool $enableHydration
      * @return Entity
      */
-    public function getLastRecord(StatehistoryHostConditions $StatehistoryHostConditions, $enableHydration = true);
+    public function getLastRecord(StatehistoryServiceConditions $StatehistoryServiceConditions, $enableHydration = true);
 }

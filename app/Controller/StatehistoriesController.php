@@ -24,15 +24,14 @@
 //	confirmation.
 
 use App\Model\Table\HostsTable;
+use App\Model\Table\ServicesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\StatehistoryControllerRequest;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Database\ScrollIndex;
 
 /**
  * Class StatehistoriesController
@@ -41,13 +40,12 @@ use itnovum\openITCOCKPIT\Database\ScrollIndex;
  */
 class StatehistoriesController extends AppController {
 
-    public $uses = [
-        MONITORING_STATEHISTORY_SERVICE,
-        'Service'
-    ];
-
     public $layout = 'blank';
 
+    /**
+     * @param int|null $id
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     */
     public function host($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -108,103 +106,62 @@ class StatehistoriesController extends AppController {
     }
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param int|null $id
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     public function service($id = null) {
-        if (!$this->Service->exists($id) && $id !== null) {
-            throw new NotFoundException(__('Invalid service'));
-        }
-
-        if (!$this->isAngularJsRequest() && $id === null) {
-            //Service for .html requests
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        //Service for .json requests
-        $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.service_type',
-                'Service.service_url'
-            ],
-            'contain'    => [
-                'Host'            => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name',
-                        'Host.uuid',
-                        'Host.address'
-                    ],
-                    'Container',
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name',
-                    ],
-                ],
-            ],
-            'conditions' => [
-                'Service.id' => $id,
-            ],
-        ]);
+        session_write_close();
 
-        $containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $service['Host']['container_id'];
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-        //Check if user is permitted to see this object
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+        if (!$ServicesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid service'));
+        }
+
+
+        $service = $ServicesTable->getServiceByIdForPermissionsCheck($id);
+        if (!$this->allowedByContainerId($service->getContainerIds(), false)) {
             $this->render403();
             return;
         }
 
-        $AngularStatehistoryControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\StatehistoryControllerRequest($this->request);
+        $AngularStatehistoryControllerRequest = new StatehistoryControllerRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularStatehistoryControllerRequest->getPage());
 
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = $User->getUserTime();
 
         //Process conditions
         $Conditions = new StatehistoryServiceConditions();
-        $Conditions->setLimit($this->Paginator->settings['limit']);
-        $Conditions->setOrder($AngularStatehistoryControllerRequest->getOrderForPaginator('StatehistoryService.state_time', 'desc'));
+        $Conditions->setOrder($AngularStatehistoryControllerRequest->getOrderForPaginator('StatehistoryServices.state_time', 'desc'));
         $Conditions->setStates($AngularStatehistoryControllerRequest->getServiceStates());
         $Conditions->setStateTypes($AngularStatehistoryControllerRequest->getServiceStateTypes());
         $Conditions->setFrom($AngularStatehistoryControllerRequest->getFrom());
         $Conditions->setTo($AngularStatehistoryControllerRequest->getTo());
-        $Conditions->setServiceUuid($service['Service']['uuid']);
+        $Conditions->setConditions($AngularStatehistoryControllerRequest->getServiceFilters());
+        $Conditions->setServiceUuid($service->get('uuid'));
 
         //Query state history records
-        $query = $this->StatehistoryService->getQuery($Conditions, $AngularStatehistoryControllerRequest->getServiceFilters());
-
-        $this->Paginator->settings = $query;
-        $this->Paginator->settings['page'] = $AngularStatehistoryControllerRequest->getPage();
-
-        if ($this->isScrollRequest()) {
-            $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-            $statehistories = $this->StatehistoryService->find('all', $this->Paginator->settings);
-            $ScrollIndex->determineHasNextPage($statehistories);
-            $ScrollIndex->scroll();
-        } else {
-            $statehistories = $this->Paginator->paginate(
-                $this->StatehistoryService->alias,
-                [],
-                [key($this->Paginator->settings['order'])]
-            );
-        }
+        $StatehistoryServicesTable = $this->DbBackend->getStatehistoryServicesTable();
 
         $all_statehistories = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        foreach ($statehistories as $statehistory) {
-            $Statehistory = new StatehistoryService($statehistory['StatehistoryService'], $UserTime);
+        foreach ($StatehistoryServicesTable->getStatehistoryIndex($Conditions, $PaginateOMat) as $statehistory) {
+            $StatehistoryService = new StatehistoryService($statehistory, $UserTime);
             $all_statehistories[] = [
-                'StatehistoryService' => $Statehistory->toArray()
+                'StatehistoryService' => $StatehistoryService->toArray()
             ];
         }
 
+        $this->set('all_statehistories', $all_statehistories);
 
-        $this->set(compact(['all_statehistories']));
         $toJson = ['all_statehistories', 'paging'];
         if ($this->isScrollRequest()) {
             $toJson = ['all_statehistories', 'scroll'];

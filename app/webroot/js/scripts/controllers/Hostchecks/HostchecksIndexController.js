@@ -71,6 +71,14 @@ angular.module('openITCOCKPIT')
                 $scope.scroll = result.data.scroll;
 
                 $scope.init = false;
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 

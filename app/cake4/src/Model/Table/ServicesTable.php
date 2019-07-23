@@ -905,6 +905,38 @@ class ServicesTable extends Table {
     }
 
     /**
+     * @param $id
+     * @return array|Service|null
+     */
+    public function getServiceByIdForPermissionsCheck($id) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.name',
+                'Services.uuid',
+                'Services.servicetemplate_id',
+            ])
+            ->where([
+                'Services.id' => $id
+            ])
+            ->contain([
+                'Hosts' => function (Query $query) {
+                    $query->select([
+                        'Hosts.id',
+                        'Hosts.container_id'
+                    ])
+                        ->contain([
+                            'HostsToContainersSharing'
+                        ]);
+                    return $query;
+                }
+            ])
+            ->first();
+
+        return $query;
+    }
+
+    /**
      * @param $hostId
      * @return array
      */
