@@ -644,7 +644,6 @@ class ServicesTable extends Table {
         }
         $selected = array_filter($selected);
 
-
         $where = $ServiceConditions->getConditions();
 
         if (!empty($selected)) {
@@ -689,9 +688,12 @@ class ServicesTable extends Table {
                 ->innerJoinWith('Hosts.HostsToContainersSharing')
                 ->innerJoinWith('Servicetemplates')
                 ->select([
-                    'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                     'Services.id',
-                    'Hosts.name'
+                    'Services.name',
+                    'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+                    'Hosts.id',
+                    'Hosts.name',
+                    'Servicetemplates.name'
                 ])
                 ->where([
                     'Services.id IN' => $selected

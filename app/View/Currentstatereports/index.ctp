@@ -52,7 +52,7 @@
                 'class' => 'form-horizontal clear',
             ]);
             ?>
-            <div class="form-group required" ng-class="{'has-error': errors.Service}">
+            <div class="form-group required" ng-class="{'has-error': errors.services}">
                 <label class="col-xs-1 col-md-1 col-lg-1 control-label">
                     <?php echo __('Services'); ?>
                 </label>
@@ -64,9 +64,9 @@
                             chosen="services"
                             callback="loadServices"
                             ng-options="service.value.Service.id as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
-                            ng-model="post.Currentstatereport.Service">
+                            ng-model="post.services">
                     </select>
-                    <div ng-repeat="error in errors.Service">
+                    <div ng-repeat="error in errors.services">
                         <div class="help-block text-danger">{{ error }}</div>
                     </div>
                 </div>
@@ -87,13 +87,15 @@
         </div>
         <div class="padding-bottom-10">
             <div class="form-group" ng-class="{'has-error': errors.current_state}">
-                <div class="col-xs-12 col-md-3">
+                <div class="col-xs-12 col-md-3" ng-class="{'error-container': errors.current_state}">
                     <fieldset>
-                        <legend><?php echo __('Service status'); ?></legend>
+                        <legend ng-class="{'text-danger': errors.current_state}">
+                            <?php echo __('Service status'); ?>
+                        </legend>
                         <div class="form-group smart-form required">
                             <label class="checkbox small-checkbox-label">
                                 <input type="checkbox" name="checkbox" checked="checked"
-                                       ng-model="filter.Servicestatus.current_state.ok"
+                                       ng-model="post.current_state.ok"
                                        ng-model-options="{debounce: 500}">
                                 <i class="checkbox-success"></i>
                                 <?php echo __('Ok'); ?>
@@ -101,7 +103,7 @@
 
                             <label class="checkbox small-checkbox-label">
                                 <input type="checkbox" name="checkbox" checked="checked"
-                                       ng-model="filter.Servicestatus.current_state.warning"
+                                       ng-model="post.current_state.warning"
                                        ng-model-options="{debounce: 500}">
                                 <i class="checkbox-warning"></i>
                                 <?php echo __('Warning'); ?>
@@ -109,7 +111,7 @@
 
                             <label class="checkbox small-checkbox-label">
                                 <input type="checkbox" name="checkbox" checked="checked"
-                                       ng-model="filter.Servicestatus.current_state.critical"
+                                       ng-model="post.current_state.critical"
                                        ng-model-options="{debounce: 500}">
                                 <i class="checkbox-danger"></i>
                                 <?php echo __('Critical'); ?>
@@ -117,13 +119,16 @@
 
                             <label class="checkbox small-checkbox-label">
                                 <input type="checkbox" name="checkbox" checked="checked"
-                                       ng-model="filter.Servicestatus.current_state.unknown"
+                                       ng-model="post.current_state.unknown"
                                        ng-model-options="{debounce: 500}">
                                 <i class="checkbox-default"></i>
                                 <?php echo __('Unknown'); ?>
                             </label>
                         </div>
                     </fieldset>
+                    <div ng-repeat="error in errors.current_state">
+                        <div class="help-block text-danger">{{ error }}</div>
+                    </div>
                 </div>
                 <div class="col-xs-12 col-md-3">
                     <fieldset>
@@ -196,6 +201,8 @@
                 </div>
 
             </div>
+
+
             <div class="row">
                 <div class="alert alert-info" ng-show="generatingReport">
                     <i class="fa fa-spin fa-refresh"></i>

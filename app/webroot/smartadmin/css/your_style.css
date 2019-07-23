@@ -2595,3 +2595,7 @@ input[type=text]:focus + .input-group-addon-no-focus {
     font-size: 11px;
     z-index: 20;
 }
+
+.error-container {
+    border: 1px dotted #a94442;
+}
