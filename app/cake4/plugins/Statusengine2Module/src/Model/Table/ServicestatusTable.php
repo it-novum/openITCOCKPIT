@@ -29,6 +29,13 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
  */
 class ServicestatusTable extends Table implements ServicestatusTableInterface {
 
+    /*****************************************************/
+    /*                         !!!                       */
+    /*           If you add a method to this table       */
+    /*   define it in the implemented interface first!   */
+    /*                         !!!                       */
+    /*****************************************************/
+
     use Cake2ResultTableTrait;
 
     /**

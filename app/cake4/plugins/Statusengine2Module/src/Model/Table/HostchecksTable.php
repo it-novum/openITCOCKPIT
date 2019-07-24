@@ -30,6 +30,13 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
  */
 class HostchecksTable extends Table implements HostchecksTableInterface {
 
+    /*****************************************************/
+    /*                         !!!                       */
+    /*           If you add a method to this table       */
+    /*   define it in the implemented interface first!   */
+    /*                         !!!                       */
+    /*****************************************************/
+
     use PaginationAndScrollIndexTrait;
 
     /**

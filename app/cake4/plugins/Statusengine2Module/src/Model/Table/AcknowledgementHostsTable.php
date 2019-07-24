@@ -27,6 +27,13 @@ use Statusengine2Module\Model\Entity\AcknowledgementHost;
  */
 class AcknowledgementHostsTable extends Table implements AcknowledgementHostsTableInterface {
 
+    /*****************************************************/
+    /*                         !!!                       */
+    /*           If you add a method to this table       */
+    /*   define it in the implemented interface first!   */
+    /*                         !!!                       */
+    /*****************************************************/
+
     use PaginationAndScrollIndexTrait;
 
     /**

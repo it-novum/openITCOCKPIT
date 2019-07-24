@@ -28,6 +28,13 @@ use Statusengine2Module\Model\Entity\StatehistoryHost;
  */
 class StatehistoryHostsTable extends Table implements StatehistoryHostTableInterface {
 
+    /*****************************************************/
+    /*                         !!!                       */
+    /*           If you add a method to this table       */
+    /*   define it in the implemented interface first!   */
+    /*                         !!!                       */
+    /*****************************************************/
+
     use PaginationAndScrollIndexTrait;
 
     /**

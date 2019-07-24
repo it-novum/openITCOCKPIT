@@ -27,6 +27,13 @@ use Statusengine2Module\Model\Entity\AcknowledgementService;
  */
 class AcknowledgementServicesTable extends Table implements AcknowledgementServicesTableInterface {
 
+    /*****************************************************/
+    /*                         !!!                       */
+    /*           If you add a method to this table       */
+    /*   define it in the implemented interface first!   */
+    /*                         !!!                       */
+    /*****************************************************/
+
     use PaginationAndScrollIndexTrait;
 
     /**

@@ -28,6 +28,13 @@ use Statusengine2Module\Model\Entity\StatehistoryService;
  */
 class StatehistoryServicesTable extends Table implements StatehistoryServiceTableInterface {
 
+    /*****************************************************/
+    /*                         !!!                       */
+    /*           If you add a method to this table       */
+    /*   define it in the implemented interface first!   */
+    /*                         !!!                       */
+    /*****************************************************/
+
     use PaginationAndScrollIndexTrait;
 
     /**

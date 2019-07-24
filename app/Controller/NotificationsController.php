@@ -47,9 +47,7 @@ class NotificationsController extends AppController {
         MONITORING_NOTIFICATION_HOST,
         MONITORING_NOTIFICATION_SERVICE,
         'Host',
-        MONITORING_HOSTSTATUS,
-        'Service',
-        MONITORING_SERVICESTATUS
+        'Service'
     ];
 
     public $layout = 'blank';
