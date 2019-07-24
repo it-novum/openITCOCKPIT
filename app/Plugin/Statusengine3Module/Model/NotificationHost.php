@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 
+/**
+ * Class NotificationHost
+ * @deprecated
+ */
 class NotificationHost extends Statusengine3ModuleAppModel {
     public $useTable = 'host_notifications';
     public $tablePrefix = 'statusengine_';
@@ -34,6 +38,7 @@ class NotificationHost extends Statusengine3ModuleAppModel {
      * @param HostNotificationConditions $HostNotificationConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(HostNotificationConditions $HostNotificationConditions, $paginatorConditions = []) {
 
