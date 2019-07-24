@@ -70,6 +70,7 @@ class HoststatusTable extends Table implements HoststatusTableInterface {
      * @return \Cake\ORM\RulesChecker
      */
     public function buildRules(RulesChecker $rules) {
+        //Readonly table
         return $rules;
     }
 

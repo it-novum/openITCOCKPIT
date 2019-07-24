@@ -23,125 +23,87 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\HostsTable;
+use App\Model\Table\ServicesTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
-use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\ServicestatusFields;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
-use itnovum\openITCOCKPIT\Database\ScrollIndex;
+use itnovum\openITCOCKPIT\Core\AngularJS\Request\AcknowledgementsControllerRequest;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use Statusengine2Module\Model\Entity\AcknowledgementHost;
 
+/**
+ * Class AcknowledgementsController
+ * @property AppPaginatorComponent $Paginator
+ * @property AppAuthComponent $Auth
+ * @property DbBackend $DbBackend
+ */
 class AcknowledgementsController extends AppController {
-    /*
-     * Attention! In this case we load an external Model from the monitoring plugin! The Controller
-     * use this external model to fetch the required data out of the database
+
+    public $layout = 'blank';
+
+    /**
+     * @param int|null $id
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
-    public $uses = [
-        MONITORING_ACKNOWLEDGED_HOST,
-        MONITORING_ACKNOWLEDGED_SERVICE,
-        MONITORING_ACKNOWLEDGED,
-        MONITORING_SERVICESTATUS,
-        'Host',
-        'Service',
-        MONITORING_HOSTSTATUS
-    ];
-
-    public $components = ['RequestHandler', 'Bbcode'];
-    public $helpers = ['Status', 'Monitoring', 'Bbcode'];
-    public $layout = 'Admin.default';
-
-    public function service($id = null) {
-        $this->layout = "blank";
-
-        if (!$this->Service->exists($id) && $id !== null) {
-            throw new NotFoundException(__('Invalid service'));
-        }
-
-        if (!$this->isAngularJsRequest() && $id === null) {
-            //Service for .html requests
+    public function host($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship html template
             return;
         }
 
-        //Service for .json requests
-        $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.service_type',
-                'Service.service_url'
-            ],
-            'contain'    => [
-                'Host'            => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name',
-                        'Host.uuid',
-                        'Host.address'
-                    ],
-                    'Container',
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name',
-                    ],
-                ],
-            ],
-            'conditions' => [
-                'Service.id' => $id,
-            ],
-        ]);
+        session_write_close();
 
-        //Check if user is permitted to see this object
-        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HostsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        /** @var \App\Model\Entity\Host $host */
+        $host = $HostsTable->getHostByIdForPermissionCheck($id);
+        if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
             $this->render403();
             return;
         }
 
-
-        $AngularAcknowledgementsControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\AcknowledgementsControllerRequest($this->request);
+        $AngularAcknowledgementsControllerRequest = new AcknowledgementsControllerRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularAcknowledgementsControllerRequest->getPage());
 
         //Process conditions
-        $Conditions = new AcknowledgedServiceConditions();
-        $Conditions->setLimit($this->Paginator->settings['limit']);
+        $Conditions = new AcknowledgedHostConditions();
         $Conditions->setFrom($AngularAcknowledgementsControllerRequest->getFrom());
         $Conditions->setTo($AngularAcknowledgementsControllerRequest->getTo());
-        $Conditions->setStates($AngularAcknowledgementsControllerRequest->getServiceStates());
-        $Conditions->setOrder($AngularAcknowledgementsControllerRequest->getOrderForPaginator('AcknowledgedService.entry_time', 'desc'));
-        $Conditions->setServiceUuid($service['Service']['uuid']);
+        $Conditions->setStates($AngularAcknowledgementsControllerRequest->getHostStates());
+        $Conditions->setOrder($AngularAcknowledgementsControllerRequest->getOrderForPaginator('AcknowledgementHosts.entry_time', 'desc'));
+        $Conditions->setConditions($AngularAcknowledgementsControllerRequest->getHostFilters());
+        $Conditions->setHostUuid($host->get('uuid'));
 
 
-        $query = $this->AcknowledgedService->getQuery($Conditions, $AngularAcknowledgementsControllerRequest->getServiceFilters());
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = $User->getUserTime();
 
-        $this->Paginator->settings = $query;
-        $this->Paginator->settings['page'] = $AngularAcknowledgementsControllerRequest->getPage();
+        $AcknowledgementHostsTable = $this->DbBackend->getAcknowledgementHostsTable();
 
-        if ($this->isScrollRequest()) {
-            $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-            $acknowledgements = $this->AcknowledgedService->find('all', $this->Paginator->settings);
-            $ScrollIndex->determineHasNextPage($acknowledgements);
-            $ScrollIndex->scroll();
-        } else {
-            $acknowledgements = $this->Paginator->paginate(
-                $this->AcknowledgedService->alias,
-                [],
-                [key($this->Paginator->settings['order'])]
-            );
-        }
-
+        //Query acknowledgements records
+        $BBCodeParser = new BBCodeParser();
         $all_acknowledgements = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        foreach ($acknowledgements as $acknowledgement) {
-            $Acknowledgement = new itnovum\openITCOCKPIT\Core\Views\AcknowledgementService($acknowledgement['AcknowledgedService'], $UserTime);
+        foreach ($AcknowledgementHostsTable->getAcknowledgements($Conditions, $PaginateOMat) as $AcknowledgementHost) {
+            /** @var AcknowledgementHost $acknowledgement */
+            $Acknowledgement = new \itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost($AcknowledgementHost->toArray(), $UserTime);
+
             $acknowledgementArray = $Acknowledgement->toArray();
-            $acknowledgementArray['comment_data'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($acknowledgementArray['comment_data'], true));
+            $acknowledgementArray['comment_data'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($acknowledgementArray['comment_data'], true));
+
             $all_acknowledgements[] = [
-                'AcknowledgedService' => $acknowledgementArray
+                'AcknowledgedHost' => $acknowledgementArray
             ];
         }
 
-        $this->set(compact(['all_acknowledgements']));
+        $this->set('all_acknowledgements', $all_acknowledgements);
         $toJson = ['all_acknowledgements', 'paging'];
         if ($this->isScrollRequest()) {
             $toJson = ['all_acknowledgements', 'scroll'];
@@ -149,86 +111,64 @@ class AcknowledgementsController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
-    public function host($id = null) {
-        $this->layout = 'blank';
-
-        if (!$this->Host->exists($id) && $id !== null) {
-            throw new NotFoundException(__('Invalid host'));
-        }
-
-        if (!$this->isAngularJsRequest() && $id === null) {
-            //Host for .html requests
+    /**
+     * @param int|null $id
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     */
+    public function service($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        //Host for .json requests
-        $host = $this->Host->find('first', [
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.address',
-                'Host.host_url',
-                'Host.host_type',
-                'Host.container_id'
-            ],
-            'conditions' => [
-                'Host.id' => $id,
-            ],
-            'contain'    => [
-                'Container',
-            ],
-        ]);
+        session_write_close();
 
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$ServicesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid service'));
+        }
+
+
+        $service = $ServicesTable->getServiceByIdForPermissionsCheck($id);
+        if (!$this->allowedByContainerId($service->getContainerIds(), false)) {
             $this->render403();
             return;
         }
 
-        $AngularAcknowledgementsControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\AcknowledgementsControllerRequest($this->request);
+        $AngularAcknowledgementsControllerRequest = new AcknowledgementsControllerRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularAcknowledgementsControllerRequest->getPage());
 
         //Process conditions
-        $Conditions = new AcknowledgedHostConditions();
-        $Conditions->setLimit($this->Paginator->settings['limit']);
+        $Conditions = new AcknowledgedServiceConditions();
         $Conditions->setFrom($AngularAcknowledgementsControllerRequest->getFrom());
         $Conditions->setTo($AngularAcknowledgementsControllerRequest->getTo());
-        $Conditions->setStates($AngularAcknowledgementsControllerRequest->getHostStates());
-        $Conditions->setOrder($AngularAcknowledgementsControllerRequest->getOrderForPaginator('AcknowledgedHost.entry_time', 'desc'));
-        $Conditions->setHostUuid($host['Host']['uuid']);
+        $Conditions->setStates($AngularAcknowledgementsControllerRequest->getServiceStates());
+        $Conditions->setOrder($AngularAcknowledgementsControllerRequest->getOrderForPaginator('AcknowledgementServices.entry_time', 'desc'));
+        $Conditions->setConditions($AngularAcknowledgementsControllerRequest->getServiceFilters());
+        $Conditions->setServiceUuid($service->get('uuid'));
 
-        //Query state history records
-        $query = $this->AcknowledgedHost->getQuery($Conditions, $AngularAcknowledgementsControllerRequest->getHostFilters());
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = $User->getUserTime();
 
-        $this->Paginator->settings = $query;
-        $this->Paginator->settings['page'] = $AngularAcknowledgementsControllerRequest->getPage();
+        $AcknowledgementServicesTable = $this->DbBackend->getAcknowledgementServicesTable();
 
-        if ($this->isScrollRequest()) {
-            $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-            $acknowledgements = $this->AcknowledgedHost->find('all', $this->Paginator->settings);
-            $ScrollIndex->determineHasNextPage($acknowledgements);
-            $ScrollIndex->scroll();
-        } else {
-            $acknowledgements = $this->Paginator->paginate(
-                $this->AcknowledgedHost->alias,
-                [],
-                [key($this->Paginator->settings['order'])]
-            );
-        }
-
+        //Query acknowledgements records
+        $BBCodeParser = new BBCodeParser();
         $all_acknowledgements = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        foreach ($acknowledgements as $acknowledgement) {
-            $Acknowledgement = new itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost($acknowledgement['AcknowledgedHost'], $UserTime);
-            $acknowledgementArray = $Acknowledgement->toArray();
-            $acknowledgementArray['comment_data'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($acknowledgementArray['comment_data'], true));
+        foreach ($AcknowledgementServicesTable->getAcknowledgements($Conditions, $PaginateOMat) as $acknowledgement) {
+            $AcknowledgedService = new itnovum\openITCOCKPIT\Core\Views\AcknowledgementService($acknowledgement, $UserTime);
+            $acknowledgementArray = $AcknowledgedService->toArray();
+            $acknowledgementArray['comment_data'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($acknowledgementArray['comment_data'], true));
             $all_acknowledgements[] = [
-                'AcknowledgedHost' => $acknowledgementArray
+                'AcknowledgedService' => $acknowledgementArray
             ];
         }
 
-        $this->set(compact(['all_acknowledgements']));
+        $this->set('all_acknowledgements', $all_acknowledgements);
         $toJson = ['all_acknowledgements', 'paging'];
         if ($this->isScrollRequest()) {
             $toJson = ['all_acknowledgements', 'scroll'];

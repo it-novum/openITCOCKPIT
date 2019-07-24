@@ -82,7 +82,6 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
      * @return array
      */
     public function getStatehistoryIndex(StatehistoryServiceConditions $StatehistoryServiceConditions, $PaginateOMat = null) {
-        $query = $this->find()->first();
         $query = $this->find()
             ->contain([
                 'Objects'

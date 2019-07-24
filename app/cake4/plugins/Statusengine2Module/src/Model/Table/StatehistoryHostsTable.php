@@ -82,7 +82,6 @@ class StatehistoryHostsTable extends Table implements StatehistoryHostTableInter
      * @return array
      */
     public function getStatehistoryIndex(StatehistoryHostConditions $StatehistoryHostConditions, $PaginateOMat = null) {
-        $query = $this->find()->first();
         $query = $this->find()
             ->contain([
                 'Objects'

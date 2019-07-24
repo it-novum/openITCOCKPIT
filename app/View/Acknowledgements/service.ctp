@@ -108,7 +108,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by comment'); ?>"
-                                                   ng-model="filter.Acknowledgement.comment"
+                                                   ng-model="filter.AcknowledgementServices.comment"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -131,7 +131,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by author'); ?>"
-                                                   ng-model="filter.Acknowledgement.author"
+                                                   ng-model="filter.AcknowledgementServices.author"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -146,7 +146,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Acknowledgement.state.warning"
+                                                       ng-model="filter.AcknowledgementServices.state.warning"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-warning"></i>
                                                 <?php echo __('Warning'); ?>
@@ -154,7 +154,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Acknowledgement.state.critical"
+                                                       ng-model="filter.AcknowledgementServices.state.critical"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-danger"></i>
                                                 <?php echo __('Critical'); ?>
@@ -162,7 +162,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Acknowledgement.state.unknown"
+                                                       ng-model="filter.AcknowledgementServices.state.unknown"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-default"></i>
                                                 <?php echo __('Unknown'); ?>
@@ -190,24 +190,24 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                style="">
                             <thead>
                             <tr>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedService.state')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedService.state')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementServices.state')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementServices.state')"></i>
                                     <?php echo __('State'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedService.entry_time')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedService.entry_time')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementServices.entry_time')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementServices.entry_time')"></i>
                                     <?php echo __('Date'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedService.author_name')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedService.author_name')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementServices.author_name')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementServices.author_name')"></i>
                                     <?php echo __('Author'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedService.comment_data')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedService.comment_data')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementServices.comment_data')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementServices.comment_data')"></i>
                                     <?php echo __('Comment'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedService.is_sticky')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedService.is_sticky')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementServices.is_sticky')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementServices.is_sticky')"></i>
                                     <?php echo __('Sticky'); ?>
                                 </th>
                             </tr>

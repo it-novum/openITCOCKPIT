@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('AcknowledgementsServiceController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, $stateParams, StatusHelperService, $interval){
 
-        SortService.setSort(QueryStringService.getValue('sort', 'AcknowledgedService.entry_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'AcknowledgementServices.entry_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Acknowledgement: {
+                AcknowledgementServices: {
                     state: {
                         warning: false,
                         critical: false,
@@ -46,9 +46,9 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[AcknowledgedService.comment_data]': $scope.filter.Acknowledgement.comment,
-                    'filter[AcknowledgedService.state][]': $rootScope.currentStateForApi($scope.filter.Acknowledgement.state),
-                    'filter[AcknowledgedService.author_name]': $scope.filter.Acknowledgement.author,
+                    'filter[AcknowledgementServices.comment_data]': $scope.filter.AcknowledgementServices.comment,
+                    'filter[AcknowledgementServices.state][]': $rootScope.currentStateForApi($scope.filter.AcknowledgementServices.state),
+                    'filter[AcknowledgementServices.author_name]': $scope.filter.AcknowledgementServices.author,
                     'filter[from]': $scope.filter.from,
                     'filter[to]': $scope.filter.to
                 }

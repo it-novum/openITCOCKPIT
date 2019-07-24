@@ -26,13 +26,14 @@ namespace itnovum\openITCOCKPIT\Core;
 
 
 use App\Lib\Exceptions\MissingDbBackendException;
+use App\Lib\Interfaces\AcknowledgementHostsTableInterface;
+use App\Lib\Interfaces\AcknowledgementServicesTableInterface;
 use App\Lib\Interfaces\HostchecksTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Interfaces\StatehistoryHostTableInterface;
 use App\Lib\Interfaces\StatehistoryServiceTableInterface;
 use Cake\ORM\TableRegistry;
-use Statusengine2Module\Model\Table\StatehistoryServicesTable;
 
 class DbBackend {
 
@@ -164,9 +165,49 @@ class DbBackend {
      */
     public function getStatehistoryServicesTable() {
         if ($this->isNdoUtils()) {
-            /** @var $StatehistoryServicesTable StatehistoryServicesTable */
+            /** @var $StatehistoryServicesTable StatehistoryServiceTableInterface */
             $StatehistoryServicesTable = TableRegistry::getTableLocator()->get('Statusengine2Module.StatehistoryServices');
             return $StatehistoryServicesTable;
+        }
+
+        if ($this->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+    }
+
+    /**
+     * @return AcknowledgementHostsTableInterface
+     * @throws MissingDbBackendException
+     */
+    public function getAcknowledgementHostsTable() {
+        if ($this->isNdoUtils()) {
+            /** @var $AcknowledgementHostsTable AcknowledgementHostsTableInterface */
+            $AcknowledgementHostsTable = TableRegistry::getTableLocator()->get('Statusengine2Module.AcknowledgementHosts');
+            return $AcknowledgementHostsTable;
+        }
+
+        if ($this->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+    }
+
+    /**
+     * @return AcknowledgementServicesTableInterface
+     * @throws MissingDbBackendException
+     */
+    public function getAcknowledgementServicesTable() {
+        if ($this->isNdoUtils()) {
+            /** @var $AcknowledgementServicesTable AcknowledgementServicesTableInterface */
+            $AcknowledgementServicesTable = TableRegistry::getTableLocator()->get('Statusengine2Module.AcknowledgementServices');
+            return $AcknowledgementServicesTable;
         }
 
         if ($this->isCrateDb()) {

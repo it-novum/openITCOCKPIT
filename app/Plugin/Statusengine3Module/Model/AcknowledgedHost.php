@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 
+/**
+ * Class AcknowledgedHost
+ * @deprecated
+ */
 class AcknowledgedHost extends Statusengine3ModuleAppModel {
     public $useTable = 'host_acknowledgements';
     public $tablePrefix = 'statusengine_';
@@ -32,6 +36,7 @@ class AcknowledgedHost extends Statusengine3ModuleAppModel {
     /**
      * @param string $uuid
      * @return array|null
+     * @deprecated
      */
     public function byHostUuid($uuid = null) {
         $return = [];
@@ -56,6 +61,7 @@ class AcknowledgedHost extends Statusengine3ModuleAppModel {
      * @param AcknowledgedHostConditions $AcknowledgedHostConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(AcknowledgedHostConditions $AcknowledgedHostConditions, $paginatorConditions = []) {
         $query = [
