@@ -29,6 +29,8 @@ use App\Model\Table\ProxiesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Comparison\HostComparison;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 
 class TestingShell extends AppShell {
     /*
@@ -76,10 +78,13 @@ class TestingShell extends AppShell {
          * Lof of space for your experimental code :)
          */
 
+        $DbBackend = new DbBackend();
+
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        
     }
 
     public function getOptionParser() {

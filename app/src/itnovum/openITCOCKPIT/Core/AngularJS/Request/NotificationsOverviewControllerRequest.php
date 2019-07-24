@@ -35,25 +35,25 @@ class NotificationsOverviewControllerRequest extends AngularRequest {
     protected $filters = [
         'host'    => [
             'like' => [
-                'NotificationHost.output',
-                'Host.name',
-                'Contact.name',
-                'Command.name'
+                'NotificationHosts.output',
+                'Hosts.name',
+                'Contacts.name',
+                'Commands.name'
             ]
         ],
         'service' => [
             'like' => [
-                'NotificationService.output',
-                'Host.name',
-                'Contact.name',
-                'Command.name'
+                'NotificationServices.output',
+                'Hosts.name',
+                'Contacts.name',
+                'Commands.name'
             ]
         ]
     ];
 
-    protected $ServiceStateField = 'NotificationService.state';
+    protected $ServiceStateField = 'NotificationServices.state';
 
-    protected $HostStateField = 'NotificationHost.state';
+    protected $HostStateField = 'NotificationHosts.state';
 
     public function getServiceFilters() {
         $Filter = new BaseFilter($this->getRequest());

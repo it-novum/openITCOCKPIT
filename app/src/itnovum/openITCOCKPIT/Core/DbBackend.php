@@ -30,6 +30,7 @@ use App\Lib\Interfaces\AcknowledgementHostsTableInterface;
 use App\Lib\Interfaces\AcknowledgementServicesTableInterface;
 use App\Lib\Interfaces\HostchecksTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
+use App\Lib\Interfaces\NotificationHostsTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Interfaces\StatehistoryHostTableInterface;
 use App\Lib\Interfaces\StatehistoryServiceTableInterface;
@@ -208,6 +209,26 @@ class DbBackend {
             /** @var $AcknowledgementServicesTable AcknowledgementServicesTableInterface */
             $AcknowledgementServicesTable = TableRegistry::getTableLocator()->get('Statusengine2Module.AcknowledgementServices');
             return $AcknowledgementServicesTable;
+        }
+
+        if ($this->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+    }
+
+    /**
+     * @return NotificationHostsTableInterface
+     * @throws MissingDbBackendException
+     */
+    public function getNotificationHostsTable() {
+        if ($this->isNdoUtils()) {
+            /** @var $NotificationHostsTable NotificationHostsTableInterface */
+            $NotificationHostsTable = TableRegistry::getTableLocator()->get('Statusengine2Module.NotificationHosts');
+            return $NotificationHostsTable;
         }
 
         if ($this->isCrateDb()) {

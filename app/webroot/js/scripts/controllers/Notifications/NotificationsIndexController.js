@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('NotificationsIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService){
 
-        SortService.setSort(QueryStringService.getValue('sort', 'NotificationHost.start_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'NotificationHosts.start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
@@ -12,20 +12,22 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Notification: {
+                NotificationHosts: {
+                    output: '',
                     state: {
                         recovery: false,
                         down: false,
                         unreachable: false
                     },
-                    state_types: {
-                        soft: false,
-                        hard: false
-                    },
-                    output: '',
-                    contactname: '',
-                    hostname: '',
-                    commandname: ''
+                },
+                Hosts: {
+                    name: ''
+                },
+                Contacts: {
+                    name: ''
+                },
+                Commands: {
+                    name: ''
                 },
                 from: date('d.m.Y H:i', now.getTime() / 1000 - (3600 * 24 * 30)),
                 to: date('d.m.Y H:i', now.getTime() / 1000 + (3600 * 24 * 30 * 2))
@@ -46,11 +48,11 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[NotificationHost.output]': $scope.filter.Notification.output,
-                    'filter[NotificationHost.state][]': $rootScope.currentStateForApi($scope.filter.Notification.state),
-                    'filter[Contact.name]': $scope.filter.Notification.contactname,
-                    'filter[Command.name]': $scope.filter.Notification.commandname,
-                    'filter[Host.name]': $scope.filter.Notification.hostname,
+                    'filter[NotificationHosts.output]': $scope.filter.NotificationHosts.output,
+                    'filter[NotificationHosts.state][]': $rootScope.currentStateForApi($scope.filter.NotificationHosts.state),
+                    'filter[Contacts.name]': $scope.filter.Contacts.name,
+                    'filter[Commands.name]': $scope.filter.Commands.name,
+                    'filter[Hosts.name]': $scope.filter.Hosts.name,
                     'filter[from]': $scope.filter.from,
                     'filter[to]': $scope.filter.to
                 }
