@@ -23,101 +23,66 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\HostsTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Request\HostchecksControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostcheckConditions;
-use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
-use itnovum\openITCOCKPIT\Database\ScrollIndex;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
+/**
+ * Class HostchecksController
+ * @property AppPaginatorComponent $Paginator
+ */
 class HostchecksController extends AppController {
-    /*
-     * Attention! In this case we load an external Model from the monitoring plugin! The Controller
-     * use this external model to fetch the required data out of the database
-     */
-    public $uses = [
-        MONITORING_HOSTCHECK,
-        MONITORING_HOSTSTATUS,
-        'Host'
-    ];
 
-    public $components = ['RequestHandler'];
-    public $helpers = ['Status', 'Monitoring'];
-    public $layout = 'Admin.default';
+
+    public $layout = 'blank';
 
     public function index($id = null) {
-        $this->layout = "blank";
-
-        if (!$this->Host->exists($id) && $id !== null) {
-            throw new NotFoundException(__('invalid host'));
-        }
-
-        if (!$this->isAngularJsRequest() && $id === null) {
-            //Host for .html requests
+        if (!$this->isAngularJsRequest()) {
+            //Only ship html template
             return;
         }
 
         session_write_close();
 
-        $host = $this->Host->find('first', [
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.address',
-                'Host.host_url',
-                'Host.container_id',
-                'Host.host_type'
-            ],
-            'conditions' => [
-                'Host.id' => $id,
-            ],
-            'contain'    => [
-                'Container',
-            ],
-        ]);
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-        //Check if user is permitted to see this object
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+        if (!$HostsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        /** @var \App\Model\Entity\Host $host */
+        $host = $HostsTable->getHostByIdForPermissionCheck($id);
+        if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
             $this->render403();
             return;
         }
 
-        $AngularHostchecksControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\HostchecksControllerRequest($this->request);
+        $HostchecksControllerRequest = new HostchecksControllerRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostchecksControllerRequest->getPage());
 
         //Process conditions
         $Conditions = new HostcheckConditions();
-        $Conditions->setLimit($this->Paginator->settings['limit']);
-        $Conditions->setFrom($AngularHostchecksControllerRequest->getFrom());
-        $Conditions->setTo($AngularHostchecksControllerRequest->getTo());
-        $Conditions->setStates($AngularHostchecksControllerRequest->getHostStates());
-        $Conditions->setStateTypes($AngularHostchecksControllerRequest->getHostStateTypes());
-        $Conditions->setOrder($AngularHostchecksControllerRequest->getOrderForPaginator('Hostcheck.start_time', 'desc'));
-        $Conditions->setHostUuid($host['Host']['uuid']);
+        $Conditions->setFrom($HostchecksControllerRequest->getFrom());
+        $Conditions->setTo($HostchecksControllerRequest->getTo());
+        $Conditions->setStates($HostchecksControllerRequest->getHostStates());
+        $Conditions->setStateTypes($HostchecksControllerRequest->getHostStateTypes());
+        $Conditions->setOrder($HostchecksControllerRequest->getOrderForPaginator('Hostchecks.start_time', 'desc'));
+        $Conditions->setHostUuid($host->get('uuid'));
+        $Conditions->setConditions($HostchecksControllerRequest->getIndexFilters());
 
-        //Query host check records
-        $query = $this->Hostcheck->getQuery($Conditions, $AngularHostchecksControllerRequest->getIndexFilters());
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = $User->getUserTime();
 
-        $this->Paginator->settings = $query;
-        $this->Paginator->settings['page'] = $AngularHostchecksControllerRequest->getPage();
-
-        $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if ($this->isScrollRequest()) {
-            $hostchecks = $this->Hostcheck->find('all', $this->Paginator->settings);
-            $ScrollIndex->determineHasNextPage($hostchecks);
-            $ScrollIndex->scroll();
-        } else {
-            $hostchecks = $this->Paginator->paginate(
-                $this->Hostcheck->alias,
-                [],
-                [key($this->Paginator->settings['order'])]
-            );
-        }
+        $HostchecksTable = $this->DbBackend->getHostchecksTable();
 
         $all_hostchecks = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        foreach ($hostchecks as $hostcheck) {
-            $Hostcheck = new itnovum\openITCOCKPIT\Core\Views\Servicecheck($hostcheck['Hostcheck'], $UserTime);
+        foreach ($HostchecksTable->getHostchecks($Conditions, $PaginateOMat) as $hostcheck) {
+            /** @var \Statusengine2Module\Model\Entity\Hostcheck $hostcheck */
+            $Hostcheck = new \itnovum\openITCOCKPIT\Core\Views\Hostcheck($hostcheck->toArray(), $UserTime);
+
             $all_hostchecks[] = [
                 'Hostcheck' => $Hostcheck->toArray()
             ];

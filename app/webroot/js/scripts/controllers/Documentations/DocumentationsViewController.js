@@ -23,10 +23,13 @@ angular.module('openITCOCKPIT')
                 $scope.allowEdit = result.data.allowEdit;
 
                 if($scope.type === 'host'){
-                    $scope.hostBrowserMenuConfig = {
-                        autoload: true,
-                        hostId: result.data.objectId
-                    };
+                    if(typeof $scope.hostBrowserMenuConfig === "undefined"){
+                        $scope.hostBrowserMenuConfig = {
+                            autoload: true,
+                            hostId: result.data.objectId,
+                            includeHoststatus: true
+                        };
+                    }
                 }
 
             }, function errorCallback(result){

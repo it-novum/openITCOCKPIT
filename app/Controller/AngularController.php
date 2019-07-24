@@ -26,6 +26,7 @@ use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
@@ -761,6 +762,7 @@ class AngularController extends AppController {
         }
 
         $hostId = $this->request->query('hostId');
+        $includeHoststatus = $this->request->query('includeHoststatus') === 'true';
 
         /** @var $HostsTable App\Model\Table\HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -792,14 +794,33 @@ class AngularController extends AppController {
             $hostUrl = $HostMacroReplacer->replaceBasicMacros($hostUrl);
         }
 
+        if ($includeHoststatus) {
+            //Get meta data and push to front end
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->currentState()->isFlapping();
+            $HosttatusTable = $this->DbBackend->getHoststatusTable();
+            $hoststatus = $HosttatusTable->byUuid($host->get('uuid'), $HoststatusFields);
+            if (!isset($hoststatus['Hoststatus'])) {
+                $hoststatus['Hoststatus'] = [];
+            }
+            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
+        } else {
+            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([
+                'Hoststatus' => []
+            ]);
+
+        }
+
         $config = [
-            'showReschedulingButton' => false,
-            'showBackButton'         => true,
-            'hostId'                 => $host->get('id'),
-            'hostUuid'               => $host->get('uuid'),
-            'docuExists'             => $DocumentationsTable->existsByUuid($host->get('uuid')),
-            'hostUrl'                => $hostUrl,
-            'allowEdit'              => $allowEdit
+            'hostId'            => $host->get('id'),
+            'hostUuid'          => $host->get('uuid'),
+            'hostName'          => $host->get('name'),
+            'hostAddress'       => $host->get('address'),
+            'docuExists'        => $DocumentationsTable->existsByUuid($host->get('uuid')),
+            'hostUrl'           => $hostUrl,
+            'allowEdit'         => $allowEdit,
+            'includeHoststatus' => $includeHoststatus,
+            'Hoststatus'        => $Hoststatus->toArray()
         ];
 
         $this->set('config', $config);

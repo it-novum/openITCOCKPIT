@@ -470,6 +470,26 @@ class HostsTable extends Table {
      * @param int $id
      * @return array|Host|null
      */
+    public function getHostByIdForPermissionCheck($id) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+                'Hosts.container_id'
+            ])
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain('HostsToContainersSharing')
+            ->first();
+        return $query;
+    }
+
+    /**
+     * @param int $id
+     * @return array|Host|null
+     */
     public function getHostByIdWithHosttemplate($id) {
         $query = $this->find()
             ->where([

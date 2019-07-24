@@ -327,4 +327,20 @@ class Service extends Entity {
         return $usedBy;
     }
 
+    /**
+     * @return array
+     */
+    public function getContainerIds() {
+        $containerIds = [
+            $this->host->container_id
+        ];
+
+        foreach ($this->host->hosts_to_containers_sharing as $container) {
+            /** @var Container $container */
+            $containerIds[] = $container->get('id');
+        }
+
+        return array_unique($containerIds);
+    }
+
 }

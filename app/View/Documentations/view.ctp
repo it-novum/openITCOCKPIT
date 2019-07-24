@@ -24,20 +24,11 @@
 //	confirmation.
 ?>
 
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="page-title">
-            <i class="fa fa-book fa-fw"></i>
-            <?php echo __('Documentation'); ?>
-        </h1>
-    </div>
-    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6 margin-top-10">
-        <host-browser-menu
-                ng-if="type === 'host' && hostBrowserMenuConfig"
-                config="hostBrowserMenuConfig"
-                class="pull-right"></host-browser-menu>
-    </div>
-</div>
+<host-browser-menu
+        ng-if="type === 'host' && hostBrowserMenuConfig"
+        config="hostBrowserMenuConfig"
+        last-load-date="0"></host-browser-menu>
+
 
 <div class="tab-content">
     <div ng-show="docu.displayView" class="tab-pane active">

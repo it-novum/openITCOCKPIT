@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2018>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,30 +22,20 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\AngularJS\Request;
+namespace App\Lib\Interfaces;
 
-use itnovum\openITCOCKPIT\Filter\BaseFilter;
 
-class HostchecksControllerRequest extends AngularRequest {
+use itnovum\openITCOCKPIT\Core\HostcheckConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+
+interface HostchecksTableInterface {
 
     /**
-     * @var array
+     * @param HostcheckConditions $HostcheckConditions
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
      */
-    protected $filters = [
-        'index' => [
-            'like' => [
-                'Hostchecks.output'
-            ]
-        ]
-    ];
-
-    protected $HostStateField = 'Hostchecks.state';
-
-    protected $HostStateTypeField = 'Hostchecks.state_type';
-
-    public function getIndexFilters() {
-        $Filter = new BaseFilter($this->getRequest());
-        return $Filter->getConditionsByFilters($this->filters['index']);
-    }
-
+    public function getHostchecks(HostcheckConditions $HostcheckConditions, $PaginateOMat = null);
 }

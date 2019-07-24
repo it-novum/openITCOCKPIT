@@ -23,13 +23,20 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsControllerRequest;
+use itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsOverviewControllerRequest;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
-use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
-use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 
+/**
+ * Class NotificationsController
+ * @property AppPaginatorComponent $Paginator
+ * @property AppAuthComponent $Auth
+ * @property DbBackend $DbBackend
+ */
 class NotificationsController extends AppController {
 
     /*
@@ -40,15 +47,14 @@ class NotificationsController extends AppController {
         MONITORING_NOTIFICATION_HOST,
         MONITORING_NOTIFICATION_SERVICE,
         'Host',
-        MONITORING_HOSTSTATUS,
-        'Service',
-        MONITORING_SERVICESTATUS
+        'Service'
     ];
 
-    //public $components = ['RequestHandler'];
-    public $helpers = ['Status', 'Monitoring', 'CustomValidationErrors', 'Uuid', 'Acl'];
-    public $layout = 'Admin.default';
+    public $layout = 'blank';
 
+    /**
+     * @deprecated
+     */
     public function index() {
         $this->layout = "blank";
 
@@ -60,7 +66,7 @@ class NotificationsController extends AppController {
             $this->Paginator->settings['conditions'] = [];
         }
 
-        $AngularNotificationsOverviewControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsOverviewControllerRequest($this->request);
+        $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
 
         //Process conditions
         $Conditions = new HostNotificationConditions();
@@ -115,6 +121,9 @@ class NotificationsController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
+    /**
+     * @deprecated
+     */
     public function services() {
         $this->layout = "blank";
 
@@ -126,7 +135,7 @@ class NotificationsController extends AppController {
             $this->Paginator->settings['conditions'] = [];
         }
 
-        $AngularNotificationsOverviewControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsOverviewControllerRequest($this->request);
+        $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
 
 
         //Process conditions
@@ -181,6 +190,10 @@ class NotificationsController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
+    /**
+     * @param int|null $host_id
+     * @deprecated
+     */
     public function hostNotification($host_id = null) {
         $this->layout = "blank";
 
@@ -220,7 +233,7 @@ class NotificationsController extends AppController {
             return;
         }
 
-        $AngularNotificationsControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsControllerRequest($this->request);
+        $AngularNotificationsControllerRequest = new NotificationsControllerRequest($this->request);
 
 
         //Process conditions
@@ -275,6 +288,10 @@ class NotificationsController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
+    /**
+     * @param int|null $service_id
+     * @deprecated
+     */
     public function serviceNotification($service_id = null) {
         $this->layout = "blank";
 
@@ -324,7 +341,7 @@ class NotificationsController extends AppController {
             return;
         }
 
-        $AngularNotificationsControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsControllerRequest($this->request);
+        $AngularNotificationsControllerRequest = new NotificationsControllerRequest($this->request);
 
 
         //Process conditions

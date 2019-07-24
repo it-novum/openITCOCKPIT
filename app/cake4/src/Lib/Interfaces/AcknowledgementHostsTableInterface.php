@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2018>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,30 +22,30 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\AngularJS\Request;
+namespace App\Lib\Interfaces;
 
-use itnovum\openITCOCKPIT\Filter\BaseFilter;
 
-class HostchecksControllerRequest extends AngularRequest {
+use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+
+interface AcknowledgementHostsTableInterface {
 
     /**
-     * @var array
+     * @param AcknowledgedHostConditions $AcknowledgedHostConditions
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
      */
-    protected $filters = [
-        'index' => [
-            'like' => [
-                'Hostchecks.output'
-            ]
-        ]
-    ];
+    public function getAcknowledgements(AcknowledgedHostConditions $AcknowledgedHostConditions, $PaginateOMat = null);
 
-    protected $HostStateField = 'Hostchecks.state';
+    /**
+     * @param string $uuid
+     * @return array
+     */
+    public function byHostUuid($uuid);
 
-    protected $HostStateTypeField = 'Hostchecks.state_type';
-
-    public function getIndexFilters() {
-        $Filter = new BaseFilter($this->getRequest());
-        return $Filter->getConditionsByFilters($this->filters['index']);
-    }
-
+    /**
+     * @param string $uuid
+     * @return array
+     */
+    public function byUuid($uuid);
 }

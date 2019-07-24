@@ -24,34 +24,10 @@
 //	confirmation.
 
 ?>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="status_headline" ng-class="hostStatusTextClass">
-
-            <span class="flapping_airport stateClass" ng-show="hoststatus.isFlapping">
-                <i class="fa" ng-class="flappingState === 1 ? 'fa-circle' : 'fa-circle-o'"></i>
-                <i class="fa" ng-class="flappingState === 0 ? 'fa-circle' : 'fa-circle-o'"></i>
-            </span>
-
-            <i class="fa fa-desktop fa-fw"></i>
-            {{ host.Host.name }}
-            <span>
-                ({{ host.Host.address }})
-            </span>
-        </h1>
-    </div>
-    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
-        <h5>
-            <div class="pull-right">
-                <a ui-sref="HostsBrowser({id:hostBrowserMenu.hostId})"
-                   class="btn btn-primary btn-sm">
-                    <i class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
-                </a>
-                <?php echo $this->element('host_browser_menu'); ?>
-            </div>
-        </h5>
-    </div>
-</div>
+<host-browser-menu
+        ng-if="hostBrowserMenuConfig"
+        config="hostBrowserMenuConfig"
+        last-load-date="0"></host-browser-menu>
 
 <section id="widget-grid" class="">
 
@@ -100,7 +76,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by comment'); ?>"
-                                                   ng-model="filter.Acknowledgement.comment"
+                                                   ng-model="filter.AcknowledgementHosts.comment"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -123,7 +99,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by author'); ?>"
-                                                   ng-model="filter.Acknowledgement.author"
+                                                   ng-model="filter.AcknowledgementHosts.author"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -138,7 +114,7 @@
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Acknowledgement.state.down"
+                                                       ng-model="filter.AcknowledgementHosts.state.down"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-danger"></i>
                                                 <?php echo __('Down'); ?>
@@ -146,7 +122,7 @@
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Acknowledgement.state.unreachable"
+                                                       ng-model="filter.AcknowledgementHosts.state.unreachable"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-default"></i>
                                                 <?php echo __('Unreachable'); ?>
@@ -174,24 +150,24 @@
                                style="">
                             <thead>
                             <tr>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedHost.state')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedHost.state')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementHosts.state')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementHosts.state')"></i>
                                     <?php echo __('State'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedHost.entry_time')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedHost.entry_time')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementHosts.entry_time')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementHosts.entry_time')"></i>
                                     <?php echo __('Date'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedHost.author_name')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedHost.author_name')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementHosts.author_name')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementHosts.author_name')"></i>
                                     <?php echo __('Author'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedHost.comment_data')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedHost.comment_data')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementHosts.comment_data')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementHosts.comment_data')"></i>
                                     <?php echo __('Comment'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedHost.is_sticky')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedHost.is_sticky')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementHosts.is_sticky')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementHosts.is_sticky')"></i>
                                     <?php echo __('Sticky'); ?>
                                 </th>
                             </tr>

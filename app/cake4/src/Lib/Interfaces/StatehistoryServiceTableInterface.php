@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2018>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,30 +22,26 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\AngularJS\Request;
+namespace App\Lib\Interfaces;
 
-use itnovum\openITCOCKPIT\Filter\BaseFilter;
 
-class HostchecksControllerRequest extends AngularRequest {
+use Cake\ORM\Entity;
+use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+
+interface StatehistoryServiceTableInterface {
 
     /**
-     * @var array
+     * @param StatehistoryServiceConditions $StatehistoryServiceConditions
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
      */
-    protected $filters = [
-        'index' => [
-            'like' => [
-                'Hostchecks.output'
-            ]
-        ]
-    ];
+    public function getStatehistoryIndex(StatehistoryServiceConditions $StatehistoryServiceConditions, $PaginateOMat = null);
 
-    protected $HostStateField = 'Hostchecks.state';
-
-    protected $HostStateTypeField = 'Hostchecks.state_type';
-
-    public function getIndexFilters() {
-        $Filter = new BaseFilter($this->getRequest());
-        return $Filter->getConditionsByFilters($this->filters['index']);
-    }
-
+    /**
+     * @param StatehistoryServiceConditions $StatehistoryServiceConditions
+     * @param bool $enableHydration
+     * @return Entity
+     */
+    public function getLastRecord(StatehistoryServiceConditions $StatehistoryServiceConditions, $enableHydration = true);
 }

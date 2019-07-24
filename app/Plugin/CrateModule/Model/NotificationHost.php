@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 
+/**
+ * Class NotificationHost
+ * @deprecated
+ */
 class NotificationHost extends CrateModuleAppModel {
     public $useDbConfig = 'Crate';
     public $useTable = 'host_notifications';
@@ -35,6 +39,7 @@ class NotificationHost extends CrateModuleAppModel {
      * @param HostNotificationConditions $HostNotificationConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(HostNotificationConditions $HostNotificationConditions, $paginatorConditions = []) {
 

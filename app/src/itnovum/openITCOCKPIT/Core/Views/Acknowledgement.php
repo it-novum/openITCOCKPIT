@@ -24,6 +24,8 @@
 
 namespace itnovum\openITCOCKPIT\Core\Views;
 
+use Cake\I18n\FrozenTime;
+
 abstract class Acknowledgement {
 
 
@@ -138,6 +140,14 @@ abstract class Acknowledgement {
      * @return int|string
      */
     public function getEntryTime() {
+        if (!is_numeric($this->entry_time)) {
+            if ($this->entry_time instanceof FrozenTime) {
+                $this->entry_time = $this->entry_time->timestamp;
+            } else {
+                $this->entry_time = strtotime($this->entry_time);
+            }
+        }
+
         return $this->entry_time;
     }
 

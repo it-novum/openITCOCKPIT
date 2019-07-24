@@ -1247,35 +1247,10 @@ class ServicesController extends AppController {
     public function browser($id = null) {
         $this->layout = 'blank';
 
-        if (!$this->isAngularJsRequest() && $idOrUuid === null) {
+        if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
-
-        $id = $idOrUuid;
-        if (!is_numeric($idOrUuid)) {
-            if (preg_match(UUID::regex(), $idOrUuid)) {
-                $lookupService = $this->Service->find('first', [
-                    'recursive'  => -1,
-                    'fields'     => [
-                        'Service.id'
-                    ],
-                    'conditions' => [
-                        'Service.uuid' => $idOrUuid
-                    ]
-                ]);
-                if (empty($lookupService)) {
-                    throw new NotFoundException(__('Service not found'));
-                }
-                $this->redirect([
-                    'controller' => 'services',
-                    'action'     => 'browser',
-                    $lookupService['Service']['id']
-                ]);
-                return;
-            }
-        }
-        unset($idOrUuid);
 
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Service not found'));
@@ -2292,7 +2267,7 @@ class ServicesController extends AppController {
 
         /** @var $DocumentationsTable DocumentationsTable */
         $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-        $docuExists = $DocumentationsTable->existsForUuid($service['Service']['uuid']);
+        $docuExists = $DocumentationsTable->existsByUuid($service['Service']['uuid']);
 
         //Get meta data and push to front end
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);

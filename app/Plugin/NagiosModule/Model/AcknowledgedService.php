@@ -25,7 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 
-
+/**
+ * Class AcknowledgedService
+ * @deprecated
+ */
 class AcknowledgedService extends NagiosModuleAppModel {
 
     public $useTable = 'acknowledgements';
@@ -41,6 +44,7 @@ class AcknowledgedService extends NagiosModuleAppModel {
     /**
      * @param null $uuid
      * @return array|null
+     * @deprecated
      */
     public function byServiceUuid($uuid = null) {
         return $this->byUuid($uuid);
@@ -49,6 +53,7 @@ class AcknowledgedService extends NagiosModuleAppModel {
     /**
      * @param string $uuid
      * @return array|null
+     * @deprecated
      */
     public function byUuid($uuid = null) {
         $return = [];
@@ -75,6 +80,7 @@ class AcknowledgedService extends NagiosModuleAppModel {
      * @param AcknowledgedServiceConditions $AcknowledgedServiceConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(AcknowledgedServiceConditions $AcknowledgedServiceConditions, $paginatorConditions = []) {
         $query = [

@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 
+/**
+ * Class StatehistoryHost
+ * @deprecated
+ */
 class StatehistoryHost extends CrateModuleAppModel {
     public $useDbConfig = 'Crate';
     public $useTable = 'host_statehistory';
@@ -40,6 +44,7 @@ class StatehistoryHost extends CrateModuleAppModel {
      * @param StatehistoryHostConditions $StatehistoryHostConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(StatehistoryHostConditions $StatehistoryHostConditions, $paginatorConditions = []) {
         $query = [
@@ -85,6 +90,7 @@ class StatehistoryHost extends CrateModuleAppModel {
     /**
      * @param StatehistoryHostConditions $StatehistoryHostConditions
      * @return array
+     * @deprecated
      */
     public function getLastRecord(StatehistoryHostConditions $StatehistoryHostConditions) {
         $query = [

@@ -373,7 +373,7 @@ class HostsController extends AppController {
         $this->set('_serialize', ['host', 'hoststatus']);
     }
 
-    public function byUuid($uuid){
+    public function byUuid($uuid) {
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
@@ -384,7 +384,7 @@ class HostsController extends AppController {
                 $this->render403();
                 return;
             }
-        }catch (RecordNotFoundException $e){
+        } catch (RecordNotFoundException $e) {
             throw new NotFoundException('Host not found');
         }
 
@@ -2124,7 +2124,7 @@ class HostsController extends AppController {
         }
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
         $this->set('mergedHost', $mergedHost);
-        $this->set('docuExists', $DocumentationsTable->existsForUuid($rawHost['Host']['uuid']));
+        $this->set('docuExists', $DocumentationsTable->existsByUuid($rawHost['Host']['uuid']));
         $this->set('hoststatus', $hoststatus);
         $this->set('mainContainer', $mainContainer);
         $this->set('sharedContainers', $sharedContainers);
@@ -2591,78 +2591,7 @@ class HostsController extends AppController {
         $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
         $this->set('_serialize', ['GrafanaDashboardExists', 'iframeUrl']);
     }
-
-    /**
-     * @deprecated
-     */
-    public function hostBrowserMenu($id) {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        if (!$this->Host->exists($id)) {
-            throw new NotFoundException();
-        }
-
-        //Host for .json requests
-        $host = $this->Host->find('first', [
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.address',
-                'Host.host_url',
-                'Host.host_type',
-                'Host.container_id'
-            ],
-            'conditions' => [
-                'Host.id' => $id,
-            ],
-            'contain'    => [
-                'Container',
-            ],
-        ]);
-
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-            $this->render403();
-            return;
-        }
-
-        /** @var $DocumentationsTable DocumentationsTable */
-        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-
-        $docuExists = $DocumentationsTable->existsByUuid($host['Host']['uuid']);
-
-        //Get meta data and push to front end
-        $HoststatusFields = new HoststatusFields($this->DbBackend);
-        $HoststatusFields->currentState()->isFlapping();
-        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
-        if (!isset($hoststatus['Hoststatus'])) {
-            $hoststatus['Hoststatus'] = [];
-        }
-        $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
-
-        $HostMacroReplacer = new \itnovum\openITCOCKPIT\Core\HostMacroReplacer($host);
-        $host['Host']['host_url_replaced'] = $host['Host']['host_url'];
-        if ($host['Host']['host_url'] !== '' && $host['Host']['host_url'] !== null) {
-            $host['Host']['host_url_replaced'] = $HostMacroReplacer->replaceBasicMacros($host['Host']['host_url']);
-        }
-
-        if ($this->hasRootPrivileges) {
-            $allowEdit = true;
-        } else {
-            $ContainerPermissions = new \itnovum\openITCOCKPIT\Core\Views\ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
-            $allowEdit = $ContainerPermissions->hasPermission();
-        }
-        $host['Host']['allowEdit'] = $allowEdit;
-
-        $this->set('host', $host);
-        $this->set('hoststatus', $Hoststatus->toArray());
-        $this->set('docuExists', $docuExists);
-        $this->set('_serialize', ['host', 'hoststatus', 'docuExists']);
-    }
-
+    
 
     /****************************
      *       AJAX METHODS       *

@@ -180,12 +180,17 @@ class DocumentationsController extends AppController {
                 'uuid'    => $uuid
             ]);
 
-            $DocumentationsTable->save($entity);
-            if ($entity->hasErrors()) {
-                $this->response->statusCode(400);
-                $this->set('error', $entity->getErrors());
-                $this->set('_serialize', ['error']);
-                return;
+            if(strlen(trim($content)) > 0) {
+                $DocumentationsTable->save($entity);
+                if ($entity->hasErrors()) {
+                    $this->response->statusCode(400);
+                    $this->set('error', $entity->getErrors());
+                    $this->set('_serialize', ['error']);
+                    return;
+                }
+            }else{
+                //Delete existing record if any
+                $DocumentationsTable->deleteDocumentationByUuid($uuid);
             }
 
             $this->set('documentation', $entity);

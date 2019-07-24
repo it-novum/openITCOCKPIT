@@ -9,6 +9,8 @@ use Cake\Validation\Validator;
 /**
  * Objects Model
  *
+ * Bake command: bin/cake bake model -p Statusengine2Module Objects
+ *
  * @method \Statusengine2Module\Model\Entity\Object get($primaryKey, $options = [])
  * @method \Statusengine2Module\Model\Entity\Object newEntity($data = null, array $options = [])
  * @method \Statusengine2Module\Model\Entity\Object[] newEntities(array $data, array $options = [])

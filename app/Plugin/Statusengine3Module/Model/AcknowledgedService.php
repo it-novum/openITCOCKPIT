@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 
+/**
+ * Class AcknowledgedService
+ * @deprecated
+ */
 class AcknowledgedService extends Statusengine3ModuleAppModel {
     public $useTable = 'service_acknowledgements';
     public $tablePrefix = 'statusengine_';
@@ -32,6 +36,7 @@ class AcknowledgedService extends Statusengine3ModuleAppModel {
     /**
      * @param null $uuid
      * @return array|null
+     * @deprecated
      */
     public function byUuid($uuid = null) {
         return $this->byServiceUuid($uuid);
@@ -40,6 +45,7 @@ class AcknowledgedService extends Statusengine3ModuleAppModel {
     /**
      * @param string $uuid
      * @return array|null
+     * @deprecated
      */
     public function byServiceUuid($uuid = null) {
         $return = [];
@@ -64,6 +70,7 @@ class AcknowledgedService extends Statusengine3ModuleAppModel {
      * @param AcknowledgedServiceConditions $AcknowledgedServiceConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(AcknowledgedServiceConditions $AcknowledgedServiceConditions, $paginatorConditions = []) {
         $query = [
