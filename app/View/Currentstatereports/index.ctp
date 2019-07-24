@@ -199,10 +199,7 @@
                         </div>
                     </fieldset>
                 </div>
-
             </div>
-
-
             <div class="row">
                 <div class="alert alert-info" ng-show="generatingReport">
                     <i class="fa fa-spin fa-refresh"></i>
@@ -462,9 +459,10 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="alert alert-info" ng-show="noDataFound">
-                    {{ noDataFoundMessage }}
+            <div class="row padding-10">
+                <div class="alert alert-info" ng-show="hasEntries === false">
+                    <i class="fa fa-lg fa-info-circle"></i>
+                    <?php echo __('No entries match the selection'); ?>
                 </div>
             </div>
         </div>
