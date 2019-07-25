@@ -190,6 +190,7 @@ class CurrentstatereportsController extends AppController {
     /**
      * @param ServiceConditions $ServiceConditions
      * @param ServicestatusConditions $ServicestatusConditions
+     * @param bool $pdf
      * @return array
      * @throws MissingDbBackendException
      */
