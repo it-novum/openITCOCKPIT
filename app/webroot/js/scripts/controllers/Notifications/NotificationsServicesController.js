@@ -19,10 +19,6 @@ angular.module('openITCOCKPIT')
                         critical: false,
                         unknown: false
                     },
-                    state_types: {
-                        soft: false,
-                        hard: false
-                    },
                     output: '',
                 },
                 Hosts: {
