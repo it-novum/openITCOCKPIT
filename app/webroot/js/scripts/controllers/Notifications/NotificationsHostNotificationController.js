@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('NotificationsHostNotificationController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, $stateParams) {
 
-        SortService.setSort(QueryStringService.getValue('sort', 'NotificationHost.start_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'NotificationHosts.start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function() {
             $scope.filter = {
-                Notification: {
+                NotificationHosts: {
                     state: {
                         recovery: false,
                         down: false,
@@ -51,8 +51,8 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[NotificationHost.output]': $scope.filter.Notification.output,
-                    'filter[NotificationHost.state][]': $rootScope.currentStateForApi($scope.filter.Notification.state),
+                    'filter[NotificationHosts.output]': $scope.filter.NotificationHosts.output,
+                    'filter[NotificationHosts.state][]': $rootScope.currentStateForApi($scope.filter.NotificationHosts.state),
                     'filter[from]': $scope.filter.from,
                     'filter[to]': $scope.filter.to
                 }
