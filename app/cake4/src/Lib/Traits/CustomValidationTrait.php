@@ -245,27 +245,6 @@ trait CustomValidationTrait {
         return false;
     }
 
-    /**
-     * @param mixed $value
-     * @param array $context
-     * @return bool
-     *
-     * Custom validation rule for escalate options (host escalations)
-     */
-    public function checkEscalateOptionsHostEscalation($value, $context) {
-        $escalateOptions = [
-            'escalate_on_recovery',
-            'escalate_on_down',
-            'escalate_on_unreachable'
-        ];
-
-        foreach ($escalateOptions as $escalateOption) {
-            if (isset($context['data'][$escalateOption]) && $context['data'][$escalateOption] == 1) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     /***************************************
      *      SERVICE VALIDATION METHODS     *
@@ -403,29 +382,6 @@ trait CustomValidationTrait {
             }
         }
 
-        return false;
-    }
-
-    /**
-     * @param mixed $value
-     * @param array $context
-     * @return bool
-     *
-     * Custom validation rule for escalate options (service escalations)
-     */
-    public function checkEscalateOptionsServiceEscalation($value, $context) {
-        $escalateOptions = [
-            'escalate_on_recovery',
-            'escalate_on_warning',
-            'escalate_on_critical',
-            'escalate_on_unknown'
-        ];
-
-        foreach ($escalateOptions as $escalateOption) {
-            if (isset($context['data'][$escalateOption]) && $context['data'][$escalateOption] == 1) {
-                return true;
-            }
-        }
         return false;
     }
 

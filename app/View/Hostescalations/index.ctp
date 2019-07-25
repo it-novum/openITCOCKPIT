@@ -304,7 +304,7 @@
                                         <ul class="list-unstyled">
                                             <li ng-repeat="host in hostescalation.hosts_excluded">
                                                 <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
-                                                title="{{host.name}}">
+                                                     title="{{host.name}}">
                                                     <label class="label label-danger label-xs">
                                                         <i class="fa fa-minus" aria-hidden="true"></i>
                                                     </label>
@@ -427,23 +427,6 @@
                                             <span class="label-forced label-default margin-right-5"
                                                   title="<?php echo __('Unreachable'); ?>"
                                                   ng-show="hostescalation.escalate_on_unreachable">
-                                                <?php echo __('U'); ?>
-                                            </span>
-                                        </div>
-                                        <!-- NOR operator => !OR -->
-                                        <div ng-show="!(hostescalation.escalate_on_recovery||
-                                        hostescalation.escalate_on_down||
-                                        hostescalation.escalate_on_unreachable)">
-                                            <span class="label-forced label-success margin-right-5"
-                                                  title="<?php echo __('Recovery'); ?>">
-                                                <?php echo __('R'); ?>
-                                            </span>
-                                            <span class="label-forced label-danger margin-right-5"
-                                                  title="<?php echo __('Down'); ?>">
-                                                <?php echo __('D'); ?>
-                                            </span>
-                                            <span class="label-forced label-default margin-right-5"
-                                                  title="<?php echo __('Unreachable'); ?>">
                                                 <?php echo __('U'); ?>
                                             </span>
                                         </div>

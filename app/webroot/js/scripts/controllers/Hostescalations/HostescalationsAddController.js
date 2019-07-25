@@ -8,9 +8,9 @@ angular.module('openITCOCKPIT')
                 last_notification: 5,
                 notification_interval: 7200,
                 timeperiod_id: null,
-                escalate_on_recovery: 1,
-                escalate_on_down: 1,
-                escalate_on_unreachable: 1,
+                escalate_on_recovery: 0,
+                escalate_on_down: 0,
+                escalate_on_unreachable: 0,
                 contacts: {
                     _ids: []
                 },

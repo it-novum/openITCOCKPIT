@@ -2599,3 +2599,7 @@ input[type=text]:focus + .input-group-addon-no-focus {
 .error-container {
     border: 1px dotted #a94442;
 }
+
+.chosen-container-single .chosen-single abbr {
+    top: 10px;
+}
