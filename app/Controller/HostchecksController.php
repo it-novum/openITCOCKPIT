@@ -88,7 +88,7 @@ class HostchecksController extends AppController {
             ];
         }
 
-        $this->set(compact(['all_hostchecks']));
+        $this->set('all_hostchecks', $all_hostchecks);
         $toJson = ['all_hostchecks', 'paging'];
         if ($this->isScrollRequest()) {
             $toJson = ['all_hostchecks', 'scroll'];

@@ -925,6 +925,7 @@ class ServicesTable extends Table {
                 'Hosts' => function (Query $query) {
                     $query->select([
                         'Hosts.id',
+                        'Hosts.uuid',
                         'Hosts.container_id'
                     ])
                         ->contain([

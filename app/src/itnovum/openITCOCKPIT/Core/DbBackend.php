@@ -32,6 +32,7 @@ use App\Lib\Interfaces\HostchecksTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\NotificationHostsTableInterface;
 use App\Lib\Interfaces\NotificationServicesTableInterface;
+use App\Lib\Interfaces\ServicechecksTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Interfaces\StatehistoryHostTableInterface;
 use App\Lib\Interfaces\StatehistoryServiceTableInterface;
@@ -130,6 +131,26 @@ class DbBackend {
             /** @var $HostchecksTable HostchecksTableInterface */
             $HostchecksTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Hostchecks');
             return $HostchecksTable;
+        }
+
+        if ($this->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+    }
+
+    /**
+     * @return ServicechecksTableInterface
+     * @throws MissingDbBackendException
+     */
+    public function getServicechecksTable() {
+        if ($this->isNdoUtils()) {
+            /** @var $ServicechecksTable ServicechecksTableInterface */
+            $ServicechecksTable = TableRegistry::getTableLocator()->get('Statusengine2Module.Servicechecks');
+            return $ServicechecksTable;
         }
 
         if ($this->isCrateDb()) {

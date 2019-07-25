@@ -260,10 +260,10 @@ class Hostcheck {
      * @return int|string
      */
     public function getStartTime() {
-        if(!is_numeric($this->start_time)){
-            if($this->start_time instanceof FrozenTime){
+        if (!is_numeric($this->start_time)) {
+            if ($this->start_time instanceof FrozenTime) {
                 $this->start_time = $this->start_time->timestamp;
-            }else{
+            } else {
                 $this->start_time = strtotime($this->start_time);
             }
         }

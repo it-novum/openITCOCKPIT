@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2018>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,30 +22,18 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\AngularJS\Request;
+namespace App\Lib\Interfaces;
 
-use itnovum\openITCOCKPIT\Filter\BaseFilter;
 
-class ServicechecksControllerRequest extends AngularRequest {
+use itnovum\openITCOCKPIT\Core\ServicechecksConditions;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+
+interface ServicechecksTableInterface {
 
     /**
-     * @var array
+     * @param ServicechecksConditions $ServicechecksConditions
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
      */
-    protected $filters = [
-        'index' => [
-            'like' => [
-                'Servicechecks.output'
-            ]
-        ]
-    ];
-
-    protected $ServiceStateField = 'Servicechecks.state';
-
-    protected $ServiceStateTypeField = 'Servicechecks.state_type';
-
-    public function getIndexFilters() {
-        $Filter = new BaseFilter($this->getRequest());
-        return $Filter->getConditionsByFilters($this->filters['index']);
-    }
-
+    public function getServicechecks(ServicechecksConditions $ServicechecksConditions, $PaginateOMat = null);
 }

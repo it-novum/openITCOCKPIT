@@ -25,11 +25,22 @@
 
 use itnovum\openITCOCKPIT\Core\ServicechecksConditions;
 
+/**
+ * Class Servicecheck
+ * @deprecated
+ */
 class Servicecheck extends Statusengine3ModuleAppModel {
     public $useTable = 'servicechecks';
     public $tablePrefix = 'statusengine_';
 
-
+    /**
+     * Servicecheck constructor.
+     * @param bool $id
+     * @param null $table
+     * @param null $ds
+     * @param bool $useDynamicAssociations
+     * @deprecated
+     */
     public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
         $this->virtualFields['state_type'] = 'Servicecheck.is_hardstate';
@@ -39,6 +50,7 @@ class Servicecheck extends Statusengine3ModuleAppModel {
      * @param ServicechecksConditions $ServicecheckConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(ServicechecksConditions $ServicecheckConditions, $paginatorConditions = []) {
         $query = [

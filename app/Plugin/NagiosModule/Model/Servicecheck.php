@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\ServicechecksConditions;
 
+/**
+ * Class Servicecheck
+ * @deprecated
+ */
 class Servicecheck extends NagiosModuleAppModel {
     //public $useDbConfig = 'nagios';
     public $useTable = 'servicechecks';
@@ -42,6 +46,7 @@ class Servicecheck extends NagiosModuleAppModel {
      * @param ServicechecksConditions $ServicecheckConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(ServicechecksConditions $ServicecheckConditions, $paginatorConditions = []) {
         $query = [
