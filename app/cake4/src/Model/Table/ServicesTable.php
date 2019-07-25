@@ -14,7 +14,9 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
+use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
@@ -1786,10 +1788,11 @@ class ServicesTable extends Table {
 
     /**
      * @param ServiceConditions $ServiceConditions
-     * @param null|PaginateOMat $PaginateOMat
+     * @param ServicestatusConditions $ServicestatusConditions
+     * @param null $PaginateOMat
      * @return array
      */
-    public function getServiceForCurrentReport(ServiceConditions $ServiceConditions, $PaginateOMat = null) {
+    public function getServiceForCurrentReport(ServiceConditions $ServiceConditions, ServicestatusConditions $ServicestatusConditions, $PaginateOMat = null) {
         $where = $ServiceConditions->getConditions();
 
         $where['Services.disabled'] = 0;
@@ -1893,10 +1896,38 @@ class ServicesTable extends Table {
             unset($where['not_keywords not rlike']);
         }
 
+        if ($ServicestatusConditions->hasConditions()) {
+            $whereServicestatusConditions = $ServicestatusConditions->getConditions();
+            if (isset($whereServicestatusConditions['Servicestatus.current_state'])) {
+                $query->andWhere([
+                    'Servicestatus.current_state IN ' => array_values($whereServicestatusConditions['Servicestatus.current_state'])
+                ]);
+            }
+            if (isset($whereServicestatusConditions['Servicestatus.scheduled_downtime_depth'])) {
+                $query->andWhere([
+                    'Servicestatus.scheduled_downtime_depth' => 0
+                ]);
+            }
+            if (isset($whereServicestatusConditions['Servicestatus.scheduled_downtime_depth > '])) {
+                $query->andWhere([
+                    'Servicestatus.scheduled_downtime_depth > ' => 0
+                ]);
+            }
+            if (isset($whereServicestatusConditions['Servicestatus.problem_has_been_acknowledged'])) {
+                $query->andWhere([
+                    'Servicestatus.problem_has_been_acknowledged' => $whereServicestatusConditions['Servicestatus.problem_has_been_acknowledged']
+                ]);
+            }
+            if (isset($whereServicestatusConditions['Servicestatus.active_checks_enabled'])) {
+                $query->andWhere([
+                    'Servicestatus.active_checks_enabled' => $whereServicestatusConditions['Servicestatus.active_checks_enabled']
+                ]);
+            }
+        }
+
         if (!empty($where)) {
             $query->andWhere($where);
         }
-
 
         $query->disableHydration();
         $query->group(['Services.id']);
@@ -1906,9 +1937,6 @@ class ServicesTable extends Table {
         }
 
         $query->order($ServiceConditions->getOrder());
-
-        //FileDebugger::dieQuery($query);
-
 
         if ($PaginateOMat === null) {
             //Just execute query

@@ -3,6 +3,7 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.errors = null;
+        $scope.hasEntries = null;
 
         $scope.post = {
             services: [],
@@ -12,17 +13,16 @@ angular.module('openITCOCKPIT')
                 warning: true,
                 critical: true,
                 unknown: true
+            },
+            Servicestatus: {
+                hasBeenAcknowledged: null,
+                inDowntime: null,
+                passive: null
             }
         };
 
         $scope.filter = {
             Servicestatus: {
-                current_state: {
-                    ok: true,
-                    warning: true,
-                    critical: true,
-                    unknown: true
-                },
                 acknowledged: QueryStringService.getValue('has_been_acknowledged', false) === '1',
                 not_acknowledged: QueryStringService.getValue('has_not_been_acknowledged', false) === '1',
                 in_downtime: QueryStringService.getValue('in_downtime', false) === '1',
@@ -32,28 +32,49 @@ angular.module('openITCOCKPIT')
             }
         };
 
+
         $scope.servicestatus = {};
 
         $scope.createCurrentStateReport = function(){
-            var hasBeenAcknowledged = '';
-            var inDowntime = '';
+            $scope.post.Servicestatus.current_state = [];
+            if($scope.post.current_state.ok === true){
+                $scope.post.Servicestatus.current_state.push(0);
+            }
+            if($scope.post.current_state.warning === true){
+                $scope.post.Servicestatus.current_state.push(1);
+            }
+            if($scope.post.current_state.critical === true){
+                $scope.post.Servicestatus.current_state.push(2);
+            }
+            if($scope.post.current_state.unknown === true){
+                $scope.post.Servicestatus.current_state.push(3);
+            }
             if($scope.filter.Servicestatus.acknowledged ^ $scope.filter.Servicestatus.not_acknowledged){
-                hasBeenAcknowledged = $scope.filter.Servicestatus.acknowledged === true;
+                $scope.post.Servicestatus.hasBeenAcknowledged = $scope.filter.Servicestatus.acknowledged === true;
+            }else if($scope.filter.Servicestatus.acknowledged && $scope.filter.Servicestatus.not_acknowledged){
+                $scope.post.Servicestatus.hasBeenAcknowledged = null;
             }
             if($scope.filter.Servicestatus.in_downtime ^ $scope.filter.Servicestatus.not_in_downtime){
-                inDowntime = $scope.filter.Servicestatus.in_downtime === true;
+                $scope.post.Servicestatus.inDowntime = $scope.filter.Servicestatus.in_downtime === true;
+            }else if($scope.filter.Servicestatus.in_downtime && $scope.filter.Servicestatus.not_in_downtime){
+                $scope.post.Servicestatus.inDowntime = null;
             }
 
-            var passive = '';
             if($scope.filter.Servicestatus.passive ^ $scope.filter.Servicestatus.active){
-                passive = !$scope.filter.Servicestatus.passive;
+                $scope.post.Servicestatus.passive = !$scope.filter.Servicestatus.passive;
+            }else if($scope.filter.Servicestatus.passive && $scope.filter.Servicestatus.active){
+                $scope.post.Servicestatus.passive = null;
             }
 
-            $http.post("/currentstatereports/index.json",
-                $scope.post
+            $http.post("/currentstatereports/index.json", $scope.post
             ).then(function(result){
                 $scope.servicestatus = result.data.all_services;
-                NotyService.genericSuccess();
+                if(result.data.all_services.length === 0){
+                    $scope.hasEntries = false;
+                }else{
+                    $scope.hasEntries = true;
+                }
+// ??????       NotyService.genericSuccess();
 
                 if($scope.post.report_format === 'pdf'){
                     window.location = '/currentstatereports/createPdfReport.pdf';
@@ -65,7 +86,7 @@ angular.module('openITCOCKPIT')
 
                 $scope.errors = null;
             }, function errorCallback(result){
-                NotyService.genericError();
+// ??????       NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
