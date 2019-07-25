@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('CurrentstatereportsIndexController', function($rootScope, $scope, $http, $timeout, NotyService, QueryStringService){
+    .controller('CurrentstatereportsIndexController', function($rootScope, $scope, $http, $timeout, NotyService, QueryStringService, $httpParamSerializer){
 
         $scope.init = true;
         $scope.errors = null;
@@ -7,7 +7,7 @@ angular.module('openITCOCKPIT')
 
         $scope.post = {
             services: [],
-            report_format: '1',
+            report_format: '2',
             current_state: {
                 ok: true,
                 warning: true,
@@ -66,32 +66,56 @@ angular.module('openITCOCKPIT')
                 $scope.post.Servicestatus.passive = null;
             }
 
-            $http.post("/currentstatereports/index.json", $scope.post
-            ).then(function(result){
-                $scope.servicestatus = result.data.all_services;
-                if(result.data.all_services.length === 0){
-                    $scope.hasEntries = false;
-                }else{
-                    $scope.hasEntries = true;
-                }
-// ??????       NotyService.genericSuccess();
 
-                if($scope.post.report_format === 'pdf'){
-                    window.location = '/currentstatereports/createPdfReport.pdf';
-                }
+            if($scope.post.report_format === '1'){
+                //PDF Report
+                var GETParams = {
+                    'angular': true,
+                    'data[current_state][ok]': $scope.post.current_state.ok,
+                    'data[current_state][warning]': $scope.post.current_state.warning,
+                    'data[current_state][critical]': $scope.post.current_state.critical,
+                    'data[current_state][unknown]': $scope.post.current_state.unknown,
+                    'data[services][]': $scope.post.services,
+                    'data[Servicestatus][hasBeenAcknowledged]': $scope.post.Servicestatus.hasBeenAcknowledged,
+                    'data[Servicestatus][inDowntime]': $scope.post.Servicestatus.inDowntime,
+                    'data[Servicestatus][passive]': $scope.post.Servicestatus.passive,
+                    'data[Servicestatus][current_state][]': $scope.post.Servicestatus.current_state
+                };
 
-                if($scope.post.report_format === 'html'){
-                    window.location = '/currentstatereports/createHtmlReport';
-                }
+                $http.get("/currentstatereports/createPdfReport.json", {
+                        params: GETParams
+                    }
+                ).then(function(result){
+                    window.location = '/currentstatereports/createPdfReport.pdf?' + $httpParamSerializer(GETParams);
+                }, function errorCallback(result){
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                });
 
-                $scope.errors = null;
-            }, function errorCallback(result){
-// ??????       NotyService.genericError();
-                if(result.data.hasOwnProperty('error')){
-                    $scope.errors = result.data.error;
-                }
-            });
-
+            }else{
+                //HTML Report
+                $http.post("/currentstatereports/index.json", $scope.post
+                ).then(function(result){
+                    $scope.servicestatus = result.data.all_services;
+                    if(result.data.all_services.length === 0){
+                        $scope.hasEntries = false;
+                    }else{
+                        $scope.hasEntries = true;
+                    }
+                    NotyService.genericSuccess({
+                        message: $scope.reportMessage.successMessage
+                    });
+                    $scope.errors = null;
+                }, function errorCallback(result){
+                    NotyService.genericError({
+                        message: $scope.reportMessage.errorMessage
+                    });
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                });
+            }
         };
 
         $scope.loadServices = function(searchString){

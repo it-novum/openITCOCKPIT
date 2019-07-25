@@ -52,7 +52,8 @@
                 'class' => 'form-horizontal clear',
             ]);
             ?>
-            <div class="form-group required" ng-class="{'has-error': errors.services}">
+            <div class="form-group required" ng-class="{'has-error': errors.services}" ng-init="reportMessage=
+            {successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
                 <label class="col-xs-1 col-md-1 col-lg-1 control-label">
                     <?php echo __('Services'); ?>
                 </label>
@@ -78,7 +79,7 @@
                 <div class="col col-xs-10 col-md-10 col-lg-10">
                     <select
                             class="form-control"
-                            ng-model="post.Currentstatereport.report_format">
+                            ng-model="post.report_format">
                         <option value="1"><?php echo __('PDF'); ?></option>
                         <option value="2"><?php echo __('HTML'); ?></option>
                     </select>
@@ -215,7 +216,8 @@
                                       style="font-size:20px;text-shadow: 2px 4px 3px rgba(0,0,0,0.3);">
                                     <i class="fa fa-lg fa-desktop"></i>
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                        <a ui-sref="HostsBrowser({id: servicestatusObject.Host.id})" class="txt-color-white">
+                                        <a ui-sref="HostsBrowser({id: servicestatusObject.Host.id})"
+                                           class="txt-color-white">
                                                 {{servicestatusObject.Host.hostname}} ({{servicestatusObject.Host.address}})
                                             </a>
                                     <?php else: ?>
@@ -232,29 +234,29 @@
                              class="txt-color-white">
                             <div class="row">
                                 <div class="col-lg-12 no-padding font-sm">
-                                    <div class="col-lg-1 no-padding">
+                                    <div class="col-lg-2 no-padding">
                                         <?php echo __('Last check'); ?>
                                     </div>
-                                    <div class="col-lg-1 no-padding">
+                                    <div class="col-lg-2 no-padding">
                                         <?php echo __('Next check'); ?>
                                     </div>
-                                    <div class="col-lg-1 no-padding">
+                                    <div class="col-lg-2 no-padding">
                                         <?php echo __('State type'); ?>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-12 no-padding font-md">
-                                    <div class="col-lg-1 no-padding">
+                                    <div class="col-lg-2 no-padding">
                                         {{servicestatusObject.Hoststatus.lastCheck}}
                                     </div>
-                                    <div class="col-lg-1 no-padding">
+                                    <div class="col-lg-2 no-padding">
                                         <span ng-if="servicestatusObject.Hoststatus.activeChecksEnabled && servicestatusObject.Host.is_satellite_host === false">{{ servicestatusObject.Hoststatus.nextCheck }}</span>
                                         <span ng-if="servicestatusObject.Hoststatus.activeChecksEnabled === false || servicestatusObject.Host.is_satellite_host === true">
                                                 <?php echo __('n/a'); ?>
                                             </span>
                                     </div>
-                                    <div class="col-lg-1 no-padding">
+                                    <div class="col-lg-2 no-padding">
                                         <div class="row" ng-show="servicestatusObject.Hoststatus.isHardstate">
                                             <?php echo __('Hard state'); ?>
                                             ({{servicestatusObject.Hoststatus.current_check_attempt}}/{{servicestatusObject.Hoststatus.max_check_attempts}})
@@ -281,7 +283,7 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="col-lg-8 text-right">
+                                    <div class="col-lg-5 text-right">
                                         {{servicestatusObject.Hoststatus.output}}
                                     </div>
                                 </div>
@@ -466,18 +468,16 @@
                 </div>
             </div>
         </div>
-        <div class="well formactions ">
-            <div class="pull-right">
-                <input type="button"
-                       class="btn btn-primary"
-                       value="<?php echo __('Create'); ?>"
-                       ng-click="createCurrentStateReport()"
-                >
-                &nbsp;
-                <a ui-sref="CurrentstatereportsIndex" class="btn btn-default">
-                    <?php echo __('Cancel'); ?>
-                </a>
+
+        <div class="col-xs-12 margin-top-10 margin-bottom-10">
+            <div class="well formactions ">
+                <div class="pull-right">
+                    <button type="button" ng-click="createCurrentStateReport()" class="btn btn-primary">
+                        <?php echo __('Create report'); ?>
+                    </button>
+                </div>
             </div>
         </div>
+
     </div>
 </div>
