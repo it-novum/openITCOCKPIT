@@ -442,27 +442,6 @@
                                                 <?php echo __('U'); ?>
                                             </span>
                                         </div>
-                                        <!-- NOR operator => !OR -->
-                                        <div ng-show="!(serviceescalation.escalate_on_recovery||
-                                        serviceescalation.escalate_on_warning|| serviceescalation.escalate_on_critical ||
-                                        serviceescalation.escalate_on_unknown)">
-                                            <span class="label-forced label-success margin-right-5"
-                                                  title="<?php echo __('Recovery'); ?>">
-                                                <?php echo __('R'); ?>
-                                            </span>
-                                            <span class="label-forced label-warning margin-right-5"
-                                                  title="<?php echo __('Warning'); ?>">
-                                                <?php echo __('W'); ?>
-                                            </span>
-                                            <span class="label-forced label-danger margin-right-5"
-                                                  title="<?php echo __('Critical'); ?>">
-                                                <?php echo __('C'); ?>
-                                            </span>
-                                            <span class="label-forced label-default margin-right-5"
-                                                  title="<?php echo __('Unreachable'); ?>">
-                                                <?php echo __('U'); ?>
-                                            </span>
-                                        </div>
                                     </td>
                                     <td class="text-center">
                                         <div class="btn-group smart-form">

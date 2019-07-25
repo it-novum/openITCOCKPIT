@@ -82,7 +82,7 @@ Once a service escalated, contacts, contact group and notification options will 
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </label>
                                     <label class="label label-light label-xs no-border"
-                                          ng-class="{'has-error': errors.services}">
+                                           ng-class="{'has-error': errors.services}">
                                         <?php echo __('Services'); ?>
                                     </label>
                                 </div>
@@ -245,21 +245,19 @@ Once a service escalated, contacts, contact group and notification options will 
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
+                        <div class="form-group">
                             <label class="col col-md-2 control-label">
-                                <?php echo __('Time period'); ?>
+                                <?php echo __('Escalation period'); ?>
                             </label>
                             <div class="col col-xs-12 col-lg-10">
                                 <select
-                                        data-placeholder="<?php echo __('Please choose a timeperiod'); ?>"
+                                        data-placeholder="<?php echo __('Please choose a escalation timeperiod'); ?>"
                                         class="form-control"
                                         chosen="timeperiods"
                                         ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
                                         ng-model="post.Serviceescalation.timeperiod_id">
+                                    <option></option>
                                 </select>
-                                <div ng-repeat="error in errors.timeperiod_id">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
                             </div>
                         </div>
 
@@ -303,13 +301,10 @@ Once a service escalated, contacts, contact group and notification options will 
 
                         <fieldset>
                             <legend class="font-sm">
-                                <div class="required">
+                                <div>
                                     <label>
-                                        <?php echo __('Service escalation options'); ?>
+                                        <?php echo __('Escalation options'); ?>
                                     </label>
-                                </div>
-                                <div ng-repeat="error in errors.escalate_on_recovery">
-                                    <div class="text-danger">{{ error }}</div>
                                 </div>
                             </legend>
                             <ul class="config-flex-inner">

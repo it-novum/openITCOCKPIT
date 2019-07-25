@@ -82,7 +82,7 @@ Once a host or service escalated, contacts, contact group and notification optio
                                         <i class="fa fa-plus" aria-hidden="true"></i>
                                     </label>
                                     <label class="label label-light label-xs no-border"
-                                          ng-class="{'has-error': errors.hosts}">
+                                           ng-class="{'has-error': errors.hosts}">
                                         <?php echo __('Hosts'); ?>
                                     </label>
                                 </div>
@@ -246,21 +246,19 @@ Once a host or service escalated, contacts, contact group and notification optio
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
+                        <div class="form-group">
                             <label class="col col-md-2 control-label">
-                                <?php echo __('Time period'); ?>
+                                <?php echo __('Escalation period'); ?>
                             </label>
                             <div class="col col-xs-12 col-lg-10">
                                 <select
-                                        data-placeholder="<?php echo __('Please choose a timeperiod'); ?>"
-                                        class="form-control"
-                                        chosen="timeperiods"
-                                        ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
-                                        ng-model="post.Hostescalation.timeperiod_id">
+                                    data-placeholder="<?php echo __('Please choose a escalation timeperiod'); ?>"
+                                    class="form-control"
+                                    chosen="timeperiods"
+                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                    ng-model="post.Hostescalation.timeperiod_id">
+                                    <option></option>
                                 </select>
-                                <div ng-repeat="error in errors.timeperiod_id">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
                             </div>
                         </div>
 
@@ -290,7 +288,7 @@ Once a host or service escalated, contacts, contact group and notification optio
                             <div class="col col-xs-12 col-lg-10">
                                 <select
                                         multiple
-                                        data-placeholder="<?php echo __('Please choose a contactgroup'); ?>"
+                                        data-placeholder="<?php echo __('Please choose a contact group'); ?>"
                                         class="form-control"
                                         chosen="contactgroups"
                                         ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
@@ -304,13 +302,10 @@ Once a host or service escalated, contacts, contact group and notification optio
 
                         <fieldset>
                             <legend class="font-sm">
-                                <div class="required">
+                                <div>
                                     <label>
-                                        <?php echo __('Host escalation options'); ?>
+                                        <?php echo __('Escalation options'); ?>
                                     </label>
-                                </div>
-                                <div ng-repeat="error in errors.escalate_on_recovery">
-                                    <div class="text-danger">{{ error }}</div>
                                 </div>
                             </legend>
                             <ul class="config-flex-inner">
