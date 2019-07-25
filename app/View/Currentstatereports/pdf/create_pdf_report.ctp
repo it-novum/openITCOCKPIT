@@ -61,99 +61,110 @@ $Logo = new Logo();
             </div>
             <div class="col-md-12 padding-20">
                 <?php
-                foreach ($currentStateData as $currentStateObjectData):
-                    if (!empty($currentStateObjectData['Host']['Services'])):?>
-                        <div class="jarviswidget col-md-12">
-                            <header role="heading">
-                                <h2>
-                                    <strong class="txt-color-blueDark font-lg">
-                                        <i class="fa fa-desktop txt-color-blueDark"></i> <?php echo h($currentStateObjectData['Host']['name']);
-                                        ?>
-                                    </strong>
-                                </h2>
-                            </header>
-                            <div class="widget-body font-md">
-                                <div class="col-md-3 ">
-                                    <?php echo __('Description'); ?>
-                                </div>
-                                <div class="col-md-9">
-                                    <?php echo h(($currentStateObjectData['Host']['description']) ? $currentStateObjectData['Host']['description'] : ' - '); ?>
-                                </div>
-                                <div class="col-md-3">
-                                    <?php echo __('IP address'); ?>
-                                </div>
-                                <div class="col-md-9">
-                                    <?php echo h($currentStateObjectData['Host']['address']); ?>
-                                </div>
-                                <div class="col-md-3">
-                                    <?php echo __('Status'); ?>
-                                </div>
-                                <div class="col-md-9">
-                                    <?php echo h($this->Status->humanSimpleServiceStatus($currentStateObjectData['Host']['Hoststatus']['current_state'])); ?>
-                                </div>
-                                <div class="col-md-3">
-                                    <?php echo __('Status since'); ?>
-                                </div>
-                                <div class="col-md-9">
-                                    <?php
-                                    echo h($this->Utils->secondsInHumanShort(time() - strtotime($currentStateObjectData['Host']['Hoststatus']['last_state_change'])));
-                                    ?>
-                                </div>
-                                <div class="col-md-3">
-                                    <?php echo __('Host output'); ?>
-                                </div>
-                                <div class="col-md-9">
-                                    <?php echo h($currentStateObjectData['Host']['Hoststatus']['output']); ?>
-                                </div>
-                                <div class="col-md-12 padding-top-20 padding-bottom-10">
-                                    <i class="fa fa-gears txt-color-blueDark"></i>
-                                    <?php echo __('Checks'); ?>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="widget-body font-sm">
-                                        <?php
-                                        foreach ($currentStateObjectData['Host']['Services'] as $serviceData):
-                                            $perfDataArray = $this->Perfdata->parsePerfData($serviceData['Servicestatus']['perfdata']);
+                if (sizeof($all_services) > 0):
+                    foreach ($all_services as $hostId => $currentStateObjectData):
+                        if (!empty($currentStateObjectData['Services'])):?>
+                            <div class="jarviswidget col-md-12">
+                                <header role="heading">
+                                    <h2>
+                                        <strong class="<?php echo $currentStateObjectData['Hoststatus']['humanState']; ?> font-lg">
+                                            <i class="fa fa-desktop <?php echo $currentStateObjectData['Hoststatus']['humanState']; ?>"></i> <?php echo h($currentStateObjectData['Host']['hostname']);
                                             ?>
-                                            <div class="row padding-5">
-                                                <div class="col-md-3">
-                                                    <i class="fa fa-square <?php echo $this->Status->ServiceStatusTextColor($serviceData['Servicestatus']['current_state']); ?>"> </i>
-                                                    <?php
-                                                    echo h($serviceData['Service']['name']);
-                                                    ?>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <?php
-                                                    echo h($this->Utils->secondsInHumanShort(time() - strtotime($serviceData['Servicestatus']['last_state_change'])));
-                                                    ?>
-                                                </div>
-                                                <div class="col-md-5">
-                                                    <?php echo h($serviceData['Servicestatus']['output']); ?>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <?php
-                                                    if (!empty($perfDataArray) && isset($perfDataArray[0])):?>
-                                                        <div class="col-md-12 text-center bordered <?php echo $this->Status->ServiceStatusColorSimple($serviceData['Servicestatus']['current_state'])['class']; ?>">
-                                                            <strong class=" txt-color-white">
-                                                                <?php
-                                                                echo $perfDataArray[0]['current_value'] . ' ' . $perfDataArray[0]['unit'];
-                                                                ?>
-                                                            </strong>
-                                                        </div>
-                                                    <?php
-                                                    endif;
-                                                    ?>
-                                                </div>
-                                            </div>
+                                        </strong>
+                                    </h2>
+                                </header>
+                                <div class="widget-body font-md">
+                                    <div class="col-md-3 ">
+                                        <?php echo __('Description'); ?>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <?php echo h(($currentStateObjectData['Host']['description']) ? $currentStateObjectData['Host']['description'] : ' - '); ?>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <?php echo __('IP address'); ?>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <?php echo h($currentStateObjectData['Host']['address']); ?>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <?php echo __('Status'); ?>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <?php echo h($this->Status->humanSimpleServiceStatus($currentStateObjectData['Hoststatus']['currentState'])); ?>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <?php echo __('Status since'); ?>
+                                    </div>
+                                    <div class="col-md-9">
                                         <?php
-                                        endforeach; ?>
+                                        echo h($currentStateObjectData['Hoststatus']['lastCheck']);
+                                        ?>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <?php echo __('Host output'); ?>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <?php echo h($currentStateObjectData['Hoststatus']['output']); ?>
+                                    </div>
+                                    <div class="col-md-12 padding-top-20 padding-bottom-10">
+                                        <i class="fa fa-gears txt-color-blueDark"></i>
+                                        <?php echo __('Checks'); ?>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="widget-body font-sm">
+                                            <?php
+                                            foreach ($currentStateObjectData['Services'] as $serviceData):
+                                                $perfDataArray = $this->Perfdata->parsePerfData($serviceData['Servicestatus']['perfdata']);
+                                                ?>
+                                                <div class="row no-padding padding-top-5">
+                                                    <div class="col-md-3">
+                                                        <i class="fa fa-square <?php echo $this->Status->ServiceStatusTextColor($serviceData['Servicestatus']['currentState']); ?>"> </i>
+                                                        <?php
+                                                        echo h($serviceData['Service']['servicename']);
+                                                        ?>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <?php
+                                                        echo h($serviceData['Servicestatus']['lastCheck']);
+                                                        ?>
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <?php echo h($serviceData['Servicestatus']['output']); ?>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <?php
+                                                        if (!empty($perfDataArray) && isset($perfDataArray[0])):?>
+                                                            <div class="col-md-12 text-center">
+                                                                <?php echo h($perfDataArray[0]['label']); ?>
+                                                            </div>
+                                                            <div class="col-md-12 text-center bordered <?php echo $this->Status->ServiceStatusColorSimple($serviceData['Servicestatus']['currentState'])['class']; ?>">
+                                                                <strong class=" txt-color-white">
+                                                                    <?php
+                                                                    echo $perfDataArray[0]['current_value'] . ' ' . $perfDataArray[0]['unit'];
+                                                                    ?>
+                                                                </strong>
+                                                            </div>
+                                                        <?php
+                                                        endif;
+                                                        ?>
+                                                    </div>
+                                                </div>
+                                            <?php
+                                            endforeach; ?>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    <?php
-                    endif;
-                endforeach;
+                        <?php
+                        endif;
+                    endforeach;
+                else:?>
+                    <i class="fa fa-lg fa-info-circle txt-color-blueDark"></i>
+                    <span class="txt-color-blueDark">
+                     <?php echo __('No entries match the selection'); ?>
+                    </span>
+                <?php
+                endif;
                 ?>
             </div>
         </div>

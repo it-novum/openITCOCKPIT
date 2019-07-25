@@ -30,7 +30,6 @@ namespace App\Form;
 use Cake\Form\Form;
 use Cake\Form\Schema;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class CurrentreportForm extends Form {
 
@@ -42,6 +41,7 @@ class CurrentreportForm extends Form {
 
     protected function _buildValidator(Validator $validator) {
         $validator
+            ->requirePresence('services', true, __('You must specify at least one service.'))
             ->allowEmptyArray('services', false, __('You must specify at least one service.'));
 
         $validator
@@ -62,10 +62,21 @@ class CurrentreportForm extends Form {
      * Custom validation rule for service status
      */
     public function atLeastOneServicestatus($value, $context) {
-        return (boolean)($context['data']['current_state']['ok']|
-            $context['data']['current_state']['warning']|
-            $context['data']['current_state']['critical']|
-            $context['data']['current_state']['unknown']);
+        $fields = ['ok', 'warning', 'critical', 'unknown'];
+        foreach ($fields as $field) {
+            $value = $context['data']['current_state'][$field];
+
+            if (isset($context['data']['current_state'][$field])) {
+                $val = $context['data']['current_state'][$field];
+            }
+            if ($val === true || $val === 'true') {
+                // (bool)true on POST
+                // (string)'true' in GET
+
+                return true;
+            }
+        }
+        return false;
     }
 
 
