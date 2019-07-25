@@ -31,6 +31,7 @@ use App\Lib\Interfaces\AcknowledgementServicesTableInterface;
 use App\Lib\Interfaces\HostchecksTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\NotificationHostsTableInterface;
+use App\Lib\Interfaces\NotificationServicesTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Interfaces\StatehistoryHostTableInterface;
 use App\Lib\Interfaces\StatehistoryServiceTableInterface;
@@ -229,6 +230,26 @@ class DbBackend {
             /** @var $NotificationHostsTable NotificationHostsTableInterface */
             $NotificationHostsTable = TableRegistry::getTableLocator()->get('Statusengine2Module.NotificationHosts');
             return $NotificationHostsTable;
+        }
+
+        if ($this->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+    }
+
+    /**
+     * @return NotificationServicesTableInterface
+     * @throws MissingDbBackendException
+     */
+    public function getNotificationServicesTable() {
+        if ($this->isNdoUtils()) {
+            /** @var $NotificationServicesTable NotificationServicesTableInterface */
+            $NotificationServicesTable = TableRegistry::getTableLocator()->get('Statusengine2Module.NotificationServices');
+            return $NotificationServicesTable;
         }
 
         if ($this->isCrateDb()) {

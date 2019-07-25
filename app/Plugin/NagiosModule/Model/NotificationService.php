@@ -25,6 +25,9 @@
 
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
 
+/**
+ * Class NotificationService
+ */
 class NotificationService extends NagiosModuleAppModel {
     public $useTable = 'notifications';
     public $primaryKey = 'notification_id';
@@ -37,6 +40,7 @@ class NotificationService extends NagiosModuleAppModel {
      * @param ServiceNotificationConditions $ServiceNotificationConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(ServiceNotificationConditions $ServiceNotificationConditions, $paginatorConditions = []) {
 

@@ -127,7 +127,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                        <label class="input"> <i class="icon-prepend fa fa-terminal"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by notification method'); ?>"
                                                    ng-model="filter.Commands.name"
@@ -138,7 +138,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                        <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
                                                    ng-model="filter.Hosts.name"
@@ -149,7 +149,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                        <label class="input"> <i class="icon-prepend fa fa-user"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by contact name'); ?>"
                                                    ng-model="filter.Contacts.name"

@@ -46,7 +46,8 @@ class NotificationsOverviewControllerRequest extends AngularRequest {
                 'NotificationServices.output',
                 'Hosts.name',
                 'Contacts.name',
-                'Commands.name'
+                'Commands.name',
+                'servicename'
             ]
         ]
     ];
