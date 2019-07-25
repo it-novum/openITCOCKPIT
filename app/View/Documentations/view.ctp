@@ -34,6 +34,42 @@
         config="serviceBrowserMenuConfig"
         last-load-date="0"></service-browser-menu>
 
+<div class="row" ng-if="type === 'hosttemplate'">
+    <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
+        <h1 class="status_headline">
+            <?php echo __('Host template:'); ?> {{objectName}}
+        </h1>
+    </div>
+
+    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6 margin-top-10">
+        <div class="pull-right">
+            <button
+                    back-button fallback-state='HosttemplatesIndex'
+                    class="btn btn-primary">
+                <i class="fa fa-arrow-circle-left"></i> <?php echo __('Back to overview'); ?>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row" ng-if="type === 'servicetemplate'">
+    <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
+        <h1 class="status_headline">
+            <?php echo __('Service template:'); ?> {{objectName}}
+        </h1>
+    </div>
+
+    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6 margin-top-10">
+        <div class="pull-right">
+            <button
+                    back-button fallback-state='ServicetemplatesIndex'
+                    class="btn btn-primary">
+                <i class="fa fa-arrow-circle-left"></i> <?php echo __('Back to overview'); ?>
+            </button>
+        </div>
+    </div>
+</div>
+
 <div class="tab-content">
     <div ng-show="docu.displayView" class="tab-pane active">
         <div class="row no-padding">

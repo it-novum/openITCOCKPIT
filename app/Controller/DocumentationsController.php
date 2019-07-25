@@ -77,6 +77,8 @@ class DocumentationsController extends AppController {
                 //Can user edit this object?
                 $allowEdit = $this->allowedByContainerId($host->getContainerIds());
 
+                $objectName = 'HOST - Not used by object host'; //Not used by object host
+
                 break;
 
             case 'service':
@@ -94,6 +96,9 @@ class DocumentationsController extends AppController {
 
                 //Can user edit this object?
                 $allowEdit = $this->allowedByContainerId($service->get('host')->getContainerIds());
+
+                $objectName = 'SERVICE - Not used by object service'; //Not used by object service
+
                 break;
 
             case 'hosttemplate':
@@ -111,12 +116,14 @@ class DocumentationsController extends AppController {
 
                 //Can user edit this object?
                 $allowEdit = $this->allowedByContainerId($hosttemplate['Hosttemplate']['container_id']);
+
+                $objectName = $hosttemplate['Hosttemplate']['name'];
                 break;
 
             case 'servicetemplate':
                 /** @var $ServicetemplatesTable ServicetemplatesTable */
                 $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-                $servicetemplate = $ServicetemplatesTable->getServicetemplateById($uuid);
+                $servicetemplate = $ServicetemplatesTable->getServicetemplateByUuid($uuid);
                 $objectId = $servicetemplate['Servicetemplate']['id'];
                 $uuid = $servicetemplate['Servicetemplate']['uuid'];
 
@@ -128,6 +135,9 @@ class DocumentationsController extends AppController {
 
                 //Can user edit this object?
                 $allowEdit = $this->allowedByContainerId($servicetemplate['Servicetemplate']['container_id']);
+
+                $objectName = $servicetemplate['Servicetemplate']['template_name'];
+
                 break;
 
             default:
@@ -157,7 +167,8 @@ class DocumentationsController extends AppController {
             $this->set('docuExists', $docuExists);
             $this->set('bbcode', $content);
             $this->set('objectId', $objectId);
-            $this->set('_serialize', ['lastUpdate', 'allowEdit', 'docuExists', 'bbcode', 'objectId']);
+            $this->set('objectName', $objectName);
+            $this->set('_serialize', ['lastUpdate', 'allowEdit', 'docuExists', 'bbcode', 'objectId', 'objectName']);
 
             return;
         }

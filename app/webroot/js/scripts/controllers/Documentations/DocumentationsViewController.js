@@ -21,6 +21,7 @@ angular.module('openITCOCKPIT')
                 $scope.bbcode = result.data.bbcode;
                 $scope.lastUpdate = result.data.lastUpdate;
                 $scope.allowEdit = result.data.allowEdit;
+                $scope.objectName = result.data.objectName; //Only for type host template and service template
 
                 if($scope.type === 'host'){
                     if(typeof $scope.hostBrowserMenuConfig === "undefined"){
