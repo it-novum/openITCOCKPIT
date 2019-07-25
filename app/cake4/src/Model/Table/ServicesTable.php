@@ -14,7 +14,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -931,6 +930,51 @@ class ServicesTable extends Table {
                         ->contain([
                             'HostsToContainersSharing'
                         ]);
+                    return $query;
+                }
+            ])
+            ->first();
+
+        return $query;
+    }
+
+    /**
+     * @param $id
+     * @return array|Service|null
+     */
+    public function getServiceByIdWithHostAndServicetemplate($id) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.name',
+                'Services.uuid',
+                'Services.servicetemplate_id',
+                'Services.service_url',
+            ])
+            ->where([
+                'Services.id' => $id
+            ])
+            ->contain([
+                'Hosts' => function (Query $query) {
+                $query->select([
+                    'Hosts.id',
+                    'Hosts.uuid',
+                    'Hosts.container_id',
+                    'Hosts.name',
+                    'Hosts.address'
+                ])
+                    ->contain([
+                        'HostsToContainersSharing'
+                    ]);
+                    return $query;
+                },
+                'Servicetemplates'=> function (Query $query) {
+                    $query->select([
+                        'Servicetemplates.id',
+                        'Servicetemplates.uuid',
+                        'Servicetemplates.name',
+                        'Servicetemplates.service_url'
+                    ]);
                     return $query;
                 }
             ])

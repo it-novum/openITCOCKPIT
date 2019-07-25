@@ -29,6 +29,10 @@
         config="hostBrowserMenuConfig"
         last-load-date="0"></host-browser-menu>
 
+<service-browser-menu
+        ng-if="type === 'service' && serviceBrowserMenuConfig"
+        config="serviceBrowserMenuConfig"
+        last-load-date="0"></service-browser-menu>
 
 <div class="tab-content">
     <div ng-show="docu.displayView" class="tab-pane active">
@@ -63,6 +67,7 @@
                     <div ng-show="docuExists">
                         <div class="widget-body">
                             <div
+                                    style="word-wrap: break-word;"
                                     ng-bind-html="html | trustAsHtml"></div>
                         </div>
                     </div>

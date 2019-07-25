@@ -81,7 +81,8 @@ $config = [
                 'template_diff',
                 'template_diff_button',
                 'queryhandler',
-                'hostBrowserMenu'
+                'hostBrowserMenu',
+                'serviceBrowserMenu'
             ],
             'Automaps'         => [
                 'icon'
@@ -130,7 +131,6 @@ $config = [
                 'icon',
                 'servicecumulatedstatusicon',
                 'details',
-                'serviceBrowserMenu',
                 'byUuid',
                 'loadServicesByStringCake4',
                 'loadServicesByContainerIdCake4'

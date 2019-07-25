@@ -24,9 +24,12 @@
 
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\ServicesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ServiceMacroReplacer;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
@@ -778,7 +781,11 @@ class AngularController extends AppController {
         }
 
         //Can user edit this object?
-        $allowEdit = $this->allowedByContainerId($host->getContainerIds());
+        $allowEdit = $this->hasRootPrivileges;
+        if ($allowEdit === false) {
+            //Strict checking for non root users
+            $allowEdit = $this->allowedByContainerId($host->getContainerIds());
+        }
 
         /** @var $DocumentationsTable App\Model\Table\DocumentationsTable */
         $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
@@ -790,7 +797,7 @@ class AngularController extends AppController {
         }
 
         if ($hostUrl) {
-            $HostMacroReplacer = new HostMacroReplacer($host);
+            $HostMacroReplacer = new HostMacroReplacer($host->toArray());
             $hostUrl = $HostMacroReplacer->replaceBasicMacros($hostUrl);
         }
 
@@ -825,6 +832,87 @@ class AngularController extends AppController {
 
         $this->set('config', $config);
         $this->set('_serialize', ['config']);
+    }
 
+    public function serviceBrowserMenu() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $serviceId = $this->request->query('serviceId');
+        $includeServicestatus = $this->request->query('includeServicestatus') === 'true';
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        if (!$ServicesTable->existsById($serviceId)) {
+            throw new NotFoundException('Invalid service');
+        }
+        $service = $ServicesTable->getServiceByIdWithHostAndServicetemplate($serviceId);
+
+        //Can user see this object?
+        if (!$this->allowedByContainerId($service->getContainerIds(), false)) {
+            $this->render403();
+            return;
+        }
+
+        //Can user edit this object?
+        $allowEdit = $this->hasRootPrivileges;
+        if ($allowEdit === false) {
+            //Strict checking for non root users
+            $allowEdit = $this->allowedByContainerId($service->getContainerIds());
+        }
+
+        /** @var $DocumentationsTable App\Model\Table\DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
+        $serviceName = $service->get('name');
+        if ($serviceName === null || $serviceName === '') {
+            $serviceName = $service->get('servicetemplate')->get('name');
+        }
+
+
+        $serviceUrl = $service->get('service_url');
+        if ($serviceUrl === null || $serviceUrl === '') {
+            $serviceUrl = $service->get('servicetemplate')->get('service_url');
+        }
+
+        if ($serviceUrl) {
+            $HostMacroReplacer = new HostMacroReplacer($service->get('host')->toArray());
+            $ServiceMacroReplacer = new ServiceMacroReplacer($service->toArray());
+            $serviceUrl = $HostMacroReplacer->replaceBasicMacros($serviceUrl);
+            $serviceUrl = $ServiceMacroReplacer->replaceBasicMacros($serviceUrl);
+        }
+
+        if ($includeServicestatus) {
+            //Get meta data and push to front end
+            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+            $ServicestatusFields->currentState()->isFlapping();
+            $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+            $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+            if (!isset($servicestatus['Servicestatus'])) {
+                $servicestatus['Servicestatus'] = [];
+            }
+            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
+        } else {
+            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus([
+                'Servicestatus' => []
+            ]);
+        }
+
+        $config = [
+            'hostId'               => $service->get('host')->get('id'),
+            'serviceUuid'          => $service->get('uuid'),
+            'hostName'             => $service->get('host')->get('name'),
+            'serviceName'          => $serviceName,
+            'hostAddress'          => $service->get('host')->get('address'),
+            'docuExists'           => $DocumentationsTable->existsByUuid($service->get('uuid')),
+            'serviceUrl'           => $serviceUrl,
+            'allowEdit'            => $allowEdit,
+            'includeServicestatus' => $includeServicestatus,
+            'Servicestatus'        => $Servicestatus->toArray()
+        ];
+        $this->set('config', $config);
+        $this->set('_serialize', ['config']);
     }
 }

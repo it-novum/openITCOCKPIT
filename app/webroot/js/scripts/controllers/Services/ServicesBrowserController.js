@@ -73,6 +73,10 @@ angular.module('openITCOCKPIT')
             }, 1000);
         };
 
+        $scope.serviceBrowserMenuReschedulingCallback = function(){
+            $scope.reschedule($scope.getObjectsForExternalCommand());
+        };
+
         $scope.load = function(){
             $scope.lastLoadDate = Date.now();
             $http.get("/services/browser/" + $scope.id + ".json", {
@@ -130,17 +134,16 @@ angular.module('openITCOCKPIT')
                     loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, graphStart, graphEnd, true);
                 }
 
-                $scope.serviceBrowserMenu = {
-                    hostId: $scope.host.Host.id,
-                    hostUuid: $scope.host.Host.uuid,
-                    serviceId: $scope.mergedService.Service.id,
-                    serviceUuid: $scope.mergedService.Service.uuid,
-                    serviceType: $scope.mergedService.Service.service_type,
-                    allowEdit: $scope.mergedService.Service.allowEdit,
-                    serviceUrl: $scope.mergedService.Service.service_url_replaced,
-                    docuExists: result.data.docuExists,
-                    isServiceBrowser: true
-                };
+                if(typeof $scope.serviceBrowserMenuConfig === "undefined"){
+                    $scope.serviceBrowserMenuConfig = {
+                        autoload: true,
+                        serviceId: $scope.mergedService.Service.id,
+                        includeServicestatus: true,
+                        showReschedulingButton: true,
+                        rescheduleCallback: $scope.serviceBrowserMenuReschedulingCallback,
+                        showBackButton: false
+                    };
+                }
 
                 $scope.init = false;
             }, function errorCallback(result){

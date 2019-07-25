@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('NotificationsServiceNotificationController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, $stateParams, StatusHelperService, $interval){
+    .controller('NotificationsServiceNotificationController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, $stateParams){
 
         SortService.setSort(QueryStringService.getValue('sort', 'NotificationServices.start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
@@ -9,7 +9,6 @@ angular.module('openITCOCKPIT')
         $scope.useScroll = true;
 
         var now = new Date();
-        var flappingInterval;
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -32,6 +31,11 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.showFilter = false;
 
+        $scope.serviceBrowserMenuConfig = {
+            autoload: true,
+            serviceId: $scope.id,
+            includeServicestatus: true
+        };
 
         $scope.load = function(){
 
@@ -52,28 +56,6 @@ angular.module('openITCOCKPIT')
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
-            });
-
-            $http.get("/services/serviceBrowserMenu/" + $scope.id + ".json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.service = result.data.service;
-                $scope.servicestatus = result.data.servicestatus;
-                $scope.serviceStatusTextClass = StatusHelperService.getServicestatusTextColor($scope.servicestatus.currentState);
-
-                $scope.serviceBrowserMenu = {
-                    hostId: $scope.service.Host.id,
-                    hostUuid: $scope.service.Host.uuid,
-                    serviceId: $scope.service.Service.id,
-                    serviceUuid: $scope.service.Service.uuid,
-                    serviceType: $scope.service.Service.service_type,
-                    allowEdit: $scope.service.Service.allowEdit,
-                    serviceUrl: $scope.service.Service.service_url_replaced,
-                    docuExists: result.data.docuExists,
-                    isServiceBrowser: false
-                };
             });
         };
 
@@ -98,24 +80,6 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
-        $scope.startFlapping = function(){
-            $scope.stopFlapping();
-            flappingInterval = $interval(function(){
-                if($scope.flappingState === 0){
-                    $scope.flappingState = 1;
-                }else{
-                    $scope.flappingState = 0;
-                }
-            }, 750);
-        };
-
-        $scope.stopFlapping = function(){
-            if(flappingInterval){
-                $interval.cancel(flappingInterval);
-            }
-            flappingInterval = null;
-        };
-
         //Fire on page load
         defaultFilter();
         SortService.setCallback($scope.load);
@@ -124,20 +88,4 @@ angular.module('openITCOCKPIT')
             $scope.currentPage = 1;
             $scope.load();
         }, true);
-
-        $scope.$watch('servicestatus.isFlapping', function(){
-            if($scope.servicestatus){
-                if($scope.servicestatus.hasOwnProperty('isFlapping')){
-                    if($scope.servicestatus.isFlapping === true){
-                        $scope.startFlapping();
-                    }
-
-                    if($scope.servicestatus.isFlapping === false){
-                        $scope.stopFlapping();
-                    }
-
-                }
-            }
-        });
-
     });

@@ -32,6 +32,16 @@ angular.module('openITCOCKPIT')
                     }
                 }
 
+                if($scope.type === 'service'){
+                    if(typeof $scope.serviceBrowserMenuConfig === "undefined"){
+                        $scope.serviceBrowserMenuConfig = {
+                            autoload: true,
+                            serviceId: result.data.objectId,
+                            includeServicestatus: true
+                        };
+                    }
+                }
+
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');

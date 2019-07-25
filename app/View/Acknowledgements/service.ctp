@@ -22,43 +22,12 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
-//Flapping Workaround while the status date is not loaded via Angular
-echo $this->Html->script('lib/FlappingWorkaround.js');
-
 ?>
-<div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
-        <h1 class="status_headline" ng-class="serviceStatusTextClass">
 
-            <span class="flapping_airport stateClass" ng-show="servicestatus.isFlapping">
-                <i class="fa" ng-class="flappingState === 1 ? 'fa-circle' : 'fa-circle-o'"></i>
-                <i class="fa" ng-class="flappingState === 0 ? 'fa-circle' : 'fa-circle-o'"></i>
-            </span>
-
-            <i class="fa fa-cog fa-fw"></i>
-            {{ service.Service.name }}
-            <span>
-                &nbsp;<?php echo __('on'); ?>
-                <?php if ($this->Acl->hasPermission('browser', 'Hosts')): ?>
-                    <a ui-sref="HostsBrowser({id:service.Host.id})">{{ service.Host.name }} ({{ service.Host.address }})</a>
-                <?php else: ?>
-                    ({{ service.Service.address }})
-                <?php endif; ?>
-            </span>
-        </h1>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
-        <h5>
-            <div class="pull-right">
-                <a ui-sref="ServicesBrowser({id:serviceBrowserMenu.serviceId})" class="btn btn-primary btn-sm">
-                    <i class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
-                </a>
-                <?php echo $this->element('service_browser_menu'); ?>
-            </div>
-        </h5>
-    </div>
-</div>
+<service-browser-menu
+        ng-if="serviceBrowserMenuConfig"
+        config="serviceBrowserMenuConfig"
+        last-load-date="0"></service-browser-menu>
 
 <section id="widget-grid" class="">
     <div class="row">
