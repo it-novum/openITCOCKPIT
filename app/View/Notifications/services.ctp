@@ -95,7 +95,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <label class="input"> <i class="icon-prepend"
                                                                  style="padding-right:14px;"><?php echo __('From'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
-                                                   placeholder="<?php echo __('From Date'); ?>"
+                                                   placeholder="<?php echo __('From date'); ?>"
                                                    ng-model="filter.from"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
@@ -107,7 +107,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by output'); ?>"
-                                                   ng-model="filter.Notification.output"
+                                                   ng-model="filter.NotificationServices.output"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -118,7 +118,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <label class="input"> <i class="icon-prepend"
                                                                  style="padding-right:14px;"><?php echo __('To'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
-                                                   placeholder="<?php echo __('To Date'); ?>"
+                                                   placeholder="<?php echo __('To date'); ?>"
                                                    ng-model="filter.to"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
@@ -127,10 +127,10 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                        <label class="input"> <i class="icon-prepend fa fa-terminal"></i>
                                             <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by Notification method'); ?>"
-                                                   ng-model="filter.Notification.commandname"
+                                                   placeholder="<?php echo __('Filter by notification method'); ?>"
+                                                   ng-model="filter.Commands.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -138,10 +138,10 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                        <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                                             <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by Host name'); ?>"
-                                                   ng-model="filter.Notification.hostname"
+                                                   placeholder="<?php echo __('Filter by host name'); ?>"
+                                                   ng-model="filter.Hosts.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -149,10 +149,21 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                        <label class="input"> <i class="icon-prepend fa fa-cog"></i>
                                             <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by Contact name'); ?>"
-                                                   ng-model="filter.Notification.contactname"
+                                                   placeholder="<?php echo __('Filter by service name'); ?>"
+                                                   ng-model="filter.servicename"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-user"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by contact name'); ?>"
+                                                   ng-model="filter.Contacts.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -167,7 +178,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Notification.state.ok"
+                                                       ng-model="filter.NotificationServices.state.ok"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-success"></i>
                                                 <?php echo __('Ok'); ?>
@@ -175,7 +186,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Notification.state.warning"
+                                                       ng-model="filter.NotificationServices.state.warning"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-warning"></i>
                                                 <?php echo __('Warning'); ?>
@@ -183,7 +194,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Notification.state.critical"
+                                                       ng-model="filter.NotificationServices.state.critical"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-danger"></i>
                                                 <?php echo __('Critical'); ?>
@@ -191,7 +202,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Notification.state.unknown"
+                                                       ng-model="filter.NotificationServices.state.unknown"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-default"></i>
                                                 <?php echo __('Unknown'); ?>
@@ -221,32 +232,32 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                    style="">
                                 <thead>
                                 <tr>
-                                    <th class="no-sort" ng-click="orderBy('NotificationService.state')">
-                                        <i class="fa" ng-class="getSortClass('NotificationService.state')"></i>
+                                    <th class="no-sort" ng-click="orderBy('NotificationServices.state')">
+                                        <i class="fa" ng-class="getSortClass('NotificationServices.state')"></i>
                                         <?php echo __('State'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Host.name')">
-                                        <i class="fa" ng-class="getSortClass('Host.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Hosts.name')">
+                                        <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                         <?php echo __('Host'); ?>
                                     </th>
                                     <th class="no-sort" ng-click="orderBy('servicename')">
                                         <i class="fa" ng-class="getSortClass('servicename')"></i>
                                         <?php echo __('Service'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('NotificationService.start_time')">
-                                        <i class="fa" ng-class="getSortClass('NotificationService.start_time')"></i>
+                                    <th class="no-sort" ng-click="orderBy('NotificationServices.start_time')">
+                                        <i class="fa" ng-class="getSortClass('NotificationServices.start_time')"></i>
                                         <?php echo __('Date'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Contact.name')">
-                                        <i class="fa" ng-class="getSortClass('Contact.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Contacts.name')">
+                                        <i class="fa" ng-class="getSortClass('Contacts.name')"></i>
                                         <?php echo __('Contact'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Command.name')">
-                                        <i class="fa" ng-class="getSortClass('Command.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Commands.name')">
+                                        <i class="fa" ng-class="getSortClass('Commands.name')"></i>
                                         <?php echo __('Notification Method'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('NotificationService.output')">
-                                        <i class="fa" ng-class="getSortClass('NotificationService.output')"></i>
+                                    <th class="no-sort" ng-click="orderBy('NotificationServices.output')">
+                                        <i class="fa" ng-class="getSortClass('NotificationServices.output')"></i>
                                         <?php echo __('Output'); ?>
                                     </th>
                                 </tr>

@@ -87,7 +87,7 @@ abstract class ListSettingsConditions {
      * @return array
      */
     public function getStateTypes() {
-        if(!is_array($this->stateTypes)){
+        if (!is_array($this->stateTypes)) {
             return [$this->stateTypes];
         }
 
@@ -163,6 +163,9 @@ abstract class ListSettingsConditions {
      * @return array
      */
     public function getContainerIds() {
+        if (!is_array($this->containerIds)) {
+            return [$this->containerIds];
+        }
         return $this->containerIds;
     }
 

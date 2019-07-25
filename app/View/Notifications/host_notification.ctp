@@ -69,7 +69,7 @@
                                         <label class="input"> <i class="icon-prepend"
                                                                  style="padding-right:14px;"><?php echo __('From'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
-                                                   placeholder="<?php echo __('From Date'); ?>"
+                                                   placeholder="<?php echo __('From date'); ?>"
                                                    ng-model="filter.from"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
@@ -80,7 +80,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by output'); ?>"
-                                                   ng-model="filter.Notification.output"
+                                                   ng-model="filter.NotificationHosts.output"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -91,7 +91,7 @@
                                         <label class="input"> <i class="icon-prepend"
                                                                  style="padding-right:14px;"><?php echo __('To'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
-                                                   placeholder="<?php echo __('To Date'); ?>"
+                                                   placeholder="<?php echo __('To date'); ?>"
                                                    ng-model="filter.to"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
@@ -107,7 +107,7 @@
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Notification.state.recovery"
+                                                       ng-model="filter.NotificationHosts.state.recovery"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-success"></i>
                                                 <?php echo __('Up'); ?>
@@ -115,7 +115,7 @@
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Notification.state.down"
+                                                       ng-model="filter.NotificationHosts.state.down"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-danger"></i>
                                                 <?php echo __('Down'); ?>
@@ -123,7 +123,7 @@
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Notification.state.unreachable"
+                                                       ng-model="filter.NotificationHosts.state.unreachable"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-default"></i>
                                                 <?php echo __('Unreachable'); ?>
@@ -151,28 +151,24 @@
                                style="">
                             <thead>
                             <tr>
-                                <th class="no-sort" ng-click="orderBy('NotificationHost.state')">
-                                    <i class="fa" ng-class="getSortClass('NotificationHost.state')"></i>
+                                <th class="no-sort" ng-click="orderBy('NotificationHosts.state')">
+                                    <i class="fa" ng-class="getSortClass('NotificationHosts.state')"></i>
                                     <?php echo __('State'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Host.name')">
-                                    <i class="fa" ng-class="getSortClass('Host.name')"></i>
-                                    <?php echo __('Host'); ?>
-                                </th>
-                                <th class="no-sort" ng-click="orderBy('NotificationHost.start_time')">
-                                    <i class="fa" ng-class="getSortClass('NotificationHost.start_time')"></i>
+                                <th class="no-sort" ng-click="orderBy('NotificationHosts.start_time')">
+                                    <i class="fa" ng-class="getSortClass('NotificationHosts.start_time')"></i>
                                     <?php echo __('Date'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Contact.name')">
-                                    <i class="fa" ng-class="getSortClass('Contact.name')"></i>
+                                <th class="no-sort" ng-click="orderBy('Contacts.name')">
+                                    <i class="fa" ng-class="getSortClass('Contacts.name')"></i>
                                     <?php echo __('Contact'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Command.name')">
-                                    <i class="fa" ng-class="getSortClass('Command.name')"></i>
+                                <th class="no-sort" ng-click="orderBy('Commands.name')">
+                                    <i class="fa" ng-class="getSortClass('Commands.name')"></i>
                                     <?php echo __('Notification Method'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('NotificationHost.output')">
-                                    <i class="fa" ng-class="getSortClass('NotificationHost.output')"></i>
+                                <th class="no-sort" ng-click="orderBy('NotificationHosts.output')">
+                                    <i class="fa" ng-class="getSortClass('NotificationHosts.output')"></i>
                                     <?php echo __('Output'); ?>
                                 </th>
                             </tr>
@@ -183,10 +179,6 @@
 
                                 <td class="text-center">
                                     <hoststatusicon state="Notification.NotificationHost.state"></hoststatusicon>
-                                </td>
-                                <td>
-                                    <a ui-sref="HostsBrowser({id:Notification.Host.id})">{{ Notification.Host.hostname
-                                        }}</a>
                                 </td>
                                 <td>
                                     {{ Notification.NotificationHost.start_time }}

@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
-    .controller('NotificationsHostNotificationController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, $stateParams) {
+    .controller('NotificationsHostNotificationController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, $stateParams){
 
-        SortService.setSort(QueryStringService.getValue('sort', 'NotificationHost.start_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'NotificationHosts.start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
@@ -12,20 +12,15 @@ angular.module('openITCOCKPIT')
         var now = new Date();
 
         /*** Filter Settings ***/
-        var defaultFilter = function() {
+        var defaultFilter = function(){
             $scope.filter = {
-                Notification: {
+                NotificationHosts: {
                     state: {
                         recovery: false,
                         down: false,
                         unreachable: false
                     },
-                    state_types: {
-                        soft: false,
-                        hard: false
-                    },
-                    output: '',
-                    author: ''
+                    output: ''
                 },
                 from: date('d.m.Y H:i', now.getTime() / 1000 - (3600 * 24 * 30)),
                 to: date('d.m.Y H:i', now.getTime() / 1000 + (3600 * 24 * 30 * 2))
@@ -42,7 +37,7 @@ angular.module('openITCOCKPIT')
             includeHoststatus: true
         };
 
-        $scope.load = function() {
+        $scope.load = function(){
 
             $http.get("/notifications/hostNotification/" + $scope.id + ".json", {
                 params: {
@@ -51,12 +46,12 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[NotificationHost.output]': $scope.filter.Notification.output,
-                    'filter[NotificationHost.state][]': $rootScope.currentStateForApi($scope.filter.Notification.state),
+                    'filter[NotificationHosts.output]': $scope.filter.NotificationHosts.output,
+                    'filter[NotificationHosts.state][]': $rootScope.currentStateForApi($scope.filter.NotificationHosts.state),
                     'filter[from]': $scope.filter.from,
                     'filter[to]': $scope.filter.to
                 }
-            }).then(function(result) {
+            }).then(function(result){
                 $scope.notifications = result.data.all_notifications;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
@@ -65,23 +60,23 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.triggerFilter = function() {
+        $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter === true;
         };
 
-        $scope.resetFilter = function() {
+        $scope.resetFilter = function(){
             defaultFilter();
         };
 
 
-        $scope.changepage = function(page) {
-            if (page !== $scope.currentPage) {
+        $scope.changepage = function(page){
+            if(page !== $scope.currentPage){
                 $scope.currentPage = page;
                 $scope.load();
             }
         };
 
-        $scope.changeMode = function(val) {
+        $scope.changeMode = function(val){
             $scope.useScroll = val;
             $scope.load();
         };
@@ -90,7 +85,7 @@ angular.module('openITCOCKPIT')
         defaultFilter();
         SortService.setCallback($scope.load);
 
-        $scope.$watch('filter', function() {
+        $scope.$watch('filter', function(){
             $scope.currentPage = 1;
             $scope.load();
         }, true);

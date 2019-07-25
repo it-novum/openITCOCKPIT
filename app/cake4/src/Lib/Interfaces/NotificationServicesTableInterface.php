@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2018>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,35 +22,18 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\Views;
+namespace App\Lib\Interfaces;
 
 
-class NotificationHost extends Notification {
+use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
-
-    /**
-     * @var bool
-     */
-    private $is_host_notification;
-
+interface NotificationServicesTableInterface {
 
     /**
-     * NotificationHost constructor.
-     * @param $data
-     * @param null $UserTime
+     * @param ServiceNotificationConditions $ServiceNotificationConditions
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
      */
-    public function __construct($data, $UserTime = null) {
-        parent::__construct($data, $UserTime);
-        if (isset($data['notification_type'])) {
-            $this->is_host_notification = (int)$data['notification_type'] === 0;
-        }
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isHostNotification() {
-        return $this->is_host_notification;
-    }
-
+    public function getNotifications(ServiceNotificationConditions $ServiceNotificationConditions, $PaginateOMat = null);
 }

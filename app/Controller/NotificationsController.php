@@ -23,13 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsControllerRequest;
+use App\Model\Table\HostsTable;
+use App\Model\Table\ServicesTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsOverviewControllerRequest;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
-use itnovum\openITCOCKPIT\Database\ScrollIndex;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
  * Class NotificationsController
@@ -39,10 +40,6 @@ use itnovum\openITCOCKPIT\Database\ScrollIndex;
  */
 class NotificationsController extends AppController {
 
-    /*
-     * Attention! In this case we load an external Model from the monitoring plugin! The Controller
-     * use this external model to fetch the required data out of the database
-     */
     public $uses = [
         MONITORING_NOTIFICATION_HOST,
         MONITORING_NOTIFICATION_SERVICE,
@@ -52,58 +49,38 @@ class NotificationsController extends AppController {
 
     public $layout = 'blank';
 
-    /**
-     * @deprecated
-     */
     public function index() {
-        $this->layout = "blank";
-
-        if (!$this->isAngularJsRequest()) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        if (!isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = [];
-        }
+        session_write_close();
 
         $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = $User->getUserTime();
 
         //Process conditions
         $Conditions = new HostNotificationConditions();
         $Conditions->setContainerIds($this->MY_RIGHTS);
-        $Conditions->setLimit($this->Paginator->settings['limit']);
         $Conditions->setFrom($AngularNotificationsOverviewControllerRequest->getFrom());
         $Conditions->setTo($AngularNotificationsOverviewControllerRequest->getTo());
-        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationHost.start_time', 'desc'));
+        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationHosts.start_time', 'desc'));
         $Conditions->setStates($AngularNotificationsOverviewControllerRequest->getHostStates());
+        $Conditions->setConditions($AngularNotificationsOverviewControllerRequest->getHostFilters());
 
-
-        $query = $this->NotificationHost->getQuery($Conditions, $AngularNotificationsOverviewControllerRequest->getHostFilters());
-
-        $this->Paginator->settings = $query;
-        $this->Paginator->settings['page'] = $AngularNotificationsOverviewControllerRequest->getPage();
-
-
-        $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if ($this->isScrollRequest()) {
-            $notifications = $this->NotificationHost->find('all', $this->Paginator->settings);
-            $ScrollIndex->determineHasNextPage($notifications);
-            $ScrollIndex->scroll();
-        } else {
-            $notifications = $this->Paginator->paginate(
-                $this->NotificationHost->alias,
-                [],
-                [key($this->Paginator->settings['order'])]
-            );
-        }
+        //Query notification records
+        $NotificationHostsTable = $this->DbBackend->getNotificationHostsTable();
 
         $all_notifications = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        foreach ($notifications as $notification) {
+        foreach ($NotificationHostsTable->getNotifications($Conditions, $PaginateOMat) as $notification) {
             $NotificationHost = new itnovum\openITCOCKPIT\Core\Views\NotificationHost($notification, $UserTime);
-            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification);
-            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Command']);
-            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact']);
+            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification['Hosts']);
+            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Commands']);
+            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contacts']);
             $all_notifications[] = [
                 'NotificationHost' => $NotificationHost->toArray(),
                 'Host'             => $Host->toArray(),
@@ -112,7 +89,7 @@ class NotificationsController extends AppController {
             ];
         }
 
-        $this->set(compact(['all_notifications']));
+        $this->set('all_notifications', $all_notifications);
 
         $toJson = ['all_notifications', 'paging'];
         if ($this->isScrollRequest()) {
@@ -121,58 +98,39 @@ class NotificationsController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
-    /**
-     * @deprecated
-     */
     public function services() {
-        $this->layout = "blank";
-
-        if (!$this->isAngularJsRequest()) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        if (!isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = [];
-        }
+        session_write_close();
 
         $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
 
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = $User->getUserTime();
 
         //Process conditions
         $Conditions = new ServiceNotificationConditions();
         $Conditions->setContainerIds($this->MY_RIGHTS);
-        $Conditions->setLimit($this->Paginator->settings['limit']);
         $Conditions->setFrom($AngularNotificationsOverviewControllerRequest->getFrom());
         $Conditions->setTo($AngularNotificationsOverviewControllerRequest->getTo());
-        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationService.start_time', 'desc'));
+        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationServices.start_time', 'desc'));
         $Conditions->setStates($AngularNotificationsOverviewControllerRequest->getServiceStates());
+        $Conditions->setConditions($AngularNotificationsOverviewControllerRequest->getServiceFilters());
 
-        $query = $this->NotificationService->getQuery($Conditions, $AngularNotificationsOverviewControllerRequest->getServiceFilters());
-
-        $this->Paginator->settings = $query;
-        $this->Paginator->settings['page'] = $AngularNotificationsOverviewControllerRequest->getPage();
-
-        $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if ($this->isScrollRequest()) {
-            $notifications = $this->NotificationService->find('all', $this->Paginator->settings);
-            $ScrollIndex->determineHasNextPage($notifications);
-            $ScrollIndex->scroll();
-        } else {
-            $notifications = $this->Paginator->paginate(
-                $this->NotificationService->alias,
-                [],
-                [key($this->Paginator->settings['order'])]
-            );
-        }
+        //Query notification records
+        $NotificationServicesTable = $this->DbBackend->getNotificationServicesTable();
 
         $all_notifications = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        foreach ($notifications as $notification) {
+        foreach ($NotificationServicesTable->getNotifications($Conditions, $PaginateOMat) as $notification) {
             $NotificationService = new itnovum\openITCOCKPIT\Core\Views\NotificationService($notification, $UserTime);
-            $Service = new itnovum\openITCOCKPIT\Core\Views\Service($notification);
-            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification);
-            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Command']);
-            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact']);
+            $Service = new itnovum\openITCOCKPIT\Core\Views\Service($notification['Services'], $notification['servicename']);
+            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification['Hosts']);
+            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Commands']);
+            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contacts']);
             $all_notifications[] = [
                 'NotificationService' => $NotificationService->toArray(),
                 'Service'             => $Service->toArray(),
@@ -182,7 +140,8 @@ class NotificationsController extends AppController {
             ];
         }
 
-        $this->set(compact(['all_notifications']));
+        $this->set('all_notifications', $all_notifications);
+
         $toJson = ['all_notifications', 'paging'];
         if ($this->isScrollRequest()) {
             $toJson = ['all_notifications', 'scroll'];
@@ -191,87 +150,56 @@ class NotificationsController extends AppController {
     }
 
     /**
-     * @param int|null $host_id
-     * @deprecated
+     * @param int|null $id
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
-    public function hostNotification($host_id = null) {
-        $this->layout = "blank";
-
-        if (!$this->Host->exists($host_id) && $host_id !== null) {
-            throw new NotFoundException(__('invalid host'));
-        }
-
-        if (!$this->isAngularJsRequest() && $host_id === null) {
-            //Host for .html requests
+    public function hostNotification($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        //Host for .json requests
-        $host = $this->Host->find('first', [
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.address',
-                'Host.host_url',
-                'Host.host_type',
-                'Host.container_id'
-            ],
-            'conditions' => [
-                'Host.id' => $host_id,
-            ],
-            'contain'    => [
-                'Container',
-            ],
-        ]);
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-        //Check if user is permitted to see this object
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+        if (!$HostsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        /** @var \App\Model\Entity\Host $host */
+        $host = $HostsTable->getHostByIdForPermissionCheck($id);
+        if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
             $this->render403();
             return;
         }
 
-        $AngularNotificationsControllerRequest = new NotificationsControllerRequest($this->request);
+        session_write_close();
 
+        $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = $User->getUserTime();
 
         //Process conditions
         $Conditions = new HostNotificationConditions();
-        $Conditions->setLimit($this->Paginator->settings['limit']);
-        $Conditions->setFrom($AngularNotificationsControllerRequest->getFrom());
-        $Conditions->setTo($AngularNotificationsControllerRequest->getTo());
-        $Conditions->setOrder($AngularNotificationsControllerRequest->getOrderForPaginator('NotificationHost.start_time', 'desc'));
-        $Conditions->setStates($AngularNotificationsControllerRequest->getHostStates());
-        $Conditions->setHostUuid($host['Host']['uuid']);
+        $Conditions->setContainerIds($this->MY_RIGHTS);
+        $Conditions->setFrom($AngularNotificationsOverviewControllerRequest->getFrom());
+        $Conditions->setTo($AngularNotificationsOverviewControllerRequest->getTo());
+        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationHosts.start_time', 'desc'));
+        $Conditions->setStates($AngularNotificationsOverviewControllerRequest->getHostStates());
+        $Conditions->setConditions($AngularNotificationsOverviewControllerRequest->getHostFilters());
+        $Conditions->setHostUuid($host->get('uuid'));
 
-        $query = $this->NotificationHost->getQuery($Conditions, $AngularNotificationsControllerRequest->getHostFilters());
-
-        $this->Paginator->settings = $query;
-        $this->Paginator->settings['page'] = $AngularNotificationsControllerRequest->getPage();
-
-
-        $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if ($this->isScrollRequest()) {
-            $notifications = $this->NotificationHost->find('all', $this->Paginator->settings);
-            $ScrollIndex->determineHasNextPage($notifications);
-            $ScrollIndex->scroll();
-        } else {
-            $notifications = $this->Paginator->paginate(
-                $this->NotificationHost->alias,
-                [],
-                [key($this->Paginator->settings['order'])]
-            );
-        }
+        //Query notification records
+        $NotificationHostsTable = $this->DbBackend->getNotificationHostsTable();
 
         $all_notifications = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        foreach ($notifications as $notification) {
-            //print_r($notification);
+        foreach ($NotificationHostsTable->getNotifications($Conditions, $PaginateOMat) as $notification) {
             $NotificationHost = new itnovum\openITCOCKPIT\Core\Views\NotificationHost($notification, $UserTime);
-            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification);
-            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Command']);
-            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact']);
+            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification['Hosts']);
+            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Commands']);
+            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contacts']);
             $all_notifications[] = [
                 'NotificationHost' => $NotificationHost->toArray(),
                 'Host'             => $Host->toArray(),
@@ -280,7 +208,8 @@ class NotificationsController extends AppController {
             ];
         }
 
-        $this->set(compact(['all_notifications']));
+        $this->set('all_notifications', $all_notifications);
+
         $toJson = ['all_notifications', 'paging'];
         if ($this->isScrollRequest()) {
             $toJson = ['all_notifications', 'scroll'];
@@ -292,94 +221,56 @@ class NotificationsController extends AppController {
      * @param int|null $service_id
      * @deprecated
      */
-    public function serviceNotification($service_id = null) {
-        $this->layout = "blank";
-
-        if (!$this->Service->exists($service_id) && $service_id !== null) {
-            throw new NotFoundException(__('Invalid service'));
-        }
-
-        if (!$this->isAngularJsRequest() && $service_id === null) {
-            //Service for .html requests
+    public function serviceNotification($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        //Service for .json requests
-        $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.service_type',
-                'Service.service_url'
-            ],
-            'contain'    => [
-                'Host'            => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name',
-                        'Host.uuid',
-                        'Host.address'
-                    ],
-                    'Container',
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name',
-                    ],
-                ],
-            ],
-            'conditions' => [
-                'Service.id' => $service_id,
-            ],
-        ]);
+        session_write_close();
 
-        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$ServicesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid service'));
+        }
+
+
+        $service = $ServicesTable->getServiceByIdForPermissionsCheck($id);
+        if (!$this->allowedByContainerId($service->getContainerIds(), false)) {
             $this->render403();
             return;
         }
 
-        $AngularNotificationsControllerRequest = new NotificationsControllerRequest($this->request);
+        $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
 
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = $User->getUserTime();
 
         //Process conditions
         $Conditions = new ServiceNotificationConditions();
-        $Conditions->setLimit($this->Paginator->settings['limit']);
-        $Conditions->setFrom($AngularNotificationsControllerRequest->getFrom());
-        $Conditions->setTo($AngularNotificationsControllerRequest->getTo());
-        $Conditions->setOrder($AngularNotificationsControllerRequest->getOrderForPaginator('NotificationService.start_time', 'desc'));
-        $Conditions->setServiceUuid($service['Service']['uuid']);
-        $Conditions->setStates($AngularNotificationsControllerRequest->getServiceStates());
+        $Conditions->setContainerIds($this->MY_RIGHTS);
+        $Conditions->setFrom($AngularNotificationsOverviewControllerRequest->getFrom());
+        $Conditions->setTo($AngularNotificationsOverviewControllerRequest->getTo());
+        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationServices.start_time', 'desc'));
+        $Conditions->setStates($AngularNotificationsOverviewControllerRequest->getServiceStates());
+        $Conditions->setConditions($AngularNotificationsOverviewControllerRequest->getServiceFilters());
+        $Conditions->setServiceUuid($service->get('uuid'));
 
-
-        $query = $this->NotificationService->getQuery($Conditions, $AngularNotificationsControllerRequest->getServiceFilters());
-
-        $this->Paginator->settings = $query;
-        $this->Paginator->settings['page'] = $AngularNotificationsControllerRequest->getPage();
-
-        $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if ($this->isScrollRequest()) {
-            $notifications = $this->NotificationService->find('all', $this->Paginator->settings);
-            $ScrollIndex->determineHasNextPage($notifications);
-            $ScrollIndex->scroll();
-        } else {
-            $notifications = $this->Paginator->paginate(
-                $this->NotificationService->alias,
-                [],
-                [key($this->Paginator->settings['order'])]
-            );
-        }
+        //Query notification records
+        $NotificationServicesTable = $this->DbBackend->getNotificationServicesTable();
 
         $all_notifications = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        foreach ($notifications as $notification) {
+        foreach ($NotificationServicesTable->getNotifications($Conditions, $PaginateOMat) as $notification) {
             $NotificationService = new itnovum\openITCOCKPIT\Core\Views\NotificationService($notification, $UserTime);
-            $Service = new itnovum\openITCOCKPIT\Core\Views\Service($notification);
-            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification);
-            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Command']);
-            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact']);
+            $Service = new itnovum\openITCOCKPIT\Core\Views\Service($notification['Services'], $notification['servicename']);
+            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification['Hosts']);
+            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Commands']);
+            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contacts']);
             $all_notifications[] = [
                 'NotificationService' => $NotificationService->toArray(),
                 'Service'             => $Service->toArray(),
@@ -389,7 +280,8 @@ class NotificationsController extends AppController {
             ];
         }
 
-        $this->set(compact(['all_notifications']));
+        $this->set('all_notifications', $all_notifications);
+
         $toJson = ['all_notifications', 'paging'];
         if ($this->isScrollRequest()) {
             $toJson = ['all_notifications', 'scroll'];

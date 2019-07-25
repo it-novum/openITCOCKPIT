@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('NotificationsServiceNotificationController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, $stateParams, StatusHelperService, $interval){
 
-        SortService.setSort(QueryStringService.getValue('sort', 'NotificationService.start_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'NotificationServices.start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
@@ -14,19 +14,14 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Notification: {
+                NotificationServices: {
                     state: {
                         ok: false,
                         warning: false,
                         critical: false,
                         unknown: false
                     },
-                    state_types: {
-                        soft: false,
-                        hard: false
-                    },
-                    output: '',
-                    author: ''
+                    output: ''
                 },
                 from: date('d.m.Y H:i', now.getTime() / 1000 - (3600 * 24 * 30)),
                 to: date('d.m.Y H:i', now.getTime() / 1000 + (3600 * 24 * 30 * 2))
@@ -47,8 +42,8 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[NotificationService.output]': $scope.filter.Notification.output,
-                    'filter[NotificationService.state][]': $rootScope.currentStateForApi($scope.filter.Notification.state),
+                    'filter[NotificationServices.output]': $scope.filter.NotificationServices.output,
+                    'filter[NotificationServices.state][]': $rootScope.currentStateForApi($scope.filter.NotificationServices.state),
                     'filter[from]': $scope.filter.from,
                     'filter[to]': $scope.filter.to
                 }
@@ -63,7 +58,7 @@ angular.module('openITCOCKPIT')
                 params: {
                     'angular': true
                 }
-            }).then(function(result) {
+            }).then(function(result){
                 $scope.service = result.data.service;
                 $scope.servicestatus = result.data.servicestatus;
                 $scope.serviceStatusTextClass = StatusHelperService.getServicestatusTextColor($scope.servicestatus.currentState);
@@ -103,19 +98,19 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
-        $scope.startFlapping = function() {
+        $scope.startFlapping = function(){
             $scope.stopFlapping();
-            flappingInterval = $interval(function() {
-                if ($scope.flappingState === 0) {
+            flappingInterval = $interval(function(){
+                if($scope.flappingState === 0){
                     $scope.flappingState = 1;
-                } else {
+                }else{
                     $scope.flappingState = 0;
                 }
             }, 750);
         };
 
-        $scope.stopFlapping = function() {
-            if (flappingInterval) {
+        $scope.stopFlapping = function(){
+            if(flappingInterval){
                 $interval.cancel(flappingInterval);
             }
             flappingInterval = null;
@@ -130,14 +125,14 @@ angular.module('openITCOCKPIT')
             $scope.load();
         }, true);
 
-        $scope.$watch('servicestatus.isFlapping', function() {
-            if ($scope.servicestatus) {
-                if ($scope.servicestatus.hasOwnProperty('isFlapping')) {
-                    if ($scope.servicestatus.isFlapping === true) {
+        $scope.$watch('servicestatus.isFlapping', function(){
+            if($scope.servicestatus){
+                if($scope.servicestatus.hasOwnProperty('isFlapping')){
+                    if($scope.servicestatus.isFlapping === true){
                         $scope.startFlapping();
                     }
 
-                    if ($scope.servicestatus.isFlapping === false) {
+                    if($scope.servicestatus.isFlapping === false){
                         $scope.stopFlapping();
                     }
 
