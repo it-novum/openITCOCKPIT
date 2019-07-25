@@ -40,13 +40,6 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
  */
 class NotificationsController extends AppController {
 
-    public $uses = [
-        MONITORING_NOTIFICATION_HOST,
-        MONITORING_NOTIFICATION_SERVICE,
-        'Host',
-        'Service'
-    ];
-
     public $layout = 'blank';
 
     public function index() {
@@ -218,8 +211,8 @@ class NotificationsController extends AppController {
     }
 
     /**
-     * @param int|null $service_id
-     * @deprecated
+     * @param int|null $id
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     public function serviceNotification($id = null) {
         if (!$this->isApiRequest()) {
@@ -229,8 +222,6 @@ class NotificationsController extends AppController {
 
         session_write_close();
 
-        /** @var $HostsTable HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
