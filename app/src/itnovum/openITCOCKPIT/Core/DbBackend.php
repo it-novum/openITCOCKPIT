@@ -29,6 +29,7 @@ use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\AcknowledgementHostsTableInterface;
 use App\Lib\Interfaces\AcknowledgementServicesTableInterface;
 use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
+use App\Lib\Interfaces\DowntimehistoryServicesTableInterface;
 use App\Lib\Interfaces\HostchecksTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\NotificationHostsTableInterface;
@@ -292,6 +293,26 @@ class DbBackend {
             /** @var $DowntimehistoryHostsTable DowntimehistoryHostsTableInterface */
             $DowntimehistoryHostsTable = TableRegistry::getTableLocator()->get('Statusengine2Module.DowntimeHosts');
             return $DowntimehistoryHostsTable;
+        }
+
+        if ($this->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+    }
+
+    /**
+     * @return DowntimehistoryServicesTableInterface
+     * @throws MissingDbBackendException
+     */
+    public function getDowntimehistoryServicesTable() {
+        if ($this->isNdoUtils()) {
+            /** @var $DowntimehistoryServicesTable DowntimehistoryServicesTableInterface */
+            $DowntimehistoryServicesTable = TableRegistry::getTableLocator()->get('Statusengine2Module.DowntimeServices');
+            return $DowntimehistoryServicesTable;
         }
 
         if ($this->isCrateDb()) {

@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('DowntimesServiceController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, MassChangeService, $interval){
 
-        SortService.setSort(QueryStringService.getValue('sort', 'DowntimeService.scheduled_start_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'DowntimeServices.scheduled_start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
@@ -12,16 +12,16 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                DowntimeService: {
+                DowntimeServices: {
                     author_name: '',
                     comment_data: '',
                     was_cancelled: false,
                     was_not_cancelled: false
                 },
-                Host: {
+                Hosts: {
                     name: ''
                 },
-                Service: {
+                Services: {
                     name: ''
                 },
                 from: date('d.m.Y H:i', now.getTime() / 1000 - (3600 * 24 * 30)),
@@ -42,8 +42,8 @@ angular.module('openITCOCKPIT')
 
         $scope.load = function(){
             var wasCancelled = '';
-            if($scope.filter.DowntimeService.was_cancelled ^ $scope.filter.DowntimeService.was_not_cancelled){
-                wasCancelled = $scope.filter.DowntimeService.was_cancelled === true;
+            if($scope.filter.DowntimeServices.was_cancelled ^ $scope.filter.DowntimeServices.was_not_cancelled){
+                wasCancelled = $scope.filter.DowntimeServices.was_cancelled === true;
             }
             $http.get("/downtimes/service.json", {
                 params: {
@@ -52,11 +52,11 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[DowntimeService.author_name]': $scope.filter.DowntimeService.author_name,
-                    'filter[DowntimeService.comment_data]': $scope.filter.DowntimeService.comment_data,
-                    'filter[DowntimeService.was_cancelled]': wasCancelled,
-                    'filter[Host.name]': $scope.filter.Host.name,
-                    'filter[Service.name]': $scope.filter.Service.name,
+                    'filter[DowntimeServices.author_name]': $scope.filter.DowntimeServices.author_name,
+                    'filter[DowntimeServices.comment_data]': $scope.filter.DowntimeServices.comment_data,
+                    'filter[DowntimeServices.was_cancelled]': wasCancelled,
+                    'filter[Hosts.name]': $scope.filter.Hosts.name,
+                    'filter[servicename]': $scope.filter.Services.name,
                     'filter[from]': $scope.filter.from,
                     'filter[to]': $scope.filter.to,
                     'filter[hideExpired]': $scope.filter.hideExpired,
