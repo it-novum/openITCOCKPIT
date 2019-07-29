@@ -28,6 +28,7 @@ namespace itnovum\openITCOCKPIT\Core;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\AcknowledgementHostsTableInterface;
 use App\Lib\Interfaces\AcknowledgementServicesTableInterface;
+use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Lib\Interfaces\HostchecksTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\NotificationHostsTableInterface;
@@ -271,6 +272,26 @@ class DbBackend {
             /** @var $NotificationServicesTable NotificationServicesTableInterface */
             $NotificationServicesTable = TableRegistry::getTableLocator()->get('Statusengine2Module.NotificationServices');
             return $NotificationServicesTable;
+        }
+
+        if ($this->isCrateDb()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+
+        if ($this->isStatusengine3()) {
+            throw new MissingDbBackendException('MissingDbBackendException');
+        }
+    }
+
+    /**
+     * @return DowntimehistoryHostsTableInterface
+     * @throws MissingDbBackendException
+     */
+    public function getDowntimehistoryHostsTable() {
+        if ($this->isNdoUtils()) {
+            /** @var $DowntimehistoryHostsTable DowntimehistoryHostsTableInterface */
+            $DowntimehistoryHostsTable = TableRegistry::getTableLocator()->get('Statusengine2Module.DowntimeHosts');
+            return $DowntimehistoryHostsTable;
         }
 
         if ($this->isCrateDb()) {

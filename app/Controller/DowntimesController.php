@@ -23,14 +23,25 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
+use App\Model\Table\HostsTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\HostDowntimesControllerRequest;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\ServiceDowntimesControllerRequest;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 
+/**
+ * Class DowntimesController
+ * @property AppPaginatorComponent $Paginator
+ * @property AppAuthComponent $Auth
+ * @property DbBackend $DbBackend
+ */
 class DowntimesController extends AppController {
 
     /*
@@ -44,84 +55,72 @@ class DowntimesController extends AppController {
         'Service'
     ];
 
-    public $helpers = ['Uuid'];
-    public $layout = 'Admin.default';
+    public $layout = 'blank';
 
     public $components = ['GearmanClient'];
 
     public function host() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
+            //Only ship HTML template
             return;
         }
 
-        $AngularHostDowntimesControllerRequest = new HostDowntimesControllerRequest($this->request);
+        $HostDowntimesControllerRequest = new HostDowntimesControllerRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostDowntimesControllerRequest->getPage());
 
         //Process conditions
         $DowntimeHostConditions = new DowntimeHostConditions();
-        $DowntimeHostConditions->setLimit($this->Paginator->settings['limit']);
-        $DowntimeHostConditions->setFrom($AngularHostDowntimesControllerRequest->getFrom());
-        $DowntimeHostConditions->setTo($AngularHostDowntimesControllerRequest->getTo());
-        $DowntimeHostConditions->setHideExpired($AngularHostDowntimesControllerRequest->hideExpired());
-        $DowntimeHostConditions->setIsRunning($AngularHostDowntimesControllerRequest->isRunning());
+        $DowntimeHostConditions->setFrom($HostDowntimesControllerRequest->getFrom());
+        $DowntimeHostConditions->setTo($HostDowntimesControllerRequest->getTo());
+        $DowntimeHostConditions->setHideExpired($HostDowntimesControllerRequest->hideExpired());
+        $DowntimeHostConditions->setIsRunning($HostDowntimesControllerRequest->isRunning());
         $DowntimeHostConditions->setContainerIds($this->MY_RIGHTS);
-        $DowntimeHostConditions->setOrder($AngularHostDowntimesControllerRequest->getOrderForPaginator('DowntimeHost.scheduled_start_time', 'desc'));
+        $DowntimeHostConditions->setOrder($HostDowntimesControllerRequest->getOrderForPaginator('DowntimeHosts.scheduled_start_time', 'desc'));
+        $DowntimeHostConditions->setConditions($HostDowntimesControllerRequest->getIndexFilters());
 
-        $this->Paginator->settings = $this->DowntimeHost->getQuery($DowntimeHostConditions, $AngularHostDowntimesControllerRequest->getIndexFilters());
-        $this->Paginator->settings['page'] = $AngularHostDowntimesControllerRequest->getPage();
+        /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
+        $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-        if ($this->isScrollRequest()) {
-            $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-            $hostDowntimes = $this->DowntimeHost->find('all', $this->Paginator->settings);
-            $ScrollIndex->determineHasNextPage($hostDowntimes);
-            $ScrollIndex->scroll();
-        } else {
-            $hostDowntimes = $this->Paginator->paginate(
-                $this->DowntimeHost->alias,
-                [],
-                [key($this->Paginator->settings['order'])]
-            );
-        }
-
+        $hostDowntimes = $DowntimehistoryHostsTable->getDowntimes($DowntimeHostConditions, $PaginateOMat);
 
         //Load containers for hosts, for non root users
         $hostContainers = [];
-        if (!empty($hostDowntimes) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts')) {
-            $hostIds = array_unique(Hash::extract($hostDowntimes, '{n}.Host.id'));
-            $_hostContainers = $this->Host->find('all', [
-                'contain'    => [
-                    'Container',
-                ],
-                'fields'     => [
-                    'Host.id',
-                    'Container.*',
-                ],
-                'conditions' => [
-                    'Host.id' => $hostIds,
-                ],
-            ]);
-            foreach ($_hostContainers as $host) {
-                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
+        $hostIds = [];
+        if (!empty($hostDowntimes) && $this->hasRootPrivileges === true && $this->hasPermission('edit', 'hosts')) {
+            foreach ($hostDowntimes as $record) {
+                $hostIds[] = $record->get('Hosts')['id'];
+            }
+
+            $hostIds = array_unique($hostIds);
+
+            foreach ($hostIds as $hostId) {
+                $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
+                $hostContainers[$host->get('id')] = $host->getContainerIds();
             }
         }
 
+
         //Prepare data for API
         $all_host_downtimes = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = $User->getUserTime();
+
         foreach ($hostDowntimes as $hostDowntime) {
-            if ($this->hasRootPrivileges) {
+            if ($this->hasRootPrivileges === 'asdadasd') {
                 $allowEdit = true;
             } else {
                 $containerIds = [];
-                if (isset($hostContainers[$hostDowntime['Host']['id']])) {
-                    $containerIds = $hostContainers[$hostDowntime['Host']['id']];
+                if (isset($hostContainers[$hostDowntime->get('Hosts')['id']])) {
+                    $containerIds = $hostContainers[$hostDowntime->get('Hosts')['id']];
                 }
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
 
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($hostDowntime, $allowEdit);
-            $HostDowntime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($hostDowntime['DowntimeHost'], $allowEdit, $UserTime);
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($hostDowntime->get('Hosts'), $allowEdit);
+            $HostDowntime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($hostDowntime, $allowEdit, $UserTime);
 
             $all_host_downtimes[] = [
                 'Host'         => $Host->toArray(),
@@ -136,12 +135,12 @@ class DowntimesController extends AppController {
             $toJson = ['all_host_downtimes', 'scroll'];
         }
         $this->set('_serialize', $toJson);
-
     }
 
-
+    /**
+     * @deprecated
+     */
     public function service() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             return;
         }
@@ -230,20 +229,6 @@ class DowntimesController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
-    public function validateDowntimeInputFromBrowser() {
-        $this->render(false);
-        if (isset($this->request->data['from']) && isset($this->request->data['to'])) {
-            if (strtotime($this->request->data['from']) !== false && strtotime($this->request->data['to']) !== false
-                && strlen($this->request->data['from']) > 0 && strlen($this->request->data['to']) > 0
-            ) {
-                echo 1;
-
-                return;
-            }
-        }
-        echo 0;
-    }
-
     public function validateDowntimeInputFromAngular() {
         if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -296,6 +281,7 @@ class DowntimesController extends AppController {
 
     /**
      * @param int $internalDowntimeId
+     * @deprecated
      */
     public function delete($internalDowntimeId = null) {
         if (!$this->request->is('post')) {
@@ -386,7 +372,6 @@ class DowntimesController extends AppController {
     }
 
     public function icon() {
-        $this->layout = 'blank';
         //Only ship template
         return;
     }
