@@ -255,7 +255,7 @@ $config = [
                 [
                     'url'   => ['controller' => 'logentries', 'action' => 'index'],
                     'state' => 'LogentriesIndex',
-                    'title' => 'Log Entries',
+                    'title' => 'Log entries',
                     'icon'  => 'file-text-o',
                 ],
                 [
