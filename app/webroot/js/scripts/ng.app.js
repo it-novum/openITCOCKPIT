@@ -817,6 +817,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             .state('HostsIndex', {
                 url: '/hosts/index',
                 templateUrl: "/hosts/index.html",
+                params: {
+                    filterHostname: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 controller: "HostsIndexController"
             })
 
