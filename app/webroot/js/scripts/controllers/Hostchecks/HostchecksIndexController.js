@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
-    .controller('HostchecksIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, $stateParams, StatusHelperService, $interval){
+    .controller('HostchecksIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, $stateParams){
 
-        SortService.setSort(QueryStringService.getValue('sort', 'Hostcheck.start_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'Hostchecks.start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
@@ -10,12 +10,11 @@ angular.module('openITCOCKPIT')
         $scope.useScroll = true;
 
         var now = new Date();
-        var flappingInterval;
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Hostcheck: {
+                Hostchecks: {
                     state: {
                         recovery: false,
                         down: false,
@@ -33,6 +32,12 @@ angular.module('openITCOCKPIT')
         };
         /*** Filter end ***/
 
+        $scope.hostBrowserMenuConfig = {
+            autoload: true,
+            hostId: $scope.id,
+            includeHoststatus: true
+        };
+
         $scope.init = true;
         $scope.showFilter = false;
 
@@ -40,9 +45,9 @@ angular.module('openITCOCKPIT')
         $scope.load = function(){
 
             var state_type = '';
-            if($scope.filter.Hostcheck.state_types.soft ^ $scope.filter.Hostcheck.state_types.hard){
+            if($scope.filter.Hostchecks.state_types.soft ^ $scope.filter.Hostchecks.state_types.hard){
                 state_type = 0;
-                if($scope.filter.Hostcheck.state_types.hard === true){
+                if($scope.filter.Hostchecks.state_types.hard === true){
                     state_type = 1;
                 }
             }
@@ -54,9 +59,9 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[Hostcheck.output]': $scope.filter.Hostcheck.output,
-                    'filter[Hostcheck.state][]': $rootScope.currentStateForApi($scope.filter.Hostcheck.state),
-                    'filter[Hostcheck.state_type]': state_type,
+                    'filter[Hostchecks.output]': $scope.filter.Hostchecks.output,
+                    'filter[Hostchecks.state][]': $rootScope.currentStateForApi($scope.filter.Hostchecks.state),
+                    'filter[Hostchecks.state_type]': state_type,
                     'filter[from]': $scope.filter.from,
                     'filter[to]': $scope.filter.to
                 }
@@ -66,25 +71,14 @@ angular.module('openITCOCKPIT')
                 $scope.scroll = result.data.scroll;
 
                 $scope.init = false;
-            });
-
-            $http.get("/hosts/hostBrowserMenu/" + $scope.id + ".json", {
-                params: {
-                    'angular': true
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
                 }
-            }).then(function(result) {
-                $scope.host = result.data.host;
-                $scope.hoststatus = result.data.hoststatus;
-                $scope.hostStatusTextClass = StatusHelperService.getHoststatusTextColor($scope.hoststatus.currentState);
 
-                $scope.hostBrowserMenu = {
-                    hostId: $scope.host.Host.id,
-                    hostUuid: $scope.host.Host.uuid,
-                    allowEdit: $scope.host.Host.allowEdit,
-                    hostUrl: $scope.host.Host.host_url_replaced,
-                    docuExists: result.data.docuExists,
-                    isHostBrowser: false
-                };
+                if(result.status === 404){
+                    $state.go('404');
+                }
             });
         };
 
@@ -109,24 +103,6 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
-        $scope.startFlapping = function() {
-            $scope.stopFlapping();
-            flappingInterval = $interval(function() {
-                if ($scope.flappingState === 0) {
-                    $scope.flappingState = 1;
-                } else {
-                    $scope.flappingState = 0;
-                }
-            }, 750);
-        };
-
-        $scope.stopFlapping = function() {
-            if (flappingInterval) {
-                $interval.cancel(flappingInterval);
-            }
-            flappingInterval = null;
-        };
-
         //Fire on page load
         defaultFilter();
         SortService.setCallback($scope.load);
@@ -135,20 +111,5 @@ angular.module('openITCOCKPIT')
             $scope.currentPage = 1;
             $scope.load();
         }, true);
-
-        $scope.$watch('hoststatus.isFlapping', function() {
-            if ($scope.hoststatus) {
-                if ($scope.hoststatus.hasOwnProperty('isFlapping')) {
-                    if ($scope.hoststatus.isFlapping === true) {
-                        $scope.startFlapping();
-                    }
-
-                    if ($scope.hoststatus.isFlapping === false) {
-                        $scope.stopFlapping();
-                    }
-
-                }
-            }
-        });
 
     });

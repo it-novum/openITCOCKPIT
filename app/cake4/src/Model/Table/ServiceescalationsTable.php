@@ -137,11 +137,6 @@ class ServiceescalationsTable extends Table {
                 'min' => 1
             ], __('You have to choose at least one service.'));
 
-        $validator
-            ->integer('timeperiod_id')
-            ->greaterThan('timeperiod_id', 0)
-            ->requirePresence('timeperiod_id')
-            ->allowEmptyString('timeperiod_id', null, false);
 
         $validator
             ->integer('first_notification')
@@ -168,42 +163,6 @@ class ServiceescalationsTable extends Table {
             ->greaterThan('notification_interval', 0)
             ->requirePresence('notification_interval')
             ->allowEmptyString('notification_interval', null, false);
-
-        $validator
-            ->boolean('escalate_on_recovery')
-            ->requirePresence('escalate_on_recovery', 'create')
-            ->allowEmptyString('escalate_on_recovery', null, true)
-            ->add('escalate_on_recovery', 'custom', [
-                'rule'    => [$this, 'checkEscalateOptionsServiceEscalation'], //\App\Lib\Traits\CustomValidationTrait
-                'message' => __('You must specify at least one escalate option.')
-            ]);
-
-        $validator
-            ->boolean('escalate_on_warning')
-            ->requirePresence('escalate_on_warning', 'create')
-            ->allowEmptyString('escalate_on_warning', null, true)
-            ->add('escalate_on_warning', 'custom', [
-                'rule'    => [$this, 'checkEscalateOptionsServiceEscalation'], //\App\Lib\Traits\CustomValidationTrait
-                'message' => __('You must specify at least one escalate option.')
-            ]);
-
-        $validator
-            ->boolean('escalate_on_critical')
-            ->requirePresence('escalate_on_critical', 'create')
-            ->allowEmptyString('escalate_on_critical', null, true)
-            ->add('escalate_on_warning', 'custom', [
-                'rule'    => [$this, 'checkEscalateOptionsServiceEscalation'], //\App\Lib\Traits\CustomValidationTrait
-                'message' => __('You must specify at least one escalate option.')
-            ]);
-
-        $validator
-            ->boolean('escalate_on_unknown')
-            ->requirePresence('escalate_on_unknown', 'create')
-            ->allowEmptyString('escalate_on_unknown', null, true)
-            ->add('escalate_on_unknown', 'custom', [
-                'rule'    => [$this, 'checkEscalateOptionsServiceEscalation'], //\App\Lib\Traits\CustomValidationTrait
-                'message' => __('You must specify at least one escalate option.')
-            ]);
 
         return $validator;
     }

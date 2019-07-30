@@ -101,4 +101,15 @@ class DocumentationsTable extends Table {
             ->where(['Documentations.uuid' => $uuid])
             ->first();
     }
+
+    /**
+     * @param string $uuid
+     * @return \Cake\Database\StatementInterface
+     */
+    public function deleteDocumentationByUuid($uuid) {
+        return $this->query()
+            ->delete()
+            ->where(['Documentations.uuid' => $uuid])
+            ->execute();
+    }
 }

@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 
+/**
+ * Class BbcodeComponent
+ * @deprecated use \itnovum\openITCOCKPIT\Core\Views\BBCodeParser
+ */
 class BbcodeComponent extends Component {
 
 
@@ -37,6 +41,7 @@ class BbcodeComponent extends Component {
      * @return string with HTML parts
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated use \itnovum\openITCOCKPIT\Core\Views\BBCodeParser
      */
     public function asHtml($bbcode, $nl2br = true) {
         $parser = new BBCodeParser();
@@ -51,6 +56,7 @@ class BbcodeComponent extends Component {
      * @return string with HTML <br> for new line
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated use \itnovum\openITCOCKPIT\Core\Views\BBCodeParser
      */
     public function nagiosNl2br($str) {
         $parser = new BBCodeParser();

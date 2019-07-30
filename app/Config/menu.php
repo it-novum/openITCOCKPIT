@@ -110,6 +110,7 @@ $config = [
                 [
                     'url'   => ['controller' => 'systemfailures', 'action' => 'index'],
                     'title' => 'System Failures',
+                    'state' => 'SystemfailuresIndex',
                     'icon'  => 'exclamation-circle',
                 ],
                 [
@@ -339,6 +340,7 @@ $config = [
         'documentation' => [
             'url'   => ['controller' => 'documentations', 'action' => 'wiki', 'plugin' => ''],
             'title' => 'Documentation',
+            'state' => 'DocumentationsWiki',
             'icon'  => 'book',
             'order' => 6,
         ],

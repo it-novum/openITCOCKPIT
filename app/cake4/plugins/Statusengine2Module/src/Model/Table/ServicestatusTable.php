@@ -14,6 +14,8 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 /**
  * Servicestatus Model
  *
+ * Bake command: bin/cake bake model -p Statusengine2Module Servicestatus
+ *
  * @property \Statusengine2Module\Model\Table\ObjectsTable|\Cake\ORM\Association\BelongsTo $Object
  *
  * @method \Statusengine2Module\Model\Entity\Servicestatus get($primaryKey, $options = [])
@@ -26,6 +28,13 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
  * @method \Statusengine2Module\Model\Entity\Servicestatus findOrCreate($search, callable $callback = null, $options = [])
  */
 class ServicestatusTable extends Table implements ServicestatusTableInterface {
+
+    /*****************************************************/
+    /*                         !!!                       */
+    /*           If you add a method to this table       */
+    /*   define it in the implemented interface first!   */
+    /*                         !!!                       */
+    /*****************************************************/
 
     use Cake2ResultTableTrait;
 

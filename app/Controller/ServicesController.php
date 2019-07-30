@@ -33,6 +33,7 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DeletedServicesTable;
+use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicecommandargumentvaluesTable;
@@ -144,7 +145,6 @@ class ServicesController extends AppController {
         MONITORING_OBJECTS,
         'DeletedService',
         'Container',
-        'Documentation',
         'Systemsetting',
         MONITORING_DOWNTIME_HOST,
         MONITORING_DOWNTIME_SERVICE,
@@ -861,6 +861,12 @@ class ServicesController extends AppController {
         if (empty($usedBy)) {
             //Not used by any module
             if ($ServicesTable->__delete($service, $User)) {
+
+                /** @var $DocumentationsTable DocumentationsTable */
+                $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
+                $DocumentationsTable->deleteDocumentationByUuid($service->get('uuid'));
+
                 $this->set('success', true);
                 $this->set('message', __('Service successfully deleted'));
                 $this->set('_serialize', ['success']);
@@ -1241,39 +1247,17 @@ class ServicesController extends AppController {
     public function browser($id = null) {
         $this->layout = 'blank';
 
-        if (!$this->isAngularJsRequest() && $idOrUuid === null) {
+        if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
 
-        $id = $idOrUuid;
-        if (!is_numeric($idOrUuid)) {
-            if (preg_match(UUID::regex(), $idOrUuid)) {
-                $lookupService = $this->Service->find('first', [
-                    'recursive'  => -1,
-                    'fields'     => [
-                        'Service.id'
-                    ],
-                    'conditions' => [
-                        'Service.uuid' => $idOrUuid
-                    ]
-                ]);
-                if (empty($lookupService)) {
-                    throw new NotFoundException(__('Service not found'));
-                }
-                $this->redirect([
-                    'controller' => 'services',
-                    'action'     => 'browser',
-                    $lookupService['Service']['id']
-                ]);
-                return;
-            }
-        }
-        unset($idOrUuid);
-
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Service not found'));
         }
+
+        /** @var $DocumentationsTable DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
 
         $rawService = $this->Service->find('first', [
             'recursive'  => -1,
@@ -1346,7 +1330,7 @@ class ServicesController extends AppController {
             $this->set('host', $rawHost);
             $this->set('service', $rawService);
             $this->set('allowEdit', $allowEdit);
-            $this->set('docuExists', $this->Documentation->existsForUuid($rawService['Service']['uuid']));
+            $this->set('docuExists', $DocumentationsTable->existsByUuid($rawService['Service']['uuid']));
             //Only ship template
             return;
         }
@@ -1592,7 +1576,7 @@ class ServicesController extends AppController {
             }
         }
 
-        $docuExists = $this->Documentation->existsForUuid($mergedService['Service']['uuid']);
+        $docuExists = $DocumentationsTable->existsByUuid($mergedService['Service']['uuid']);
 
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
 
@@ -2217,99 +2201,6 @@ class ServicesController extends AppController {
             'acknowledgements',
             'timeranges'
         ]);
-    }
-
-    /**
-     * @param int $id
-     * @deprecated
-     */
-    public function serviceBrowserMenu($id) {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        if (!$this->Service->exists($id)) {
-            throw new NotFoundException();
-        }
-
-        $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.host_id',
-                'Service.service_type',
-                'Service.service_url'
-            ],
-            'contain'    => [
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.name',
-                        'Servicetemplate.service_url'
-                    ]
-                ],
-                'Host'            => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.uuid',
-                        'Host.name',
-                        'Host.address'
-                    ]
-                ]
-            ],
-            'conditions' => [
-                'Service.id' => $id
-            ]
-        ]);
-
-        if ($service['Service']['service_url'] === '' || $service['Service']['service_url'] === null) {
-            $service['Service']['service_url'] = $service['Servicetemplate']['service_url'];
-        }
-
-        if ($service['Service']['name'] === '' || $service['Service']['name'] === null) {
-            $service['Service']['name'] = $service['Servicetemplate']['name'];
-        }
-
-        $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($service['Service']['host_id']));
-        $host = new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost);
-        $rawHost['Host']['is_satellite_host'] = $host->isSatelliteHost();
-
-        $containerIdsToCheck = Hash::extract($rawHost, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $rawHost['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-            $this->render403();
-            return;
-        }
-
-        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
-
-        //Get meta data and push to front end
-        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-        $ServicestatusFields->currentState()->isFlapping();
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
-        if (!isset($servicestatus['Servicestatus'])) {
-            $servicestatus['Servicestatus'] = [];
-        }
-        $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
-
-        $ServiceMacroReplacer = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($service);
-        $service['Service']['service_url_replaced'] = $service['Service']['service_url'];
-        if ($service['Service']['service_url'] !== '' && $service['Service']['service_url'] !== null) {
-            $service['Service']['service_url_replaced'] = $ServiceMacroReplacer->replaceBasicMacros($service['Service']['service_url']);
-        }
-
-        if ($this->hasRootPrivileges) {
-            $allowEdit = true;
-        } else {
-            $ContainerPermissions = new \itnovum\openITCOCKPIT\Core\Views\ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
-            $allowEdit = $ContainerPermissions->hasPermission();
-        }
-        $service['Service']['allowEdit'] = $allowEdit;
-
-        $this->set('service', $service);
-        $this->set('servicestatus', $Servicestatus->toArray());
-        $this->set('docuExists', $docuExists);
-        $this->set('_serialize', ['service', 'servicestatus', 'docuExists']);
     }
 
     /****************************

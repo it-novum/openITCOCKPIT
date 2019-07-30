@@ -24,42 +24,13 @@
 //	confirmation.
 
 //Flapping Workaround while the status date is not loaded via Angular
-echo $this->Html->script('lib/FlappingWorkaround.js');
 
 ?>
 
-<div class="alert auto-hide alert-success" id="flashSuccess"
-     style="display:none"><?php echo __('Command sent successfully'); ?></div>
-<div class="alert auto-hide alert-danger" id="flashFailed"
-     style="display:none"><?php echo __('Error while sending command'); ?></div>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="status_headline" ng-class="hostStatusTextClass">
-
-            <span class="flapping_airport stateClass" ng-show="hoststatus.isFlapping">
-                <i class="fa" ng-class="flappingState === 1 ? 'fa-circle' : 'fa-circle-o'"></i>
-                <i class="fa" ng-class="flappingState === 0 ? 'fa-circle' : 'fa-circle-o'"></i>
-            </span>
-
-            <i class="fa fa-desktop fa-fw"></i>
-            {{ host.Host.name }}
-            <span>
-                ({{ host.Host.address }})
-            </span>
-        </h1>
-    </div>
-    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
-        <h5>
-            <div class="pull-right">
-                <a ui-sref="HostsBrowser({id:hostBrowserMenu.hostId})"
-                   class="btn btn-primary btn-sm">
-                    <i class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
-                </a>
-                <?php echo $this->element('host_browser_menu'); ?>
-            </div>
-        </h5>
-    </div>
-</div>
+<host-browser-menu
+        ng-if="hostBrowserMenuConfig"
+        config="hostBrowserMenuConfig"
+        last-load-date="0"></host-browser-menu>
 
 <section id="widget-grid" class="">
     <div class="row">
@@ -98,7 +69,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <label class="input"> <i class="icon-prepend"
                                                                  style="padding-right:14px;"><?php echo __('From'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
-                                                   placeholder="<?php echo __('From Date'); ?>"
+                                                   placeholder="<?php echo __('From date'); ?>"
                                                    ng-model="filter.from"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
@@ -109,7 +80,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by output'); ?>"
-                                                   ng-model="filter.Notification.output"
+                                                   ng-model="filter.NotificationHosts.output"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -120,7 +91,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <label class="input"> <i class="icon-prepend"
                                                                  style="padding-right:14px;"><?php echo __('To'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
-                                                   placeholder="<?php echo __('To Date'); ?>"
+                                                   placeholder="<?php echo __('To date'); ?>"
                                                    ng-model="filter.to"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
@@ -136,7 +107,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Notification.state.recovery"
+                                                       ng-model="filter.NotificationHosts.state.recovery"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-success"></i>
                                                 <?php echo __('Up'); ?>
@@ -144,7 +115,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Notification.state.down"
+                                                       ng-model="filter.NotificationHosts.state.down"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-danger"></i>
                                                 <?php echo __('Down'); ?>
@@ -152,7 +123,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Notification.state.unreachable"
+                                                       ng-model="filter.NotificationHosts.state.unreachable"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-default"></i>
                                                 <?php echo __('Unreachable'); ?>
@@ -180,28 +151,24 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                style="">
                             <thead>
                             <tr>
-                                <th class="no-sort" ng-click="orderBy('NotificationHost.state')">
-                                    <i class="fa" ng-class="getSortClass('NotificationHost.state')"></i>
+                                <th class="no-sort" ng-click="orderBy('NotificationHosts.state')">
+                                    <i class="fa" ng-class="getSortClass('NotificationHosts.state')"></i>
                                     <?php echo __('State'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Host.name')">
-                                    <i class="fa" ng-class="getSortClass('Host.name')"></i>
-                                    <?php echo __('Host'); ?>
-                                </th>
-                                <th class="no-sort" ng-click="orderBy('NotificationHost.start_time')">
-                                    <i class="fa" ng-class="getSortClass('NotificationHost.start_time')"></i>
+                                <th class="no-sort" ng-click="orderBy('NotificationHosts.start_time')">
+                                    <i class="fa" ng-class="getSortClass('NotificationHosts.start_time')"></i>
                                     <?php echo __('Date'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Contact.name')">
-                                    <i class="fa" ng-class="getSortClass('Contact.name')"></i>
+                                <th class="no-sort" ng-click="orderBy('Contacts.name')">
+                                    <i class="fa" ng-class="getSortClass('Contacts.name')"></i>
                                     <?php echo __('Contact'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Command.name')">
-                                    <i class="fa" ng-class="getSortClass('Command.name')"></i>
+                                <th class="no-sort" ng-click="orderBy('Commands.name')">
+                                    <i class="fa" ng-class="getSortClass('Commands.name')"></i>
                                     <?php echo __('Notification Method'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('NotificationHost.output')">
-                                    <i class="fa" ng-class="getSortClass('NotificationHost.output')"></i>
+                                <th class="no-sort" ng-click="orderBy('NotificationHosts.output')">
+                                    <i class="fa" ng-class="getSortClass('NotificationHosts.output')"></i>
                                     <?php echo __('Output'); ?>
                                 </th>
                             </tr>
@@ -212,10 +179,6 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                                 <td class="text-center">
                                     <hoststatusicon state="Notification.NotificationHost.state"></hoststatusicon>
-                                </td>
-                                <td>
-                                    <a ui-sref="HostsBrowser({id:Notification.Host.id})">{{ Notification.Host.hostname
-                                        }}</a>
                                 </td>
                                 <td>
                                     {{ Notification.NotificationHost.start_time }}

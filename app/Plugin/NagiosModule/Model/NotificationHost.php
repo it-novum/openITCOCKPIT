@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 
+/**
+ * Class NotificationHost
+ * @deprecated
+ */
 class NotificationHost extends NagiosModuleAppModel {
     public $useTable = 'notifications';
     public $primaryKey = 'notification_id';
@@ -37,6 +41,7 @@ class NotificationHost extends NagiosModuleAppModel {
      * @param HostNotificationConditions $HostNotificationConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(HostNotificationConditions $HostNotificationConditions, $paginatorConditions = []) {
 

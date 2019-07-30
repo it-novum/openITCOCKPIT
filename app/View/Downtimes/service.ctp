@@ -112,7 +112,7 @@
                                         <label class="input"> <i class="icon-prepend"
                                                                  style="padding-right:14px;"><?php echo __('From'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
-                                                   placeholder="<?php echo __('From Date'); ?>"
+                                                   placeholder="<?php echo __('From date'); ?>"
                                                    ng-model="filter.from"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
@@ -123,7 +123,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-user"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by user'); ?>"
-                                                   ng-model="filter.DowntimeService.author_name"
+                                                   ng-model="filter.DowntimeServices.author_name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -134,7 +134,7 @@
                                         <label class="input"> <i class="icon-prepend"
                                                                  style="padding-right:14px;"><?php echo __('To'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
-                                                   placeholder="<?php echo __('To Date'); ?>"
+                                                   placeholder="<?php echo __('To date'); ?>"
                                                    ng-model="filter.to"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
@@ -146,7 +146,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by comment'); ?>"
-                                                   ng-model="filter.DowntimeService.comment_data"
+                                                   ng-model="filter.DowntimeServices.comment_data"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -157,7 +157,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
-                                                   ng-model="filter.Host.name"
+                                                   ng-model="filter.Hosts.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -167,7 +167,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-cog"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by service name'); ?>"
-                                                   ng-model="filter.Service.name"
+                                                   ng-model="filter.Services.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -190,7 +190,7 @@
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.DowntimeService.was_not_cancelled"
+                                                       ng-model="filter.DowntimeServices.was_not_cancelled"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Was not cancelled'); ?>
@@ -198,7 +198,7 @@
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.DowntimeService.was_cancelled"
+                                                       ng-model="filter.DowntimeServices.was_cancelled"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Was cancelled'); ?>
@@ -236,41 +236,41 @@
                                 <tr>
                                     <th class="no-sort text-center"><i class="fa fa-check-square-o fa-lg"></i></th>
                                     <th class="no-sort"><?php echo __('Running'); ?></th>
-                                    <th class="no-sort" ng-click="orderBy('Host.name')">
-                                        <i class="fa" ng-class="getSortClass('Host.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Hosts.name')">
+                                        <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                         <?php echo __('Host'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Service.name')">
-                                        <i class="fa" ng-class="getSortClass('Service.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Services.name')">
+                                        <i class="fa" ng-class="getSortClass('Services.name')"></i>
                                         <?php echo __('Service'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeService.author_name')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeService.author_name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeServices.author_name')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeServices.author_name')"></i>
                                         <?php echo __('User'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeService.comment_data')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeService.comment_data')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeServices.comment_data')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeServices.comment_data')"></i>
                                         <?php echo __('Comment'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeService.entry_time')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeService.entry_time')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeServices.entry_time')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeServices.entry_time')"></i>
                                         <?php echo __('Created'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeService.scheduled_start_time')">
+                                    <th class="no-sort" ng-click="orderBy('DowntimeServices.scheduled_start_time')">
                                         <i class="fa"
-                                           ng-class="getSortClass('DowntimeService.scheduled_start_time')"></i>
+                                           ng-class="getSortClass('DowntimeServices.scheduled_start_time')"></i>
                                         <?php echo __('Start'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeService.scheduled_end_time')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeService.scheduled_end_time')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeServices.scheduled_end_time')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeServices.scheduled_end_time')"></i>
                                         <?php echo __('End'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeService.duration')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeService.duration')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeServices.duration')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeServices.duration')"></i>
                                         <?php echo __('Duration'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeService.was_cancelled')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeService.was_cancelled')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeServices.was_cancelled')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeServices.was_cancelled')"></i>
                                         <?php echo __('Was cancelled'); ?>
                                     </th>
                                     <th class="no-sort"><?php echo __('Delete'); ?></th>

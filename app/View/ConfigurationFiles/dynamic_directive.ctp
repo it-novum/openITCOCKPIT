@@ -22,4 +22,4 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-printf('<%s widget="widget"></%s>', $directiveName, $directiveName);
+printf('<%s></%s>', $directiveName, $directiveName);

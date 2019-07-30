@@ -23,92 +23,135 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\SystemfailuresTable;
+use Cake\I18n\FrozenTime;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\SystemfailuresFilter;
+
+/**
+ * Class SystemfailuresController
+ * @property AppPaginatorComponent $Paginator
+ * @property AppAuthComponent $Auth
+ */
 class SystemfailuresController extends AppController {
-    public $layout = 'Admin.default';
 
-    public $components = [
-        'ListFilter.ListFilter',
-        'RequestHandler',
-        'CustomValidationErrors',
-        'AdditionalLinks',
-    ];
-    public $helpers = [
-        'ListFilter.ListFilter',
-        'Status',
-        'Monitoring',
-        'CustomValidationErrors',
-        'CustomVariables',
-    ];
-
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Systemfailure.comment' => ['label' => 'Comment', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
+    public $layout = 'blank';
 
     public function index() {
-        $all_systemfailures = $this->Paginator->paginate();
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
 
-        $this->set(compact(['all_systemfailures']));
+
+        /** @var $SystemfailuresTable SystemfailuresTable */
+        $SystemfailuresTable = TableRegistry::getTableLocator()->get('Systemfailures');
+
+        $SystemfailuresFilter = new SystemfailuresFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $SystemfailuresFilter->getPage());
+
+        $systemfailures = $SystemfailuresTable->getSystemfailuresIndex($SystemfailuresFilter, $PaginateOMat);
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = $User->getUserTime();
+
+        foreach ($systemfailures as $index => $systemfailure) {
+            /** @var FrozenTime $FrozenStartTime */
+            $FrozenStartTime = $systemfailure['start_time'];
+            /** @var FrozenTime $FrozenEndTime */
+            $FrozenEndTime = $systemfailure['end_time'];
+
+            $systemfailures[$index]['start_time'] = $UserTime->format($FrozenStartTime->timestamp);
+            $systemfailures[$index]['end_time'] = $UserTime->format($FrozenEndTime->timestamp);
+        }
+
+
+        $this->set('all_systemfailures', $systemfailures);
+        $toJson = ['all_systemfailures', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_systemfailures', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function add() {
-        $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
-        $customFildsToRefill = [
-            'Systemfailure' => [
-                'from_date',
-                'from_time',
-                'to_date',
-                'to_time',
-            ],
-        ];
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            $this->set('User', $User);
+            return;
+        }
 
-        $this->CustomValidationErrors->checkForRefill($customFildsToRefill);
+        if ($this->request->is('post')) {
+            /** @var $SystemfailuresTable SystemfailuresTable */
+            $SystemfailuresTable = TableRegistry::getTableLocator()->get('Systemfailures');
+            $this->request->data['Systemfailure']['user_id'] = $User->getId();
 
-        $this->set('back_url', $this->referer());
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Systemfailure']['user_id'] = $this->Auth->user('id');
-            $this->Systemfailure->set($this->request->data);
-            if ($this->Systemfailure->validates()) {
-                // Data is valide and ready to save
-                // Merging from_date and from_time to start_time
-                $this->request->data['Systemfailure']['start_time'] = date('Y-m-d H:i:s', strtotime(trim($this->request->data['Systemfailure']['from_date']) . ' ' . trim($this->request->data['Systemfailure']['from_time'])));
-                // Merging to_date and to_time to end_time
-                $this->request->data['Systemfailure']['end_time'] = date('Y-m-d H:i:s', strtotime(trim($this->request->data['Systemfailure']['to_date']) . ' ' . trim($this->request->data['Systemfailure']['to_time'])));
-                if ($this->Systemfailure->save($this->request->data)) {
-                    $this->setFlash(__('Systemfailure successfully saved'));
+            $this->request->data['Systemfailure']['start_time'] = '';
+            $this->request->data['Systemfailure']['end_time'] = '';
 
-                    return $this->redirect(['action' => 'index']);
+            $startTime = strtotime(trim($this->request->data('Systemfailure.from_date') . ' ' . trim($this->request->data('Systemfailure.from_time'))));
+            if ($this->request->data('Systemfailure.from_date') !== '' && $startTime > 0) {
+                $this->request->data['Systemfailure']['start_time'] = date('Y-m-d H:i:s', $startTime);
+            }
+
+            $endTime = strtotime(trim($this->request->data('Systemfailure.to_date') . ' ' . trim($this->request->data('Systemfailure.to_time'))));
+            if ($this->request->data('Systemfailure.to_date') !== '' && $endTime > 0) {
+                $this->request->data['Systemfailure']['end_time'] = date('Y-m-d H:i:s', $endTime);
+            }
+
+
+            $systemfailure = $SystemfailuresTable->newEntity();
+            $systemfailure = $SystemfailuresTable->patchEntity($systemfailure, $this->request->data('Systemfailure'));
+
+            $SystemfailuresTable->save($systemfailure);
+            if ($systemfailure->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $systemfailure->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($systemfailure); // REST API ID serialization
+                    return;
                 }
             }
-            $this->setFlash(__('Systemfailure could not be saved'), false);
-            $this->CustomValidationErrors->loadModel($this->Systemfailure);
-            $this->CustomValidationErrors->customFields(['from_date', 'from_time', 'to_date', 'to_time']);
-            $this->CustomValidationErrors->fetchErrors();
+            $this->set('systemfailure', $systemfailure);
+            $this->set('_serialize', ['systemfailure']);
         }
     }
 
+    /**
+     * @param null|int $id
+     */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        $this->Systemfailure->id = $id;
+        /** @var $SystemfailuresTable SystemfailuresTable */
+        $SystemfailuresTable = TableRegistry::getTableLocator()->get('Systemfailures');
 
-        if (!$this->Systemfailure->exists($id)) {
-            throw new NotFoundException(__('Systemfailure not found'));
+        if (!$SystemfailuresTable->existsById($id)) {
+            throw new NotFoundException(__('System failure not found'));
         }
 
+        $systemfailure = $SystemfailuresTable->get($id);
 
-        if ($this->Systemfailure->delete()) {
-            $this->setFlash(__('Systemfailure deleted'));
-            $this->redirect(['action' => 'index']);
+        if ($SystemfailuresTable->delete($systemfailure)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
         }
-        $this->setFlash(__('Could not delete systemfailure'));
-        $this->redirect(['action' => 'index']);
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
 
     }
 }

@@ -320,11 +320,7 @@ class HosttemplatesController extends AppController {
             //Delete Documentation record if exists
             /** @var $DocumentationsTable DocumentationsTable */
             $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
-
-            $documentation = $DocumentationsTable->getDocumentationByUuid($hosttemplate->get('uuid'));
-            if ($documentation) {
-                $DocumentationsTable->delete($documentation);
-            }
+            $DocumentationsTable->deleteDocumentationByUuid($hosttemplate->get('uuid'));
 
             $this->set('success', true);
             $this->set('_serialize', ['success']);

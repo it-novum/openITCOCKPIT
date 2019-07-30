@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 
+/**
+ * Class AcknowledgedHost
+ * @deprecated
+ */
 class AcknowledgedHost extends CrateModuleAppModel {
     public $useDbConfig = 'Crate';
     public $useTable = 'host_acknowledgements';
@@ -33,6 +37,7 @@ class AcknowledgedHost extends CrateModuleAppModel {
     /**
      * @param string $uuid
      * @return array|null
+     * @deprecated
      */
     public function byHostUuid($uuid = null) {
         $return = [];
@@ -57,6 +62,7 @@ class AcknowledgedHost extends CrateModuleAppModel {
      * @param AcknowledgedHostConditions $AcknowledgedHostConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(AcknowledgedHostConditions $AcknowledgedHostConditions, $paginatorConditions = []) {
         $query = [

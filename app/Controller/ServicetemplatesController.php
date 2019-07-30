@@ -27,6 +27,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
@@ -46,7 +47,6 @@ use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
  * @property Changelog $Changelog
  * @property Servicetemplate $Servicetemplate
  * @property Service $Service
- * @property Documentation $Documentation
  *
  * @property AppPaginatorComponent $Paginator
  */
@@ -57,7 +57,6 @@ class ServicetemplatesController extends AppController {
     public $uses = [
         'Servicetemplate', //Remove me
         'Service', //Remove me
-        'Documentation', //Remove me
         'Changelog'
     ];
 
@@ -317,11 +316,11 @@ class ServicetemplatesController extends AppController {
                 }
 
                 //Delete Documentation record if exists
-                $documentation = $this->Documentation->findByUuid($servicetemplate['Servicetemplate']['uuid']);
-                if (isset($documentation['Documentation']['id'])) {
-                    $this->Documentation->delete($documentation['Documentation']['id']);
-                    unset($documentation);
-                }
+                /** @var $DocumentationsTable DocumentationsTable */
+                $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
+                $DocumentationsTable->deleteDocumentationByUuid($servicetemplate['Servicetemplate']['uuid']);
+
 
                 //Delete all services that were created using this template
                 $this->loadModel('Service');

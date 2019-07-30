@@ -22,15 +22,10 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+?>
 
-if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
-    <div class="alert alert-danger alert-block">
-        <a href="#" data-dismiss="alert" class="close">×</a>
-        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
-        </h4>
-        <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
-    </div>
-<?php endif; ?>
+<query-handler-directive></query-handler-directive>
+
 
 <div class="alert alert-success alert-block" ng-show="showFlashSuccess">
     <a href="#" data-dismiss="alert" class="close">×</a>
@@ -38,34 +33,10 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
     <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter }} <?php echo __('seconds...'); ?>
 </div>
 
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="status_headline" ng-class="serviceStatusTextClass">
-
-            <span class="flapping_airport stateClass" ng-show="servicestatus.isFlapping">
-                <i class="fa" ng-class="flappingState === 1 ? 'fa-circle' : 'fa-circle-o'"></i>
-                <i class="fa" ng-class="flappingState === 0 ? 'fa-circle' : 'fa-circle-o'"></i>
-            </span>
-
-            <i class="fa fa-cog fa-fw"></i>
-            {{ mergedService.Service.name }}
-            <?php echo __('on'); ?>
-            <a ui-sref="HostsBrowser({id:host.Host.id})">
-                <span>
-                    {{ host.Host.name }}
-                    ({{ host.Host.address }})
-                </span>
-            </a>
-        </h1>
-    </div>
-    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
-        <h5>
-            <div class="pull-right">
-                <?php echo $this->element('service_browser_menu'); ?>
-            </div>
-        </h5>
-    </div>
-</div>
+<service-browser-menu
+        ng-if="serviceBrowserMenuConfig"
+        config="serviceBrowserMenuConfig"
+        last-load-date="lastLoadDate"></service-browser-menu>
 
 <article class="row">
     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">

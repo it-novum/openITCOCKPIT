@@ -25,7 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 
-
+/**
+ * Class AcknowledgedHost
+ * @deprecated
+ */
 class AcknowledgedHost extends NagiosModuleAppModel {
 
     public $useTable = 'acknowledgements';
@@ -42,6 +45,7 @@ class AcknowledgedHost extends NagiosModuleAppModel {
     /**
      * @param string $uuid
      * @return array|null
+     * @deprecated
      */
     public function byHostUuid($uuid = null) {
         $return = [];
@@ -68,6 +72,7 @@ class AcknowledgedHost extends NagiosModuleAppModel {
      * @param AcknowledgedHostConditions $AcknowledgedHostConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(AcknowledgedHostConditions $AcknowledgedHostConditions, $paginatorConditions = []) {
         $query = [

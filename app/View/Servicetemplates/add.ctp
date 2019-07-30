@@ -606,7 +606,7 @@
                                                     <div class="help-block text-danger">{{ error }}</div>
                                                 </div>
                                                 <div class="help-block">
-                                                    <?php echo __('The macros $HOSTNAME$, $HOSTDISPLAYNAME$, $HOSTADDRESS$, $SERVICEDESC$, $SERVICEDISPLAYNAME$ will be replaced'); ?>
+                                                    <?php echo __('The macros $HOSTID$, $HOSTNAME$, $HOSTDISPLAYNAME$, $HOSTADDRESS$, $SERVICEID$, $SERVICEDESC$, $SERVICEDISPLAYNAME$ will be replaced'); ?>
                                                 </div>
                                             </div>
                                         </div>

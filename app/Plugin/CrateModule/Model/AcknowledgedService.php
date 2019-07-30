@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 
+/**
+ * Class AcknowledgedService
+ * @deprecated
+ */
 class AcknowledgedService extends CrateModuleAppModel {
     public $useDbConfig = 'Crate';
     public $useTable = 'service_acknowledgements';
@@ -33,6 +37,7 @@ class AcknowledgedService extends CrateModuleAppModel {
     /**
      * @param null $uuid
      * @return array|null
+     * @deprecated
      */
     public function byUuid($uuid = null) {
         return $this->byServiceUuid($uuid);
@@ -41,6 +46,7 @@ class AcknowledgedService extends CrateModuleAppModel {
     /**
      * @param string $uuid
      * @return array|null
+     * @deprecated
      */
     public function byServiceUuid($uuid = null) {
         $return = [];
@@ -65,6 +71,7 @@ class AcknowledgedService extends CrateModuleAppModel {
      * @param AcknowledgedServiceConditions $AcknowledgedServiceConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(AcknowledgedServiceConditions $AcknowledgedServiceConditions, $paginatorConditions = []) {
         $query = [

@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('DowntimesHostController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, MassChangeService, $interval){
 
-        SortService.setSort(QueryStringService.getValue('sort', 'DowntimeHost.scheduled_start_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'DowntimeHosts.scheduled_start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
@@ -13,13 +13,13 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                DowntimeHost: {
+                DowntimeHosts: {
                     author_name: '',
                     comment_data: '',
                     was_cancelled: false,
                     was_not_cancelled: false
                 },
-                Host: {
+                Hosts: {
                     name: ''
                 },
                 from: date('d.m.Y H:i', now.getTime() / 1000 - (3600 * 24 * 30)),
@@ -40,8 +40,8 @@ angular.module('openITCOCKPIT')
 
         $scope.load = function(){
             var wasCancelled = '';
-            if($scope.filter.DowntimeHost.was_cancelled ^ $scope.filter.DowntimeHost.was_not_cancelled){
-                wasCancelled = $scope.filter.DowntimeHost.was_cancelled === true;
+            if($scope.filter.DowntimeHosts.was_cancelled ^ $scope.filter.DowntimeHosts.was_not_cancelled){
+                wasCancelled = $scope.filter.DowntimeHosts.was_cancelled === true;
             }
             $http.get("/downtimes/host.json", {
                 params: {
@@ -50,10 +50,10 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[DowntimeHost.author_name]': $scope.filter.DowntimeHost.author_name,
-                    'filter[DowntimeHost.comment_data]': $scope.filter.DowntimeHost.comment_data,
-                    'filter[DowntimeHost.was_cancelled]': wasCancelled,
-                    'filter[Host.name]': $scope.filter.Host.name,
+                    'filter[DowntimeHosts.author_name]': $scope.filter.DowntimeHosts.author_name,
+                    'filter[DowntimeHosts.comment_data]': $scope.filter.DowntimeHosts.comment_data,
+                    'filter[DowntimeHosts.was_cancelled]': wasCancelled,
+                    'filter[Hosts.name]': $scope.filter.Hosts.name,
                     'filter[from]': $scope.filter.from,
                     'filter[to]': $scope.filter.to,
                     'filter[hideExpired]': $scope.filter.hideExpired,

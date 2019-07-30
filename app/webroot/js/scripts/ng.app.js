@@ -603,6 +603,18 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "DocumentationsViewController"
             })
 
+            .state('DocumentationsWiki', {
+                url: '/documentations/wiki/:documentation',
+                params: {
+                    documentation: {
+                        value: null,
+                        squash: true
+                    }
+                },
+                templateUrl: "/documentations/wiki.html",
+                controller: "DocumentationsWikiController"
+            })
+
             .state('MacrosIndex', {
                 url: '/macros/index',
                 templateUrl: "/macros/index.html",
@@ -970,6 +982,18 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 url: '/locations/edit/:id',
                 templateUrl: "/locations/edit.html",
                 controller: "LocationsEditController"
+            })
+
+            .state('SystemfailuresIndex', {
+                url: '/systemfailures/index',
+                templateUrl: "/systemfailures/index.html",
+                controller: "SystemfailuresIndexController"
+            })
+
+            .state('SystemfailuresAdd', {
+                url: '/systemfailures/add',
+                templateUrl: "/systemfailures/add.html",
+                controller: "SystemfailuresAddController"
             })
 
     })

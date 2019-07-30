@@ -61,6 +61,19 @@ class ServiceMacroReplacer {
      */
 
     public function __construct($service, $servicestatus = []) {
+        if (isset($service['id']) && isset($service['uuid'])) {
+            //Cake4 result...
+            $service = [
+                'Service' => $service
+            ];
+
+            if(isset($service['Service']['servicetemplate']['name'])){
+                if($service['Service']['name'] === null || $service['Service']['name'] === ''){
+                    $service['Service']['name'] = $service['Service']['servicetemplate']['name'];
+                }
+            }
+        }
+
         $this->service = $service;
         $this->servicestatus = $servicestatus;
     }

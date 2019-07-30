@@ -14,6 +14,8 @@ use itnovum\openITCOCKPIT\Core\HoststatusFields;
 /**
  * Hoststatus Model
  *
+ * Bake command: bin/cake bake model -p Statusengine2Module Hoststatus
+ *
  * @property \Statusengine2Module\Model\Table\ObjectsTable|\Cake\ORM\Association\BelongsTo $Object
  *
  * @method \Statusengine2Module\Model\Entity\Hoststatus get($primaryKey, $options = [])
@@ -26,6 +28,13 @@ use itnovum\openITCOCKPIT\Core\HoststatusFields;
  * @method \Statusengine2Module\Model\Entity\Hoststatus findOrCreate($search, callable $callback = null, $options = [])
  */
 class HoststatusTable extends Table implements HoststatusTableInterface {
+
+    /*****************************************************/
+    /*                         !!!                       */
+    /*           If you add a method to this table       */
+    /*   define it in the implemented interface first!   */
+    /*                         !!!                       */
+    /*****************************************************/
 
     use Cake2ResultTableTrait;
 
@@ -68,6 +77,7 @@ class HoststatusTable extends Table implements HoststatusTableInterface {
      * @return \Cake\ORM\RulesChecker
      */
     public function buildRules(RulesChecker $rules) {
+        //Readonly table
         return $rules;
     }
 

@@ -35,21 +35,21 @@ class AcknowledgementsControllerRequest extends AngularRequest {
     protected $filters = [
         'host'    => [
             'like' => [
-                'AcknowledgedHost.comment_data',
-                'AcknowledgedHost.author_name'
+                'AcknowledgementHosts.comment_data',
+                'AcknowledgementHosts.author_name'
             ]
         ],
         'service' => [
             'like' => [
-                'AcknowledgedService.comment_data',
-                'AcknowledgedService.author_name'
+                'AcknowledgementServices.comment_data',
+                'AcknowledgementServices.author_name'
             ]
         ]
     ];
 
-    protected $ServiceStateField = 'AcknowledgedService.state';
+    protected $ServiceStateField = 'AcknowledgementServices.state';
 
-    protected $HostStateField = 'AcknowledgedHost.state';
+    protected $HostStateField = 'AcknowledgementHosts.state';
 
     public function getServiceFilters() {
         $Filter = new BaseFilter($this->getRequest());

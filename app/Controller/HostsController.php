@@ -32,6 +32,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostcommandargumentvaluesTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
@@ -75,7 +76,6 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
  * @property Host $Host
- * @property Documentation $Documentation
  * @property Hosttemplatecommandargumentvalue $Hosttemplatecommandargumentvalue
  * @property Hostcommandargumentvalue $Hostcommandargumentvalue
  * @property Contact $Contact
@@ -118,7 +118,6 @@ class HostsController extends AppController {
         MONITORING_HOSTSTATUS, //MysqlModule.Hoststatus || CrateModule.Hoststatus
         MONITORING_SERVICESTATUS,
         MONITORING_OBJECTS,
-        'Documentation',
         'Hosttemplatecommandargumentvalue',
         'Hostcommandargumentvalue',
         'Contact',
@@ -374,7 +373,7 @@ class HostsController extends AppController {
         $this->set('_serialize', ['host', 'hoststatus']);
     }
 
-    public function byUuid($uuid){
+    public function byUuid($uuid) {
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
@@ -385,7 +384,7 @@ class HostsController extends AppController {
                 $this->render403();
                 return;
             }
-        }catch (RecordNotFoundException $e){
+        } catch (RecordNotFoundException $e) {
             throw new NotFoundException('Host not found');
         }
 
@@ -1192,6 +1191,12 @@ class HostsController extends AppController {
         if (empty($usedBy['host']) && empty($usedBy['service'])) {
             //Not used by any module
             if ($this->Host->__delete($host, $this->Auth->user('id'))) {
+
+                /** @var $DocumentationsTable DocumentationsTable */
+                $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
+                $DocumentationsTable->deleteDocumentationByUuid($host['Host']['uuid']);
+
                 $this->set('success', true);
                 $this->set('message', __('Host successfully deleted'));
                 $this->set('_serialize', ['success']);
@@ -1929,6 +1934,10 @@ class HostsController extends AppController {
                 return;
             }
         }
+
+        /** @var $DocumentationsTable DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
         unset($idOrUuid);
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
@@ -2115,7 +2124,7 @@ class HostsController extends AppController {
         }
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
         $this->set('mergedHost', $mergedHost);
-        $this->set('docuExists', $this->Documentation->existsForUuid($rawHost['Host']['uuid']));
+        $this->set('docuExists', $DocumentationsTable->existsByUuid($rawHost['Host']['uuid']));
         $this->set('hoststatus', $hoststatus);
         $this->set('mainContainer', $mainContainer);
         $this->set('sharedContainers', $sharedContainers);
@@ -2245,36 +2254,6 @@ class HostsController extends AppController {
             'background'         => true,
             'no-background'      => false,
         ];
-    }
-
-
-    /**
-     * @deprecated
-     */
-    public function ping() {
-        $output = [];
-        $id = $this->request->query('id');
-        if(!$this->Host->exists($id)){
-            throw new NotFoundException('Host not found');
-        }
-
-        $host = $this->Host->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Host.id' => $id,
-            ],
-            'fields' => [
-                'Host.id',
-                'Host.address'
-            ]
-        ]);
-
-        if(!empty($host)) {
-            exec('ping ' . escapeshellarg($host['Host']['address']) . ' -c 4 -W 5', $output);
-        }
-
-        $this->set('output', $output);
-        $this->set('_serialize', ['output']);
     }
 
     //Only for ACLs
@@ -2612,75 +2591,7 @@ class HostsController extends AppController {
         $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
         $this->set('_serialize', ['GrafanaDashboardExists', 'iframeUrl']);
     }
-
-    /**
-     * @deprecated
-     */
-    public function hostBrowserMenu($id) {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        if (!$this->Host->exists($id)) {
-            throw new NotFoundException();
-        }
-
-        //Host for .json requests
-        $host = $this->Host->find('first', [
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.address',
-                'Host.host_url',
-                'Host.host_type',
-                'Host.container_id'
-            ],
-            'conditions' => [
-                'Host.id' => $id,
-            ],
-            'contain'    => [
-                'Container',
-            ],
-        ]);
-
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-            $this->render403();
-            return;
-        }
-
-        $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
-
-        //Get meta data and push to front end
-        $HoststatusFields = new HoststatusFields($this->DbBackend);
-        $HoststatusFields->currentState()->isFlapping();
-        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
-        if (!isset($hoststatus['Hoststatus'])) {
-            $hoststatus['Hoststatus'] = [];
-        }
-        $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
-
-        $HostMacroReplacer = new \itnovum\openITCOCKPIT\Core\HostMacroReplacer($host);
-        $host['Host']['host_url_replaced'] = $host['Host']['host_url'];
-        if ($host['Host']['host_url'] !== '' && $host['Host']['host_url'] !== null) {
-            $host['Host']['host_url_replaced'] = $HostMacroReplacer->replaceBasicMacros($host['Host']['host_url']);
-        }
-
-        if ($this->hasRootPrivileges) {
-            $allowEdit = true;
-        } else {
-            $ContainerPermissions = new \itnovum\openITCOCKPIT\Core\Views\ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
-            $allowEdit = $ContainerPermissions->hasPermission();
-        }
-        $host['Host']['allowEdit'] = $allowEdit;
-
-        $this->set('host', $host);
-        $this->set('hoststatus', $Hoststatus->toArray());
-        $this->set('docuExists', $docuExists);
-        $this->set('_serialize', ['host', 'hoststatus', 'docuExists']);
-    }
-
+    
 
     /****************************
      *       AJAX METHODS       *

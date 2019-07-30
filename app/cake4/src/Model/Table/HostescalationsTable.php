@@ -138,12 +138,6 @@ class HostescalationsTable extends Table {
             ], __('You have to choose at least one host.'));
 
         $validator
-            ->integer('timeperiod_id')
-            ->greaterThan('timeperiod_id', 0)
-            ->requirePresence('timeperiod_id')
-            ->allowEmptyString('timeperiod_id', null, false);
-
-        $validator
             ->integer('first_notification')
             ->greaterThan('first_notification', 0)
             ->lessThanField('first_notification', 'last_notification', __('The first notification must be before the last notification.'),
@@ -169,32 +163,6 @@ class HostescalationsTable extends Table {
             ->requirePresence('notification_interval')
             ->allowEmptyString('notification_interval', null, false);
 
-        $validator
-            ->boolean('escalate_on_recovery')
-            ->requirePresence('escalate_on_recovery', 'create')
-            ->allowEmptyString('escalate_on_recovery', null, true)
-            ->add('escalate_on_recovery', 'custom', [
-                'rule'    => [$this, 'checkEscalateOptionsHostEscalation'], //\App\Lib\Traits\CustomValidationTrait
-                'message' => __('You must specify at least one escalate option.')
-            ]);
-
-        $validator
-            ->boolean('escalate_on_down')
-            ->requirePresence('escalate_on_down', 'create')
-            ->allowEmptyString('escalate_on_down', null, true)
-            ->add('escalate_on_down', 'custom', [
-                'rule'    => [$this, 'checkEscalateOptionsHostEscalation'], //\App\Lib\Traits\CustomValidationTrait
-                'message' => __('You must specify at least one escalate option.')
-            ]);
-
-        $validator
-            ->boolean('escalate_on_unreachable')
-            ->requirePresence('escalate_on_unreachable', 'create')
-            ->allowEmptyString('escalate_on_unreachable', null, true)
-            ->add('escalate_on_unreachable', 'custom', [
-                'rule'    => [$this, 'checkEscalateOptionsHostEscalation'], //\App\Lib\Traits\CustomValidationTrait
-                'message' => __('You must specify at least one escalate option.')
-            ]);
 
         return $validator;
     }

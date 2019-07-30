@@ -80,7 +80,9 @@ $config = [
                 'humanTime',
                 'template_diff',
                 'template_diff_button',
-                'queryhandler'
+                'queryhandler',
+                'hostBrowserMenu',
+                'serviceBrowserMenu'
             ],
             'Automaps'         => [
                 'icon'
@@ -92,7 +94,6 @@ $config = [
                 'byTenantForSelect', 'byTenant', 'loadContainersForAngular', 'loadContainers', 'loadContainersByContainerId'
             ],
             'Downtimes'        => [
-                'validateDowntimeInputFromBrowser',
                 'validateDowntimeInputFromAngular',
                 'icon'
             ],
@@ -129,7 +130,6 @@ $config = [
                 'icon',
                 'servicecumulatedstatusicon',
                 'details',
-                'serviceBrowserMenu',
                 'byUuid',
                 'loadServicesByStringCake4',
                 'loadServicesByContainerIdCake4'
@@ -186,7 +186,6 @@ $config = [
                 'hostservicelist',
                 'loadParentHostsByString',
                 'hoststatus',
-                'hostBrowserMenu',
                 'byUuid'
             ],
             'Statistics'       => [
@@ -385,7 +384,7 @@ $config = [
                 'Cronjobs'              => ['index'],
                 'Currentstatereports'   => ['index'],
                 'DeletedHosts'          => ['index'],
-                'Documentations'        => ['index', 'view', 'wiki'],
+                'Documentations'        => ['view', 'wiki'],
                 'Downtimereports'       => ['index', 'host', 'service'],
                 'Exports'               => ['index'],
                 'GraphCollections'      => ['index', 'display'],

@@ -207,9 +207,6 @@ foreach ($modulePlugins as $pluginName) {
 }
 
 Configure::load('rrd');
-//define('MY_RIGHTS', 0);
-define('MY_DATEFORMAT', 'dd.mm.yyyy');
-define('PHP_DATEFORMAT', 'd/m/Y');
 
 CakePlugin::load('CakePdf', [
         'bootstrap' => true,

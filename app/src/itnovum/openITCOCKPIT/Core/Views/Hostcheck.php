@@ -24,6 +24,8 @@
 
 namespace itnovum\openITCOCKPIT\Core\Views;
 
+use Cake\I18n\FrozenTime;
+
 class Hostcheck {
 
     /**
@@ -201,6 +203,14 @@ class Hostcheck {
      * @return int|string
      */
     public function getEndTime() {
+        if(!is_numeric($this->end_time)){
+            if($this->end_time instanceof FrozenTime){
+                $this->end_time = $this->end_time->timestamp;
+            }else{
+                $this->end_time = strtotime($this->end_time);
+            }
+        }
+
         return $this->end_time;
     }
 
@@ -250,6 +260,14 @@ class Hostcheck {
      * @return int|string
      */
     public function getStartTime() {
+        if (!is_numeric($this->start_time)) {
+            if ($this->start_time instanceof FrozenTime) {
+                $this->start_time = $this->start_time->timestamp;
+            } else {
+                $this->start_time = strtotime($this->start_time);
+            }
+        }
+
         return $this->start_time;
     }
 

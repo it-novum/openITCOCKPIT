@@ -27,7 +27,7 @@ use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 
 /**
  * Class BbcodeHelper
- * @deprecated
+ * @deprecated use \itnovum\openITCOCKPIT\Core\Views\BBCodeParser
  */
 class BbcodeHelper extends AppHelper {
 
@@ -40,7 +40,7 @@ class BbcodeHelper extends AppHelper {
      * @return string with HTML parts
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
-     * @deprecated
+     * @deprecated use \itnovum\openITCOCKPIT\Core\Views\BBCodeParser
      */
     public function asHtml($bbcode, $nl2br = true) {
         $parser = new BBCodeParser();
@@ -55,7 +55,7 @@ class BbcodeHelper extends AppHelper {
      * @return string with HTML <br> for new line
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
-     * @deprecated
+     * @deprecated use \itnovum\openITCOCKPIT\Core\Views\BBCodeParser
      */
     public function nagiosNl2br($str) {
         $parser = new BBCodeParser();
