@@ -26,6 +26,7 @@ namespace App\Lib\Interfaces;
 
 
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
+use itnovum\openITCOCKPIT\Core\Views\Downtime;
 
 interface DowntimehistoryServicesTableInterface {
 
@@ -35,5 +36,12 @@ interface DowntimehistoryServicesTableInterface {
      * @return array
      */
     public function getDowntimes(DowntimeServiceConditions $DowntimeServiceConditions, $PaginateOMat = null);
+
+    /**
+     * @param int $hostId
+     * @param Downtime $Downtime
+     * @return array
+     */
+    public function getServiceDowntimesByHostAndDowntime($hostId, Downtime $Downtime);
 
 }

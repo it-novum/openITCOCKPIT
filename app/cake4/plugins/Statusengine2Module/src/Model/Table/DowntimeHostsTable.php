@@ -163,4 +163,47 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
 
         return $result;
     }
+
+
+    /**
+     * @param int $internalDowntimeId
+     * @return array
+     */
+    public function getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId) {
+        $result = $this->find()
+            ->select([
+                'DowntimeHosts.author_name',
+                'DowntimeHosts.comment_data',
+                'DowntimeHosts.entry_time',
+                'DowntimeHosts.scheduled_start_time',
+                'DowntimeHosts.scheduled_end_time',
+                'DowntimeHosts.duration',
+                'DowntimeHosts.was_started',
+                'DowntimeHosts.internal_downtime_id',
+                'DowntimeHosts.downtimehistory_id',
+                'DowntimeHosts.was_cancelled',
+
+                'Objects.name1'
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = DowntimeHosts.object_id', 'DowntimeHosts.downtime_type = 2'] //Downtime.downtime_type = 2 Host downtime
+            )
+            ->where([
+                'DowntimeHosts.internal_downtime_id' => $internalDowntimeId
+            ])
+            ->disableHydration()
+            ->first();
+
+        if($result === null){
+            return [];
+        }
+
+        return [
+            'DowntimeHosts' => $result,
+            'Hosts' => [
+                'uuid' => $result['Objects']['name1']
+            ]
+        ];
+    }
 }
