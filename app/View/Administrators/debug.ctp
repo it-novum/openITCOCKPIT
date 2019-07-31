@@ -602,12 +602,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
                 <dt>&nbsp;</dt>
                 <dd>
-                    <form accept-charset="utf-8" method="post" class="form-horizontal clear" novalidate="novalidate"
-                          action="/Administrators/testMail">
-                        <input type="submit"
-                               value="<?php echo __('Send test Email to'); ?> {{emailInformation.test_mail_address}}"
-                               class="btn btn-xs btn-default">
-                    </form>
+                    <button class="btn btn-xs btn-default" ng-click="sendTestMail()">
+                        <?php echo __('Send test Email to'); ?> {{emailInformation.test_mail_address}}
+                    </button>
                 </dd>
             </dl>
         </div>

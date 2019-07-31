@@ -324,9 +324,13 @@ class AdministratorsController extends AppController {
     }
 
     public function testMail() {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
         try {
-            $this->loadModel('Systemsetting');
             $recipientAddress = $this->Auth->user('email');
+
             /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
             $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
             $_systemsettings = $SystemsettingsTable->findAsArray();
@@ -335,18 +339,24 @@ class AdministratorsController extends AppController {
             $Email->config('default');
             $Email->from([$_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
             $Email->to($recipientAddress);
-            $Email->subject(__('System test mail'));
+            $Email->subject(__('System test mail from %s', $_systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']));
 
             $Email->emailFormat('both');
             $Email->template('template-testmail', 'template-testmail');
 
+            $Email->viewVars([
+                'systemname' => $_systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']
+            ]);
             $Email->send();
-            $this->setFlash(__('Test mail send to: %s', $recipientAddress));
 
-            return $this->redirect(['action' => 'debug']);
+            $this->set('success', true);
+            $this->set('message', __('Test mail send to: %s', $recipientAddress));
+            $this->set('_serialize', ['success', 'message']);
+            return;
         } catch (Exception $ex) {
-            $this->setFlash(__('An error occured while sending test mail: %s', $ex->getMessage()), false);
-            return $this->redirect(['action' => 'debug']);
+            $this->set('success', false);
+            $this->set('message', __('An error occured while sending test mail: %s', $ex->getMessage()));
+            $this->set('_serialize', ['success', 'message']);
         }
     }
 

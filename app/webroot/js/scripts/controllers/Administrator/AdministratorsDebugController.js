@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('AdministratorsDebugController', function($scope, $http, $interval){
+    .controller('AdministratorsDebugController', function($scope, $http, $interval, NotyService){
 
         $scope.init = true;
 
@@ -209,6 +209,30 @@ angular.module('openITCOCKPIT')
                 if(result.status === 404){
                     $state.go('404');
                 }
+            });
+        };
+
+        $scope.sendTestMail = function(){
+            $http.post("/Administrators/testMail.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                if(result.data.success){
+                    NotyService.genericSuccess({
+                        message: result.data.message
+                    });
+                    return;
+                }
+
+                NotyService.genericError({
+                    message: result.data.message
+                });
+
+            }, function errorCallback(result){
+                NotyService.genericError({
+                    message: "Unknown error"
+                });
             });
         };
 
