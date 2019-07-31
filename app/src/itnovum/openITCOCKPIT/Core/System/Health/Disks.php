@@ -31,11 +31,11 @@ class Disks {
         exec('LANG=C df -h', $output, $returncode);
         $disks = [];
         if ($returncode == 0) {
-            $ignore = ['none', 'udev', 'Filesystem'];
+            $ignore = ['none', 'udev', 'Filesystem', 'tmpfs', 'overlay', 'shm'];
             foreach ($output as $line) {
                 $value = preg_split('/\s+/', $line);
-                if (!in_array($value[0], $ignore)) {
-                    if ($value[5] != '/run' || strpos($value[5], 'snapshot')) {
+                if (!in_array($value[0], $ignore, true)) {
+                    if ($value[5] === '/run' || strpos($value[5], 'snapshot')) {
                         continue;
                     }
 

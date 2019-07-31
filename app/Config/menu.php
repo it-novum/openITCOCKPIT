@@ -105,6 +105,7 @@ $config = [
                 [
                     'url'   => ['controller' => 'Administrators', 'action' => 'debug'],
                     'title' => 'Debugging',
+                    'state' => 'AdministratorsDebug',
                     'icon'  => 'bug',
                 ],
                 [

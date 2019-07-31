@@ -110,4 +110,37 @@ class CpuLoad {
         return $load;
     }
 
+    /**
+     * @return float
+     */
+    public function getLoad1() {
+        if ($this->load1 === null) {
+            $this->getLoad();
+        }
+
+        return (float)$this->load1;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLoad5() {
+        if ($this->load5 === null) {
+            $this->getLoad();
+        }
+
+        return (float)$this->load5;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLoad15() {
+        if ($this->load15 === null) {
+            $this->getLoad();
+        }
+
+        return (float)$this->load15;
+    }
+
 }

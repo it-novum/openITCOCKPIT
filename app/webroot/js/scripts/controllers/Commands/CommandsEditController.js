@@ -49,8 +49,7 @@ angular.module('openITCOCKPIT')
                     $state.go('404');
                 }
             });
-        }
-        ;
+        };
 
         $scope.removeArg = function(indexToDelete){
             var args = [];
