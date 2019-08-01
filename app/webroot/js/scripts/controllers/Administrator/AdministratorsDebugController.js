@@ -251,11 +251,11 @@ angular.module('openITCOCKPIT')
             }
 
             if(jobs > 500){
-                cssClass = 'txt-color-white bg-color-red';
+                cssClass = 'txt-color-white bg-critical';
             }
 
             if(worker === 0){
-                cssClass = 'txt-color-white bg-color-orangeDark';
+                cssClass = 'txt-color-white bg-warning';
             }
             return cssClass;
         };

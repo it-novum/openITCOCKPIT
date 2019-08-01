@@ -171,9 +171,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                         <dt><?php echo __('Monitoring engine'); ?>:</dt>
                         <dd>
                     <span ng-show="processInformation.backgroundProcesses.isNagiosRunning"
-                          class="text-success"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
                             <span ng-hide="processInformation.backgroundProcesses.isNagiosRunning"
-                                  class="text-danger"><i
+                                  class="critical"><i
                                         class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
                             <a data-original-title="{{interfaceInformation.monitoring_engine}}" data-placement="right"
                                rel="tooltip" class="text-info" href="javascript:void(0);"><i
@@ -183,9 +183,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                         <dt><?php echo __('Database connector'); ?>:</dt>
                         <dd ng-if="processInformation.isStatusengineInstalled">
                     <span ng-show="processInformation.backgroundProcesses.isStatusengineRunning"
-                          class="text-success"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
                             <span ng-hide="processInformation.backgroundProcesses.isStatusengineRunning"
-                                  class="text-danger"><i
+                                  class="critical"><i
                                         class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
 
                             <a data-original-title="<?php echo __('Statusengine'); ?>" data-placement="right"
@@ -194,9 +194,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                         </dd>
                         <dd ng-if="processInformation.isNdoInstalled">
                     <span ng-show="processInformation.backgroundProcesses.isNdoRunning"
-                          class="text-success"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
                             <span ng-hide="processInformation.backgroundProcesses.isNdoRunning"
-                                  class="text-danger"><i
+                                  class="critical"><i
                                         class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
 
                             <a data-original-title="<?php echo __('NDOUtils'); ?>" data-placement="right"
@@ -207,9 +207,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                         <dt><?php echo __('Perfdata processor'); ?>:</dt>
                         <dd ng-if="processInformation.isStatusengineInstalled">
                     <span ng-show="processInformation.backgroundProcesses.isStatusengineRunning"
-                          class="text-success"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
                             <span ng-hide="processInformation.backgroundProcesses.isStatusengineRunning"
-                                  class="text-danger"><i
+                                  class="critical"><i
                                         class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
 
                             <a data-original-title="<?php echo __('Statusengine'); ?>" data-placement="right"
@@ -218,9 +218,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                         </dd>
                         <dd ng-if="!processInformation.isStatusenginePerfdataProcessor">
                     <span ng-show="processInformation.backgroundProcesses.isNpcdRunning"
-                          class="text-success"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
                             <span ng-hide="processInformation.backgroundProcesses.isNpcdRunning"
-                                  class="text-danger"><i
+                                  class="critical"><i
                                         class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
 
                             <a data-original-title="<?php echo __('NPCD'); ?>" data-placement="right"
@@ -230,7 +230,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
                         <dt><?php echo __('Queuing engine'); ?>:</dt>
                         <dd>
-                            <span class="text-success"><i class="fa fa-check"></i> <?php echo __('Running'); ?></span>
+                            <span class="ok"><i class="fa fa-check"></i> <?php echo __('Running'); ?></span>
                             <a data-original-title="<?php echo h('openITCOCKPIT uses the Gearman Job Server to run different background tasks'); ?>"
                                data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i
                                         class="fa fa-info-circle"></i></a>
@@ -239,9 +239,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                         <dt><?php echo __('Gearman Worker'); ?>:</dt>
                         <dd>
                     <span ng-show="processInformation.backgroundProcesses.isGearmanWorkerRunning"
-                          class="text-success"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
                             <span ng-hide="processInformation.backgroundProcesses.isGearmanWorkerRunning"
-                                  class="text-danger"><i
+                                  class="critical"><i
                                         class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
 
                             <a data-original-title="<?php echo __('Execute background jobs like refresh of monitoring configuration.'); ?>"
@@ -253,9 +253,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                         <dt><?php echo __('OITC Cmd'); ?>:</dt>
                         <dd>
                     <span ng-show="processInformation.backgroundProcesses.isOitcCmdRunning"
-                          class="text-success"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
                             <span ng-hide="processInformation.backgroundProcesses.isOitcCmdRunning"
-                                  class="text-danger"><i
+                                  class="critical"><i
                                         class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
 
                             <a data-original-title="<?php echo __('External command interface used by Check_MK to pass check results.'); ?>"
@@ -267,9 +267,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                         <dt><?php echo __('phpNSTA'); ?>:</dt>
                         <dd>
                     <span ng-show="processInformation.backgroundProcesses.isPhpNstaRunning"
-                          class="text-success"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
                             <span ng-hide="processInformation.backgroundProcesses.isPhpNstaRunning"
-                                  class="text-danger"><i
+                                  class="critical"><i
                                         class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
 
                             <a data-original-title="<?php echo __('phpNSTA is only installed and running if you are using Distributed Monitoring.'); ?>"
@@ -281,9 +281,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                         <dt><?php echo __('Push notification service'); ?>:</dt>
                         <dd>
                     <span ng-show="processInformation.backgroundProcesses.isPushNotificationRunning"
-                          class="text-success"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
                             <span ng-hide="processInformation.backgroundProcesses.isPushNotificationRunning"
-                                  class="text-danger"><i
+                                  class="critical"><i
                                         class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
 
                             <a data-original-title="<?php echo __('Service required to send push notifications to your browser window.'); ?>"
@@ -295,9 +295,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                         <dt><?php echo __('NodeJS Server'); ?>:</dt>
                         <dd>
                     <span ng-show="processInformation.backgroundProcesses.isNodeJsServerRunning"
-                          class="text-success"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
                             <span ng-hide="processInformation.backgroundProcesses.isNodeJsServerRunning"
-                                  class="text-danger"><i
+                                  class="critical"><i
                                         class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
 
                             <a data-original-title="<?php echo __('Service required to run server side JavaScript to render charts to email notifications and PDF reports.'); ?>"
@@ -395,7 +395,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
             <div class="well" ng-show="!renderGraph">
                 {{currentCpuLoad['1']}}, {{currentCpuLoad['5']}}, {{currentCpuLoad['15']}}
             </div>
-            <div class="well" ng-show="renderGraph">
+            <div ng-show="renderGraph">
                 <div class="graph_legend">
                     <table style="font-size: 11px; color:#545454">
                         <tbody>
@@ -470,15 +470,15 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
                 <div class="progress" style="margin-bottom: 0px;">
                     <div style="width: {{(memory.memory.used / memory.memory.total) * 100 }}%; position: unset;"
-                         class="progress-bar bg-color-green">
+                         class="progress-bar bg-ok">
                         <span ng-show="memory.memory.used > 50">{{memory.memory.used}}MB</span>
                     </div>
                     <div style="width: {{(memory.memory.cached / memory.memory.total) * 100 }}%; position: unset;"
-                         class="progress-bar bg-color-orange">
+                         class="progress-bar bg-warning">
                         <span ng-show="memory.memory.cached > 10">{{memory.memory.cached}}MB</span>
                     </div>
                     <div style="width: {{(memory.memory.buffers / memory.memory.total) * 100 }}%; position: unset;"
-                         class="progress-bar bg-color-blue">
+                         class="progress-bar bg-downtime">
                         <span ng-show="memory.memory.buffers > 10">{{memory.memory.buffers}}MB</span>
                     </div>
 
@@ -497,7 +497,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
                 <div class="progress" style="margin-bottom: 0px;">
                     <div style="width: {{(memory.swap.used / memory.swap.total) * 100 }}%; position: unset;"
-                         class="progress-bar bg-color-red">
+                         class="progress-bar bg-critical">
                         <span ng-show="memory.swap.used > 50">{{memory.swap.used}}MB</span>
                     </div>
                 </div>
@@ -518,7 +518,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
                 <div class="progress" style="margin-bottom: 0px;">
                     <div style="width: {{disk.use_percentage}}%; position: unset;"
-                         class="progress-bar bg-primary">
+                         class="progress-bar bg-downtime">
                         <span ng-show="disk.use_percentage > 5">{{disk.use_percentage}}%</span>
                     </div>
                 </div>
