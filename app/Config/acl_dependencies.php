@@ -94,7 +94,6 @@ $config = [
                 'byTenantForSelect', 'byTenant', 'loadContainersForAngular', 'loadContainers', 'loadContainersByContainerId'
             ],
             'Downtimes'        => [
-                'validateDowntimeInputFromBrowser',
                 'validateDowntimeInputFromAngular',
                 'icon'
             ],

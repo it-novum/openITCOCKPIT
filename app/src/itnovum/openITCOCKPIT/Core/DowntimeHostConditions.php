@@ -30,7 +30,7 @@ class DowntimeHostConditions extends ListSettingsConditions {
      * @var array
      */
     protected $order = [
-        'DowntimeHost.scheduled_start_time' => 'DESC'
+        'DowntimeHosts.scheduled_start_time' => 'DESC'
     ];
 
     /**

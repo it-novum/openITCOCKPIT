@@ -105,6 +105,7 @@ $config = [
                 [
                     'url'   => ['controller' => 'Administrators', 'action' => 'debug'],
                     'title' => 'Debugging',
+                    'state' => 'AdministratorsDebug',
                     'icon'  => 'bug',
                 ],
                 [
@@ -256,7 +257,7 @@ $config = [
                 [
                     'url'   => ['controller' => 'logentries', 'action' => 'index'],
                     'state' => 'LogentriesIndex',
-                    'title' => 'Log Entries',
+                    'title' => 'Log entries',
                     'icon'  => 'file-text-o',
                 ],
                 [

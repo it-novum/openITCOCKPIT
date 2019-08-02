@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $httpParamSerializer){
+angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $httpParamSerializer, $state){
     return {
         restrict: 'A',
         templateUrl: '/angular/menu.html',
@@ -114,7 +114,9 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                 }
 
                 if(keyCode === RETURN_KEY && $scope.menuFilterPosition === -1){
-                    window.location.href = '/ng/#!/hosts/index?filter[Host.name]=' + rawurlencode($scope.menuFilter);
+                    $state.go('HostsIndex', {
+                        filterHostname: $scope.menuFilter
+                    });
                 }
 
                 if(keyCode !== ARROW_KEY_UP && keyCode !== ARROW_KEY_DOWN){

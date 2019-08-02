@@ -28,7 +28,7 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-file-text-o fa-fw"></i>
-            <?php echo __('Log Entries'); ?>
+            <?php echo __('Log entries'); ?>
             <span>>
                 <?php echo __('Overview'); ?>
             </span>
@@ -71,7 +71,7 @@
                                     <div class="form-group smart-form">
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by record'); ?>"
+                                                   placeholder="<?php echo __('Filter by record and UUID'); ?>"
                                                    ng-model="filter.Logentry.logentry_data"
                                                    ng-model-options="{debounce: 500}">
                                         </label>

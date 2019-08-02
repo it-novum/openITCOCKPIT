@@ -105,6 +105,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "Error404Controller"
             })
 
+            .state('AdministratorsDebug', {
+                url: '/Administrators/debug',
+                templateUrl: "/Administrators/debug.html",
+                controller: "AdministratorsDebugController"
+            })
+
             .state('AdministratorsQuerylog', {
                 url: '/Administrators/querylog',
                 templateUrl: "/Administrators/querylog.html",
@@ -817,6 +823,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             .state('HostsIndex', {
                 url: '/hosts/index',
                 templateUrl: "/hosts/index.html",
+                params: {
+                    filterHostname: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 controller: "HostsIndexController"
             })
 
