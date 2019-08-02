@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes" ?>
+<driver-data>
+    <holidays>
+    
+            
+        <holiday>
+            <internal-name>newYearsDay</internal-name>
+            <translation>New Year's Day</translation>
+        </holiday>
+            
+        <holiday>
+            <internal-name>mlkDay</internal-name>
+            <translation>Dr. Martin Luther King Jr's Birthday</translation>
+        </holiday>
+            
+        <holiday>
+            <internal-name>presidentsDay</internal-name>
+            <translation>President's Day</translation>
+        </holiday>
+            
+        <holiday>
+            <internal-name>memorialDay</internal-name>
+            <translation>Memorial Day</translation>
+        </holiday>
+            
+        <holiday>
+            <internal-name>independenceDay</internal-name>
+            <translation>Independence Day</translation>
+        </holiday>
+            
+        <holiday>
+            <internal-name>laborDay</internal-name>
+            <translation>Labor Day</translation>
+        </holiday>
+            
+        <holiday>
+            <internal-name>columbusDay</internal-name>
+            <translation>Columbus Day</translation>
+        </holiday>
+            
+        <holiday>
+            <internal-name>veteransDay</internal-name>
+            <translation>Veteran's Day</translation>
+        </holiday>
+            
+        <holiday>
+            <internal-name>thanksgivingDay</internal-name>
+            <translation>Thanksgiving Day</translation>
+        </holiday>
+            
+        <holiday>
+            <internal-name>christmasDay</internal-name>
+            <translation>Christmas Day</translation>
+        </holiday>
+        
+        
+    </holidays>
+</driver-data>

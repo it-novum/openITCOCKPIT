@@ -6,6 +6,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Filter\CalendarFilter;
 
 /**
  * Commands Model
@@ -76,5 +77,36 @@ class CalendarsTable extends Table {
             ->allowEmptyString('description');
 
         return $validator;
+    }
+
+    /**
+     * @param CalendarFilter $CalendarFilter
+     * @param null $PaginateOMat
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getCalendarsIndex(CalendarFilter $CalendarFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+        $query = $this->find();
+
+        $where = $CalendarFilter->indexFilter();
+        if (!empty($MY_RIGHTS)) {
+            $where['Calendars.container_id IN'] = $MY_RIGHTS;
+        }
+        $query->where($where);
+
+        $query->order($CalendarFilter->getOrderForPaginator('Calendars.name', 'asc'));
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
     }
 }

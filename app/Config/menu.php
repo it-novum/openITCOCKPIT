@@ -209,6 +209,7 @@ $config = [
                 ],
                 [
                     'url'   => ['controller' => 'calendars', 'action' => 'index'],
+                    'state' => 'CalendarsIndex',
                     'title' => 'Calendar',
                     'icon'  => 'calendar',
                 ],
