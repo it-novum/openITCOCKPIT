@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<driver-data>
+    <holidays>
+
+        <holiday>
+            <internal-name>newYearsDay</internal-name>
+            <translation>Neujahrstag</translation>
+        </holiday>
+        
+        <holiday>
+            <internal-name>epiphany</internal-name>
+            <translation>Dreikönigstag</translation>
+            <properties>
+                <property id="other-translations">Heilige drei Könige</property>
+            </properties>
+        </holiday>
+        
+        <holiday>
+            <internal-name>easter</internal-name>
+            <translation>Ostersonntag</translation>
+        </holiday>
+        
+        <holiday>
+            <internal-name>goodFriday</internal-name>
+            <translation>Karfreitag</translation>
+        </holiday>
+        
+        <holiday>
+            <internal-name>easterMonday</internal-name>
+            <translation>Ostermontag</translation>
+        </holiday>
+        
+        <holiday>
+            <internal-name>mayDay</internal-name>
+            <translation>Maifeiertag</translation>
+        </holiday>
+        
+        <holiday>
+            <internal-name>pentecost</internal-name>
+            <translation>Pfingstsonntag</translation>
+        </holiday>
+        
+        <holiday>
+            <internal-name>ascensionDay</internal-name>
+            <translation>Christi Himmelfahrt</translation>
+        </holiday>
+        
+        <holiday>
+            <internal-name>swedenNationalDay</internal-name>
+            <translation>Tag der schwedischen Flagge</translation>
+            <properties>
+                <property id="other-translations">Unabhängigkeitstag</property>
+            </properties>
+        </holiday>
+        
+        <holiday>
+            <internal-name>midSummer</internal-name>
+            <translation>Mittsommer</translation>
+        </holiday>
+        
+        <holiday>
+            <internal-name>midSummerEve</internal-name>
+            <translation>Mittsommerabend</translation>
+        </holiday>
+        
+        <holiday>
+            <internal-name>allSaintsDay</internal-name>
+            <translation>Allerheiligen</translation>
+        </holiday>
+        
+        <holiday>
+            <internal-name>christmasEve</internal-name>
+            <translation>Heiligabend</translation>
+        </holiday>
+        
+        <holiday>
+            <internal-name>christmasDay</internal-name>
+            <translation>1. Weihnachtsfeiertag</translation>
+        </holiday>
+        
+        <holiday>
+            <internal-name>boxingDay</internal-name>
+            <translation>2. Weihnachtsfeiertag</translation>
+        </holiday>
+        
+        <holiday>
+            <internal-name>newYearsEve</internal-name>
+            <translation>Silvester</translation>
+        </holiday>
+
+    </holidays>
+</driver-data>

@@ -996,6 +996,24 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "SystemfailuresAddController"
             })
 
+            .state('CalendarsIndex', {
+                url: '/calendars/index',
+                templateUrl: "/calendars/index.html",
+                controller: "CalendarsIndexController"
+            })
+
+            .state('CalendarsAdd', {
+                url: '/calendars/add',
+                templateUrl: "/calendars/add.html",
+                controller: "CalendarsAddController"
+            })
+
+            .state('CalendarsEdit', {
+                url: '/calendars/edit/:id',
+                templateUrl: "/calendars/edit.html",
+                controller: "CalendarsEditController"
+            })
+
     })
 
     /*

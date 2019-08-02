@@ -27,6 +27,10 @@ use App\Model\Table\ContainersTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
 
+/**
+ * Class Calendar
+ * @deprecated
+ */
 class Calendar extends AppModel {
 
     public $hasMany = [
@@ -62,6 +66,11 @@ class Calendar extends AppModel {
         ],
     ];
 
+    /**
+     * @deprecated
+     * @param $request_data
+     * @return array
+     */
     public function prepareForSave($request_data) {
         $holidays = [];
         foreach ($request_data as $date => $holidayValues) {
@@ -75,6 +84,12 @@ class Calendar extends AppModel {
         return $holidays;
     }
 
+    /**
+     * @deprecated
+     * @param array $container_ids
+     * @param string $type
+     * @return array|null
+     */
     public function calendarsByContainerId($container_ids = [], $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
