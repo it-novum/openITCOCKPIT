@@ -465,6 +465,9 @@ class HosttemplatesTable extends Table {
                 'Customvariables',
                 'Hosttemplatecommandargumentvalues' => [
                     'Commandarguments'
+                ],
+                'CheckCommand'                      => [
+                    'Commandarguments'
                 ]
             ])
             ->disableHydration()
@@ -480,6 +483,33 @@ class HosttemplatesTable extends Table {
         $hosttemplate['contactgroups'] = [
             '_ids' => Hash::extract($query, 'contactgroups.{n}.id')
         ];
+
+        // Merge new command arguments that are missing in the host template to host template command arguments
+        // and remove old command arguments that don't exists in the command anymore.
+        $filteredCommandArgs = [];
+        foreach ($hosttemplate['check_command']['commandarguments'] as $commandargument) {
+            $valueExists = false;
+            foreach ($hosttemplate['hosttemplatecommandargumentvalues'] as $hosttemplatecommandargumentvalue) {
+                if ($commandargument['id'] === $hosttemplatecommandargumentvalue['commandargument']['id']) {
+                    $filteredCommandArgs[] = $hosttemplatecommandargumentvalue;
+                    $valueExists = true;
+                }
+            }
+            if (!$valueExists) {
+                $filteredCommandArgs[] = [
+                    'commandargument_id' => $commandargument['id'],
+                    'hostetemplate_id'   => $hosttemplate['id'],
+                    'value'              => '',
+                    'commandargument'    => [
+                    'name'       => $commandargument['name'],
+                    'human_name' => $commandargument['human_name'],
+                    'command_id' => $commandargument['command_id'],
+                ]
+                ];
+            }
+        }
+
+        $hosttemplate['hosttemplatecommandargumentvalues'] = $filteredCommandArgs;
 
         return [
             'Hosttemplate' => $hosttemplate

@@ -27,6 +27,7 @@ use App\Model\Table\CronjobsTable;
 use App\Model\Table\RegistersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
+use itnovum\openITCOCKPIT\Core\Security\ItcMail;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\System\Health\CpuLoad;
 use itnovum\openITCOCKPIT\Core\System\Health\Disks;
@@ -362,25 +363,5 @@ class AdministratorsController extends AppController {
 
     public function querylog() {
         //Only ship HTML template
-    }
-}
-
-App::uses('CakeEmail', 'Network/Email');
-
-class ItcMail extends CakeEmail {
-
-    public function __construct($config = null) {
-        parent::__construct($config);
-    }
-
-    public function getConfig($removePassword = true) {
-        if ($removePassword === true) {
-            $config = $this->_config;
-            unset($config['password']);
-
-            return $config;
-        }
-
-        return $this->_config;
     }
 }

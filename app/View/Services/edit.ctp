@@ -115,7 +115,7 @@
                                             </label>
                                             <div class="col-xs-12 col-lg-10">
 
-                                                <div ng-if="post.Service.service_type !== <?php echo MK_SERVICE; ?>">
+                                                <div ng-if="post.Service.service_type !== <?php echo MK_SERVICE; ?> && post.Service.service_type !== <?php echo OITC_AGENT_SERVICE; ?>">
                                                     <select
                                                             id="ServiceServicetemplateSelect"
                                                             data-placeholder="<?php echo __('Please choose'); ?>"

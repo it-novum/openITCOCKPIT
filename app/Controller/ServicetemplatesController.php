@@ -38,7 +38,6 @@ use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
-use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
@@ -125,10 +124,8 @@ class ServicetemplatesController extends AppController {
         $this->set('_serialize', ['servicetemplate']);
     }
 
-    /**
-     * @param int|null $servicetemplatetype_id
-     */
-    public function add($servicetemplatetype_id = null) {
+
+    public function add() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -138,12 +135,10 @@ class ServicetemplatesController extends AppController {
             /** @var $ServicetemplatesTable ServicetemplatesTable */
             $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
             $this->request->data['Servicetemplate']['uuid'] = UUID::v4();
-            $this->request->data['Servicetemplate']['servicetemplatetype_id'] = GENERIC_SERVICE;
-
-            if ($servicetemplatetype_id !== null && is_numeric($servicetemplatetype_id)) {
-                //Legacy???
-                $this->request->data['Servicetemplate']['servicetemplatetype_id'] = $servicetemplatetype_id;
+            if (!isset($this->request->data['Servicetemplate']['servicetemplatetype_id'])) {
+                $this->request->data['Servicetemplate']['servicetemplatetype_id'] = GENERIC_SERVICE;
             }
+
 
             $servicetemplate = $ServicetemplatesTable->newEntity();
             $servicetemplate = $ServicetemplatesTable->patchEntity($servicetemplate, $this->request->data('Servicetemplate'));
@@ -188,9 +183,8 @@ class ServicetemplatesController extends AppController {
 
     /**
      * @param int|null $id
-     * @param int|null $servicetemplatetype_id
      */
-    public function edit($id = null, $servicetemplatetype_id = null) {
+    public function edit($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -216,7 +210,17 @@ class ServicetemplatesController extends AppController {
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return service template information
             $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
-            $eventhandlerCommands = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
+
+            //Use foreach because of arra_merge remove the keys and adding None after getCommandByTypeAsList()
+            //will display "None" as the last element in the select box
+            $eventhandlerCommands = [
+                0 => __('None')
+            ];
+            foreach ($CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND) as $eventhandlerCommndId => $eventhandlerCommandName) {
+                $eventhandlerCommands[$eventhandlerCommndId] = $eventhandlerCommandName;
+            }
+
+
             $this->set('commands', Api::makeItJavaScriptAble($commands));
             $this->set('eventhandlerCommands', Api::makeItJavaScriptAble($eventhandlerCommands));
             $this->set('servicetemplate', $servicetemplate);
@@ -498,7 +502,7 @@ class ServicetemplatesController extends AppController {
         $filter = $ServicetemplateFilter->usedByFilter();
 
         $includeDisabled = true;
-        if(isset($filter['Services.disabled']) && $filter['Services.disabled'] === 0){
+        if (isset($filter['Services.disabled']) && $filter['Services.disabled'] === 0) {
             $includeDisabled = false;
         }
 
@@ -545,9 +549,9 @@ class ServicetemplatesController extends AppController {
         }
 
         $groupByHost = [];
-        foreach($services as $service){
+        foreach ($services as $service) {
             $hostId = $service['host']['id'];
-            if(!isset($groupByHost[$hostId])){
+            if (!isset($groupByHost[$hostId])) {
                 $groupByHost[$hostId] = $service['host'];
                 $groupByHost[$hostId]['services'] = [];
             }
@@ -689,12 +693,13 @@ class ServicetemplatesController extends AppController {
         }
 
         //Get command arguments
+        $commandarguments = $CommandargumentsTable->getByCommandId($commandId);
         if (empty($servicetemplatecommandargumentvalues)) {
             //Servicetemplate has no command arguments defined
             //Or we are in servicetemplates/add ?
 
             //Load command arguments of the check command
-            foreach ($CommandargumentsTable->getByCommandId($commandId) as $commandargument) {
+            foreach ($commandarguments as $commandargument) {
                 $servicetemplatecommandargumentvalues[] = [
                     'commandargument_id' => $commandargument['Commandargument']['id'],
                     'value'              => '',
@@ -706,6 +711,32 @@ class ServicetemplatesController extends AppController {
                 ];
             }
         };
+
+        // Merge new command arguments that are missing in the service template to service template command arguments
+        // and remove old command arguments that don't exists in the command anymore.
+        $filteredCommandArgumentsValules = [];
+        foreach ($commandarguments as $commandargument){
+            $valueExists = false;
+            foreach($servicetemplatecommandargumentvalues as $servicetemplatecommandargumentvalue){
+                if($commandargument['Commandargument']['id'] === $servicetemplatecommandargumentvalue['commandargument_id']){
+                    $filteredCommandArgumentsValules[] = $servicetemplatecommandargumentvalue;
+                    $valueExists = true;
+                }
+            }
+            if(!$valueExists){
+                $filteredCommandArgumentsValules[] = [
+                    'commandargument_id' => $commandargument['Commandargument']['id'],
+                    'value'              => '',
+                    'commandargument'    => [
+                        'name'       => $commandargument['Commandargument']['name'],
+                        'human_name' => $commandargument['Commandargument']['human_name'],
+                        'command_id' => $commandargument['Commandargument']['command_id'],
+                    ]
+                ];
+            }
+        }
+        $servicetemplatecommandargumentvalues = $filteredCommandArgumentsValules;
+
 
         $this->set('servicetemplatecommandargumentvalues', $servicetemplatecommandargumentvalues);
         $this->set('_serialize', ['servicetemplatecommandargumentvalues']);
@@ -850,6 +881,40 @@ class ServicetemplatesController extends AppController {
         );
         $this->set('servicetemplates', $servicetemplates);
         $this->set('_serialize', ['servicetemplates']);
+    }
+
+    public function agent() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        $ServicetemplateFilter = new ServicetemplateFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+        $servicetemplates = $ServicetemplatesTable->getServicetemplatesIndex($ServicetemplateFilter, $PaginateOMat, $MY_RIGHTS, OITC_AGENT_SERVICE);
+
+        foreach ($servicetemplates as $index => $servicetemplate) {
+            $servicetemplates[$index]['Servicetemplate']['allow_edit'] = true;
+            if ($this->hasRootPrivileges === false) {
+                $servicetemplates[$index]['Servicetemplate']['allow_edit'] = $this->isWritableContainer($servicetemplate['Servicetemplate']['container_id']);
+            }
+        }
+
+
+        $this->set('all_servicetemplates', $servicetemplates);
+        $toJson = ['all_servicetemplates', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_servicetemplates', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
 }

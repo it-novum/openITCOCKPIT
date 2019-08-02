@@ -1663,6 +1663,35 @@ class AppSchema extends CakeSchema {
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
+    public $agentchecks = [
+        'id'                 => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'name'               => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'servicetemplate_id' => ['type' => 'integer', 'default' => null],
+        'created'            => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'           => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'            => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters'    => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $agentconfigs = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'host_id'         => ['type' => 'integer', 'default' => null],
+        'port'            => ['type' => 'integer', 'default' => null],
+        'use_https'       => ['type' => 'boolean', 'null' => false, 'default' => '1'],
+        'insecure'        => ['type' => 'boolean', 'null' => false, 'default' => '1'],
+        'basic_auth'      => ['type' => 'boolean', 'null' => false, 'default' => '1'],
+        'username'        => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'password'        => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
 
     /*public $devicegroups = array(
         'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),

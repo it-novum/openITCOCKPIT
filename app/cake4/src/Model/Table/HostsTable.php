@@ -476,6 +476,7 @@ class HostsTable extends Table {
                 'Hosts.id',
                 'Hosts.uuid',
                 'Hosts.name',
+                'Hosts.address',
                 'Hosts.container_id'
             ])
             ->where([

@@ -658,12 +658,13 @@ class HosttemplatesController extends AppController {
         }
 
         //Get command arguments
+        $commandarguments = $CommandargumentsTable->getByCommandId($commandId);
         if (empty($hosttemplatecommandargumentvalues)) {
             //Hosttemplate has no command arguments defined
             //Or we are in hosttemplates/add ?
 
             //Load command arguments of the check command
-            foreach ($CommandargumentsTable->getByCommandId($commandId) as $commandargument) {
+            foreach ($commandarguments as $commandargument) {
                 $hosttemplatecommandargumentvalues[] = [
                     'commandargument_id' => $commandargument['Commandargument']['id'],
                     'value'              => '',
@@ -675,6 +676,31 @@ class HosttemplatesController extends AppController {
                 ];
             }
         };
+
+        // Merge new command arguments that are missing in the host template to host template command arguments
+        // and remove old command arguments that don't exists in the command anymore.
+        $filteredCommandArgumentsValules = [];
+        foreach ($commandarguments as $commandargument){
+            $valueExists = false;
+            foreach($hosttemplatecommandargumentvalues as $hosttemplatecommandargumentvalue){
+                if($commandargument['Commandargument']['id'] === $hosttemplatecommandargumentvalue['commandargument_id']){
+                    $filteredCommandArgumentsValules[] = $hosttemplatecommandargumentvalue;
+                    $valueExists = true;
+                }
+            }
+            if(!$valueExists){
+                $filteredCommandArgumentsValules[] = [
+                    'commandargument_id' => $commandargument['Commandargument']['id'],
+                    'value'              => '',
+                    'commandargument'    => [
+                        'name'       => $commandargument['Commandargument']['name'],
+                        'human_name' => $commandargument['Commandargument']['human_name'],
+                        'command_id' => $commandargument['Commandargument']['command_id'],
+                    ]
+                ];
+            }
+        }
+        $hosttemplatecommandargumentvalues = $filteredCommandArgumentsValules;
 
         $this->set('hosttemplatecommandargumentvalues', $hosttemplatecommandargumentvalues);
         $this->set('_serialize', ['hosttemplatecommandargumentvalues']);
