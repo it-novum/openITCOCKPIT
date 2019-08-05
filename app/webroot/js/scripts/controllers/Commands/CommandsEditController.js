@@ -71,7 +71,7 @@ angular.module('openITCOCKPIT')
                 argsCount++;
             }
             $scope.args.push({
-                name: '$ARG' + argsCount,
+                name: '$ARG' + argsCount + '$',
                 human_name: ''
             });
             $scope.args = _.sortBy($scope.args, 'name');

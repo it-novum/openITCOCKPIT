@@ -106,8 +106,8 @@
                                                             class="form-control"
                                                             chosen="mapping.health"
                                                             multiple
-                                                            ng-options="health.name as health.name for health in mapping.health"
-                                                            ng-model="post.Agentcheck.servicetemplate_id">
+                                                            ng-options="health as health.name for health in mapping.health"
+                                                            ng-model="selectedHealthChecks">
                                                     </select>
                                                     <div ng-repeat="error in errors.servicetemplate_id">
                                                         <div class="help-block text-danger">{{ error }}</div>
@@ -127,8 +127,8 @@
                                                             class="form-control"
                                                             chosen="mapping.processes"
                                                             multiple
-                                                            ng-options="process.name as process.name for process in mapping.processes"
-                                                            ng-model="post.Agentcheck.servicetemplate_id">
+                                                            ng-options="process as process.name for process in mapping.processes"
+                                                            ng-model="selectedProcessChecks">
                                                     </select>
                                                     <div ng-repeat="error in errors.servicetemplate_id">
                                                         <div class="help-block text-danger">{{ error }}</div>
@@ -138,6 +138,26 @@
                                         </div>
                                     </div>
 
+                                </div>
+
+                                <div class="col-xs-12 margin-top-10" ng-show="isCreatingServices">
+                                    <h4><?php echo __('Creating Services...'); ?></h4>
+                                </div>
+                                <div class="col-xs-12 margin-top-10" ng-show="isCreatingServices">
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar bg-primary" style="width: {{percentage}}%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 margin-top-10">
+                                    <div class="well formactions ">
+                                        <div class="pull-right">
+                                            <input class="btn btn-primary" type="button" ng-click="createServices()"
+                                                   value="<?php echo __('Create services'); ?>">
+                                            <a ui-sref="HostsIndex"
+                                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </form>

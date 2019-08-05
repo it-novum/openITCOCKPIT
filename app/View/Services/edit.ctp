@@ -130,7 +130,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div ng-if="post.Service.service_type == <?php echo MK_SERVICE; ?>">
+                                                <div ng-if="post.Service.service_type == <?php echo MK_SERVICE; ?> || post.Service.service_type == <?php echo OITC_AGENT_SERVICE; ?>">
                                                     <!-- Service template of MK_SERVICES can't be changed -->
                                                     <!-- For better design we use a fake select box to display the service template name -->
                                                     <div class="chosen-container chosen-container-single chosen-disabled"

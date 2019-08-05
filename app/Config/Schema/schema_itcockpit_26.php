@@ -1666,6 +1666,7 @@ class AppSchema extends CakeSchema {
     public $agentchecks = [
         'id'                 => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'name'               => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'plugin_name'        => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'servicetemplate_id' => ['type' => 'integer', 'default' => null],
         'created'            => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'           => ['type' => 'datetime', 'null' => false, 'default' => null],

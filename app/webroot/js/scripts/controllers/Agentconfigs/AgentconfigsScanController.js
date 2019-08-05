@@ -6,6 +6,14 @@ angular.module('openITCOCKPIT')
         $scope.hasError = false;
         $scope.hasAgentOutput = false;
 
+        $scope.selectedHealthChecks = [];
+        $scope.selectedProcessChecks = [];
+
+        $scope.totalServices = 0;
+        $scope.isCreatingServices = false;
+        $scope.percentage = 0;
+        $scope.ajaxCount = 0;
+
         $scope.load = function(){
             var params = {
                 'angular': true
@@ -64,16 +72,58 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.submit = function(){
-            $http.post("/agentconfigs/config/" + $scope.hostId + ".json?angular=true",
-                $scope.post
+        $scope.createServices = function(){
+            $scope.totalServices = $scope.selectedHealthChecks.length + $scope.selectedProcessChecks.length;
+            if($scope.totalServices === 0){
+                NotyService.genericWarning({
+                    message: 'No objects selected'
+                });
+                return;
+            }
+
+            $scope.isCreatingServices = true;
+
+            var postData = {};
+
+            if($scope.selectedHealthChecks.length > 0){
+                for(var index in $scope.selectedHealthChecks){
+                    var healthCheck = $scope.selectedHealthChecks[index];
+
+                    postData = {
+                        Service: healthCheck.agentcheck.service
+                    };
+                    postData.Service.host_id = $scope.hostId;
+
+                    $scope.createService(postData);
+                }
+            }
+
+            if($scope.selectedProcessChecks.length > 0){
+                for(var index in $scope.selectedProcessChecks){
+                    var processCheck = $scope.selectedProcessChecks[index];
+
+                    postData = {
+                        Service: processCheck.agentcheck.service
+                    };
+                    postData.Service.host_id = $scope.hostId;
+
+                    $scope.createService(postData);
+                }
+            }
+        };
+
+        $scope.createService = function(postData){
+            $http.post("/agentconfigs/createService.json?angular=true",
+                postData
             ).then(function(result){
-                NotyService.genericSuccess({
-                    message: $scope.successMessage.objectName + ' ' + $scope.successMessage.message
-                });
-                $state.go('AgentconfigsScan', {
-                    hostId: $scope.hostId
-                });
+                $scope.ajaxCount++;
+
+                $scope.percentage = Math.round($scope.ajaxCount / $scope.totalServices * 100);
+                if($scope.ajaxCount === $scope.totalServices){
+                    $state.go('ServicesServiceList', {
+                        id: $scope.hostId
+                    });
+                }
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){
@@ -84,6 +134,6 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        //Fire on page load
         $scope.load();
-
     });

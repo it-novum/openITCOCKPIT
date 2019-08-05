@@ -74,9 +74,30 @@
                             </div>
                         </div>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.servicetemplate_id}">
+                        <div class="form-group required" ng-class="{'has-error': errors.plugin_name}">
                             <label class="col col-md-2 control-label">
-                                <?php echo __('Service template'); ?>
+                                <?php echo __('Plugin name'); ?>
+                            </label>
+                            <div class="col col-xs-10">
+                                <input class="form-control" type="text" ng-model="post.Agentcheck.plugin_name">
+                                <div ng-repeat="error in errors.plugin_name">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                                <div class="help-block">
+                                    <?php echo __('The name of the check plugin used by the poller.'); ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required" ng-class="{'has-error': errors.servicetemplate_id}">
+                            <label class="col-xs-12 col-lg-2 control-label">
+                                <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                    <a ui-sref="ServicetemplatesEdit({id:post.Agentcheck.servicetemplate_id})">
+                                        <?php echo __('Service template'); ?>
+                                    </a>
+                                <?php else: ?>
+                                    <?php echo __('Service template'); ?>
+                                <?php endif; ?>
                             </label>
                             <div class="col col-xs-10">
                                 <select data-placeholder="<?php echo __('Please choose'); ?>"

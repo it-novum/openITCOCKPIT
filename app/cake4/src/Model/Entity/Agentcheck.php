@@ -28,6 +28,7 @@ class Agentcheck extends Entity {
     protected $_accessible = [
         'name'               => true,
         'servicetemplate_id' => true,
+        'plugin_name'        => true,
         'created'            => true,
         'modified'           => true,
         'servicetemplate'    => true

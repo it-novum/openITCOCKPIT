@@ -36,14 +36,13 @@ class AgentResponseToServicetemplateMapper {
     /**
      * AgentResponseToServicetemplateMapper constructor.
      * @param array $agentResponse
-     * @param array $agentchecks []
+     * @param array $agentchecks
      */
     public function __construct($agentResponse, $agentchecks) {
         $this->agentResponse = $agentResponse;
 
         foreach ($agentchecks as $agentcheck) {
-            /** @var $agentcheck Agentcheck */
-            $key = $agentcheck->get('name');
+            $key = $agentcheck['name'];
             $this->agentchecks[$key] = $agentcheck;
         }
     }
@@ -66,37 +65,51 @@ class AgentResponseToServicetemplateMapper {
 
                 switch ($groupKey) {
                     case 'memory':
-                        $mapping['health'][] = [
-                            'name'       => __('Memory usage percentage'),
+                        $servicename = __('Memory usage percentage');
+
+                        $check = [
+                            'name'       => $servicename,
                             'agentcheck' => [
-                                'name'               => $agentcheck->get('name'),
-                                'servicetemplate_id' => $agentcheck->get('servicetemplate_id'),
-                                'args' => []
+                                'name'            => $agentcheck['name'],
+                                'plugin_name'     => $agentcheck['plugin_name'],
+                                'service' => $agentcheck['service']
                             ]
                         ];
+                        $check['agentcheck']['service']['name'] = $servicename;
+
+                        $mapping['health'][] = $check;
                         continue;
 
                     case 'swap':
-                        $mapping['health'][] = [
-                            'name'       => __('Swap usage percentage'),
-                            'agentcheck' => [
-                                'name'               => $agentcheck->get('name'),
-                                'servicetemplate_id' => $agentcheck->get('servicetemplate_id'),
-                                                                'args' => []
+                        $servicename = __('Swap usage percentage');
 
+                        $check = [
+                            'name'       => $servicename,
+                            'agentcheck' => [
+                                'name'            => $agentcheck['name'],
+                                'plugin_name'     => $agentcheck['plugin_name'],
+                                'service' => $agentcheck['service']
                             ]
                         ];
+                        $check['agentcheck']['service']['name'] = $servicename;
+
+                        $mapping['health'][] = $check;
                         continue;
 
                     case 'cpu_percentage':
-                        $mapping['health'][] = [
-                            'name'       => __('CPU usage percentage'),
+                        $servicename = __('CPU usage percentage');
+
+                        $check = [
+                            'name'       => $servicename,
                             'agentcheck' => [
-                                'name'               => $agentcheck->get('name'),
-                                'servicetemplate_id' => $agentcheck->get('servicetemplate_id'),
-                                'args' => []
+                                'name'            => $agentcheck['name'],
+                                'plugin_name'     => $agentcheck['plugin_name'],
+                                'service' => $agentcheck['service']
                             ]
                         ];
+                        $check['agentcheck']['service']['name'] = $servicename;
+
+                        $mapping['health'][] = $check;
                         continue;
 
                 }
@@ -105,35 +118,59 @@ class AgentResponseToServicetemplateMapper {
                     foreach ($items as $itemKey => $item) {
                         switch ($groupKey) {
                             case 'disks':
-                                $mapping['health'][] = [
-                                    'name'       => sprintf(
-                                        '%s %s',
-                                        __('Disk usage of:'),
-                                        $item['disk']['mountpoint']
-                                    ),
+                                $servicename = sprintf(
+                                    '%s %s',
+                                    __('Disk usage of:'),
+                                    $item['disk']['device']
+                                );
+
+                                $check = [
+                                    'name'       => $servicename,
                                     'agentcheck' => [
-                                        'name'               => $agentcheck->get('name'),
-                                        'servicetemplate_id' => $agentcheck->get('servicetemplate_id'),
-                                        'args' => []
+                                        'name'            => $agentcheck['name'],
+                                        'plugin_name'     => $agentcheck['plugin_name'],
+                                        'service' => $agentcheck['service']
                                     ]
                                 ];
+
+                                $check['agentcheck']['service']['name'] = $servicename;
+                                foreach ($check['agentcheck']['service']['servicecommandargumentvalues'] as $index => $arg) {
+                                    if ($arg['commandargument']['name'] === '$ARG3$') {
+                                        $check['agentcheck']['service']['servicecommandargumentvalues'][$index]['value'] = $item['disk']['device'];
+                                    }
+                                }
+
+                                $mapping['health'][] = $check;
                                 break;
 
                             case 'disk_io':
                                 if ($itemKey === 'timestamp') {
                                     continue;
                                 }
-                                $mapping['health'][] = [
-                                    'name'       => sprintf(
-                                        '%s %s',
-                                        __('Disk stats of:'),
-                                        $itemKey
-                                    ),
+
+                                $servicename = sprintf(
+                                    '%s %s',
+                                    __('Disk stats of:'),
+                                    $itemKey
+                                );
+
+                                $check = [
+                                    'name'       => $servicename,
                                     'agentcheck' => [
-                                        'name'               => $agentcheck->get('name'),
-                                        'servicetemplate_id' => $agentcheck->get('servicetemplate_id')
+                                        'name'            => $agentcheck['name'],
+                                        'plugin_name'     => $agentcheck['plugin_name'],
+                                        'service' => $agentcheck['service']
                                     ]
                                 ];
+
+                                $check['agentcheck']['service']['name'] = $servicename;
+                                foreach ($check['agentcheck']['service']['servicecommandargumentvalues'] as $index => $arg) {
+                                    if ($arg['commandargument']['name'] === '$ARG3$') {
+                                        $check['agentcheck']['service']['servicecommandargumentvalues'][$index]['value'] = $itemKey;
+                                    }
+                                }
+
+                                $mapping['health'][] = $check;
                                 break;
 
                             case 'processes':
@@ -145,44 +182,78 @@ class AgentResponseToServicetemplateMapper {
                                     $processName = implode(' ', $item['cmdline']);
                                 }
 
-                                $mapping['processes'][] = [
+                                $check = [
                                     'name'       => $processName,
                                     'agentcheck' => [
-                                        'name'               => $agentcheck->get('name'),
-                                        'servicetemplate_id' => $agentcheck->get('servicetemplate_id')
+                                        'name'            => $agentcheck['name'],
+                                        'plugin_name'     => $agentcheck['plugin_name'],
+                                        'service' => $agentcheck['service']
                                     ]
                                 ];
+
+                                $check['agentcheck']['service']['name'] = $processName;
+                                foreach ($check['agentcheck']['service']['servicecommandargumentvalues'] as $index => $arg) {
+                                    if ($arg['commandargument']['name'] === '$ARG7$') {
+                                        $check['agentcheck']['service']['servicecommandargumentvalues'][$index]['value'] = $processName;
+                                    }
+                                }
+
+                                $mapping['processes'][] = $check;
                                 break;
 
                             case 'net_stats':
-                                $mapping['health'][] = [
-                                    'name'       => sprintf(
-                                        '%s %s',
-                                        __('Network state of:'),
-                                        $itemKey
-                                    ),
+                                $servicename = sprintf(
+                                    '%s %s',
+                                    __('Network state of:'),
+                                    $itemKey
+                                );
+
+                                $check = [
+                                    'name'       => $servicename,
                                     'agentcheck' => [
-                                        'name'               => $agentcheck->get('name'),
-                                        'servicetemplate_id' => $agentcheck->get('servicetemplate_id')
+                                        'name'            => $agentcheck['name'],
+                                        'plugin_name'     => $agentcheck['plugin_name'],
+                                        'service' => $agentcheck['service']
                                     ]
                                 ];
+
+                                $check['agentcheck']['service']['name'] = $servicename;
+                                /*foreach ($check['agentcheck']['service']['serviceservicecommandargumentvalues'] as $index => $arg) {
+                                    if ($arg['commandargument']['name'] === '$ARG3$') {
+                                        $check['agentcheck']['service']['serviceservicecommandargumentvalues'][$index]['value'] = $itemKey;
+                                    }
+                                }*/
+
+                                $mapping['health'][] = $check;
                                 break;
 
                             case 'net_io':
                                 if ($itemKey === 'timestamp') {
                                     continue;
                                 }
-                                $mapping['health'][] = [
-                                    'name'       => sprintf(
-                                        '%s %s',
-                                        __('Network stats of:'),
-                                        $itemKey
-                                    ),
+                                $servicename = sprintf(
+                                    '%s %s',
+                                    __('Network stats of:'),
+                                    $itemKey
+                                );
+
+                                $check = [
+                                    'name'       => $servicename,
                                     'agentcheck' => [
-                                        'name'               => $agentcheck->get('name'),
-                                        'servicetemplate_id' => $agentcheck->get('servicetemplate_id')
+                                        'name'            => $agentcheck['name'],
+                                        'plugin_name'     => $agentcheck['plugin_name'],
+                                        'service' => $agentcheck['service']
                                     ]
                                 ];
+
+                                $check['agentcheck']['service']['name'] = $servicename;
+                                /*foreach ($check['agentcheck']['service']['servicecommandargumentvalues'] as $index => $arg) {
+                                    if ($arg['commandargument']['name'] === '$ARG3$') {
+                                        $check['agentcheck']['service']['servicecommandargumentvalues'][$index]['value'] = $itemKey;
+                                    }
+                                }*/
+
+                                $mapping['health'][] = $check;
                                 break;
                         }
                     }

@@ -404,7 +404,7 @@ class ServicetemplatesTable extends Table {
      * @return array
      */
     public function getServicetemplatesIndex(ServicetemplateFilter $ServicetemplateFilter, $PaginateOMat = null, $MY_RIGHTS = [], $servicetemplatetypeId = null) {
-        if($servicetemplatetypeId === null){
+        if ($servicetemplatetypeId === null) {
             $servicetemplatetypeId = GENERIC_SERVICE;
         }
 
@@ -591,7 +591,7 @@ class ServicetemplatesTable extends Table {
                 'Servicetemplateeventcommandargumentvalues' => [
                     'Commandarguments'
                 ],
-                'CheckCommand' => [
+                'CheckCommand'                              => [
                     'Commandarguments'
                 ]
             ])
@@ -623,7 +623,7 @@ class ServicetemplatesTable extends Table {
             if (!$valueExists) {
                 $filteredCommandArgs[] = [
                     'commandargument_id' => $commandargument['id'],
-                    'servicetemplate_id'   => $servicetemplate['id'],
+                    'servicetemplate_id' => $servicetemplate['id'],
                     'value'              => '',
                     'commandargument'    => [
                         'name'       => $commandargument['name'],
@@ -1039,6 +1039,24 @@ class ServicetemplatesTable extends Table {
         $result = $query->all();
 
         return $this->emptyArrayIfNull($result->toArray());
+    }
+
+    /**
+     * @param $servicetemplateName
+     * @param null $servicetemplateTypeId
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getServicetemplateByName($servicetemplateName, $servicetemplateTypeId = null) {
+        if ($servicetemplateTypeId === null) {
+            $servicetemplateTypeId = GENERIC_SERVICE;
+        }
+
+        return $this->find()
+            ->where([
+                'Servicetemplates.template_name'          => $servicetemplateName,
+                'Servicetemplates.servicetemplatetype_id' => $servicetemplateTypeId
+            ])
+            ->firstOrFail();
     }
 
 }

@@ -2345,6 +2345,8 @@ class NagiosExportTask extends AppShell {
     }
 
     public function beforeExportExternalTasks() {
+        $this->createMissingOitcAgentActiveChecks();
+
         foreach ($this->externalTasks as $pluginName => $taskName) {
             $_task = new TaskCollection($this);
             $extTask = $_task->load($pluginName . '.' . $taskName);
@@ -2354,6 +2356,7 @@ class NagiosExportTask extends AppShell {
 
     public function afterExportExternalTasks() {
         //Restart oitc CMD to wipe old cached information
+        $this->createOitcAgentJsonConfig();
         exec('service oitc_cmd restart');
 
         foreach ($this->externalTasks as $pluginName => $taskName) {
@@ -2723,4 +2726,95 @@ class NagiosExportTask extends AppShell {
         }
         return $str;
     }
+
+    private function createMissingOitcAgentActiveChecks() {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        try {
+            $servicetemplate = $ServicetemplatesTable->getServicetemplateByName('OITC_AGENT_ACTIVE', OITC_AGENT_SERVICE);
+            $servicetemplateId = $servicetemplate->get('id');
+            $hosts = $HostsTable->getHostsThatUseOitcAgentForExport();
+            foreach ($hosts as $host) {
+                $hostId = $host['id'];
+                if (!$HostsTable->hasHostServiceFromServicetemplateId($hostId, $servicetemplateId)) {
+                    //Create active oITC Agent check
+                    $host = $HostsTable->get($hostId);
+                    $serviceData = [
+                        'uuid' => UUID::v4(),
+                        'host_id' => $hostId,
+                        'servicetemplate_id' => $servicetemplateId,
+                        'service_type' => OITC_AGENT_SERVICE,
+
+                        'flap_detection_enabled' => 0
+                    ];
+
+                    $service = $ServicesTable->newEntity($serviceData);
+                    $ServicesTable->save($service);
+                }
+            }
+
+        } catch (\Exception $e) {
+            debug($e->getMessage());
+            //Ignore error while export
+        }
+    }
+
+    private function createOitcAgentJsonConfig() {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $hosts = $HostsTable->getHostsThatUseOitcAgentForExport();
+        if (empty($hosts)) {
+            return;
+        }
+
+        $configFile = sprintf('/opt/openitc/receiver/etc/production_%s.json', date('Y-m-d-H-i-s'));
+        $outfile = '/opt/openitc/receiver/etc/production.json';
+        $config = [];
+        foreach ($hosts as $hostId => $host) {
+            $hostUuid = $host['uuid'];
+            $services = $ServicesTable->getAllOitcAgentServicesByHostIdForExport($hostId);
+
+            if (!empty($services)) {
+                $config[$hostUuid] = [
+                    'name'    => $host['name'],
+                    'address' => $host['address'],
+                    'uuid'    => $hostUuid,
+                    'checks'  => []
+                ];
+
+                foreach ($services as $service) {
+                    $servicename = $service['name'];
+                    if ($servicename === null || $servicename === '') {
+                        $servicename = $service['Servicetemplates']['name'];
+                    }
+
+
+                    $config[$hostUuid]['checks'][] = [
+                        'plugin'      => $service['Agentchecks']['plugin_name'],
+                        'servicename' => $servicename,
+                        'uuid'        => $service['uuid'],
+                        'args'        => $service['args_for_config']
+                    ];
+                }
+            }
+        }
+
+        file_put_contents($configFile, json_encode($config, JSON_PRETTY_PRINT));
+
+        if (file_exists($outfile)) {
+            unlink($outfile);
+        }
+        symlink($configFile, $outfile);
+    }
+
+
 }

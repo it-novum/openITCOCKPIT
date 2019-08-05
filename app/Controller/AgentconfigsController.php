@@ -5,12 +5,17 @@
 // The license agreement and license key were sent with the order confirmation.
 use App\Model\Table\AgentchecksTable;
 use App\Model\Table\AgentconfigsTable;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\HostsTable;
+use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Agent\AgentResponseToServicetemplateMapper;
 use itnovum\openITCOCKPIT\Agent\HttpLoader;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AgentchecksFilter;
 
@@ -305,6 +310,111 @@ class AgentconfigsController extends AppController {
 
         $this->set('servicetemplates', $servicetemplates);
         $this->set('_serialize', ['servicetemplates']);
+    }
+
+    public function createService() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $servicetemplateId = $this->request->data('Service.servicetemplate_id');
+            if ($servicetemplateId === null) {
+                throw new BadRequestException('Service.servicetemplate_id needs to set.');
+            }
+
+            $hostId = $this->request->data('Service.host_id');
+            if ($hostId === null) {
+                throw new BadRequestException('Service.host_id needs to set.');
+            }
+
+            /** @var $HosttemplatesTable HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            /** @var $ServicetemplatesTable ServicetemplatesTable */
+            $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            /** @var $ChangelogsTable ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            if (!$ServicetemplatesTable->existsById($servicetemplateId)) {
+                throw new NotFoundException(__('Invalid service template'));
+            }
+
+            $host = $HostsTable->get($hostId);
+            $this->request->data['Host'] = [
+                [
+                    'id'   => $host->get('id'),
+                    'name' => $host->get('name')
+                ]
+            ];
+
+            $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicetemplateId);
+
+
+            $servicename = $this->request->data('Service.name');
+            if ($servicename === null || $servicename === '') {
+                $servicename = $servicetemplate['Servicetemplate']['name'];
+            }
+
+            $ServiceComparisonForSave = new ServiceComparisonForSave(
+                $this->request->data,
+                $servicetemplate,
+                $HostsTable->getContactsAndContactgroupsById($host->get('id')),
+                $HosttemplatesTable->getContactsAndContactgroupsById($host->get('hosttemplate_id'))
+            );
+            $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
+            $serviceData['uuid'] = UUID::v4();
+            $serviceData['service_type'] = OITC_AGENT_SERVICE;
+
+            //Add required fields for validation
+            $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
+            $serviceData['servicetemplate_flap_detection_on_ok'] = $servicetemplate['Servicetemplate']['flap_detection_on_ok'];
+            $serviceData['servicetemplate_flap_detection_on_warning'] = $servicetemplate['Servicetemplate']['flap_detection_on_warning'];
+            $serviceData['servicetemplate_flap_detection_on_critical'] = $servicetemplate['Servicetemplate']['flap_detection_on_critical'];
+            $serviceData['servicetemplate_flap_detection_on_unknown'] = $servicetemplate['Servicetemplate']['flap_detection_on_unknown'];
+
+            $service = $ServicesTable->newEntity($serviceData);
+
+            $ServicesTable->save($service);
+            if ($service->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $service->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+
+                $User = new User($this->Auth);
+
+                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    'add',
+                    'services',
+                    $service->get('id'),
+                    OBJECT_SERVICE,
+                    $host->get('container_id'),
+                    $User->getId(),
+                    $host->get('name') . '/' . $servicename,
+                    array_merge($this->request->data, $extDataForChangelog)
+                );
+
+                if ($changelog_data) {
+                    $ChangelogsTable->write($changelog_data);
+                }
+
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($service); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('service', $service);
+            $this->set('_serialize', ['$service']);
+        }
     }
 
 }
