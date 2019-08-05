@@ -4,7 +4,7 @@
     <title><?php echo $title_for_layout; ?></title>
 </head>
 <body>
-This is a test mail
+This is a test mail from <?php echo h($systemname); ?>
 
 
 </body>

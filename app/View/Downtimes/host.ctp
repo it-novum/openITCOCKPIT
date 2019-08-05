@@ -258,7 +258,7 @@
                                         <i class="fa" ng-class="getSortClass('DowntimeHosts.was_cancelled')"></i>
                                         <?php echo __('Was cancelled'); ?>
                                     </th>
-                                    <th class="no-sort"><?php echo __('Delete'); ?></th>
+                                    <th class="no-sort"><?php echo __('Cancel'); ?></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -318,7 +318,7 @@
                                                     class="btn btn-xs btn-danger"
                                                     ng-if="downtime.DowntimeHost.allowEdit && downtime.DowntimeHost.isCancellable"
                                                     ng-click="confirmHostDowntimeDelete(getObjectForDelete(downtime))">
-                                                <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                <i class="fa fa-trash-o"></i> <?php echo __('Cancel'); ?>
                                             </button>
                                         <?php endif; ?>
                                     </td>
@@ -355,7 +355,7 @@
                                 <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmHostDowntimeDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fa fa-lg fa-trash-o"></i>
-                                    <?php echo __('Delete'); ?>
+                                    <?php echo __('Cancel'); ?>
                                 </span>
                                 </div>
                             </div>

@@ -128,4 +128,8 @@ class RegistersTable extends Table {
         }
         return null;
     }
+
+    public function getCommunityLicenseKey(){
+        return '0dc0d951-e34e-43d0-a5a5-a690738e6a49';
+    }
 }

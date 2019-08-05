@@ -26,17 +26,16 @@
 use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Lib\Interfaces\DowntimehistoryServicesTableInterface;
 use App\Model\Table\HostsTable;
-use App\Model\Table\ServicesTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\HostDowntimesControllerRequest;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\ServiceDowntimesControllerRequest;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Database\ScrollIndex;
 
 /**
  * Class DowntimesController
@@ -46,20 +45,8 @@ use itnovum\openITCOCKPIT\Database\ScrollIndex;
  */
 class DowntimesController extends AppController {
 
-    /*
-     * Attention! In this case we load an external Model from the monitoring plugin! The Controller
-     * use this external model to fetch the required data out of the database
-     */
-    public $uses = [
-        MONITORING_DOWNTIME_HOST,
-        MONITORING_DOWNTIME_SERVICE,
-        'Host',
-        'Service'
-    ];
 
     public $layout = 'blank';
-
-    public $components = ['GearmanClient'];
 
     public function host() {
         if (!$this->isAngularJsRequest()) {
@@ -139,9 +126,6 @@ class DowntimesController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
-    /**
-     * @deprecated
-     */
     public function service() {
         if (!$this->isAngularJsRequest()) {
             return;
@@ -275,7 +259,7 @@ class DowntimesController extends AppController {
 
     /**
      * @param int $internalDowntimeId
-     * @deprecated
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     public function delete($internalDowntimeId = null) {
         if (!$this->request->is('post')) {
@@ -291,73 +275,66 @@ class DowntimesController extends AppController {
         }
 
         Configure::load('gearman');
-        $this->Config = Configure::read('gearman');
+        $GearmanClient = new Gearman(Configure::read('gearman'));
 
-        $this->GearmanClient->client->setTimeout(5000);
-        $gearmanReachable = @$this->GearmanClient->client->ping(true);
+        $DowntimeHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
+        $DowntimeServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
+        /** @var $HostsTable HostsTable */
 
         switch ($this->request->data['type']) {
             case 'host':
-                //host dinge
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
                 $includeServices = true;
                 if (isset($this->request->data['includeServices'])) {
                     $includeServices = (bool)$this->request->data['includeServices'];
                 }
 
-                $servicesInternalDowntimeIds = [];
                 if ($includeServices) {
                     //Find current downtime
-                    $downtime = $this->DowntimeHost->getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId);
-                    $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost']);
-                    $host = $this->Host->find('first', [
-                        'recursive'  => -1,
-                        'conditions' => [
-                            'Host.uuid' => $downtime['Host']['uuid']
-                        ],
-                        'fields'     => [
-                            'Host.id'
-                        ],
-                    ]);
+                    $downtime = $DowntimeHostsTable->getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId);
+                    if (!empty($downtime)) {
+                        $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHosts']);
+                        try {
+                            $host = $HostsTable->getHostByUuid($downtime['Hosts']['uuid']);
+                            $servicesInternalDowntimeIds = $DowntimeServicesTable->getServiceDowntimesByHostAndDowntime(
+                                $host->get('id'),
+                                $Downtime
+                            );
 
-                    if (!empty($host)) {
-                        $servicesInternalDowntimeIds = $this->DowntimeService->getServiceDowntimesByHostAndDowntime(
-                            $host['Host']['id'],
-                            $Downtime
-                        );
+                            //Delete Host downtime
+                            $GearmanClient->sendBackground('deleteHostDowntime', [
+                                'internal_downtime_id' => $internalDowntimeId
+                            ]);
+
+                            //Delete corresponding service downtimes
+                            foreach ($servicesInternalDowntimeIds as $serviceInternalDowntimeId) {
+                                $GearmanClient->sendBackground('deleteServiceDowntime', [
+                                    'internal_downtime_id' => $serviceInternalDowntimeId
+                                ]);
+                            }
+
+                        } catch (RecordNotFoundException $e) {
+                            $this->set('success', false);
+                            $this->set('message', $e->getMessage());
+                            $this->set('_serialize', ['success', 'message']);
+                            return;
+                        }
+
                     }
-                }
-
-                //Delete Host downtime
-                $this->GearmanClient->client->doBackground(
-                    "oitc_gearman",
-                    Security::cipher(serialize([
-                        'task'                 => 'deleteHostDowntime',
+                } else {
+                    //Only delete Host downtime
+                    $GearmanClient->sendBackground('deleteHostDowntime', [
                         'internal_downtime_id' => $internalDowntimeId
-                    ]), $this->Config['password'])
-                );
-
-                //Delete corresponding service downtimes
-                foreach ($servicesInternalDowntimeIds as $serviceInternalDowntimeId) {
-                    $this->GearmanClient->client->doBackground(
-                        "oitc_gearman",
-                        Security::cipher(serialize([
-                            'task'                 => 'deleteServiceDowntime',
-                            'internal_downtime_id' => $serviceInternalDowntimeId
-                        ]), $this->Config['password'])
-                    );
+                    ]);
                 }
-
-
                 break;
 
             default:
-                $this->GearmanClient->client->doBackground(
-                    "oitc_gearman",
-                    Security::cipher(serialize([
-                        'task'                 => 'deleteServiceDowntime',
-                        'internal_downtime_id' => $internalDowntimeId
-                    ]), $this->Config['password'])
-                );
+                //Only delete Service downtime
+                $GearmanClient->sendBackground('deleteServiceDowntime', [
+                    'internal_downtime_id' => $internalDowntimeId
+                ]);
                 break;
         }
         $this->set('success', true);

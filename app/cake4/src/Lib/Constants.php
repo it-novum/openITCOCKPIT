@@ -163,10 +163,11 @@ class Constants {
 
     private function defineServiceTypes() {
         $this->define([
-            'GENERIC_SERVICE' => 1 << 0, //1
-            'EVK_SERVICE'     => 1 << 1, //2
-            'SLA_SERVICE'     => 1 << 2, //4
-            'MK_SERVICE'      => 1 << 3  //8
+            'GENERIC_SERVICE'    => 1 << 0, //1
+            'EVK_SERVICE'        => 1 << 1, //2
+            'SLA_SERVICE'        => 1 << 2, //4
+            'MK_SERVICE'         => 1 << 3, //8
+            'OITC_AGENT_SERVICE' => 1 << 4  //16
         ]);
     }
 

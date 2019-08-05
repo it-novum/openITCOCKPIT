@@ -75,7 +75,7 @@ app/webroot/img/logo_small_custom.png
 !app/Vendor/
 app/Vendor/*
 !app/Vendor/adldap
-!app/Vendor/Date
+!app/Vendor/Date/*/*/*
 !app/Vendor/Oauth2
 !app/Vendor/imageSmoothArc.php
 !app/Vendor/qqFileUploader.php

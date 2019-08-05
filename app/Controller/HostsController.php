@@ -2787,6 +2787,9 @@ class HostsController extends AppController {
     }
 
     /**
+     * This function is designed to be called if a command gets changed.
+     * NOT to get initial values like /hosts/edit/$id.json
+     *
      * @param int|null $commandId
      * @param int|null $hostId
      */
@@ -2830,12 +2833,13 @@ class HostsController extends AppController {
         }
 
         //Get command arguments
+        $commandarguments = $CommandargumentsTable->getByCommandId($commandId);
         if (empty($hostcommandargumentvalues)) {
             //Host has no command arguments defined
             //Or we are in /hosts/add ?
 
             //Load command arguments of the check command
-            foreach ($CommandargumentsTable->getByCommandId($commandId) as $commandargument) {
+            foreach ($commandarguments as $commandargument) {
                 $hostcommandargumentvalues[] = [
                     'commandargument_id' => $commandargument['Commandargument']['id'],
                     'value'              => '',
@@ -2847,6 +2851,32 @@ class HostsController extends AppController {
                 ];
             }
         };
+
+        // Merge new command arguments that are missing in the host to host command arguments
+        // and remove old command arguments that don't exists in the command anymore.
+        $filteredCommandArgumentsValules = [];
+        foreach ($commandarguments as $commandargument){
+            $valueExists = false;
+            foreach($hostcommandargumentvalues as $hostcommandargumentvalue){
+                if($commandargument['Commandargument']['id'] === $hostcommandargumentvalue['commandargument_id']){
+                    $filteredCommandArgumentsValules[] = $hostcommandargumentvalue;
+                    $valueExists = true;
+                }
+            }
+            if(!$valueExists){
+                $filteredCommandArgumentsValules[] = [
+                    'commandargument_id' => $commandargument['Commandargument']['id'],
+                    'value'              => '',
+                    'commandargument'    => [
+                        'name'       => $commandargument['Commandargument']['name'],
+                        'human_name' => $commandargument['Commandargument']['human_name'],
+                        'command_id' => $commandargument['Commandargument']['command_id'],
+                    ]
+                ];
+            }
+        }
+        $hostcommandargumentvalues = $filteredCommandArgumentsValules;
+
 
         $this->set('hostcommandargumentvalues', $hostcommandargumentvalues);
         $this->set('_serialize', ['hostcommandargumentvalues']);

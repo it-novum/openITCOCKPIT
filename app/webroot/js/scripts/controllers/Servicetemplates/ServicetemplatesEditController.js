@@ -71,10 +71,11 @@ angular.module('openITCOCKPIT')
             };
 
             var eventHandlerCommandId = $scope.post.Servicetemplate.eventhandler_command_id;
+
             $http.get("/servicetemplates/loadEventhandlerCommandArguments/" + eventHandlerCommandId + "/" + $scope.id + ".json", {
                 params: params
             }).then(function(result){
-                $scope.post.Servicetemplate.servicetemplateeventhandlercommandargumentvalues = result.data.servicetemplateeventhandlercommandargumentvalues;
+                $scope.post.Servicetemplate.servicetemplateeventcommandargumentvalues = result.data.servicetemplateeventhandlercommandargumentvalues;
             });
         };
 
@@ -169,6 +170,13 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
+
+            if($scope.post.Servicetemplate.eventhandler_command_id === 0){
+                //"None" selected
+                $scope.post.Servicetemplate.servicetemplateeventcommandargumentvalues = [];
+                return;
+            }
+
             $scope.loadEventHandlerCommandArguments();
         }, true);
 

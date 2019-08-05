@@ -23,9 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\CalendarsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\CalendarFilter;
 
 App::uses('CalendarHolidays', 'Vendor/Date');
 
@@ -38,49 +41,53 @@ App::uses('CalendarHolidays', 'Vendor/Date');
  * @property PaginatorComponent $Paginator
  */
 class CalendarsController extends AppController {
-    public $uses = [
-        'Calendar',
-        'Tenant',
-        'CalendarHoliday',
-        'Timeperiod'
-    ];
-    public $layout = 'Admin.default';
-    public $components = [
-        'RequestHandler',
-    ];
+
+    public $layout = 'blank';
 
     /**
      * Lists the existing configurations to load and edit them.
      */
     public function index() {
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        $containerIds = $this->MY_RIGHTS;
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container',
-            ],
-            'fields'     => [
-                'Calendar.id',
-                'Calendar.name',
-                'Calendar.description',
-                'Calendar.container_id',
-            ],
-            'conditions' => [
-                'Calendar.container_id' => $containerIds,
-            ],
-            'order'      => [
-                'Calendar.name' => 'ASC',
-            ],
-        ];
-        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-        $calendars = $this->Paginator->paginate();
-        $this->set(compact(['calendars']));
-        $this->set('_serialize', ['calendars']);
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var $CalendarsTable CalendarsTable */
+        $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
+        $CalendarFilter = new CalendarFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $CalendarFilter->getPage());
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        $calendars = $CalendarsTable->getCalendarsIndex($CalendarFilter, $PaginateOMat, $MY_RIGHTS);
+        $all_calendars = [];
+        foreach ($calendars as $calendar) {
+            $calendar['allowEdit'] = $this->hasPermission('edit', 'calendars');
+            if ($this->hasRootPrivileges === false && $calendar['allowEdit'] === true) {
+                $calendar['allowEdit'] = $this->allowedByContainerId($calendar['container_id']);
+            }
+
+            $all_calendars[] = $calendar;
+        }
+
+        $this->set('all_calendars', $all_calendars);
+        $toJson = ['all_calendars', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_calendars', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
@@ -204,7 +211,7 @@ class CalendarsController extends AppController {
 
     public function loadHolidays($countryCode = 'de') {
         if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
+     //       throw new MethodNotAllowedException();
         }
         $holiday = new CalendarHolidays();
         $holidays = $holiday->getHolidays($countryCode);

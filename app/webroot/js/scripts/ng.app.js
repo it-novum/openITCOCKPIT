@@ -105,10 +105,46 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "Error404Controller"
             })
 
+            .state('AdministratorsDebug', {
+                url: '/Administrators/debug',
+                templateUrl: "/Administrators/debug.html",
+                controller: "AdministratorsDebugController"
+            })
+
             .state('AdministratorsQuerylog', {
                 url: '/Administrators/querylog',
                 templateUrl: "/Administrators/querylog.html",
                 controller: "AdministratorsQuerylogController"
+            })
+
+            .state('AgentchecksIndex', {
+                url: '/agentchecks/index',
+                templateUrl: "/agentchecks/index.html",
+                controller: "AgentchecksIndexController"
+            })
+
+            .state('AgentchecksAdd', {
+                url: '/agentchecks/add',
+                templateUrl: "/agentchecks/add.html",
+                controller: "AgentchecksAddController"
+            })
+
+            .state('AgentchecksEdit', {
+                url: '/agentchecks/edit/:id',
+                templateUrl: "/agentchecks/edit.html",
+                controller: "AgentchecksEditController"
+            })
+
+            .state('AgentconfigsConfig', {
+                url: '/agentconfigs/config/:hostId',
+                templateUrl: "/agentconfigs/config.html",
+                controller: "AgentconfigsConfigController"
+            })
+
+            .state('AgentconfigsScan', {
+                url: '/agentconfigs/scan/:hostId',
+                templateUrl: "/agentconfigs/scan.html",
+                controller: "AgentconfigsScanController"
             })
 
             .state('AutomapsView', {
@@ -817,6 +853,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             .state('HostsIndex', {
                 url: '/hosts/index',
                 templateUrl: "/hosts/index.html",
+                params: {
+                    filterHostname: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 controller: "HostsIndexController"
             })
 
@@ -880,14 +922,32 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ServicetemplatesIndexController"
             })
 
+            .state('ServicetemplatesAgent', {
+                url: '/servicetemplates/agent',
+                templateUrl: "/servicetemplates/agent.html",
+                controller: "ServicetemplatesAgentController"
+            })
+
             .state('ServicetemplatesAdd', {
                 url: '/servicetemplates/add',
+                params: {
+                    servicetemplateTypeId: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 templateUrl: "/servicetemplates/add.html",
                 controller: "ServicetemplatesAddController"
             })
 
             .state('ServicetemplatesEdit', {
                 url: '/servicetemplates/edit/:id',
+                params: {
+                    servicetemplateTypeId: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 templateUrl: "/servicetemplates/edit.html",
                 controller: "ServicetemplatesEditController"
             })
@@ -994,6 +1054,24 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 url: '/systemfailures/add',
                 templateUrl: "/systemfailures/add.html",
                 controller: "SystemfailuresAddController"
+            })
+
+            .state('CalendarsIndex', {
+                url: '/calendars/index',
+                templateUrl: "/calendars/index.html",
+                controller: "CalendarsIndexController"
+            })
+
+            .state('CalendarsAdd', {
+                url: '/calendars/add',
+                templateUrl: "/calendars/add.html",
+                controller: "CalendarsAddController"
+            })
+
+            .state('CalendarsEdit', {
+                url: '/calendars/edit/:id',
+                templateUrl: "/calendars/edit.html",
+                controller: "CalendarsEditController"
             })
 
     })

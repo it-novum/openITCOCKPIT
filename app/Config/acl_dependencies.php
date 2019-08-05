@@ -201,6 +201,13 @@ $config = [
             ],
         ],
         'dependencies'   => [
+            'Agentchecks'           => [
+                'add'  => ['loadServicetemplates'],
+                'edit' => ['loadServicetemplates']
+            ],
+            'Agentconfigs'          => [
+                'scan' => ['config'],
+            ],
             'Automaps'              => [
                 'view' => ['loadServiceDetails'],
             ],

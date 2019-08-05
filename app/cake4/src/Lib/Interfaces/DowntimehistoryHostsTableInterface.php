@@ -36,4 +36,10 @@ interface DowntimehistoryHostsTableInterface {
      */
     public function getDowntimes(DowntimeHostConditions $DowntimeHostConditions, $PaginateOMat = null);
 
+    /**
+     * @param int $internalDowntimeId
+     * @return array
+     */
+    public function getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId);
+
 }

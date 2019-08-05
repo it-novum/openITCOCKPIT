@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService){
+    .controller('HostsIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService, $stateParams){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Hoststatus.current_state'));
@@ -7,6 +7,11 @@ angular.module('openITCOCKPIT')
         $scope.currentPage = 1;
 
         $scope.useScroll = true;
+
+        filterHostname = null;
+        if(typeof $stateParams.filterHostname !== "undefined"){
+            var filterHostname = $stateParams.filterHostname;
+        }
 
 
         /*** Filter Settings ***/
@@ -22,7 +27,7 @@ angular.module('openITCOCKPIT')
                 },
                 Host: {
                     id: QueryStringService.getIds('filter[Hosts.id][]', []),
-                    name: QueryStringService.getValue('filter[Hosts.name]', ''),
+                    name: (filterHostname)?filterHostname:'',
                     description: '',
                     keywords: '',
                     not_keywords: '',
@@ -31,7 +36,7 @@ angular.module('openITCOCKPIT')
                 }
             };
         };
-        /*** Filter end ***/
+        /*** Filter end ***/filterMainMenu
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/hosts/delete/';

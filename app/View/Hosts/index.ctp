@@ -42,7 +42,6 @@
 <?php echo $this->Flash->render('positive'); ?>
 
 
-
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
     <a href="#" data-dismiss="alert" class="close">×</a>
     <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
@@ -592,6 +591,15 @@
                                                         <a ng-click="confirmAddHostsToHostgroup(getObjectForDelete(host))"
                                                            class="a-clean pointer">
                                                             <i class="fa fa-sitemap"></i> <?php echo __('Append to host group'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+
+                                                <?php if ($this->Acl->hasPermission('scan', 'agentconfigs', '')): ?>
+                                                    <li>
+                                                        <a ui-sref="AgentconfigsConfig({hostId: host.Host.id})">
+                                                            <i class="fa fa-user-secret"></i>
+                                                            <?php echo __('openITCOCKPIT Agent discovery'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>

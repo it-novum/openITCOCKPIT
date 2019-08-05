@@ -6,8 +6,10 @@ use App\Lib\Interfaces\DowntimehistoryServicesTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
+use itnovum\openITCOCKPIT\Core\Views\Downtime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
@@ -195,5 +197,36 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
         }
 
         return $result;
+    }
+
+    /**
+     * @param int $hostId
+     * @param Downtime $Downtime
+     * @return array
+     */
+    public function getServiceDowntimesByHostAndDowntime($hostId, Downtime $Downtime) {
+        $records = $this->find()
+            ->select([
+                'DowntimeServices.internal_downtime_id'
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = DowntimeServices.object_id']
+            )
+            ->innerJoin(
+                ['Services' => 'services'],
+                ['Services.uuid = Objects.name2']
+            )
+            ->where([
+                'DowntimeServices.downtime_type'        => 1,  //Downtime.downtime_type = 1 Service downtime
+                'Services.host_id'                      => $hostId,
+                'DowntimeServices.scheduled_start_time' => date('Y-m-d H:i:s', $Downtime->getScheduledStartTime()),
+                'DowntimeServices.scheduled_end_time'   => date('Y-m-d H:i:s', $Downtime->getScheduledEndTime())
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $records->toArray();
+        return Hash::extract($result, '{n}.internal_downtime_id');
     }
 }
