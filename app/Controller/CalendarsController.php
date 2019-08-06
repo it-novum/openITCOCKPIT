@@ -25,8 +25,10 @@
 
 use App\Model\Table\CalendarsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\Holidays;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CalendarFilter;
 
@@ -210,12 +212,12 @@ class CalendarsController extends AppController {
     }
 
     public function loadHolidays($countryCode = 'de') {
-        if (!$this->request->is('ajax')) {
-     //       throw new MethodNotAllowedException();
-        }
-        $holiday = new CalendarHolidays();
+
+
+        $holiday = new Holidays();
+
         $holidays = $holiday->getHolidays($countryCode);
-        $this->set(compact(['holidays']));
+        $this->set('holidays', $holidays);
         $this->set('_serialize', ['holidays']);
     }
 

@@ -2603,3 +2603,13 @@ input[type=text]:focus + .input-group-addon-no-focus {
 .chosen-container-single .chosen-single abbr {
     top: 10px;
 }
+
+.fc-button-primary {
+    background-color: #3688D8!important;
+    border-color: #317ABF !important;
+    color: #FFF;
+    padding: 0px 4px!important;
+}
+.fc-day-number {
+    float: left!important;
+}
