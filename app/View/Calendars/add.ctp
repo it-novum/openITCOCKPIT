@@ -170,3 +170,40 @@
         </div>
     </div>
 </div>
+
+<div id="editEventModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-user"></i>
+                    <?php echo __('Edit holiday'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form">
+                            <label class="input"> <i class="icon-prepend fa fa-pencil"></i>
+                                <input type="text" class="input-sm"
+                                       placeholder="<?php echo __('Title'); ?>"
+                                       ng-model="editEvent.title">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" ng-click="editEventFromModal()">
+                    <?php echo __('Save'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
