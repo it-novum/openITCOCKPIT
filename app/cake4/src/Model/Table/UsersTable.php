@@ -331,7 +331,7 @@ class UsersTable extends Table {
                     'Users.paginatorlength',
                     'Users.recursive_browser',
                     'ContainersUsersMemberships.container_id',
-                   // 'Usercontainerroles.id',
+                    // 'Usercontainerroles.id',
                     'full_name' => $query->func()->concat([
                         'Users.firstname' => 'literal',
                         ' ',
@@ -390,6 +390,22 @@ class UsersTable extends Table {
     }
 
     /**
+     * @param $usercontaineroles
+     * @return array
+     */
+    public function usercontainerolePermissionsForAngular($usercontaineroles) {
+        if (empty($usercontaineroles)) {
+            return [];
+        }
+
+        $ret = [];
+        foreach ($usercontaineroles as $usercontainerole) {
+            $ret['usercontainerroles']['_ids'][] = $usercontainerole['id'];
+        }
+        return $ret;
+    }
+
+    /**
      * @param null $userId
      * @param $rights
      * @return array
@@ -400,6 +416,11 @@ class UsersTable extends Table {
         if (!empty($user['containers'])) {
             $containerPermissions = $this->containerPermissionsForAngular($user['containers']);
             $user = array_merge($user, $containerPermissions);
+        }
+
+        if (!empty($user['usercontainerroles'])) {
+            $usercontaienroles = $this->usercontainerolePermissionsForAngular($user['usercontainerroles']);
+            $user = array_merge($user, $usercontaienroles);
         }
         return $user;
     }
