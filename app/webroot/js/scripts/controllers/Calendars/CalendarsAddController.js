@@ -96,7 +96,13 @@ angular.module('openITCOCKPIT')
                             'ng-click': 'testBob(info.event.start)'
                         })
                         .click(function(){
-                                console.log('edit knöbbe');
+                                var event = $scope.getEvents(date('Y-m-d', info.event.start));
+                                $scope.editEvent = {
+                                    start: event.start,
+                                    title: event.title
+                                };
+                                $scope.$apply();
+                                $('#editEventModal').modal('show');
                             }
                         );
 
@@ -116,6 +122,24 @@ angular.module('openITCOCKPIT')
                     $(elements[1]).css('text-align', 'right').append($deleteButton);
                     $(elements[1]).append($editButton);
                 },
+
+                eventDrop: function(info){
+                    //Move event in json
+                    var event = $scope.deleteEvent(date('Y-m-d', info.oldEvent.start));
+                    if(!event){
+                        return;
+                    }
+                    event = event[0];
+
+                    //Set new start date
+                    event.start = date('Y-m-d', info.event.start);
+
+                    //Add event back to json
+                    $scope.addEvent(event.title, event.start);
+
+                    $scope.$apply();
+                },
+
                 events: $scope.events
             });
 
@@ -168,8 +192,7 @@ angular.module('openITCOCKPIT')
         $scope.deleteEvent = function(date){
             for(var index in $scope.events){
                 if($scope.events[index].start === date){
-                    $scope.events.splice(index, 1);
-                    return true;
+                    return $scope.events.splice(index, 1);
                 }
             }
             return false;
@@ -183,12 +206,40 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.addEventFromModal = function(){
+            if($scope.newEvent.title === ''){
+                return;
+            }
+
             //Add event to internal json
             $scope.addEvent($scope.newEvent.title, $scope.newEvent.start);
 
             //Reset modal and newEvent object
             $('#addEventModal').modal('hide');
             $scope.newEvent = {
+                title: '',
+                start: ''
+            };
+        };
+
+        $scope.editEventFromModal = function(){
+            if($scope.editEvent.title === ''){
+                return;
+            }
+
+            //Get old event from json
+            var event = $scope.deleteEvent($scope.editEvent.start);
+            if(!event){
+                return;
+            }
+
+            event = event[0];
+
+            //Add event back to json with new name and old date
+            $scope.addEvent($scope.editEvent.title, event.start);
+
+            //Reset modal and newEvent object
+            $('#editEventModal').modal('hide');
+            $scope.editEvent = {
                 title: '',
                 start: ''
             };
