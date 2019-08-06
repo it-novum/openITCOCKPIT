@@ -114,7 +114,7 @@ $timezones = CakeTime::listTimezones();
                     <div class="well formactions ">
                         <div class="pull-right">
                             <input class="btn btn-primary" type="submit"
-                                   value="<?php echo __('Create new User Container Role'); ?>">
+                                   value="<?php echo __('Update User Container Role'); ?>">
                             <a ui-sref="UsersIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>

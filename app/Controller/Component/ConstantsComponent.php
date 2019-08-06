@@ -129,7 +129,7 @@ class ConstantsComponent extends Component {
         //Container definitions and properties
         $this->defines['containers'] = [
             "GLOBAL_CONTAINER"               => [
-                'properties'     => OBJECT_TENANT  ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY,
+                'properties'     => OBJECT_TENANT ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY,
                 'container_type' => CT_GLOBAL,
             ],
             "TENANT_CONTAINER"               => [
@@ -173,10 +173,11 @@ class ConstantsComponent extends Component {
 
         //Service type definitions
         $this->defines['service_types'] = [
-            "GENERIC_SERVICE" => 1, // 2^0
-            "EVK_SERVICE"     => 2, // 2^1
-            "SLA_SERVICE"     => 4,
-            'MK_SERVICE'      => 8,
+            "GENERIC_SERVICE"    => 1, // 2^0
+            "EVK_SERVICE"        => 2, // 2^1
+            "SLA_SERVICE"        => 4,
+            'MK_SERVICE'         => 8,
+            'OITC_AGENT_SERVICE' => 16
         ];
         $this->define($this->defines['service_types']);
 

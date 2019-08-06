@@ -1,5 +1,12 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicetemplatesAddController', function($scope, $http, SudoService, $state, NotyService, RedirectService){
+    .controller('ServicetemplatesAddController', function($scope, $http, SudoService, $state, NotyService, RedirectService, $stateParams){
+
+        var servicetemplateTypeId = 1; // GENERIC_SERVICE
+        if(typeof $stateParams.servicetemplateTypeId !== "undefined"){
+            if($stateParams.servicetemplateTypeId !== null){
+                servicetemplateTypeId = parseInt($stateParams.servicetemplateTypeId, 10);
+            }
+        }
 
         $scope.data = {
             createAnother: false
@@ -48,6 +55,7 @@ angular.module('openITCOCKPIT')
                     service_url: '',
                     is_volatile: 0,
                     freshness_checks_enabled: 0,
+                    servicetemplatetype_id: servicetemplateTypeId,
                     contacts: {
                         _ids: []
                     },
@@ -197,7 +205,6 @@ angular.module('openITCOCKPIT')
                     $scope.errors = {};
                     NotyService.scrollTop();
                 }
-
 
 
                 console.log('Data saved successfully');

@@ -637,7 +637,7 @@ class ServicesController extends AppController {
                 }
             }
             $this->set('service', $service);
-            $this->set('_serialize', ['$service']);
+            $this->set('_serialize', ['service']);
         }
     }
 
@@ -2432,12 +2432,13 @@ class ServicesController extends AppController {
         }
 
         //Get command arguments
+        $commandarguments = $CommandargumentsTable->getByCommandId($commandId);
         if (empty($servicecommandargumentvalues)) {
             //Service has no command arguments defined
             //Or we are in services/add ?
 
             //Load command arguments of the check command
-            foreach ($CommandargumentsTable->getByCommandId($commandId) as $commandargument) {
+            foreach ($commandarguments as $commandargument) {
                 $servicecommandargumentvalues[] = [
                     'commandargument_id' => $commandargument['Commandargument']['id'],
                     'value'              => '',
@@ -2449,6 +2450,31 @@ class ServicesController extends AppController {
                 ];
             }
         };
+
+        // Merge new command arguments that are missing in the service to service command arguments
+        // and remove old command arguments that don't exists in the command anymore.
+        $filteredCommandArgumentsValules = [];
+        foreach ($commandarguments as $commandargument){
+            $valueExists = false;
+            foreach($servicecommandargumentvalues as $servicecommandargumentvalue){
+                if($commandargument['Commandargument']['id'] === $servicecommandargumentvalue['commandargument_id']){
+                    $filteredCommandArgumentsValules[] = $servicecommandargumentvalue;
+                    $valueExists = true;
+                }
+            }
+            if(!$valueExists){
+                $filteredCommandArgumentsValules[] = [
+                    'commandargument_id' => $commandargument['Commandargument']['id'],
+                    'value'              => '',
+                    'commandargument'    => [
+                        'name'       => $commandargument['Commandargument']['name'],
+                        'human_name' => $commandargument['Commandargument']['human_name'],
+                        'command_id' => $commandargument['Commandargument']['command_id'],
+                    ]
+                ];
+            }
+        }
+        $servicecommandargumentvalues = $filteredCommandArgumentsValules;
 
         $this->set('servicecommandargumentvalues', $servicecommandargumentvalues);
         $this->set('_serialize', ['servicecommandargumentvalues']);

@@ -33,7 +33,7 @@ $config = [
             'order' => 1,
         ],
 
-        'maps'          => [
+        'maps' => [
             'title'    => 'Maps',
             'icon'     => 'map-marker',
             'order'    => 2,
@@ -51,6 +51,7 @@ $config = [
                 ],
             ],
         ],
+
         'configuration' => [
             'title'    => 'Configuration',
             'icon'     => 'wrench',
@@ -76,7 +77,8 @@ $config = [
                 ],
             ],
         ],
-        'admin'         => [
+
+        'admin' => [
             'title'    => 'Administration',
             'icon'     => 'cogs',
             'order'    => 10,
@@ -139,7 +141,8 @@ $config = [
                 ],
             ],
         ],
-        'itc'           => [
+
+        'itc' => [
             'title'    => 'Basic Monitoring',
             'icon'     => 'cogs',
             'order'    => 3,
@@ -273,7 +276,8 @@ $config = [
                 ],
             ],
         ],
-        'itc_expert'    => [
+
+        'itc_expert' => [
             'title'    => 'Expert Monitoring',
             'icon'     => 'fire',
             'order'    => 4,
@@ -315,7 +319,8 @@ $config = [
                 ],
             ],
         ],
-        'reporting'     => [
+
+        'reporting' => [
             'title'    => 'Reporting',
             'icon'     => 'file-text-o',
             'order'    => 5,
@@ -339,6 +344,7 @@ $config = [
                 ],
             ],
         ],
+
         'documentation' => [
             'url'   => ['controller' => 'documentations', 'action' => 'wiki', 'plugin' => ''],
             'title' => 'Documentation',
@@ -346,7 +352,8 @@ $config = [
             'icon'  => 'book',
             'order' => 6,
         ],
-        'support'       => [
+
+        'support' => [
             'title'    => 'Support',
             'icon'     => 'life-ring',
             'order'    => 999,
@@ -356,6 +363,26 @@ $config = [
                     'state' => 'SupportsIssue',
                     'title' => 'Report an issue',
                     'icon'  => 'bug',
+                ],
+            ],
+        ],
+
+        'oitc_agent' => [
+            'title'    => 'openITCOCKPIT Agent',
+            'icon'     => 'user-secret',
+            'order'    => 8,
+            'children' => [
+                [
+                    'url'   => ['controller' => 'servicetemplates', 'action' => 'agent'],
+                    'state' => 'ServicetemplatesAgent',
+                    'title' => 'Agent Servicetemp.',
+                    'icon'  => 'pencil-square-o',
+                ],
+                [
+                    'url'   => ['controller' => 'agentchecks', 'action' => 'index'],
+                    'state' => 'AgentchecksIndex',
+                    'title' => 'Agent Checks',
+                    'icon'  => 'cogs',
                 ],
             ],
         ],

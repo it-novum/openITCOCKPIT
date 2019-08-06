@@ -51,14 +51,15 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.removeArg = function(indexToDelete){
+        $scope.removeArg = function(arg){
             var args = [];
             for(var i in $scope.args){
-                if(i != indexToDelete){
+                if($scope.args[i].id !== arg.id){
                     args.push($scope.args[i])
                 }
             }
-            $scope.args = _.sortBy(args, 'name');
+
+            $scope.args = _.sortBy(args, 'id');
         };
 
         $scope.addArg = function(){
@@ -70,7 +71,7 @@ angular.module('openITCOCKPIT')
                 argsCount++;
             }
             $scope.args.push({
-                name: '$ARG' + argsCount,
+                name: '$ARG' + argsCount + '$',
                 human_name: ''
             });
             $scope.args = _.sortBy($scope.args, 'name');

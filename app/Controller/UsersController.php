@@ -144,12 +144,9 @@ class UsersController extends AppController {
                 $containerPermissions = $Users->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
                 $this->request->data['User']['containers'] = $containerPermissions;
             }
-
             $this->request->data = $this->request->data('User');
-
             $user = $Users->newEntity();
             $user = $Users->patchEntity($user, $this->request->data);
-
             $Users->save($user);
             if ($user->hasErrors()) {
                 $this->response->statusCode(400);
@@ -204,6 +201,10 @@ class UsersController extends AppController {
         $this->set('_serialize', ['user']);
 
         if ($this->request->is('post') || $this->request->is('put')) {
+
+            /** @var $Usercontainerroles App\Model\Table\UsercontainerrolesTable */
+            /*$Usercontainerroles = TableRegistry::getTableLocator()->get('Usercontainerroles');
+            $Usercontainerroles->getUniqueRoles();*/
 
             // save additional data to containersUsersMemberships
             if (isset($this->request->data['User']['ContainersUsersMemberships'])) {

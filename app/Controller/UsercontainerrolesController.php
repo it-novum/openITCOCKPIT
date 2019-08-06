@@ -24,6 +24,7 @@
 //	confirmation.
 
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
@@ -181,5 +182,43 @@ class UsercontainerrolesController extends AppController {
             $this->set('usercontainerrole', $usercontainerrole);
             $this->set('_serialize', ['usercontainerrole']);
         }
+    }
+
+    public function loadUsercontainerrolesForAngular() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        /** @var $UsercontainerrolesTable Usercontainerroles */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+        $usercontainerroles = $UsercontainerrolesTable->getUsercontainerroles($this->MY_RIGHTS);
+        $ucr = [];
+        $usercontainerrolePermissions = [];
+        foreach ($usercontainerroles as $ucrKey => $ucrValue) {
+            $containerroleId = $ucrValue['Usercontainerrole']['id'];
+
+            foreach ($ucrValue['Container'] as $key => $value) {
+                $path = $value['_joinData'];
+
+                $permissionLevel = $path['permission_level'];
+                /* if(isset($usercontainerrolePermissions[$containerroleId][$path['container_id']])){
+                     if($usercontainerrolePermissions[$containerroleId][$path['container_id']] < $path['permission_level']){
+                         $permissionLevel = $path['permission_level'];
+                     }
+                 }
+ */
+
+                $usercontainerrolePermissions[$containerroleId][$path['container_id']] = $permissionLevel;
+            }
+
+
+            $ucr[$ucrValue['Usercontainerrole']['id']] = $ucrValue['Usercontainerrole']['name'];
+        }
+
+        $usercontainerroles = Api::makeItJavaScriptAble($ucr);
+
+        $this->set('usercontainerroles', $usercontainerroles);
+        $this->set('usercontainerrolePermissions', $usercontainerrolePermissions);
+        $this->set('_serialize', ['usercontainerroles', 'usercontainerrolePermissions']);
     }
 }

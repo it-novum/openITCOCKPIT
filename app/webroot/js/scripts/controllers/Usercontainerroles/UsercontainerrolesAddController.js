@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('UsercontainerrolesAddController', function($scope, $http, $state, NotyService){
+    .controller('UsercontainerrolesAddController', function($scope, $http, $state, NotyService, RedirectService){
 
         $scope.post = {
             'Usercontainerrole':{

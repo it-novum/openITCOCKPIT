@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('UsercontainerrolesEditController', function($scope, $http, $state, $stateParams, NotyService){
+    .controller('UsercontainerrolesEditController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
         $scope.id = $stateParams.id;
 
 
@@ -64,11 +64,11 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            $http.post("/usercontainerroles/add.json?angular=true",
+            $http.post("/usercontainerroles/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-               // RedirectService.redirectWithFallback('UsercontainerrolesIndex');
+                RedirectService.redirectWithFallback('UsercontainerrolesIndex');
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){

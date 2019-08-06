@@ -1,8 +1,5 @@
 angular.module('openITCOCKPIT')
     .controller('UsersAddController', function($scope, $http, $rootScope, $state, NotyService, RedirectService){
-        /**
-         * @TODO kick old values out of ContainersUsersMemberships when the container has been deselected from the list
-         */
 
         $scope.intervalText = 'disabled';
         $scope.post = {
@@ -32,8 +29,27 @@ angular.module('openITCOCKPIT')
                     }
                     */
                 },
-                'ContainersUsersMemberships': {}
+                'ContainersUsersMemberships': {},
+                'usercontainerroles': {
+                    '_ids': []
+                }
             }
+        };
+
+        $scope.chosenContainerroles = {};
+
+
+        $scope.loadUsercontainerroles = function(){
+            $http.get("/usercontainerroles/loadUsercontainerrolesForAngular.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.usercontainerroles = result.data.usercontainerroles;
+                $scope.usercontainerrolePermissions = result.data.usercontainerrolePermissions;
+                console.log($scope.usercontainerroles);
+                console.log($scope.usercontainerrolePermissions);
+            });
         };
 
 
@@ -94,6 +110,7 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
+
             $http.post("/users/add.json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -105,11 +122,30 @@ angular.module('openITCOCKPIT')
                     $scope.errors = result.data.error;
                 }
             });
-
         };
 
+        $scope.$watch('post.User.usercontainerroles._ids', function(){
+            $scope.chosenContainerroles = {};
+            $scope.post.User.usercontainerroles._ids.forEach(function(k){
+                for(var i in $scope.usercontainerrolePermissions[k]){
+                    var currentValue = $scope.usercontainerrolePermissions[k][i];
+                    if($scope.chosenContainerroles.hasOwnProperty(i)){
+                        if($scope.chosenContainerroles[i] < currentValue){
+                            $scope.chosenContainerroles[i] = currentValue;
+                        }
+                    }else{
+                        $scope.chosenContainerroles[i] = currentValue;
+                    }
+                }
+            });
+        }, true);
+
+        $scope.loadUsercontainerroles();
         $scope.loadContainer();
         $scope.loadUsergroups();
         $scope.loadDateformats();
+
+
+
     });
 
