@@ -2613,3 +2613,15 @@ input[type=text]:focus + .input-group-addon-no-focus {
 .fc-day-number {
     float: left!important;
 }
+
+.fc-holidays-button{
+    background-color: #5cb85c!important;
+    border-color: #449D44 !important;
+}
+
+.fc-deleteallholidays-button,
+.fc-deletemonthevents-button,
+.fc-deleteallevents-button{
+    background-color: #d9534f!important;
+    border-color: #a94442!important;
+}
