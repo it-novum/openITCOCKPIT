@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Filter\AgentchecksFilter;
 
@@ -64,6 +65,12 @@ class AgentchecksTable extends Table {
             ->maxLength('name', 255)
             ->requirePresence('name', 'create')
             ->notEmptyString('name');
+
+        $validator
+            ->scalar('plugin_name')
+            ->maxLength('plugin_name', 255)
+            ->requirePresence('plugin_name', 'create')
+            ->notEmptyString('plugin_name');
 
         $validator
             ->scalar('servicetemplate_id')
@@ -142,12 +149,38 @@ class AgentchecksTable extends Table {
      */
     public function getAgentchecksForMapping() {
         $query = $this->find()
-            ->contain([
-                'Servicetemplates'
-            ])
+            ->disableHydration()
             ->all();
+        $agentchecks = $query->toArray();
+        if ($agentchecks === null) {
+            return [];
+        }
 
-        return $query->toArray();
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        foreach ($agentchecks as $index => $agentcheck) {
+            $servicetemplate = $ServicetemplatesTable->getServicetemplateForEdit(
+                $agentcheck['servicetemplate_id']
+            );
+
+            $service = $servicetemplate['Servicetemplate'];
+
+            $fieldsToRename = [
+                'id'                                        => 'servicetemplate_id',
+                'servicetemplatecommandargumentvalues'      => 'servicecommandargumentvalues',
+                'servicetemplateeventcommandargumentvalues' => 'serviceeventcommandargumentvalues'
+            ];
+            foreach ($fieldsToRename as $srcField => $dscField) {
+                $service[$dscField] = $servicetemplate['Servicetemplate'][$srcField];
+                unset($service[$srcField]);
+                unset($service['uuid'], $service['template_name']);
+            }
+
+            $agentchecks[$index]['service'] = $service;
+        }
+
+        return $agentchecks;
     }
 
 }

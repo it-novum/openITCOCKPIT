@@ -637,7 +637,7 @@ class ServicesController extends AppController {
                 }
             }
             $this->set('service', $service);
-            $this->set('_serialize', ['$service']);
+            $this->set('_serialize', ['service']);
         }
     }
 

@@ -9,6 +9,7 @@ angular.module('openITCOCKPIT')
             $scope.post = {
                 Agentcheck: {
                     name: '',
+                    plugin_name: '',
                     servicetemplate_id: ''
                 }
             };

@@ -108,6 +108,10 @@
                                         <i class="fa" ng-class="getSortClass('Agentchecks.name')"></i>
                                         <?php echo __('Agent check name'); ?>
                                     </th>
+                                    <th class="no-sort" ng-click="orderBy('Agentchecks.plugin_name')">
+                                        <i class="fa" ng-class="getSortClass('Agentchecks.plugin_name')"></i>
+                                        <?php echo __('Plugin name'); ?>
+                                    </th>
                                     <th class="no-sort" ng-click="orderBy('Servicetemplates.template_name')">
                                         <i class="fa" ng-class="getSortClass('Servicetemplates.template_name')"></i>
                                         <?php echo __('Service template name'); ?>
@@ -128,6 +132,7 @@
                                         <?php endif; ?>
                                     </td>
                                     <td>{{agentcheck.name}}</td>
+                                    <td>{{agentcheck.plugin_name}}</td>
                                     <td>
                                         <?php if($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
                                             <a ui-sref="ServicetemplatesEdit({id: agentcheck.servicetemplate.id})">

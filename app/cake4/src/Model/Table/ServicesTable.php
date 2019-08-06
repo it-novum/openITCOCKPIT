@@ -14,6 +14,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -955,20 +956,20 @@ class ServicesTable extends Table {
                 'Services.id' => $id
             ])
             ->contain([
-                'Hosts' => function (Query $query) {
-                $query->select([
-                    'Hosts.id',
-                    'Hosts.uuid',
-                    'Hosts.container_id',
-                    'Hosts.name',
-                    'Hosts.address'
-                ])
-                    ->contain([
-                        'HostsToContainersSharing'
-                    ]);
+                'Hosts'            => function (Query $query) {
+                    $query->select([
+                        'Hosts.id',
+                        'Hosts.uuid',
+                        'Hosts.container_id',
+                        'Hosts.name',
+                        'Hosts.address'
+                    ])
+                        ->contain([
+                            'HostsToContainersSharing'
+                        ]);
                     return $query;
                 },
-                'Servicetemplates'=> function (Query $query) {
+                'Servicetemplates' => function (Query $query) {
                     $query->select([
                         'Servicetemplates.id',
                         'Servicetemplates.uuid',
@@ -1995,5 +1996,76 @@ class ServicesTable extends Table {
         }
 
         return $result;
+    }
+
+    public function getAllOitcAgentServicesByHostIdForExport($hostId) {
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.name',
+                'Services.servicetemplate_id',
+                'Services.uuid',
+
+                'Servicetemplates.id',
+                'Servicetemplates.name',
+                'Servicetemplates.uuid',
+
+                'Agentchecks.id',
+                'Agentchecks.name',
+                'Agentchecks.servicetemplate_id',
+                'Agentchecks.plugin_name'
+            ])
+            ->innerJoin(
+                ['Servicetemplates' => 'servicetemplates'],
+                ['Services.servicetemplate_id = Servicetemplates.id']
+            )
+            ->innerJoin(
+                ['Agentchecks' => 'agentchecks'],
+                ['Servicetemplates.id = Agentchecks.servicetemplate_id']
+            )
+            ->contain([
+                'Servicecommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->where([
+                'Services.host_id'      => $hostId,
+                'Services.service_type' => OITC_AGENT_SERVICE
+            ])
+            ->disableHydration()
+            ->all();
+
+        $services = $this->emptyArrayIfNull($query->toArray());
+
+        $ServicetemplateArgsCache = new KeyValueStore();
+
+        foreach ($services as $index => $service) {
+            if (!empty($servicecommandargumentvalues)) {
+                //Arguments from service
+                $servicecommandargumentvalues = $service['servicecommandargumentvalues'];
+                $servicecommandargumentvalues = Hash::sort($servicecommandargumentvalues, '{n}.commandargument.name', 'asc', 'natural');
+                $servicecommandargumentvalues = Hash::extract($servicecommandargumentvalues, '{n}.value');
+            }else{
+                //Use arguments from service template
+                if (!$ServicetemplateArgsCache->has($service['servicetemplate_id'])) {
+                    $servicetemplate = $ServicetemplatesTable->getServicetemplateForEdit($service['servicetemplate_id']);
+
+                    $servicecommandargumentvalues = $servicetemplate['Servicetemplate']['servicetemplatecommandargumentvalues'];
+                    $servicecommandargumentvalues = Hash::sort($servicecommandargumentvalues, '{n}.commandargument.name', 'asc', 'natural');
+
+                    $servicecommandargumentvalues = Hash::extract($servicecommandargumentvalues, '{n}.value');
+                    $ServicetemplateArgsCache->set($service['servicetemplate_id'], $servicecommandargumentvalues);
+                }
+
+                $servicecommandargumentvalues = $ServicetemplateArgsCache->get($service['servicetemplate_id']);
+            }
+
+            $services[$index]['args_for_config'] = $servicecommandargumentvalues;
+        }
+
+        return $services;
     }
 }

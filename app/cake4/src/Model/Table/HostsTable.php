@@ -13,6 +13,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
@@ -1600,6 +1601,58 @@ class HostsTable extends Table {
         $result = $query->all();
 
         return $this->emptyArrayIfNull($result->toArray());
+    }
+
+    /**
+     * @return array
+     */
+    public function getHostsThatUseOitcAgentForExport() {
+        $query = $this->find()
+            ->disableHydration()
+            ->select([
+                'Hosts.id',
+                'Hosts.name',
+                'Hosts.uuid',
+                'Hosts.address'
+            ])
+            ->innerJoinWith('Services', function(Query $query){
+                $query->where([
+                    'Services.service_type' => OITC_AGENT_SERVICE
+                ]);
+                return $query;
+            })
+            ->group([
+                'Hosts.id'
+            ])
+            ->all();
+
+        $rawHosts = $query->toArray();
+        if($rawHosts === null){
+            return [];
+        }
+
+        $hosts = [];
+        foreach($rawHosts as $host) {
+            $hosts[$host['id']] = $host;
+        }
+
+        return $hosts;
+    }
+
+    public function hasHostServiceFromServicetemplateId($hostId, $servicetemplateId){
+        $count = $this->find()
+            ->where([
+                'Hosts.id' => $hostId,
+            ])
+            ->innerJoinWith('Services', function(Query $query) use ($servicetemplateId){
+                $query->where([
+                    'Services.servicetemplate_id' => $servicetemplateId
+                ]);
+                return $query;
+            })
+            ->count();
+
+        return $count > 0;
     }
 
 }

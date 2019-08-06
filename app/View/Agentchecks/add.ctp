@@ -73,6 +73,21 @@
                             </div>
                         </div>
 
+                        <div class="form-group required" ng-class="{'has-error': errors.plugin_name}">
+                            <label class="col col-md-2 control-label">
+                                <?php echo __('Plugin name'); ?>
+                            </label>
+                            <div class="col col-xs-10">
+                                <input class="form-control" type="text" ng-model="post.Agentcheck.plugin_name">
+                                <div ng-repeat="error in errors.plugin_name">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                                <div class="help-block">
+                                    <?php echo __('The name of the check plugin used by the poller.'); ?>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group required" ng-class="{'has-error': errors.servicetemplate_id}">
                             <label class="col col-md-2 control-label">
                                 <?php echo __('Service template'); ?>

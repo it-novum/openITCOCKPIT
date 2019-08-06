@@ -206,7 +206,7 @@ $config = [
                 'edit' => ['loadServicetemplates']
             ],
             'Agentconfigs'          => [
-                'scan' => ['config'],
+                'scan' => ['config', 'createService'],
             ],
             'Automaps'              => [
                 'view' => ['loadServiceDetails'],
