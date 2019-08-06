@@ -52,8 +52,49 @@ $timezones = CakeTime::listTimezones();
     <div>
         <div class="widget-body">
             <form ng-submit="submit();" class="form-horizontal">
-
                 <div class="row">
+                    <div class="form-group required" ng-class="{'has-error': errors.usercontainerroles}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Container Roles'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="Usercontainerroles"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="usercontainerroles"
+                                    multiple
+                                    ng-options="usercontainerrole.key as usercontainerrole.value for usercontainerrole in usercontainerroles"
+                                    ng-model="post.User.usercontainerroles._ids">
+                            </select>
+                            <div ng-repeat="error in errors.usercontainerroles">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Container permissions read/write -->
+                    <div class="row" ng-repeat="(containerId, value) in chosenContainerroles">
+                        <div class="col col-md-2"></div>
+                        <div class="col col-md-10">
+                            <legend class="no-padding font-sm text-primary">{{getContainerName(containerId)}}
+                            </legend>
+                            <input type="radio" ng-value="1"
+                                   id="{{'read_'+containerId}}"
+                                   name="{{'containerPermissions1_'+containerId}}"
+                                   ng-model="chosenContainerroles[containerId]" disabled>
+                            <label for="userPermissionButton"
+                                   class="padding-10 font-sm"><?php echo __('read'); ?></label>
+                            <input type="radio" ng-value="2"
+                                   id="{{'write_'+containerId}}"
+                                   name="{{'containerPermissions2_'+containerId}}"
+                                   ng-model="chosenContainerroles[containerId]" disabled>
+                            <label for="userPermissionButton"
+                                   class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+
+                        </div>
+                    </div>
+
                     <div class="form-group required" ng-class="{'has-error': errors.containers}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Container'); ?>
@@ -94,19 +135,13 @@ $timezones = CakeTime::listTimezones();
                             <label for="userPermissionButton"
                                    class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
 
-                            <!--
-                            <input type="radio" value="1" ng-value="1" id="{{'read_'+containerId}}"
-                                   name="{{'containerPermissions1_'+containerId}}"
-                                   ng-model="post.User.ContainersUsersMemberships[containerId]"
-                                   ng-checked="{{containerId != 1}}">
-                            <label for="userPermissionButton"
-                                   class="padding-10 font-sm"><?php echo __('read'); ?></label>
-                            <input type="radio" value="2" ng-value="2" id="{{'write_'+containerId}}"
-                                   name="{{'containerPermissions2_'+containerId}}"
-                                   ng-model="post.User.ContainersUsersMemberships[containerId]"
-                                   ng-checked="{{containerId == 1}}">
-                            <label for="userPermissionButton"
-                                   class="padding-10 font-sm"><?php echo __('read/write'); ?></label> -->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="col col-xs-2 text-right"><i class="fa fa-info-circle text-info"></i></span>
+                        <div class="col col-xs-10 text-info">
+                            <?php echo __('User Container permissions override Container Role permissions!'); ?>
                         </div>
                     </div>
 

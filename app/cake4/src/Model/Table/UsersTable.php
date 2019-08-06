@@ -72,6 +72,13 @@ class UsersTable extends Table {
             'targetForeignKey' => 'container_id',
             'joinTable'        => 'users_to_containers'
         ]);
+
+        $this->belongsToMany('Usercontainerroles', [
+            'className'        => 'Usercontainerroles',
+            'foreignKey'       => 'user_id',
+            'targetForeignKey' => 'usercontainerrole_id',
+            'joinTable'        => 'users_to_usercontainerroles'
+        ]);
     }
 
     /**
@@ -299,7 +306,7 @@ class UsersTable extends Table {
 
         $query = $this->find()
             ->disableHydration()
-            ->contain(['Containers'])
+            ->contain(['Containers', 'Usercontainerroles'])
             ->matching('Containers')
             ->where([
                 'Users.id'                                   => $userId,
@@ -313,7 +320,6 @@ class UsersTable extends Table {
                     'Users.samaccountname',
                     'Users.usergroup_id',
                     'Users.is_active',
-                    //'Users.password',
                     'Users.firstname',
                     'Users.lastname',
                     'Users.position',
@@ -325,6 +331,7 @@ class UsersTable extends Table {
                     'Users.paginatorlength',
                     'Users.recursive_browser',
                     'ContainersUsersMemberships.container_id',
+                   // 'Usercontainerroles.id',
                     'full_name' => $query->func()->concat([
                         'Users.firstname' => 'literal',
                         ' ',
@@ -410,7 +417,6 @@ class UsersTable extends Table {
                 'Users.samaccountname',
                 'Users.usergroup_id',
                 'Users.is_active',
-                //'Users.password',
                 'Users.firstname',
                 'Users.lastname',
                 'Users.position',
