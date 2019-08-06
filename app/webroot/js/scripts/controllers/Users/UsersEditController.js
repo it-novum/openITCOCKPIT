@@ -31,7 +31,10 @@ angular.module('openITCOCKPIT')
                     }
                     */
                 },
-                'ContainersUsersMemberships': {}
+                'ContainersUsersMemberships': {},
+                'usercontainerroles': {
+                    '_ids': []
+                }
             }
         };
 
@@ -44,6 +47,20 @@ angular.module('openITCOCKPIT')
                 $scope.post.User = result.data.user;
             });
         };
+
+        $scope.chosenContainerroles = {};
+
+        $scope.loadUsercontainerroles = function(){
+            $http.get("/usercontainerroles/loadUsercontainerrolesForAngular.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.usercontainerroles = result.data.usercontainerroles;
+                $scope.usercontainerrolePermissions = result.data.usercontainerrolePermissions;
+            });
+        };
+
 
         $scope.loadContainer = function(){
             $http.get("/containers/loadContainersForAngular.json", {
@@ -130,14 +147,34 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.$watch('post.User.usercontainerroles._ids', function(){
+            if($scope.post.User.usercontainerroles._ids.length > 0){
+                $scope.chosenContainerroles = {};
+                $scope.post.User.usercontainerroles._ids.forEach(function(k){
+                    for(var i in $scope.usercontainerrolePermissions[k]){
+                        var currentValue = $scope.usercontainerrolePermissions[k][i];
+                        if($scope.chosenContainerroles.hasOwnProperty(i)){
+                            if($scope.chosenContainerroles[i] < currentValue){
+                                $scope.chosenContainerroles[i] = currentValue;
+                            }
+                        }else{
+                            $scope.chosenContainerroles[i] = currentValue;
+                        }
+                    }
+                });
+            }
+        }, true);
+
 
         $scope.loadContainer();
+        $scope.loadUsercontainerroles();
         $scope.loadUsergroups();
         $scope.loadDateformats();
         $scope.load();
 
-        $scope.$watch('post', function(){
+        $scope.$watch('post.User',function(){
             console.log($scope.post);
-        }, true);
+        },true);
+
     });
 

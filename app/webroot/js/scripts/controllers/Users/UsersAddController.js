@@ -38,7 +38,6 @@ angular.module('openITCOCKPIT')
 
         $scope.chosenContainerroles = {};
 
-
         $scope.loadUsercontainerroles = function(){
             $http.get("/usercontainerroles/loadUsercontainerrolesForAngular.json", {
                 params: {
@@ -47,8 +46,6 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.usercontainerroles = result.data.usercontainerroles;
                 $scope.usercontainerrolePermissions = result.data.usercontainerrolePermissions;
-                console.log($scope.usercontainerroles);
-                console.log($scope.usercontainerrolePermissions);
             });
         };
 
@@ -144,7 +141,6 @@ angular.module('openITCOCKPIT')
         $scope.loadContainer();
         $scope.loadUsergroups();
         $scope.loadDateformats();
-
 
 
     });
