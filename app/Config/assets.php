@@ -21,6 +21,11 @@ $config = [
             '/smartadmin/css/smartadmin-production-plugins.min.css',
             '/smartadmin/css/smartadmin-skins.css',
             '/smartadmin/css/demo.css',
+//          '/smartadmin/js/plugin/fullcalendar-2.3.1/fullcalendar.min.css', <---- Old
+            '/smartadmin/js/plugin/fullcalendar-4.2.0/packages/core/main.css',      // <-- NEW FC 4.2.0
+            '/smartadmin/js/plugin/fullcalendar-4.2.0/packages/daygrid/main.css',   // <-- NEW FC 4.2.0
+            '/smartadmin/js/plugin/fullcalendar-4.2.0/packages/timegrid/main.css',   // <-- NEW FC 4.2.0
+            '/smartadmin/js/plugin/fullcalendar-4.2.0/packages/list/main.css',   // <-- NEW FC 4.2.0
             '/smartadmin/css/your_style.css',
             '/smartadmin/css/animate.css',
             'lockscreen.css',
@@ -33,8 +38,6 @@ $config = [
             'animate_new',
             'vendor/prism.css',
             'vendor/gridstack/gridstack.min.css',
-            '/smartadmin/js/plugin/fullcalendar-2.3.1/fullcalendar.min.css',
-            //'vendor/vis-4.21.0/dist/vis-timeline-graph2d.min.css',
             'vendor/vis-4.21.0/dist/vis.css',
             'my_vis.css',
             'vendor/noty/noty.css',
@@ -68,7 +71,6 @@ $config = [
             '/smartadmin/js/notification/SmartNotification.js',
             '/smartadmin/js/demo.js',
             '/smartadmin/js/app.js',
-//          '/smartadmin/js/smartwidgets/jarvis.widget.min.js',
             '/smartadmin/js/smartwidgets/jarvis.widget.js',
             '/smartadmin/js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js',
             '/smartadmin/js/plugin/sparkline/jquery.sparkline.min.js',
@@ -82,8 +84,6 @@ $config = [
             '/smartadmin/js/plugin/flot/jquery.flot.navigate.js',
             '/smartadmin/js/plugin/flot/jquery.flot.threshold.js',
             '/smartadmin/js/plugin/flot/jquery.flot.selection.js',
-
-//          '/smartadmin/js/plugin/flot/jquery.flot.time.js', // timezones for jQuery flot
             '/smartadmin/js/plugin/colorpicker/bootstrap-colorpicker.min.js',
 
             '/smartadmin/js/plugin/dropzone/dropzone.min.js',
@@ -93,7 +93,13 @@ $config = [
             '/smartadmin/js/plugin/datatables/dataTables.colVis.min.js',
             '/smartadmin/js/plugin/datatables/dataTables.tableTools.min.js',
             '/smartadmin/js/plugin/datatables/fnPagingInfo.js',
-            '/smartadmin/js/plugin/fullcalendar-2.3.1/fullcalendar.min.js',
+
+//          '/smartadmin/js/plugin/fullcalendar-2.3.1/fullcalendar.min.js',                 <-- Old
+            '/smartadmin/js/plugin/fullcalendar-4.2.0/packages/core/main.js',           //  <-- NEW FC 4.2.0
+            '/smartadmin/js/plugin/fullcalendar-4.2.0/packages/interaction/main.js',    //  <-- NEW FC 4.2.0
+            '/smartadmin/js/plugin/fullcalendar-4.2.0/packages/daygrid/main.js',        //  <-- NEW FC 4.2.0
+
+
             '/smartadmin/js/plugin/fuelux/wizard/wizard.js',
             'lib/jquery-cookie.js',
             'lib/jquery.nestable.js',

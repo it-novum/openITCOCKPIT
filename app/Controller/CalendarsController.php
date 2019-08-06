@@ -215,7 +215,7 @@ class CalendarsController extends AppController {
         }
         $holiday = new CalendarHolidays();
         $holidays = $holiday->getHolidays($countryCode);
-        $this->set(compact(['holidays']));
+        $this->set('holidays', $holidays);
         $this->set('_serialize', ['holidays']);
     }
 

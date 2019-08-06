@@ -44,12 +44,15 @@ class CalendarHolidays {
             foreach ($holidaysArray->_holidays as $key => $value) {
                 if (is_array($value)) {
                     foreach ($value as $subvalue) {
-                        $holidays[date('Y-m-d', $key)] = __($holidaysArray->getHoliday($subvalue, 'en_EN')->_title);
+                        $holidays[date('Y-m-d', $key)] = [
+                            'start' => date('Y-m-d', $key),
+                            'title' => __($holidaysArray->getHoliday($subvalue, 'en_EN')->_title)
+                        ];
                     }
                 }
             }
         }
         ksort($holidays);
-        return $holidays;
+        return array_values($holidays);
     }
 }

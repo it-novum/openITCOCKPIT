@@ -77,7 +77,12 @@ class AngularAssets implements AngularAssetsInterface {
         'js/lib/jqconsole.min.js',
         'js/vendor/jquery.blockUI.js',
         'js/lib/jquery-jvectormap-1.2.2.min.js',
-        'js/lib/maps/jquery-jvectormap-world-mill-en.js'
+        'js/lib/maps/jquery-jvectormap-world-mill-en.js',
+        'smartadmin/js/plugin/fullcalendar-4.2.0/packages/core/main.js',               //  <-- NEW FC 4.2.0
+        'smartadmin/js/plugin/fullcalendar-4.2.0/packages/interaction/main.js',        //  <-- NEW FC 4.2.0
+        'smartadmin/js/plugin/fullcalendar-4.2.0/packages/daygrid/main.js',            //  <-- NEW FC 4.2.0
+        'smartadmin/js/plugin/fullcalendar-4.2.0/packages/timegrid/main.js',           //  <-- NEW FC 4.2.0
+        'smartadmin/js/plugin/fullcalendar-4.2.0/packages/list/main.js'               //  <-- NEW FC 4.2.0
     ];
 
     /**
