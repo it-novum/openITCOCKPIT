@@ -105,6 +105,11 @@ $config = [
                     'icon'  => 'users',
                 ],
                 [
+                    'url'   => ['plugin' => '', 'controller' => 'usercontainerroles', 'action' => 'index'],
+                    'title' => 'User Container Roles',
+                    'icon'  => 'users',
+                ],
+                [
                     'url'   => ['controller' => 'Administrators', 'action' => 'debug'],
                     'title' => 'Debugging',
                     'state' => 'AdministratorsDebug',
