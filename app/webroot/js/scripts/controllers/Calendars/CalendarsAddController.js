@@ -212,7 +212,8 @@ angular.module('openITCOCKPIT')
         $scope.addEvent = function(title, date){
             $scope.events.push({
                 title: title,
-                start: date
+                start: date,
+                default_holiday: 0
             });
         };
 
