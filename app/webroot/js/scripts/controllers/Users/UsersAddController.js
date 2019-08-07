@@ -122,19 +122,21 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.$watch('post.User.usercontainerroles._ids', function(){
-            $scope.chosenContainerroles = {};
-            $scope.post.User.usercontainerroles._ids.forEach(function(k){
-                for(var i in $scope.usercontainerrolePermissions[k]){
-                    var currentValue = $scope.usercontainerrolePermissions[k][i];
-                    if($scope.chosenContainerroles.hasOwnProperty(i)){
-                        if($scope.chosenContainerroles[i] < currentValue){
+            if($scope.post.User.usercontainerroles._ids.length > 0){
+                $scope.chosenContainerroles = {};
+                $scope.post.User.usercontainerroles._ids.forEach(function(k){
+                    for(var i in $scope.usercontainerrolePermissions[k]){
+                        var currentValue = $scope.usercontainerrolePermissions[k][i];
+                        if($scope.chosenContainerroles.hasOwnProperty(i)){
+                            if($scope.chosenContainerroles[i] < currentValue){
+                                $scope.chosenContainerroles[i] = currentValue;
+                            }
+                        }else{
                             $scope.chosenContainerroles[i] = currentValue;
                         }
-                    }else{
-                        $scope.chosenContainerroles[i] = currentValue;
                     }
-                }
-            });
+                });
+            }
         }, true);
 
         $scope.loadUsercontainerroles();
