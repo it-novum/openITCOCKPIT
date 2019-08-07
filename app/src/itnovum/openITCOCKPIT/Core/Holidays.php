@@ -58,7 +58,8 @@ class Holidays {
             $filteredHolidays[date('Y-m-d', $holiday->getTimestamp())] = [
                 'start'           => date('Y-m-d', $holiday->getTimestamp()),
                 'title'           => $holidayName,
-                'default_holiday' => true
+                'default_holiday' => true,
+                'className' => 'bg-color-magenta'
             ];
         }
 
