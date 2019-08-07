@@ -1655,4 +1655,19 @@ class HostsTable extends Table {
         return $count > 0;
     }
 
+    /**
+     * @param bool $includeDisabled
+     * @return int|null
+     */
+    public function getHostsCountForStats($includeDisabled = true){
+        $query = $this->find();
+        if($includeDisabled === false){
+            $query->where([
+                'Hosts.disabled' => 0
+            ]);
+        }
+
+        return $query->count();
+    }
+
 }
