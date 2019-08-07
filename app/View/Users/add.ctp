@@ -81,13 +81,13 @@ $timezones = CakeTime::listTimezones();
                             </legend>
                             <input type="radio" ng-value="1"
                                    id="{{'read_'+containerId}}"
-                                   name="{{'containerPermissions1_'+containerId}}"
+                                   name="{{'containerrolePermissions1_'+containerId}}"
                                    ng-model="chosenContainerroles[containerId]" disabled>
                             <label for="userPermissionButton"
                                    class="padding-10 font-sm"><?php echo __('read'); ?></label>
                             <input type="radio" ng-value="2"
                                    id="{{'write_'+containerId}}"
-                                   name="{{'containerPermissions2_'+containerId}}"
+                                   name="{{'containerrolePermissions2_'+containerId}}"
                                    ng-model="chosenContainerroles[containerId]" disabled>
                             <label for="userPermissionButton"
                                    class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
