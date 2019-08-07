@@ -38,10 +38,33 @@ angular.module('openITCOCKPIT')
 
             $scope.calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
+                customButtons: {
+                    holidays: {
+                        text: 'Holidays',
+                    },
+                    deleteallholidays: {
+                        text: 'Delete all holidays',
+                        click: function(){
+                            alert('clicked the custom button!');
+                        }
+                    },
+                    deletemonthevents: {
+                        text: 'Delete month events',
+                        click: function(){
+                            alert('clicked the custom button!');
+                        }
+                    },
+                    deleteallevents: {
+                        text: 'Delete all events',
+                        click: function(){
+                            alert('clicked the custom button!');
+                        }
+                    }
+                },
                 header: {
-                    left: 'prev,next today',
+                    left: 'holidays deleteallholidays deletemonthevents deleteallevents',
                     center: 'title',
-                    right: ''
+                    right: 'prev,next today',
                 },
                 defaultDate: $scope.defaultDate,
                 navLinks: false, // can click day/week names to navigate views
@@ -157,6 +180,22 @@ angular.module('openITCOCKPIT')
                 $scope.init = false;
                 $scope.events = result.data.holidays;
                 renderCalendar();
+                console.log('render calendar !!!');
+                setTimeout(function(){
+                    $('.fc-holidays-button').attr({
+                        'data-toggle': 'dropdown',
+                        'type': 'button',
+                        'aria-expanded': false
+                    }).append('<span class="caret"></span>');
+                    $('.fc-holidays-button').append('<div class="dropdown-menu">\n' +
+                        '    <a class="dropdown-item" href="#">Action</a>\n' +
+                        '    <a class="dropdown-item" href="#">Another action</a>\n' +
+                        '    <a class="dropdown-item" href="#">Something else here</a>\n' +
+                        '    <div class="dropdown-divider"></div>\n' +
+                        '    <a class="dropdown-item" href="#">Separated link</a>\n' +
+                        '  </div>');
+
+                }, 1000);
             });
         };
 
@@ -168,6 +207,16 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.containers = result.data.containers;
                 $scope.init = false;
+                console.log('test 1');
+
+                /*
+                $('#calendar.fc-holidays-button').attr({
+                    'data-toggle' : 'dropdown'
+                }).append(
+                    $('span').addClass('caret')
+                );
+                 */
+                console.log('test 2');
             });
         };
 
