@@ -2,46 +2,15 @@
  * @link https://fullcalendar.io/docs/upgrading-from-v3
  */
 angular.module('openITCOCKPIT')
-    .controller('CalendarsAddController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
-
-        $scope.data = {
-            createAnother: false
-        };
+    .controller('CalendarsEditController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
 
         $scope.defaultDate = new Date();
         $scope.countryCode = 'de';
 
-        var clearForm = function(){
-            $scope.post = {
-                Calendar: {
-                    container_id: 0,
-                    name: '',
-                    description: ''
-                }
-            };
-        };
-        clearForm();
+        $scope.id = $stateParams.id;
+
 
         $scope.calendar = null;
-        /**
-         *  {
-                daysOfWeek: [6], //Saturdays
-                rendering: "background",
-                color: "#bbdefb ",
-                overLap: false,
-                allDay: true
-            },
-         {
-                daysOfWeek: [0], //Sundays
-                rendering: "background",
-                color: "#90caf9",
-                overLap: false,
-                allDay: true
-            },
-         * @type {*[]}
-         */
-        $scope.events = [];
-
         $scope.init = true;
 
         var renderCalendar = function(){
@@ -49,33 +18,10 @@ angular.module('openITCOCKPIT')
 
             $scope.calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
-                customButtons: {
-                    holidays: {
-                        text: 'Add holidays ',
-                    },
-                    deleteallholidays: {
-                        text: 'Delete all holidays',
-                        click: function(){
-                            alert('clicked the custom button!');
-                        }
-                    },
-                    deletemonthevents: {
-                        text: 'Delete month events',
-                        click: function(){
-                            alert('clicked the custom button!');
-                        }
-                    },
-                    deleteallevents: {
-                        text: 'Delete all events',
-                        click: function(){
-                            alert('clicked the custom button!');
-                        }
-                    }
-                },
                 header: {
-                    left: 'holidays deleteallholidays deletemonthevents deleteallevents',
+                    left: 'prev,next today',
                     center: 'title',
-                    right: 'prev,next today',
+                    right: ''
                 },
                 defaultDate: $scope.defaultDate,
                 navLinks: false, // can click day/week names to navigate views
@@ -182,36 +128,7 @@ angular.module('openITCOCKPIT')
             $scope.calendar.render();
         };
 
-        $scope.loadHolidays = function(){
-            $http.get('/calendars/loadHolidays/' + $scope.countryCode + '.json', {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.init = false;
-                $scope.events = result.data.holidays;
-                renderCalendar();
-                console.log('render calendar !!!');
-                setTimeout(function(){
-                    $( ".fc-holidays-button" ).wrap( "<span class='dropdown'></span>" );
-                    $('.fc-holidays-button').addClass('btn btn-secondary dropdown-toggle');
-                    $('.fc-holidays-button').attr({
-                        'data-toggle': 'dropdown',
-                        'type': 'button',
-                        'aria-expanded': false,
-                        'id': 'dropdownMenuButton'
-                    }).append('<span class="caret"></span>');
-                    $('.fc-holidays-button').parent().append('<ul class="dropdown-menu">' +
-                        '<li><a class="dropdown-item" href="#"><img class="flag flag-de"> Germany</a></li>\n' +
-                        '    <li><a href="#"><img class="flag flag-us"> USA</a></li>\n' +
-                        '    <li><a href="#"><img class="flag flag-se"> Sweden</a></li>\n' +
-                        '  </ul>');
-
-                }, 1000);
-            });
-        };
-
-        $scope.load = function(){
+        $scope.loadContainers = function(){
             $http.get("/containers/loadContainersForAngular.json", {
                 params: {
                     'angular': true
@@ -219,16 +136,20 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.containers = result.data.containers;
                 $scope.init = false;
-                console.log('test 1');
+            });
+        };
 
-                /*
-                $('#calendar.fc-holidays-button').attr({
-                    'data-toggle' : 'dropdown'
-                }).append(
-                    $('span').addClass('caret')
-                );
-                 */
-                console.log('test 2');
+        $scope.load = function(){
+            $http.get("/calendars/edit/" + $scope.id + ".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.post = {
+                    Calendar: result.data.calendar
+                };
+                $scope.events = result.data.events;
+                $scope.init = false;
             });
         };
 
@@ -309,23 +230,17 @@ angular.module('openITCOCKPIT')
 
         $scope.submit = function(){
             $scope.post.events = $scope.events;
-            $http.post("/calendars/add.json?angular=true",
+            $http.post("/calendars/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-                var url = $state.href('CalendarsEdit', {id: result.data.id});
+                var url = $state.href('CalendarsEdit', {id: result.data.calendar.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                if($scope.data.createAnother === false){
-                    RedirectService.redirectWithFallback('CalendarsIndex');
-                }else{
-                    clearForm();
-                    $scope.errors = {};
-                    NotyService.scrollTop();
-                }
+                RedirectService.redirectWithFallback('CalendarsIndex');
 
                 console.log('Data saved successfully');
             }, function errorCallback(result){
@@ -341,7 +256,7 @@ angular.module('openITCOCKPIT')
 
         //Fire on page load
         $scope.load();
-        $scope.loadHolidays();
+        $scope.loadContainers();
 
         $scope.$watch('events', function(){
             if($scope.init){

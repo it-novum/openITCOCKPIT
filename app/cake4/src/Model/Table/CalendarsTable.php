@@ -5,7 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\Datasource\Exception\RecordNotFoundException;
-use Cake\ORM\Query;
+use Cake\I18n\FrozenDate;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -216,5 +216,19 @@ class CalendarsTable extends Table {
         }
 
         return $this->formatListAsCake2($query->toArray());
+    }
+
+    public function getCalendarByIdForEdit($id) {
+        $result = $this->find()
+            ->contain([
+                'CalendarHolidays'
+            ])
+            ->where([
+                'Calendars.id' => $id
+            ])
+            ->disableHydration()
+            ->firstOrFail();
+
+        return $result;
     }
 }

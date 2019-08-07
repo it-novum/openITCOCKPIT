@@ -26,7 +26,7 @@
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-calendar fa-fw "></i>
+            <i class="fa fa-calendar-plus-o fa-fw "></i>
             <?php echo __('Calendars'); ?>
             <span>>
                 <?php echo __('Add'); ?>
