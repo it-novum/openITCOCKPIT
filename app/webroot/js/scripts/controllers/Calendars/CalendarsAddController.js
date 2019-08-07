@@ -51,7 +51,7 @@ angular.module('openITCOCKPIT')
                 plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
                 customButtons: {
                     holidays: {
-                        text: 'Holidays',
+                        text: 'Add holidays ',
                     },
                     deleteallholidays: {
                         text: 'Delete all holidays',
@@ -193,18 +193,19 @@ angular.module('openITCOCKPIT')
                 renderCalendar();
                 console.log('render calendar !!!');
                 setTimeout(function(){
+                    $( ".fc-holidays-button" ).wrap( "<span class='dropdown'></span>" );
+                    $('.fc-holidays-button').addClass('btn btn-secondary dropdown-toggle');
                     $('.fc-holidays-button').attr({
                         'data-toggle': 'dropdown',
                         'type': 'button',
-                        'aria-expanded': false
+                        'aria-expanded': false,
+                        'id': 'dropdownMenuButton'
                     }).append('<span class="caret"></span>');
-                    $('.fc-holidays-button').append('<div class="dropdown-menu">\n' +
-                        '    <a class="dropdown-item" href="#">Action</a>\n' +
-                        '    <a class="dropdown-item" href="#">Another action</a>\n' +
-                        '    <a class="dropdown-item" href="#">Something else here</a>\n' +
-                        '    <div class="dropdown-divider"></div>\n' +
-                        '    <a class="dropdown-item" href="#">Separated link</a>\n' +
-                        '  </div>');
+                    $('.fc-holidays-button').parent().append('<ul class="dropdown-menu">' +
+                        '<li><a class="dropdown-item" href="#"><img class="flag flag-de"> Germany</a></li>\n' +
+                        '    <li><a href="#"><img class="flag flag-us"> USA</a></li>\n' +
+                        '    <li><a href="#"><img class="flag flag-se"> Sweden</a></li>\n' +
+                        '  </ul>');
 
                 }, 1000);
             });
