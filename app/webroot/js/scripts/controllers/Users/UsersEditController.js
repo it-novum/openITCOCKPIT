@@ -1,10 +1,8 @@
 angular.module('openITCOCKPIT')
     .controller('UsersEditController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
-
         $scope.intervalText = 'disabled';
-
         $scope.id = $stateParams.id;
-
+        $scope.chosenContainerroles = {};
         $scope.post = {
             'User': {
                 'email': '',
@@ -38,6 +36,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
+
         $scope.load = function(){
             $http.get("/users/edit/" + $scope.id + ".json", {
                 params: {
@@ -48,7 +47,6 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.chosenContainerroles = {};
 
         $scope.loadUsercontainerroles = function(){
             $http.get("/usercontainerroles/loadUsercontainerrolesForAngular.json", {
@@ -171,10 +169,5 @@ angular.module('openITCOCKPIT')
         $scope.loadUsergroups();
         $scope.loadDateformats();
         $scope.load();
-
-        $scope.$watch('post.User',function(){
-            console.log($scope.post);
-        },true);
-
     });
 

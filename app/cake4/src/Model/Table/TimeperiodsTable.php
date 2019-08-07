@@ -400,8 +400,6 @@ class TimeperiodsTable extends Table {
 
         $container_ids = array_unique($container_ids);
 
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 

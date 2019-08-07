@@ -4,27 +4,38 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\ORM\Query;
+use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CalendarFilter;
 
 /**
- * Commands Model
- **
+ * Calendars Model
+ *
+ * @property |\Cake\ORM\Association\BelongsTo $Containers
+ * @property |\Cake\ORM\Association\HasMany $Autoreports
+ * @property \App\Model\Table\CalendarHolidaysTable|\Cake\ORM\Association\HasMany $CalendarHolidays
+ * @property |\Cake\ORM\Association\HasMany $Timeperiods
+ *
  * @method \App\Model\Entity\Calendar get($primaryKey, $options = [])
  * @method \App\Model\Entity\Calendar newEntity($data = null, array $options = [])
  * @method \App\Model\Entity\Calendar[] newEntities(array $data, array $options = [])
  * @method \App\Model\Entity\Calendar|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Calendar|bool saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Calendar saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
  * @method \App\Model\Entity\Calendar patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
  * @method \App\Model\Entity\Calendar[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Calendar findOrCreate($search, callable $callback = null, $options = [])
+ *
+ * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class CalendarsTable extends Table {
 
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
-
 
     /**
      * Initialize method
@@ -39,11 +50,17 @@ class CalendarsTable extends Table {
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
+        $this->addBehavior('Timestamp');
+
+        $this->belongsTo('Containers', [
+            'foreignKey' => 'container_id',
+            'joinType'   => 'INNER'
+        ]);
+
         $this->hasMany('CalendarHolidays', [
             'foreignKey'   => 'calendar_id',
             'saveStrategy' => 'replace'
         ])->setDependent(true);
-
     }
 
     /**
@@ -60,7 +77,7 @@ class CalendarsTable extends Table {
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
-            ->allowEmptyString('name', false)
+            ->allowEmptyString('name', null, false)
             ->add('name', 'unique', [
                 'rule'     => 'validateUnique',
                 'provider' => 'table',
@@ -80,8 +97,21 @@ class CalendarsTable extends Table {
     }
 
     /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules) {
+        $rules->add($rules->existsIn(['container_id'], 'Containers'));
+
+        return $rules;
+    }
+
+    /**
      * @param CalendarFilter $CalendarFilter
-     * @param null $PaginateOMat
+     * @param PaginateOMat|null $PaginateOMat
      * @param array $MY_RIGHTS
      * @return array
      */
@@ -108,5 +138,83 @@ class CalendarsTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Calendars.id' => $id]);
+    }
+
+
+    /**
+     * @param int $id
+     * @return array|\Cake\Datasource\EntityInterface
+     * @throws RecordNotFoundException
+     */
+    public function getCalendarById($id) {
+        return $this->find()
+            ->contain([
+                'Containers',
+                'CalendarHolidays'
+            ])
+            ->where([
+                'Calendars.id' => $id
+            ])
+            ->firstOrFail();
+    }
+
+    /**
+     * @param int|array $containerId
+     * @param string $type
+     * @return array|\Cake\Datasource\EntityInterface
+     * @throws RecordNotFoundException
+     */
+    public function getCalendarsByContainerIds($containerIds, $type = 'all') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $containerIds = array_unique($containerIds);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $tenantContainerIds = [];
+        foreach ($containerIds as $containerId) {
+            if ($containerId != ROOT_CONTAINER) {
+                $path = $ContainersTable->getPathByIdAndCacheResult($containerId, 'CalendarCalendarsByContainerIds');
+                // Get container id of the tenant container
+                // Tenant timeperiods are available for all users of a tenant (oITC V2 legacy)
+                if (isset($path[1])) {
+                    $tenantContainerIds[] = $path[1]['id'];
+                }
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+
+        $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        $query = $this->find('all')
+            ->contain([
+                'Containers'
+            ])
+            ->where([
+                'Calendars.container_id IN' => $containerIds
+            ])
+            ->disableHydration();
+
+        if ($type === 'all') {
+            return $this->formatResultAsCake2($query->toArray());
+        }
+
+        return $this->formatListAsCake2($query->toArray());
     }
 }

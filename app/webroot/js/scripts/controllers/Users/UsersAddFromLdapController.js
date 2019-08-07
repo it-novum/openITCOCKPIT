@@ -2,6 +2,7 @@ angular.module('openITCOCKPIT')
     .controller('UsersAddFromLdapController', function($scope, $http, $state, NotyService, RedirectService){
         $scope.init = true;
         $scope.errors = false;
+        $scope.chosenContainerroles = {};
         $scope.post = {
             'User': {
                 'ldap': 1,
@@ -30,12 +31,26 @@ angular.module('openITCOCKPIT')
                     }
                     */
                 },
-                'ContainersUsersMemberships': {}
+                'ContainersUsersMemberships': {},
+                'usercontainerroles': {
+                    '_ids': []
+                }
             }
         };
 
         $scope.data = {
             selectedSamAccountName: ''
+        };
+
+        $scope.loadUsercontainerroles = function(){
+            $http.get("/usercontainerroles/loadUsercontainerrolesForAngular.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.usercontainerroles = result.data.usercontainerroles;
+                $scope.usercontainerrolePermissions = result.data.usercontainerrolePermissions;
+            });
         };
 
         $scope.loadContainer = function(){
@@ -168,6 +183,26 @@ angular.module('openITCOCKPIT')
             }
         }, true);
 
+
+        $scope.$watch('post.User.usercontainerroles._ids', function(){
+            if($scope.post.User.usercontainerroles._ids.length > 0){
+                $scope.chosenContainerroles = {};
+                $scope.post.User.usercontainerroles._ids.forEach(function(k){
+                    for(var i in $scope.usercontainerrolePermissions[k]){
+                        var currentValue = $scope.usercontainerrolePermissions[k][i];
+                        if($scope.chosenContainerroles.hasOwnProperty(i)){
+                            if($scope.chosenContainerroles[i] < currentValue){
+                                $scope.chosenContainerroles[i] = currentValue;
+                            }
+                        }else{
+                            $scope.chosenContainerroles[i] = currentValue;
+                        }
+                    }
+                });
+            }
+        }, true);
+
+        $scope.loadUsercontainerroles();
         $scope.loadContainer();
         $scope.loadDateformats();
         $scope.loadUsergroups();

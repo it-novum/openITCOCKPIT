@@ -55,7 +55,7 @@
                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
                         <div class="row">
 
-                            <div class="form-group required" ng-class="{'has-error': errors.container.parent_id}">
+                            <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                                 <label class="col col-md-2 control-label">
                                     <?php echo __('Container'); ?>
                                 </label>
@@ -73,13 +73,13 @@
                                         <?php echo __('Please select a container.'); ?>
                                     </div>
 
-                                    <div ng-repeat="error in errors.calendar.container_id">
+                                    <div ng-repeat="error in errors.container_id">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group required" ng-class="{'has-error': errors.calendar.name}">
+                            <div class="form-group required" ng-class="{'has-error': errors.name}">
                                 <label class="col col-md-2 control-label">
                                     <?php echo __('Calendar name'); ?>
                                 </label>
@@ -88,18 +88,24 @@
                                             class="form-control"
                                             type="text"
                                             ng-model="post.Calendar.name">
-                                    <div ng-repeat="error in errors.calendar.name">
+                                    <div ng-repeat="error in errors.name">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" ng-class="{'has-error': errors.description}">
                                 <label class="col col-md-2 control-label">
                                     <?php echo __('Description'); ?>
                                 </label>
                                 <div class="col col-xs-10">
-                                    <input class="form-control" type="text" ng-model="post.Calendar.description">
+                                    <input
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="post.Calendar.description">
+                                    <div ng-repeat="error in errors.description">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +137,6 @@
         </div>
     </div>
 </div>
-
 
 
 <div id="addEventModal" class="modal" role="dialog">

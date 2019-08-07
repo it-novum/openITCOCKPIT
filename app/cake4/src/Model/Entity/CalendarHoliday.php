@@ -5,18 +5,17 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Calendar Entity
+ * CalendarHoliday Entity
  *
  * @property int $id
+ * @property int $calendar_id
  * @property string $name
- * @property string $description
- * @property int $container_id
- * @property \Cake\I18n\FrozenTime $created
- * @property \Cake\I18n\FrozenTime $modified
+ * @property int $default_holiday
+ * @property \Cake\I18n\FrozenDate $date
  *
- * @property \App\Model\Entity\CalendarHoliday[] $calendar_holidays
+ * @property \App\Model\Entity\Calendar $calendar
  */
-class Calendar extends Entity {
+class CalendarHoliday extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -27,11 +26,10 @@ class Calendar extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'name'              => true,
-        'description'       => true,
-        'container_id'      => true,
-        'created'           => true,
-        'modified'          => true,
-        'calendar_holidays' => true
+        'calendar_id'     => true,
+        'name'            => true,
+        'default_holiday' => true,
+        'date'            => true,
+        'calendar'        => true
     ];
 }
