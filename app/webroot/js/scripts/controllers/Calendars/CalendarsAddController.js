@@ -54,19 +54,19 @@ angular.module('openITCOCKPIT')
                         text: 'Add holidays ',
                     },
                     deleteallholidays: {
-                        text: 'Delete all holidays',
+                        text: 'Delete ALL holidays',
                         click: function(){
                             alert('clicked the custom button!');
                         }
                     },
                     deletemonthevents: {
-                        text: 'Delete month events',
+                        text: 'Delete MONTH events',
                         click: function(){
                             alert('clicked the custom button!');
                         }
                     },
                     deleteallevents: {
-                        text: 'Delete all events',
+                        text: 'Delete ALL events',
                         click: function(){
                             alert('clicked the custom button!');
                         }
@@ -85,7 +85,7 @@ angular.module('openITCOCKPIT')
                 weekNumbersWithinDays: false,
                 weekNumberCalculation: 'ISO',
                 eventOverlap: false,
-
+                eventDurationEditable: false,
                 datesRender: function(info){
                     //Update default date to avoid "jumping" calendar on add/delete of events
                     $scope.defaultDate = info.view.currentStart;
@@ -97,11 +97,11 @@ angular.module('openITCOCKPIT')
                         var currentDate = $parentTd.data('date');
 
                         var $addButton = $('<button>')
-                            .html('<i class="fa fa-plus-circle txt-color-green"></i>')
+                            .html('<i class="fa fa-plus"></i>')
                             .attr({
                                 title: 'add',
                                 type: 'button',
-                                class: 'btn btn-xs btn-default calendar-button'
+                                class: 'btn btn-xs btn-success calendar-button'
                             })
                             .click(function(){
                                     $('#addEventModal').modal('show');
@@ -122,12 +122,11 @@ angular.module('openITCOCKPIT')
                     var elements = $('[data-date="' + date('Y-m-d', info.event.start) + '"]');
 
                     var $editButton = $('<button>')
-                        .html('<i class="fa fa-pencil txt-color-blue"></i>')
+                        .html('<i class="fa fa-pencil"></i>')
                         .attr({
                             title: 'edit',
                             type: 'button',
-                            class: 'btn btn-xs btn-default calendar-button',
-                            'ng-click': 'testBob(info.event.start)'
+                            class: 'btn btn-xs btn-primary btn-edit calendar-button margin-right-5'
                         })
                         .click(function(){
                                 var event = $scope.getEvents(date('Y-m-d', info.event.start));
@@ -141,11 +140,11 @@ angular.module('openITCOCKPIT')
                         );
 
                     var $deleteButton = $('<button>')
-                        .html('<i class="fa fa-trash-o txt-color-red"></i>')
+                        .html('<i class="fa fa-trash-o"></i>')
                         .attr({
                             title: 'delete',
                             type: 'button',
-                            class: 'btn btn-xs btn-default calendar-button'
+                            class: 'btn btn-xs btn-danger calendar-button'
                         })
                         .click(function(){
                                 $scope.deleteEvent(date('Y-m-d', info.event.start));
@@ -173,11 +172,8 @@ angular.module('openITCOCKPIT')
 
                     $scope.$apply();
                 },
-
                 events: $scope.events
             });
-
-            //console.warn($calendar);
 
             $scope.calendar.render();
         };
@@ -191,9 +187,8 @@ angular.module('openITCOCKPIT')
                 $scope.init = false;
                 $scope.events = result.data.holidays;
                 renderCalendar();
-                console.log('render calendar !!!');
                 setTimeout(function(){
-                    $( ".fc-holidays-button" ).wrap( "<span class='dropdown'></span>" );
+                    $(".fc-holidays-button").wrap("<span class='dropdown'></span>");
                     $('.fc-holidays-button').addClass('btn btn-secondary dropdown-toggle');
                     $('.fc-holidays-button').attr({
                         'data-toggle': 'dropdown',
@@ -219,16 +214,6 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.containers = result.data.containers;
                 $scope.init = false;
-                console.log('test 1');
-
-                /*
-                $('#calendar.fc-holidays-button').attr({
-                    'data-toggle' : 'dropdown'
-                }).append(
-                    $('span').addClass('caret')
-                );
-                 */
-                console.log('test 2');
             });
         };
 
@@ -263,7 +248,8 @@ angular.module('openITCOCKPIT')
             $scope.events.push({
                 title: title,
                 start: date,
-                default_holiday: 0
+                default_holiday: 0,
+                className: 'bg-color-pinkDark'
             });
         };
 
@@ -326,8 +312,6 @@ angular.module('openITCOCKPIT')
                     $scope.errors = {};
                     NotyService.scrollTop();
                 }
-
-                console.log('Data saved successfully');
             }, function errorCallback(result){
 
                 NotyService.genericError();

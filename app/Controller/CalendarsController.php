@@ -150,6 +150,11 @@ class CalendarsController extends AppController {
             foreach ($events as $index => $event) {
                 $events[$index]['title'] = $event['name'];
                 $events[$index]['start'] = $event['date'];
+                if ($events[$index]['default_holiday'] === true) {
+                    $events[$index]['className'] = 'bg-color-magenta';
+                } else {
+                    $events[$index]['className'] = 'bg-color-pinkDark';
+                }
             }
 
             unset($calendar['calendar_holidays']);

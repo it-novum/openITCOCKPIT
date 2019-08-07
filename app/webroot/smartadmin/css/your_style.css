@@ -2605,23 +2605,35 @@ input[type=text]:focus + .input-group-addon-no-focus {
 }
 
 .fc-button-primary {
-    background-color: #3688D8!important;
+    background-color: #3688D8 !important;
     border-color: #317ABF !important;
     color: #FFF;
-    padding: 0px 4px!important;
-}
-.fc-day-number {
-    float: left!important;
+    padding: 0px 4px !important;
 }
 
-.fc-holidays-button{
-    background-color: #5cb85c!important;
+.btn-edit {
+    background-color: #3688D8 !important;
+    border-color: #317ABF !important;
+    color: #FFF;
+}
+
+
+.fc-day-number {
+    float: left !important;
+}
+
+.fc-holidays-button {
+    background-color: #5cb85c !important;
     border-color: #449D44 !important;
 }
 
-.fc-deleteallholidays-button,
+.fc-deleteallholidays-button {
+    background-color: #6E3671 !important;
+    border-color: #582b5b !important;
+}
+
 .fc-deletemonthevents-button,
-.fc-deleteallevents-button{
-    background-color: #d9534f!important;
-    border-color: #a94442!important;
+.fc-deleteallevents-button {
+    background-color: #d9534f !important;
+    border-color: #a94442 !important;
 }
