@@ -1,0 +1,271 @@
+/**
+ * @link https://fullcalendar.io/docs/upgrading-from-v3
+ */
+angular.module('openITCOCKPIT')
+    .controller('CalendarsEditController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
+
+        $scope.defaultDate = new Date();
+        $scope.countryCode = 'de';
+
+        $scope.id = $stateParams.id;
+
+
+        $scope.calendar = null;
+        $scope.init = true;
+
+        var renderCalendar = function(){
+            var calendarEl = document.getElementById('calendar');
+
+            $scope.calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: ''
+                },
+                defaultDate: $scope.defaultDate,
+                navLinks: false, // can click day/week names to navigate views
+                businessHours: true, // display business hours
+                editable: true,
+                weekNumbers: true,
+                weekNumbersWithinDays: false,
+                weekNumberCalculation: 'ISO',
+                eventOverlap: false,
+
+                datesRender: function(info){
+                    //Update default date to avoid "jumping" calendar on add/delete of events
+                    $scope.defaultDate = info.view.currentStart;
+
+                    $(".fc-day-number").each(function(index, obj){
+                        //obj = fc-day-number <span>
+                        var $span = $(obj);
+                        var $parentTd = $span.parent();
+                        var currentDate = $parentTd.data('date');
+
+                        var $addButton = $('<button>')
+                            .html('<i class="fa fa-plus-circle txt-color-green"></i>')
+                            .attr({
+                                title: 'add',
+                                type: 'button',
+                                class: 'btn btn-xs btn-default calendar-button'
+                            })
+                            .click(function(){
+                                    $('#addEventModal').modal('show');
+                                    $scope.newEvent = {
+                                        title: '',
+                                        start: currentDate
+                                    };
+                                }
+                            );
+
+                        var events = $scope.getEvents(currentDate);
+                        if(!$scope.hasEvents(currentDate)){
+                            $parentTd.css('text-align', 'right').append($addButton);
+                        }
+                    });
+                },
+                eventPositioned: function(info){
+                    var elements = $('[data-date="' + date('Y-m-d', info.event.start) + '"]');
+
+                    var $editButton = $('<button>')
+                        .html('<i class="fa fa-pencil txt-color-blue"></i>')
+                        .attr({
+                            title: 'edit',
+                            type: 'button',
+                            class: 'btn btn-xs btn-default calendar-button',
+                            'ng-click': 'testBob(info.event.start)'
+                        })
+                        .click(function(){
+                                var event = $scope.getEvents(date('Y-m-d', info.event.start));
+                                $scope.editEvent = {
+                                    start: event.start,
+                                    title: event.title
+                                };
+                                $scope.$apply();
+                                $('#editEventModal').modal('show');
+                            }
+                        );
+
+                    var $deleteButton = $('<button>')
+                        .html('<i class="fa fa-trash-o txt-color-red"></i>')
+                        .attr({
+                            title: 'delete',
+                            type: 'button',
+                            class: 'btn btn-xs btn-default calendar-button'
+                        })
+                        .click(function(){
+                                $scope.deleteEvent(date('Y-m-d', info.event.start));
+                                $scope.$apply();
+                            }
+                        );
+
+                    $(elements[1]).css('text-align', 'right').append($deleteButton);
+                    $(elements[1]).append($editButton);
+                },
+
+                eventDrop: function(info){
+                    //Move event in json
+                    var event = $scope.deleteEvent(date('Y-m-d', info.oldEvent.start));
+                    if(!event){
+                        return;
+                    }
+                    event = event[0];
+
+                    //Set new start date
+                    event.start = date('Y-m-d', info.event.start);
+
+                    //Add event back to json
+                    $scope.addEvent(event.title, event.start);
+
+                    $scope.$apply();
+                },
+
+                events: $scope.events
+            });
+
+            //console.warn($calendar);
+
+            $scope.calendar.render();
+        };
+
+        $scope.loadContainers = function(){
+            $http.get("/containers/loadContainersForAngular.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.containers = result.data.containers;
+                $scope.init = false;
+            });
+        };
+
+        $scope.load = function(){
+            $http.get("/calendars/edit/" + $scope.id + ".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.post = {
+                    Calendar: result.data.calendar
+                };
+                $scope.events = result.data.events;
+                $scope.init = false;
+            });
+        };
+
+        $scope.getEvents = function(date){
+            for(var index in $scope.events){
+                if($scope.events[index].start === date){
+                    return $scope.events[index]
+                }
+            }
+            return null;
+        };
+
+        $scope.hasEvents = function(date){
+            for(var index in $scope.events){
+                if($scope.events[index].start === date){
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        $scope.deleteEvent = function(date){
+            for(var index in $scope.events){
+                if($scope.events[index].start === date){
+                    return $scope.events.splice(index, 1);
+                }
+            }
+            return false;
+        };
+
+        $scope.addEvent = function(title, date){
+            $scope.events.push({
+                title: title,
+                start: date,
+                default_holiday: 0
+            });
+        };
+
+        $scope.addEventFromModal = function(){
+            if($scope.newEvent.title === ''){
+                return;
+            }
+
+            //Add event to internal json
+            $scope.addEvent($scope.newEvent.title, $scope.newEvent.start);
+
+            //Reset modal and newEvent object
+            $('#addEventModal').modal('hide');
+            $scope.newEvent = {
+                title: '',
+                start: ''
+            };
+        };
+
+        $scope.editEventFromModal = function(){
+            if($scope.editEvent.title === ''){
+                return;
+            }
+
+            //Get old event from json
+            var event = $scope.deleteEvent($scope.editEvent.start);
+            if(!event){
+                return;
+            }
+
+            event = event[0];
+
+            //Add event back to json with new name and old date
+            $scope.addEvent($scope.editEvent.title, event.start);
+
+            //Reset modal and newEvent object
+            $('#editEventModal').modal('hide');
+            $scope.editEvent = {
+                title: '',
+                start: ''
+            };
+        };
+
+        $scope.submit = function(){
+            $scope.post.events = $scope.events;
+            $http.post("/calendars/edit/" + $scope.id + ".json?angular=true",
+                $scope.post
+            ).then(function(result){
+                var url = $state.href('CalendarsEdit', {id: result.data.calendar.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+
+                RedirectService.redirectWithFallback('CalendarsIndex');
+
+                console.log('Data saved successfully');
+            }, function errorCallback(result){
+
+                NotyService.genericError();
+
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+            });
+
+        };
+
+        //Fire on page load
+        $scope.load();
+        $scope.loadContainers();
+
+        $scope.$watch('events', function(){
+            if($scope.init){
+                return;
+            }
+
+            if($scope.calendar !== null){
+                $scope.calendar.destroy();
+            }
+            renderCalendar();
+        }, true);
+    });

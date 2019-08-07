@@ -2,6 +2,7 @@
 
 namespace App\Model\Table;
 
+use Cake\Database\Schema\TableSchema;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -21,6 +22,11 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\CalendarHoliday findOrCreate($search, callable $callback = null, $options = [])
  */
 class CalendarHolidaysTable extends Table {
+
+    public function _initializeSchema(TableSchema $schema) {
+        return $schema->addColumn('date', 'string');
+    }
+
     /**
      * Initialize method
      *
