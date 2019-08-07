@@ -28,27 +28,20 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\Holidays;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CalendarFilter;
 
-App::uses('CalendarHolidays', 'Vendor/Date');
-
 
 /**
- * @property Calendar $Calendar
- * @property Tenant $Tenant
- * @property CalendarHoliday $CalendarHoliday
- * @property RequestHandlerComponent $RequestHandler
- * @property PaginatorComponent $Paginator
+ * @property AppPaginatorComponent $Paginator
+ * @property DbBackend $DbBackend
  */
 class CalendarsController extends AppController {
 
     public $layout = 'blank';
 
-    /**
-     * Lists the existing configurations to load and edit them.
-     */
     public function index() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
@@ -83,49 +76,55 @@ class CalendarsController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
+
     public function add() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
 
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        if ($this->hasRootPrivileges === true) {
-            $containerIds = $this->MY_RIGHTS;
-            $tenants = $this->Tenant->tenantsByContainerId($containerIds, 'list', 'container_id');
-        } else {
-            $tenants = $this->Tenant->tenantsByContainerId($this->getWriteContainers(), 'list', 'container_id');
-        }
-        $this->set(compact(['tenants']));
         if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->request->data('CalendarHoliday')) {
-                $this->Frontend->setJson('events', $this->request->data['CalendarHoliday']);
-                $this->request->data['CalendarHoliday'] = $this->Calendar->prepareForSave($this->request->data['CalendarHoliday']);
-            }
-            if ($this->Calendar->saveAll($this->request->data)) {
-                if ($this->request->ext == 'json') {
-                    $this->serializeId();
-
-                    return;
-                } else {
-                    $this->setFlash(__('Calendar successfully saved.'));
-                    $this->redirect(['action' => 'index']);
+            $data = $this->request->data('Calendar');
+            $events = $this->request->data('events');
+            $data['calendar_holidays'] = [];
+            foreach ($events as $event) {
+                if (!isset($event['title']) || !isset($event['default_holiday']) || !isset($event['start'])) {
+                    continue;
                 }
+
+                $data['calendar_holidays'][] = [
+                    'name'            => $event['title'],
+                    'default_holiday' => (int)$event['default_holiday'],
+                    'date'            => $event['start']
+                ];
+            }
+
+            /** @var $CalendarsTable CalendarsTable */
+            $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
+
+            $Entity = $CalendarsTable->newEntity($data);
+            $CalendarsTable->save($Entity);
+            if ($Entity->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $Entity->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
             } else {
+                //No errors
                 if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-
+                    $this->serializeCake4Id($Entity); // REST API ID serialization
                     return;
-                } else {
-                    $this->setFlash(__('Could not save data'), false);
                 }
             }
+            $this->set('calendar', $Entity);
+            $this->set('_serialize', ['calendar']);
         }
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function edit($id = null) {
         if (!$this->Calendar->exists($id)) {
             throw new NotFoundException(__('Invalid calendar'));
@@ -183,19 +182,25 @@ class CalendarsController extends AppController {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Calendar->exists($id)) {
+
+        /** @var $CalendarsTable CalendarsTable */
+        $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
+
+        if (!$CalendarsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid calendar'));
         }
-        $calendar = $this->Calendar->findById($id);
-        if (!$this->allowedByContainerId($calendar['Calendar']['container_id'])) {
-            $this->render403();
 
+        $calendar = $CalendarsTable->get($id);
+
+        if (!$this->allowedByContainerId($calendar->get('container_id'))) {
+            $this->render403();
             return;
         }
+
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         $query = $TimeperiodsTable->query();
-        if ($this->Calendar->delete($id)) {
+        if ($CalendarsTable->delete($calendar)) {
             $timeperiods = $TimeperiodsTable->getTimeperiodByCalendarIdsAsList($id);
             foreach ($timeperiods as $timeperiodId => $timeperiodName) {
                 $query->update()
@@ -204,16 +209,24 @@ class CalendarsController extends AppController {
                     ->execute();
 
             }
-            $this->setFlash(__('Calendar deleted'));
-            $this->redirect(['action' => 'index']);
+
+            $this->set('success', true);
+            $this->set('message', __('Calendar deleted successfully'));
+            $this->set('_serialize', ['success', 'message']);
+            return;
         }
-        $this->setFlash(__('Could not delete calendar'), false);
-        $this->redirect(['action' => 'index']);
+
+        $this->response->statusCode(400);
+        $this->set('success', false);
+        $this->set('message', __('Issue while deleting calendar'));
+        $this->set('_serialize', ['success', 'message']);
     }
 
+    /**
+     * @param string $countryCode
+     * @throws ReflectionException
+     */
     public function loadHolidays($countryCode = 'de') {
-
-
         $holiday = new Holidays();
 
         $holidays = $holiday->getHolidays($countryCode);
@@ -221,42 +234,18 @@ class CalendarsController extends AppController {
         $this->set('_serialize', ['holidays']);
     }
 
-    public function mass_delete() {
-        $args_are_valid = true;
-        $args = func_get_args();
-        foreach ($args as $arg) {
-            if (!is_numeric($arg)) {
-                $args_are_valid = false;
-            }
-        }
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        $query = $TimeperiodsTable->query();
-        if ($args_are_valid) {
-            $this->Calendar->deleteAll('Calendar.id IN (' . implode(',', $args) . ')');
-            $timeperiods = $TimeperiodsTable->getTimeperiodByCalendarIdsAsList($args);
-            foreach ($timeperiods as $timeperiodId => $timeperiodName) {
-                $query->update()
-                    ->set(['calendar_id' => 0])
-                    ->where(['id' => $timeperiodId])
-                    ->execute();
-
-            }
-            $this->setFlash(__('The calendars were successfully deleted.'));
-        } else {
-            $this->setFlash(__('Could not delete the calendars. The given arguments were invalid.'), false);
-        }
-        $this->redirect(['action' => 'index']);
-    }
-
     public function loadCalendarsByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
+
+        /** @var $CalendarsTable CalendarsTable */
+        $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
+
         $containerId = $this->request->query('containerId');
 
         $calendars = Api::makeItJavaScriptAble(
-            $this->Calendar->calendarsByContainerId($containerId, 'list')
+            $CalendarsTable->getCalendarsByContainerIds($containerId, 'list')
         );
 
         $this->set('calendars', $calendars);

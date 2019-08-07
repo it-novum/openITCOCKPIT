@@ -56,8 +56,9 @@ class Holidays {
             }
 
             $filteredHolidays[date('Y-m-d', $holiday->getTimestamp())] = [
-                'start' => date('Y-m-d', $holiday->getTimestamp()),
-                'title' => $holidayName
+                'start'           => date('Y-m-d', $holiday->getTimestamp()),
+                'title'           => $holidayName,
+                'default_holiday' => true
             ];
         }
 

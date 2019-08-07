@@ -217,7 +217,6 @@ $config = [
             'Calendars'             => [
                 'add'    => ['loadHolidays'],
                 'edit'   => ['loadHolidays'],
-                'delete' => ['mass_delete'],
             ],
             'Commands'              => [
                 'index' => ['view'],
