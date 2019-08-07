@@ -11,6 +11,17 @@ angular.module('openITCOCKPIT')
         $scope.defaultDate = new Date();
         $scope.countryCode = 'de';
 
+        var clearForm = function(){
+            $scope.post = {
+                Calendar: {
+                    container_id: 0,
+                    name: '',
+                    description: ''
+                }
+            };
+        };
+        clearForm();
+
         $scope.calendar = null;
         /**
          *  {
@@ -246,6 +257,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
+            $scope.post.events = $scope.events;
             $http.post("/calendars/add.json?angular=true",
                 $scope.post
             ).then(function(result){
