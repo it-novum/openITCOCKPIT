@@ -235,7 +235,7 @@ angular.module('openITCOCKPIT')
 
         $scope.setSelected = function(countryCode){
             $scope.countryCode = countryCode;
-        }
+        };
 
         $scope.loadHolidays = function(){
             $http.get('/calendars/loadHolidays/' + $scope.countryCode + '.json', {
@@ -244,7 +244,25 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.init = false;
+                var customEvents = [];
+                for(var index in $scope.events){
+                    if($scope.events[index].default_holiday === false){
+                        customEvents.push($scope.events[index]);
+                    }
+                }
                 $scope.events = result.data.holidays;
+                for(var index in customEvents){
+                    if($scope.hasEvents(customEvents[index].start)){
+                        $scope.deleteEvent(customEvents[index].start);
+                    }
+                    $scope.events.push(customEvents[index]);
+                }
+                if($scope.init){
+                    return;
+                }
+                if($scope.calendar !== null){
+                    $scope.calendar.destroy();
+                }
                 renderCalendar();
             });
         };
@@ -301,7 +319,7 @@ angular.module('openITCOCKPIT')
             $scope.events.push({
                 title: title,
                 start: date,
-                default_holiday: 0,
+                default_holiday: false,
                 className: 'bg-color-pinkDark'
             });
         };
@@ -383,7 +401,6 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-
             if($scope.calendar !== null){
                 $scope.calendar.destroy();
             }
