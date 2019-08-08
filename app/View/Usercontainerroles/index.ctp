@@ -79,7 +79,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by name'); ?>"
-                                                   ng-model="filter.Users.full_name"
+                                                   ng-model="filter.Usercontainerroles.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>

@@ -26,6 +26,7 @@
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
 
 /**
  * Class UsersController
@@ -40,10 +41,11 @@ class UsercontainerrolesController extends AppController {
             return;
         }
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest());
+        $usercontainerrolesFilter = new UsercontainerrolesFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $usercontainerrolesFilter->getPage());
         /** @var $Usercontainerroles App\Model\Table\UsercontainerrolesTable */
         $Usercontainerroles = TableRegistry::getTableLocator()->get('Usercontainerroles');
-        $allUsercontainerroles = $Usercontainerroles->getUsercontainerroles($this->MY_RIGHTS, $PaginateOMat);
+        $allUsercontainerroles = $Usercontainerroles->getUsercontainerroles($this->MY_RIGHTS, $usercontainerrolesFilter, $PaginateOMat);
 
         foreach ($allUsercontainerroles as $index => $usercontainerrole) {
             $allUsercontainerroles[$index]['Usercontainerrole']['allow_edit'] = true;

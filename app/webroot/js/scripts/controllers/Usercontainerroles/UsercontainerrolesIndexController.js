@@ -1,16 +1,33 @@
 angular.module('openITCOCKPIT')
-    .controller('UsercontainerrolesIndexController', function($scope, $http, MassChangeService, QueryStringService, NotyService){
+    .controller('UsercontainerrolesIndexController', function($scope, $http, MassChangeService, QueryStringService, NotyService, SortService){
         $scope.currentPage = 1;
         $scope.deleteUrl = '/usercontainerroles/delete/';
+
+        /*** Filter Settings ***/
+        var defaultFilter = function(){
+            $scope.filter = {
+                Usercontainerroles: {
+                    name: '',
+                }
+            };
+        };
+
+        $scope.triggerFilter = function(){
+            $scope.showFilter = !$scope.showFilter === true;
+        };
+
+        $scope.resetFilter = function(){
+            defaultFilter();
+        };
 
         $scope.load = function(){
             var params = {
                 'angular': true,
-                //'scroll': $scope.useScroll,
-                //'sort': SortService.getSort(),
-                //'page': $scope.currentPage,
-                //'direction': SortService.getDirection(),
-                //'filter[Usercontainerroles.name]': $scope.filter.Usercontainerroles.name,
+                'scroll': $scope.useScroll,
+                'sort': SortService.getSort(),
+                'page': $scope.currentPage,
+                'direction': SortService.getDirection(),
+                'filter[Usercontainerroles.name]': $scope.filter.Usercontainerroles.name,
             };
 
             $http.get("/usercontainerroles/index.json", {
@@ -44,7 +61,15 @@ angular.module('openITCOCKPIT')
             return objects;
         };
 
+        //Fire on page load
+        defaultFilter();
         $scope.load();
+
+        $scope.$watch('filter', function(){
+            $scope.currentPage = 1;
+            $scope.load();
+        }, true);
+
 
     });
 
