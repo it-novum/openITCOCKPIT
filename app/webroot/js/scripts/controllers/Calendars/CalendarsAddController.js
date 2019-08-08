@@ -52,24 +52,37 @@ angular.module('openITCOCKPIT')
                 plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
                 customButtons: {
                     holidays: {
-                        text: 'Add holidays ',
+                        text: $scope.message.addHoliday,
                     },
                     deleteallholidays: {
                         text: 'Delete ALL holidays',
                         click: function(){
-                            alert('clicked the custom button!');
+                            for(var index in $scope.events){
+                                if($scope.events[index].default_holiday === true){
+                                    $scope.events.splice(index, 1);
+                                }
+                            }
+                            $scope.$apply();
                         }
                     },
                     deletemonthevents: {
-                        text: 'Delete MONTH events',
+                        text: $scope.message.deleteMonthEvents,
                         click: function(){
-                            alert('clicked the custom button!');
+                            for(var index in $scope.events){
+                                var start = new Date($scope.events[index].start);
+                                if(start >= $scope.calendar.state.dateProfile.currentRange.start &&
+                                    start < $scope.calendar.state.dateProfile.currentRange.end){
+                                    $scope.events.splice(index, 1);
+                                }
+                            }
+                            $scope.$apply();
                         }
                     },
                     deleteallevents: {
-                        text: 'Delete ALL events',
+                        text: $scope.message.deleteAllEvents,
                         click: function(){
-                            alert('clicked the custom button!');
+                            $scope.events = [];
+                            $scope.$apply();
                         }
                     }
                 },
@@ -341,8 +354,8 @@ angular.module('openITCOCKPIT')
                 var url = $state.href('CalendarsEdit', {id: result.data.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '
-                        + $scope.successMessage.objectName
-                        + '</a></u> ' + $scope.successMessage.message
+                        + $scope.message.objectName
+                        + '</a></u> ' + $scope.message.message
                 });
 
                 if($scope.data.createAnother === false){
