@@ -53,6 +53,9 @@ angular.module('openITCOCKPIT')
                 customButtons: {
                     holidays: {
                         text: $scope.message.addHoliday,
+                        click: function(event){
+                            event.stopPropagation();
+                        }
                     },
                     deleteallholidays: {
                         text: 'Delete ALL holidays',
@@ -197,26 +200,27 @@ angular.module('openITCOCKPIT')
                     'data-toggle': 'dropdown',
                     'type': 'button',
                     'aria-expanded': false,
-                    'aria-haspopup': true,
-                    'id': 'dropdownMenuButton'
+                    'aria-haspopup': true
                 })
                 .append($('<img/>', {'class': 'flag flag-' + $scope.countryCode}))
                 .append('<span class="caret caret-with-margin-left-5"></span>');
-            $('.fc-holidays-button').parent().append(
+            $('.fc-holidays-button')
+                .parent().append(
                 $('<ul/>', {
                         'id': 'countryList',
                         'class': 'dropdown-menu',
-                        'role': 'menu'
+                        'role': 'button'
                     }
                 )
             );
+
             for(var key in $scope.countries){
                 $('#countryList').append($compile(
                     $('<li/>', {
                         'ng-click': 'setSelected("' + key + '")'
                     }).append(
                         $('<a/>', {
-                            'class': 'dropdown-item'
+                            // 'class': 'dropdown-item'
                         }).append(
                             $('<img/>', {
                                 'class': 'flag flag-' + key

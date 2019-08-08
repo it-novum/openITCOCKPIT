@@ -2632,7 +2632,7 @@ input[type=text]:focus + .input-group-addon-no-focus {
     font-size: 20px;
 }
 
-#credits{
+#credits {
     position: absolute;
     bottom: 0px;
     width: 100%;
@@ -2682,6 +2682,28 @@ input[type=text]:focus + .input-group-addon-no-focus {
     border-color: #a94442 !important;
 }
 
-.caret-with-margin-left-5{
-    margin-left: 5px!important;
+.caret-with-margin-left-5 {
+    margin-left: 5px !important;
+}
+
+#countryList.dropdown-menu > li > a {
+    padding:0px 5px;
+}
+
+.fc-left .dropdown .dropdown-menu {
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    transition:         all 0.2s  ease;
+    -moz-transition:    all 0.2s  ease;
+    -webkit-transition: all 0.2s  ease;
+    -o-transition:      all 0.2s  ease;
+    -ms-transition:     all 0.2s  ease;
+}
+.fc-left .dropdown:hover .dropdown-menu {
+    visibility: visible;
+    opacity: 1;
+}
+fc-left .dropdown {
+    display: inline-block;
 }
