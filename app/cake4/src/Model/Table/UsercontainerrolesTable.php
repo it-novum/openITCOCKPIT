@@ -6,6 +6,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
 
 
 /**
@@ -129,13 +130,14 @@ class UsercontainerrolesTable extends Table {
      * @param null $PaginateOMat
      * @return array
      */
-    public function getUsercontainerroles($rights, $PaginateOMat = null) {
+    public function getUsercontainerroles($rights, UsercontainerrolesFilter $usercontainerrolesFilter, $PaginateOMat = null) {
         $query = $this->find()
             ->disableHydration()
             ->contain('Containers')
             ->matching('Containers')
             ->where([
                 'ContainersUsercontainerrolesMemberships.container_id IN' => $rights,
+                $usercontainerrolesFilter->indexFilter()
             ])
             ->group([
                 'Usercontainerroles.id'
@@ -160,13 +162,13 @@ class UsercontainerrolesTable extends Table {
      * @param $rights
      * @return array|\Cake\Datasource\EntityInterface|null
      */
-    public function getUsercontainerole($id, $rights){
+    public function getUsercontainerole($id, $rights) {
         $query = $this->find()
             ->disableHydration()
             ->contain('Containers')
             ->matching('Containers')
             ->where([
-                'Usercontainerroles.id' => $id,
+                'Usercontainerroles.id'                                   => $id,
                 'ContainersUsercontainerrolesMemberships.container_id IN' => $rights,
             ]);
 
@@ -181,7 +183,7 @@ class UsercontainerrolesTable extends Table {
      * @param $rights
      * @return array|\Cake\Datasource\EntityInterface|null
      */
-    public function getUsercontainerroleWithPermission($id, $rights){
+    public function getUsercontainerroleWithPermission($id, $rights) {
         $usercontainerrole = $this->getUsercontainerole($id, $rights);
 
         $containerPermissions = [];
