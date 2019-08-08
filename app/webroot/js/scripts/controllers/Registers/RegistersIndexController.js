@@ -23,6 +23,12 @@ angular.module('openITCOCKPIT')
 
         }, false);
 
+        $scope.$on('$destroy', function(){
+            if($scope.scrollInterval !== null){
+                clearInterval($scope.scrollInterval);
+            }
+        });
+
         var handleLicenseResponse = function(licenseResponse, showNotyMsg){
             if(licenseResponse.success === true){
                 if(showNotyMsg){
