@@ -27,7 +27,7 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-calendar-plus-o fa-fw "></i>
-            <?php echo __('Calendars groups'); ?>
+            <?php echo __('Calendars'); ?>
             <span>>
                 <?php echo __('Add'); ?>
             </span>
@@ -38,7 +38,7 @@
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
-        <span class="widget-icon"> <i class="fa fa-calendar"></i> </span>
+        <span class="widget-icon"> <i class="fa fa-calendar-plus-o"></i> </span>
         <h2><?php echo __('Create new calendar'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <a back-button fallback-state='CalendarsIndex' class="btn btn-default btn-xs">
@@ -111,7 +111,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row padding-top-20">
                     <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10 padding-top-20">
                         <div id="calendar">
                         </div>

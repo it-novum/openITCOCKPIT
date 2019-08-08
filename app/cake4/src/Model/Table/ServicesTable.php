@@ -2068,4 +2068,19 @@ class ServicesTable extends Table {
 
         return $services;
     }
+
+    /**
+     * @param bool $includeDisabled
+     * @return int|null
+     */
+    public function getServicesCountForStats($includeDisabled = true){
+        $query = $this->find();
+        if($includeDisabled === false){
+            $query->where([
+                'Services.disabled' => 0
+            ]);
+        }
+
+        return $query->count();
+    }
 }

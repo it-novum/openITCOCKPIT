@@ -25,6 +25,12 @@
 
 <?php echo $this->Html->css('vendor/radio_buttons.css'); ?>
 
+<?php if ($this->Acl->hasPermission('index', 'statistics')): ?>
+    <?php if (isset($askForHelp) && $askForHelp === true): ?>
+        <ask-anonymous-statistics></ask-anonymous-statistics>
+    <?php endif; ?>
+<?php endif; ?>
+
 <div class="row">
     <div class="col-xs-12">
         <h1 class="page-title txt-color-blueDark">

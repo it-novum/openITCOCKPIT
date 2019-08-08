@@ -2,6 +2,7 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
 use Cake\Cache\Cache;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\Query;
@@ -25,7 +26,7 @@ use Model;
  */
 class SystemsettingsTable extends Table {
     use LocatorAwareTrait;
-
+    use Cake2ResultTableTrait;
 
     /**
      * Initialize method
@@ -181,5 +182,30 @@ class SystemsettingsTable extends Table {
             Cache::write('systemsettings_is_ldap_auth', $value, 'permissions');
         }
         return Cache::read('systemsettings_is_ldap_auth', 'permissions');
+    }
+
+    /**
+     * @param string $key
+     * @return array
+     */
+    public function getSystemsettingByKeyAsCake2($key) {
+        $query = $this->find()
+            ->where([
+                'Systemsettings.key' => $key
+            ])
+            ->first();
+        return $this->formatFirstResultAsCake2($query->toArray());
+    }
+
+    /**
+     * @param string $key
+     * @return \Cake\Datasource\EntityInterface
+     */
+    public function getSystemsettingByKey($key) {
+        return $this->find()
+            ->where([
+                'Systemsettings.key' => $key
+            ])
+            ->firstOrFail();
     }
 }

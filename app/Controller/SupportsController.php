@@ -28,10 +28,6 @@ class SupportsController extends AppController {
 
     public $layout = 'blank';
 
-    public $uses = [
-        'Register'
-    ];
-
     public function index() {
 
     }

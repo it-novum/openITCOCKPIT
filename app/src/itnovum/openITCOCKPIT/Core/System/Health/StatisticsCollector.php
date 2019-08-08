@@ -25,35 +25,36 @@
 namespace itnovum\openITCOCKPIT\Core\System\Health;
 
 
+use App\Model\Table\HostsTable;
+use App\Model\Table\ServicesTable;
+
 /**
  * Class StatisticsCollector
  * @package itnovum\openITCOCKPIT\Core\System\Health
- * @property \Host $Host
- * @property \Service $Service
  */
 class StatisticsCollector {
 
     /**
-     * @var \Host
+     * @var HostsTable
      */
-    private $Host;
+    private $HostsTable;
 
     /**
-     * @var \Service
+     * @var ServicesTable
      */
-    private $Service;
+    private $ServicesTable;
 
-    public function __construct(\Model $Host, \Model $Service) {
-        $this->Host = $Host;
-        $this->Service = $Service;
+    public function __construct(HostsTable $HostsTable, ServicesTable $ServicesTable) {
+        $this->HostsTable = $HostsTable;
+        $this->ServicesTable = $ServicesTable;
     }
 
     public function getData() {
         \Configure::load('version');
         $openITCOCKPITVersion = \Configure::read('version');
 
-        $numberOfHosts = $this->Host->find('count');
-        $numberOfServices = $this->Service->find('count');
+        $numberOfHosts = $this->HostsTable->getHostsCountForStats();
+        $numberOfServices = $this->ServicesTable->getServicesCountForStats();
 
 
         $CpuLoad = new CpuLoad();
@@ -68,7 +69,7 @@ class StatisticsCollector {
             return strpos($value, 'Module') !== false;
         });
 
-        $MysqlHealth = new MySQLHealth($this->Host);
+        $MysqlHealth = new MySQLHealth($this->HostsTable);
 
         return [
             'system_id'         => $SystemId->getSystemId(),

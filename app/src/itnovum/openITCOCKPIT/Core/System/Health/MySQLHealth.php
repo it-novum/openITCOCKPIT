@@ -25,46 +25,51 @@
 namespace itnovum\openITCOCKPIT\Core\System\Health;
 
 
+use Cake\ORM\Table;
+
 class MySQLHealth {
 
     /**
-     * @var \Model
+     * @var Table
      */
-    private $Model;
+    private $Table;
 
-    public function __construct(\Model $Model) {
-        $this->Model = $Model;
+    public function __construct(Table $Table) {
+        $this->Table = $Table;
     }
 
     /**
      * @return array
      */
     public function selectInnoDbMetrics() {
-        $db = $this->getDb();
-        $rawResult = $db->fetchAll('SHOW GLOBAL STATUS LIKE "innodb%";');
-        return $this->parseGlobalStatusResult($rawResult);
+        $connection = $this->getDbConnection();
+        $result = $connection->execute('SHOW GLOBAL STATUS LIKE "innodb%"');
+        $result = $result->fetchAll('assoc');
+        return $this->parseGlobalStatusResult($result);
     }
 
     /**
      * @return array
      */
     public function selectTmpMetrics() {
-        $db = $this->getDb();
-        $rawResult = $db->fetchAll('SHOW GLOBAL STATUS LIKE "Created_tmp_%";');
-        return $this->parseGlobalStatusResult($rawResult);
+        $connection = $this->getDbConnection();
+        $result = $connection->execute('SHOW GLOBAL STATUS LIKE "Created_tmp_%"');
+        $result = $result->fetchAll('assoc');
+        return $this->parseGlobalStatusResult($result);
     }
 
     /**
      * @return array
      */
     public function selectQueryCacheMetrics() {
-        $db = $this->getDb();
-        $rawResult = $db->fetchAll('SHOW GLOBAL STATUS LIKE "Qcache%";');
-        return $this->parseGlobalStatusResult($rawResult);
+        $connection = $this->getDbConnection();
+        $result = $connection->execute('SHOW GLOBAL STATUS LIKE "Qcache%"');
+        $result = $result->fetchAll('assoc');
+        return $this->parseGlobalStatusResult($result);
     }
 
     public function selectComMetrics() {
-        $db = $this->getDb();
+        $connection = $this->getDbConnection();
         $fields = [
             'Com_alter_table',
             'Com_commit',
@@ -77,11 +82,13 @@ class MySQLHealth {
             'Com_truncate',
             'Com_update'
         ];
-        $rawResult = $db->fetchAll(sprintf(
-            "SHOW GLOBAL STATUS WHERE Variable_name IN ('%s');",
+
+        $result = $connection->execute(sprintf(
+            "SHOW GLOBAL STATUS WHERE Variable_name IN ('%s')",
             implode("', '", $fields)
         ));
-        return $this->parseGlobalStatusResult($rawResult);
+        $result = $result->fetchAll('assoc');
+        return $this->parseGlobalStatusResult($result);
     }
 
     /**
@@ -113,22 +120,18 @@ class MySQLHealth {
      */
     private function parseGlobalStatusResult($rawResult) {
         $result = [];
+
         foreach ($rawResult as $record) {
-            if (isset($record['STATUS'])) {
-                $result[$record['STATUS']['Variable_name']] = $record['STATUS']['Value'];
-            }
-            if (isset($record['global_status'])) {
-                $result[$record['global_status']['Variable_name']] = $record['global_status']['Value'];
-            }
+            $result[$record['Variable_name']] = $record['Value'];
         }
         return $result;
     }
 
     /**
-     * @return \DataSource
+     * @return \Cake\Database\Connection
      */
-    private function getDb() {
-        return $this->Model->getDataSource();
+    private function getDbConnection() {
+        return $this->Table->getConnection();
     }
 
 }
