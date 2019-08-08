@@ -1,46 +1,56 @@
 angular.module('openITCOCKPIT')
-    .controller('RegistersIndexController', function($scope, $http){
+    .controller('RegistersIndexController', function($scope, $http, NotyService){
 
         $scope.post = {
-            'Registers': {
-                'license': ''
+            Registers: {
+                license: ''
             }
         };
 
-        $scope.license = null;
-        $scope.errors = null;
-        $scope.checked = false;
+        $scope.license = {};
+        $scope.valid = false;
 
-        $scope.load = function(){
-            $http.get("/registers/loadLicense.json", {
-                params: {
-                    'angular': true
+        var handleLicenseResponse = function(licenseResponse, showNotyMsg){
+            if(licenseResponse.success === true){
+                if(showNotyMsg){
+                    NotyService.genericSuccess({
+                        message: 'Valid openITCOCKPIT Enterprise license.',
+                        timeout: 5500
+                    });
                 }
-            }).then(function(result){
-                $scope.post.Registers.license = result.data.license.license;
-                $scope.isProductionEnv = result.data.license.productionEnv;
-            });
+                $scope.license = licenseResponse.license;
+                $scope.valid = true;
+                return;
+            }
+
+            if(licenseResponse.error.hasOwnProperty('error')){
+                //error is an object
+
+                var errorMsg = '[ ' + licenseResponse.error.errno + ' ] ' + licenseResponse.error.error;
+                NotyService.genericError({
+                    message: errorMsg,
+                    timeout: 5500
+                });
+            }else{
+                //error is a string
+                NotyService.genericError({
+                    message: licenseResponse.error
+                });
+            }
         };
 
-        $scope.checkLicense = function(){
-            $http.get("/registers/checkLicense/" + $scope.post.Registers.license + ".json", {
+        $scope.load = function(){
+            $http.get("/registers/index.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
-                $scope.checked = true;
-                console.log(result);
-                if(result.data.hasOwnProperty('license')){
-                    $scope.license = result.data.license;
+                $scope.hasLicense = result.data.hasLicense;
+                if($scope.hasLicense){
+                    $scope.post.Registers = result.data.license;
                 }
-
-                if(result.data.hasOwnProperty('error')){
-                    $scope.errors = result.data.error
-                }
-
-                // $scope.license.expire = $scope.formatDate($scope.license.expire);
-                /* console.log($scope.license.expire);
-                 console.log($scope.formatDate($scope.license.expire)); */
+                var licenseResponse = result.data.licenseResponse;
+                handleLicenseResponse(licenseResponse, false);
             });
         };
 
@@ -49,11 +59,8 @@ angular.module('openITCOCKPIT')
             $http.post("/registers/index.json?angular=true",
                 $scope.post
             ).then(function(result){
-
-                console.log('hudeldudel');
-                console.log(result);
-                console.log('Data saved successfully');
-                // window.location.href = '/registers/index';
+                var licenseResponse = result.data.licenseResponse;
+                handleLicenseResponse(licenseResponse, true);
             }, function errorCallback(result){
                 console.log(result);
                 if(result.data.hasOwnProperty('error')){
@@ -65,10 +72,5 @@ angular.module('openITCOCKPIT')
 
         $scope.load();
 
-        $scope.$watch('post.Registers.license', function(){
-            if($scope.post.Registers.license.length > 0){
-                $scope.checkLicense();
-            }
-        }, true);
 
     });

@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 
@@ -23,6 +24,7 @@ use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class RegistersTable extends Table {
+
     use LocatorAwareTrait;
 
     /**
@@ -50,24 +52,14 @@ class RegistersTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmpty('id', 'create');
+            ->allowEmptyString('id', null, 'create');
 
         $validator
             ->scalar('license')
             ->maxLength('license', 37)
             ->requirePresence('license', 'create')
-            ->notEmpty('license');
+            ->notEmptyString('license');
 
-        /* $validator
-             ->boolean('accepted')
-             ->requirePresence('accepted', 'create')
-             ->notEmpty('accepted');
-
-         $validator
-             ->boolean('apt')
-             ->requirePresence('apt', 'create')
-             ->notEmpty('apt');
- */
         return $validator;
     }
 
@@ -90,46 +82,63 @@ class RegistersTable extends Table {
     }
 
     /**
-     * @param $license
+     * @param string $license
      * @return array|bool|null
      */
     public function checkLicenseKey($license) {
-        $TableLocator = $this->getTableLocator();
-        $Proxies = $TableLocator->get('Proxies');
-
-        $prb = new PackagemanagerRequestBuilder(ENVIRONMENT, $license);
-
-        $url = $prb->getUrlForLicenseCheck();
-
-        $http = new Http(
-            $url,
-            $prb->getOptions(),
-            $Proxies->getSettings()
-        );
-
-        $http->sendRequest();
-        $error = $http->getLastError();
-
-        if ($error) {
-            return $error;
+        if(empty($license)){
+            return [
+                'success' => false,
+                'error' => __('Please enter a license key'),
+                'license' => null
+            ];
         }
 
+        $TableLocator = $this->getTableLocator();
+        /** @var ProxiesTable $Proxies */
+        $Proxies = $TableLocator->get('Proxies');
+
+        $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $license);
+        $http = new Http(
+            $packagemanagerRequestBuilder->getUrlForLicenseCheck(),
+            $packagemanagerRequestBuilder->getOptions(),
+            $Proxies->getSettings()
+        );
+        $http->sendRequest();
+        $error = $http->getLastError();
         $response = json_decode($http->data);
+
         if (is_object($response)) {
             //wrong spelled "licence" comes from license server
             if (property_exists($response, 'licence')) {
                 if (!empty($response->licence) && property_exists($response->licence, 'Licence')) {
                     if (!empty($response->licence->Licence) && strtotime($response->licence->Licence->expire) > time()) {
-                        //license is valid
-                        return $response->licence->Licence;
+                        return [
+                            'success' => true,
+                            'error' => null,
+                            'license' => $response->licence->Licence
+                        ];
                     }
                 }
             }
         }
-        return null;
+
+        if($error === false){
+            return [
+                'success' => false,
+                'error' => __('Invalid license key'),
+                'license' => null
+            ];
+        }
+
+        return [
+            'success' => false,
+            'error' => $error,
+            'license' => null
+        ];
     }
 
-    public function getCommunityLicenseKey(){
+    public function getCommunityLicenseKey() {
         return '0dc0d951-e34e-43d0-a5a5-a690738e6a49';
     }
 }

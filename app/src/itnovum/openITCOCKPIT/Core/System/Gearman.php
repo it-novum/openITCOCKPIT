@@ -49,11 +49,7 @@ class Gearman {
         $payload['task'] = $task;
         $payload = serialize($payload);
 
-        if ($this->config['encryption'] === true) {
-            $result = $this->client->doNormal('oitc_gearman', \Security::cipher($payload, $this->config['password']));
-        } else {
-            $result = $this->client->doNormal('oitc_gearman', $payload);
-        }
+        $result = $this->client->doNormal('oitc_gearman', $payload);
 
         $result = @unserialize($result);
         if (!is_array($result)) {
@@ -67,11 +63,7 @@ class Gearman {
         $payload['task'] = $task;
         $payload = serialize($payload);
 
-        if ($this->config['encryption'] === true) {
-            $result = $this->client->doBackground('oitc_gearman', \Security::cipher($payload, $this->config['password']));
-        } else {
-            $result = $this->client->doBackground('oitc_gearman', $payload);
-        }
+        $result = $this->client->doBackground('oitc_gearman', $payload);
 
         $result = @unserialize($result);
         if (!is_array($result)) {

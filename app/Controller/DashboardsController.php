@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\ContainersTable;
+use App\Model\Table\SystemsettingsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeHostListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeServiceListJson;
@@ -77,12 +78,11 @@ class DashboardsController extends AppController {
         if (!$this->isAngularJsRequest()) {
             $askForHelp = false;
             if (!$this->Cookie->check('askAgainForHelp')) {
-                $record = $this->Systemsetting->find('first', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'Systemsetting.key' => 'SYSTEM.ANONYMOUS_STATISTICS'
-                    ]
-                ]);
+
+                /** @var $SystemsettingsTable SystemsettingsTable */
+                $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+                $record = $SystemsettingsTable->getSystemsettingByKeyAsCake2('SYSTEM.ANONYMOUS_STATISTICS');
                 if (!empty($record)) {
                     if ($record['Systemsetting']['value'] === '2') {
                         $askForHelp = true;

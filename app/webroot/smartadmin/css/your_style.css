@@ -2617,6 +2617,9 @@ input[type=text]:focus + .input-group-addon-no-focus {
     color: #FFF;
 }
 
+.code-font {
+    font-family: Monaco,Menlo,Consolas,"Courier New",monospace;
+}
 
 .fc-day-number {
     float: left !important;

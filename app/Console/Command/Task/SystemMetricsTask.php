@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\HostsTable;
+use App\Model\Table\ServicesTable;
+use App\Model\Table\SystemsettingsTable;
 use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
@@ -33,27 +36,16 @@ use itnovum\openITCOCKPIT\Core\System\Health\StatisticsCollector;
  *
  * Send anonymous statistics to report.openitcockpit.io
  *
- * @property Host $Host
- * @property Service $Service
- * @property Systemsetting Systemsetting
  */
 class SystemMetricsTask extends AppShell implements CronjobInterface {
-
-    public $uses = [
-        'Host',
-        'Service',
-        'Systemsetting'
-    ];
 
     function execute($quiet = false) {
         $this->params['quiet'] = $quiet;
 
-        $record = $this->Systemsetting->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Systemsetting.key' => 'SYSTEM.ANONYMOUS_STATISTICS'
-            ]
-        ]);
+        /** @var $SystemsettingsTable SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+        $record = $SystemsettingsTable->getSystemsettingByKeyAsCake2('SYSTEM.ANONYMOUS_STATISTICS');
 
         if (empty($record)) {
             return;
@@ -68,7 +60,12 @@ class SystemMetricsTask extends AppShell implements CronjobInterface {
 
         $this->out('Sending anonymous statistic information...', false);
 
-        $StatisticsCollector = new StatisticsCollector($this->Host, $this->Service);
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $StatisticsCollector = new StatisticsCollector($HostsTable, $ServicesTable);
         $dataToSend = $StatisticsCollector->getData();
 
         $params = [

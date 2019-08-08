@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2019>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,26 +22,34 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-use Cake\ORM\TableRegistry;
+namespace itnovum\openITCOCKPIT\Filter;
 
-class SupportsController extends AppController {
 
-    public $layout = 'blank';
+class UsercontainerrolesFilter extends Filter {
 
-    public function index() {
+    /**
+     * @return array
+     */
+    public function indexFilter() {
+        $filters = [
+            'like' => [
+                'Usercontainerroles.name',
+            ],
+        ];
 
+        return $this->getConditionsByFilters($filters);
     }
 
-    public function issue() {
-        $Registers = TableRegistry::getTableLocator()->get('Registers');
-        $License = $Registers->getLicense();
+    /**
+     * @return array
+     */
+    public function ajaxFilter() {
+        $filters = [
+            'like' => [
+                'Usercontainerroles.name',
+            ],
+        ];
 
-        $hasLicense = false;
-        if(!empty($License)){
-            $hasLicense = true;
-        }
-
-        $this->set('hasLicense', $hasLicense);
+        return $this->getConditionsByFilters($filters);
     }
-
 }

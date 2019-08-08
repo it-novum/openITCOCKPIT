@@ -136,7 +136,7 @@ class ExportsController extends AppController {
 
             Configure::load('gearman');
             $this->Config = Configure::read('gearman');
-            $this->GearmanClient->client->doBackground("oitc_gearman", Security::cipher(serialize(['task' => 'export_start_export', 'backup' => (int)$createBackup]), $this->Config['password']));
+            $this->GearmanClient->client->doBackground("oitc_gearman", serialize(['task' => 'export_start_export', 'backup' => (int)$createBackup]));
             $exportStarted = true;
         }
 
@@ -169,7 +169,7 @@ class ExportsController extends AppController {
         //$this->allowOnlyAjaxRequests();
         Configure::load('gearman');
         $this->Config = Configure::read('gearman');
-        $result = $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'export_verify_config']), $this->Config['password']));
+        $result = $this->GearmanClient->client->doNormal("oitc_gearman", serialize(['task' => 'export_verify_config']));
         $result = unserialize($result);
         $this->set('result', $result);
         $this->set('_serialize', ['result']);

@@ -225,9 +225,6 @@ class GearmanWorkerShell extends AppShell {
         $this->jobIdelCounter = 0;
 
         $payload = $job->workload();
-        if ($this->Config['encryption'] === true) {
-            $payload = Security::cipher($payload, $this->Config['password']);
-        }
 
         $payload = @unserialize($payload);
 
@@ -865,7 +862,7 @@ class GearmanWorkerShell extends AppShell {
             ],
         ];
         $response = $this->Export->save($data);
-        $gearmanClient->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'export_delete_old_configuration']), $this->Config['password']));
+        $gearmanClient->doNormal("oitc_gearman", serialize(['task' => 'export_delete_old_configuration']));
         $this->Export->saveField('finished', 1);
         $this->Export->saveField('successfully', 1);
 
@@ -937,10 +934,10 @@ class GearmanWorkerShell extends AppShell {
         foreach ($tasks as $taskName => $task) {
             if (isset($task['options'])) {
                 //Task with secial options
-                $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName, 'options' => $task['options']]), $this->Config['password']));
+                $gearmanClient->addTask("oitc_gearman", serialize(['task' => $taskName, 'options' => $task['options']]));
             } else {
                 //Normal task
-                $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName]), $this->Config['password']));
+                $gearmanClient->addTask("oitc_gearman", serialize(['task' => $taskName]));
             }
             $this->Export->create();
             $data = [
@@ -1119,7 +1116,7 @@ class GearmanWorkerShell extends AppShell {
                             'text' => __('Copy new monitoring configuration for Satellite [' . $satellite['Satellite']['id'] . '] ' . $satellite['Satellite']['name']),
                         ],
                     ]);
-                    $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => 'export_sync_sat_config', 'Satellite' => $satellite]), $this->Config['password']));
+                    $gearmanClient->addTask("oitc_gearman", serialize(['task' => 'export_sync_sat_config', 'Satellite' => $satellite]));
                 }
                 $gearmanClient->runTasks();
             }

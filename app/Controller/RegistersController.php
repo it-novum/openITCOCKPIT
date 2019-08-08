@@ -23,126 +23,91 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\RegistersTable;
 use Cake\ORM\Locator\LocatorAwareTrait;
-use itnovum\openITCOCKPIT\Core\ValueObjects\License;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
 
 class RegistersController extends AppController {
     use LocatorAwareTrait;
 
-    public $layout = 'angularjs';
-    public $components = ['GearmanClient'];
-
     public function index() {
         $this->layout = 'blank';
-
         if (!$this->isApiRequest()) {
+            //get also the state env for License input autocompletion
+            $disableAutocomplete = ENVIRONMENT === Environments::PRODUCTION;
+            $this->set('disableAutocomplete', $disableAutocomplete);
+
+            //Ship HTML template
             return;
         }
 
         $TableLocator = $this->getTableLocator();
-        $Registers = $TableLocator->get('Registers');
+
+        /** @var RegistersTable $RegistersTable */
+        $RegistersTable = $TableLocator->get('Registers');
+
+        if ($this->request->is('get')) {
+            $license = $RegistersTable->getLicense();
+            $hasLicense = false;
+            if ($license !== null) {
+                $hasLicense = true;
+            }
+
+            $licenseResponse = null;
+            if ($hasLicense) {
+                $licenseResponse = $RegistersTable->checkLicenseKey($license['license']);
+            }
+
+            $this->set('hasLicense', $hasLicense);
+            $this->set('license', $license);
+            $this->set('licenseResponse', $licenseResponse);
+            $this->set('_serialize', ['hasLicense', 'license', 'licenseResponse']);
+            return;
+        }
 
         if ($this->request->is('post')) {
-            $licenseValid = false;
-            $licenseResponse = $Registers->checkLicenseKey($this->request->data['Registers']['license']);
-            if (is_object($licenseResponse) && property_exists($licenseResponse, 'licence')) {
-                //license is valid
-                $licenseValid = true;
-            }
-            $licenseEntity = $Registers->getLicenseEntity();
+            $license = $this->request->data('Registers.license');
 
-            if (is_null($licenseEntity)) {
-                //no license yet
-                $licenseEntity = $Registers->newEntity();
-            }
-            $license = $this->request->data['Registers']['license'];
 
-            $licenseEntity = $Registers->patchEntity($licenseEntity, ['license' => $license]);
+            $licenseResponse = $RegistersTable->checkLicenseKey($license);
+            FileDebugger::dump($licenseResponse);
 
-            if (!empty($licenseValid)) {
-                $this->GearmanClient->sendBackground('create_apt_config', ['key' => $license]);
-                $licenseEntity->apt = true;
+            if ($licenseResponse['success'] === true) {
+                if (is_object($licenseResponse['license']) && property_exists($licenseResponse['license'], 'licence')) {
+                    //license is valid
 
-                if ($Registers->save($licenseEntity)) {
-                    if ($this->isAngularJsRequest()) {
-                        $id = $licenseEntity->id;
-                        $this->set('_serialize', ['id']);
-                        return;
-                    } else {
-                        $this->setFlash(__('License successfully added'));
-                        $this->redirect(['action' => 'index']);
+                    $licenseEntity = $RegistersTable->getLicenseEntity();
+                    if (is_null($licenseEntity)) {
+                        //no license yet
+                        $licenseEntity = $RegistersTable->newEntity();
                     }
-                }
-                if ($this->isAngularJsRequest()) {
-                    $this->serializeErrorMessage();
 
+                    $licenseEntity = $RegistersTable->patchEntity($licenseEntity, ['license' => $license]);
+
+                    $GearmanClient = new Gearman(Configure::read('gearman'));
+                    $GearmanClient->sendBackground('create_apt_config', ['key' => $license]);
+
+                    $licenseEntity->set('apt', 1);
+                    $licenseEntity->set('accepted', 1);
+                    $RegistersTable->save($licenseEntity);
+
+                    if ($licenseEntity->hasErrors()) {
+                        $this->response->statusCode(400);
+                        $this->set('error', $licenseEntity->getErrors());
+                        $this->set('_serialize', ['error']);
+                        return;
+                    }
+
+                    $this->set('licenseResponse', $licenseResponse);
+                    $this->set('_serialize', ['licenseResponse']);
                     return;
-                } else {
-                    $this->setFlash(__('Could not add license'), false);
                 }
             }
 
+            $this->set('licenseResponse', $licenseResponse);
+            $this->set('_serialize', ['licenseResponse']);
         }
     }
 
-    public function loadLicense() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        $TableLocator = $this->getTableLocator();
-        $Registers = $TableLocator->get('Registers');
-        $license = $Registers->getLicense();
-        if ($license == null) {
-            //no license available
-            $license = ['license' => []];
-        }
-        //get also the state env for License input autocompletion
-        $env = ['productionEnv' => ENVIRONMENT === Environments::PRODUCTION];
-        $license = Hash::merge($license, $env);
-        $this->set(compact('license'));
-        $this->set('_serialize', ['license']);
-    }
-
-
-    /**
-     * @param $license License key
-     * @return bool
-     */
-    public function checkLicense($license) {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        $TableLocator = $this->getTableLocator();
-        $Registers = $TableLocator->get('Registers');
-        $response = $Registers->checkLicenseKey($license);
-
-        if (is_object($response) && property_exists($response, 'licence')) {
-            //License found and valid
-
-            //rearrange expire date to user date
-            $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-            $response->expire = $UserTime->format($response->expire);
-
-            $license = $response;
-            $this->set(compact('license'));
-            $this->set('_serialize', ['license']);
-            return;
-        }
-
-        if (is_null($response)) {
-            $license = $response;
-            $this->set(compact('license'));
-            $this->set('_serialize', ['license']);
-            return;
-        }
-
-        if (isset($response['error'])) {
-            $error = $response;
-            $this->set(compact('error'));
-            $this->set('_serialize', ['error']);
-            return;
-        }
-    }
 }

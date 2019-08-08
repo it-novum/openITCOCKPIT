@@ -47,7 +47,7 @@ class BackupsController extends AppController {
         if (!$error) {
             Configure::load('gearman');
             $this->Config = Configure::read('gearman');
-            $this->GearmanClient->client->doBackground("oitc_gearman", Security::cipher(serialize(['task' => 'make_sql_backup', 'filename' => $filenameForBackup]), $this->Config['password']));
+            $this->GearmanClient->client->doBackground("oitc_gearman", serialize(['task' => 'make_sql_backup', 'filename' => $filenameForBackup]));
         }
 
         $backup = [
@@ -63,7 +63,7 @@ class BackupsController extends AppController {
         $pathForRestore = $this->request->query['backupfile'];
         Configure::load('gearman');
         $this->Config = Configure::read('gearman');
-        $this->GearmanClient->client->doBackground("oitc_gearman", Security::cipher(serialize(['task' => 'restore_sql_backup', 'path' => $pathForRestore]), $this->Config['password']));
+        $this->GearmanClient->client->doBackground("oitc_gearman", serialize(['task' => 'restore_sql_backup', 'path' => $pathForRestore]));
         $backup = [
             'backupRunning' => true,
         ];
@@ -83,12 +83,12 @@ class BackupsController extends AppController {
             $finished = true;
             $error = false;
             $this->Config = Configure::read('gearman');
-            $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'delete_sql_backup', 'path' => $fileBackup]), $this->Config['password']));
+            $this->GearmanClient->client->doNormal("oitc_gearman", serialize(['task' => 'delete_sql_backup', 'path' => $fileBackup]));
         } else if (file_exists($fileRestore)) {
             $finished = true;
             $error = false;
             $this->Config = Configure::read('gearman');
-            $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'delete_sql_backup', 'path' => $fileRestore]), $this->Config['password']));
+            $this->GearmanClient->client->doNormal("oitc_gearman", serialize(['task' => 'delete_sql_backup', 'path' => $fileRestore]));
         } else {
             $finished = false;
             $error = false;
@@ -108,7 +108,7 @@ class BackupsController extends AppController {
         $fileToDelete = $this->request->query['fileToDelete'];
 
         $this->Config = Configure::read('gearman');
-        $result = $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'delete_sql_backup', 'path' => $fileToDelete]), $this->Config['password']));
+        $result = $this->GearmanClient->client->doNormal("oitc_gearman", serialize(['task' => 'delete_sql_backup', 'path' => $fileToDelete]));
 
         $result = unserialize($result);
         $backup_files = $this->getBackupFiles();
