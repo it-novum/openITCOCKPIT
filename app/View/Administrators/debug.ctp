@@ -564,7 +564,10 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                 <tr ng-repeat="(queueName, queue) in gearmanStatus"
                     class="{{getGearmanStatusClass(queue.jobs, queue.worker)}}">
                     <td>{{queueName}}</td>
-                    <td>{{queue.jobs}}</td>
+                    <td>
+                        {{queue.jobs}}
+                        <span id="{{queueName}}_sparkline"></span>
+                    </td>
                     <td>{{queue.running}}</td>
                     <td>{{queue.worker}}</td>
                 </tr>

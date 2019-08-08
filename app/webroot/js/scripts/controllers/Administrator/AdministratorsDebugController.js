@@ -13,6 +13,8 @@ angular.module('openITCOCKPIT')
             isGearmanWorkerRunning: true
         };
 
+        $scope.sparklines = {};
+
         var reloadInterval = null;
 
         var initTooltip = function(){
@@ -196,6 +198,22 @@ angular.module('openITCOCKPIT')
                     }, 250);
                 }
 
+                for(var queueName in $scope.gearmanStatus){
+                    var jobs = parseInt($scope.gearmanStatus[queueName].jobs, 10);
+
+                    if(!$scope.sparklines.hasOwnProperty(queueName)){
+                        $scope.sparklines[queueName] = {
+                            values: []
+                        };
+                    }
+
+                    if($scope.sparklines[queueName].values.length > 50){
+                        $scope.sparklines[queueName].values.shift(1, 1);
+                    }
+                    $scope.sparklines[queueName].values.push(jobs);
+                }
+                $scope.updateSparklines();
+
                 if(reloadInterval === null){
                     $scope.startReloadInterval();
                 }
@@ -258,6 +276,12 @@ angular.module('openITCOCKPIT')
                 cssClass = 'txt-color-white bg-warning';
             }
             return cssClass;
+        };
+
+        $scope.updateSparklines = function(){
+            for(var key in $scope.sparklines){
+                var sparkline = $('#' + key + '_sparkline').sparkline($scope.sparklines[key].values, {type: 'line'});
+            }
         };
 
         $scope.startReloadInterval = function(){
