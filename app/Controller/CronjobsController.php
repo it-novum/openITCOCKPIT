@@ -27,11 +27,9 @@ use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class CronjobsController extends AppController {
-    public $layout = 'angularjs';
+    public $layout = 'blank';
 
     public function index() {
-        $this->layout = 'blank';
-
         if (!$this->isApiRequest()) {
             return;
         }

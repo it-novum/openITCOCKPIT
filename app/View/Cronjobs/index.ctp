@@ -30,7 +30,7 @@
             <i class="fa fa-clock-o fa-fw "></i>
             <?php echo __('Administration') ?>
             <span>>
-                <?php echo __('Cronjobs'); ?>
+                <?php echo __('Cron jobs'); ?>
             </span>
         </h1>
     </div>
@@ -49,8 +49,15 @@
                         <?php endif; ?>
                     </div>
 
+                    <div class="widget-toolbar" role="menu">
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+                    </div>
+
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-clock-o"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Cronjobs'); ?> </h2>
+                    <h2 class="hidden-mobile"><?php echo __('Cron jobs overview'); ?> </h2>
 
                 </header>
 
@@ -89,15 +96,34 @@
                                     <td class="text-align-center" ng-if="!cronjob.Cronjob.enabled">
                                         <i class="fa fa-times text-danger"></i>
                                     </td>
-                                    <td class="text-center">
-                                        <!-- modal edit -->
-                                        <a class="cursor-pointer" ng-click="triggerEditModal(cronjob.Cronjob);"
-                                           data-original-title="<?php echo __('Edit'); ?>" data-placement="left"
-                                           rel="tooltip" data-container="body">
-                                            <i class="fa fa-gear fa-lg txt-color-teal"></i>
-                                        </a>
+                                    <td class="width-50">
+                                        <div class="btn-group">
+                                            <?php if ($this->Acl->hasPermission('edit', 'cronjobs')): ?>
+                                                <a ng-click="triggerEditModal(cronjob.Cronjob);"
+                                                   href="javascript:void(0);"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{cronjob.Cronjob.id}}">
+                                                <?php if ($this->Acl->hasPermission('edit', 'cronjobs')): ?>
+                                                    <li>
+                                                        <a ng-click="triggerEditModal(cronjob.Cronjob);"
+                                                           href="javascript:void(0);">
+                                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
                                     </td>
-
                                 </tr>
                                 </tbody>
                             </table>
