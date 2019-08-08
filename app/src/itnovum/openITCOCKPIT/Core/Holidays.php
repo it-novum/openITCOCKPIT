@@ -59,12 +59,53 @@ class Holidays {
                 'start'           => date('Y-m-d', $holiday->getTimestamp()),
                 'title'           => $holidayName,
                 'default_holiday' => true,
-                'className' => 'bg-color-magenta'
+                'className'       => 'bg-color-magenta'
             ];
         }
 
         ksort($filteredHolidays);
         return array_values($filteredHolidays);
+    }
+
+
+    /**
+     * @return array countries as CountryCode => CountryName Array
+     */
+    public function getCountries() {
+        return [
+            'au' => __('Australia'),
+            'at' => __('Austria'),
+            'be' => __('Belgium'),
+            'ba' => __('Bosnia and Herzegovina'),
+            'cz' => __('Czech Republic'),
+            'dk' => __('Denmark'),
+            'ee' => __('Estonia'),
+            'fi' => __('Finland'),
+            'fr' => __('France'),
+            'de' => __('Germany'),
+            'gr' => __('Greece'),
+            'hu' => __('Hungary'),
+            'ie' => __('Ireland'),
+            'it' => __('Italy'),
+            'jp' => __('Japan'),
+            'lv' => __('Latvia'),
+            'lt' => __('Lithuania'),
+            'nl' => __('Netherlands'),
+            'nz' => __('New Zealand'),
+            'no' => __('Norway'),
+            'pl' => __('Poland'),
+            'pt' => __('Portugal'),
+            'ro' => __('Romania'),
+            'ru' => __('Russian Federation'),
+            'sk' => __('Slovakia'),
+            'za' => __('South Africa'),
+            'es' => __('Spain'),
+            'se' => __('Sweden'),
+            'ch' => __('Switzerland'),
+            'ua' => __('Ukraine'),
+            'gb' => __('United Kingdom'),
+            'us' => __('United States')
+        ];
     }
 
     /**

@@ -263,6 +263,19 @@ class CalendarsController extends AppController {
         $this->set('_serialize', ['holidays']);
     }
 
+
+    /**
+     * @throws ReflectionException
+     */
+    public function loadCountryList() {
+        $holiday = new Holidays();
+
+        $countries = $holiday->getCountries();
+        $this->set('countries', $countries);
+        $this->set('_serialize', ['countries']);
+    }
+
+
     public function loadCalendarsByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

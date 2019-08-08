@@ -2,7 +2,7 @@
  * @link https://fullcalendar.io/docs/upgrading-from-v3
  */
 angular.module('openITCOCKPIT')
-    .controller('CalendarsAddController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
+    .controller('CalendarsAddController', function($scope, $http, $state, $stateParams, $q, $compile, NotyService, RedirectService){
 
         $scope.data = {
             createAnother: false
@@ -41,6 +41,7 @@ angular.module('openITCOCKPIT')
          * @type {*[]}
          */
         $scope.events = [];
+        $scope.countries = [];
 
         $scope.init = true;
 
@@ -176,7 +177,52 @@ angular.module('openITCOCKPIT')
             });
 
             $scope.calendar.render();
+            $(".fc-holidays-button")
+                .wrap("<span class='dropdown'></span>")
+                .addClass('btn btn-secondary dropdown-toggle')
+                .attr({
+                    'data-toggle': 'dropdown',
+                    'type': 'button',
+                    'aria-expanded': false,
+                    'aria-haspopup': true,
+                    'id': 'dropdownMenuButton'
+                })
+                .append($('<img/>', {'class': 'flag flag-' + $scope.countryCode}))
+                .append('<span class="caret caret-with-margin-left-5"></span>');
+            $('.fc-holidays-button').parent().append(
+                $('<ul/>', {
+                        'id': 'countryList',
+                        'class': 'dropdown-menu',
+                        'role': 'menu'
+                    }
+                )
+            );
+            for(var key in $scope.countries){
+                $('#countryList').append($compile(
+                    $('<li/>', {
+                        'ng-click': 'setSelected("' + key + '")'
+                    }).append(
+                        $('<a/>', {
+                            'class': 'dropdown-item'
+                        }).append(
+                            $('<img/>', {
+                                'class': 'flag flag-' + key
+                            })
+                        ).append(
+                            $('<span/>', {
+                                'class': 'padding-left-5',
+                                'text': $scope.countries[key]
+                            })
+                        )
+                    )
+                    )($scope)
+                );
+            }
         };
+
+        $scope.setSelected = function(countryCode){
+            $scope.countryCode = countryCode;
+        }
 
         $scope.loadHolidays = function(){
             $http.get('/calendars/loadHolidays/' + $scope.countryCode + '.json', {
@@ -187,33 +233,27 @@ angular.module('openITCOCKPIT')
                 $scope.init = false;
                 $scope.events = result.data.holidays;
                 renderCalendar();
-                setTimeout(function(){
-                    $(".fc-holidays-button").wrap("<span class='dropdown'></span>");
-                    $('.fc-holidays-button').addClass('btn btn-secondary dropdown-toggle');
-                    $('.fc-holidays-button').attr({
-                        'data-toggle': 'dropdown',
-                        'type': 'button',
-                        'aria-expanded': false,
-                        'id': 'dropdownMenuButton'
-                    }).append('<span class="caret"></span>');
-                    $('.fc-holidays-button').parent().append('<ul class="dropdown-menu">' +
-                        '<li><a class="dropdown-item" href="#"><img class="flag flag-de"> Germany</a></li>\n' +
-                        '    <li><a href="#"><img class="flag flag-us"> USA</a></li>\n' +
-                        '    <li><a href="#"><img class="flag flag-se"> Sweden</a></li>\n' +
-                        '  </ul>');
-
-                }, 1000);
             });
         };
 
+
         $scope.load = function(){
-            $http.get("/containers/loadContainersForAngular.json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.containers = result.data.containers;
+            $q.all([
+                $http.get("/containers/loadContainersForAngular.json", {
+                    params: {
+                        'angular': true
+                    }
+                }),
+                $http.get("/calendars/loadCountryList.json", {
+                    params: {
+                        'angular': true
+                    }
+                })
+            ]).then(function(results){
+                $scope.containers = results[0].data.containers;
+                $scope.countries = results[1].data.countries;
                 $scope.init = false;
+                $scope.loadHolidays();
             });
         };
 
@@ -325,7 +365,6 @@ angular.module('openITCOCKPIT')
 
         //Fire on page load
         $scope.load();
-        $scope.loadHolidays();
 
         $scope.$watch('events', function(){
             if($scope.init){
@@ -336,5 +375,12 @@ angular.module('openITCOCKPIT')
                 $scope.calendar.destroy();
             }
             renderCalendar();
+        }, true);
+
+        $scope.$watch('countryCode', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.loadHolidays();
         }, true);
     });
