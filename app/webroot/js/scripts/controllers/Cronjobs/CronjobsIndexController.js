@@ -4,27 +4,6 @@ angular.module('openITCOCKPIT')
         $scope.post = {};
         $scope.editPost = {};
 
-
-        /*** Filter Settings ***/
-/*        var defaultFilter = function(){
-            $scope.filter = {
-                Cronjob: {
-                    Plugin: '',
-                    Task: ''
-                    Interval:0
-                    enabled
-                }
-            };
-        };
-        $scope.showFilter = false;
-        */
-        /*** Filter end ***/
-
-        /*$scope.triggerFilter = function(){
-            $scope.showFilter = !$scope.showFilter === true;
-        };
-        */
-
         $scope.load = function(){
             var params = {
                 'angular': true
@@ -108,11 +87,7 @@ angular.module('openITCOCKPIT')
                 NotyService.genericError();
             });
         };
-/*
-        $scope.resetFilter = function(){
-            defaultFilter();
-        };
-*/
+
         $scope.triggerAddModal = function(){
             $scope.post = {
                 Cronjob: {
@@ -164,15 +139,13 @@ angular.module('openITCOCKPIT')
         };
 
         //Fire on page load
-    //    defaultFilter();
         $scope.load();
 
-        $scope.$watch('post.Cronjob.plugin',function(){
+        $scope.$watch('post.Cronjob.plugin', function(){
             if($scope.post.Cronjob != null){
-                console.log($scope.post.Cronjob.plugin);
                 $scope.loadAvailableCronjobTasks('', $scope.post.Cronjob.plugin, function(){
                 });
             }
-        },true);
+        }, true);
 
     });
