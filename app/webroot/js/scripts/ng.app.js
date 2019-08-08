@@ -1056,6 +1056,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "SystemfailuresAddController"
             })
 
+            .state('NagiostatsIndex', {
+                url: '/nagiostats/index',
+                templateUrl: "/nagiostats/index.html",
+                controller: "NagiostatsIndexController"
+            })
+
             .state('CalendarsIndex', {
                 url: '/calendars/index',
                 templateUrl: "/calendars/index.html",

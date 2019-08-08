@@ -23,18 +23,21 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class NagiostatsController extends AppController {
-    /*
-     * Attention! In this case we load an external Model from the monitoring plugin! The Controller
-     * use this external model to fetch the required data out of the database
-     */
-    public $uses = [MONITORING_NAGIOSTAT];
+use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
 
-    public $components = ['ListFilter.ListFilter', 'RequestHandler'];
-    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
-    public $layout = 'Admin.default';
+class NagiostatsController extends AppController {
+
+    public $layout = 'blank';
 
     public function index() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
 
+        $MonitoringEngine = new MonitoringEngine();
+        $stats = $MonitoringEngine->runNagiostats();
+        $this->set('stats', $stats);
+        $this->set('_serialize', ['stats']);
     }
 }
