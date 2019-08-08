@@ -167,7 +167,7 @@
                                         <div class="jarviswidget">
                                             <header>
                                                 <div class="jarviswidget-ctrls" role="menu"></div>
-                                                <h2><?php echo __('Active Service Checks'); ?> </h2>
+                                                <h2><?php echo __('Additional information'); ?> </h2>
                                             </header>
                                             <div>
                                                 <div class="widget-body no-padding">
@@ -175,41 +175,29 @@
                                                         <thead>
                                                         <tr>
                                                             <th><?php echo __('Key'); ?></th>
-                                                            <th><?php echo __('Min.'); ?></th>
-                                                            <th><?php echo __('Max.'); ?></th>
-                                                            <th>&#216;</th>
+                                                            <th><?php echo __('Value'); ?></th>
                                                         </tr>
                                                         </thead>
                                                         <tbody>
                                                         <tr>
-                                                            <td><?php echo __('Execution time'); ?></td>
-                                                            <td ng-class="{'warning': stats.MINACTSVCEXT > 20000, 'critical': stats.MINACTSVCEXT > 30000}">
-                                                                {{stats.MINACTSVCEXT / 1000}} sec.
-                                                            </td>
-                                                            <td ng-class="{'warning': stats.MAXACTSVCEXT > 20000, 'critical': stats.MAXACTSVCEXT > 30000}">
-                                                                {{stats.MAXACTSVCEXT / 1000}} sec.
-                                                            </td>
-                                                            <td ng-class="{'warning': stats.AVGACTSVCEXT > 20000, 'critical': stats.AVGACTSVCEXT > 30000}">
-                                                                {{stats.AVGACTSVCEXT / 1000}} sec.
-                                                            </td>
+                                                            <td><?php echo __('Version'); ?></td>
+                                                            <td>{{stats.NAGIOSVERSION}}</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><?php echo __('Latency'); ?></td>
-                                                            <td ng-class="{'warning': stats.MINACTSVCLAT > 20000, 'critical': stats.MINACTSVCLAT > 30000}">
-                                                                {{stats.MINACTSVCLAT / 1000}} sec.
-                                                            </td>
-                                                            <td ng-class="{'warning': stats.MAXACTSVCLAT > 20000, 'critical': stats.MAXACTSVCLAT > 30000}">
-                                                                {{stats.MAXACTSVCLAT / 1000}} sec.
-                                                            </td>
-                                                            <td ng-class="{'warning': stats.AVGACTSVCLAT > 20000, 'critical': stats.AVGACTSVCLAT > 30000}">
-                                                                {{stats.AVGACTSVCLAT / 1000}} sec.
-                                                            </td>
+                                                            <td><?php echo __('Core PID'); ?></td>
+                                                            <td>{{stats.NAGIOSPID}}</td>
                                                         </tr>
                                                         <tr>
-                                                            <td><?php echo __('State changes'); ?></td>
-                                                            <td>{{stats.MINACTSVCPSC}} %</td>
-                                                            <td>{{stats.MAXACTSVCPSC}} %</td>
-                                                            <td>{{stats.AVGACTSVCPSC}} %</td>
+                                                            <td><?php echo __('Total hosts'); ?></td>
+                                                            <td>{{stats.NUMHOSTS}}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><?php echo __('Total services'); ?></td>
+                                                            <td>{{stats.NUMSERVICES}}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><?php echo __('Program uptime'); ?></td>
+                                                            <td>{{stats.PROGRUNTIME}}</td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
