@@ -277,6 +277,7 @@ $config = [
                 ],
                 [
                     'url'   => ['controller' => 'nagiostats', 'action' => 'index'],
+                    'state' => 'NagiostatsIndex',
                     'title' => 'Performance Info',
                     'icon'  => 'fighter-jet',
                 ],

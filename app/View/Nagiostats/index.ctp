@@ -23,60 +23,47 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<div id="error_msg"></div>
+
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-fighter-jet fa-fw "></i>
-            <?php echo __('Performance'); ?>
+            <?php echo __('Monitoring Engine'); ?>
             <span>>
-                <?php echo __('Overview'); ?>
-			</span>
+                <?php echo __('Performance'); ?>
+            </span>
+            <div class="third_level">> <?php echo __('Overview'); ?></div>
         </h1>
     </div>
 </div>
 
-<!-- widget grid -->
-<section id="widget-grid" class="">
-    <!-- row -->
+
+<section id="widget-grid">
     <div class="row">
-        <!-- NEW WIDGET START -->
-        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <!-- Widget ID (each widget will need unique ID)-->
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+        <article class="col-xs-12">
+            <div class="jarviswidget jarviswidget-color-blueDark">
                 <header>
-                    <?php
-                    /*
                     <div class="widget-toolbar" role="menu">
-                         <a class="btn btn-xs btn-primary toggle" href="<?php echo $this->here; ?>"><i class="fa fa-refresh"></i> <?php echo __('Refresh'); ?></a>
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
                     </div>
-                     */ ?>
-                    <div class="widget-toolbar" role="menu">
-                        <?php echo __('auto refresh'); ?>:
-                        <div class="pull-right padding-top-8 padding-left-10 padding-right-20" id="autoLoadChart"></div>
-                    </div>
-                    <div class="jarviswidget-ctrls" role="menu"></div>
-                    <span class="widget-icon"> <i class="fa fa-fighter-jet"></i> </span>
-                    <h2><?php echo __('Performance'); ?> </h2>
+                    <span class="widget-icon"> <i class="fa fa-fighter-jet"></i></span>
+                    <h2><?php echo __('Performance information'); ?> </h2>
                 </header>
-                <!-- widget div-->
                 <div>
-                    <!-- widget content -->
                     <div class="widget-body no-padding">
-                        <div> <!-- active services -->
+                        <div>
                             <div class="row">
                                 <div class="padding-10">
-                                    <!-- left row -->
-                                    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4 sortable-grid ui-sortable">
-                                        <div class="jarviswidget jarviswidget-color-white" id="wid-id-1"
-                                             data-widget-editbutton="false">
+                                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
+                                        <div class="jarviswidget">
                                             <header>
                                                 <div class="jarviswidget-ctrls" role="menu"></div>
-                                                <h2><?php echo __('Active Service Checks'); ?> </h2>
+                                                <h2><?php echo __('Executed Active Service Checks'); ?> </h2>
                                             </header>
-                                            <!-- widget div-->
                                             <div>
-                                                <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     <table class="table table-bordered">
                                                         <thead>
@@ -88,43 +75,51 @@
                                                         <tbody>
                                                         <tr>
                                                             <td><= 1 <?php echo __('minute'); ?></td>
-                                                            <td nagiostats="NUMSVCACTCHK1M" unit="" critical="0"></td>
+                                                            <td ng-class="{'critical': stats.NUMSVCACTCHK1M == 0}">
+                                                                {{stats.NUMSVCACTCHK1M}}
+                                                                <span id="NUMSVCACTCHK1M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><= 5 <?php echo __('minutes'); ?></td>
-                                                            <td nagiostats="NUMSVCACTCHK5M" unit="" critical="0"></td>
+                                                            <td ng-class="{'critical': stats.NUMSVCACTCHK5M == 0}">
+                                                                {{stats.NUMSVCACTCHK5M}}
+                                                                <span id="NUMSVCACTCHK5M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><= 15 <?php echo __('minutes'); ?></td>
-                                                            <td nagiostats="NUMSVCACTCHK15M" unit="" critical="0"></td>
+                                                            <td ng-class="{'critical': stats.NUMSVCACTCHK15M == 0}">
+                                                                {{stats.NUMSVCACTCHK15M}}
+                                                                <span id="NUMSVCACTCHK15M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><= 60 <?php echo __('minutes'); ?></td>
-                                                            <td nagiostats="NUMSVCACTCHK60M" unit="" critical="0"></td>
+                                                            <td ng-class="{'critical': stats.NUMSVCACTCHK60M == 0}">
+                                                                {{stats.NUMSVCACTCHK60M}}
+                                                                <span id="NUMSVCACTCHK60M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><?php echo __('Since start'); ?></td>
-                                                            <td nagiostats="NUMSVCCHECKED" unit="" critical="0"></td>
+                                                            <td ng-class="{'critical': stats.NUMSVCCHECKED == 0}">
+                                                                {{stats.NUMSVCCHECKED}}
+                                                            </td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                                <!-- end widget content -->
                                             </div>
-                                            <!-- end widget div -->
                                         </div>
-                                    </article> <!-- end article -->
-                                    <!-- center row -->
-                                    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4 sortable-grid ui-sortable">
-                                        <div class="jarviswidget jarviswidget-color-white" id="wid-id-1"
-                                             data-widget-editbutton="false">
+                                    </article>
+                                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-4 ">
+                                        <div class="jarviswidget">
                                             <header>
                                                 <div class="jarviswidget-ctrls" role="menu"></div>
-                                                <h2><?php echo __('Active Service Checks'); ?> </h2>
+                                                <h2><?php echo __('Active Service Checks Timings'); ?> </h2>
                                             </header>
-                                            <!-- widget div-->
                                             <div>
-                                                <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     <table class="table table-bordered">
                                                         <thead>
@@ -138,48 +133,43 @@
                                                         <tbody>
                                                         <tr>
                                                             <td><?php echo __('Execution time'); ?></td>
-                                                            <td nagiostats="MINACTSVCEXT" unit="s"></td>
-                                                            <td nagiostats="MAXACTSVCEXT" unit="s"></td>
-                                                            <td nagiostats="AVGACTSVCEXT" unit="s" warning="40"
-                                                                critical="60"></td>
+                                                            <td>{{stats.MINACTSVCEXT / 1000}} sec.</td>
+                                                            <td>{{stats.MAXACTSVCEXT / 1000}} sec.</td>
+                                                            <td ng-class="{'warning': stats.AVGACTSVCEXT > 20000, 'critical': stats.AVGACTSVCEXT > 30000}">
+                                                                {{stats.AVGACTSVCEXT / 1000}} sec.
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><?php echo __('Latency'); ?></td>
-                                                            <td nagiostats="MINACTSVCLAT" unit="s" warning="20"
-                                                                critical="50"></td>
-                                                            <td nagiostats="MAXACTSVCLAT" unit="s" warning="20"
-                                                                critical="50"></td>
-                                                            <td nagiostats="AVGACTSVCLAT" unit="s" warning="20"
-                                                                critical="50"></td>
+                                                            <td ng-class="{'warning': stats.MINACTSVCLAT > 20000, 'critical': stats.MINACTSVCLAT > 30000}">
+                                                                {{stats.MINACTSVCLAT / 1000}} sec.
+                                                            </td>
+                                                            <td ng-class="{'warning': stats.MAXACTSVCLAT > 20000, 'critical': stats.MAXACTSVCLAT > 30000}">
+                                                                {{stats.MAXACTSVCLAT / 1000}} sec.
+                                                            </td>
+                                                            <td ng-class="{'warning': stats.AVGACTSVCLAT > 20000, 'critical': stats.AVGACTSVCLAT > 30000}">
+                                                                {{stats.AVGACTSVCLAT / 1000}} sec.
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><?php echo __('State changes'); ?></td>
-                                                            <td nagiostats="MINACTSVCPSC" unit="%"
-                                                            </td>
-                                                            <td nagiostats="MAXACTSVCPSC" unit="%"
-                                                            </td>
-                                                            <td nagiostats="AVGACTSVCPSC" unit="%"
-                                                            </td>
+                                                            <td>{{stats.MINACTSVCPSC}} %</td>
+                                                            <td>{{stats.MAXACTSVCPSC}} %</td>
+                                                            <td>{{stats.AVGACTSVCPSC}} %</td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                                <!-- end widget content -->
                                             </div>
-                                            <!-- end widget div -->
                                         </div>
-                                    </article> <!-- end article -->
-                                    <!-- right row -->
-                                    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4 sortable-grid ui-sortable">
-                                        <div class="jarviswidget jarviswidget-color-white" id="wid-id-1"
-                                             data-widget-editbutton="false">
+                                    </article>
+                                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-4 ">
+                                        <div class="jarviswidget">
                                             <header>
                                                 <div class="jarviswidget-ctrls" role="menu"></div>
                                                 <h2><?php echo __('Additional information'); ?> </h2>
                                             </header>
-                                            <!-- widget div-->
                                             <div>
-                                                <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     <table class="table table-bordered">
                                                         <thead>
@@ -191,54 +181,43 @@
                                                         <tbody>
                                                         <tr>
                                                             <td><?php echo __('Version'); ?></td>
-                                                            <td class="text-primary" nagiostats="NAGIOSVERSION"
-                                                                unit=""></td>
+                                                            <td>{{stats.NAGIOSVERSION}}</td>
                                                         </tr>
                                                         <tr>
                                                             <td><?php echo __('Core PID'); ?></td>
-                                                            <td class="text-primary" nagiostats="NAGIOSPID"
-                                                                unit=""></td>
+                                                            <td>{{stats.NAGIOSPID}}</td>
                                                         </tr>
                                                         <tr>
                                                             <td><?php echo __('Total hosts'); ?></td>
-                                                            <td class="text-primary" nagiostats="NUMHOSTS" unit=""></td>
+                                                            <td>{{stats.NUMHOSTS}}</td>
                                                         </tr>
                                                         <tr>
                                                             <td><?php echo __('Total services'); ?></td>
-                                                            <td class="text-primary" nagiostats="NUMSERVICES"
-                                                                unit=""></td>
+                                                            <td>{{stats.NUMSERVICES}}</td>
                                                         </tr>
                                                         <tr>
                                                             <td><?php echo __('Program uptime'); ?></td>
-                                                            <td class="text-primary" nagiostats="PROGRUNTIME"
-                                                                unit=""></td>
+                                                            <td>{{stats.PROGRUNTIME}}</td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                                <!-- end widget content -->
                                             </div>
-                                            <!-- end widget div -->
                                         </div>
-                                    </article> <!-- end article -->
-                                </div><!-- end pedding -->
-                            </div> <!-- end row -->
-                        </div> <!-- end active services -->
-                        <div> <!-- passive services -->
+                                    </article>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
                             <div class="row">
                                 <div class="padding-10">
-                                    <!-- left row -->
-
-                                    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4 sortable-grid ui-sortable">
-                                        <div class="jarviswidget jarviswidget-color-white" id="wid-id-1"
-                                             data-widget-editbutton="false">
+                                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
+                                        <div class="jarviswidget">
                                             <header>
                                                 <div class="jarviswidget-ctrls" role="menu"></div>
                                                 <h2><?php echo __('Passive Service Checks'); ?> </h2>
                                             </header>
-                                            <!-- widget div-->
                                             <div>
-                                                <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     <table class="table table-bordered">
                                                         <thead>
@@ -250,41 +229,46 @@
                                                         <tbody>
                                                         <tr>
                                                             <td><= 1 <?php echo __('minute'); ?></td>
-                                                            <td nagiostats="NUMSVCPSVCHK1M" unit=""></td>
+                                                            <td>
+                                                                {{stats.NUMSVCPSVCHK1M}}
+                                                                <span id="NUMSVCPSVCHK1M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><= 5 <?php echo __('minutes'); ?></td>
-                                                            <td nagiostats="NUMSVCPSVCHK5M" unit=""></td>
+                                                            <td>
+                                                                {{stats.NUMSVCPSVCHK5M}}
+                                                                <span id="NUMSVCPSVCHK5M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><= 15 <?php echo __('minutes'); ?></td>
-                                                            <td nagiostats="NUMSVCPSVCHK15M" unit=""></td>
+                                                            <td>
+                                                                {{stats.NUMSVCPSVCHK15M}}
+                                                                <span id="NUMSVCPSVCHK15M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><= 60 <?php echo __('minutes'); ?></td>
-                                                            <td nagiostats="NUMSVCPSVCHK60M" unit=""></td>
+                                                            <td>
+                                                                {{stats.NUMSVCPSVCHK60M}}
+                                                                <span id="NUMSVCPSVCHK60M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                                <!-- end widget content -->
                                             </div>
-                                            <!-- end widget div -->
                                         </div>
-                                    </article> <!-- end article -->
-                                    <!-- center row -->
-                                    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4 sortable-grid ui-sortable">
-                                        <div class="jarviswidget jarviswidget-color-white" id="wid-id-1"
-                                             data-widget-editbutton="false">
+                                    </article>
+                                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
+                                        <div class="jarviswidget">
                                             <header>
                                                 <div class="jarviswidget-ctrls" role="menu"></div>
-                                                <h2><?php echo __('Passive Service Checks'); ?> </h2>
+                                                <h2><?php echo __('Processed Passive Service Checks'); ?> </h2>
                                             </header>
-                                            <!-- widget div-->
                                             <div>
-                                                <!-- widget content -->
                                                 <div class="widget-body no-padding" style="min-height: 10px;">
-                                                    <!-- removing min-height :( -->
                                                     <table class="table table-bordered">
                                                         <thead>
                                                         <tr>
@@ -297,35 +281,29 @@
                                                         <tbody>
                                                         <tr>
                                                             <td><?php echo __('State changes'); ?></td>
-                                                            <td nagiostats="MINPSVSVCPSC" unit="%"></td>
-                                                            <td nagiostats="MAXPSVSVCPSC" unit="%"></td>
-                                                            <td nagiostats="AVGPSVSVCPSC" unit="%"></td>
+                                                            <td>{{stats.MINPSVSVCPSC}} %</td>
+                                                            <td>{{stats.MAXPSVSVCPSC}} %</td>
+                                                            <td>{{stats.AVGPSVSVCPSC}} %</td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                                <!-- end widget content -->
                                             </div>
-                                            <!-- end widget div -->
                                         </div>
-                                    </article> <!-- end article -->
-                                </div><!-- end pedding -->
-                            </div> <!-- end row -->
-                        </div> <!-- end passive services -->
-                        <div> <!-- active hosts -->
+                                    </article>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
                             <div class="row">
                                 <div class="padding-10">
-                                    <!-- left row -->
-                                    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4 sortable-grid ui-sortable">
-                                        <div class="jarviswidget jarviswidget-color-white" id="wid-id-1"
-                                             data-widget-editbutton="false">
+                                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
+                                        <div class="jarviswidget">
                                             <header>
                                                 <div class="jarviswidget-ctrls" role="menu"></div>
-                                                <h2><?php echo __('Active Host Checks'); ?> </h2>
+                                                <h2><?php echo __('Executed Active Host Checks'); ?> </h2>
                                             </header>
-                                            <!-- widget div-->
                                             <div>
-                                                <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     <table class="table table-bordered">
                                                         <thead>
@@ -337,43 +315,51 @@
                                                         <tbody>
                                                         <tr>
                                                             <td><= 1 <?php echo __('minute'); ?></td>
-                                                            <td nagiostats="NUMHSTACTCHK1M" unit="" critical="0"></td>
+                                                            <td ng-class="{'critical': stats.NUMHSTACTCHK1M == 0}">
+                                                                {{stats.NUMHSTACTCHK1M}}
+                                                                <span id="NUMHSTACTCHK1M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><= 5 <?php echo __('minutes'); ?></td>
-                                                            <td nagiostats="NUMHSTACTCHK5M" unit="" critical="0"></td>
+                                                            <td ng-class="{'critical': stats.NUMHSTACTCHK5M == 0}">
+                                                                {{stats.NUMHSTACTCHK5M}}
+                                                                <span id="NUMHSTACTCHK5M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><= 15 <?php echo __('minutes'); ?></td>
-                                                            <td nagiostats="NUMHSTACTCHK15M" unit="" critical="0"></td>
+                                                            <td ng-class="{'critical': stats.NUMHSTACTCHK15M == 0}">
+                                                                {{stats.NUMHSTACTCHK15M}}
+                                                                <span id="NUMHSTACTCHK15M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><= 60 <?php echo __('minutes'); ?></td>
-                                                            <td nagiostats="NUMHSTACTCHK60M" unit="" critical="0"></td>
+                                                            <td ng-class="{'critical': stats.NUMHSTACTCHK60M == 0}">
+                                                                {{stats.NUMHSTACTCHK60M}}
+                                                                <span id="NUMHSTACTCHK60M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><?php echo __('Since start'); ?></td>
-                                                            <td nagiostats="NUMHSTCHECKED" unit="" critical="0"></td>
+                                                            <td ng-class="{'critical': stats.NUMHSTCHECKED == 0}">
+                                                                {{stats.NUMHSTCHECKED}}
+                                                            </td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                                <!-- end widget content -->
                                             </div>
-                                            <!-- end widget div -->
                                         </div>
-                                    </article> <!-- end article -->
-                                    <!-- center row -->
-                                    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4 sortable-grid ui-sortable">
-                                        <div class="jarviswidget jarviswidget-color-white" id="wid-id-1"
-                                             data-widget-editbutton="false">
+                                    </article>
+                                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-4 ">
+                                        <div class="jarviswidget">
                                             <header>
                                                 <div class="jarviswidget-ctrls" role="menu"></div>
-                                                <h2><?php echo __('Active Host Checks'); ?> </h2>
+                                                <h2><?php echo __('Active Host Checks Timings'); ?> </h2>
                                             </header>
-                                            <!-- widget div-->
                                             <div>
-                                                <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     <table class="table table-bordered">
                                                         <thead>
@@ -387,53 +373,53 @@
                                                         <tbody>
                                                         <tr>
                                                             <td><?php echo __('Execution time'); ?></td>
-                                                            <td nagiostats="MINACTHSTEXT" unit="s" warning="40"
-                                                                critical="60"></td>
-                                                            <td nagiostats="MAXACTHSTEXT" unit="s" warning="40"
-                                                                critical="60"></td>
-                                                            <td nagiostats="AVGACTHSTEXT" unit="s" warning="40"
-                                                                critical="60"></td>
+                                                            <td ng-class="{'warning': stats.MINACTHSTEXT > 20000, 'critical': stats.MINACTHSTEXT > 30000}">
+                                                                {{stats.MINACTHSTEXT / 1000}} sec.
+                                                            </td>
+                                                            <td ng-class="{'warning': stats.MAXACTHSTEXT > 20000, 'critical': stats.MAXACTHSTEXT > 30000}">
+                                                                {{stats.MAXACTHSTEXT / 1000}} sec.
+                                                            </td>
+                                                            <td ng-class="{'warning': stats.AVGACTHSTEXT > 20000, 'critical': stats.AVGACTHSTEXT > 30000}">
+                                                                {{stats.AVGACTHSTEXT / 1000}} sec.
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><?php echo __('Latency'); ?></td>
-                                                            <td nagiostats="MINACTHSTLAT" unit="s" warning="20"
-                                                                critical="50"></td>
-                                                            <td nagiostats="MAXACTHSTLAT" unit="s" warning="20"
-                                                                critical="50"></td>
-                                                            <td nagiostats="AVGACTHSTLAT" unit="s" warning="20"
-                                                                critical="50"></td>
+                                                            <td ng-class="{'warning': stats.MINACTHSTLAT > 20000, 'critical': stats.MINACTHSTLAT > 30000}">
+                                                                {{stats.MINACTHSTLAT / 1000}} sec.
+                                                            </td>
+                                                            <td ng-class="{'warning': stats.MAXACTHSTLAT > 20000, 'critical': stats.MAXACTHSTLAT > 30000}">
+                                                                {{stats.MAXACTHSTLAT / 1000}} sec.
+                                                            </td>
+                                                            <td ng-class="{'warning': stats.AVGACTHSTLAT > 20000, 'critical': stats.AVGACTHSTLAT > 30000}">
+                                                                {{stats.AVGACTHSTLAT / 1000}} sec.
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><?php echo __('State changes'); ?></td>
-                                                            <td nagiostats="MINACTHSTPSC" unit="%"></td>
-                                                            <td nagiostats="MAXACTHSTPSC" unit="%"></td>
-                                                            <td nagiostats="AVGACTHSTPSC" unit="%"></td>
+                                                            <td>{{stats.MINACTHSTPSC}} %</td>
+                                                            <td>{{stats.MAXACTHSTPSC}} %</td>
+                                                            <td>{{stats.AVGACTHSTPSC}} %</td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                                <!-- end widget content -->
                                             </div>
-                                            <!-- end widget div -->
                                         </div>
-                                    </article> <!-- end article -->
-                                </div><!-- end pedding -->
-                            </div> <!-- end row -->
-                        </div> <!-- end active hosts -->
-                        <div> <!-- passive hosts -->
+                                    </article>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
                             <div class="row">
                                 <div class="padding-10">
-                                    <!-- left row -->
-                                    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4 sortable-grid ui-sortable">
-                                        <div class="jarviswidget jarviswidget-color-white" id="wid-id-1"
-                                             data-widget-editbutton="false">
+                                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
+                                        <div class="jarviswidget">
                                             <header>
                                                 <div class="jarviswidget-ctrls" role="menu"></div>
-                                                <h2><?php echo __('Passive Host Checks'); ?> </h2>
+                                                <h2><?php echo __('Processed Passive Host Checks'); ?> </h2>
                                             </header>
-                                            <!-- widget div-->
                                             <div>
-                                                <!-- widget content -->
                                                 <div class="widget-body no-padding">
                                                     <table class="table table-bordered">
                                                         <thead>
@@ -445,41 +431,46 @@
                                                         <tbody>
                                                         <tr>
                                                             <td><= 1 <?php echo __('minute'); ?></td>
-                                                            <td nagiostats="NUMHSTPSVCHK1M" unit=""></td>
+                                                            <td>
+                                                                {{stats.NUMHSTPSVCHK1M}}
+                                                                <span id="NUMHSTPSVCHK1M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><= 5 <?php echo __('minutes'); ?></td>
-                                                            <td nagiostats="NUMHSTPSVCHK5M" unit=""></td>
+                                                            <td>
+                                                                {{stats.NUMHSTPSVCHK5M}}
+                                                                <span id="NUMHSTPSVCHK5M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><= 15 <?php echo __('minutes'); ?></td>
-                                                            <td nagiostats="NUMHSTPSVCHK15M" unit=""></td>
+                                                            <td>
+                                                                {{stats.NUMHSTPSVCHK15M}}
+                                                                <span id="NUMHSTPSVCHK15M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td><= 60 <?php echo __('minutes'); ?></td>
-                                                            <td nagiostats="NUMHSTPSVCHK60M" unit=""></td>
+                                                            <td>
+                                                                {{stats.NUMHSTPSVCHK60M}}
+                                                                <span id="NUMHSTPSVCHK60M_sparkline"></span>
+                                                            </td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                                <!-- end widget content -->
                                             </div>
-                                            <!-- end widget div -->
                                         </div>
-                                    </article> <!-- end article -->
-                                    <!-- center row -->
-                                    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4 sortable-grid ui-sortable">
-                                        <div class="jarviswidget jarviswidget-color-white" id="wid-id-1"
-                                             data-widget-editbutton="false">
+                                    </article>
+                                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
+                                        <div class="jarviswidget">
                                             <header>
                                                 <div class="jarviswidget-ctrls" role="menu"></div>
                                                 <h2><?php echo __('Passive Host Checks'); ?> </h2>
                                             </header>
-                                            <!-- widget div-->
                                             <div>
-                                                <!-- widget content -->
                                                 <div class="widget-body no-padding" style="min-height: 10px;">
-                                                    <!-- removing min-height :( -->
                                                     <table class="table table-bordered">
                                                         <thead>
                                                         <tr>
@@ -492,29 +483,22 @@
                                                         <tbody>
                                                         <tr>
                                                             <td><?php echo __('State changes'); ?></td>
-                                                            <td nagiostats="MINPSVHSTPSC" unit="%"></td>
-                                                            <td nagiostats="MAXPSVHSTPSC" unit="%"></td>
-                                                            <td nagiostats="AVGPSVHSTPSC" unit="%"></td>
+                                                            <td>{{stats.MINPSVHSTPSC}} %</td>
+                                                            <td>{{stats.MAXPSVHSTPSC}} %</td>
+                                                            <td>{{stats.AVGPSVHSTPSC}} %</td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
-                                                <!-- end widget content -->
                                             </div>
-                                            <!-- end widget div -->
                                         </div>
-                                    </article> <!-- end article -->
-                                </div><!-- end pedding -->
-                            </div> <!-- end row -->
+                                    </article>
+                                </div>
+                            </div>
                             <br/>
-                        </div> <!-- end passive hosts -->
+                        </div>
                     </div>
-                    <!-- end widget content -->
                 </div>
-                <!-- end widget div -->
             </div>
-            <!-- end widget -->
     </div>
-    <!-- end row -->
 </section>
-<!-- end widget grid -->

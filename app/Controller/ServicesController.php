@@ -839,6 +839,7 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
+        /** @var \App\Model\Entity\Service $service */
         $service = $ServicesTable->find()
             ->contain([
                 'ServiceescalationsServiceMemberships',
@@ -856,7 +857,7 @@ class ServicesController extends AppController {
         $Constants = new Constants();
         $moduleConstants = $Constants->getModuleConstants();
 
-        $usedBy = $service->isUsedByModules($service, $moduleConstants);
+        $usedBy = $service->isUsedByModules($moduleConstants);
         $User = new User($this->Auth);
         if (empty($usedBy)) {
             //Not used by any module

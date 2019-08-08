@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Nagiostat
+ * @deprecated
+ */
 class Nagiostat extends NagiosModuleAppModel {
     public $useTable = false;
     public $MRTG = [
@@ -131,6 +135,10 @@ class Nagiostat extends NagiosModuleAppModel {
 
     public $delimiter = '|';
 
+    /**
+     * @return string
+     * @deprecated
+     */
     public function command() {
         Configure::load('nagios');
         return sprintf(
@@ -144,6 +152,11 @@ class Nagiostat extends NagiosModuleAppModel {
         );
     }
 
+    /**
+     * @param $result
+     * @return array|false
+     * @deprecated
+     */
     public function mergeResult($result) {
 
         /*

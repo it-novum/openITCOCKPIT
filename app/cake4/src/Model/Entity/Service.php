@@ -313,11 +313,10 @@ class Service extends Entity {
     }
 
     /**
-     * @param $service
      * @param $moduleConstants
      * @return array
      */
-    public function isUsedByModules($service, $moduleConstants) {
+    public function isUsedByModules($moduleConstants) {
         $usedBy = [];
         foreach ($moduleConstants as $moduleName => $value) {
             if ($this->get('usage_flag') & $value) {
