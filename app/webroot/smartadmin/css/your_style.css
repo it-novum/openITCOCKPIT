@@ -2618,7 +2618,41 @@ input[type=text]:focus + .input-group-addon-no-focus {
 }
 
 .code-font {
-    font-family: Monaco,Menlo,Consolas,"Courier New",monospace;
+    font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+}
+
+.credits-container {
+    background: #000;
+    width: 100%;
+    text-align: center;
+
+    color: #f9f9f9;
+    text-shadow: 0 0 7px #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+}
+
+#credits{
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+}
+
+.credits-h1 {
+    font-size: 60px;
+    font-weight: bold;
+}
+
+.credits-h2 {
+    font-size: 45px;
+    font-weight: bold;
+}
+
+.credits-fineprint {
+    color: #888888;
+    font-size: 15px;
+    padding-top: 15px;
+    font-family: sans-serif;
 }
 
 .fc-day-number {

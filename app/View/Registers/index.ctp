@@ -42,6 +42,14 @@
         <h2>
             <?php echo __('Register this openITCOCKPIT instance'); ?>
         </h2>
+
+        <div class="widget-toolbar" role="menu">
+            <button type="button" class="btn btn-default btn-xs" ng-click="toggleFullscreenMode();">
+                <i class="fa fa-heart"></i>
+                <?php echo __('Credits'); ?>
+            </button>
+        </div>
+
     </header>
     <div class="widget-body">
         <form ng-submit="submit();" class="form-horizontal">
@@ -118,5 +126,76 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+
+<div class="credits-container" id="credits-container" style="display:none;">
+    <div id="credits">
+        <h1 class="credits-h1">openITCOCKPIT</h1>
+        <br/>
+
+        <h2 class="credits-h2">Developers</h2>
+        <dl>
+            <dd>Irina Bering</dd>
+            <dd>Daniel Ziegler</dd>
+            <dd>Maximilian Pappert</dd>
+            <dd>Timo Triebensky</dd>
+        </dl>
+
+
+        <h2 class="credits-h2">Special Thanks</h2>
+        <p>Stephan Kraus, Oliver Müller, Laziz Karimov, Robert Braun,<br/>
+            René Kleffel, Michael Ziegler, Jonas Rottmann,<br/>
+            Johannes Drummer, Jens Michelsons, Jeremy Eder and more...</p>
+
+        <h2 class="credits-h2">Special Thanks</h2>
+        <p>Thanks to all the developers for the beautiful libraries.</p>
+
+        <h2 class="credits-h2">Powered by</h2>
+        <p>
+            <img src="/img/logos/php.png">
+        </p>
+
+        <p>
+            <img src="/img/logos/We-bake-with-CakePHP.png" style="width: 300px;">
+        </p>
+
+        <p>
+            <img src="/img/logos/jquery.png">
+        </p>
+
+        <p>
+            <img src="/img/logos/jquery_ui.png" >
+        </p>
+
+        <p>
+            <img src="/img/logos/AngularJS-medium.png">
+        </p>
+
+        <p class="padding-top-80">
+            <img src="/img/logos/Statusengine_dark.png">
+        </p>
+
+        <div class="credits-fineprint">All trademarks are the property of the trademark owners.</div>
+
+        <br/>
+        <br/>
+        <h2 class="credits-h2">Sponsored by it-novum</h2>
+        <p>
+            <img src="/img/logos/it-novum.png">
+        </p>
+
+        <br/>
+        <br/>
+        <br/>
+        <p id="credits-oitc-logo">
+            <img src="/img/logos/openITCOCKPIT_dark.png" style="width: 600px;">
+        </p>
+
+        <br />
+        <br />
+        <div class="credits-fineprint">Press ESC to exit</div>
+
     </div>
 </div>

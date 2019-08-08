@@ -9,6 +9,19 @@ angular.module('openITCOCKPIT')
 
         $scope.license = {};
         $scope.valid = false;
+        $scope.scrollInterval = null;
+
+        document.addEventListener("fullscreenchange", function(){
+            if(document.fullscreenElement === null){
+                $scope.fullscreen = false;
+
+                if($scope.scrollInterval !== null){
+                    clearInterval($scope.scrollInterval);
+                }
+                $('#credits-container').hide();
+            }
+
+        }, false);
 
         var handleLicenseResponse = function(licenseResponse, showNotyMsg){
             if(licenseResponse.success === true){
@@ -67,6 +80,67 @@ angular.module('openITCOCKPIT')
                     $scope.errors = result.data.error;
                 }
             });
+        };
+
+        $scope.toggleFullscreenMode = function(){
+
+            $('#credits-container').show();
+
+            var elem = document.getElementById('credits-container');
+            if($scope.fullscreen === true){
+                if(document.exitFullscreen){
+                    document.exitFullscreen();
+                }else if(document.webkitExitFullscreen){
+                    document.webkitExitFullscreen();
+                }else if(document.mozCancelFullScreen){
+                    document.mozCancelFullScreen();
+                }else if(document.msExitFullscreen){
+                    document.msExitFullscreen();
+                }
+            }else{
+                if(elem.requestFullscreen){
+                    elem.requestFullscreen();
+                }else if(elem.mozRequestFullScreen){
+                    elem.mozRequestFullScreen();
+                }else if(elem.webkitRequestFullscreen){
+                    elem.webkitRequestFullscreen();
+                }else if(elem.msRequestFullscreen){
+                    elem.msRequestFullscreen();
+                }
+
+                $('#credits-container').css({
+                    'width': $(window).width(),
+                    'height': $(window).height()
+                });
+
+                //Move credits to the bottom out of the monitor
+                var bottom = $('#credits').height() + 10;
+                bottom = bottom * -1;
+                $('#credits').css('bottom', bottom + 'px');
+
+                var stopPosition = ($(window).height() / 2) - (114 / 2); //114 is height of oITC logo in px
+                var stopInterval = ($(window).height() / 2) + 100;
+                var marginTop = 1;
+
+                $scope.scrollInterval = null;
+                $scope.scrollInterval = setInterval(function(){
+                    var bottom = parseInt($('#credits').css('bottom'), 10);
+                    bottom++;
+                    if(bottom > stopPosition){
+                        marginTop++;
+                        $('#credits-oitc-logo').css('margin-top', marginTop + 'px');
+                    }else{
+                        $('#credits').css('bottom', bottom + 'px');
+                    }
+
+                    if(marginTop > stopInterval){
+                        clearInterval($scope.scrollInterval);
+                    }
+
+                }, 15);
+
+                $scope.fullscreen = true;
+            }
         };
 
 
