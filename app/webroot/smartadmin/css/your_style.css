@@ -2662,6 +2662,13 @@ input[type=text]:focus + .input-group-addon-no-focus {
 .fc-holidays-button {
     background-color: #5cb85c !important;
     border-color: #449D44 !important;
+    color: #ffffff;
+}
+
+.fc-holidays-button:hover,
+.fc-holidays-button:active,
+.fc-holidays-button:focus {
+    color: #ffffff;
 }
 
 .fc-deleteallholidays-button {
@@ -2673,4 +2680,8 @@ input[type=text]:focus + .input-group-addon-no-focus {
 .fc-deleteallevents-button {
     background-color: #d9534f !important;
     border-color: #a94442 !important;
+}
+
+.caret-with-margin-left-5{
+    margin-left: 5px!important;
 }

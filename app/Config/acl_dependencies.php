@@ -215,8 +215,8 @@ $config = [
                 'index' => ['tenantBrowser', 'locationBrowser', 'nodeBrowser'],
             ],
             'Calendars'             => [
-                'add'    => ['loadHolidays'],
-                'edit'   => ['loadHolidays'],
+                'add'    => ['loadHolidays', 'loadCountryList'],
+                'edit'   => ['loadHolidays', 'loadCountryList'],
             ],
             'Commands'              => [
                 'index' => ['view'],
