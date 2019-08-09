@@ -38,6 +38,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.init = true;
 
         $scope.load = function(){
             $http.get("/users/editFromLdap/" + $scope.id + ".json", {
@@ -65,6 +66,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.usercontainerroles = result.data.usercontainerroles;
                 $scope.usercontainerrolePermissions = result.data.usercontainerrolePermissions;
+                $scope.init = false;
             });
         };
 
@@ -183,7 +185,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.$watch('post.User.usercontainerroles._ids', function(){
-            if($scope.post.User.usercontainerroles._ids.length > 0){
+            if($scope.post.User.usercontainerroles._ids.length > 0 && !$scope.init){
                 $scope.chosenContainerroles = {};
                 $scope.post.User.usercontainerroles._ids.forEach(function(k){
                     for(var i in $scope.usercontainerrolePermissions[k]){
