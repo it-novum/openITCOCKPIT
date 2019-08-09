@@ -10,7 +10,7 @@ angular.module('openITCOCKPIT')
                 'samaccountname': null, //username
                 'firstname': '',
                 'lastname': '',
-                'is_active':true,
+                'is_active': true,
                 'company': null,
                 'position': null,
                 'phone': null,

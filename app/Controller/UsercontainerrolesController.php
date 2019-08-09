@@ -190,10 +190,10 @@ class UsercontainerrolesController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
+        $usercontainerrolesFilter = new UsercontainerrolesFilter($this->request);
         /** @var $UsercontainerrolesTable Usercontainerroles */
         $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
-
-        $usercontainerroles = $UsercontainerrolesTable->getUsercontainerroles($this->MY_RIGHTS);
+        $usercontainerroles = $UsercontainerrolesTable->getUsercontainerroles($this->MY_RIGHTS, $usercontainerrolesFilter);
         $ucr = [];
         $usercontainerrolePermissions = [];
         foreach ($usercontainerroles as $ucrKey => $ucrValue) {
