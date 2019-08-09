@@ -419,8 +419,10 @@ class UsersTable extends Table {
         }
 
         if (!empty($user['usercontainerroles'])) {
-            $usercontaienroles = $this->usercontainerolePermissionsForAngular($user['usercontainerroles']);
-            $user = array_merge($user, $usercontaienroles);
+            $usercontainerroles = $this->usercontainerolePermissionsForAngular($user['usercontainerroles']);
+            $user = array_merge($user, $usercontainerroles);
+        } else {
+            $user['usercontainerroles'] = ['_ids' => []];
         }
         return $user;
     }
@@ -597,7 +599,7 @@ class UsersTable extends Table {
     public function getUserById($id) {
         $query = $this->find('all')
             ->disableHydration()
-            ->contain(['Containers'])
+            ->contain(['Containers', 'Usercontainerroles' => 'Containers'])
             ->where([
                 'Users.id' => $id
             ]);

@@ -205,15 +205,45 @@ class AppController extends Controller {
     protected function __getUserRights() {
         /** @var $Users App\Model\Table\UsersTable */
         $Users = TableRegistry::getTableLocator()->get('Users');
-        //The user is logedIn, so we need to select container permissions out of DB
+        //The user is loggedIn, so we need to select container permissions out of DB
         $_user = $Users->getUserById($this->Auth->user('id'));
-        $User = new User($this->Auth);
 
+        $User = new User($this->Auth);
         $cacheKey = 'userPermissions_' . $User->getId();
 
         if (!Cache::read($cacheKey, 'permissions')) {
             /** @var $ContainersTable ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            //unify the usercontainerrole permissions
+            $usercontainerrolePermissions = [];
+            foreach ($_user['usercontainerroles'] as $usercontainerrole){
+                foreach ($usercontainerrole['containers'] as $usercontainerroleContainer){
+                    $currentId = $usercontainerroleContainer['id'];
+                    if(isset($usercontainerrolePermissions[$currentId])){
+                        //highest usercontainerrole permission wins
+                        if($usercontainerrolePermissions[$currentId]['_joinData']['permission_level'] < $usercontainerroleContainer['_joinData']['permission_level']){
+                            $usercontainerrolePermissions[$currentId] = $usercontainerroleContainer;
+                            continue;
+                        }
+                    }else{
+                        $usercontainerrolePermissions[$currentId] = $usercontainerroleContainer;
+                    }
+                }
+            }
+
+            //merge permissions from usercontainerrole with the user container permissions
+            //User container permissions override permissions from the role
+            $containerPermissions = [];
+            foreach ($usercontainerrolePermissions as $usercontainerrolePermission){
+                $containerPermissions[$usercontainerrolePermission['id']] = $usercontainerrolePermission;
+                foreach ($_user['containers'] as $container){
+                    $containerPermissions[$container['id']] = $container;
+                }
+            }
+
+            //user container permissions AND usercontainerrole permissions
+            $_user['containers'] = $containerPermissions;
 
             $rights = [ROOT_CONTAINER];
             $rights_levels = [ROOT_CONTAINER => READ_RIGHT];
