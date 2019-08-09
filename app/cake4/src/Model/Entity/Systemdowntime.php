@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -20,12 +21,9 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
  *
- * @property \App\Model\Entity\Objecttype $objecttype
  * @property \App\Model\Entity\Object $object
- * @property \App\Model\Entity\Downtimetype $downtimetype
  */
-class Systemdowntime extends Entity
-{
+class Systemdowntime extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -36,20 +34,18 @@ class Systemdowntime extends Entity
      * @var array
      */
     protected $_accessible = [
-        'objecttype_id' => true,
-        'object_id' => true,
+        'objecttype_id'   => true,
+        'object_id'       => true,
         'downtimetype_id' => true,
-        'weekdays' => true,
-        'day_of_month' => true,
-        'from_time' => true,
-        'to_time' => true,
-        'duration' => true,
-        'comment' => true,
-        'author' => true,
-        'created' => true,
-        'modified' => true,
-        'objecttype' => true,
-        'object' => true,
-        'downtimetype' => true
+        'weekdays'        => true,
+        'day_of_month'    => true,
+        'from_time'       => true,
+        'to_time'         => true,
+        'duration'        => true,
+        'comment'         => true,
+        'author'          => true,
+        'created'         => true,
+        'modified'        => true,
+        'objecttype'      => true
     ];
 }

@@ -24,14 +24,21 @@
 //	confirmation.
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
+use App\Model\Table\SystemdowntimesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\AngularRequest;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\SystemdowntimesFilter;
 
 
 /**
+ * @property AppPaginatorComponent $Paginator
+ * @property DbBackend $DbBackend
+ * @property AppAuthComponent $Auth
+ *
  * @property Systemdowntime $Systemdowntime
  * @property Host $Host
  * @property Service $Service
@@ -60,42 +67,41 @@ class SystemdowntimesController extends AppController {
     ];
     public $layout = 'blank';
 
-    /**
-     * @deprecated
-     */
     public function host() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
 
-        $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $AngularRequest = new AngularRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularRequest->getPage());
+
+        $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $Conditions = new SystemdowntimesConditions();
 
+        //Process conditions
         $Conditions->setContainerIds($this->MY_RIGHTS);
-        $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntime.from_time', 'desc'));
+        $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntimes.from_time', 'desc'));
+        $Conditions->setConditions($SystemdowntimesFilter->hostFilter());
 
+        /** @var $SystemdowntimesTable SystemdowntimesTable */
+        $SystemdowntimesTable = TableRegistry::getTableLocator()->get('Systemdowntimes');
 
-        $this->Paginator->settings = $this->Systemdowntime->getRecurringHostDowntimesQuery($Conditions, $SystemdowntimesFilter->hostFilter());
-        $this->Paginator->settings['page'] = $AngularRequest->getPage();
+        $recurringHostDowntimes = $SystemdowntimesTable->getRecurringHostDowntimes($Conditions, $PaginateOMat);
 
-        $hostRecurringDowntimes = $this->Paginator->paginate(
-            $this->Systemdowntime->alias,
-            [],
-            [key($this->Paginator->settings['order'])]
-        );
-
+        //Prepare data for API
         $all_host_recurring_downtimes = [];
-        foreach ($hostRecurringDowntimes as $hostRecurringDowntime) {
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($hostRecurringDowntime);
-            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($hostRecurringDowntime);
+        foreach ($recurringHostDowntimes as $recurringHostDowntime) {
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
-                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $Host->getContainerIds());
+                $containerIds = \Cake\Utility\Hash::extract($recurringHostDowntime['host']['hosts_to_containers_sharing'], '{n}.id');
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
+
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($recurringHostDowntime['host']);
+            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($recurringHostDowntime);
 
             $tmpRecord = [
                 'Host'           => $Host->toArray(),
@@ -106,8 +112,11 @@ class SystemdowntimesController extends AppController {
         }
 
         $this->set('all_host_recurring_downtimes', $all_host_recurring_downtimes);
-        $this->set('_serialize', ['all_host_recurring_downtimes', 'paging']);
-
+        $toJson = ['all_host_recurring_downtimes', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_host_recurring_downtimes', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     /**

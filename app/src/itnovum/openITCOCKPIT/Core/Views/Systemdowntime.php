@@ -54,26 +54,26 @@ class Systemdowntime {
      * @param array $systemdowntime
      */
     public function __construct($systemdowntime) {
-        $this->id = (int)$systemdowntime['Systemdowntime']['id'];
-        $this->objecttypeId = (int)$systemdowntime['Systemdowntime']['objecttype_id'];
-        $this->objectId = (int)$systemdowntime['Systemdowntime']['object_id'];
-        $this->downtimeTypeId = (int)$systemdowntime['Systemdowntime']['downtimetype_id'];
+        $this->id = (int)$systemdowntime['id'];
+        $this->objecttypeId = (int)$systemdowntime['objecttype_id'];
+        $this->objectId = (int)$systemdowntime['object_id'];
+        $this->downtimeTypeId = (int)$systemdowntime['downtimetype_id'];
 
-        $this->weekdays = explode(',', $systemdowntime['Systemdowntime']['weekdays']);
-        if (empty($systemdowntime['Systemdowntime']['weekdays'])) {
+        $this->weekdays = explode(',', $systemdowntime['weekdays']);
+        if (empty($systemdowntime['weekdays'])) {
             $this->weekdays = [];
         }
 
         $this->weekdaysHuman = $this->getHumanWeekDays();
 
-        $this->dayOfMonth = explode(',', $systemdowntime['Systemdowntime']['day_of_month']);
-        if (empty($systemdowntime['Systemdowntime']['day_of_month'])) {
+        $this->dayOfMonth = explode(',', $systemdowntime['day_of_month']);
+        if (empty($systemdowntime['day_of_month'])) {
             $this->dayOfMonth = [];
         }
-        $this->startTime = $systemdowntime['Systemdowntime']['from_time'];
-        $this->duration = (int)$systemdowntime['Systemdowntime']['duration'];
-        $this->comment = $systemdowntime['Systemdowntime']['comment'];
-        $this->author = $systemdowntime['Systemdowntime']['author'];
+        $this->startTime = $systemdowntime['from_time'];
+        $this->duration = (int)$systemdowntime['duration'];
+        $this->comment = $systemdowntime['comment'];
+        $this->author = $systemdowntime['author'];
     }
 
     /**

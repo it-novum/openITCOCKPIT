@@ -1,17 +1,18 @@
 <?php
+
 namespace App\Model\Table;
 
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
  * Systemdowntimes Model
  *
- * @property \App\Model\Table\ObjecttypesTable|\Cake\ORM\Association\BelongsTo $Objecttypes
- * @property \App\Model\Table\ObjectsTable|\Cake\ORM\Association\BelongsTo $Objects
- * @property \App\Model\Table\DowntimetypesTable|\Cake\ORM\Association\BelongsTo $Downtimetypes
  *
  * @method \App\Model\Entity\Systemdowntime get($primaryKey, $options = [])
  * @method \App\Model\Entity\Systemdowntime newEntity($data = null, array $options = [])
@@ -24,16 +25,17 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class SystemdowntimesTable extends Table
-{
+class SystemdowntimesTable extends Table {
+
+    use PaginationAndScrollIndexTrait;
+
     /**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         parent::initialize($config);
 
         $this->setTable('systemdowntimes');
@@ -42,14 +44,13 @@ class SystemdowntimesTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Objecttypes', [
-            'foreignKey' => 'objecttype_id'
-        ]);
-        $this->belongsTo('Objects', [
-            'foreignKey' => 'object_id'
-        ]);
-        $this->belongsTo('Downtimetypes', [
-            'foreignKey' => 'downtimetype_id'
+        $this->belongsTo('Hosts', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER',
+            'className'  => 'Hosts',
+            //'conditions' => [
+            //    'Systemdowntimes.objecttype_id' => OBJECT_HOST
+            //]
         ]);
     }
 
@@ -59,8 +60,7 @@ class SystemdowntimesTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -110,12 +110,70 @@ class SystemdowntimesTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules)
-    {
-        $rules->add($rules->existsIn(['objecttype_id'], 'Objecttypes'));
-        $rules->add($rules->existsIn(['object_id'], 'Objects'));
-        $rules->add($rules->existsIn(['downtimetype_id'], 'Downtimetypes'));
-
+    public function buildRules(RulesChecker $rules) {
         return $rules;
+    }
+
+
+    /**
+     * @param SystemdowntimesConditions $SystemdowntimesConditions
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
+     */
+    public function getRecurringHostDowntimes(SystemdowntimesConditions $SystemdowntimesConditions, $PaginateOMat = null) {
+        $MY_RIGHTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 81, 26, 62, 61, 8];
+
+        $query = $this->find()
+            ->select([
+                'Systemdowntimes.id',
+                'Systemdowntimes.objecttype_id',
+                'Systemdowntimes.object_id',
+                'Systemdowntimes.downtimetype_id',
+                'Systemdowntimes.weekdays',
+                'Systemdowntimes.day_of_month',
+                'Systemdowntimes.from_time',
+                'Systemdowntimes.to_time',
+                'Systemdowntimes.duration',
+                'Systemdowntimes.comment',
+                'Systemdowntimes.author',
+            ])
+            ->contain([
+                'Hosts' => function (Query $query) use ($MY_RIGHTS) {
+                    $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                        if (!empty($MY_RIGHTS)) {
+                            return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+                        }
+                        return $q;
+                    });
+                    $query->contain('HostsToContainersSharing');
+                    return $query;
+                }
+            ])
+            ->andWhere([
+                'Systemdowntimes.objecttype_id' => OBJECT_HOST
+            ]);
+
+        if ($SystemdowntimesConditions->hasConditions()) {
+            $query->andWhere($SystemdowntimesConditions->getConditions());
+        }
+
+        $query->group([
+            'Systemdowntimes.id'
+        ])
+            ->order($SystemdowntimesConditions->getOrder())
+            ->disableHydration();
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
     }
 }
