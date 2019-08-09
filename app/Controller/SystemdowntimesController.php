@@ -61,6 +61,9 @@ class SystemdowntimesController extends AppController {
     public $layout = 'Admin.default';
 
 
+    /**
+     * @deprecated
+     */
     public function index() {
         if (isset($this->PERMISSIONS['systemdowntimes']['host'])) {
             $this->redirect(['action' => 'host']);
@@ -81,6 +84,9 @@ class SystemdowntimesController extends AppController {
         $this->render403();
     }
 
+    /**
+     * @deprecated
+     */
     public function host() {
         $this->layout = 'blank';
 
@@ -130,6 +136,9 @@ class SystemdowntimesController extends AppController {
 
     }
 
+    /**
+     * @deprecated
+     */
     public function service() {
         $this->layout = 'blank';
 
@@ -207,6 +216,9 @@ class SystemdowntimesController extends AppController {
         $this->set('_serialize', ['all_service_recurring_downtimes', 'paging']);
     }
 
+    /**
+     * @deprecated
+     */
     public function hostgroup() {
         $this->layout = 'blank';
 
@@ -255,6 +267,9 @@ class SystemdowntimesController extends AppController {
         $this->set('_serialize', ['all_hostgroup_recurring_downtimes', 'paging']);
     }
 
+    /**
+     * @deprecated
+     */
     public function node() {
         $this->layout = 'blank';
 
@@ -302,6 +317,9 @@ class SystemdowntimesController extends AppController {
         $this->set('_serialize', ['all_node_recurring_downtimes', 'paging']);
     }
 
+    /**
+     * @deprecated
+     */
     public function addHostdowntime() {
         $this->layout = 'blank';
 
@@ -382,7 +400,9 @@ class SystemdowntimesController extends AppController {
         }
     }
 
-
+    /**
+     * @deprecated
+     */
     public function addHostgroupdowntime() {
         $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
@@ -459,6 +479,9 @@ class SystemdowntimesController extends AppController {
         }
     }
 
+    /**
+     * @deprecated
+     */
     public function addServicedowntime() {
         $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
@@ -547,7 +570,9 @@ class SystemdowntimesController extends AppController {
         }
     }
 
-
+    /**
+     * @deprecated
+     */
     public function addContainerdowntime() {
         $this->layout = 'blank';
 
@@ -658,7 +683,10 @@ class SystemdowntimesController extends AppController {
         }
     }
 
-
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -694,6 +722,10 @@ class SystemdowntimesController extends AppController {
 
     }
 
+    /**
+     * @return array
+     * @deprecated
+     */
     private function _rewritePostData() {
         /*
         why we need this function? The problem is, may be a user want to save the downtime for more that one host. the array we get from $this->request->data looks like this:
