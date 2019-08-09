@@ -58,38 +58,12 @@ class SystemdowntimesController extends AppController {
         'CustomValidationErrors',
         'Uuid',
     ];
-    public $layout = 'Admin.default';
-
-
-    /**
-     * @deprecated
-     */
-    public function index() {
-        if (isset($this->PERMISSIONS['systemdowntimes']['host'])) {
-            $this->redirect(['action' => 'host']);
-        }
-
-        if (isset($this->PERMISSIONS['systemdowntimes']['service'])) {
-            $this->redirect(['action' => 'service']);
-        }
-
-        if (isset($this->PERMISSIONS['systemdowntimes']['hostgroup'])) {
-            $this->redirect(['action' => 'hostgroup']);
-        }
-
-        if (isset($this->PERMISSIONS['systemdowntimes']['node'])) {
-            $this->redirect(['action' => 'node']);
-        }
-
-        $this->render403();
-    }
+    public $layout = 'blank';
 
     /**
      * @deprecated
      */
     public function host() {
-        $this->layout = 'blank';
-
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
@@ -140,8 +114,6 @@ class SystemdowntimesController extends AppController {
      * @deprecated
      */
     public function service() {
-        $this->layout = 'blank';
-
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
@@ -220,8 +192,6 @@ class SystemdowntimesController extends AppController {
      * @deprecated
      */
     public function hostgroup() {
-        $this->layout = 'blank';
-
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
@@ -271,8 +241,6 @@ class SystemdowntimesController extends AppController {
      * @deprecated
      */
     public function node() {
-        $this->layout = 'blank';
-
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
@@ -321,8 +289,6 @@ class SystemdowntimesController extends AppController {
      * @deprecated
      */
     public function addHostdowntime() {
-        $this->layout = 'blank';
-
         if (!$this->isAngularJsRequest()) {
             // ship html template
             return;
@@ -404,7 +370,6 @@ class SystemdowntimesController extends AppController {
      * @deprecated
      */
     public function addHostgroupdowntime() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             // ship html template
             return;
@@ -483,7 +448,6 @@ class SystemdowntimesController extends AppController {
      * @deprecated
      */
     public function addServicedowntime() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             // ship html template
             return;
@@ -574,8 +538,6 @@ class SystemdowntimesController extends AppController {
      * @deprecated
      */
     public function addContainerdowntime() {
-        $this->layout = 'blank';
-
         if (!$this->isAngularJsRequest()) {
             // ship html template
             return;

@@ -33,9 +33,9 @@ class SystemdowntimesFilter extends Filter {
     public function hostFilter() {
         $filters = [
             'like' => [
-                'Host.name',
-                'Systemdowntime.author',
-                'Systemdowntime.comment'
+                'Hosts.name',
+                'Systemdowntimes.author',
+                'Systemdowntimes.comment'
             ],
         ];
 
@@ -44,6 +44,7 @@ class SystemdowntimesFilter extends Filter {
 
     /**
      * @return array
+     * @deprecated
      */
     public function serviceFilter() {
         $filters = [
@@ -60,6 +61,7 @@ class SystemdowntimesFilter extends Filter {
 
     /**
      * @return array
+     * @deprecated
      */
     public function hostgroupFilter() {
         $filters = [
