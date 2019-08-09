@@ -58,9 +58,10 @@ angular.module('openITCOCKPIT')
                         }
                     },
                     deleteallholidays: {
-                        text: 'Delete ALL holidays',
+                        text: $scope.message.deleteAllHolidays,
                         click: function(){
-                            for(var index in $scope.events){
+                            var index = $scope.events.length;
+                            while (index--) {
                                 if($scope.events[index].default_holiday === true){
                                     $scope.events.splice(index, 1);
                                 }
@@ -71,10 +72,11 @@ angular.module('openITCOCKPIT')
                     deletemonthevents: {
                         text: $scope.message.deleteMonthEvents,
                         click: function(){
-                            for(var index in $scope.events){
+                            var index = $scope.events.length;
+                            while (index--) {
                                 var start = new Date($scope.events[index].start);
-                                if(start >= $scope.calendar.state.dateProfile.currentRange.start &&
-                                    start < $scope.calendar.state.dateProfile.currentRange.end){
+                                if (start >= $scope.calendar.state.dateProfile.currentRange.start &&
+                                    start < $scope.calendar.state.dateProfile.currentRange.end) {
                                     $scope.events.splice(index, 1);
                                 }
                             }
