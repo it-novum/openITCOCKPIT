@@ -35,7 +35,7 @@ angular.module('openITCOCKPIT')
                 }
             }
         };
-
+        $scope.init = true;
 
         $scope.load = function(){
             $http.get("/users/edit/" + $scope.id + ".json", {
@@ -54,6 +54,7 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
+                $scope.init = false;
                 $scope.usercontainerroles = result.data.usercontainerroles;
                 $scope.usercontainerrolePermissions = result.data.usercontainerrolePermissions;
             });
@@ -136,7 +137,7 @@ angular.module('openITCOCKPIT')
          * sync the membership array with the containers array so we can cleanly remove a container from a user
          */
         $scope.syncMemberships = function(){
-            var memberships = $scope.post.User.ContainersUsersMemberships
+            var memberships = $scope.post.User.ContainersUsersMemberships;
             for(var key in memberships){
                 key = parseInt(key, 10);
                 if($scope.post.User.containers._ids.indexOf(key) == -1){
@@ -146,7 +147,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.$watch('post.User.usercontainerroles._ids', function(){
-            if($scope.post.User.usercontainerroles._ids.length > 0){
+            if($scope.post.User.usercontainerroles._ids.length > 0 && !$scope.init){
                 $scope.chosenContainerroles = {};
                 $scope.post.User.usercontainerroles._ids.forEach(function(k){
                     for(var i in $scope.usercontainerrolePermissions[k]){

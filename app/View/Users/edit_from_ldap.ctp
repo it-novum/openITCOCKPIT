@@ -136,6 +136,13 @@ $timezones = CakeTime::listTimezones();
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <span class="col col-xs-2 text-right"><i class="fa fa-info-circle text-info"></i></span>
+                        <div class="col col-xs-10 text-info">
+                            <?php echo __('User Container permissions override Container Role permissions!'); ?>
+                        </div>
+                    </div>
+
                     <div class="form-group required" ng-class="{'has-error': errors.usergroup_id}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('User role'); ?>

@@ -127,6 +127,7 @@ class UsercontainerrolesTable extends Table {
 
     /**
      * @param $rights
+     * @param UsercontainerrolesFilter $usercontainerrolesFilter
      * @param null $PaginateOMat
      * @return array
      */
