@@ -235,12 +235,15 @@ class AppController extends Controller {
             //merge permissions from usercontainerrole with the user container permissions
             //User container permissions override permissions from the role
             $containerPermissions = [];
+            $containerPermissionsUser = [];
             foreach ($usercontainerrolePermissions as $usercontainerrolePermission){
                 $containerPermissions[$usercontainerrolePermission['id']] = $usercontainerrolePermission;
-                foreach ($_user['containers'] as $container){
-                    $containerPermissions[$container['id']] = $container;
-                }
             }
+            foreach ($_user['containers'] as $container){
+                $containerPermissionsUser[$container['id']] = $container;
+            }
+
+            $containerPermissions = $containerPermissionsUser + $containerPermissions;
 
             //user container permissions AND usercontainerrole permissions
             $_user['containers'] = $containerPermissions;
