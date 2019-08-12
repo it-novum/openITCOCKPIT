@@ -48,9 +48,24 @@ class SystemdowntimesTable extends Table {
             'foreignKey' => 'object_id',
             'joinType'   => 'INNER',
             'className'  => 'Hosts',
-            //'conditions' => [
-            //    'Systemdowntimes.objecttype_id' => OBJECT_HOST
-            //]
+        ]);
+
+        $this->belongsTo('Services', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER',
+            'className'  => 'Services',
+        ]);
+
+        $this->belongsTo('Hostgroups', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER',
+            'className'  => 'Hostgroups',
+        ]);
+
+        $this->belongsTo('Containers', [
+            'foreignKey' => 'object_id',
+            'joinType'   => 'INNER',
+            'className'  => 'Containers',
         ]);
     }
 
@@ -121,7 +136,7 @@ class SystemdowntimesTable extends Table {
      * @return array
      */
     public function getRecurringHostDowntimes(SystemdowntimesConditions $SystemdowntimesConditions, $PaginateOMat = null) {
-        $MY_RIGHTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 81, 26, 62, 61, 8];
+        $MY_RIGHTS = $SystemdowntimesConditions->getContainerIds();
 
         $query = $this->find()
             ->select([
@@ -152,6 +167,240 @@ class SystemdowntimesTable extends Table {
             ->andWhere([
                 'Systemdowntimes.objecttype_id' => OBJECT_HOST
             ]);
+
+        if ($SystemdowntimesConditions->hasConditions()) {
+            $query->andWhere($SystemdowntimesConditions->getConditions());
+        }
+
+        $query->group([
+            'Systemdowntimes.id'
+        ])
+            ->order($SystemdowntimesConditions->getOrder())
+            ->disableHydration();
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param SystemdowntimesConditions $SystemdowntimesConditions
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
+     */
+    public function getRecurringServiceDowntimes(SystemdowntimesConditions $SystemdowntimesConditions, $PaginateOMat = null) {
+        $MY_RIGHTS = $SystemdowntimesConditions->getContainerIds();
+
+        $query = $this->find();
+        $query->select([
+            'Systemdowntimes.id',
+            'Systemdowntimes.objecttype_id',
+            'Systemdowntimes.object_id',
+            'Systemdowntimes.downtimetype_id',
+            'Systemdowntimes.weekdays',
+            'Systemdowntimes.day_of_month',
+            'Systemdowntimes.from_time',
+            'Systemdowntimes.to_time',
+            'Systemdowntimes.duration',
+            'Systemdowntimes.comment',
+            'Systemdowntimes.author',
+
+            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)')
+        ])
+            ->contain([
+                'Services' => function (Query $query) use ($MY_RIGHTS) {
+                    $query->contain([
+                        'Hosts' => function (Query $query) use ($MY_RIGHTS) {
+                            $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                                if (!empty($MY_RIGHTS)) {
+                                    return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+                                }
+                                return $q;
+                            });
+                            $query->contain('HostsToContainersSharing');
+                            return $query;
+                        },
+                        'Servicetemplates'
+                    ]);
+                    return $query;
+                },
+
+
+            ])
+            ->andWhere([
+                'Systemdowntimes.objecttype_id' => OBJECT_SERVICE
+            ]);
+
+        $where = $SystemdowntimesConditions->getConditions();
+        $having = null;
+        if (isset($where['servicename LIKE'])) {
+            $having = [
+                'servicename LIKE' => $where['servicename LIKE']
+            ];
+            unset($where['servicename LIKE']);
+        }
+
+        if (!empty($where)) {
+            $query->andWhere($where);
+        }
+
+        if (!empty($having)) {
+            $query->having($having);
+        }
+
+        $query->group([
+            'Systemdowntimes.id'
+        ])
+            ->order($SystemdowntimesConditions->getOrder())
+            ->disableHydration();
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param SystemdowntimesConditions $SystemdowntimesConditions
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
+     */
+    public function getRecurringHostgroupDowntimes(SystemdowntimesConditions $SystemdowntimesConditions, $PaginateOMat = null) {
+        $MY_RIGHTS = $SystemdowntimesConditions->getContainerIds();
+
+        $query = $this->find();
+        $query->select([
+            'Systemdowntimes.id',
+            'Systemdowntimes.objecttype_id',
+            'Systemdowntimes.object_id',
+            'Systemdowntimes.downtimetype_id',
+            'Systemdowntimes.weekdays',
+            'Systemdowntimes.day_of_month',
+            'Systemdowntimes.from_time',
+            'Systemdowntimes.to_time',
+            'Systemdowntimes.duration',
+            'Systemdowntimes.comment',
+            'Systemdowntimes.author',
+        ])
+            ->contain([
+                'Hostgroups' => function (Query $query) {
+                    $query
+                        ->disableAutoFields()
+                        ->select([
+                            'Hostgroups.id',
+                            'Hostgroups.uuid',
+                            'Hostgroups.description',
+                            'Hostgroups.container_id'
+                        ])
+                        ->contain([
+                            'Containers' => function (Query $query) {
+                                $query
+                                    ->disableAutoFields()
+                                    ->select([
+                                        'Containers.id',
+                                        'Containers.containertype_id',
+                                        'Containers.name'
+                                    ]);
+                                return $query;
+                            }
+                        ]);
+                    return $query;
+                }
+            ])
+            ->andWhere([
+                'Systemdowntimes.objecttype_id' => OBJECT_HOSTGROUP
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Hostgroups.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        if ($SystemdowntimesConditions->hasConditions()) {
+            $query->andWhere($SystemdowntimesConditions->getConditions());
+        }
+
+        $query->group([
+            'Systemdowntimes.id'
+        ])
+            ->order($SystemdowntimesConditions->getOrder())
+            ->disableHydration();
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param SystemdowntimesConditions $SystemdowntimesConditions
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
+     */
+    public function getRecurringNodeDowntimes(SystemdowntimesConditions $SystemdowntimesConditions, $PaginateOMat = null) {
+        $MY_RIGHTS = $SystemdowntimesConditions->getContainerIds();
+
+        $query = $this->find();
+        $query->select([
+            'Systemdowntimes.id',
+            'Systemdowntimes.objecttype_id',
+            'Systemdowntimes.object_id',
+            'Systemdowntimes.downtimetype_id',
+            'Systemdowntimes.weekdays',
+            'Systemdowntimes.day_of_month',
+            'Systemdowntimes.from_time',
+            'Systemdowntimes.to_time',
+            'Systemdowntimes.duration',
+            'Systemdowntimes.comment',
+            'Systemdowntimes.author',
+        ])
+            ->contain([
+                'Containers' => function (Query $query) {
+                    $query
+                        ->disableAutoFields()
+                        ->select([
+                            'Containers.id',
+                            'Containers.containertype_id',
+                            'Containers.name'
+                        ]);
+                    return $query;
+                }
+            ])
+            ->andWhere([
+                'Systemdowntimes.objecttype_id' => OBJECT_NODE
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->andWhere([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
 
         if ($SystemdowntimesConditions->hasConditions()) {
             $query->andWhere($SystemdowntimesConditions->getConditions());

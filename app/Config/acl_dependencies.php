@@ -326,7 +326,7 @@ $config = [
             'Users'                 => [
                 'index' => ['view', 'loadUsersByContainerId'],
                 'add'   => ['addFromLdap', 'loadLdapUserByString', 'loadDateformats'],
-                'edit'  => ['resetPassword'],
+                'edit'  => ['resetPassword', 'loadDateformats'],
             ],
             'Tenants'               => [
                 'index'  => ['view'],

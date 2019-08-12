@@ -80,7 +80,9 @@ class SystemdowntimesController extends AppController {
         $Conditions = new SystemdowntimesConditions();
 
         //Process conditions
-        $Conditions->setContainerIds($this->MY_RIGHTS);
+        if ($this->hasRootPrivileges) {
+            $Conditions->setContainerIds($this->MY_RIGHTS);
+        }
         $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntimes.from_time', 'desc'));
         $Conditions->setConditions($SystemdowntimesFilter->hostFilter());
 
@@ -92,6 +94,10 @@ class SystemdowntimesController extends AppController {
         //Prepare data for API
         $all_host_recurring_downtimes = [];
         foreach ($recurringHostDowntimes as $recurringHostDowntime) {
+            if (!isset($recurringHostDowntime['host'])) {
+                continue;
+            }
+
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
@@ -119,179 +125,180 @@ class SystemdowntimesController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
-    /**
-     * @deprecated
-     */
     public function service() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
 
-        $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $AngularRequest = new AngularRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularRequest->getPage());
+
+        $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $Conditions = new SystemdowntimesConditions();
 
-        $Conditions->setContainerIds($this->MY_RIGHTS);
-        $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntime.from_time', 'desc'));
-
-
-        $this->Paginator->settings = $this->Systemdowntime->getRecurringServiceDowntimesQuery($Conditions, $SystemdowntimesFilter->serviceFilter());
-        $this->Paginator->settings['page'] = $AngularRequest->getPage();
-
-        $serviceRecurringDowntimes = $this->Paginator->paginate(
-            $this->Systemdowntime->alias,
-            [],
-            [key($this->Paginator->settings['order'])]
-        );
-
-
-        $hostContainers = [];
-        if (!empty($serviceRecurringDowntimes) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-            $hostIds = array_unique(Hash::extract($serviceRecurringDowntimes, '{n}.Host.id'));
-            $_hostContainers = $this->Host->find('all', [
-                'contain'    => [
-                    'Container',
-                ],
-                'fields'     => [
-                    'Host.id',
-                    'Container.*',
-                ],
-                'conditions' => [
-                    'Host.id' => $hostIds,
-                ],
-            ]);
-            foreach ($_hostContainers as $host) {
-                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
-            }
+        //Process conditions
+        if ($this->hasRootPrivileges) {
+            $Conditions->setContainerIds($this->MY_RIGHTS);
         }
+        $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntimes.from_time', 'desc'));
+        $Conditions->setConditions($SystemdowntimesFilter->serviceFilter());
 
+        /** @var $SystemdowntimesTable SystemdowntimesTable */
+        $SystemdowntimesTable = TableRegistry::getTableLocator()->get('Systemdowntimes');
 
+        $recurringServiceDowntimes = $SystemdowntimesTable->getRecurringServiceDowntimes($Conditions, $PaginateOMat);
+
+        //Prepare data for API
         $all_service_recurring_downtimes = [];
-        foreach ($serviceRecurringDowntimes as $serviceRecurringDowntime) {
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($serviceRecurringDowntime);
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($serviceRecurringDowntime);
-            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($serviceRecurringDowntime);
+        foreach ($recurringServiceDowntimes as $recurringServiceDowntime) {
+            if (!isset($recurringServiceDowntime['service'])) {
+                continue;
+            }
+
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
-                $containerIds = [];
-                if (isset($hostContainers[$service['Host']['id']])) {
-                    $containerIds = $hostContainers[$serviceRecurringDowntime['Host']['id']];
-                }
+                $containerIds = \Cake\Utility\Hash::extract($recurringServiceDowntime['host']['hosts_to_containers_sharing'], '{n}.id');
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
 
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($recurringServiceDowntime['service'], $recurringServiceDowntime['servicename'], $allowEdit);
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($recurringServiceDowntime['service']['host'], $allowEdit);
+            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($recurringServiceDowntime);
+
             $tmpRecord = [
-                'Host'           => $Host->toArray(),
                 'Service'        => $Service->toArray(),
+                'Host'           => $Host->toArray(),
                 'Systemdowntime' => $Systemdowntime->toArray()
             ];
             $tmpRecord['Host']['allow_edit'] = $allowEdit;
-            $tmpRecord['Service']['allow_edit'] = $allowEdit;
             $all_service_recurring_downtimes[] = $tmpRecord;
         }
 
+
         $this->set('all_service_recurring_downtimes', $all_service_recurring_downtimes);
-        $this->set('_serialize', ['all_service_recurring_downtimes', 'paging']);
+        $toJson = ['all_service_recurring_downtimes', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_service_recurring_downtimes', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
-    /**
-     * @deprecated
-     */
     public function hostgroup() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
 
-        $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $AngularRequest = new AngularRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularRequest->getPage());
+
+        $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $Conditions = new SystemdowntimesConditions();
 
-        $Conditions->setContainerIds($this->MY_RIGHTS);
-        $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntime.from_time', 'desc'));
+        //Process conditions
+        if ($this->hasRootPrivileges) {
+            $Conditions->setContainerIds($this->MY_RIGHTS);
+        }
+        $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntimes.from_time', 'desc'));
+        $Conditions->setConditions($SystemdowntimesFilter->hostgroupFilter());
 
+        /** @var $SystemdowntimesTable SystemdowntimesTable */
+        $SystemdowntimesTable = TableRegistry::getTableLocator()->get('Systemdowntimes');
 
-        $this->Paginator->settings = $this->Systemdowntime->getRecurringHostgroupDowntimesQuery($Conditions, $SystemdowntimesFilter->hostgroupFilter());
-        $this->Paginator->settings['page'] = $AngularRequest->getPage();
+        $recurringHostgroupDowntimes = $SystemdowntimesTable->getRecurringHostgroupDowntimes($Conditions, $PaginateOMat);
 
-        $hostgroupRecurringDowntimes = $this->Paginator->paginate(
-            $this->Systemdowntime->alias,
-            [],
-            [key($this->Paginator->settings['order'])]
-        );
-
+        //Prepare data for API
         $all_hostgroup_recurring_downtimes = [];
-        foreach ($hostgroupRecurringDowntimes as $hostgroupRecurringDowntime) {
-            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($hostgroupRecurringDowntime);
+        foreach ($recurringHostgroupDowntimes as $recurringHostgroupDowntime) {
+            if (!isset($recurringHostgroupDowntime['hostgroup'])) {
+                continue;
+            }
+
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
-                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, [$hostgroupRecurringDowntime['Hostgroup']['container_id']]);
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, [$recurringHostgroupDowntime['hostgroup']['container_id']]);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
 
+            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($recurringHostgroupDowntime);
+
             $tmpRecord = [
-                'Systemdowntime' => $Systemdowntime->toArray(),
-                'Container'      => $hostgroupRecurringDowntime['Container'],
-                'Hostgroup'      => $hostgroupRecurringDowntime['Hostgroup']
+                'Container'      => $recurringHostgroupDowntime['hostgroup']['container'],
+                'Hostgroup'      => $recurringHostgroupDowntime['hostgroup'],
+                'Systemdowntime' => $Systemdowntime->toArray()
             ];
             $tmpRecord['Hostgroup']['allow_edit'] = $allowEdit;
             $all_hostgroup_recurring_downtimes[] = $tmpRecord;
         }
 
+
         $this->set('all_hostgroup_recurring_downtimes', $all_hostgroup_recurring_downtimes);
-        $this->set('_serialize', ['all_hostgroup_recurring_downtimes', 'paging']);
+        $toJson = ['all_hostgroup_recurring_downtimes', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_hostgroup_recurring_downtimes', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
-    /**
-     * @deprecated
-     */
     public function node() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
 
-        $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $AngularRequest = new AngularRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularRequest->getPage());
+
+        $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $Conditions = new SystemdowntimesConditions();
 
-        $Conditions->setContainerIds($this->MY_RIGHTS);
-        $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntime.from_time', 'desc'));
+        //Process conditions
+        if ($this->hasRootPrivileges) {
+            $Conditions->setContainerIds($this->MY_RIGHTS);
+        }
+        $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntimes.from_time', 'desc'));
+        $Conditions->setConditions($SystemdowntimesFilter->nodeFilter());
 
+        /** @var $SystemdowntimesTable SystemdowntimesTable */
+        $SystemdowntimesTable = TableRegistry::getTableLocator()->get('Systemdowntimes');
 
-        $this->Paginator->settings = $this->Systemdowntime->getRecurringNodeDowntimesQuery($Conditions, $SystemdowntimesFilter->nodeFilter());
-        $this->Paginator->settings['page'] = $AngularRequest->getPage();
+        $recurringNodeDowntimes = $SystemdowntimesTable->getRecurringNodeDowntimes($Conditions, $PaginateOMat);
 
-        $nodeRecurringDowntimes = $this->Paginator->paginate(
-            $this->Systemdowntime->alias,
-            [],
-            [key($this->Paginator->settings['order'])]
-        );
-
+        //Prepare data for API
         $all_node_recurring_downtimes = [];
-        foreach ($nodeRecurringDowntimes as $nodeRecurringDowntime) {
-            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($nodeRecurringDowntime);
+        foreach ($recurringNodeDowntimes as $recurringNodeDowntime) {
+            if (!isset($recurringNodeDowntime['container'])) {
+                continue;
+            }
+
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
-                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, [$nodeRecurringDowntime['Container']['id']]);
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, [$recurringNodeDowntime['hostgroup']['container_id']]);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
 
+            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($recurringNodeDowntime);
+
             $tmpRecord = [
-                'Systemdowntime' => $Systemdowntime->toArray(),
-                'Container'      => $nodeRecurringDowntime['Container'],
+                'Container'      => $recurringNodeDowntime['container'],
+                'Systemdowntime' => $Systemdowntime->toArray()
             ];
             $tmpRecord['Container']['allow_edit'] = $allowEdit;
             $all_node_recurring_downtimes[] = $tmpRecord;
         }
 
+
         $this->set('all_node_recurring_downtimes', $all_node_recurring_downtimes);
-        $this->set('_serialize', ['all_node_recurring_downtimes', 'paging']);
+        $toJson = ['all_node_recurring_downtimes', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_node_recurring_downtimes', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     /**
