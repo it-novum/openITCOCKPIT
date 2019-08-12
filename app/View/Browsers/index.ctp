@@ -47,7 +47,8 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
     </li>
 </ol>
-
+<massdelete></massdelete>
+<massdeactivate></massdeactivate>
 
 <?php if (!$QueryHandler->exists()): ?>
     <div class="alert alert-danger alert-block">
