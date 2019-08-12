@@ -244,7 +244,7 @@
                     <!-- widget content -->
                     <div class="widget-body no-padding"
                          ng-init="objectName='<?php echo __('Host escalation #'); ?>'">
-                        <div class="mobile_table" ng-show="hostescalations.length > 0">
+                        <div class="mobile_table">
                             <table id="hostescalation_list"
                                    class="table table-striped table-hover table-bordered smart-form"
                                    style="">
@@ -267,225 +267,225 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="hostescalation in hostescalations">
-                                    <td class="text-center" class="width-15">
-                                        <?php if ($this->Acl->hasPermission('delete', 'hostescalations')): ?>
-                                            <input type="checkbox"
-                                                   ng-model="massChange[hostescalation.id]"
-                                                   ng-show="hostescalation.allowEdit">
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <li ng-repeat="host in hostescalation.hosts">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-success padding-2"
-                                                     title="{{host.name}}">
-                                                    <label class="label label-success label-xs">
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                                    </label>
-                                                    <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                        <a ui-sref="HostsEdit({id:host.id})"
-                                                           class="label label-light label-xs">
-                                                            {{host.name}}
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <span class="label label-light label-xs">
-                                                            {{host.name}}
-                                                        </span>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <i ng-if="host.disabled == 1"
-                                                   class="fa fa-power-off text-danger"
-                                                   title="disabled" aria-hidden="true"></i>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <li ng-repeat="host in hostescalation.hosts_excluded">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
-                                                     title="{{host.name}}">
-                                                    <label class="label label-danger label-xs">
-                                                        <i class="fa fa-minus" aria-hidden="true"></i>
-                                                    </label>
-                                                    <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                        <a ui-sref="HostsEdit({id:host.id})"
-                                                           class="label label-light label-xs">
-                                                            {{host.name}}
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <span class="label label-light label-xs">
-                                                            {{host.name}}
-                                                        </span>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <i ng-if="host.disabled == 1"
-                                                   class="fa fa-power-off text-danger"
-                                                   title="disabled" aria-hidden="true"></i>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <li ng-repeat="hostgroup in hostescalation.hostgroups">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-success padding-2"
-                                                     title="{{hostgroup.container.name}}">
-                                                    <label class="label label-success label-xs">
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
-                                                    </label>
-                                                    <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
-                                                        <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
-                                                           class="label label-light label-xs">
-                                                            {{hostgroup.container.name}}
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <span class="label label-light label-xs">
-                                                        {{hostgroup.container.name}}
-                                                    </span>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <li ng-repeat="hostgroup in hostescalation.hostgroups_excluded">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
-                                                     title="{{hostgroup.container.name}}">
-                                                    <label class="label label-danger label-xs">
-                                                        <i class="fa fa-minus" aria-hidden="true"></i>
-                                                    </label>
-                                                    <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
-                                                        <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
-                                                           class="label label-light label-xs">
-                                                            {{hostgroup.container.name}}
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <span class="label label-light label-xs">
-                                                            {{hostgroup.container.name}}
-                                                        </span>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        {{ hostescalation.first_notification }}
-                                    </td>
-                                    <td>
-                                        {{ hostescalation.last_notification }}
-                                    </td>
-                                    <td>
-                                        {{ hostescalation.notification_interval }}
-                                    </td>
-                                    <td>
-                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
-                                            <a ui-sref="TimeperiodsEdit({id: hostescalation.timeperiod.id})">{{
-                                                hostescalation.timeperiod.name }}</a>
-                                        <?php else: ?>
-                                            {{ hostescalation.timeperiod.name }}
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <li ng-repeat="contact in hostescalation.contacts">
-                                                <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
-                                                    <a ui-sref="ContactsEdit({id: contact.id})">
-                                                        {{ contact.name }}
-                                                    </a>
-                                                <?php else: ?>
-                                                    {{ contact.name }}
-                                                <?php endif; ?>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <li ng-repeat="contactgroup in hostescalation.contactgroups">
-                                                <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
-                                                    <a ui-sref="ContactgroupsEdit({id: contactgroup.id})">
-                                                        {{ contactgroup.container.name }}
-                                                    </a>
-                                                <?php else: ?>
-                                                    {{ contactgroup.container.name }}
-                                                <?php endif; ?>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td class="text-align-center">
-                                        <div>
-                                            <span class="label-forced label-success margin-right-5"
-                                                  title="<?php echo __('Recovery'); ?>"
-                                                  ng-show="hostescalation.escalate_on_recovery">
-                                                <?php echo __('R'); ?>
-                                            </span>
-                                            <span class="label-forced label-danger margin-right-5"
-                                                  title="<?php echo __('Down'); ?>"
-                                                  ng-show="hostescalation.escalate_on_down">
-                                                <?php echo __('D'); ?>
-                                            </span>
-                                            <span class="label-forced label-default margin-right-5"
-                                                  title="<?php echo __('Unreachable'); ?>"
-                                                  ng-show="hostescalation.escalate_on_unreachable">
-                                                <?php echo __('U'); ?>
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="btn-group smart-form">
-                                            <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
-                                                <a ui-sref="HostescalationsEdit({id: hostescalation.id})"
-                                                   ng-if="hostescalation.allowEdit"
-                                                   class="btn btn-default">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                </a>
-                                                <a href="javascript:void(0);"
-                                                   ng-if="!hostescalation.allowEdit"
-                                                   class="btn btn-default disabled">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                </a>
-                                            <?php else: ?>
-                                                <a href="javascript:void(0);" class="btn btn-default">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                </a>
+                                    <tr ng-repeat="hostescalation in hostescalations">
+                                        <td class="text-center" class="width-15">
+                                            <?php if ($this->Acl->hasPermission('delete', 'hostescalations')): ?>
+                                                <input type="checkbox"
+                                                       ng-model="massChange[hostescalation.id]"
+                                                       ng-show="hostescalation.allowEdit">
                                             <?php endif; ?>
-                                            <a href="javascript:void(0);" data-toggle="dropdown"
-                                               class="btn btn-default dropdown-toggle"><span
-                                                        class="caret"></span></a>
-                                            <ul class="dropdown-menu pull-right"
-                                                id="menuHack-{{hostescalation.id}}">
-                                                <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
-                                                    <li ng-if="hostescalation.allowEdit">
-                                                        <a ui-sref="HostescalationsEdit({id:hostescalation.id})">
-                                                            <i class="fa fa-cog"></i>
-                                                            <?php echo __('Edit'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('delete', 'hostescalations')): ?>
-                                                    <li class="divider"
-                                                        ng-if="hostescalation.allowEdit"></li>
-                                                    <li ng-if="hostescalation.allowEdit">
-                                                        <a href="javascript:void(0);"
-                                                           class="txt-color-red"
-                                                           ng-click="confirmDelete(getObjectForDelete(hostescalation))">
-                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="host in hostescalation.hosts">
+                                                    <div class="label-group label-breadcrumb label-breadcrumb-success padding-2"
+                                                         title="{{host.name}}">
+                                                        <label class="label label-success label-xs">
+                                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                                        </label>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                                            <a ui-sref="HostsEdit({id:host.id})"
+                                                               class="label label-light label-xs">
+                                                                {{host.name}}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="label label-light label-xs">
+                                                                {{host.name}}
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <i ng-if="host.disabled == 1"
+                                                       class="fa fa-power-off text-danger"
+                                                       title="disabled" aria-hidden="true"></i>
+                                                </li>
                                             </ul>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="host in hostescalation.hosts_excluded">
+                                                    <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
+                                                         title="{{host.name}}">
+                                                        <label class="label label-danger label-xs">
+                                                            <i class="fa fa-minus" aria-hidden="true"></i>
+                                                        </label>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                                            <a ui-sref="HostsEdit({id:host.id})"
+                                                               class="label label-light label-xs">
+                                                                {{host.name}}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="label label-light label-xs">
+                                                                {{host.name}}
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <i ng-if="host.disabled == 1"
+                                                       class="fa fa-power-off text-danger"
+                                                       title="disabled" aria-hidden="true"></i>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="hostgroup in hostescalation.hostgroups">
+                                                    <div class="label-group label-breadcrumb label-breadcrumb-success padding-2"
+                                                         title="{{hostgroup.container.name}}">
+                                                        <label class="label label-success label-xs">
+                                                            <i class="fa fa-plus" aria-hidden="true"></i>
+                                                        </label>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
+                                                            <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
+                                                               class="label label-light label-xs">
+                                                                {{hostgroup.container.name}}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="label label-light label-xs">
+                                                            {{hostgroup.container.name}}
+                                                        </span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="hostgroup in hostescalation.hostgroups_excluded">
+                                                    <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
+                                                         title="{{hostgroup.container.name}}">
+                                                        <label class="label label-danger label-xs">
+                                                            <i class="fa fa-minus" aria-hidden="true"></i>
+                                                        </label>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
+                                                            <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
+                                                               class="label label-light label-xs">
+                                                                {{hostgroup.container.name}}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="label label-light label-xs">
+                                                                {{hostgroup.container.name}}
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            {{ hostescalation.first_notification }}
+                                        </td>
+                                        <td>
+                                            {{ hostescalation.last_notification }}
+                                        </td>
+                                        <td>
+                                            {{ hostescalation.notification_interval }}
+                                        </td>
+                                        <td>
+                                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsEdit({id: hostescalation.timeperiod.id})">{{
+                                                    hostescalation.timeperiod.name }}</a>
+                                            <?php else: ?>
+                                                {{ hostescalation.timeperiod.name }}
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="contact in hostescalation.contacts">
+                                                    <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
+                                                        <a ui-sref="ContactsEdit({id: contact.id})">
+                                                            {{ contact.name }}
+                                                        </a>
+                                                    <?php else: ?>
+                                                        {{ contact.name }}
+                                                    <?php endif; ?>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="contactgroup in hostescalation.contactgroups">
+                                                    <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
+                                                        <a ui-sref="ContactgroupsEdit({id: contactgroup.id})">
+                                                            {{ contactgroup.container.name }}
+                                                        </a>
+                                                    <?php else: ?>
+                                                        {{ contactgroup.container.name }}
+                                                    <?php endif; ?>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td class="text-align-center">
+                                            <div>
+                                                <span class="label-forced label-success margin-right-5"
+                                                      title="<?php echo __('Recovery'); ?>"
+                                                      ng-show="hostescalation.escalate_on_recovery">
+                                                    <?php echo __('R'); ?>
+                                                </span>
+                                                <span class="label-forced label-danger margin-right-5"
+                                                      title="<?php echo __('Down'); ?>"
+                                                      ng-show="hostescalation.escalate_on_down">
+                                                    <?php echo __('D'); ?>
+                                                </span>
+                                                <span class="label-forced label-default margin-right-5"
+                                                      title="<?php echo __('Unreachable'); ?>"
+                                                      ng-show="hostescalation.escalate_on_unreachable">
+                                                    <?php echo __('U'); ?>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group smart-form">
+                                                <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
+                                                    <a ui-sref="HostescalationsEdit({id: hostescalation.id})"
+                                                       ng-if="hostescalation.allowEdit"
+                                                       class="btn btn-default">
+                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                    </a>
+                                                    <a href="javascript:void(0);"
+                                                       ng-if="!hostescalation.allowEdit"
+                                                       class="btn btn-default disabled">
+                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                    </a>
+                                                <?php else: ?>
+                                                    <a href="javascript:void(0);" class="btn btn-default">
+                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                    </a>
+                                                <?php endif; ?>
+                                                <a href="javascript:void(0);" data-toggle="dropdown"
+                                                   class="btn btn-default dropdown-toggle"><span
+                                                            class="caret"></span></a>
+                                                <ul class="dropdown-menu pull-right"
+                                                    id="menuHack-{{hostescalation.id}}">
+                                                    <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
+                                                        <li ng-if="hostescalation.allowEdit">
+                                                            <a ui-sref="HostescalationsEdit({id:hostescalation.id})">
+                                                                <i class="fa fa-cog"></i>
+                                                                <?php echo __('Edit'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->Acl->hasPermission('delete', 'hostescalations')): ?>
+                                                        <li class="divider"
+                                                            ng-if="hostescalation.allowEdit"></li>
+                                                        <li ng-if="hostescalation.allowEdit">
+                                                            <a href="javascript:void(0);"
+                                                               class="txt-color-red"
+                                                               ng-click="confirmDelete(getObjectForDelete(hostescalation))">
+                                                                <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr ng-show="hostescalations.length == 0">
+                                        <td colspan="13">
+                                            <div class="col-xs-12 text-center txt-color-red italic">
+                                                <?php echo __('No entries match the selection'); ?>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
-                        </div>
-                        <div class="row margin-top-10 margin-bottom-10">
-                            <div class="row margin-top-10 margin-bottom-10" ng-show="hostescalations.length == 0">
-                                <div class="col-xs-12 text-center txt-color-red italic">
-                                    <?php echo __('No entries match the selection'); ?>
-                                </div>
-                            </div>
                         </div>
                         <div class="row margin-top-10 margin-bottom-10" ng-show="hostescalations.length > 0">
                             <div class="col-xs-12 col-md-2 text-muted text-center">

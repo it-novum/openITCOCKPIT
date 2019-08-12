@@ -309,7 +309,7 @@
                     <!-- widget content -->
                     <div class="widget-body no-padding"
                          ng-init="objectName='<?php echo __('Service dependency #'); ?>'">
-                        <div class="mobile_table" ng-show="servicedependencies.length > 0">
+                        <div class="mobile_table">
                             <table id="servicedependency"
                                    class="table table-striped table-hover table-bordered smart-form"
                                    style="">
@@ -328,239 +328,239 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="servicedependency in servicedependencies">
-                                    <td class="text-center" class="width-15">
-                                        <?php if ($this->Acl->hasPermission('delete', 'servicedependencies')): ?>
-                                            <input type="checkbox"
-                                                   ng-model="massChange[servicedependency.id]"
-                                                   ng-show="servicedependency.allowEdit">
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <li ng-repeat="service in servicedependency.services">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-default padding-2"
-                                                title="{{service.servicename}}">
-                                                    <label class="label label-default label-xs">
-                                                        <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
-                                                    </label>
-                                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                        <a ui-sref="ServicesEdit({id:service.id})"
-                                                           class="label label-light label-xs">
-                                                            {{service.servicename}}
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <span class="label label-light label-xs">
-                                                            {{service.servicename}}
-                                                        </span>
-                                                    <?php endif; ?>
-                                                    <i ng-if="service.disabled == 1"
-                                                       class="fa fa-power-off text-danger"
-                                                       title="disabled" aria-hidden="true"></i>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <li ng-repeat="service in servicedependency.services_dependent">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2"
-                                                title="{{service.servicename}}">
-                                                    <label class="label label-primary label-xs">
-                                                        <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
-                                                    </label>
-                                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                        <a ui-sref="ServicesEdit({id:service.id})"
-                                                           class="label label-light label-xs">
-                                                            {{service.servicename}}
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <span class="label label-light label-xs">
-                                                            {{service.servicename}}
-                                                        </span>
-                                                    <?php endif; ?>
-                                                    <i ng-if="service.disabled == 1"
-                                                       class="fa fa-power-off text-danger"
-                                                       title="disabled" aria-hidden="true"></i>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <li ng-repeat="servicegroup in servicedependency.servicegroups">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-default padding-2"
-                                                title="{{servicegroup.container.name}}">
-                                                    <label class="label label-default label-xs">
-                                                        <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
-                                                    </label>
-                                                    <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
-                                                        <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
-                                                           class="label label-light label-xs">
-                                                            {{servicegroup.container.name}}
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <span class="label label-light label-xs">
-                                                        {{servicegroup.container.name}}
-                                                    </span>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <li ng-repeat="servicegroup in servicedependency.servicegroups_dependent">
-                                                <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2"
-                                                title="{{servicegroup.container.name}}">
-                                                    <label class="label label-primary label-xs">
-                                                        <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
-                                                    </label>
-                                                    <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
-                                                        <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
-                                                           class="label label-light label-xs">
-                                                            {{servicegroup.container.name}}
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <span class="label label-light label-xs">
-                                                            {{servicegroup.container.name}}
-                                                        </span>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
-                                            <a ui-sref="TimeperiodsEdit({id: servicedependency.timeperiod.id})">{{
-                                                servicedependency.timeperiod.name }}</a>
-                                        <?php else: ?>
-                                            {{ servicedependency.timeperiod.name }}
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="text-align-center">
-                                        <div>
-                                            <span class="label-forced label-success margin-right-5"
-                                                  title="<?php echo __('Ok'); ?>"
-                                                  ng-show="servicedependency.execution_fail_on_ok">
-                                                <?php echo __('O'); ?>
-                                            </span>
-                                            <span class="label-forced label-warning margin-right-5"
-                                                  title="<?php echo __('Warning'); ?>"
-                                                  ng-show="servicedependency.execution_fail_on_warning">
-                                                <?php echo __('W'); ?>
-                                            </span>
-                                            <span class="label-forced label-danger margin-right-5"
-                                                  title="<?php echo __('Critical'); ?>"
-                                                  ng-show="servicedependency.execution_fail_on_critical">
-                                                <?php echo __('C'); ?>
-                                            </span>
-                                            <span class="label-forced label-default margin-right-5"
-                                                  title="<?php echo __('Unknown'); ?>"
-                                                  ng-show="servicedependency.execution_fail_on_unknown">
-                                                <?php echo __('U'); ?>
-                                            </span>
-                                            <span class="label-forced label-primary margin-right-5"
-                                                  title="<?php echo __('Pending'); ?>"
-                                                  ng-show="servicedependency.execution_fail_on_pending">
-                                                <?php echo __('P'); ?>
-                                            </span>
-                                            <span class="label-forced label-primary margin-right-5"
-                                                  title="<?php echo __('Execution none'); ?>"
-                                                  ng-show="servicedependency.execution_none">
-                                                <?php echo __('N'); ?>
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td class="text-align-center">
-                                        <div>
-                                            <span class="label-forced label-success margin-right-5"
-                                                  title="<?php echo __('Ok'); ?>"
-                                                  ng-show="servicedependency.notification_fail_on_ok">
-                                                <?php echo __('O'); ?>
-                                            </span>
-                                            <span class="label-forced label-warning margin-right-5"
-                                                  title="<?php echo __('Warning'); ?>"
-                                                  ng-show="servicedependency.notification_fail_on_warning">
-                                                <?php echo __('W'); ?>
-                                            </span>
-                                            <span class="label-forced label-danger margin-right-5"
-                                                  title="<?php echo __('Critical'); ?>"
-                                                  ng-show="servicedependency.notification_fail_on_critical">
-                                                <?php echo __('C'); ?>
-                                            </span>
-                                            <span class="label-forced label-default margin-right-5"
-                                                  title="<?php echo __('Unknown'); ?>"
-                                                  ng-show="servicedependency.notification_fail_on_unknown">
-                                                <?php echo __('U'); ?>
-                                            </span>
-                                            <span class="label-forced label-primary margin-right-5"
-                                                  title="<?php echo __('Pending'); ?>"
-                                                  ng-show="servicedependency.notification_fail_on_pending">
-                                                <?php echo __('P'); ?>
-                                            </span>
-                                            <span class="label-forced label-primary margin-right-5"
-                                                  title="<?php echo __('Notification none'); ?>"
-                                                  ng-show="servicedependency.notification_none">
-                                                <?php echo __('N'); ?>
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="btn-group smart-form">
-                                            <?php if ($this->Acl->hasPermission('edit', 'servicedependencies')): ?>
-                                                <a ui-sref="ServicedependenciesEdit({id: servicedependency.id})"
-                                                   ng-if="servicedependency.allowEdit"
-                                                   class="btn btn-default">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                </a>
-                                                <a href="javascript:void(0);"
-                                                   ng-if="!servicedependency.allowEdit"
-                                                   class="btn btn-default disabled">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                </a>
-                                            <?php else: ?>
-                                                <a href="javascript:void(0);" class="btn btn-default">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                </a>
+                                    <tr ng-repeat="servicedependency in servicedependencies">
+                                        <td class="text-center" class="width-15">
+                                            <?php if ($this->Acl->hasPermission('delete', 'servicedependencies')): ?>
+                                                <input type="checkbox"
+                                                       ng-model="massChange[servicedependency.id]"
+                                                       ng-show="servicedependency.allowEdit">
                                             <?php endif; ?>
-                                            <a href="javascript:void(0);" data-toggle="dropdown"
-                                               class="btn btn-default dropdown-toggle"><span
-                                                        class="caret"></span></a>
-                                            <ul class="dropdown-menu pull-right"
-                                                id="menuHack-{{servicedependency.id}}">
-                                                <?php if ($this->Acl->hasPermission('edit', 'servicedependencies')): ?>
-                                                    <li ng-if="servicedependency.allowEdit">
-                                                        <a ui-sref="ServicedependenciesEdit({id:servicedependency.id})">
-                                                            <i class="fa fa-cog"></i>
-                                                            <?php echo __('Edit'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('delete', 'servicedependencies')): ?>
-                                                    <li class="divider"
-                                                        ng-if="servicedependency.allowEdit"></li>
-                                                    <li ng-if="servicedependency.allowEdit">
-                                                        <a href="javascript:void(0);"
-                                                           class="txt-color-red"
-                                                           ng-click="confirmDelete(getObjectForDelete(servicedependency))">
-                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="service in servicedependency.services">
+                                                    <div class="label-group label-breadcrumb label-breadcrumb-default padding-2"
+                                                    title="{{service.servicename}}">
+                                                        <label class="label label-default label-xs">
+                                                            <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
+                                                        </label>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                                            <a ui-sref="ServicesEdit({id:service.id})"
+                                                               class="label label-light label-xs">
+                                                                {{service.servicename}}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="label label-light label-xs">
+                                                                {{service.servicename}}
+                                                            </span>
+                                                        <?php endif; ?>
+                                                        <i ng-if="service.disabled == 1"
+                                                           class="fa fa-power-off text-danger"
+                                                           title="disabled" aria-hidden="true"></i>
+                                                    </div>
+                                                </li>
                                             </ul>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="service in servicedependency.services_dependent">
+                                                    <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2"
+                                                    title="{{service.servicename}}">
+                                                        <label class="label label-primary label-xs">
+                                                            <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
+                                                        </label>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                                            <a ui-sref="ServicesEdit({id:service.id})"
+                                                               class="label label-light label-xs">
+                                                                {{service.servicename}}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="label label-light label-xs">
+                                                                {{service.servicename}}
+                                                            </span>
+                                                        <?php endif; ?>
+                                                        <i ng-if="service.disabled == 1"
+                                                           class="fa fa-power-off text-danger"
+                                                           title="disabled" aria-hidden="true"></i>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="servicegroup in servicedependency.servicegroups">
+                                                    <div class="label-group label-breadcrumb label-breadcrumb-default padding-2"
+                                                    title="{{servicegroup.container.name}}">
+                                                        <label class="label label-default label-xs">
+                                                            <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
+                                                        </label>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
+                                                            <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
+                                                               class="label label-light label-xs">
+                                                                {{servicegroup.container.name}}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="label label-light label-xs">
+                                                            {{servicegroup.container.name}}
+                                                        </span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="servicegroup in servicedependency.servicegroups_dependent">
+                                                    <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2"
+                                                    title="{{servicegroup.container.name}}">
+                                                        <label class="label label-primary label-xs">
+                                                            <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
+                                                        </label>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
+                                                            <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
+                                                               class="label label-light label-xs">
+                                                                {{servicegroup.container.name}}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="label label-light label-xs">
+                                                                {{servicegroup.container.name}}
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsEdit({id: servicedependency.timeperiod.id})">{{
+                                                    servicedependency.timeperiod.name }}</a>
+                                            <?php else: ?>
+                                                {{ servicedependency.timeperiod.name }}
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="text-align-center">
+                                            <div>
+                                                <span class="label-forced label-success margin-right-5"
+                                                      title="<?php echo __('Ok'); ?>"
+                                                      ng-show="servicedependency.execution_fail_on_ok">
+                                                    <?php echo __('O'); ?>
+                                                </span>
+                                                <span class="label-forced label-warning margin-right-5"
+                                                      title="<?php echo __('Warning'); ?>"
+                                                      ng-show="servicedependency.execution_fail_on_warning">
+                                                    <?php echo __('W'); ?>
+                                                </span>
+                                                <span class="label-forced label-danger margin-right-5"
+                                                      title="<?php echo __('Critical'); ?>"
+                                                      ng-show="servicedependency.execution_fail_on_critical">
+                                                    <?php echo __('C'); ?>
+                                                </span>
+                                                <span class="label-forced label-default margin-right-5"
+                                                      title="<?php echo __('Unknown'); ?>"
+                                                      ng-show="servicedependency.execution_fail_on_unknown">
+                                                    <?php echo __('U'); ?>
+                                                </span>
+                                                <span class="label-forced label-primary margin-right-5"
+                                                      title="<?php echo __('Pending'); ?>"
+                                                      ng-show="servicedependency.execution_fail_on_pending">
+                                                    <?php echo __('P'); ?>
+                                                </span>
+                                                <span class="label-forced label-primary margin-right-5"
+                                                      title="<?php echo __('Execution none'); ?>"
+                                                      ng-show="servicedependency.execution_none">
+                                                    <?php echo __('N'); ?>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="text-align-center">
+                                            <div>
+                                                <span class="label-forced label-success margin-right-5"
+                                                      title="<?php echo __('Ok'); ?>"
+                                                      ng-show="servicedependency.notification_fail_on_ok">
+                                                    <?php echo __('O'); ?>
+                                                </span>
+                                                <span class="label-forced label-warning margin-right-5"
+                                                      title="<?php echo __('Warning'); ?>"
+                                                      ng-show="servicedependency.notification_fail_on_warning">
+                                                    <?php echo __('W'); ?>
+                                                </span>
+                                                <span class="label-forced label-danger margin-right-5"
+                                                      title="<?php echo __('Critical'); ?>"
+                                                      ng-show="servicedependency.notification_fail_on_critical">
+                                                    <?php echo __('C'); ?>
+                                                </span>
+                                                <span class="label-forced label-default margin-right-5"
+                                                      title="<?php echo __('Unknown'); ?>"
+                                                      ng-show="servicedependency.notification_fail_on_unknown">
+                                                    <?php echo __('U'); ?>
+                                                </span>
+                                                <span class="label-forced label-primary margin-right-5"
+                                                      title="<?php echo __('Pending'); ?>"
+                                                      ng-show="servicedependency.notification_fail_on_pending">
+                                                    <?php echo __('P'); ?>
+                                                </span>
+                                                <span class="label-forced label-primary margin-right-5"
+                                                      title="<?php echo __('Notification none'); ?>"
+                                                      ng-show="servicedependency.notification_none">
+                                                    <?php echo __('N'); ?>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group smart-form">
+                                                <?php if ($this->Acl->hasPermission('edit', 'servicedependencies')): ?>
+                                                    <a ui-sref="ServicedependenciesEdit({id: servicedependency.id})"
+                                                       ng-if="servicedependency.allowEdit"
+                                                       class="btn btn-default">
+                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                    </a>
+                                                    <a href="javascript:void(0);"
+                                                       ng-if="!servicedependency.allowEdit"
+                                                       class="btn btn-default disabled">
+                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                    </a>
+                                                <?php else: ?>
+                                                    <a href="javascript:void(0);" class="btn btn-default">
+                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                    </a>
+                                                <?php endif; ?>
+                                                <a href="javascript:void(0);" data-toggle="dropdown"
+                                                   class="btn btn-default dropdown-toggle"><span
+                                                            class="caret"></span></a>
+                                                <ul class="dropdown-menu pull-right"
+                                                    id="menuHack-{{servicedependency.id}}">
+                                                    <?php if ($this->Acl->hasPermission('edit', 'servicedependencies')): ?>
+                                                        <li ng-if="servicedependency.allowEdit">
+                                                            <a ui-sref="ServicedependenciesEdit({id:servicedependency.id})">
+                                                                <i class="fa fa-cog"></i>
+                                                                <?php echo __('Edit'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->Acl->hasPermission('delete', 'servicedependencies')): ?>
+                                                        <li class="divider"
+                                                            ng-if="servicedependency.allowEdit"></li>
+                                                        <li ng-if="servicedependency.allowEdit">
+                                                            <a href="javascript:void(0);"
+                                                               class="txt-color-red"
+                                                               ng-click="confirmDelete(getObjectForDelete(servicedependency))">
+                                                                <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="9" ng-show="servicedependencies.length == 0">
+                                            <div class="col-xs-12 text-center txt-color-red italic">
+                                                <?php echo __('No entries match the selection'); ?>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
-                        </div>
-                        <div class="row margin-top-10 margin-bottom-10">
-                            <div class="row margin-top-10 margin-bottom-10" ng-show="servicedependencies.length == 0">
-                                <div class="col-xs-12 text-center txt-color-red italic">
-                                    <?php echo __('No entries match the selection'); ?>
-                                </div>
-                            </div>
                         </div>
                         <div class="row margin-top-10 margin-bottom-10" ng-show="servicedependencies.length > 0">
                             <div class="col-xs-12 col-md-2 text-muted text-center">
