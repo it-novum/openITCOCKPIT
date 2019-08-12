@@ -1,18 +1,19 @@
 angular.module('openITCOCKPIT')
     .controller('SystemdowntimesNodeController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, MassChangeService){
 
-        SortService.setSort(QueryStringService.getValue('sort', 'Systemdowntime.from_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'Systemdowntimes.from_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
+        $scope.useScroll = true;
 
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Container: {
+                Containers: {
                     name: ''
                 },
-                Systemdowntime: {
+                Systemdowntimes: {
                     author: '',
                     comment: ''
                 }
@@ -32,16 +33,18 @@ angular.module('openITCOCKPIT')
             $http.get("/systemdowntimes/node.json", {
                 params: {
                     'angular': true,
+                    'scroll': $scope.useScroll,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[Container.name]': $scope.filter.Container.name,
-                    'filter[Systemdowntime.author]': $scope.filter.Systemdowntime.author,
-                    'filter[Systemdowntime.comment]': $scope.filter.Systemdowntime.comment
+                    'filter[Containers.name]': $scope.filter.Containers.name,
+                    'filter[Systemdowntimes.author]': $scope.filter.Systemdowntimes.author,
+                    'filter[Systemdowntimes.comment]': $scope.filter.Systemdowntimes.comment
                 }
             }).then(function(result){
                 $scope.systemdowntimes = result.data.all_node_recurring_downtimes;
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -99,6 +102,10 @@ angular.module('openITCOCKPIT')
             return objects;
         };
 
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
 
         //Fire on page load
         defaultFilter();
