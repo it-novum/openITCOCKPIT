@@ -36,19 +36,15 @@ use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
  * @property Timeperiod $Timeperiod
  */
 class DowntimereportsController extends AppController {
-    public $layout = 'Admin.default';
-    public $uses = [
-        'Downtimereport',
-        'Host',
-        'Service',
-        'Timeperiod',
-        MONITORING_STATEHISTORY_HOST,
-        MONITORING_STATEHISTORY_SERVICE,
-        MONITORING_DOWNTIME_HOST,
-        MONITORING_DOWNTIME_SERVICE
-    ];
+    public $layout = 'blank';
+
 
     public function index() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        return;
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
