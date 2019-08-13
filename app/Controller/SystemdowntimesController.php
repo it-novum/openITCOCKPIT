@@ -681,42 +681,32 @@ class SystemdowntimesController extends AppController {
     }
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param int|null $id
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
+        /** @var $SystemdowntimesTable SystemdowntimesTable */
+        $SystemdowntimesTable = TableRegistry::getTableLocator()->get('Systemdowntimes');
 
-        $this->Systemdowntime->id = $id;
-        if (!$this->Systemdowntime->exists()) {
-            throw new NotFoundException(__('Invalide downtime'));
+        if (!$SystemdowntimesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalide Systemdowntime'));
         }
 
-        $systemdowntime = $this->Systemdowntime->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Systemdowntime.id' => $id
-            ]
-        ]);
-
-        if (empty($systemdowntime)) {
-            return;
-        }
-
-
-        if ($this->Systemdowntime->delete($systemdowntime['Systemdowntime']['id'])) {
+        $systemdowntime = $SystemdowntimesTable->get($id);
+        if ($SystemdowntimesTable->delete($systemdowntime)) {
             $this->set('success', true);
             $this->set('message', __('Systemdowntime successfully deleted'));
             $this->set('_serialize', ['success', 'message']);
             return;
         }
+
+        $this->response->statusCode(400);
         $this->set('success', false);
         $this->set('message', __('Error while deleting systemdowntime'));
         $this->set('_serialize', ['success', 'message']);
-
     }
 
     /**
