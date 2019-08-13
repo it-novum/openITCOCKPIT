@@ -30,7 +30,7 @@
             <?php echo __('Adhoc Reports'); ?>
             <span>>
                 <?php echo __('Downtime Report'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
