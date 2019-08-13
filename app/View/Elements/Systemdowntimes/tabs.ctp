@@ -43,7 +43,7 @@
         <li ng-class="{'active': $resolve.$$controller === 'SystemdowntimesHostgroupController'}">
             <a ui-sref="SystemdowntimesHostgroup">
                 <i class="fa fa-sitemap"></i>
-                <span class="hidden-mobile hidden-tablet"> <?php echo __('Hostgroup'); ?></span>
+                <span class="hidden-mobile hidden-tablet"> <?php echo __('Host group'); ?></span>
             </a>
         </li>
     <?php endif; ?>

@@ -30,22 +30,34 @@
     <ul class="dropdown-menu pull-right">
         <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
             <li>
-                <a ui-sref="SystemdowntimesAddHostdowntime"><?php echo __('Create host downtime'); ?></a>
-            </li>
-        <?php endif; ?>
-        <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
-            <li>
-                <a ui-sref="SystemdowntimesAddHostgroupdowntime"><?php echo __('Create hostgroup downtime'); ?></a>
+                <a ui-sref="SystemdowntimesAddHostdowntime">
+                    <i class="fa fa-desktop"></i>
+                    <?php echo __('Create host downtime'); ?>
+                </a>
             </li>
         <?php endif; ?>
         <?php if ($this->Acl->hasPermission('addServicedowntime', 'systemdowntimes')): ?>
             <li>
-                <a ui-sref="SystemdowntimesAddServicedowntime"><?php echo __('Create service downtime'); ?></a>
+                <a ui-sref="SystemdowntimesAddServicedowntime">
+                    <i class="fa fa-cog"></i>
+                    <?php echo __('Create service downtime'); ?>
+                </a>
             </li>
         <?php endif; ?>
         <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
             <li>
-                <a ui-sref="SystemdowntimesAddContainerdowntime"><?php echo __('Create container downtime'); ?></a>
+                <a ui-sref="SystemdowntimesAddHostgroupdowntime">
+                    <i class="fa fa-sitemap"></i>
+                    <?php echo __('Create host group downtime'); ?>
+                </a>
+            </li>
+        <?php endif; ?>
+        <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
+            <li>
+                <a ui-sref="SystemdowntimesAddContainerdowntime">
+                    <i class="fa fa-link"></i>
+                    <?php echo __('Create container downtime'); ?>
+                </a>
             </li>
         <?php endif; ?>
     </ul>
