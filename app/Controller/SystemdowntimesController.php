@@ -41,33 +41,9 @@ use itnovum\openITCOCKPIT\Filter\SystemdowntimesFilter;
  * @property AppPaginatorComponent $Paginator
  * @property DbBackend $DbBackend
  * @property AppAuthComponent $Auth
- *
- * @property Systemdowntime $Systemdowntime
- * @property Host $Host
- * @property Service $Service
- * @property Hostgroup $Hostgroup
  */
 class SystemdowntimesController extends AppController {
-    public $uses = [
-        'Systemdowntime',
-        'Host',
-        'Service',
-        'Hostgroup',
-        'Container',
-    ];
-    public $components = [
-        'ListFilter.ListFilter',
-        'RequestHandler',
-        'CustomValidationErrors',
-        'GearmanClient',
-    ];
-    public $helpers = [
-        'ListFilter.ListFilter',
-        'Status',
-        'Monitoring',
-        'CustomValidationErrors',
-        'Uuid',
-    ];
+
     public $layout = 'blank';
 
     public function host() {
@@ -604,114 +580,130 @@ class SystemdowntimesController extends AppController {
         }
     }
 
-    /**
-     * @deprecated
-     */
     public function addContainerdowntime() {
         if (!$this->isAngularJsRequest()) {
             // ship html template
             return;
-            //$this->set('back_url', $this->referer());
         }
 
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $childrenContainers = [];
-
         if ($this->request->is('post') || $this->request->is('put')) {
-            if (isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])) {
-                $this->request->data['Systemdowntime']['weekdays'] = implode(',', $this->request->data['Systemdowntime']['weekdays']);
-            }
-
-            $isRecurringDowntime = ($this->request->data('Systemdowntime.is_recurring') == 1);
-
-            if ($this->request->data('Systemdowntime.inherit_downtime') == 1) {
-                $childrenContainers = [];
-
-                foreach ($this->request->data('Systemdowntime.object_id') as $containerId) {
-                    if ($containerId == ROOT_CONTAINER) {
-                        $childrenContainers = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-                    } else {
-                        $childrenContainers = $ContainersTable->resolveChildrenOfContainerIds($this->request->data('Systemdowntime.object_id'));
-                        $childrenContainers = $ContainersTable->removeRootContainer($childrenContainers);
-                    }
-                }
+            /** @var $SystemdowntimesTable SystemdowntimesTable */
+            $SystemdowntimesTable = TableRegistry::getTableLocator()->get('Systemdowntimes');
+            $data = $this->request->data('Systemdowntime');
 
 
-                $objectIds = [];
-                foreach ($childrenContainers as $childrenContainer) {
-                    if (isset($this->MY_RIGHTS_LEVEL[$childrenContainer])) {
-                        if ((int)$this->MY_RIGHTS_LEVEL[$childrenContainer] === WRITE_RIGHT) {
-                            $objectIds[] = (int)$childrenContainer;
-                        }
-                    }
-                }
-                $this->request->data['Systemdowntime']['object_id'] = $objectIds;
-            }
-
-
-            if ($isRecurringDowntime) {
-                $this->request->data = $this->_rewritePostData();
-                $this->Systemdowntime->validate = $this->Systemdowntime->getValidationRulesForRecurringDowntimes();
-                $this->Systemdowntime->set($this->request->data);
-                if ($this->Systemdowntime->validateMany($this->request->data)) {
-                    $this->Systemdowntime->create();
-                    if ($this->Systemdowntime->saveAll($this->request->data)) {
-                        if ($this->isAngularJsRequest()) {
-                            $this->set('success', true);
-                            $this->set('_serialize', ['success']);
-                        }
-                        $this->serializeId();
-                    }
-                } else {
-                    $this->serializeErrorMessage();
-                }
+            if (!isset($data['object_id']) || empty($data['object_id'])) {
+                $this->response->statusCode(400);
+                $this->set('error', [
+                    'object_id' => [
+                        '_empty' => __('You have to select at least on object.')
+                    ]
+                ]);
+                $this->set('_serialize', ['error']);
                 return;
             }
 
-            if ($isRecurringDowntime === false) {
+            if (!is_array($data['object_id'])) {
+                $data['object_id'] = [$data['object_id']];
+            }
 
-                $postDataForValidate = $this->_rewritePostData();
-                $this->Systemdowntime->set($postDataForValidate);
-                if ($this->Systemdowntime->validateMany($postDataForValidate)) {
-                    $hosts = $this->Host->hostsByContainerId(
-                        $this->request->data['Systemdowntime']['object_id'],
-                        'list',
-                        ['Host.disabled' => 0],
-                        'uuid'
-                    );
-                    foreach ($hosts as $hostUuid => $hostName) {
+            if (isset($data['weekdays']) && is_array($data['weekdays'])) {
+                $data['weekdays'] = implode(',', $data['weekdays']);
+            }
+
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+            $data['author'] = $User->getFullName();
+
+            $objectIds = $data['object_id'];
+            unset($data['object_id']);
+
+            $Entities = [];
+            foreach ($objectIds as $objectId) {
+                $tmpData = $data;
+                $tmpData['object_id'] = $objectId;
+                $Entity = $SystemdowntimesTable->newEntity($tmpData);
+                if ($Entity->hasErrors()) {
+                    //On entity has an error so ALL entities has an error!
+                    $this->response->statusCode(400);
+                    $this->set('error', $Entity->getErrors());
+                    $this->set('_serialize', ['error']);
+                    return;
+                }
+
+                //No errors
+                $Entities[] = $Entity;
+            }
+
+            $isRecurringDowntime = $data['is_recurring'] === 1 || $data['is_recurring'] === '1';
+            $success = true;
+
+            if ($isRecurringDowntime) {
+                //Recurring downtimes will get saved to the database
+                $success = $SystemdowntimesTable->saveMany($Entities);
+            } else {
+                //Normal downtimes will be passed to the monitoring engine
+                $GearmanClient = new Gearman();
+                /** @var $ContainersTable ContainersTable */
+                $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+                /** @var $HostsTable HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+                foreach ($Entities as $Entity) {
+
+                    $containerId = $Entity->get('object_id');
+                    $containerIds = [$containerId];
+                    if ($Entity->get('is_recursive') == 1) {
+                        //Recursive container lookup is enabled
+                        //Lookup all child containers the user has write permissions to to select the hosts and create
+                        //the downtimes
+
+                        if ($containerId == ROOT_CONTAINER) {
+                            $childrenContainers = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+                        } else {
+                            $childrenContainers = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+                            $childrenContainers = $ContainersTable->removeRootContainer($childrenContainers);
+                        }
+
+                        foreach ($childrenContainers as $childrenContainerId) {
+                            if (isset($this->MY_RIGHTS_LEVEL[$childrenContainerId]) || $this->MY_RIGHTS_LEVEL[$childrenContainerId] === WRITE_RIGHT) {
+                                $containerIds[] = $childrenContainerId;
+                            }
+                        }
+                    }
+
+
+                    $hosts = $HostsTable->getHostsByContainerId($containerIds, 'list', 'uuid');
+                    if (!empty($hosts)) {
                         $start = strtotime(
                             sprintf(
                                 '%s %s',
-                                $this->request->data['Systemdowntime']['from_date'],
-                                $this->request->data['Systemdowntime']['from_time']
+                                $Entity->get('from_date'),
+                                $Entity->get('from_time')
                             ));
                         $end = strtotime(
                             sprintf('%s %s',
-                                $this->request->data['Systemdowntime']['to_date'],
-                                $this->request->data['Systemdowntime']['to_time']
+                                $Entity->get('to_date'),
+                                $Entity->get('to_time')
                             ));
 
-                        $payload = [
-                            'hostUuid'     => $hostUuid,
-                            'downtimetype' => $this->request->data['Systemdowntime']['downtimetype_id'],
-                            'start'        => $start,
-                            'end'          => $end,
-                            'comment'      => $this->request->data['Systemdowntime']['comment'],
-                            'author'       => $this->Auth->user('full_name'),
-                        ];
-                        $this->GearmanClient->sendBackground('createHostDowntime', $payload);
+                        foreach ($hosts as $hostUuid => $hostName) {
+                            $payload = [
+                                'hostUuid'     => $hostUuid,
+                                'downtimetype' => $Entity->get('downtimetype_id'),
+                                'start'        => $start,
+                                'end'          => $end,
+                                'comment'      => $Entity->get('comment'),
+                                'author'       => $Entity->get('author'),
+                            ];
+                            $GearmanClient->sendBackground('createHostDowntime', $payload);
+                        }
                     }
-                    $this->set('success', true);
-                    $this->set('_serialize', ['success']);
-                    return;
                 }
-                $this->serializeErrorMessage();
-                return;
             }
+
+            $this->set('success', $success);
+            $this->set('_serialize', ['success']);
         }
     }
 
@@ -742,83 +734,5 @@ class SystemdowntimesController extends AppController {
         $this->set('success', false);
         $this->set('message', __('Error while deleting systemdowntime'));
         $this->set('_serialize', ['success', 'message']);
-    }
-
-    /**
-     * @return array
-     * @deprecated
-     */
-    private function _rewritePostData() {
-        /*
-        why we need this function? The problem is, may be a user want to save the downtime for more that one host. the array we get from $this->request->data looks like this:
-            array(
-                'Systemdowntime' => array(
-                    'downtimetype' => 'host',
-                    'object_id' => array(
-                        (int) 0 => '1',
-                        (int) 1 => '2'
-                    ),
-                    'downtimetype_id' => '0',
-                    'comment' => 'In maintenance',
-                    'is_recurring' => '1',
-                    'weekdays' => '1',
-                    'recurring_days_month' => '1',
-                    'from_date' => '11.09.2014',
-                    'from_time' => '99:99',
-                    'to_date' => '14.09.2014',
-                    'to_time' => '06:09'
-                )
-            )
-
-        the big problem is the object_id, this throws us an "Array to string conversion". So we need to rewrite the post array fo some like this:
-
-        array(
-            (int) 0 => array(
-                'Systemdowntime' => array(
-                    'downtimetype' => 'host',
-                    'object_id' => '2',
-                    'downtimetype_id' => '0',
-                    'comment' => 'In maintenance',
-                    'is_recurring' => '1',
-                    'weekdays' => '',
-                    'recurring_days_month' => 'asdadasd',
-                    'from_date' => '11.09.2014',
-                    'from_time' => '06:09',
-                    'to_date' => '14.09.2014',
-                    'to_time' => '06:09'
-                )
-            ),
-            (int) 1 => array(
-                'Systemdowntime' => array(
-                    'downtimetype' => 'host',
-                    'object_id' => '3',
-                    'downtimetype_id' => '0',
-                    'comment' => 'In maintenance',
-                    'is_recurring' => '1',
-                    'weekdays' => '',
-                    'recurring_days_month' => 'asdadasd',
-                    'from_date' => '11.09.2014',
-                    'from_time' => '06:09',
-                    'to_date' => '14.09.2014',
-                    'to_time' => '06:09'
-                )
-            )
-        )
-
-        */
-        if (empty($this->request->data('Systemdowntime.object_id'))) {
-            return [$this->request->data];
-        }
-        $return = [];
-        if (is_array($this->request->data['Systemdowntime']['object_id'])) {
-            foreach ($this->request->data['Systemdowntime']['object_id'] as $object_id) {
-                $tmp['Systemdowntime'] = $this->request->data['Systemdowntime'];
-                $tmp['Systemdowntime']['object_id'] = $object_id;
-                $tmp['Systemdowntime']['author'] = $this->Auth->user('full_name');
-                $return[] = $tmp;
-            }
-        }
-        return $return;
-
     }
 }

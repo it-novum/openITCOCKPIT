@@ -477,19 +477,27 @@ class ContainersController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        $onlyWithWritePermissions = $this->request->query('onlyWritePermissions') === 'true';
+
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === true) {
-            $containers = Api::makeItJavaScriptAble(
-                $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
-            );
+            $containers =
+                $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         } else {
-            $containers = Api::makeItJavaScriptAble(
-                $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
-            );
+                $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
+        if($onlyWithWritePermissions === true){
+            foreach($containers as $containerId => $containerName){
+                if (!isset($this->MY_RIGHTS_LEVEL[$containerId]) || $this->MY_RIGHTS_LEVEL[$containerId] !== WRITE_RIGHT) {
+                    unset($containers[$containerId]);
+                }
+            }
+        }
+
+        $containers = Api::makeItJavaScriptAble($containers);
         $this->set('containers', $containers);
         $this->set('_serialize', ['containers']);
     }

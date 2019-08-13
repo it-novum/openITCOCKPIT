@@ -1262,6 +1262,7 @@ class AppSchema extends CakeSchema {
         'from_time'       => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'to_time'         => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'duration'        => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'is_recursive'    => ['type' => 'integer', 'null' => false, 'default' => 0],
         'comment'         => ['type' => 'string', 'default' => null],
         'author'          => ['type' => 'string', 'default' => null],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],

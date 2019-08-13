@@ -245,6 +245,17 @@ class SystemdowntimesTable extends Table {
             ->maxLength('author', 255)
             ->notEmptyString('author');
 
+        $validator
+            ->integer('is_recursive')
+            ->inList('is_recursive', [0, 1], __('This field needs to be 0 or 1'))
+            ->notEmptyString('is_recursive', null, function ($context) {
+                if (isset($context['data']['objecttype_id']) && $context['data']['objecttype_id'] == OBJECT_NODE) {
+                    //Only required for container downtimes
+                    return false;
+                }
+                return true;
+            });
+
         return $validator;
     }
 

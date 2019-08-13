@@ -46,6 +46,6 @@ class Systemdowntime extends Entity {
         'author'          => true,
         'created'         => true,
         'modified'        => true,
-        'objecttype'      => true
+        'is_recursive'    => true
     ];
 }

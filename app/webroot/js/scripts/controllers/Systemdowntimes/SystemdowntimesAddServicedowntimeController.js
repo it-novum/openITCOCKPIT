@@ -22,7 +22,8 @@ angular.module('openITCOCKPIT')
                         downtimetype_id: '0',
                         objecttype_id: 2048,     //OBJECT_SERVICE
                         object_id: [],
-                        comment: ''
+                        comment: '',
+                        is_recursive: 0
                     }
                 };
             };
