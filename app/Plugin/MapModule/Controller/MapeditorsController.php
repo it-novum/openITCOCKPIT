@@ -1338,8 +1338,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($hostgroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Container.{n}.HostsToContainer.container_id'), false)) {
-                            $this->render403();
+                        if (!$this->allowedByContainerId(array_unique(Hash::extract($hostgroup['Host'], '{n}.Container.{n}.HostsToContainer.container_id')), false)) { $this->render403();
                             return;
                         }
                     }
