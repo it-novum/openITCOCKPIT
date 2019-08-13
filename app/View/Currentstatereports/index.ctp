@@ -47,44 +47,40 @@
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Currentstatereport', [
-                'class' => 'form-horizontal clear',
-            ]);
-            ?>
-            <div class="form-group required" ng-class="{'has-error': errors.services}" ng-init="reportMessage=
+            <form class="form-horizontal clear">
+                <div class="form-group required" ng-class="{'has-error': errors.services}" ng-init="reportMessage=
             {successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
-                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
-                    <?php echo __('Services'); ?>
-                </label>
-                <div class="col col-xs-10">
-                    <select multiple
-                            id="ServiceId"
-                            data-placeholder="<?php echo __('Please choose'); ?>"
-                            class="form-control"
-                            chosen="services"
-                            callback="loadServices"
-                            ng-options="service.value.Service.id as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
-                            ng-model="post.services">
-                    </select>
-                    <div ng-repeat="error in errors.services">
-                        <div class="help-block text-danger">{{ error }}</div>
+                    <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                        <?php echo __('Services'); ?>
+                    </label>
+                    <div class="col col-xs-10">
+                        <select multiple
+                                id="ServiceId"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="services"
+                                callback="loadServices"
+                                ng-options="service.value.Service.id as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
+                                ng-model="post.services">
+                        </select>
+                        <div ng-repeat="error in errors.services">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
-                    <?php echo __('Report format'); ?>
-                </label>
-                <div class="col col-xs-10 col-md-10 col-lg-10">
-                    <select
-                            class="form-control"
-                            ng-model="post.report_format">
-                        <option value="1"><?php echo __('PDF'); ?></option>
-                        <option value="2"><?php echo __('HTML'); ?></option>
-                    </select>
+                <div class="form-group">
+                    <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                        <?php echo __('Report format'); ?>
+                    </label>
+                    <div class="col col-xs-10 col-md-10 col-lg-10">
+                        <select
+                                class="form-control"
+                                ng-model="post.report_format">
+                            <option value="1"><?php echo __('PDF'); ?></option>
+                            <option value="2"><?php echo __('HTML'); ?></option>
+                        </select>
+                    </div>
                 </div>
-            </div>
         </div>
         <div class="padding-bottom-10">
             <div class="form-group" ng-class="{'has-error': errors.current_state}">
