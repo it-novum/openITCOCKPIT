@@ -59,7 +59,7 @@
                                 </label>
                                 <div class="col col-xs-10">
                                     <select multiple
-                                            id="HostId"
+                                            id="HostgroupId"
                                             data-placeholder="<?php echo __('Please select...'); ?>"
                                             class="form-control"
                                             chosen="hostgroups"

@@ -2048,7 +2048,7 @@ class ServicesTable extends Table {
                 $servicecommandargumentvalues = $service['servicecommandargumentvalues'];
                 $servicecommandargumentvalues = Hash::sort($servicecommandargumentvalues, '{n}.commandargument.name', 'asc', 'natural');
                 $servicecommandargumentvalues = Hash::extract($servicecommandargumentvalues, '{n}.value');
-            }else{
+            } else {
                 //Use arguments from service template
                 if (!$ServicetemplateArgsCache->has($service['servicetemplate_id'])) {
                     $servicetemplate = $ServicetemplatesTable->getServicetemplateForEdit($service['servicetemplate_id']);
@@ -2073,14 +2073,38 @@ class ServicesTable extends Table {
      * @param bool $includeDisabled
      * @return int|null
      */
-    public function getServicesCountForStats($includeDisabled = true){
+    public function getServicesCountForStats($includeDisabled = true) {
         $query = $this->find();
-        if($includeDisabled === false){
+        if ($includeDisabled === false) {
             $query->where([
                 'Services.disabled' => 0
             ]);
         }
 
         return $query->count();
+    }
+
+    public function getServiceByIdForDowntimeCreation($id) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.uuid'
+            ])
+            ->where([
+                'Services.id' => $id,
+            ])
+            ->contain([
+                'Hosts' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Hosts.id',
+                            'Hosts.name',
+                            'Hosts.uuid'
+                        ]);
+                    return $query;
+                }
+            ])
+            ->first();
+        return $query;
     }
 }

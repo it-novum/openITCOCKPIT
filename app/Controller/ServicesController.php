@@ -1921,7 +1921,6 @@ class ServicesController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $this->Service->virtualFields['servicename'] = 'CONCAT(Host.name,"/",IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name))';
         $selected = $this->request->query('selected');
         $includeDisabled = $this->request->query('includeDisabled') === 'true';
 
@@ -2555,6 +2554,9 @@ class ServicesController extends AppController {
 
         $selected = $this->request->query('selected');
         $containerId = $this->request->query('containerId');
+        if(empty($containerId)){
+            $containerId = $this->MY_RIGHTS;
+        }
 
         if (!$this->allowedByContainerId($containerId, false)) {
             $this->render403();
