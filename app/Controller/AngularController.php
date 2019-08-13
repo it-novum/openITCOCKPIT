@@ -430,8 +430,15 @@ class AngularController extends AppController {
         //Only ship HTML template
 
         if ($this->isAngularJsRequest()) {
-            $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
-            $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
+            if (!Cache::read('FRONTEND.PRESELECTED_DOWNTIME_OPTION', 'permissions')) {
+                /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+                $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+                $record = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.PRESELECTED_DOWNTIME_OPTION');
+                Cache::write('FRONTEND.PRESELECTED_DOWNTIME_OPTION', $record->get('value'), 'permissions');
+            }
+            $downtimetypeId = Cache::read('FRONTEND.PRESELECTED_DOWNTIME_OPTION', 'permissions');
+
+            $this->set('preselectedDowntimetype', $downtimetypeId);
             $this->set('_serialize', ['preselectedDowntimetype']);
         }
 
@@ -444,22 +451,26 @@ class AngularController extends AppController {
     }
 
     public function getDowntimeData() {
-        $this->layout = 'angularjs';
-        if (!$this->isAngularJsRequest()) {
-            return;
+        if (!Cache::read('FRONTEND.PRESELECTED_DOWNTIME_OPTION', 'permissions')) {
+            /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $record = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.PRESELECTED_DOWNTIME_OPTION');
+            Cache::write('FRONTEND.PRESELECTED_DOWNTIME_OPTION', $record->get('value'), 'permissions');
         }
+        $downtimetypeId = Cache::read('FRONTEND.PRESELECTED_DOWNTIME_OPTION', 'permissions');
 
-        $refill = [
-            'from_date' => date('d.m.Y'),
-            'from_time' => date('H:i'),
-            'to_date'   => date('d.m.Y'),
-            'to_time'   => date('H:i', time() + 60 * 15),
-            'duration'  => "15",
-            'comment'   => __('In maintenance')
+        $defaultValues = [
+            'from_date'       => date('d.m.Y'),
+            'from_time'       => date('H:i'),
+            'to_date'         => date('d.m.Y'),
+            'to_time'         => date('H:i', time() + 60 * 15),
+            'duration'        => 15,
+            'comment'         => __('In maintenance'),
+            'downtimetype_id' => $downtimetypeId
         ];
 
-        $this->set('refill', $refill);
-        $this->set('_serialize', ['refill']);
+        $this->set('defaultValues', $defaultValues);
+        $this->set('_serialize', ['defaultValues']);
     }
 
     public function system_health() {
@@ -914,5 +925,10 @@ class AngularController extends AppController {
         ];
         $this->set('config', $config);
         $this->set('_serialize', ['config']);
+    }
+
+    public function durationInput() {
+        //Only ship HTML template
+        return;
     }
 }

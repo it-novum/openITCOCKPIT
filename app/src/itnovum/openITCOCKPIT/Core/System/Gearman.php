@@ -37,7 +37,14 @@ class Gearman {
      */
     private $client;
 
-    public function __construct($config) {
+    /**
+     * Gearman constructor.
+     */
+    public function __construct() {
+        \Configure::load('gearman');
+        $config = \Configure::read('gearman');
+
+
         $this->config = $config;
 
         $this->client = new \GearmanClient();
@@ -80,14 +87,14 @@ class Gearman {
      * @param int $timeout An interval of time in milliseconds
      * @return bool Always returns true
      */
-    public function setTimeout($timeout){
+    public function setTimeout($timeout) {
         return $this->client->setTimeout($timeout);
     }
 
     /**
      * @return bool
      */
-    public function ping(){
+    public function ping() {
         $result = @$this->client->ping(true);
         return $result;
     }

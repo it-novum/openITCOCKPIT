@@ -82,7 +82,8 @@ $config = [
                 'template_diff_button',
                 'queryhandler',
                 'hostBrowserMenu',
-                'serviceBrowserMenu'
+                'serviceBrowserMenu',
+                'durationInput'
             ],
             'Automaps'         => [
                 'icon'
