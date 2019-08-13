@@ -81,39 +81,169 @@ class SystemdowntimesTable extends Table {
             ->allowEmptyString('id', null, 'create');
 
         $validator
+            ->integer('objecttype_id')
+            ->allowEmptyString('objecttype_id', null, false)
+            ->inList('objecttype_id', [OBJECT_HOST, OBJECT_SERVICE, OBJECT_HOSTGROUP, OBJECT_NODE]);
+
+        $validator
+            ->integer('downtimetype_id')
+            ->allowEmptyString('downtimetype_id', null, false)
+            ->inList('downtimetype_id', [0, 1]);
+
+        $validator
+            ->integer('object_id')
+            ->allowEmptyString('object_id', null, false)
+            ->greaterThan('object_id', 0, __('Please select at least on object.'));
+
+        $validator
             ->scalar('weekdays')
             ->maxLength('weekdays', 255)
-            ->allowEmptyString('weekdays');
+            ->notEmptyString('weekdays', __('You have to select at least one weekday'), function ($context) {
+                if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {
+                    //Only required for recurring downtimes
+                    return true;
+                }
+                return false;
+            })
+            ->add('weekdays', 'custom', [
+                'rule'    => function ($value, $context) {
+                    if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {
+                        //Only required for recurring downtimes
+
+                        if (!isset($context['data']['weekdays'])) {
+                            return false;
+                        }
+
+                        $weekdays = explode(',', $context['data']['weekdays']);
+                        $validDays = [1, 2, 3, 4, 5, 6, 7];
+                        foreach ($weekdays as $weekday) {
+                            $weekday = (int)$weekday;
+                            if (!in_array($weekday, $validDays, true)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+
+                    return true;
+                },
+                'message' => __('Weekdays needs to be in range (1-7).')
+            ]);
 
         $validator
             ->scalar('day_of_month')
             ->maxLength('day_of_month', 255)
-            ->allowEmptyString('day_of_month');
+            ->allowEmptyString('day_of_month')
+            ->add('day_of_month', 'custom', [
+                'rule'    => function ($value, $context) {
+                    if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {
+                        //Only required for recurring downtimes
+                        if (isset($context['data']['day_of_month'])) {
+                            $days = explode(',', $context['data']['day_of_month']);
+                            $validDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+                            foreach ($days as $day) {
+                                $day = (int)$day;
+                                if (!in_array($day, $validDays, true)) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }
+                    }
+
+                    return true;
+                },
+                'message' => __('Weekdays needs to be in range (1-31).')
+            ]);
 
         $validator
             ->scalar('from_time')
             ->maxLength('from_time', 255)
             ->requirePresence('from_time', 'create')
-            ->notEmptyString('from_time');
+            ->add('from_time', 'custom', [
+                'rule'    => function ($value, $context) {
+                    if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {
+                        //Recurring downtimes only have a start time (no date)
+                        preg_match('/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/', $context['data']['from_time'], $matches);
+                        if (!empty($matches)) {
+                            return true;
+                        }
+
+                        return false;
+                    }
+
+                    if (!isset($context['data']['from_date']) || !isset($context['data']['from_time'])) {
+                        return false;
+                    }
+
+                    $datetime = $context['data']['from_date'] . ' ' . $context['data']['from_time'];
+                    $timestamp = strtotime($datetime);
+                    if ($timestamp === false) {
+                        return false;
+                    }
+
+                    if (is_numeric($timestamp) && $timestamp > 0) {
+                        return true;
+                    }
+                    return false;
+                },
+                'message' => __('Start time needs to be a valid date.')
+            ]);
 
         $validator
             ->scalar('to_time')
             ->maxLength('to_time', 255)
-            ->allowEmptyString('to_time');
+            ->add('to_time', 'custom', [
+                'rule'    => function ($value, $context) {
+                    if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {
+                        //Recurring dont have to_time
+                        return true;
+                    }
+
+                    if (!isset($context['data']['to_date']) || !isset($context['data']['to_time'])) {
+                        return false;
+                    }
+
+                    $datetime = $context['data']['to_date'] . ' ' . $context['data']['to_time'];
+                    $timestamp = strtotime($datetime);
+                    if ($timestamp === false) {
+                        return false;
+                    }
+
+                    if (is_numeric($timestamp) && $timestamp > 0) {
+                        return true;
+                    }
+                    return false;
+                },
+                'message' => __('End time needs to be a valid date.')
+            ]);
 
         $validator
             ->integer('duration')
-            ->notEmptyString('duration');
+            ->greaterThan('duration', 0, __('Duration needs to be greater than zero.'), function ($context) {
+                if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {
+                    //Only required for recurring downtimes
+                    return true;
+                }
+                return false;
+            })
+            ->notEmptyString('duration', null, function ($context) {
+                if (isset($context['data']['is_recurring']) && $context['data']['is_recurring'] === 1) {
+                    //Only required for recurring downtimes
+                    return true;
+                }
+                return false;
+            });
 
         $validator
             ->scalar('comment')
             ->maxLength('comment', 255)
-            ->allowEmptyString('comment');
+            ->notEmptyString('comment');
 
         $validator
             ->scalar('author')
             ->maxLength('author', 255)
-            ->allowEmptyString('author');
+            ->notEmptyString('author');
 
         return $validator;
     }

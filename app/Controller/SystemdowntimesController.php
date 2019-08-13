@@ -24,10 +24,12 @@
 //	confirmation.
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\SystemdowntimesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\AngularRequest;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -301,84 +303,101 @@ class SystemdowntimesController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
-    /**
-     * @deprecated
-     */
     public function addHostdowntime() {
         if (!$this->isAngularJsRequest()) {
             // ship html template
             return;
-            //$this->set('back_url', $this->referer());
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            if (isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])) {
-                $this->request->data['Systemdowntime']['weekdays'] = implode(',', $this->request->data['Systemdowntime']['weekdays']);
-            }
+            /** @var $SystemdowntimesTable SystemdowntimesTable */
+            $SystemdowntimesTable = TableRegistry::getTableLocator()->get('Systemdowntimes');
+            $data = $this->request->data('Systemdowntime');
 
-            $isRecurringDowntime = ($this->request->data('Systemdowntime.is_recurring') == 1);
-            $this->request->data = $this->_rewritePostData();
 
-            if ($isRecurringDowntime) {
-                $this->Systemdowntime->validate = $this->Systemdowntime->getValidationRulesForRecurringDowntimes();
-                $this->Systemdowntime->set($this->request->data);
-                if ($this->Systemdowntime->validateMany($this->request->data)) {
-                    $this->Systemdowntime->create();
-                    if ($this->Systemdowntime->saveAll($this->request->data)) {
-                        if ($this->isAngularJsRequest()) {
-                            $this->set('success', true);
-                            $this->set('_serialize', ['success']);
-                        }
-                        $this->serializeId();
-                    }
-                } else {
-                    $this->serializeErrorMessage();
-                }
+            if (!isset($data['object_id']) || empty($data['object_id'])) {
+                $this->response->statusCode(400);
+                $this->set('error', [
+                    'object_id' => [
+                        '_empty' => __('You have to select at least on object.')
+                    ]
+                ]);
+                $this->set('_serialize', ['error']);
                 return;
             }
 
-            if ($isRecurringDowntime === false) {
-                $this->Systemdowntime->set($this->request->data);
-                if ($this->Systemdowntime->validateMany($this->request->data)) {
-                    foreach ($this->request->data as $request) {
-                        $start = strtotime(
-                            sprintf(
-                                '%s %s',
-                                $request['Systemdowntime']['from_date'],
-                                $request['Systemdowntime']['from_time']
-                            ));
-                        $end = strtotime(
-                            sprintf('%s %s',
-                                $request['Systemdowntime']['to_date'],
-                                $request['Systemdowntime']['to_time']
-                            ));
+            if (!is_array($data['object_id'])) {
+                $data['object_id'] = [$data['object_id']];
+            }
 
-                        $host = $this->Host->find('first', [
-                            'recursive'  => -1,
-                            'fields'     => [
-                                'Host.uuid'
-                            ],
-                            'conditions' => [
-                                'Host.id' => $request['Systemdowntime']['object_id']
-                            ]
-                        ]);
-                        $payload = [
-                            'hostUuid'     => $host['Host']['uuid'],
-                            'downtimetype' => $request['Systemdowntime']['downtimetype_id'],
-                            'start'        => $start,
-                            'end'          => $end,
-                            'comment'      => $request['Systemdowntime']['comment'],
-                            'author'       => $this->Auth->user('full_name'),
-                        ];
-                        $this->GearmanClient->sendBackground('createHostDowntime', $payload);
-                    }
-                    $this->set('success', true);
-                    $this->set('_serialize', ['success']);
+            if (isset($data['weekdays']) && is_array($data['weekdays'])) {
+                $data['weekdays'] = implode(',', $data['weekdays']);
+            }
+
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+            $data['author'] = $User->getFullName();
+
+            $objectIds = $data['object_id'];
+            unset($data['object_id']);
+
+            $Entities = [];
+            foreach ($objectIds as $objectId) {
+                $tmpData = $data;
+                $tmpData['object_id'] = $objectId;
+                $Entity = $SystemdowntimesTable->newEntity($tmpData);
+                if ($Entity->hasErrors()) {
+                    //On entity has an error so ALL entities has an error!
+                    $this->response->statusCode(400);
+                    $this->set('error', $Entity->getErrors());
+                    $this->set('_serialize', ['error']);
                     return;
                 }
-                $this->serializeErrorMessage();
-                return;
+
+                //No errors
+                $Entities[] = $Entity;
             }
+
+            $isRecurringDowntime = $data['is_recurring'] === 1 || $data['is_recurring'] === '1';
+            $success = true;
+
+            if ($isRecurringDowntime) {
+                //Recurring downtimes will get saved to the database
+                $success = $SystemdowntimesTable->saveMany($Entities);
+            } else {
+                //Normal downtimes will be passed to the monitoring engine
+                $GearmanClient = new Gearman();
+                /** @var $HostsTable HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+                foreach ($Entities as $Entity) {
+                    $hostUuid = $HostsTable->getHostUuidById($Entity->get('object_id'));
+                    $start = strtotime(
+                        sprintf(
+                            '%s %s',
+                            $Entity->get('from_date'),
+                            $Entity->get('from_time')
+                        ));
+                    $end = strtotime(
+                        sprintf('%s %s',
+                            $Entity->get('to_date'),
+                            $Entity->get('to_time')
+                        ));
+
+                    $payload = [
+                        'hostUuid'     => $hostUuid,
+                        'downtimetype' => $Entity->get('downtimetype_id'),
+                        'start'        => $start,
+                        'end'          => $end,
+                        'comment'      => $Entity->get('comment'),
+                        'author'       => $this->Auth->user('full_name'),
+                    ];
+                    $GearmanClient->sendBackground('createHostDowntime', $payload);
+                }
+            }
+
+            $this->set('success', $success);
+            $this->set('_serialize', ['success']);
         }
     }
 

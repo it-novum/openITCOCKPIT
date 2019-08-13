@@ -274,8 +274,7 @@ class DowntimesController extends AppController {
             throw new InvalidArgumentException('Parameter type is missing');
         }
 
-        Configure::load('gearman');
-        $GearmanClient = new Gearman(Configure::read('gearman'));
+        $GearmanClient = new Gearman();
 
         $DowntimeHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
         $DowntimeServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
