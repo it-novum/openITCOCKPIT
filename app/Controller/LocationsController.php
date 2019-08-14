@@ -28,22 +28,19 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\LocationsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\LocationFilter;
 
+/**
+ * Class LocationsController
+ * @property AppPaginatorComponent $Paginator
+ * @property DbBackend $DbBackend
+ * @property Changelog $Changelog
+ */
 class LocationsController extends AppController {
-    public $uses = ['Location', 'Container'];
+
     public $layout = 'blank';
-    public $components = ['ListFilter.ListFilter', 'RequestHandler'];
-    public $helpers = ['ListFilter.ListFilter'];
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Container.name'       => ['label' => 'Name', 'searchType' => 'wildcard'],
-                'Location.description' => ['label' => 'description', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
 
     public function index() {
         if (!$this->isAngularJsRequest()) {

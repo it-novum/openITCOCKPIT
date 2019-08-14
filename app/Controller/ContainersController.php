@@ -35,10 +35,10 @@ use itnovum\openITCOCKPIT\Core\ModuleManager;
  * @property Container $Container
  */
 class ContainersController extends AppController {
-    public $layout = 'Admin.default';
+
+    public $layout = 'blank';
 
     public function index() {
-        $this->layout = 'blank';
         return;
     }
 
@@ -70,7 +70,6 @@ class ContainersController extends AppController {
 
 
     public function add() {
-        $this->layout = 'blank';
         if ($this->request->is('GET')) {
             //Only ship HTML Template
             return;
@@ -100,7 +99,6 @@ class ContainersController extends AppController {
     }
 
     public function edit() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             return;
         }
@@ -254,6 +252,10 @@ class ContainersController extends AppController {
         $this->set('_serialize', ['paths']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function delete($id = null) {
         $userId = $this->Auth->user('id');
 
@@ -502,9 +504,11 @@ class ContainersController extends AppController {
         $this->set('_serialize', ['containers']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function showDetails($id = null) {
-        $this->layout = 'blank';
-
         if (!$this->isApiRequest() && $id === null) {
             //Only ship HTML template for angular
             return;

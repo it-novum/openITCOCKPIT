@@ -23,10 +23,11 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+
 /**
  * Class Container
+ * @deprecated
  * @mixin TreeBehavior
- * @deprecated Use ContianersTable
  */
 class Container extends AppModel {
     public $actsAs = ['Tree'];
@@ -146,6 +147,10 @@ class Container extends AppModel {
 
     var $name = 'Container';
 
+    /**
+     * @return bool
+     * @deprecated
+     */
     public function isUniqueByObject() {
         if (isset($this->data['Container']['containertype_id']) && in_array($this->data['Container']['containertype_id'], [CT_TENANT])) {
             //return $this->isUnique('name');
@@ -188,10 +193,20 @@ class Container extends AppModel {
     }
 
 
+    /**
+     * @param $id
+     * @return bool
+     * @deprecated
+     */
     public function __delete($id) {
         return $this->delete($id, true);
     }
 
+    /**
+     * @param $hostIds
+     * @return bool
+     * @deprecated
+     */
     public function __allowDelete($hostIds) {
         if (empty($hostIds)) {
             return true;
