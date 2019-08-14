@@ -38,8 +38,8 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                     $scope.filter.Hoststatus.not_acknowledged = !result.data.config.Hoststatus.problem_has_been_acknowledged;
                     $scope.filter.Hoststatus.not_in_downtime = !result.data.config.Hoststatus.scheduled_downtime_depth;
                     $scope.statusCount = result.data.statusCount;
-                    $scope.widgetHref = $scope.linkForHostList();
                     $scope.init = false;
+                    $scope.widgetHref = $scope.linkForHostList();
                 });
             };
 
