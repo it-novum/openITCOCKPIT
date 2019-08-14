@@ -38,6 +38,11 @@ class SystemdowntimesConditions {
     private $order = [];
 
     /**
+     * @var array
+     */
+    private $conditions = [];
+
+    /**
      * @return array
      */
     public function getContainerIds() {
@@ -70,6 +75,27 @@ class SystemdowntimesConditions {
      */
     public function getOrder() {
         return $this->order;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConditions() {
+        return $this->conditions;
+    }
+
+    /**
+     * @param array $conditions
+     */
+    public function setConditions($conditions) {
+        $this->conditions = $conditions;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasConditions() {
+        return !empty($this->conditions);
     }
 
 }

@@ -89,7 +89,7 @@
                                             <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                                                 <input type="text" class="input-sm"
                                                        placeholder="<?php echo __('Filter by host name'); ?>"
-                                                       ng-model="filter.Host.name"
+                                                       ng-model="filter.Hosts.name"
                                                        ng-model-options="{debounce: 500}">
                                             </label>
                                         </div>
@@ -100,7 +100,7 @@
                                             <label class="input"> <i class="icon-prepend fa fa-user"></i>
                                                 <input type="text" class="input-sm"
                                                        placeholder="<?php echo __('Filter by user'); ?>"
-                                                       ng-model="filter.Systemdowntime.author"
+                                                       ng-model="filter.Systemdowntimes.author"
                                                        ng-model-options="{debounce: 500}">
                                             </label>
                                         </div>
@@ -111,7 +111,7 @@
                                             <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                                 <input type="text" class="input-sm"
                                                        placeholder="<?php echo __('Filter by comment'); ?>"
-                                                       ng-model="filter.Systemdowntime.comment"
+                                                       ng-model="filter.Systemdowntimes.comment"
                                                        ng-model-options="{debounce: 500}">
                                             </label>
                                         </div>
@@ -138,18 +138,18 @@
                                 <tr>
                                     <th class="no-sort text-center"><i class="fa fa-check-square-o fa-lg"></i></th>
 
-                                    <th class="no-sort" ng-click="orderBy('Host.name')">
-                                        <i class="fa" ng-class="getSortClass('Host.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Hosts.name')">
+                                        <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                         <?php echo __('Host name'); ?>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Systemdowntime.author')">
-                                        <i class="fa" ng-class="getSortClass('Systemdowntime.author')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Systemdowntimes.author')">
+                                        <i class="fa" ng-class="getSortClass('Systemdowntimes.author')"></i>
                                         <?php echo __('User'); ?>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Systemdowntime.comment')">
-                                        <i class="fa" ng-class="getSortClass('Systemdowntime.comment')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Systemdowntimes.comment')">
+                                        <i class="fa" ng-class="getSortClass('Systemdowntimes.comment')"></i>
                                         <?php echo __('Comment'); ?>
                                     </th>
 
@@ -157,13 +157,13 @@
 
                                     <th class="no-sort"><?php echo __('Days of month'); ?></th>
 
-                                    <th class="no-sort" ng-click="orderBy('Systemdowntime.from_time')">
-                                        <i class="fa" ng-class="getSortClass('Systemdowntime.from_time')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Systemdowntimes.from_time')">
+                                        <i class="fa" ng-class="getSortClass('Systemdowntimes.from_time')"></i>
                                         <?php echo __('Start time'); ?>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Systemdowntime.duration')">
-                                        <i class="fa" ng-class="getSortClass('Systemdowntime.duration')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Systemdowntimes.duration')">
+                                        <i class="fa" ng-class="getSortClass('Systemdowntimes.duration')"></i>
                                         <?php echo __('Duration'); ?>
                                     </th>
 
@@ -260,7 +260,9 @@
                                 </div>
                             </div>
 
+                            <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                             <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                            <?php echo $this->element('paginator_or_scroll'); ?>
                         </div>
                     </div>
                 </div>

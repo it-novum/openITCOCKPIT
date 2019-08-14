@@ -24,14 +24,14 @@
 //	confirmation.
 
 
-// in src/Form/CurrentreportForm.php
+// in src/Form/CurrentstatereportForm.php
 namespace App\Form;
 
 use Cake\Form\Form;
 use Cake\Form\Schema;
 use Cake\Validation\Validator;
 
-class CurrentreportForm extends Form {
+class CurrentstatereportForm extends Form {
 
     protected function _buildSchema(Schema $schema) {
         return $schema
@@ -42,7 +42,7 @@ class CurrentreportForm extends Form {
     protected function _buildValidator(Validator $validator) {
         $validator
             ->requirePresence('services', true, __('You must specify at least one service.'))
-            ->allowEmptyArray('services', false, __('You must specify at least one service.'));
+            ->allowEmptyArray('services',  __('You must specify at least one service.'), false);
 
         $validator
             ->requirePresence('current_state')

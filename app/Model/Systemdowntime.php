@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
 
+/**
+ * Class Systemdowntime
+ * @deprecated
+ */
 class Systemdowntime extends AppModel {
 
 
@@ -154,6 +158,10 @@ class Systemdowntime extends AppModel {
         ]
     ];
 
+    /**
+     * @return bool
+     * @deprecated
+     */
     public function checkDowntimeSettings() {
         if (isset($this->data['Systemdowntime']['downtimetype'])) {
             if ($this->data['Systemdowntime']['is_recurring'] == 1) {
@@ -164,6 +172,11 @@ class Systemdowntime extends AppModel {
         return false;
     }
 
+    /**
+     * @param $request
+     * @return bool
+     * @deprecated
+     */
     public function validateRecurring($request) {
         //Validate days from selectbox
         if ($request['Systemdowntime']['weekdays'] != '') {
@@ -189,6 +202,10 @@ class Systemdowntime extends AppModel {
         return true;
     }
 
+    /**
+     * @return bool
+     * @deprecated
+     */
     public function validateDuration() {
         if ($this->data['Systemdowntime']['is_recurring'] == 0) {
             return true;
@@ -205,6 +222,7 @@ class Systemdowntime extends AppModel {
 
     /**
      * @return array
+     * @deprecated
      */
     public function getValidationRulesForRecurringDowntimes() {
         $validate = Hash::merge(
@@ -245,6 +263,7 @@ class Systemdowntime extends AppModel {
      *
      * @param array $check Contains the value passed from the view to be validated
      * @return boolean False if in the future, True otherwise
+     * @deprecated
      */
     public function checkPastDate() {
         if ($this->data[$this->name]['is_recurring']) {
@@ -254,6 +273,10 @@ class Systemdowntime extends AppModel {
         return CakeTime::fromString($this->data[$this->alias]['to_date']) >= CakeTime::fromString(date("d.m.Y", time()));
     }
 
+    /**
+     * @return bool
+     * @deprecated
+     */
     public function checkPastTime() {
         if (CakeTime::fromString($this->data[$this->alias]['to_date']) > CakeTime::fromString(date("d.m.Y", time()))) {
             return true;
@@ -261,6 +284,10 @@ class Systemdowntime extends AppModel {
         return CakeTime::fromString($this->data[$this->alias]['to_date'] . ' ' . $this->data[$this->alias]['to_time']) > time();
     }
 
+    /**
+     * @return bool
+     * @deprecated
+     */
     function dateComparison() {
         if ($this->data[$this->name]['is_recurring']) {
             return true;
@@ -268,6 +295,10 @@ class Systemdowntime extends AppModel {
         return Validation::comparison(CakeTime::fromString($this->data[$this->alias]['from_date']), '<=', CakeTime::fromString($this->data[$this->alias]['to_date']));
     }
 
+    /**
+     * @return bool
+     * @deprecated
+     */
     function timeComparison() {
         if ($this->data[$this->name]['is_recurring']) {
             return Validation::time($this->data[$this->alias]['from_time']);
@@ -280,9 +311,10 @@ class Systemdowntime extends AppModel {
         return false;
     }
 
-    /*
-    Custom validation rule for recurring downtimes
-    */
+    /**
+     * Custom validation rule for recurring downtimes
+     * @deprecated
+     */
     public function atLeastOne() {
         if (!$this->data[$this->name]['is_recurring']) {
             return true;
@@ -292,6 +324,7 @@ class Systemdowntime extends AppModel {
 
     /**
      * @return array
+     * @deprecated
      */
     public function getRecurringHostDowntimesQuery(SystemdowntimesConditions $Conditions, $filterConditions = []) {
         $this->bindModel([
@@ -331,6 +364,7 @@ class Systemdowntime extends AppModel {
 
     /**
      * @return array
+     * @deprecated
      */
     public function getRecurringServiceDowntimesQuery(SystemdowntimesConditions $Conditions, $filterConditions = []) {
         $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
@@ -376,7 +410,7 @@ class Systemdowntime extends AppModel {
             'conditions' => [
                 'HostsToContainers.container_id' => $Conditions->getContainerIds()
             ],
-            'group' => [
+            'group'      => [
                 'Systemdowntime.id'
             ],
             'order'      => $Conditions->getOrder()
@@ -389,6 +423,7 @@ class Systemdowntime extends AppModel {
 
     /**
      * @return array
+     * @deprecated
      */
     public function getRecurringHostgroupDowntimesQuery(SystemdowntimesConditions $Conditions, $filterConditions = []) {
         $query = [
@@ -426,6 +461,12 @@ class Systemdowntime extends AppModel {
         return $query;
     }
 
+    /**
+     * @param SystemdowntimesConditions $Conditions
+     * @param array $filterConditions
+     * @return array
+     * @deprecated
+     */
     public function getRecurringNodeDowntimesQuery(SystemdowntimesConditions $Conditions, $filterConditions = []) {
         $query = [
             'recursive'  => -1,

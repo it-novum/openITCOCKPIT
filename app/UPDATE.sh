@@ -4,6 +4,7 @@ if [[ $1 == "--help" ]]; then
     echo "--roles          Restore all default user role permissions"
     echo "--roles-admin    Restore all default user role permissions for Administrator role"
     echo "--rights         Reset file permissions"
+    echo "--cc             Clear model cache"
 
     exit 0
 fi

@@ -231,6 +231,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "DowntimesServiceController"
             })
 
+            .state('DowntimereportsIndex', {
+                url: '/downtimereports/index',
+                templateUrl: "/downtimereports/index.html",
+                controller: "DowntimereportsIndexController"
+            })
+
             .state('InstantreportsIndex', {
                 url: '/instantreports/index',
                 templateUrl: "/instantreports/index.html",

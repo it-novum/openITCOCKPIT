@@ -85,7 +85,7 @@ class RegistersController extends AppController {
 
                     $licenseEntity = $RegistersTable->patchEntity($licenseEntity, ['license' => $license]);
 
-                    $GearmanClient = new Gearman(Configure::read('gearman'));
+                    $GearmanClient = new Gearman();
                     $GearmanClient->sendBackground('create_apt_config', ['key' => $license]);
 
                     $licenseEntity->set('apt', 1);

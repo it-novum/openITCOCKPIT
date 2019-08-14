@@ -22,7 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-use App\Form\CurrentreportForm;
+use App\Form\CurrentstatereportForm;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
@@ -38,7 +38,7 @@ use Statusengine\PerfdataParser;
 
 
 /**
- * @property Currentstatereport $Currentstatereport
+ * @property CurrentstatereportForm $CurrentstatereportForm
  * @property DbBackend $DbBackend
  * @property AppPaginatorComponent $Paginator
  */
@@ -50,7 +50,7 @@ class CurrentstatereportsController extends AppController {
             //Only ship HTML template
             return;
         }
-        $currentstatereportForm = new CurrentreportForm();
+        $currentstatereportForm = new CurrentstatereportForm();
 
         $currentstatereportForm->execute($this->request->data);
 
@@ -104,7 +104,7 @@ class CurrentstatereportsController extends AppController {
         $this->layout = 'Admin.default';
 
 
-        $currentstatereportForm = new CurrentreportForm();
+        $currentstatereportForm = new CurrentstatereportForm();
         $currentstatereportForm->execute($this->request->data);
 
 

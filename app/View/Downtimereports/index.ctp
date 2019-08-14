@@ -24,13 +24,13 @@
 //	confirmation.
 ?>
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-file-image-o fa-fw "></i>
             <?php echo __('Adhoc Reports'); ?>
             <span>>
-                <?php echo __('Downtime Report'); ?>
-			</span>
+                <?php echo __('Downtime report'); ?>
+            </span>
         </h1>
     </div>
 </div>
@@ -38,9 +38,11 @@
 <div class="jarviswidget">
     <header>
         <span class="widget-icon"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2><?php echo __('Create Downtime Report'); ?></h2>
+        <h2><?php echo __('Create downtime report'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(); ?>
+            <a ui-sref="DowntimereportsIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
@@ -49,59 +51,122 @@
             echo $this->Form->create('Downtimereport', [
                 'class' => 'form-horizontal clear',
             ]);
-
-            echo $this->Form->input('evaluationMethod', [
-                'before'  => '<label class="col col-md-2 text-right">' . __('Evaluation') . '</label>',
-                'type'    => 'radio',
-                'options' => [
-                    'DowntimereportHost'    => '<i class="fa fa-desktop"></i> ' . __('Hosts '),
-                    'DowntimereportService' => '<i class="fa fa-gears"></i> ' . __('Hosts and Services '),
-                ],
-                'class'   => 'padding-right-10',
-                'default' => 'DowntimereportHost',
-            ]);
-
-
-            echo $this->Form->input('report_format', [
-                    'options'          => ['pdf' => __('PDF'), 'html' => __('HTML')],
-                    'data-placeholder' => __('Please select...'),
-                    'class'            => 'chosen',
-                    'label'            => __('Report format'),
-                    'style'            => 'width:100%;',
-                ]
-            );
-
-            echo $this->Form->input('timeperiod_id', ['options' => $this->Html->chosenPlaceholder($timeperiods), 'data-placeholder' => __('Please select...'), 'class' => 'chosen', 'label' => __('Timeperiod'), 'style' => 'width:100%;']);
-
-            echo $this->Form->input('start_date', [
-                'label' => __('From'),
-                'type'  => 'text',
-                'class' => 'form-control required',
-                'value' => $this->CustomValidationErrors->refill('start_date', date('d.m.Y', strtotime('-15 days'))),
-            ]);
-
-            echo $this->Form->input('end_date', [
-                'label'    => __('To'),
-                'type'     => 'text',
-                'class'    => 'form-control required',
-                'reguired' => true,
-                'value'    => $this->CustomValidationErrors->refill('end_date', date('d.m.Y', time())),
-            ]);
-
-            echo $this->Form->input('check_hard_state', [
-                'options'          => [__('soft and hard state'), __('only hard state')],
-                'data-placeholder' => __('Please select...'),
-                'class'            => 'chosen',
-                'label'            => __('Reflection state'),
-                'style'            => 'width:100%;',
-            ]);
-
             ?>
+            <div ng-class="{'has-error': errors.services}" ng-init="reportMessage=
+            {successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
+                <div class="form-group">
+                    <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                        <?php echo __('Evaluation'); ?>
+                    </label>
+                    <div class="col col-xs-10 col-md-10 col-lg-10">
+                        <span>
+                            <input type="radio"
+                                   id="hosts"
+                                   ng-model="post.evaluation_type"
+                                   ng-value="0">
+                            <label for="hosts">
+                                <i class="fa fa-desktop"></i>
+                                <?php echo __('Hosts'); ?>
+                            </label>
+                        </span>
+                        <span class="padding-left-10">
+                            <input type="radio"
+                                   id="hostandservices"
+                                   ng-model="post.evaluation_type"
+                                   ng-value="1">
+                            <label for="hostandservices">
+                                <i class="fa fa-cogs"></i>
+                                <?php echo __('Hosts and Services'); ?>
+                            </label>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                        <?php echo __('Report format'); ?>
+                    </label>
+                    <div class="col col-xs-10 col-md-10 col-lg-10">
+                        <select
+                                class="form-control"
+                                ng-model="post.report_format">
+                            <option ng-value="1"><?php echo __('PDF'); ?></option>
+                            <option ng-value="2"><?php echo __('HTML'); ?></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group required">
+                    <label class="col col-md-1 control-label">
+                        <?php echo __('Timeperiod'); ?>
+                    </label>
+                    <div class="col col-xs-10 col-lg-10">
+                        <select
+                                data-placeholder="<?php echo __('Please choose a timeperiod'); ?>"
+                                class="form-control"
+                                chosen="timeperiods"
+                                ng-options="timeperiod.Timeperiod.id as timeperiod.Timeperiod.name for timeperiod in timeperiods"
+                                ng-model="post.timeperiod_id">
+                            <option></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group required" ng-class="{'has-error': errors.from_time}">
+                    <label class="col col-md-1 control-label"
+                           for="FromTime"><?php echo __('From'); ?></label>
+                    <div class="col col-xs-10 col-md-10 col-lg-10">
+                        <input type="text" class="form-control" ng-model="post.from_time"
+                               placeholder="<?php echo __('DD.MM.YYYY'); ?>">
+                        <div ng-repeat="error in errors.from_time">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group required" ng-class="{'has-error': errors.to_time}">
+                    <label class="col col-md-1 control-label"
+                           for="ToTime"><?php echo __('To'); ?></label>
+                    <div class="col col-xs-10 col-md-10 col-lg-10">
+                        <input type="text" class="form-control" ng-model="post.to_time"
+                               placeholder="<?php echo __('DD.MM.YYYY'); ?>">
+                        <div ng-repeat="error in errors.to_time">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                        <?php echo __('Reflection state'); ?>
+                    </label>
+                    <div class="col col-xs-10 col-md-10 col-lg-10">
+                        <select class="form-control" ng-model="post.reflection_state">
+                            <option ng-value="1"><?php echo __('soft and hard state'); ?></option>
+                            <option ng-value="2"><?php echo __('only hard state'); ?></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="padding-bottom-10">
+                <div class="row">
+                    <div class="alert alert-info" ng-show="generatingReport">
+                        <i class="fa fa-spin fa-refresh"></i>
+                        <?php echo __('Generating report...'); ?>
+                    </div>
+                </div>
+                <div class="row padding-10">
+                    <div class="alert alert-info" ng-show="hasEntries === false">
+                        <i class="fa fa-lg fa-info-circle"></i>
+                        <?php echo __('No entries match the selection'); ?>
+                    </div>
+                </div>
+            </div>
 
+            <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                <div class="well formactions ">
+                    <div class="pull-right">
+                        <button type="button" ng-click="createDowntimeReport()" class="btn btn-primary">
+                            <?php echo __('Create report'); ?>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <?php
-        echo $this->Form->formActions(__('Create'));
-        ?>
     </div>
-</div>
 </div>

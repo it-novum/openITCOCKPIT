@@ -123,74 +123,72 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="calendar in calendars">
-                                    <td class="text-center" class="width-15">
-                                        <input type="checkbox"
-                                               ng-model="massChange[calendar.id]"
-                                               ng-show="calendar.allowEdit">
-                                    </td>
-                                    <td>
-                                        {{ calendar.name }}
-                                    </td>
-                                    <td>
-                                        {{ calendar.description }}
-                                    </td>
-                                    <td class="width-50">
-                                        <div class="btn-group smart-form">
-                                            <?php if ($this->Acl->hasPermission('edit', 'calendars')): ?>
-                                                <a ui-sref="CalendarsEdit({id: calendar.id})"
-                                                   ng-if="calendar.allowEdit"
-                                                   class="btn btn-default">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                </a>
-                                                <a href="javascript:void(0);"
-                                                   ng-if="!calendar.allowEdit"
-                                                   class="btn btn-default disabled">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                </a>
-                                            <?php else: ?>
-                                                <a href="javascript:void(0);" class="btn btn-default disabled">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-                                            <?php endif; ?>
-                                            <a href="javascript:void(0);" data-toggle="dropdown"
-                                               class="btn btn-default dropdown-toggle"><span
-                                                        class="caret"></span></a>
-                                            <ul class="dropdown-menu pull-right"
-                                                id="menuHack-{{calendar.id}}">
+                                    <tr ng-repeat="calendar in calendars">
+                                        <td class="text-center" class="width-15">
+                                            <input type="checkbox"
+                                                   ng-model="massChange[calendar.id]"
+                                                   ng-show="calendar.allowEdit">
+                                        </td>
+                                        <td>
+                                            {{ calendar.name }}
+                                        </td>
+                                        <td>
+                                            {{ calendar.description }}
+                                        </td>
+                                        <td class="width-50">
+                                            <div class="btn-group smart-form">
                                                 <?php if ($this->Acl->hasPermission('edit', 'calendars')): ?>
-                                                    <li ng-if="calendar.allowEdit">
-                                                        <a ui-sref="CalendarsEdit({id: calendar.id})">
-                                                            <i class="fa fa-cog"></i>
-                                                            <?php echo __('Edit'); ?>
-                                                        </a>
-                                                    </li>
+                                                    <a ui-sref="CalendarsEdit({id: calendar.id})"
+                                                       ng-if="calendar.allowEdit"
+                                                       class="btn btn-default">
+                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                    </a>
+                                                    <a href="javascript:void(0);"
+                                                       ng-if="!calendar.allowEdit"
+                                                       class="btn btn-default disabled">
+                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                    </a>
+                                                <?php else: ?>
+                                                    <a href="javascript:void(0);" class="btn btn-default disabled">
+                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('delete', 'calendars')): ?>
-                                                    <li class="divider" ng-if="calendar.allowEdit"></li>
-                                                    <li ng-if="calendar.allowEdit">
-                                                        <a href="javascript:void(0);"
-                                                           class="txt-color-red"
-                                                           ng-click="confirmDelete(getObjectForDelete(calendar))">
-                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                                                        </a>
-                                                    </li>
-                                                <?php endif; ?>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                </tr>
+                                                <a href="javascript:void(0);" data-toggle="dropdown"
+                                                   class="btn btn-default dropdown-toggle"><span
+                                                            class="caret"></span></a>
+                                                <ul class="dropdown-menu pull-right"
+                                                    id="menuHack-{{calendar.id}}">
+                                                    <?php if ($this->Acl->hasPermission('edit', 'calendars')): ?>
+                                                        <li ng-if="calendar.allowEdit">
+                                                            <a ui-sref="CalendarsEdit({id: calendar.id})">
+                                                                <i class="fa fa-cog"></i>
+                                                                <?php echo __('Edit'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->Acl->hasPermission('delete', 'calendars')): ?>
+                                                        <li class="divider" ng-if="calendar.allowEdit"></li>
+                                                        <li ng-if="calendar.allowEdit">
+                                                            <a href="javascript:void(0);"
+                                                               class="txt-color-red"
+                                                               ng-click="confirmDelete(getObjectForDelete(calendar))">
+                                                                <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr ng-show="calendars.length == 0">
+                                        <td colspan="4">
+                                            <div class="col-xs-12 text-center txt-color-red italic">
+                                                <?php echo __('No entries match the selection'); ?>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
-
-                        <div class="row margin-top-10 margin-bottom-10">
-                            <div class="row margin-top-10 margin-bottom-10" ng-show="calendars.length == 0">
-                                <div class="col-xs-12 text-center txt-color-red italic">
-                                    <?php echo __('No entries match the selection'); ?>
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="row margin-top-10 margin-bottom-10">
                             <div class="col-xs-12 col-md-2 text-muted text-center">
                                 <span ng-show="selectedElements > 0">({{selectedElements}})</span>

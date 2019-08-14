@@ -94,7 +94,7 @@ class AdministratorsController extends AppController {
         ];
 
         //Collect process information
-        $GearmanClient = new Gearman(Configure::read('gearman'));
+        $GearmanClient = new Gearman();
         $gearmanReachable = $GearmanClient->ping();
 
         $isGearmanWorkerRunning = false;

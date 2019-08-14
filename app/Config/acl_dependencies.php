@@ -82,7 +82,8 @@ $config = [
                 'template_diff_button',
                 'queryhandler',
                 'hostBrowserMenu',
-                'serviceBrowserMenu'
+                'serviceBrowserMenu',
+                'durationInput'
             ],
             'Automaps'         => [
                 'icon'
@@ -326,7 +327,7 @@ $config = [
             'Users'                 => [
                 'index' => ['view', 'loadUsersByContainerId'],
                 'add'   => ['addFromLdap', 'loadLdapUserByString', 'loadDateformats'],
-                'edit'  => ['resetPassword'],
+                'edit'  => ['resetPassword', 'loadDateformats'],
             ],
             'Tenants'               => [
                 'index'  => ['view'],

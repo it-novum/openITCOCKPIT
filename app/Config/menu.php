@@ -341,6 +341,7 @@ $config = [
                 ],
                 [
                     'url'   => ['controller' => 'downtimereports', 'action' => 'index'],
+                    'state' => 'DowntimereportsIndex',
                     'title' => 'Downtime Report',
                     'icon'  => 'file-image-o',
                 ],
