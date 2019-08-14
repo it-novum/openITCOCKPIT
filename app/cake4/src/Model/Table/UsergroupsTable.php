@@ -4,6 +4,8 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 
 /**
  * Usergroups Model
@@ -22,6 +24,8 @@ use Cake\Validation\Validator;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class UsergroupsTable extends Table {
+    use Cake2ResultTableTrait;
+    use PaginationAndScrollIndexTrait;
 
     /**
      * Initialize method
@@ -74,5 +78,26 @@ class UsergroupsTable extends Table {
     public function getUsergroupsList() {
         $query = $this->find('list');
         return $query->toArray();
+    }
+
+    public function getUsergroups($PaginateOMat = null) {
+        $query = $this->find()
+            ->disableHydration()
+            ->order([
+                'name' => 'asc'
+            ]);
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
+      $result = $query->toArray();
+        return $result;
     }
 }

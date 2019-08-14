@@ -102,6 +102,7 @@ $config = [
                 [
                     'url'   => ['plugin' => '', 'controller' => 'usergroups', 'action' => 'index'],
                     'title' => 'Manage User Roles',
+                    'state' => 'UsergroupsIndex',
                     'icon'  => 'users',
                 ],
                 [

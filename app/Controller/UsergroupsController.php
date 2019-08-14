@@ -25,6 +25,7 @@
 
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 class UsergroupsController extends AppController {
     public $layout = 'Admin.default';
@@ -32,30 +33,20 @@ class UsergroupsController extends AppController {
 
     public $uses = ['Usergroup', 'Aro', 'Tenant'];
 
-    //public function beforeFilter(){
-    //	$this->Auth->allow();
-    //	parent::beforeFilter();
-    //}
-
     public function index() {
-        $options = [
-            'recursive' => -1,
-            'order'     => [
-                'Usergroup.name' => 'asc',
-            ],
-        ];
-
-        $query = Hash::merge($this->Paginator->settings, $options);
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_usergroups = $this->Usergroup->find('all', $query);
-            $this->set('all_usergroups', $all_usergroups);
-            $this->set('_serialize', ['all_usergroups']);
-        } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
-            $usergroups = $this->Paginator->paginate();
+        $this->layout = 'blank';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
         }
-        $this->set(compact(['usergroups']));
+
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest());
+        /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+        $allUsergroups = $UsergroupsTable->getUsergroups($PaginateOMat);
+
+        $this->set('allUsergroups', $allUsergroups);
+        $this->set('_serialize', ['allUsergroups']);
     }
 
     public function view($id = null) {
@@ -291,7 +282,7 @@ class UsergroupsController extends AppController {
         $this->redirect(['action' => 'index']);
     }
 
-    public function loadUsergroups(){
+    public function loadUsergroups() {
         $this->layout = 'blank';
         /** @var $Usergroups App\Model\Table\UsergroupsTable */
         $Usergroups = TableRegistry::getTableLocator()->get('Usergroups');
