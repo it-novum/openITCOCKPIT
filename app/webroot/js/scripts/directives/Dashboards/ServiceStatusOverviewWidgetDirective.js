@@ -42,8 +42,8 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', functio
                     $scope.filter.Servicestatus.not_acknowledged = !result.data.config.Servicestatus.problem_has_been_acknowledged;
                     $scope.filter.Servicestatus.not_in_downtime = !result.data.config.Servicestatus.scheduled_downtime_depth;
                     $scope.statusCount = result.data.statusCount;
-                    $scope.widgetHref = $scope.linkForServiceList();
                     $scope.init = false;
+                    $scope.widgetHref = $scope.linkForServiceList();
                 });
             };
 
