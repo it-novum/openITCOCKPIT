@@ -335,7 +335,8 @@ class ContactgroupsController extends AppController {
             $Cache = new KeyValueStore();
 
             $postData = $this->request->data('data');
-            $userId = $this->Auth->user('id');
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $userId = $User->getId();
 
             foreach ($postData as $index => $contactgroupData) {
                 if (!isset($contactgroupData['Contactgroup']['id'])) {

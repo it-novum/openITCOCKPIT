@@ -10,6 +10,7 @@ angular.module('openITCOCKPIT')
         $scope.rotationInterval = parseInt($stateParams.interval, 10) * 1000;
         $scope.rotationPossition = 1;
 
+        $scope.interval = null;
 
         $scope.loadMapDetails = function(){
             $http.get("/map_module/mapeditors/mapDetails/" + $scope.id + ".json", {
@@ -32,7 +33,7 @@ angular.module('openITCOCKPIT')
         if($scope.rotate !== null && $scope.rotationInterval > 0){
             $scope.rotate = $scope.rotate.split(',');
 
-            $interval(function(){
+            $scope.interval = $interval(function(){
                 $scope.rotationPossition++;
                 if($scope.rotationPossition > $scope.rotate.length){
                     $scope.rotationPossition = 1;
@@ -59,6 +60,13 @@ angular.module('openITCOCKPIT')
             document.getElementById('main').style.marginLeft = '220px';
             $('#content > .ng-scope > .row').css('display','block');
         };
+
+        //Disable interval if object gets removed from DOM.
+        $scope.$on('$destroy', function(){
+            if($scope.interval !== null){
+                $interval.cancel($scope.interval);
+            }
+        });
 
         $scope.$watch('fullscreen', function(){
             if($scope.fullscreen){

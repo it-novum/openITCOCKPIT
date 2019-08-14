@@ -27,12 +27,13 @@
 use App\Model\Table\ContainersTable;
 use App\Model\Table\TenantsTable;
 use Cake\ORM\TableRegistry;
+use FreeDSx\Ldap\Entry\Change;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
 
 /**
  * @property Tenant $Tenant
- * @property Container $Container
+ * @property Changelog $Changelog
  * @property AppPaginatorComponent $Paginator
  */
 class TenantsController extends AppController {

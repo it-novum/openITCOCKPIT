@@ -203,7 +203,7 @@ class TimeperiodsController extends AppController {
                 return;
             } else {
                 //No errors
-                $userId = $this->Auth->user('id');
+                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
                 $requestData = $this->request->data;
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'add',
@@ -211,7 +211,7 @@ class TimeperiodsController extends AppController {
                     $timeperiod->get('id'),
                     OBJECT_TIMEPERIOD,
                     [ROOT_CONTAINER],
-                    $userId,
+                    $User->getId(),
                     $requestData['Timeperiod']['name'],
                     $requestData
                 );
