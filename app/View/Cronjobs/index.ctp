@@ -84,11 +84,9 @@
                                     <td>{{cronjob.Cronjob.plugin}}</td>
                                     <td>{{cronjob.Cronjob.interval}}</td>
                                     <td>{{cronjob.Cronschedule.last_scheduled_usertime}}</td>
-                                    <td class="text-center" ng-if="cronjob.Cronschedules.is_running == 0">
-                                        <?php echo __('No'); ?>
-                                    </td>
-                                    <td class="text-center" ng-if="cronjob.Cronschedules.is_running != 0">
-                                        <?php echo __('Yes'); ?>
+                                    <td class="text-center">
+                                        <span ng-show="cronjob.Cronschedule.is_running == 1"><?php echo __('Yes'); ?></span>
+                                        <span ng-show="cronjob.Cronschedule.is_running == 0"><?php echo __('No'); ?></span>
                                     </td>
                                     <td class="text-align-center" ng-if="cronjob.Cronjob.enabled">
                                         <i class="fa fa-check text-success"></i>

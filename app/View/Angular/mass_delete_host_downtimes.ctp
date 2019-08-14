@@ -33,7 +33,7 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-xs-12">
-                        <?php echo __('Do you really want cancel the selected host downtimes?'); ?>
+                        <?php echo __('Do you really want to cancel the selected host downtimes?'); ?>
                     </div>
 
                     <div class="col-xs-12 padding-top-15">
@@ -61,7 +61,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" ng-click="doDeleteHostDowntime()">
-                    <?php echo __('Cancel'); ?>
+                    <?php echo __('Cancel downtime'); ?>
                 </button>
 
                 <button type="button" class="btn btn-default" data-dismiss="modal">

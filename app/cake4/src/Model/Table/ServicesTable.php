@@ -8,6 +8,7 @@ use App\Model\Entity\Service;
 use App\Model\Entity\Servicedependency;
 use App\Model\Entity\Serviceescalation;
 use Cake\Database\Expression\Comparison;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -937,6 +938,33 @@ class ServicesTable extends Table {
             ->first();
 
         return $query;
+    }
+
+    /**
+     * @param int $id
+     * @return array|\Cake\Datasource\EntityInterface
+     * @throws RecordNotFoundException
+     */
+    public function getServiceByIdForExternalCommand($id) {
+        return $this->find()
+            ->select([
+                'Services.id',
+                'Services.uuid',
+            ])
+            ->where([
+                'Services.id' => $id
+            ])
+            ->contain([
+                'Hosts' => function (Query $query) {
+                    $query->select([
+                        'Hosts.id',
+                        'Hosts.uuid',
+                        'Hosts.satellite_id'
+                    ]);
+                    return $query;
+                }
+            ])
+            ->firstOrFail();
     }
 
     /**

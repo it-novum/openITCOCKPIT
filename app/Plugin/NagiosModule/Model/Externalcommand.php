@@ -29,6 +29,10 @@ use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 
+/**
+ * Class Externalcommand
+ * @deprecated
+ */
 class Externalcommand extends NagiosModuleAppModel {
     public $useTable = false;
 
@@ -43,6 +47,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     private function _initialize() {
         $this->nagiosCmd = null;
@@ -65,6 +70,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function rescheduleHost($options = [], $timestamp = null) {
         if ($timestamp === null) {
@@ -93,6 +99,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function rescheduleHostWithQuery($options = []) {
         $this->Host = ClassRegistry::init('Host');
@@ -123,6 +130,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function rescheduleHostgroup($options, $timestamp = null) {
         /** @var $HostgroupsTable HostgroupsTable */
@@ -165,6 +173,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function passiveTransferHostCheckresult($options) {
         $_options = ['comment' => 'No comment given', 'state' => 2, 'forceHardstate' => 0, 'repetitions' => 1];
@@ -197,6 +206,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function passiveTransferServiceCheckresult($options) {
         $_options = ['comment' => 'No comment given', 'state' => 3, 'forceHardstate' => 0, 'repetitions' => 1];
@@ -223,6 +233,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function enableOrDisableHostFlapdetection($options) {
         $_options = ['condition' => 1];
@@ -249,6 +260,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function enableOrDisableServiceFlapdetection($options) {
         $_options = ['condition' => 1];
@@ -276,6 +288,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function rescheduleService($options, $timestamp = null) {
         if ($timestamp === null) {
@@ -296,6 +309,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function rescheduleServiceWithQuery($options = [], $timestamp = null) {
         $this->Service = ClassRegistry::init('Service');
@@ -337,6 +351,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function sendCustomHostNotification($options) {
         switch ($options['type']) {
@@ -373,6 +388,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function sendCustomServiceNotification($options) {
         switch ($options['type']) {
@@ -409,6 +425,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @author     Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since      3.0
      * @version    3.0.1
+     * @deprecated
      */
     public function setHostAck($options) {
         $_options = [
@@ -479,6 +496,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @author     Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since      3.0
      * @version    3.0.1
+     * @deprecated
      */
     public function setHostAckWithQuery($options) {
         $_options = [
@@ -562,6 +580,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function setHostgroupAck($options) {
         /** @var $HostgroupsTable HostgroupsTable */
@@ -604,6 +623,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function setServiceAck($options) {
         $this->_write('ACKNOWLEDGE_SVC_PROBLEM;' . $options['hostUuid'] . ';' . $options['serviceUuid'] . ';' . $options['sticky'] . ';1;1;' . $options['author'] . ';' . $options['comment']);
@@ -624,6 +644,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function setServiceAckWithQuery($options) {
         $this->Servicestatus = ClassRegistry::init(MONITORING_SERVICESTATUS);
@@ -661,6 +682,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function setHostDowntime($options) {
         $_options = [
@@ -710,6 +732,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function setHostgroupDowntime($options) {
         $_options = [
@@ -791,6 +814,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function setServiceDowntime($options) {
         $_options['duration'] = $options['end'] - $options['start'];
@@ -868,6 +892,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function disableHostNotifications($options = []) {
         $this->_write('DISABLE_HOST_NOTIFICATIONS;' . $options['uuid'], 0);
@@ -888,6 +913,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function enableHostNotifications($options = []) {
         $this->_write('ENABLE_HOST_NOTIFICATIONS;' . $options['uuid'], 0);
@@ -908,6 +934,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function disableHostgroupNotifications($options = []) {
         /** @var $HostgroupsTable HostgroupsTable */
@@ -932,6 +959,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function enableHostgroupNotifications($options = []) {
         /** @var $HostgroupsTable HostgroupsTable */
@@ -956,6 +984,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function disableServiceNotifications($options = []) {
         $this->_write('DISABLE_SVC_NOTIFICATIONS;' . $options['hostUuid'] . ';' . $options['serviceUuid'], 0);
@@ -973,6 +1002,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function enableServiceNotifications($options = []) {
         $this->_write('ENABLE_SVC_NOTIFICATIONS;' . $options['hostUuid'] . ';' . $options['serviceUuid'], 0);
@@ -983,10 +1013,11 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    string with external command prefix
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     private function _prefix() {
-        return '[' . time() . '] ';
-    }
+    return '[' . time() . '] ';
+}
 
     /**
      * Send a custom command to the nagios.cmd
@@ -1001,6 +1032,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function runCmdCommand($payload) {
         $payload['parameters'] = (array)$payload['parameters'];
@@ -1022,6 +1054,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function deleteHostDowntime($internal_downtime_id = 0, $downtimehistory_id = 0) {
         if ($internal_downtime_id > 0) {
@@ -1042,6 +1075,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function deleteServiceDowntime($internal_downtime_id = 0, $downtimehistory_id = 0) {
         if ($internal_downtime_id > 0) {
@@ -1055,6 +1089,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function test() {
         try {
@@ -1071,6 +1106,7 @@ class Externalcommand extends NagiosModuleAppModel {
      *
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     private function _write($content = '', $satellite_id = 0) {
         if ($satellite_id > 0) {
@@ -1122,6 +1158,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function close() {
         if ($this->_is_resource()) {
@@ -1138,6 +1175,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    bool
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     private function _is_resource($recursive = false) {
         if (is_resource($this->nagiosCmd)) {

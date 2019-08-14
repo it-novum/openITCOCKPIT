@@ -24,8 +24,16 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Systemsetting
+ * @deprecated
+ */
 class Systemsetting extends AppModel {
 
+    /**
+     * @return array
+     * @deprecated
+     */
     public function findNice() {
         $systemsettings = $this->find('all');
         $all_systemsettings = [];
@@ -73,6 +81,10 @@ class Systemsetting extends AppModel {
         return $sortedSystemSettings;
     }
 
+    /**
+     * @return array
+     * @deprecated
+     */
     public function findAsArray() {
         $return = [];
         $systemsettings = $this->findNice();
@@ -87,6 +99,11 @@ class Systemsetting extends AppModel {
         return $return;
     }
 
+    /**
+     * @param string $section
+     * @return array
+     * @deprecated
+     */
     public function findAsArraySection($section = '') {
         $return = [];
         $systemsettings = $this->findAllBySection($section);
@@ -105,6 +122,7 @@ class Systemsetting extends AppModel {
 
     /**
      * @return mixed
+     * @deprecated
      */
     public function getMasterInstanceName() {
         if (!Cache::read('systemsettings_master_instance', 'permissions')) {
@@ -116,6 +134,7 @@ class Systemsetting extends AppModel {
 
     /**
      * @return mixed
+     * @deprecated
      */
     public function getQueryHandlerPath() {
         if (!Cache::read('systemsettings_qh_path', 'permissions')) {

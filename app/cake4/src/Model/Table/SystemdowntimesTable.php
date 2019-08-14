@@ -575,4 +575,13 @@ class SystemdowntimesTable extends Table {
         return $this->exists(['Systemdowntimes.id' => $id]);
     }
 
+    /**
+     * @return array
+     */
+    public function getRecurringDowntimesForCronjob() {
+        $query = $this->find()
+            ->all();
+        return $query->toArray();
+    }
+
 }

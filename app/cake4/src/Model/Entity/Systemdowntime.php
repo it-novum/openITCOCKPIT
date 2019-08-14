@@ -48,4 +48,83 @@ class Systemdowntime extends Entity {
         'modified'        => true,
         'is_recursive'    => true
     ];
+
+    /**
+     * @return array
+     */
+    public function getWeekdays() {
+        if ($this->weekdays === '' || $this->weekdays === null) {
+            return [];
+        }
+
+        return explode(',', $this->weekdays);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasWeekdays() {
+        return !empty($this->getWeekdays());
+    }
+
+    /**
+     * @return array
+     */
+    public function getDayOfMonth() {
+        if ($this->day_of_month === '' || $this->day_of_month === null) {
+            return [];
+        }
+
+        return explode(',', $this->day_of_month);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasDayOfMonth() {
+        return !empty($this->getDayOfMonth());
+    }
+
+    /**
+     * @return false|int
+     */
+    public function getScheduledStartTime() {
+        return strtotime($this->from_time);
+    }
+
+    /**
+     * @return false|int
+     */
+    public function getScheduledEndTime() {
+        return $this->getScheduledStartTime() + ($this->getDuration() * 60);
+    }
+
+    /**
+     * @return int
+     */
+    public function getDuration() {
+        return (int)$this->duration;
+    }
+
+    /**
+     * @param int $timestamp
+     * @return bool
+     */
+    public function isTimestampInThePast($timestamp = 0) {
+        return $timestamp < time();
+    }
+
+    /**
+     * @return int
+     */
+    public function getDowntimetypeId() {
+        return (int)$this->downtimetype_id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRecurringDowntimeComment(){
+        return 'AUTO[' . $this->id . ']: ' . $this->comment;
+    }
 }
