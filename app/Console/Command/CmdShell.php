@@ -50,7 +50,7 @@ class CmdShell extends AppShell {
      */
     public function main() {
         App::uses('UUID', 'Lib');
-        $this->uuidRegex = UUID::regex();
+        $this->uuidRegex = \itnovum\openITCOCKPIT\Core\UUID::regex();
         define('LOGLEVEL_INFO', 1);
         define('LOGLEVEL_WARNING', 2);
         define('LOGLEVEL_FATAL', 4);

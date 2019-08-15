@@ -524,7 +524,7 @@ class HostsController extends AppController {
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
             $HostComparisonForSave = new HostComparisonForSave($this->request->data, $hosttemplate);
             $hostData = $HostComparisonForSave->getDataForSaveForAllFields();
-            $hostData['uuid'] = UUID::v4();
+            $hostData['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
 
             //Add required fields for validation
             $hostData['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
@@ -1422,7 +1422,7 @@ class HostsController extends AppController {
                 $newHostData = [
                     'Host'                     => Hash::merge(
                         $sourceHost['Host'], [
-                        'uuid'         => UUID::v4(),
+                        'uuid'         => \itnovum\openITCOCKPIT\Core\UUID::v4(),
                         'name'         => $host2copy['name'],
                         'description'  => $host2copy['description'],
                         'host_url'     => $host2copy['host_url'],
@@ -1763,7 +1763,7 @@ class HostsController extends AppController {
                             $newServiceData = [
                                 'Service'                          => Hash::merge(
                                     $service['Service'], [
-                                    'uuid'         => UUID::v4(),
+                                    'uuid'         => \itnovum\openITCOCKPIT\Core\UUID::v4(),
                                     'host_id'      => $hostId,
                                     'Contact'      => $contactIds,
                                     'Contactgroup' => $contactgroupIds,
@@ -1913,7 +1913,7 @@ class HostsController extends AppController {
 
         $id = $idOrUuid;
         if (!is_numeric($idOrUuid)) {
-            if (preg_match(UUID::regex(), $idOrUuid)) {
+            if (preg_match(\itnovum\openITCOCKPIT\Core\UUID::regex(), $idOrUuid)) {
                 $lookupHost = $this->Host->find('first', [
                     'recursive'  => -1,
                     'fields'     => [

@@ -117,7 +117,7 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
      */
     public function onOpen(ConnectionInterface $conn) {
         //debug($conn->resourceId);
-        $uuid = UUID::v4();
+        $uuid = \itnovum\openITCOCKPIT\Core\UUID::v4();
         $conn->uuid = $uuid;
         $this->clients->attach($conn);
         $conn->send(json_encode([

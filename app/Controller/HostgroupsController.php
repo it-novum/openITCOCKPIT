@@ -149,7 +149,7 @@ class HostgroupsController extends AppController {
 
             /** @var $HostgroupsTable HostgroupsTable */
             $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-            $this->request->data['Hostgroup']['uuid'] = UUID::v4();
+            $this->request->data['Hostgroup']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
             $this->request->data['Hostgroup']['container']['containertype_id'] = CT_HOSTGROUP;
             $hostgroup = $HostgroupsTable->newEntity();
             $hostgroup = $HostgroupsTable->patchEntity($hostgroup, $this->request->data('Hostgroup'));

@@ -484,7 +484,7 @@ class DebugConfigNagiosTask extends AppShell {
             $this->_buildUuidCache();
         }
 
-        $string = preg_replace_callback(UUID::regex(), [$this, '_replaceUuid'], $string);
+        $string = preg_replace_callback(\itnovum\openITCOCKPIT\Core\UUID::regex(), [$this, '_replaceUuid'], $string);
 
         return $string;
     }

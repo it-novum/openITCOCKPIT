@@ -1,15 +1,16 @@
 <?php
 
+namespace itnovum\openITCOCKPIT\Core;
+
 /**
  * Class UUID
+ * @package itnovum\openITCOCKPIT\Core
  * @license MIT License
- * @deprecated
  */
 class UUID {
 
     /**
      * @return string
-     * @deprecated
      */
     public static function v4() {
         $data = openssl_random_pseudo_bytes(16);
@@ -24,7 +25,6 @@ class UUID {
     /**
      * @param $uuid
      * @return bool
-     * @deprecated
      */
     public static function is_valid($uuid) {
         return preg_match('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?' .
@@ -33,7 +33,6 @@ class UUID {
 
     /**
      * @return string
-     * @deprecated
      */
     public static function regex() {
         return '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/';
@@ -41,9 +40,9 @@ class UUID {
 
     /**
      * @return string
-     * @deprecated
      */
     public static function JSregex() {
         return '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
     }
+
 }

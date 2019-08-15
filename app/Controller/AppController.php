@@ -687,7 +687,7 @@ class AppController extends Controller {
             if (!empty($linkData) && $viewPosition == 'tab') {
                 foreach ($linkData as $key => $data) {
                     //add an id so we can identify tabs
-                    $linkData[$key]['uuid'] = UUID::v4();
+                    $linkData[$key]['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
                 }
             }
             //defines the vars link $additionalLinkList or $additionalLinkTab

@@ -78,7 +78,7 @@ class BackgroundUploadsController extends MapModuleAppController {
             }
 
             $uploadFilename = str_replace('.' . $fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
-            $saveFilename = UUID::v4();
+            $saveFilename = \itnovum\openITCOCKPIT\Core\UUID::v4();
             $fullFilePath = $backgroundFolder->path . DS . $saveFilename . '.' . $fileExtension;
             try {
                 if (!move_uploaded_file($_FILES['file']['tmp_name'], $fullFilePath)) {

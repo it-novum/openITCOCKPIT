@@ -110,7 +110,7 @@ class LocationsController extends AppController {
         $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $this->request->data['uuid'] = UUID::v4();
+            $this->request->data['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
             $location = $LocationsTable->newEntity();
             $location = $LocationsTable->patchEntity($location, $this->request->data);
             $location->container->containertype_id = CT_LOCATION;

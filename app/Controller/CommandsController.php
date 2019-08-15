@@ -103,7 +103,7 @@ class CommandsController extends AppController {
             $command = $CommandsTable->newEntity();
 
             $command = $CommandsTable->patchEntity($command, $this->request->data('Command'));
-            $command->set('uuid', UUID::v4());
+            $command->set('uuid', \itnovum\openITCOCKPIT\Core\UUID::v4());
 
             $CommandsTable->save($command);
             if ($command->hasErrors()) {
@@ -390,7 +390,7 @@ class CommandsController extends AppController {
                         'command_line'     => $commandData['Command']['command_line'],
                         'command_type'     => $sourceCommand['command_type'],
                         'description'      => $commandData['Command']['description'],
-                        'uuid'             => UUID::v4(),
+                        'uuid'             => \itnovum\openITCOCKPIT\Core\UUID::v4(),
                         'commandarguments' => $sourceCommand['commandarguments']
                     ];
 

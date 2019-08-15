@@ -402,7 +402,7 @@ class GraphgeneratorsController extends AppController {
         }
         $service_uuid_amount = 0;
         foreach ($host_and_service_uuids as $host_uuid => $service_uuids) {
-            if (!UUID::is_valid($host_uuid)) {
+            if (!\itnovum\openITCOCKPIT\Core\UUID::is_valid($host_uuid)) {
                 return;
             }
 
@@ -412,7 +412,7 @@ class GraphgeneratorsController extends AppController {
                 } else {
                     $service_uuid = $service_uuid_arr;
                 }
-                if (!UUID::is_valid($service_uuid)) {
+                if (!\itnovum\openITCOCKPIT\Core\UUID::is_valid($service_uuid)) {
                     return;
                 }
             }

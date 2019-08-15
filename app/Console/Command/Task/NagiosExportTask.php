@@ -2745,7 +2745,7 @@ class NagiosExportTask extends AppShell {
                 if (!$HostsTable->hasHostServiceFromServicetemplateId($hostId, $servicetemplateId)) {
                     //Create active oITC Agent check
                     $serviceData = [
-                        'uuid' => UUID::v4(),
+                        'uuid' => \itnovum\openITCOCKPIT\Core\UUID::v4(),
                         'host_id' => $hostId,
                         'servicetemplate_id' => $servicetemplateId,
                         'service_type' => OITC_AGENT_SERVICE,

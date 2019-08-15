@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core\System\Health;
 
 
+use itnovum\openITCOCKPIT\Core\UUID;
+
 class SystemId {
 
     private $systemId = null;
@@ -38,7 +40,7 @@ class SystemId {
         } else {
             if (is_writable('/etc/openitcockpit')) {
                 $file = fopen('/etc/openitcockpit/system-id', 'w+');
-                $this->systemId = \UUID::v4();
+                $this->systemId = UUID::v4();
                 fwrite($file, $this->systemId);
                 fclose($file);
                 return;

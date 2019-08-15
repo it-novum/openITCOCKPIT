@@ -620,7 +620,7 @@ class Host extends AppModel {
         if ($save_mode === 'add') {
             $diff_array = Hash::merge($diff_array, [
                 'Host' => [
-                    'uuid' => UUID::v4(),
+                    'uuid' => \itnovum\openITCOCKPIT\Core\UUID::v4(),
                 ],
             ]);
         } else if ($save_mode === 'edit') {

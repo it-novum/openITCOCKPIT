@@ -367,7 +367,7 @@ class AgentconfigsController extends AppController {
                 $HosttemplatesTable->getContactsAndContactgroupsById($host->get('hosttemplate_id'))
             );
             $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
-            $serviceData['uuid'] = UUID::v4();
+            $serviceData['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
             $serviceData['service_type'] = OITC_AGENT_SERVICE;
 
             //Add required fields for validation

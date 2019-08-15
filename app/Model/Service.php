@@ -610,7 +610,7 @@ class Service extends AppModel {
             $diff_array = Hash::merge($diff_array,
                 [
                     'Service' => [
-                        'uuid' => UUID::v4(),
+                        'uuid' => \itnovum\openITCOCKPIT\Core\UUID::v4(),
                     ],
                 ]);
         } else if ($save_mode === 'edit') {

@@ -195,7 +195,7 @@ class HostescalationsController extends AppController {
         if ($this->request->is('post')) {
             /** @var $HostescalationsTable HostescalationsTable */
             $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
-            $this->request->data['Hostescalation']['uuid'] = UUID::v4();
+            $this->request->data['Hostescalation']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
             $data['hosts'] = $HostescalationsTable->parseHostMembershipData(
                 $this->request->data('Hostescalation.hosts._ids'),
                 $this->request->data('Hostescalation.hosts_excluded._ids')

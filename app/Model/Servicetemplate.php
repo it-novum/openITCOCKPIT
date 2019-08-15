@@ -452,7 +452,7 @@ class Servicetemplate extends AppModel {
      * @deprecated
      */
     public function createUUID() {
-        return UUID::v4();
+        return \itnovum\openITCOCKPIT\Core\UUID::v4();
     }
 
     /**

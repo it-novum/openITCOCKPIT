@@ -195,7 +195,7 @@ class ImportTemplates {
                 //replacing the command uuid with the command id
                 $servicetemplateData[$key]['Servicetemplate']['command_id'] = $commandId;
                 //insert a new UUID for the Servicetemplates
-                //$servicetemplateData[$key]['Servicetemplate']['uuid'] = UUID::v4();
+                //$servicetemplateData[$key]['Servicetemplate']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
                 $i = 0;
                 //go through the servicetemplatecommandarguments
                 if (!empty($servicetemplate['Servicetemplatecommandargumentvalue'])) {

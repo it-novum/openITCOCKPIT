@@ -194,7 +194,7 @@ class TimeperiodsController extends AppController {
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $timeperiod = $TimeperiodsTable->newEntity();
             $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->data('Timeperiod'));
-            $timeperiod->set('uuid', UUID::v4());
+            $timeperiod->set('uuid', \itnovum\openITCOCKPIT\Core\UUID::v4());
             $TimeperiodsTable->checkRules($timeperiod);
             $TimeperiodsTable->save($timeperiod);
             if ($timeperiod->hasErrors()) {
@@ -462,7 +462,7 @@ class TimeperiodsController extends AppController {
                         'description'           => $timeperiodData['Timeperiod']['description'],
                         'container_id'          => $sourceTimeperiod['container_id'],
                         'calendar_id'           => $sourceTimeperiod['calendar_id'],
-                        'uuid'                  => UUID::v4(),
+                        'uuid'                  => \itnovum\openITCOCKPIT\Core\UUID::v4(),
                         'timeperiod_timeranges' => $sourceTimeperiod['timeperiod_timeranges']
                     ];
 

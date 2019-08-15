@@ -225,7 +225,7 @@ class Rrd extends AppModel {
             $this->rrd_path = Configure::read('rrd.path');
         }
 
-        return UUID::is_valid($host_uuid) && is_dir($this->rrd_path . $host_uuid);
+        return \itnovum\openITCOCKPIT\Core\UUID::is_valid($host_uuid) && is_dir($this->rrd_path . $host_uuid);
     }
 
     public function isValidHostAndServiceUuid($host_uuid, $service_uuid) {
@@ -238,7 +238,7 @@ class Rrd extends AppModel {
         $xml_file_name = $base_path . '.xml';
         $rrd_file_name = $base_path . '.rrd';
 
-        if (UUID::is_valid($service_uuid) && UUID::is_valid($host_uuid) &&
+        if (\itnovum\openITCOCKPIT\Core\UUID::is_valid($service_uuid) && \itnovum\openITCOCKPIT\Core\UUID::is_valid($host_uuid) &&
             file_exists($xml_file_name) && file_exists($rrd_file_name)
         ) {
 

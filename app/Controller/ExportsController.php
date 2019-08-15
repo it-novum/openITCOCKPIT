@@ -67,7 +67,7 @@ class ExportsController extends AppController {
         $this->set('exportRunning', $exportRunning);
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->Frontend->setJson('exportRunning', $exportRunning);
-        $this->Frontend->setJson('uuidRegEx', UUID::JSregex());
+        $this->Frontend->setJson('uuidRegEx', \itnovum\openITCOCKPIT\Core\UUID::JSregex());
     }
 
     public function broadcast() {
