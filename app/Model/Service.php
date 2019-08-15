@@ -1266,15 +1266,6 @@ class Service extends AppModel {
 
         if ($this->delete($id)) {
             //Delete was successfully - delete Graphgenerator configurations
-            $GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
-            $graphgenTmplConfs = $GraphgenTmplConf->find('all', [
-                'conditions' => [
-                    'GraphgenTmplConf.service_id' => $id,
-                ],
-            ]);
-            foreach ($graphgenTmplConfs as $graphgenTmplConf) {
-                $GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
-            }
 
             $changelog_data = $Changelog->parseDataForChangelog(
                 'delete',

@@ -101,9 +101,6 @@ $config = [
             'Forward'          => [
                 'index',
             ],
-            'GraphCollections' => [
-                'loadCollectionGraphData',
-            ],
             'Packetmanager'    => [
                 'getPackets',
             ],
@@ -117,10 +114,6 @@ $config = [
             ],
             'Proxy'            => [
                 'getSettings',
-            ],
-            'Rrds'             => [
-                'index',
-                'ajax',
             ],
             'Search'           => [
                 'index',
@@ -136,10 +129,6 @@ $config = [
                 'loadServicesByContainerIdCake4'
             ],
             'Graphgenerators'  => [
-                'fetchGraphData',
-                'loadServicesByHostId',
-                'loadPerfDataStructures',
-                'loadServiceruleFromService',
                 'getPerfdataByUuid'
             ],
             'Dashboards'       => [
@@ -394,7 +383,6 @@ $config = [
                 'Documentations'        => ['view', 'wiki'],
                 'Downtimereports'       => ['index', 'host', 'service'],
                 'Exports'               => ['index'],
-                'GraphCollections'      => ['index', 'display'],
                 'Hostchecks'            => ['index'],
                 'Hostdependencies'      => ['index'],
                 'Hostescalations'       => ['index'],

@@ -88,7 +88,6 @@ class AppController extends Controller {
         'Servicedependency',
         'Container',
         'Tenant',
-        'GraphCollection',
         'User',
         'Location',
         'Servicetemplate',

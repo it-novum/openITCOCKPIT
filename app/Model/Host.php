@@ -1068,20 +1068,9 @@ class Host extends AppModel {
             ],
         ]));
 
-        $GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
-        $graphgenTmplConfs = $GraphgenTmplConf->find('all', [
-            'conditions' => [
-                'GraphgenTmplConf.service_id' => $serviceIds,
-            ],
-        ]);
-
 
         if ($this->delete()) {
             //Delete was successfully - delete Graphgenerator configurations
-            foreach ($graphgenTmplConfs as $graphgenTmplConf) {
-                $GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
-            }
-
             $changelog_data = $Changelog->parseDataForChangelog(
                 'delete',
                 'hosts',
@@ -1250,11 +1239,9 @@ class Host extends AppModel {
         $datasource = $this->getDataSource();
         $DeletedHost = ClassRegistry::init('DeletedHost');
         $DeletedService = ClassRegistry::init('DeletedService');
-        $GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
         $Documentation = ClassRegistry::init('Documentation');
         try {
             $datasource->begin();
-            $GraphgenTmplConf->deleteAll(['GraphgenTmplConf.service_id' => $serviceIds, true]);
 
             foreach ($hostsInSatellite as $hostArr) {
                 $changelog_data = $Changelog->parseDataForChangelog(

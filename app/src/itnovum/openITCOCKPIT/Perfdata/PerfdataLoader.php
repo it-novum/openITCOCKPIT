@@ -36,7 +36,6 @@ use Statusengine\PerfdataParser;
 /**
  * Class PerfdataLoader
  * @package itnovum\openITCOCKPIT\Perfdata
- * @property \Rrd $Rrd
  * @property \Servicestatus $Servicestatus
  */
 class PerfdataLoader {
@@ -61,23 +60,16 @@ class PerfdataLoader {
     private $Servicestatus;
 
     /**
-     * @var \Model
-     */
-    private $Rrd;
-
-    /**
      * PerfdataLoader constructor.
      * @param DbBackend $DbBackend
      * @param PerfdataBackend $PerfdataBackend
      * @param \Model $Servicestatus
-     * @param \Model $Rrd
      * @param null|string $gauge
      */
-    public function __construct(DbBackend $DbBackend, PerfdataBackend $PerfdataBackend, \Model $Servicestatus, \Model $Rrd) {
+    public function __construct(DbBackend $DbBackend, PerfdataBackend $PerfdataBackend, \Model $Servicestatus) {
         $this->DbBackend = $DbBackend;
         $this->PerfdataBackend = $PerfdataBackend;
         $this->Servicestatus = $Servicestatus;
-        $this->Rrd = $Rrd;
     }
 
     /**
@@ -86,7 +78,7 @@ class PerfdataLoader {
      * @param $start
      * @param $end
      * @param bool $jsTimestamp
-     * @param string $type
+     * @param string $type (min|max|avg)
      * @param null|string $gauge
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -173,12 +165,9 @@ class PerfdataLoader {
 
         if ($this->PerfdataBackend->isRrdtool()) {
             if (file_exists(sprintf('/opt/openitc/nagios/share/perfdata/%s/%s.rrd', $hostUuid, $serviceUuid))) {
-                $options = [
-                    'start' => $start,
-                    'end'   => $end
-                ];
 
-                $rrd_data = $this->Rrd->getPerfDataFiles($hostUuid, $serviceUuid, $options, null, $type);
+                $RrdLoader = new RrdLoader();
+                $rrd_data = $RrdLoader->getPerfDataFiles($hostUuid, $serviceUuid, $start, $end, $type);
 
                 $limit = (int)self::MAX_RESPONSE_GRAPH_POINTS / sizeof($rrd_data['data']);
                 foreach ($rrd_data['xml_data'] as $dataSource) {
@@ -188,7 +177,7 @@ class PerfdataLoader {
                         }
                     }
 
-                    $tmpData = $this->Rrd->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE);
+                    $tmpData = $RrdLoader->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE);
                     $data = [];
 
                     foreach ($tmpData as $timestamp => $value) {
