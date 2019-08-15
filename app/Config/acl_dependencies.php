@@ -371,7 +371,6 @@ $config = [
                 'Automaps'              => ['index'],
                 'Browsers'              => ['index'],
                 'Calendars'             => ['index'],
-                'Category'              => ['index'],
                 'Changelogs'            => ['index'],
                 'Commands'              => ['index', 'hostchecks', 'notifications', 'handler'],
                 'Contactgroups'         => ['index'],
