@@ -22,7 +22,6 @@ Router::mapResources([
     'serviceescalations',
     'hostdependencies',
     'servicedependencies',
-    'graph_collections',
     'locations',
     'servicetemplates',
     'hosttemplates',
