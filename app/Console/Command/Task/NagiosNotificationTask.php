@@ -213,7 +213,7 @@ class NagiosNotificationTask extends AppShell {
 
             $DbBackend = new DbBackend();
             $PerfdataBackend = new PerfdataBackend();
-            $PerfdataLoader = new PerfdataLoader($DbBackend, $PerfdataBackend, $this->Servicestatus);
+            $PerfdataLoader = new PerfdataLoader($DbBackend, $PerfdataBackend);
 
             try {
                 $graphStart = (time() - (4 * 3600));

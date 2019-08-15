@@ -38,11 +38,6 @@ class GraphgeneratorsController extends AppController {
 
     public $layout = 'blank';
 
-    public $uses = [
-        MONITORING_SERVICESTATUS
-    ];
-
-
     /**
      * New method for AngularJS
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -60,8 +55,7 @@ class GraphgeneratorsController extends AppController {
         $jsTimestamp = (bool)$this->request->query('jsTimestamp');
         $gauge = $this->request->query('gauge');
 
-
-        $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend, $this->Servicestatus);
+        $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
         if (is_numeric($hours)) {
             $hours = (int)$hours;
             $start = time() - ($hours * 3600);
