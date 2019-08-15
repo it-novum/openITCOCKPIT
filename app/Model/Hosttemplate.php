@@ -342,7 +342,6 @@ class Hosttemplate extends AppModel {
      */
     public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
-        App::uses('UUID', 'Lib');
         $this->notification_options = [
             'host' => [
                 'notify_on_recovery',

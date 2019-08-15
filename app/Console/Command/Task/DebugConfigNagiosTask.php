@@ -35,7 +35,6 @@ class DebugConfigNagiosTask extends AppShell {
     public function setup($conf = []) {
         $this->conf = $conf;
         $this->monitoringLog = Configure::read('nagios.logfilepath') . Configure::read('nagios.logfilename');
-        App::uses('UUID', 'Lib');
         App::uses('Folder', 'Utility');
         //Loading components
         App::uses('Component', 'Controller');
@@ -480,7 +479,6 @@ class DebugConfigNagiosTask extends AppShell {
 
     public function searchUuids($string = '') {
         if (!isset($this->uuidCache) || empty($this->uuidCache) || !is_array($this->uuidCache)) {
-            App::uses('UUID', 'Lib');
             $this->_buildUuidCache();
         }
 

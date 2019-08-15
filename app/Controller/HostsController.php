@@ -1228,7 +1228,6 @@ class HostsController extends AppController {
             $validationError = false;
             $dataToSaveArray = [];
             $this->loadModel('Hosttemplate');
-            App::uses('UUID', 'Lib');
             //We want to save/validate the data and save it
             foreach ($this->request->data['Host'] as $key => $host2copy) {
                 if (!$this->Host->exists($host2copy)) {

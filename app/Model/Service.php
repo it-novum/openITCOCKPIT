@@ -344,7 +344,6 @@ class Service extends AppModel {
      */
     function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
-        App::uses('UUID', 'Lib');
         $this->notification_options = [
             'service' => [
                 'notify_on_recovery',

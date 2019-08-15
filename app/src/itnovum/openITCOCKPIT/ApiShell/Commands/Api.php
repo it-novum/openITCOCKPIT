@@ -43,7 +43,6 @@ class Api extends CoreApi implements ApiInterface {
     private $data;
 
     public function __construct($cake, $modelName) {
-        \App::uses('UUID', 'Lib');
         parent::__construct($cake, $modelName);
     }
 

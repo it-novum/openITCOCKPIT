@@ -34,7 +34,6 @@ use Ratchet\MessageComponentInterface;
 use Shell;
 use UUID;
 
-App::uses('UUID', 'Lib');
 
 /**
  * Class PushNotificationsMessageInterface

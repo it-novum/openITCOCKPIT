@@ -64,7 +64,6 @@ class UuidHelper extends AppHelper {
     }
 
     public function replaceUuids($string) {
-        App::uses('UUID', 'Lib');
         $string = preg_replace_callback(\itnovum\openITCOCKPIT\Core\UUID::regex(), function ($matches) {
             foreach ($matches as $match) {
                 if (isset($this->uuidCache[$match])) {

@@ -25,7 +25,6 @@
 
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
-App::uses('UUID', 'Lib');
 
 class UploadComponent extends Component {
 

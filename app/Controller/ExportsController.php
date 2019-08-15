@@ -39,7 +39,6 @@ class ExportsController extends AppController {
     ];
 
     public function index() {
-        App::uses('UUID', 'Lib');
         Configure::load('gearman');
         $this->Config = Configure::read('gearman');
 

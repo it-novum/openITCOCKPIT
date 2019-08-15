@@ -23,7 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-App::uses('UUID', 'Lib');
 
 /**
  * Class GraphCollectionsController

@@ -86,7 +86,6 @@ class LogentriesController extends AppController {
 
 
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        App::uses('UUID', 'Lib');
 
 
         $all_logentries = [];

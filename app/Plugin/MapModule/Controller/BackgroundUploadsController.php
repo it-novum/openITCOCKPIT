@@ -28,7 +28,6 @@ use Symfony\Component\Finder\Finder;
 
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
-App::uses('UUID', 'Lib');
 
 /**
  * Class BackgroundUploadsController

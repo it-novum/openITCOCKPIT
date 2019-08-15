@@ -32,8 +32,6 @@ class SystemId {
     private $systemId = null;
 
     public function __construct() {
-        \App::uses('UUID', 'Lib');
-
         if (file_exists('/etc/openitcockpit/system-id')) {
             $this->systemId = trim(file_get_contents('/etc/openitcockpit/system-id'));
             return;

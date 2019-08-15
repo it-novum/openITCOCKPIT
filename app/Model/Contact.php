@@ -234,7 +234,6 @@ class Contact extends AppModel {
                 'notify_service_downtime',
             ],
         ];
-        App::uses('UUID', 'Lib');
     }
 
 

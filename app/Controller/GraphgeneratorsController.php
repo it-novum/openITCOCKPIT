@@ -29,7 +29,6 @@ use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 
-App::uses('UUID', 'Lib');
 App::uses('Graphgenerator', 'Model');
 
 /**

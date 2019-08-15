@@ -33,7 +33,6 @@ App::uses('Controller', 'Controller');
 App::uses('CakeTime', 'Utility');
 App::uses('AuthActions', 'Lib');
 App::uses('User', 'Model');
-App::uses('UUID', 'Lib');
 
 use App\Model\Table\ContainersTable;
 use Cake\Datasource\EntityInterface;

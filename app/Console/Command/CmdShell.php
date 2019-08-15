@@ -49,7 +49,6 @@ class CmdShell extends AppShell {
      * @since     3.0.1
      */
     public function main() {
-        App::uses('UUID', 'Lib');
         $this->uuidRegex = \itnovum\openITCOCKPIT\Core\UUID::regex();
         define('LOGLEVEL_INFO', 1);
         define('LOGLEVEL_WARNING', 2);
