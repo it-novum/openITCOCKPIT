@@ -1131,8 +1131,9 @@ rect.unknown {
 
 .downtime-report-state-overview {
     border: 1px solid #fff;
-    text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);
+    /*text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);*/
     color: #fff;
+    margin: 1px 0px;
 }
 
 .search_list_item_active {
@@ -2687,23 +2688,29 @@ input[type=text]:focus + .input-group-addon-no-focus {
 }
 
 #countryList.dropdown-menu > li > a {
-    padding:0px 5px;
+    padding: 0px 5px;
 }
 
 .fc-left .dropdown .dropdown-menu {
     display: block;
     visibility: hidden;
     opacity: 0;
-    transition:         all 0.2s  ease;
-    -moz-transition:    all 0.2s  ease;
-    -webkit-transition: all 0.2s  ease;
-    -o-transition:      all 0.2s  ease;
-    -ms-transition:     all 0.2s  ease;
+    transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -webkit-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
 }
+
 .fc-left .dropdown:hover .dropdown-menu {
     visibility: visible;
     opacity: 1;
 }
+
 fc-left .dropdown {
     display: inline-block;
+}
+
+.rounded-box {
+    border-radius: 20px 5px;
 }

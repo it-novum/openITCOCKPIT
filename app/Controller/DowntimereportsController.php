@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Form\DowntimereportForm;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
@@ -43,6 +44,18 @@ class DowntimereportsController extends AppController {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
+        }
+        $downtimereportForm = new DowntimereportForm();
+
+        $downtimereportForm->execute($this->request->data);
+
+        if (!empty($downtimereportForm->getErrors())) {
+            $this->response->statusCode(400);
+            $this->set('error', $downtimereportForm->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
+        } else {
+
         }
         return;
         /** @var $ContainersTable ContainersTable */

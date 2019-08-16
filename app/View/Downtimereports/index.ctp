@@ -94,7 +94,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="form-group required">
+                <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
                     <label class="col col-md-1 control-label">
                         <?php echo __('Timeperiod'); ?>
                     </label>
@@ -107,26 +107,29 @@
                                 ng-model="post.timeperiod_id">
                             <option></option>
                         </select>
-                    </div>
-                </div>
-                <div class="form-group required" ng-class="{'has-error': errors.from_time}">
-                    <label class="col col-md-1 control-label"
-                           for="FromTime"><?php echo __('From'); ?></label>
-                    <div class="col col-xs-10 col-md-10 col-lg-10">
-                        <input type="text" class="form-control" ng-model="post.from_time"
-                               placeholder="<?php echo __('DD.MM.YYYY'); ?>">
-                        <div ng-repeat="error in errors.from_time">
+                        <div ng-repeat="error in errors.timeperiod_id">
                             <div class="help-block text-danger">{{ error }}</div>
                         </div>
                     </div>
                 </div>
-                <div class="form-group required" ng-class="{'has-error': errors.to_time}">
+                <div class="form-group required" ng-class="{'has-error': errors.from_date}">
+                    <label class="col col-md-1 control-label"
+                           for="FromTime"><?php echo __('From'); ?></label>
+                    <div class="col col-xs-10 col-md-10 col-lg-10">
+                        <input type="text" class="form-control" ng-model="post.from_date"
+                               placeholder="<?php echo __('DD.MM.YYYY'); ?>">
+                        <div ng-repeat="error in errors.from_date">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group required" ng-class="{'has-error': errors.to_date}">
                     <label class="col col-md-1 control-label"
                            for="ToTime"><?php echo __('To'); ?></label>
                     <div class="col col-xs-10 col-md-10 col-lg-10">
-                        <input type="text" class="form-control" ng-model="post.to_time"
+                        <input type="text" class="form-control" ng-model="post.to_date"
                                placeholder="<?php echo __('DD.MM.YYYY'); ?>">
-                        <div ng-repeat="error in errors.to_time">
+                        <div ng-repeat="error in errors.to_date">
                             <div class="help-block text-danger">{{ error }}</div>
                         </div>
                     </div>
@@ -143,21 +146,301 @@
                     </div>
                 </div>
             </div>
-            <div class="padding-bottom-10">
-                <div class="row">
-                    <div class="alert alert-info" ng-show="generatingReport">
-                        <i class="fa fa-spin fa-refresh"></i>
-                        <?php echo __('Generating report...'); ?>
+            <div class="row">
+                <div class="col col-lg-12 col-md-12 col-xs-12 padding-5">
+                    <canvas id="hostChart" height="250" width="900"></canvas>
+                </div>
+            </div>
+            <div class="row padding-top-50">
+                <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
+                    <div class="col col-md-12 padding-5 rounded-box"
+                         style="box-shadow: 1px 1px 3px #ccc;background:hsla(84, 100%, 35%, 0.7);">
+                        <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
+                            <canvas id="hostPieChart"></canvas>
+                        </div>
+                        <div class="col col-xs-8 col-md-8 col-lg-8 no-padding font-sm">
+                            <div class="row padding-bottom-3 txt-color-white">
+                                <div class="col-md-12 no-padding font-md ellipsis"
+                                     style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
+                                    <h3 class="no-padding">
+                                        <i class="fa fa-desktop"> </i>
+                                        Localhost
+                                    </h3>
+
+                                </div>
+                            </div>
+                            <div class="row padding-bottom-5 txt-color-white">
+                                <div class="col-md-12 no-padding font-sm ellipsis"
+                                     style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
+                                    <i class="fa fa-info"> </i>
+                                    192.168.46.5
+                                </div>
+                            </div>
+                            <div class="row padding-bottom-3 txt-color-white">
+                                <div class="col-md-12 padding-bottom-5 padding-left-0 font-sm ellipsis">
+                                    Description text text fdsfjlsdkf jfkdlsj fjfsdk
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-success downtime-report-state-overview padding-left-2">
+                                    99.999 %
+                                </div>
+                                <div class="col-md-8 btn-success downtime-report-state-overview padding-left-2">
+                                    5Y 10M 24D 10h 15m 18s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-danger downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-danger downtime-report-state-overview padding-left-2">
+                                    0s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-unknown downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-unknown downtime-report-state-overview padding-left-2">
+                                    0s
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="row padding-10">
-                    <div class="alert alert-info" ng-show="hasEntries === false">
-                        <i class="fa fa-lg fa-info-circle"></i>
-                        <?php echo __('No entries match the selection'); ?>
+                <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
+                    <div class="col col-md-12 padding-5 rounded-box"
+                         style="box-shadow: 1px 1px 3px #ccc;background:hsla(120, 100%, 35%, 0.7);">
+                        <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
+                            <canvas id="myChart"></canvas>
+                        </div>
+                        <div class="col col-xs-8 col-md-8 col-lg-8 no-padding font-sm">
+                            <div class="row padding-bottom-3 txt-color-white">
+                                <div class="col-md-12 no-padding font-md ellipsis"
+                                     style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
+                                    <h3 class="no-padding">
+                                        <i class="fa fa-cog"> </i>
+                                        Service 1 jhkfhgkdhjghkd hgjfdkghdfkg hgjf
+                                    </h3>
+                                </div>
+                            </div>
+                            <div class="row padding-bottom-5 txt-color-white">
+                                <div class="col-md-12 no-padding font-sm ellipsis"
+                                     style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
+                                    <i class="fa fa-pencil-square-o"> </i>
+                                    LAN-PING
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-success downtime-report-state-overview padding-left-2">
+                                    99.999 %
+                                </div>
+                                <div class="col-md-8 btn-success downtime-report-state-overview padding-left-2">
+                                    5Y 10M 24D 10h 15m 18s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-warning downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-warning downtime-report-state-overview padding-left-2">
+                                    5Y 10M 24D 10h 15m 18s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-danger downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-danger downtime-report-state-overview padding-left-2">
+                                    0s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-unknown downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-unknown downtime-report-state-overview padding-left-2">
+                                    0s
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
+                    <div class="col col-md-12 padding-5 rounded-box"
+                         style="box-shadow: 1px 1px 3px #ccc;background:hsla(11, 100%, 40%, 0.7);">
+                        <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
+                            <canvas id="myChart2"></canvas>
+                        </div>
+                        <div class="col col-xs-8 col-md-8 col-lg-8 no-padding font-sm">
+                            <div class="row padding-bottom-3 txt-color-white">
+                                <div class="col-md-12 no-padding font-md ellipsis"
+                                     style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
+                                    <h3 class="no-padding">
+                                        <i class="fa fa-cog"> </i>
+                                        Service 2
+                                    </h3>
+                                </div>
+                            </div>
+                            <div class="row padding-bottom-5 txt-color-white">
+                                <div class="col-md-12 no-padding font-sm ellipsis"
+                                     style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
+                                    <i class="fa fa-pencil-square-o"> </i>
+                                    LAN-PING
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-success downtime-report-state-overview padding-left-2">
+                                    99.999 %
+                                </div>
+                                <div class="col-md-8 btn-success downtime-report-state-overview padding-left-2">
+                                    5Y 10M 24D 10h 15m 18s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-warning downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-warning downtime-report-state-overview padding-left-2">
+                                    5Y 10M 24D 10h 15m 18s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-danger downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-danger downtime-report-state-overview padding-left-2">
+                                    0s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-unknown downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-unknown downtime-report-state-overview padding-left-2">
+                                    0s
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
+                    <div class="col col-md-12 padding-5 rounded-box"
+                         style="box-shadow: 1px 1px 3px #ccc;background:hsla(120, 100%, 35%, 0.7) ;">
+                        <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
+                            <canvas id="myChart3"></canvas>
+                        </div>
+                        <div class="col col-xs-8 col-md-8 col-lg-8 no-padding font-sm">
+                            <div class="row padding-bottom-3 txt-color-white">
+                                <div class="col-md-12 no-padding font-md ellipsis"
+                                     style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
+                                    <h3 class="no-padding">
+                                        <i class="fa fa-cog"> </i>
+                                        Service 3
+                                    </h3>
+                                </div>
+                            </div>
+                            <div class="row padding-bottom-5 txt-color-white">
+                                <div class="col-md-12 no-padding font-sm ellipsis"
+                                     style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
+                                    <i class="fa fa-pencil-square-o"> </i>
+                                    LAN-PING
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-success downtime-report-state-overview padding-left-2">
+                                    99.999 %
+                                </div>
+                                <div class="col-md-8 btn-success downtime-report-state-overview padding-left-2">
+                                    5Y 10M 24D 10h 15m 18s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-warning downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-warning downtime-report-state-overview padding-left-2">
+                                    5Y 10M 24D 10h 15m 18s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-danger downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-danger downtime-report-state-overview padding-left-2">
+                                    0s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-unknown downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-unknown downtime-report-state-overview padding-left-2">
+                                    0s
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
+                    <div class="col col-md-12 padding-5 rounded-box"
+                         style="box-shadow: 1px 1px 3px #ccc;background:hsla(60, 100%, 35%, 0.7) ;">
+                        <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
+                            <canvas id="myChart4"></canvas>
+                        </div>
+                        <div class="col col-xs-8 col-md-8 col-lg-8 no-padding font-sm">
+                            <div class="row padding-bottom-3 txt-color-white">
+                                <div class="col-md-12 no-padding font-md ellipsis"
+                                     style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
+                                    <h3 class="no-padding">
+                                        <i class="fa fa-cog"> </i>
+                                        Service 4
+                                    </h3>
+                                </div>
+                            </div>
+                            <div class="row padding-bottom-5 txt-color-white">
+                                <div class="col-md-12 no-padding font-sm ellipsis"
+                                     style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
+                                    <i class="fa fa-pencil-square-o"> </i>
+                                    LAN-PING
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-success downtime-report-state-overview padding-left-2">
+                                    99.999 %
+                                </div>
+                                <div class="col-md-8 btn-success downtime-report-state-overview padding-left-2">
+                                    5Y 10M 24D 10h 15m 18s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-warning downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-warning downtime-report-state-overview padding-left-2">
+                                    5Y 10M 24D 10h 15m 18s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-danger downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-danger downtime-report-state-overview padding-left-2">
+                                    0s
+                                </div>
+                            </div>
+                            <div class="row no-padding font-sm">
+                                <div class="col-md-4 btn-unknown downtime-report-state-overview padding-left-2">
+                                    100 %
+                                </div>
+                                <div class="col-md-8 btn-unknown downtime-report-state-overview padding-left-2">
+                                    0s
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
             <div class="col-xs-12 margin-top-10 margin-bottom-10">
                 <div class="well formactions ">
                     <div class="pull-right">
@@ -169,4 +452,5 @@
             </div>
         </div>
     </div>
+
 </div>
