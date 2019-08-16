@@ -25,7 +25,7 @@
 
 class NagiosNotificationShell extends AppShell {
     public $tasks = ['NagiosNotification'];
-    public $uses = ['Systemsetting', 'Host', 'Service', 'Hosttemplate', 'Servicetemplate', 'Rrd'];
+    public $uses = ['Systemsetting', 'Host', 'Service', 'Hosttemplate', 'Servicetemplate'];
 
     public function main() {
 

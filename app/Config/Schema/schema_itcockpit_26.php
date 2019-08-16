@@ -1382,48 +1382,6 @@ class AppSchema extends CakeSchema {
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
-    public $graphgen_tmpls = [
-        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'name'            => ['type' => 'string', 'null' => false, 'length' => 128],
-        'relative_time'   => ['type' => 'integer', 'null' => false],
-        'indexes'         => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-        ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
-    ];
-
-    public $graphgen_tmpl_confs = [
-        'id'               => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'graphgen_tmpl_id' => ['type' => 'integer', 'null' => false],
-        'service_id'       => ['type' => 'integer', 'null' => false],
-        'data_sources'     => ['type' => 'string', 'length' => 256, 'null' => false],
-        'indexes'          => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-        ],
-        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
-    ];
-
-    public $graph_collections = [
-        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'name'            => ['type' => 'string', 'null' => false],
-        'description'     => ['type' => 'string', 'null' => false],
-        'indexes'         => [
-            'PRIMARY'     => ['column' => 'id', 'unique' => 1],
-            'UNIQUE_NAME' => ['column' => ['id', 'name'], 'unique' => 1],
-        ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
-    ];
-
-    public $graph_tmpl_to_graph_collection = [
-        'id'                  => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'graphgen_tmpl_id'    => ['type' => 'integer', 'null' => false],
-        'graph_collection_id' => ['type' => 'integer', 'null' => false],
-        'indexes'             => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-        ],
-        'tableParameters'     => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
-    ];
-
     public $automaps = [
         'id'                => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'name'              => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],

@@ -33,13 +33,12 @@ use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 
 /**
  * Class NagiosNotificationTask
- * @property Rrd $Rrd
  * @property Systemsetting $Systemsetting
  * @property Servicestatus $Servicestatus
  */
 class NagiosNotificationTask extends AppShell {
 
-    public $uses = ['Rrd', 'Systemsetting', MONITORING_SERVICESTATUS];
+    public $uses = ['Systemsetting', MONITORING_SERVICESTATUS];
 
     public function construct() {
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
@@ -214,7 +213,7 @@ class NagiosNotificationTask extends AppShell {
 
             $DbBackend = new DbBackend();
             $PerfdataBackend = new PerfdataBackend();
-            $PerfdataLoader = new PerfdataLoader($DbBackend, $PerfdataBackend, $this->Servicestatus, $this->Rrd);
+            $PerfdataLoader = new PerfdataLoader($DbBackend, $PerfdataBackend);
 
             try {
                 $graphStart = (time() - (4 * 3600));

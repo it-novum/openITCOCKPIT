@@ -387,16 +387,4 @@ class MonitoringHelper extends AppHelper {
         return str_replace(array_keys($commandarguments), array_values($commandarguments), $command_line);
     }
 
-    /**
-     * @param $commandUuid
-     * @return bool
-     * @deprecated
-     */
-    public function checkForGrapherTemplate($commandUuid) {
-        if (file_exists(OLD_APP . 'GrapherTemplates' . DS . $commandUuid . '.php')) {
-            return true;
-        }
-
-        return false;
-    }
 }

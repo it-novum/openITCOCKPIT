@@ -114,12 +114,6 @@ $config = [
         'documentations'        => [
             '*' => '*',
         ],
-        'graphgenerators'       => [
-            '*' => '*',
-        ],
-        'graph_collections'     => [
-            '*' => '*',
-        ],
         'downtimes'             => [
             '*' => '*',
         ],

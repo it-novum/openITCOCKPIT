@@ -21,6 +21,7 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
 use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
+use Statusengine\PerfdataParser;
 
 /**
  * Class GrafanaDashboardTask
@@ -29,7 +30,6 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
  * @property Service $Service
  * @property Hoststatus $Hoststatus
  * @property Servicestatus $Servicestatus
- * @property Rrd $Rrd
  * @property GrafanaConfiguration $GrafanaConfiguration
  * @property GrafanaConfigurationHostgroupMembership $GrafanaConfigurationHostgroupMembership
  * @property GrafanaDashboard $GrafanaDashboard
@@ -42,7 +42,6 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
         'Service',
         MONITORING_HOSTSTATUS,
         MONITORING_SERVICESTATUS,
-        'Rrd',
         'GrafanaModule.GrafanaConfiguration',
         'GrafanaModule.GrafanaConfigurationHostgroupMembership',
         'GrafanaModule.GrafanaDashboard',
@@ -224,7 +223,8 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
                 continue;
             }
 
-            $perfdata = $this->Rrd->parsePerfData($servicestatus[$service['uuid']]['Servicestatus']['perfdata']);
+            $PerfdataParser = new PerfdataParser($servicestatus[$service['uuid']]['Servicestatus']['perfdata']);
+            $perfdata = $PerfdataParser->parse();
             $grafanaPanel = new GrafanaPanel($panelId);
             $grafanaPanel->setTitle(sprintf('%s - %s', $host['Host']['name'], $serviceName));
             $grafanaTargetCollection = new GrafanaTargetCollection();
