@@ -1,21 +1,42 @@
 <?php
-App::uses('ModelBehavior', 'Model');
+// Copyright (C) <2015>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
-/**
- * Class DateRangeBehavior
- */
-class DateRangeBehavior extends ModelBehavior {
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
+
+namespace itnovum\openITCOCKPIT\Core\Reports;
+
+use Cake\Utility\Hash;
+
+class DaterangesCreator {
+
 
     /**
-     * @param $Model
-     * @param $date_start string d.m.Y H:i:s
-     * @param $date_end string d.m.Y H:i:s
+     * @param string $date_start_timestamp
+     * @param string $date_end_timestamp
      * @param array $time_ranges
      * @return array
      */
-    public function createDateRanges(&$Model, $date_start, $date_end, $time_ranges = []) {
-        $date_start_timestamp = strtotime($date_start);
-        $date_end_timestamp = strtotime($date_end);
+    public static function createDateRanges($date_start_timestamp, $date_end_timestamp, $time_ranges = []) {
         $time_slices_default = [];
 
         $time_slices = [];
@@ -59,7 +80,7 @@ class DateRangeBehavior extends ModelBehavior {
             }
         }
 
-        return $this->removeUselessTimeslices(date('Ymd', $date_start_timestamp), date('Ymd', $date_end_timestamp), $time_slices);
+        return self::removeUselessTimeslices(date('Ymd', $date_start_timestamp), date('Ymd', $date_end_timestamp), $time_slices);
     }
 
     /**
@@ -85,11 +106,10 @@ class DateRangeBehavior extends ModelBehavior {
     }
 
     /**
-     * @param $Model
      * @param $timeslice_array
      * @return mixed
      */
-    public function mergeTimeOverlapping(&$Model, $timeslice_array) {
+    public function mergeTimeOverlapping($timeslice_array) {
         $next_key = 0;
         for ($i = 0; $i <= sizeof($timeslice_array); $i++) {
             $next_key++;
@@ -125,13 +145,13 @@ class DateRangeBehavior extends ModelBehavior {
         return (($current_date >= $start_date) && ($current_date <= $end_date));
     }
 
+
     /**
-     * @param $Model
      * @param $time_slices
      * @param $downtimes
      * @return array
      */
-    public function setDowntimesInTimeslices(&$Model, $time_slices, $downtimes) {
+    public function setDowntimesInTimeslices($time_slices, $downtimes) {
         $time_slices_new = [];
         $show_outages_in_dowtime = true;
         if (!empty($downtimes)) {
@@ -186,20 +206,21 @@ class DateRangeBehavior extends ModelBehavior {
         return $time_slices;
     }
 
+
     /**
      * @param $lastUpdateDate
      * @param $interval
-     * @return array date time slices
-     * @throws Exception
+     * @return array
+     * @throws \Exception
      */
-    public function createDateSlicesByIntervalAndLastUpdateDate(&$Model, $lastUpdateDate, $interval) {
-        if(date('H:i:s', $lastUpdateDate) === '23:59:59'){
-            $lastUpdateDate+=1;// plus on second for moving timestamp into new day
+    public function createDateSlicesByIntervalAndLastUpdateDate($lastUpdateDate, $interval) {
+        if (date('H:i:s', $lastUpdateDate) === '23:59:59') {
+            $lastUpdateDate += 1;// plus on second for moving timestamp into new day
         }
         $now = time();
         $dateTimeSlices = [];
         $initialEntryType = 'update';
-        $LastUpdateDate = new DateTime(date('Y-m-d H:i:s', $lastUpdateDate));
+        $LastUpdateDate = new \DateTime(date('Y-m-d H:i:s', $lastUpdateDate));
         $h = $LastUpdateDate->format('H');
         $m = $LastUpdateDate->format('i');
         $s = $LastUpdateDate->format('s');
@@ -215,12 +236,13 @@ class DateRangeBehavior extends ModelBehavior {
                         'end'       => strtotime(date('d.m.Y', $lastUpdateDate) . ' 23:59:59'),
                         'entryType' => $initialEntryType
                     ];
-                    $begin = new DateTime(date('d.m.Y', $lastUpdateDate));
-                    $end = new DateTime(date('d.m.Y', $now));
+                    $begin = new \DateTime(date('d.m.Y', $lastUpdateDate));
+                    $end = new \DateTime(date('d.m.Y', $now));
                     $end = $end->modify('+1 day');
 
-                    $dateInterval = new DateInterval('P1D');
-                    $dateRange = new DatePeriod($begin, $dateInterval, $end);
+                    $dateInterval = new \DateInterval('P1D');
+                    $dateRange = new \DatePeriod($begin, $dateInterval, $end);
+                    /** @var DateTime $date */
                     foreach ($dateRange as $date) {
                         $dateAsTimestamp = $date->getTimestamp();
                         if (date('z', $dateAsTimestamp) < date('z', $now)) {
@@ -253,7 +275,7 @@ class DateRangeBehavior extends ModelBehavior {
                 }
 
                 if (date('WY', $lastUpdateDate) !== date('WY', $now)) {
-                    $begin = new DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
+                    $begin = new \DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
                     $sunday = $begin->modify('sunday this week');
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
@@ -261,10 +283,11 @@ class DateRangeBehavior extends ModelBehavior {
                         'entryType' => $initialEntryType
                     ];
                     $nextWeekMonday = $begin->modify('monday next week 00:00:00');
-                    $end = new DateTime(date('Y-m-d', $now));
+                    $end = new \DateTime(date('Y-m-d', $now));
 
-                    $interval = new DateInterval('P1W');
-                    $daterange = new DatePeriod($nextWeekMonday, $interval, $end);
+                    $interval = new \DateInterval('P1W');
+                    $daterange = new \DatePeriod($nextWeekMonday, $interval, $end);
+                    /** @var DateTime $date */
                     foreach ($daterange as $date) {
                         $dateAsTimestamp = $date->getTimestamp();
                         if (date('W', $now) === date('W', $dateAsTimestamp)) {
@@ -291,13 +314,13 @@ class DateRangeBehavior extends ModelBehavior {
                 return $dateTimeSlices;
                 break;
             case 'MONTH':
-                $j = date('j',$lastUpdateDate); //Day of the month without leading zeros
+                $j = date('j', $lastUpdateDate); //Day of the month without leading zeros
                 if ($h == 0 && $m == 0 && $s == 0 && $j == 1) {
                     $initialEntryType = 'new'; //midnight and first day of month -> new day detected
                 }
 
                 if (date('mY', $lastUpdateDate) !== date('mY', $now)) {
-                    $begin = new DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
+                    $begin = new \DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
                     $lastDayOfThisMonth = $begin->modify('last day of this month');
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
@@ -305,10 +328,11 @@ class DateRangeBehavior extends ModelBehavior {
                         'entryType' => $initialEntryType
                     ];
                     $nextMonthFirstDay = $begin->modify('first day of next month 00:00:00');
-                    $end = new DateTime(date('Y-m-d', $now));
+                    $end = new \DateTime(date('Y-m-d', $now));
 
-                    $interval = new DateInterval('P1M');
-                    $daterange = new DatePeriod($nextMonthFirstDay, $interval, $end);
+                    $interval = new \DateInterval('P1M');
+                    $daterange = new \DatePeriod($nextMonthFirstDay, $interval, $end);
+                    /** @var DateTime $date */
                     foreach ($daterange as $date) {
                         $dateAsTimestamp = $date->getTimestamp();
                         if (date('m', $now) === date('m', $dateAsTimestamp)) {
@@ -343,7 +367,7 @@ class DateRangeBehavior extends ModelBehavior {
                 }
 
                 if (date('Y', $lastUpdateDate) . $this->getNumberFromQuarter($lastUpdateDate) !== date('Y', $now) . $numberFromCurrentQuarter) {
-                    $begin = new DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
+                    $begin = new \DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
                     $lastUpdateQuarter = $this->getNumberFromQuarter($lastUpdateDate);
                     $lastDayOfThisQuarter = $this->lastDayOfQuarter($begin, $lastUpdateQuarter);
                     $dateTimeSlices[] = [
@@ -353,9 +377,10 @@ class DateRangeBehavior extends ModelBehavior {
                     ];
 
                     $nextQuarterFirstDay = $begin->modify('tomorrow 00:00:00');
-                    $end = new DateTime(date('Y-m-d', $now));
-                    $interval = new DateInterval('P3M');
-                    $daterange = new DatePeriod($nextQuarterFirstDay, $interval, $end);
+                    $end = new \DateTime(date('Y-m-d', $now));
+                    $interval = new \DateInterval('P3M');
+                    $daterange = new \DatePeriod($nextQuarterFirstDay, $interval, $end);
+                    /** @var DateTime $date */
                     foreach ($daterange as $date) {
                         $dateAsTimestamp = $date->getTimestamp();
                         $numberFromDateQuarter = $this->getNumberFromQuarter($dateAsTimestamp);
@@ -385,13 +410,13 @@ class DateRangeBehavior extends ModelBehavior {
                 }
                 break;
             case 'YEAR':
-                $j = date('j',$lastUpdateDate); //Day of the month without leading zeros
-                $n = date('n',$lastUpdateDate); //Numeric representation of a month, without leading zeros
+                $j = date('j', $lastUpdateDate); //Day of the month without leading zeros
+                $n = date('n', $lastUpdateDate); //Numeric representation of a month, without leading zeros
                 if ($h == 0 && $m == 0 && $s == 0 && $j == 1 && $n == 1) {
                     $initialEntryType = 'new'; //midnight and first day of the year -> new day detected
                 }
                 if (date('Y', $lastUpdateDate) !== date('Y', $now)) {
-                    $begin = new DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
+                    $begin = new \DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
                     $lastDayOfThisYear = $begin->modify('last day of december this year');
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
@@ -399,10 +424,11 @@ class DateRangeBehavior extends ModelBehavior {
                         'entryType' => $initialEntryType
                     ];
                     $nextMonthFirstDay = $begin->modify('first day of january next year 00:00:00');
-                    $end = new DateTime(date('Y-m-d', $now));
+                    $end = new \DateTime(date('Y-m-d', $now));
 
-                    $interval = new DateInterval('P1Y');
-                    $daterange = new DatePeriod($nextMonthFirstDay, $interval, $end);
+                    $interval = new \DateInterval('P1Y');
+                    $daterange = new \DatePeriod($nextMonthFirstDay, $interval, $end);
+                    /** @var DateTime $date */
                     foreach ($daterange as $date) {
                         $dateAsTimestamp = $date->getTimestamp();
                         if (date('Y', $now) === date('Y', $dateAsTimestamp)) {
@@ -434,10 +460,11 @@ class DateRangeBehavior extends ModelBehavior {
     }
 
     /**
+     * @param \DateTime $date
      * @param $numberOfQuarter
-     * @return Datetime $date
+     * @return \DateTime
      */
-    private function firstDayOfQuarter(Datetime $date, $numberOfQuarter) {
+    private function firstDayOfQuarter(\DateTime $date, $numberOfQuarter) {
         switch ($numberOfQuarter) {
             case 1:
                 $date->modify('first day of january 00:00:00');
@@ -456,10 +483,11 @@ class DateRangeBehavior extends ModelBehavior {
     }
 
     /**
+     * @param \DateTime $date
      * @param $numberOfQuarter
-     * @return Datetime $date
+     * @return \DateTime
      */
-    private function lastDayOfQuarter(Datetime $date, $numberOfQuarter) {
+    private function lastDayOfQuarter(\DateTime $date, $numberOfQuarter) {
         switch ($numberOfQuarter) {
             case 1:
                 $date->modify('last day of march');

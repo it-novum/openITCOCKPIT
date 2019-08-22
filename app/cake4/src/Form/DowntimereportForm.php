@@ -31,8 +31,11 @@ use Cake\Form\Form;
 use Cake\Form\Schema;
 use Cake\Validation\Validator;
 
+/**
+ * Class DowntimereportForm
+ * @package App\Form
+ */
 class DowntimereportForm extends Form {
-
     protected function _buildSchema(Schema $schema) {
         return $schema
             ->addField('timeperiod_id', ['type' => 'int'])
@@ -54,7 +57,15 @@ class DowntimereportForm extends Form {
         $validator
             ->date('to_date', 'dmy')
             ->requirePresence('to_date')
-            ->allowEmptyDateTime('to_date', null, false);
+            ->allowEmptyDateTime('to_date', null, false)
+            ->add('to_date', 'custom', [
+                'rule'    => function ($value, $context) {
+                    $fromDate = strtotime($context['data']['from_date'] . ' 00:00:00');
+                    $toDate = strtotime($value . ' 23:59:59');
+                    return !($fromDate > $toDate);
+                },
+                'message' => '"From" date should be greater then "to" date.'
+            ]);
         return $validator;
     }
 }

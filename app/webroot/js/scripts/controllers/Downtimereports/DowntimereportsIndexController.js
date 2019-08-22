@@ -3,16 +3,24 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.errors = null;
         $scope.hasEntries = null;
+        $scope.setColorDynamically = false;
+        var now = new Date();
 
         $scope.post = {
             evaluation_type: 0,
             report_format: 2,
-            reflection_state: 2,
+            reflection_state: 1,
             timeperiod_id: null,
-            from_date: null,
-            to_date: null
+            from_date: date('d.m.Y', now.getTime() / 1000 - (3600 * 24 * 30)),
+            to_date: date('d.m.Y', now.getTime() / 1000)
         };
         $scope.timeperiods = {};
+
+        $('#infoButton').popover({
+            boundary: 'window',
+            trigger: 'hover',
+            placement: 'left'
+        });
 
         $scope.loadTimeperiods = function(searchString){
             $http.get("/timeperiods/index.json", {
@@ -23,7 +31,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.timeperiods = result.data.all_timeperiods;
             });
-            var myChart = new Chart('hostChart', {
+            var hostChart = new Chart('hostChart', {
                 type: 'bar',
                 data: {
                     labels: ['Host1.fjdkdgjlsdg.fjkdsljfkdls.jfkdslf', 'Host2', 'Host3', 'Host4', 'Host5', 'Host6', '', '', '', ''],
@@ -34,26 +42,26 @@ angular.module('openITCOCKPIT')
                         backgroundColor: '#3688D8',
                         borderWidth: 2,
                         fill: false,
-                        data: [85, 69, 33.456, 25, 12, 3]
+                        data: [85, 69, 33.456, 25, 12, 0.000]
                     }, {
                         type: 'bar',
                         label: 'Up',
                         data: [85, 69, 33, 25, 12, 3, 0, 0, 0, 0],
-                        backgroundColor: '#5cb85c',
+                        backgroundColor: '#449D44',
                         borderColor: '#ffffff',
                         borderWidth: 1
                     }, {
                         type: 'bar',
                         label: 'Down',
                         data: [15, 29, 43, 70, 80, 73, 0, 0, 0, 0],
-                        backgroundColor: '#d9534f',
+                        backgroundColor: '#C9302C',
                         borderColor: '#ffffff',
                         borderWidth: 1
                     }, {
                         type: 'bar',
                         label: 'Unreachable',
                         data: [0, 2, 24, 5, 8, 24, 0, 0, 0, 0],
-                        backgroundColor: '#cccccc',
+                        backgroundColor: '#92a2a8',
                         borderColor: '#ffffff',
                         borderWidth: 1
                     }]
@@ -64,8 +72,11 @@ angular.module('openITCOCKPIT')
                     tooltips: {
                         mode: 'label',
                         callbacks: {
+                            title: function(tooltipItem, data){
+                                return data.labels[tooltipItem[0]['index']];
+                            },
                             label: function(tooltipItem, data){
-                                return data.datasets[tooltipItem.datasetIndex].label + ": " + tooltipItem.yLabel;
+                                return data.datasets[tooltipItem.datasetIndex].label + ": " + parseFloat(tooltipItem.yLabel).toFixed(3);
                             }
                         }
                     },
@@ -101,18 +112,6 @@ angular.module('openITCOCKPIT')
                                     }
                                 }
                             }
-                            /*
-                            barPercentage: 0.5,
-                            barThickness: 6,
-                            maxBarThickness: 8,
-                            minBarLength: 2,
-                            gridLines: {
-                                offsetGridLines: true
-                            },
-                            ticks: {
-                                beginAtZero: true
-                            }
-                             */
                         }]
                     }
                 }
@@ -160,7 +159,6 @@ angular.module('openITCOCKPIT')
                             text: '79%',
                             font: 20,
                             color: '#ffffff'
-
                         }
                     }
                 }
@@ -209,7 +207,6 @@ angular.module('openITCOCKPIT')
                             text: '99%',
                             font: 20,
                             color: '#ffffff'
-
                         }
                     }
                 }
@@ -253,10 +250,9 @@ angular.module('openITCOCKPIT')
                     cutoutPercentage: 50, //inner cut circle
                     elements: {
                         center: {
-                            text: '100%',
+                            text: '10%',
                             font: 20,
                             color: '#ffffff'
-
                         }
                     }
                 }
@@ -295,10 +291,9 @@ angular.module('openITCOCKPIT')
                     cutoutPercentage: 50, //inner cut circle
                     elements: {
                         center: {
-                            text: '50%',
+                            text: '30%',
                             font: 20,
                             color: '#ffffff'
-
                         }
                     }
                 }
@@ -342,10 +337,9 @@ angular.module('openITCOCKPIT')
                     cutoutPercentage: 50, //inner cut circle
                     elements: {
                         center: {
-                            text: '100%',
+                            text: '80%',
                             font: 20,
                             color: '#ffffff'
-
                         }
                     }
                 }
@@ -393,6 +387,25 @@ angular.module('openITCOCKPIT')
                 });
             }
         };
+
+        var getBackgroundColor = function getColor(value, minimalAvailability){
+            //value from 0 to 100
+            var colorLightness = 40;
+            var hue = 120;
+            if(value < 100 && value < minimalAvailability){
+                hue = 0;
+            }else if(value < 100 && value >= minimalAvailability){
+                hue = parseInt(((value - minimalAvailability) / (100 - minimalAvailability)) * 120, 10);
+                if(hue > 120){
+                    hue = 120;
+                }
+            }
+            return ['hsl(', hue, ',100%,' + colorLightness + '%)'].join('');
+        };
+
+        $scope.$watch('setColorDynamically', function() {
+            $scope.$apply();
+        });
 
         $scope.loadTimeperiods();
     });

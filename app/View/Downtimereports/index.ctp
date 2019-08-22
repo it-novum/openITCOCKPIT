@@ -105,7 +105,6 @@
                                 chosen="timeperiods"
                                 ng-options="timeperiod.Timeperiod.id as timeperiod.Timeperiod.name for timeperiod in timeperiods"
                                 ng-model="post.timeperiod_id">
-                            <option></option>
                         </select>
                         <div ng-repeat="error in errors.timeperiod_id">
                             <div class="help-block text-danger">{{ error }}</div>
@@ -145,6 +144,35 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-lg-1 control-label" for="setColorDynamically">
+                        <?php echo __('Dynamic color'); ?>
+                        <i class="fa fa-info-circle text-info" id="infoButton" role="tooltip"
+                           data-toggle="tooltip" data-html="true" title="<?php echo __('Colors'); ?>"
+                           data-content='<div class="colorsquare" style="background-color: #449D44;"><div class="colortext">100%</div></div>
+                            <div class="colorsquare" style="background-color: #639A3C;"><div class="colortext">90%</div></div>
+                            <div class="colorsquare" style="background-color: #829734;"><div class="colortext">80%</div></div>
+                            <div class="colorsquare" style="background-color: #A1942C;"><div class="colortext">70%</div></div>
+                            <div class="colorsquare" style="background-color: #C09124;"><div class="colortext">60%</div></div>
+                            <div class="colorsquare" style="background-color: #DF8F1D;"><div class="colortext">50%</div></div>
+                            <div class="colorsquare" style="background-color: #DA7C20;"><div class="colortext">40%</div></div>
+                            <div class="colorsquare" style="background-color: #D66923;"><div class="colortext">30%</div></div>
+                            <div class="colorsquare" style="background-color: #D15626;"><div class="colortext">20%</div></div>
+                            <div class="colorsquare" style="background-color: #CD4329;"><div class="colortext">10%</div></div>
+                            <div class="colorsquare" style="background-color: #C9302C;"><div class="colortext">0%</div></div>'>
+                        </i>
+                    </label>
+
+                    <div class="col-xs-12 col-lg-10 smart-form">
+                        <label class="checkbox small-checkbox-label no-required no-padding-top">
+                            <input type="checkbox" name="checkbox"
+                                   id="setColorDynamically"
+                                   ng-model="setColorDynamically">
+                            <i class="checkbox-primary"></i>
+                            <?php echo __('Yes'); ?>
+                        </label>
+                    </div>
+                </div>
             </div>
             <div class="row">
                 <div class="col col-lg-12 col-md-12 col-xs-12 padding-5">
@@ -154,7 +182,8 @@
             <div class="row padding-top-50">
                 <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
                     <div class="col col-md-12 padding-5 rounded-box"
-                         style="box-shadow: 1px 1px 3px #ccc;background:hsla(84, 100%, 35%, 0.7);">
+                         ng-style="{'background': setColorDynamically ?'#829734FF' : 'rgba(76, 79, 83, 0.9)'}"
+                         style="box-shadow: 1px 1px 3px #ccc;">
                         <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
                             <canvas id="hostPieChart"></canvas>
                         </div>
@@ -177,7 +206,8 @@
                                 </div>
                             </div>
                             <div class="row padding-bottom-3 txt-color-white">
-                                <div class="col-md-12 padding-bottom-5 padding-left-0 font-sm ellipsis">
+                                <div class="col-md-12 padding-bottom-3 padding-left-0 font-sm ellipsis"
+                                     title="Description text text fdsfjlsdkf jfkdlsj fjfsdk">
                                     Description text text fdsfjlsdkf jfkdlsj fjfsdk
                                 </div>
                             </div>
@@ -210,21 +240,23 @@
                 </div>
                 <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
                     <div class="col col-md-12 padding-5 rounded-box"
-                         style="box-shadow: 1px 1px 3px #ccc;background:hsla(120, 100%, 35%, 0.7);">
+                         ng-style="{'background': setColorDynamically ?'#449D44FF' : 'rgba(146, 162, 168, 0.9)'}"
+                         style="box-shadow: 1px 1px 3px #ccc;">
                         <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
                             <canvas id="myChart"></canvas>
                         </div>
                         <div class="col col-xs-8 col-md-8 col-lg-8 no-padding font-sm">
-                            <div class="row padding-bottom-3 txt-color-white">
-                                <div class="col-md-12 no-padding font-md ellipsis"
+                            <div class="row padding-bottom-3 txt-color-white"
+                                 title="Service 1 jhkfhgkdhjghkd hgjfdkghdfkg hgjf">
+                                <div class="col-md-12 no-padding font-md"
                                      style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
-                                    <h3 class="no-padding">
+                                    <h3 class="no-padding ellipsis">
                                         <i class="fa fa-cog"> </i>
                                         Service 1 jhkfhgkdhjghkd hgjfdkghdfkg hgjf
                                     </h3>
                                 </div>
                             </div>
-                            <div class="row padding-bottom-5 txt-color-white">
+                            <div class="row padding-bottom-3 txt-color-white">
                                 <div class="col-md-12 no-padding font-sm ellipsis"
                                      style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
                                     <i class="fa fa-pencil-square-o"> </i>
@@ -268,7 +300,8 @@
                 </div>
                 <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
                     <div class="col col-md-12 padding-5 rounded-box"
-                         style="box-shadow: 1px 1px 3px #ccc;background:hsla(11, 100%, 40%, 0.7);">
+                         ng-style="{'background': setColorDynamically ?'#CD4329FF' : 'rgba(146, 162, 168, 0.9)'}"
+                         style="box-shadow: 1px 1px 3px #ccc;">
                         <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
                             <canvas id="myChart2"></canvas>
                         </div>
@@ -282,7 +315,7 @@
                                     </h3>
                                 </div>
                             </div>
-                            <div class="row padding-bottom-5 txt-color-white">
+                            <div class="row padding-bottom-3 txt-color-white">
                                 <div class="col-md-12 no-padding font-sm ellipsis"
                                      style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
                                     <i class="fa fa-pencil-square-o"> </i>
@@ -326,7 +359,8 @@
                 </div>
                 <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
                     <div class="col col-md-12 padding-5 rounded-box"
-                         style="box-shadow: 1px 1px 3px #ccc;background:hsla(120, 100%, 35%, 0.7) ;">
+                         ng-style="{'background': setColorDynamically ?'#D66923FF' : 'rgba(146, 162, 168, 0.9)'}"
+                         style="box-shadow: 1px 1px 3px #ccc;">
                         <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
                             <canvas id="myChart3"></canvas>
                         </div>
@@ -340,7 +374,7 @@
                                     </h3>
                                 </div>
                             </div>
-                            <div class="row padding-bottom-5 txt-color-white">
+                            <div class="row padding-bottom-3 txt-color-white">
                                 <div class="col-md-12 no-padding font-sm ellipsis"
                                      style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
                                     <i class="fa fa-pencil-square-o"> </i>
@@ -382,9 +416,12 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="row">
                 <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
                     <div class="col col-md-12 padding-5 rounded-box"
-                         style="box-shadow: 1px 1px 3px #ccc;background:hsla(60, 100%, 35%, 0.7) ;">
+                         ng-style="{'background': setColorDynamically ?'#829734FF' : 'rgba(146, 162, 168, 0.9)'}"
+                         style="box-shadow: 1px 1px 3px #ccc;">
                         <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
                             <canvas id="myChart4"></canvas>
                         </div>
@@ -398,7 +435,7 @@
                                     </h3>
                                 </div>
                             </div>
-                            <div class="row padding-bottom-5 txt-color-white">
+                            <div class="row padding-bottom-3 txt-color-white">
                                 <div class="col-md-12 no-padding font-sm ellipsis"
                                      style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
                                     <i class="fa fa-pencil-square-o"> </i>
