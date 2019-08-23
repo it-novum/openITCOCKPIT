@@ -180,6 +180,7 @@ class DowntimereportsController extends AppController {
                         $statehistoriesHost[] = $record->set('state_time', $fromDate);
                     }
                 }
+                $statehistoriesHost = [];
                 if (empty($statehistoriesHost)) {
                     $HoststatusTable = $this->DbBackend->getHoststatusTable();
                     $HoststatusFields = new HoststatusFields($this->DbBackend);
@@ -191,7 +192,7 @@ class DowntimereportsController extends AppController {
                             $stateHistoryHost['StatehistoryHost']['state_time'] = $fromDate;
                             $stateHistoryHost['StatehistoryHost']['state'] = $Hoststatus->currentState();
                             $stateHistoryHost['StatehistoryHost']['last_state'] = $Hoststatus->currentState();
-                            $stateHistoryHost['StatehistoryHost']['last_hard_state'] = $Hoststatus->currentState();
+                            $stateHistoryHost['StatehistoryHost']['last_hard_state'] = $Hoststatus->getLastHardState();
                             $stateHistoryHost['StatehistoryHost']['state_type'] = $Hoststatus->getStateType();
                             $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($stateHistoryHost['StatehistoryHost']);
                             $statehistoriesHost[$uuid]['Statehistory'][] = $StatehistoryHost;
@@ -213,7 +214,6 @@ class DowntimereportsController extends AppController {
                     ($reflectionState === 2),
                     true
                 );
-                //FileDebugger::varExport($reportData[$uuid]['Host']['reportData']);
             }
             foreach (array_keys($services) as $uuid) {
                 $allStatehistories = [];
@@ -247,7 +247,7 @@ class DowntimereportsController extends AppController {
                             $stateHistoryService['StatehistoryService']['state_time'] = $fromDate;
                             $stateHistoryService['StatehistoryService']['state'] = $Servicestatus->currentState();
                             $stateHistoryService['StatehistoryService']['last_state'] = $Servicestatus->currentState();
-                            $stateHistoryService['StatehistoryService']['last_hard_state'] = $Servicestatus->currentState();
+                            $stateHistoryService['StatehistoryService']['last_hard_state'] = $Servicestatus->getLastHardState();
                             $stateHistoryService['StatehistoryService']['state_type'] = $Servicestatus->getStateType();
                             $stateHistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($stateHistoryService['StatehistoryService']);
                             $statehistoriesService[$uuid]['Statehistory'][] = $stateHistoryService;
@@ -272,14 +272,12 @@ class DowntimereportsController extends AppController {
             }
             $downtimeReport = [];
             foreach ($reportData as $reportResult) {
-                //FileDebugger::varExport($reportResult);
                 if ($reportResult['Host']['reportData'][1] > 0) {
                     $downtimeReport['hostsWithOutages'][] = $reportResult;
                 } else {
                     $downtimeReport['hostsWithoutOutages'][] = $reportResult;
                 }
             }
-//FileDebugger::varExport($downtimeReport);
             $downtimeReport['hostsWithOutages'] = Hash::sort(
                 $downtimeReport['hostsWithOutages'],
                 '{n}.Host.reportdata.1',
@@ -289,8 +287,6 @@ class DowntimereportsController extends AppController {
             $hostBarChartData = [];
             $pieChartData = [];
             $downtimeReport['hostsWithOutages'] = array_chunk($downtimeReport['hostsWithOutages'], 10);
-//FileDebugger::varExport($downtimeReport);
-//return;
             if (!empty($downtimeReport['hostsWithOutages'])) {
                 $hostBarChartData = DowntimeReportBarChartWidgetDataPreparer::getDataForHostBarChart($downtimeReport['hostsWithOutages'], $totalTime);
                 foreach ($downtimeReport['hostsWithOutages'] as $chunkKey => $hostsArray) {
@@ -308,16 +304,10 @@ class DowntimereportsController extends AppController {
                                 $service['Service']['reportData'],
                                 $totalTime
                             );
-            //                FileDebugger::varExport($service['Service']['reportData']);
                         }
                     }
                 }
             }
-
-            //FileDebugger::varExport($totalTime);
-            //FileDebugger::varExport($downtimeReport);
-
-            //FileDebugger::varExport($hostBarChartData);
 
             $this->set('downtimes', $downtimes);
             $this->set('_serialize', ['downtimes']);
