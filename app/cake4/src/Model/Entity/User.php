@@ -98,15 +98,4 @@ class User extends Entity {
         'password'
     ];
 
-    /**
-     * @var array
-     */
-    protected $_virtual = ['full_name'];
-
-    /**
-     * @return string
-     */
-    protected function _getFullName() {
-        return $this->firstname . ' ' . $this->lastname;
-    }
 }

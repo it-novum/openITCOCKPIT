@@ -9,6 +9,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Security;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
 
 /**
@@ -249,49 +250,70 @@ class UsersTable extends Table {
 
 
     /**
-     * @param $rights
-     * @param null $PaginateOMat
+     * @param array $rights
+     * @param UsersFilter $UsersFilter
+     * @param PaginateOMat|null $PaginateOMat
      * @return array
      */
-    public function getUsers($rights, UsersFilter $usersFilter, $PaginateOMat = null) {
-        $query = $this->find()
-            ->disableHydration()
-            ->contain(['Containers', 'Usergroups'])
-            ->matching('Containers')
-            ->order(['full_name' => 'asc'])
-            ->where([
-                'ContainersUsersMemberships.container_id IN' => $rights,
-                $usersFilter->indexFilter()
+    public function getUsersIndex(UsersFilter $UsersFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+        if (!is_array($MY_RIGHTS)) {
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
+
+        $where = $UsersFilter->indexFilter();
+        $having = [];
+        if (isset($where['full_name LIKE'])) {
+            $having['full_name LIKE'] = $where['full_name LIKE'];
+            unset($where['full_name LIKE']);
+        }
+
+        $query = $this->find();
+        $query->select([
+            'Users.id',
+            'Users.email',
+            'Users.company',
+            'Users.phone',
+            'Users.is_active',
+            'Users.samaccountname',
+            'Usergroups.id',
+            'Usergroups.name',
+            'ContainersUsersMemberships.container_id',
+            'full_name' => $query->func()->concat([
+                'Users.firstname' => 'literal',
+                ' ',
+                'Users.lastname'  => 'literal'
             ])
-            ->select(function (Query $query) {
-                return [
-                    'Users.id',
-                    'Users.email',
-                    'Users.company',
-                    'Users.phone',
-                    'Users.is_active',
-                    'Users.samaccountname',
-                    'Usergroups.id',
-                    'Usergroups.name',
-                    'ContainersUsersMemberships.container_id',
-                    'full_name' => $query->func()->concat([
-                        'Users.firstname' => 'literal',
-                        ' ',
-                        'Users.lastname'  => 'literal'
-                    ])
-                ];
-            })
-            ->group([
-                'Users.id'
+        ])
+            ->contain([
+                'Containers',
+                'Usergroups'
+            ])
+            ->matching('Containers');
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'ContainersUsersMemberships.container_id IN' => $MY_RIGHTS
             ]);
+        }
+        if(!empty($where)){
+            $query->where($where);
+        }
+        if(!empty($having)){
+            $query->having($having);
+        }
+
+        $query->order($UsersFilter->getOrderForPaginator('full_name', 'asc'));
+        $query->group([
+            'Users.id'
+        ]);
+
         if ($PaginateOMat === null) {
             //Just execute query
-            $result = $this->formatResultAsCake2($query->toArray(), false);
+            $result = $query->toArray();
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
-                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
             }
         }
         return $result;
@@ -393,7 +415,7 @@ class UsersTable extends Table {
      * @param $usercontaineroles
      * @return array
      */
-    public function usercontainerolePermissionsForAngular($usercontaineroles) {
+    private function usercontainerolePermissionsForAngular($usercontaineroles) {
         if (empty($usercontaineroles)) {
             return [];
         }

@@ -26,14 +26,15 @@
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-terminal fa-fw "></i>
-            <?php echo __('Administration'); ?>
+            <i class="fa fa-user fa-fw "></i>
+            <?php echo __('Users'); ?>
             <span>>
-                <?php echo __('Manage users'); ?>
+                <?php echo __('Overview'); ?>
             </span>
         </h1>
     </div>
 </div>
+
 <massdelete></massdelete>
 
 <section id="widget-grid" class="">
@@ -46,15 +47,18 @@
                             <i class="fa fa-refresh"></i>
                             <?php echo __('Refresh'); ?>
                         </button>
-                        <?php if ($this->Acl->hasPermission('add', 'users')): ?>
+                        <?php if ($this->Acl->hasPermission('add', 'contacts')): ?>
                             <a ui-sref="UsersAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
-                                <?php echo __('Create local user'); ?>
+                                <?php echo __('New local user'); ?>
                             </a>
-                            <a ng-if="isLdapAuth" ui-sref="UsersAddFromLdap" class="btn btn-xs btn-warning">
-                                <i class="fa fa-plus"></i>
-                                <?php echo __('Import from LDAP'); ?>
-                            </a>
+
+                            <?php if ($isLdapAuth): ?>
+                                <a ui-sref="UsersAddFromLdap" class="btn btn-xs btn-warning">
+                                    <i class="fa fa-plus"></i>
+                                    <?php echo __('Import from LDAP'); ?>
+                                </a>
+                            <?php endif; ?>
                         <?php endif; ?>
 
                         <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
@@ -63,13 +67,12 @@
                         </button>
 
                     </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-terminal"></i> </span>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-user"></i> </span>
                     <h2 class="hidden-mobile">
-                        <?php echo __('Manage users'); ?>
+                        <?php echo __('Users overview'); ?>
                     </h2>
                 </header>
 
-                <!-- widget div-->
                 <div>
                     <div class="widget-body no-padding">
                         <!-- Start Filter -->
@@ -80,8 +83,8 @@
                                     <div class="form-group smart-form">
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by user full name'); ?>"
-                                                   ng-model="filter.Users.full_name"
+                                                   placeholder="<?php echo __('Filter by users ful name'); ?>"
+                                                   ng-model="filter.full_name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -91,7 +94,7 @@
                                     <div class="form-group smart-form">
                                         <label class="input"> <i class="icon-prepend fa fa-envelope-o"></i>
                                             <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by user email'); ?>"
+                                                   placeholder="<?php echo __('Filter by email'); ?>"
                                                    ng-model="filter.Users.email"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
@@ -102,7 +105,7 @@
                                     <div class="form-group smart-form">
                                         <label class="input"> <i class="icon-prepend fa fa-phone"></i>
                                             <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by user phone'); ?>"
+                                                   placeholder="<?php echo __('Filter by phone'); ?>"
                                                    ng-model="filter.Users.phone"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
@@ -113,7 +116,7 @@
                                     <div class="form-group smart-form">
                                         <label class="input"> <i class="icon-prepend fa fa-building"></i>
                                             <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by user company'); ?>"
+                                                   placeholder="<?php echo __('Filter by company'); ?>"
                                                    ng-model="filter.Users.company"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
@@ -121,22 +124,24 @@
                                 </div>
                             </div>
 
-                            <div class="col-xs-12 col-md-6">
-                                <fieldset>
-                                    <legend><?php echo __('User Role'); ?></legend>
-                                    <div class="form-group smart-form">
-                                        <select
-                                                id="UserRoles"
-                                                data-placeholder="<?php echo __('Filter by user role'); ?>"
-                                                class="input-sm"
-                                                chosen="usergroups"
-                                                multiple
-                                                ng-model="filter.Users.usergroup_id"
-                                                ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
-                                                ng-model-options="{debounce: 500}">
-                                        </select>
-                                    </div>
-                                </fieldset>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <fieldset>
+                                        <legend><?php echo __('User Role'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <select
+                                                    id="UserRoles"
+                                                    data-placeholder="<?php echo __('Filter by user role'); ?>"
+                                                    class="input-sm"
+                                                    chosen="usergroups"
+                                                    multiple
+                                                    ng-model="filter.Users.usergroup_id"
+                                                    ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
+                                                    ng-model-options="{debounce: 500}">
+                                            </select>
+                                        </div>
+                                    </fieldset>
+                                </div>
                             </div>
 
                             <div class="row">
@@ -153,11 +158,14 @@
                         <!-- End Filter -->
 
                         <div class="mobile_table">
-                            <table class="table table-striped table-hover table-bordered smart-form">
+                            <table id="contact_list" class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
-                                    <th class="no-sort" ng-click="orderBy('Users.full_name')">
-                                        <i class="fa" ng-class="getSortClass('Users.full_name')"></i>
+                                    <th class="no-sort width-15">
+                                        <i class="fa fa-check-square-o fa-lg"></i>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('full_name')">
+                                        <i class="fa" ng-class="getSortClass('full_name')"></i>
                                         <?php echo __('Full name'); ?>
                                     </th>
                                     <th class="no-sort" ng-click="orderBy('Users.email')">
@@ -176,8 +184,8 @@
                                         <i class="fa" ng-class="getSortClass('Users.is_active')"></i>
                                         <?php echo __('Is active'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('User.usergroup.name')">
-                                        <i class="fa" ng-class="getSortClass('User.usergroup.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Users.usergroup_id')">
+                                        <i class="fa" ng-class="getSortClass('Users.usergroup_id')"></i>
                                         <?php echo __('User role'); ?>
                                     </th>
                                     <th class="no-sort text-center">
@@ -186,31 +194,44 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="user in Users">
-                                    <td>{{user.User.full_name}}</td>
-                                    <td>{{user.User.email}}</td>
-                                    <td>{{user.User.phone}}</td>
-                                    <td>{{user.User.company}}</td>
+                                <tr ng-repeat="user in users">
+                                    <td class="text-center" class="width-15">
+                                        <input type="checkbox"
+                                               ng-model="massChange[user.id]"
+                                               ng-show="user.allow_edit && (user.id != myUserId)">
+                                    </td>
+
+                                    <td>{{user.full_name}}</td>
+                                    <td>{{user.email}}</td>
+                                    <td>{{user.phone}}</td>
+                                    <td>{{user.company}}</td>
                                     <td>
-                                        <i class="fa fa-check" ng-if="user.User.is_active"></i>
-                                        <i class="fa fa-times" ng-if="!user.User.is_active"></i>
-                                        </td>
-                                    <td>{{user.User.usergroup.name}}</td>
+                                         <span class="label-forced label-danger"
+                                               ng-hide="user.is_active">
+                                            <?php echo __('Disabled'); ?>
+                                        </span>
+                                        <span class="label-forced label-success"
+                                              ng-show="user.is_active">
+                                            <?php echo __('Active'); ?>
+                                        </span>
+                                    </td>
+                                    <td>{{user.usergroup.name}}</td>
+
                                     <td class="width-50">
                                         <div class="btn-group smart-form">
                                             <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
-                                                <a ui-sref="UsersEdit({id: user.User.id})"
-                                                   ng-if="user.User.allow_edit && !user.User.samaccountname"
+                                                <a ui-sref="UsersEdit({id: user.id})"
+                                                   ng-if="user.allow_edit && !user.samaccountname"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
-                                                <a ui-sref="UsersEditFromLdap({id: user.User.id})"
-                                                   ng-if="user.User.allow_edit && user.User.samaccountname"
+                                                <a ui-sref="UsersEditFromLdap({id: user.id})"
+                                                   ng-if="user.allow_edit && user.samaccountname"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
                                                 <a href="javascript:void(0);"
-                                                   ng-if="!user.User.allow_edit"
+                                                   ng-if="!user.allow_edit"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
@@ -222,32 +243,33 @@
                                                class="btn btn-default dropdown-toggle"><span
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right"
-                                                id="menuHack-{{user.User.id}}">
+                                                id="menuHack-{{user.id}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
-                                                    <li ng-if="user.User.allow_edit && !user.User.samaccountname">
-                                                        <a ui-sref="UsersEdit({id:user.User.id})">
+                                                    <li ng-if="user.allow_edit && !user.samaccountname">
+                                                        <a ui-sref="UsersEdit({id:user.id})">
                                                             <i class="fa fa-cog"></i>
                                                             <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
-                                                    <li ng-if="user.User.allow_edit && user.User.samaccountname">
-                                                        <a ui-sref="UsersEditFromLdap({id:user.User.id})">
+                                                    <li ng-if="user.allow_edit && user.samaccountname">
+                                                        <a ui-sref="UsersEditFromLdap({id:user.id})">
                                                             <i class="fa fa-cog"></i>
                                                             <?php echo __('Edit Ldap'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
-                                                    <li ng-if="!user.User.samaccountname">
-                                                        <a ng-click="resetPassword(user.User.id, user.User.email)">
+                                                    <li ng-if="!user.samaccountname">
+                                                        <a ng-click="resetPassword(user.id, user.email)">
                                                             <i class="fa fa-reply-all fa-flip-horizontal"></i>
                                                             <?php echo __('Reset Password'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'users')): ?>
-                                                    <li class="divider" ng-if="user.User.allow_edit && (user.User.id != userId)"></li>
-                                                    <li ng-if="user.User.allow_edit && (user.User.id != userId)">
+                                                    <li class="divider"
+                                                        ng-if="user.allow_edit && (user.id != myUserId)"></li>
+                                                    <li ng-if="user.allow_edit && (user.id != myUserId)">
                                                         <a href="javascript:void(0);"
                                                            class="txt-color-red"
                                                            ng-click="confirmDelete(getObjectForDelete(user))">
@@ -262,8 +284,42 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="contacts.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-4 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                        </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
+            </div>
         </article>
     </div>
 </section>

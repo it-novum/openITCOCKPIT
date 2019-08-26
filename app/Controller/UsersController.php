@@ -23,8 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\SystemsettingsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -33,7 +35,9 @@ use itnovum\openITCOCKPIT\Ldap\LdapClient;
 
 /**
  * Class UsersController
- * @property User $User
+ * @property AppPaginatorComponent $Paginator
+ * @property DbBackend $DbBackend
+ * @property AppAuthComponent $Auth
  */
 class UsersController extends AppController {
     public $layout = 'blank';
@@ -42,36 +46,43 @@ class UsersController extends AppController {
     ];
 
     public function index() {
+        /** @var $SystemsettingsTable SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
+            $this->set('isLdapAuth', $SystemsettingsTable->isLdapAuth());
             return;
         }
-        $userId = $this->Auth->User('id');
 
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
-        $usersFilter = new UsersFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $usersFilter->getPage());
-        $all_users = $Users->getUsers($this->MY_RIGHTS, $usersFilter, $PaginateOMat);
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
-        foreach ($all_users as $index => $user) {
-            $all_users[$index]['User']['allow_edit'] = true;
+        $UsersFilter = new UsersFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $UsersFilter->getPage());
+        $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, $PaginateOMat, $this->MY_RIGHTS);
+
+        $all_users = [];
+        foreach ($all_tmp_users as $index => $_user) {
+            $user = $_user->toArray();
+            $user['allow_edit'] = $this->hasRootPrivileges;
             if ($this->hasRootPrivileges === false) {
-                foreach ($user['Container'] as $key => $container) {
+                foreach ($user['containers'] as $key => $container) {
                     if ($this->isWritableContainer($container['id'])) {
-                        $all_users[$index]['User']['allow_edit'] = $this->isWritableContainer($container['id']);
+                        $user['allow_edit'] = true;
                         break;
                     }
-                    $all_users[$index]['User']['allow_edit'] = false;
                 }
             }
+            $all_users[] = $user;
         }
         $this->set('all_users', $all_users);
-        $this->set('userId', $userId);
-        $toJson = ['all_users', 'paging', 'userId'];
+        $this->set('myUserId', $User->getId());
+        $toJson = ['all_users', 'paging', 'myUserId'];
         if ($this->isScrollRequest()) {
-            $toJson = ['all_users', 'scroll', 'userId'];
+            $toJson = ['all_users', 'scroll', 'myUserId'];
         }
         $this->set('_serialize', $toJson);
     }
@@ -81,12 +92,12 @@ class UsersController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
-        if (!$Users->existsById($id)) {
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        if (!$UsersTable->existsById($id)) {
             throw new MethodNotAllowedException('Invalid User');
         }
-        $user = $Users->getUserWithContainerPermission($id, $this->MY_RIGHTS);
+        $user = $UsersTable->getUserWithContainerPermission($id, $this->MY_RIGHTS);
         if (is_null($user)) {
             $this->render403();
             return;
@@ -104,24 +115,24 @@ class UsersController extends AppController {
             //Only ship HTML template for angular
             return;
         }
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
-        if (!$Users->existsById($id)) {
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        if (!$UsersTable->existsById($id)) {
             throw new MethodNotAllowedException();
         }
-        $user = $Users->get($id);
+        $user = $UsersTable->get($id);
         if (!$this->allowedByContainerId($user->id)) {
             $this->render403();
             return;
         }
 
-        if ($Users->delete($user)) {
+        if ($UsersTable->delete($user)) {
             $this->set('success', true);
             $this->set('_serialize', ['success']);
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response->statusCode(400);
         $this->set('success', false);
         $this->set('_serialize', ['success']);
         return;
@@ -418,5 +429,16 @@ class UsersController extends AppController {
         ];
         $this->set($data);
         $this->set('_serialize', array_keys($data));
+    }
+
+    public function loadUsergroups() {
+        /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+        $usergroups = $UsergroupsTable->getUsergroupsList();
+
+        $usergroups = Api::makeItJavaScriptAble($usergroups);
+
+        $this->set('usergroups', $usergroups);
+        $this->set('_serialize', ['usergroups']);
     }
 }

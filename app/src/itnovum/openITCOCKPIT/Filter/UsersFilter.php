@@ -33,7 +33,7 @@ class UsersFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'like'   => [
-                'Users.full_name',
+                'full_name',
                 'Users.email',
                 'Users.company',
                 'Users.phone',
@@ -52,7 +52,7 @@ class UsersFilter extends Filter {
     public function ajaxFilter() {
         $filters = [
             'like'   => [
-                'Users.full_name',
+                'full_name',
                 'Users.email',
                 'Users.company',
                 'Users.phone',
