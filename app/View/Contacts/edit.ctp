@@ -117,7 +117,7 @@
                     </div>
 
                     <div class="form-group" ng-class="{'has-error': errors.email}">
-                        <label class="col col-md-2 control-label">
+                        <label class="col col-md-2 control-label hintmark">
                             <?php echo __('Email'); ?>
                         </label>
                         <div class="col col-xs-10">
@@ -133,7 +133,7 @@
                     </div>
 
                     <div class="form-group" ng-class="{'has-error': errors.phone}">
-                        <label class="col col-md-2 control-label">
+                        <label class="col col-md-2 control-label hintmark">
                             <?php echo __('Phone'); ?>
                         </label>
                         <div class="col col-xs-10">

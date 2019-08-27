@@ -29,11 +29,9 @@ use App\Model\Table\UsercontainerrolesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
 use itnovum\openITCOCKPIT\Ldap\LdapClient;
 

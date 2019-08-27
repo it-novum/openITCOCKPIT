@@ -19,12 +19,6 @@ use itnovum\openITCOCKPIT\Filter\UsersFilter;
  * @property \App\Model\Table\ApikeysTable|\Cake\ORM\Association\HasMany $Apikeys
  * @property \App\Model\Table\ChangelogsTable|\Cake\ORM\Association\HasMany $Changelogs
  * @property \App\Model\Table\ContactsTable|\Cake\ORM\Association\HasMany $Contacts
- * @property \App\Model\Table\DashboardTabsTable|\Cake\ORM\Association\HasMany $DashboardTabs
- * @property \App\Model\Table\InstantreportsToUsersTable|\Cake\ORM\Association\HasMany $InstantreportsToUsers
- * @property \App\Model\Table\MapUploadsTable|\Cake\ORM\Association\HasMany $MapUploads
- * @property \App\Model\Table\SystemfailuresTable|\Cake\ORM\Association\HasMany $Systemfailures
- * @property \App\Model\Table\UsersToAutoreportsTable|\Cake\ORM\Association\HasMany $UsersToAutoreports
- * @property \App\Model\Table\UsersToContainersTable|\Cake\ORM\Association\HasMany $UsersToContainers
  *
  * @method \App\Model\Entity\User get($primaryKey, $options = [])
  * @method \App\Model\Entity\User newEntity($data = null, array $options = [])
@@ -40,6 +34,11 @@ use itnovum\openITCOCKPIT\Filter\UsersFilter;
 class UsersTable extends Table {
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
+
+    /**
+     * Password validation regex.
+     */
+    const PASSWORD_REGEX = '/^(?=.*\d).{6,}$/i';
 
     /**
      * Initialize method
@@ -94,11 +93,22 @@ class UsersTable extends Table {
             ->allowEmptyString('id', null, 'create');
 
         $validator
-            ->requirePresence('containers', 'create', __('You have to choose at least one option.'))
-            ->allowEmptyString('containers', null, false)
-            ->multipleOptions('containers', [
-                'min' => 1
-            ], __('You have to choose at least one option.'));
+            ->allowEmptyString('containers', __('You need to select at least one container or container role.'), function ($context) {
+                return $this->validateHasContainerOrContainerUserRolePermissions(null, $context);
+            })
+            ->add('containers', 'custom', [
+                'rule'    => [$this, 'validateHasContainerOrContainerUserRolePermissions'],
+                'message' => __('You need to select at least one container or container role.')
+            ]);
+
+        $validator
+            ->allowEmptyString('usercontainerroles', __('You need to select at least one container or container role.'), function ($context) {
+                return $this->validateHasContainerOrContainerUserRolePermissions(null, $context);
+            })
+            ->add('usercontainerroles', 'custom', [
+                'rule'    => [$this, 'validateHasContainerOrContainerUserRolePermissions'],
+                'message' => __('You need to select at least one container or container role.')
+            ]);
 
         $validator
             ->integer('usergroup_id')
@@ -210,9 +220,31 @@ class UsersTable extends Table {
     }
 
     /**
-     * Password validation regex.
+     * @param null $value
+     * @param array $context
+     * @return bool
      */
-    const PASSWORD_REGEX = '/^(?=.*\d).{6,}$/i';
+    public function validateHasContainerOrContainerUserRolePermissions($value, $context) {
+        if (isset($context['data']['containers']) && is_array($context['data']['containers'])) {
+            if (!empty($context['data']['containers']) && sizeof($context['data']['containers']) > 0) {
+
+                //User has own containers
+                return true;
+            }
+        }
+
+        //Has the user an user container role assignment?
+        if (isset($context['data']['usercontainerroles']['_ids']) && is_array($context['data']['usercontainerroles']['_ids'])) {
+            if (!empty($context['data']['usercontainerroles']['_ids']) && sizeof($context['data']['usercontainerroles']['_ids']) > 0) {
+
+                //User has a user container role assignment
+                return true;
+            }
+        }
+
+        //No own containers, no user container role
+        return false;
+    }
 
     /**
      * Returns a rules checker object that will be used for validating
@@ -410,8 +442,9 @@ class UsersTable extends Table {
     /**
      * @param $containers
      * @return array
+     * @deprecated
      */
-    public function containerPermissionsForAngular($containers) {
+    private function containerPermissionsForAngular($containers) {
         if (empty($containers)) {
             return [];
         }
@@ -443,6 +476,7 @@ class UsersTable extends Table {
      * @param null $userId
      * @param $rights
      * @return array
+     * @deprecated
      */
     public function getUserWithContainerPermission($userId = null, $rights) {
         $user = $this->getUser($userId, $rights);

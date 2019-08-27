@@ -57,7 +57,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
             {objectName : '<?php echo __('User'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
                 <div class="row">
                     <div class="form-group" ng-class="{'has-error': errors.usercontainerroles}">
-                        <label class="col col-md-2 control-label">
+                        <label class="col col-md-2 control-label hintmark">
                             <?php echo __('Container Roles'); ?>
                         </label>
                         <div class="col col-xs-10">
@@ -99,8 +99,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
                     </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.containers}">
-                        <label class="col col-md-2 control-label">
+                    <div class="form-group" ng-class="{'has-error': errors.containers}">
+                        <label class="col col-md-2 control-label hintmark">
                             <?php echo __('Container'); ?>
                         </label>
                         <div class="col col-xs-10">
