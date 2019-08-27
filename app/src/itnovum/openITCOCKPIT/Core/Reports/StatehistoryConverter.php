@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core\Reports;
 
 
+use itnovum\openITCOCKPIT\Core\FileDebugger;
+
 class StatehistoryConverter {
 
     /**
@@ -48,7 +50,7 @@ class StatehistoryConverter {
             }
             reset($stateHistoryArray);
             foreach ($stateHistoryArray as $key => $stateHistory) {
-                $stateTimeTimestamp = $stateHistory['state_time'];
+                $stateTimeTimestamp = strtotime($stateHistory['state_time']);
                 if (!$setInitialState) {
                     $currentState = $stateHistory['last_state'];
                     if ($checkHardState && $stateHistory['last_state'] != 0) {

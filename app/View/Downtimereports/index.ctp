@@ -149,17 +149,17 @@
                         <?php echo __('Dynamic color'); ?>
                         <i class="fa fa-info-circle text-info" id="infoButton" role="tooltip"
                            data-toggle="tooltip" data-html="true" title="<?php echo __('Colors'); ?>"
-                           data-content='<div class="colorsquare" style="background-color: #449D44;"><div class="colortext">100%</div></div>
-                            <div class="colorsquare" style="background-color: #639A3C;"><div class="colortext">90%</div></div>
-                            <div class="colorsquare" style="background-color: #829734;"><div class="colortext">80%</div></div>
-                            <div class="colorsquare" style="background-color: #A1942C;"><div class="colortext">70%</div></div>
-                            <div class="colorsquare" style="background-color: #C09124;"><div class="colortext">60%</div></div>
-                            <div class="colorsquare" style="background-color: #DF8F1D;"><div class="colortext">50%</div></div>
-                            <div class="colorsquare" style="background-color: #DA7C20;"><div class="colortext">40%</div></div>
-                            <div class="colorsquare" style="background-color: #D66923;"><div class="colortext">30%</div></div>
-                            <div class="colorsquare" style="background-color: #D15626;"><div class="colortext">20%</div></div>
-                            <div class="colorsquare" style="background-color: #CD4329;"><div class="colortext">10%</div></div>
-                            <div class="colorsquare" style="background-color: #C9302C;"><div class="colortext">0%</div></div>'>
+                           data-content='<div class="colorsquare" style="background-color: #449d44;"><div class="colortext">100%</div></div>
+                            <div class="colorsquare" style="background-color: #55a03e;"><div class="colortext">90%</div></div>
+                            <div class="colorsquare" style="background-color: #65a339;"><div class="colortext">80%</div></div>
+                            <div class="colorsquare" style="background-color: #76a633;"><div class="colortext">70%</div></div>
+                            <div class="colorsquare" style="background-color: #86a92d;"><div class="colortext">60%</div></div>
+                            <div class="colorsquare" style="background-color: #97ac28;"><div class="colortext">50%</div></div>
+                            <div class="colorsquare" style="background-color: #d6671f;"><div class="colortext">40%</div></div>
+                            <div class="colorsquare" style="background-color: #d35922;"><div class="colortext">30%</div></div>
+                            <div class="colorsquare" style="background-color: #d04c25;"><div class="colortext">20%</div></div>
+                            <div class="colorsquare" style="background-color: #cc3e29;"><div class="colortext">10%</div></div>
+                            <div class="colorsquare" style="background-color: #c9302c;"><div class="colortext">0%</div></div>'>
                         </i>
                     </label>
 
@@ -182,7 +182,7 @@
             <div class="row padding-top-50">
                 <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
                     <div class="col col-md-12 padding-5 rounded-box"
-                         ng-style="{'background': setColorDynamically ?'#829734FF' : 'rgba(76, 79, 83, 0.9)'}"
+                         ng-style="{'background': setColorDynamically ?'#65a339' : 'rgba(76, 79, 83, 0.9)'}"
                          style="box-shadow: 1px 1px 3px #ccc;">
                         <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
                             <canvas id="hostPieChart"></canvas>
@@ -240,7 +240,7 @@
                 </div>
                 <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
                     <div class="col col-md-12 padding-5 rounded-box"
-                         ng-style="{'background': setColorDynamically ?'#449D44FF' : 'rgba(146, 162, 168, 0.9)'}"
+                         ng-style="{'background': setColorDynamically ?'#449d44' : 'rgba(146, 162, 168, 0.9)'}"
                          style="box-shadow: 1px 1px 3px #ccc;">
                         <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
                             <canvas id="myChart"></canvas>
@@ -300,7 +300,7 @@
                 </div>
                 <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
                     <div class="col col-md-12 padding-5 rounded-box"
-                         ng-style="{'background': setColorDynamically ?'#CD4329FF' : 'rgba(146, 162, 168, 0.9)'}"
+                         ng-style="{'background': setColorDynamically ?'#cc3e29' : 'rgba(146, 162, 168, 0.9)'}"
                          style="box-shadow: 1px 1px 3px #ccc;">
                         <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
                             <canvas id="myChart2"></canvas>
@@ -359,7 +359,7 @@
                 </div>
                 <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
                     <div class="col col-md-12 padding-5 rounded-box"
-                         ng-style="{'background': setColorDynamically ?'#D66923FF' : 'rgba(146, 162, 168, 0.9)'}"
+                         ng-style="{'background': setColorDynamically ?'#d35922' : 'rgba(146, 162, 168, 0.9)'}"
                          style="box-shadow: 1px 1px 3px #ccc;">
                         <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
                             <canvas id="myChart3"></canvas>
@@ -420,7 +420,7 @@
             <div class="row">
                 <div class="col col-lg-3 col-md-3 col-xs-12 padding-5">
                     <div class="col col-md-12 padding-5 rounded-box"
-                         ng-style="{'background': setColorDynamically ?'#829734FF' : 'rgba(146, 162, 168, 0.9)'}"
+                         ng-style="{'background': setColorDynamically ?'#97ac28' : 'rgba(146, 162, 168, 0.9)'}"
                          style="box-shadow: 1px 1px 3px #ccc;">
                         <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
                             <canvas id="myChart4"></canvas>
