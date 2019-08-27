@@ -4,6 +4,8 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Datasource\EntityInterface;
+use Cake\Event\Event;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -263,12 +265,12 @@ class UsersTable extends Table {
     }
 
     /**
-     * @param $event
-     * @param $entity
-     * @param $options
+     * @param Event $event
+     * @param EntityInterface $entity
+     * @param \ArrayObject $options
      * @return bool
      */
-    public function beforeSave($event, $entity, $options) {
+    public function beforeSave(Event $event, EntityInterface $entity, \ArrayObject $options) {
         if (!empty($entity->password)) {
             $entity->password = $this->getPasswordHash($entity->password);
         }
