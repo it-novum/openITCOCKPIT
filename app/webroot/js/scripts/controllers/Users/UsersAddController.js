@@ -1,54 +1,61 @@
 angular.module('openITCOCKPIT')
     .controller('UsersAddController', function($scope, $http, $rootScope, $state, NotyService, RedirectService){
-
-        $scope.intervalText = 'disabled';
-        $scope.post = {
-            'User': {
-                'email': '',
-                'firstname': '',
-                'lastname': '',
-                'is_active': true,
-                'company': null,
-                'position': null,
-                'phone': null,
-                'password': '',
-                'confirm_password': '',
-                'usergroup_id': '',
-                'showstatsinmenu': false,
-                'paginatorlength': 25,
-                'dashboard_tab_rotation': 0,
-                'recursive_browser': false,
-                'dateformat': '',
-                'containers': {
-                    /* example data CURRENTLY NOT USED!
-                    0: {
-                        'id': null, //container ID
-                        '_joinData':{ //saving additional data to "through" table
-                            'permission_level':null //radio button value
-                        }
-                    }
-                    */
-                },
-                'ContainersUsersMemberships': {},
-                'usercontainerroles': {
-                    '_ids': []
-                }
-            }
+        $scope.data = {
+            createAnother: false
         };
 
-        $scope.chosenContainerroles = {};
+        var clearForm = function(){
+            $scope.selectedUserContainers = [];
+            $scope.selectedUserContainerWithPermission = {};
 
-        $scope.loadUsercontainerroles = function(){
-            $http.get("/usercontainerroles/loadUsercontainerrolesForAngular.json", {
+            $scope.post = {
+                User: {
+                    firstname: '',
+                    lastname: '',
+                    email: '',
+                    phone: '',
+                    is_active: 1,
+                    showstatsinmenu: 0,
+                    paginatorlength: 25,
+                    dashboard_tab_rotation: 0,
+                    recursive_browser: 0,
+                    dateformat: '%H:%M:%S - %d.%m.%Y',
+                    timezone: 'Europe/Berlin',
+                    password: '',
+                    confirm_password: '',
+
+                    usergroup_id: 0,
+                    usercontainerroles: {
+                        _ids: []
+                    },
+                    ContainersUsersMemberships: {},
+                }
+            };
+        };
+        clearForm();
+
+        var getContainerName = function(containerId){
+            containerId = parseInt(containerId, 10);
+            for(var index in $scope.containers){
+                if($scope.containers[index].key === containerId){
+                    return $scope.containers[index].value;
+                }
+            }
+
+            return 'ERROR UNKNOWN CONTAINER';
+        };
+
+        $scope.intervalText = 'disabled';
+
+        $scope.loadUserContaineRoles = function(){
+            $http.get("/users/loadContainerRoles.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
                 $scope.usercontainerroles = result.data.usercontainerroles;
-                $scope.usercontainerrolePermissions = result.data.usercontainerrolePermissions;
             });
         };
-
 
         $scope.loadContainer = function(){
             $http.get("/containers/loadContainersForAngular.json", {
@@ -61,7 +68,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadUsergroups = function(){
-            $http.get("/usergroups/loadUsergroups.json", {
+            $http.get("/users/loadUsergroups.json", {
                 params: {
                     'angular': true
                 }
@@ -81,13 +88,20 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.getContainerName = function(id){
-            for(var c in $scope.containers){
-                if($scope.containers[c].key == id){
-                    return $scope.containers[c].value;
-                }
+        $scope.loadContainerPermissions = function(){
+            if($scope.post.User.usercontainerroles._ids.length === 0){
+                $scope.userContainerRoleContainerPermissions = {};
+                return;
             }
-            return null;
+
+            $http.get("/users/loadContainerPermissions.json", {
+                params: {
+                    'angular': true,
+                    'usercontainerRoleIds[]': $scope.post.User.usercontainerroles._ids
+                }
+            }).then(function(result){
+                $scope.userContainerRoleContainerPermissions = result.data.userContainerRoleContainerPermissions;
+            });
         };
 
         $scope.$watch('post.User.dashboard_tab_rotation', function(){
@@ -107,12 +121,33 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
+            //Define $scope.post.User.ContainersUsersMemberships
+            var ContainersUsersMemberships = {};
+            for(var containerId in $scope.selectedUserContainerWithPermission){
+                ContainersUsersMemberships[containerId] = $scope.selectedUserContainerWithPermission[containerId].permission_level;
+            }
+            $scope.post.User.ContainersUsersMemberships = ContainersUsersMemberships;
 
             $http.post("/users/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                NotyService.genericSuccess();
-                RedirectService.redirectWithFallback('UsersIndex');
+                var url = $state.href('UsersEdit', {id: result.data.user.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+
+
+                if($scope.data.createAnother === false){
+                    RedirectService.redirectWithFallback('UsersIndex');
+                }else{
+                    clearForm();
+                    $scope.errors = {};
+                    NotyService.scrollTop();
+                }
+
+                console.log('Data saved successfully');
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
@@ -122,28 +157,50 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.$watch('post.User.usercontainerroles._ids', function(){
-            if($scope.post.User.usercontainerroles._ids.length > 0){
-                $scope.chosenContainerroles = {};
-                $scope.post.User.usercontainerroles._ids.forEach(function(k){
-                    for(var i in $scope.usercontainerrolePermissions[k]){
-                        var currentValue = $scope.usercontainerrolePermissions[k][i];
-                        if($scope.chosenContainerroles.hasOwnProperty(i)){
-                            if($scope.chosenContainerroles[i] < currentValue){
-                                $scope.chosenContainerroles[i] = currentValue;
-                            }
-                        }else{
-                            $scope.chosenContainerroles[i] = currentValue;
-                        }
+            $scope.loadContainerPermissions();
+        }, true);
+
+        $scope.$watch('selectedUserContainers', function(){
+            if($scope.selectedUserContainers.length === 0){
+                //No user containers selected
+                $scope.selectedUserContainerWithPermission = {};
+                return;
+            }
+
+            //Add new selected containers
+            for(var index in $scope.selectedUserContainers){
+                var containerId = $scope.selectedUserContainers[index];
+                if(!$scope.selectedUserContainerWithPermission.hasOwnProperty(containerId)){
+
+                    var permission_level = 1;
+                    if(containerId === 1){
+                        // ROOT_CONTAINER is always read/write !
+                        permission_level = 2;
                     }
-                });
+
+                    $scope.selectedUserContainerWithPermission[containerId] = {
+                        name: getContainerName(containerId),
+                        container_id: parseInt(containerId, 10),
+                        permission_level: permission_level.toString() //String is required for AngularJS Front End value="2"
+                    };
+                }
+            }
+
+            //Remove "unselected" containers
+            for(var containerId in $scope.selectedUserContainerWithPermission){
+                //Do not mix strings and integers with indexOf !
+                containerId = parseInt(containerId, 10);
+                if($scope.selectedUserContainers.indexOf(containerId) === -1){
+                    //Container was removed from select box - remove it from permissions object
+                    delete $scope.selectedUserContainerWithPermission[containerId];
+                }
             }
         }, true);
 
-        $scope.loadUsercontainerroles();
+        $scope.loadUserContaineRoles();
         $scope.loadContainer();
         $scope.loadUsergroups();
         $scope.loadDateformats();
-
 
     });
 

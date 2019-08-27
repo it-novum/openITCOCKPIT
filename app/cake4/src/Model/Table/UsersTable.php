@@ -103,6 +103,7 @@ class UsersTable extends Table {
         $validator
             ->integer('usergroup_id')
             ->requirePresence('usergroup_id', 'create')
+            ->greaterThan('usergroup_id', 0, __('You have to select a user role.'))
             ->allowEmptyString('usergroup_id', null, false);
 
         $validator
@@ -294,10 +295,10 @@ class UsersTable extends Table {
                 'ContainersUsersMemberships.container_id IN' => $MY_RIGHTS
             ]);
         }
-        if(!empty($where)){
+        if (!empty($where)) {
             $query->where($where);
         }
-        if(!empty($having)){
+        if (!empty($having)) {
             $query->having($having);
         }
 
@@ -382,17 +383,28 @@ class UsersTable extends Table {
      */
     public function containerPermissionsForSave($containerPermissions = []) {
         //ContainersUsersMemberships
-        return array_map(function ($containerId, $permissionLevel) {
-            return [
+
+        $dataForSave = [];
+        foreach ($containerPermissions as $containerId => $permissionLevel) {
+            $containerId = (int)$containerId;
+            $permissionLevel = (int)$permissionLevel;
+            if ($permissionLevel !== READ_RIGHT && $permissionLevel !== WRITE_RIGHT) {
+                $permissionLevel = READ_RIGHT;
+            }
+            if ($containerId === ROOT_CONTAINER) {
+                // ROOT_CONTAINER is always read/write
+                $permissionLevel = WRITE_RIGHT;
+            }
+
+            $dataForSave[] = [
                 'id'        => $containerId,
                 '_joinData' => [
                     'permission_level' => $permissionLevel
                 ]
             ];
-        },
-            array_keys($containerPermissions),
-            $containerPermissions
-        );
+        }
+
+        return $dataForSave;
     }
 
     /**

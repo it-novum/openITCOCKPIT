@@ -31,6 +31,7 @@ use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
 /**
  * Class UsersController
  * @property User $User
+ * @property AppPaginatorComponent $Paginator
  */
 class UsercontainerrolesController extends AppController {
     public $layout = 'blank';
@@ -45,7 +46,7 @@ class UsercontainerrolesController extends AppController {
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $usercontainerrolesFilter->getPage());
         /** @var $Usercontainerroles App\Model\Table\UsercontainerrolesTable */
         $Usercontainerroles = TableRegistry::getTableLocator()->get('Usercontainerroles');
-        $allUsercontainerroles = $Usercontainerroles->getUsercontainerroles($this->MY_RIGHTS, $usercontainerrolesFilter, $PaginateOMat);
+        $allUsercontainerroles = $Usercontainerroles->getUsercontainerroles($usercontainerrolesFilter, $PaginateOMat, $this->MY_RIGHTS);
 
         foreach ($allUsercontainerroles as $index => $usercontainerrole) {
             $allUsercontainerroles[$index]['Usercontainerrole']['allow_edit'] = true;
@@ -186,41 +187,4 @@ class UsercontainerrolesController extends AppController {
         }
     }
 
-    public function loadUsercontainerrolesForAngular() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        $usercontainerrolesFilter = new UsercontainerrolesFilter($this->request);
-        /** @var $UsercontainerrolesTable Usercontainerroles */
-        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
-        $usercontainerroles = $UsercontainerrolesTable->getUsercontainerroles($this->MY_RIGHTS, $usercontainerrolesFilter);
-        $ucr = [];
-        $usercontainerrolePermissions = [];
-        foreach ($usercontainerroles as $ucrKey => $ucrValue) {
-            $containerroleId = $ucrValue['Usercontainerrole']['id'];
-
-            foreach ($ucrValue['Container'] as $key => $value) {
-                $path = $value['_joinData'];
-
-                $permissionLevel = $path['permission_level'];
-                /* if(isset($usercontainerrolePermissions[$containerroleId][$path['container_id']])){
-                     if($usercontainerrolePermissions[$containerroleId][$path['container_id']] < $path['permission_level']){
-                         $permissionLevel = $path['permission_level'];
-                     }
-                 }
- */
-
-                $usercontainerrolePermissions[$containerroleId][$path['container_id']] = $permissionLevel;
-            }
-
-
-            $ucr[$ucrValue['Usercontainerrole']['id']] = $ucrValue['Usercontainerrole']['name'];
-        }
-
-        $usercontainerroles = Api::makeItJavaScriptAble($ucr);
-
-        $this->set('usercontainerroles', $usercontainerroles);
-        $this->set('usercontainerrolePermissions', $usercontainerrolePermissions);
-        $this->set('_serialize', ['usercontainerroles', 'usercontainerrolePermissions']);
-    }
 }

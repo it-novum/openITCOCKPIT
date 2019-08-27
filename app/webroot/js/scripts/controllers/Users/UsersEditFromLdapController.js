@@ -89,7 +89,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadUsergroups = function(){
-            $http.get("/usergroups/loadUsergroups.json", {
+            $http.get("/users/loadUsergroups.json", {
                 params: {
                     'angular': true
                 }

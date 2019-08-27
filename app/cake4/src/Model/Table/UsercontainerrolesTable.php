@@ -5,7 +5,9 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
 
 
@@ -126,18 +128,57 @@ class UsercontainerrolesTable extends Table {
     }
 
     /**
-     * @param $rights
-     * @param UsercontainerrolesFilter $usercontainerrolesFilter
-     * @param null $PaginateOMat
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getUsercontainerroles($rights, UsercontainerrolesFilter $usercontainerrolesFilter, $PaginateOMat = null) {
+    public function getUsercontainerrolesAsList($MY_RIGHTS = []) {
+        if (!is_array($MY_RIGHTS)) {
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Usercontainerroles.id',
+                'Usercontainerroles.name'
+            ])
+            ->contain('Containers')
+            ->matching('Containers')
+            ->where([
+                'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
+            ])
+            ->group([
+                'Usercontainerroles.id'
+            ])
+            ->order([
+                'Usercontainerroles.name' => 'asc'
+            ])
+            ->disableHydration();
+
+        $result = [];
+        foreach($query->toArray() as $record) {
+            $result[$record['id']] = $record['name'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param UsercontainerrolesFilter $usercontainerrolesFilter
+     * @param PaginateOMat|null $PaginateOMat
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getUsercontainerroles(UsercontainerrolesFilter $usercontainerrolesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+        if (!is_array($MY_RIGHTS)) {
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
+
         $query = $this->find()
             ->disableHydration()
             ->contain('Containers')
             ->matching('Containers')
             ->where([
-                'ContainersUsercontainerrolesMemberships.container_id IN' => $rights,
+                'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS,
                 $usercontainerrolesFilter->indexFilter()
             ])
             ->group([
@@ -194,5 +235,32 @@ class UsercontainerrolesTable extends Table {
         }
         return $usercontainerrole;
 
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getContainerPermissionsByUserContainerRoleIds($ids = []){
+        $query = $this->find()
+            ->contain('Containers')
+            ->where([
+                'Usercontainerroles.id IN' => $ids
+            ])
+            ->disableHydration()
+            ->all();
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $result = [];
+        foreach ($query->toArray() as $record){
+            foreach($record['containers'] as $index => $container){
+                $record['containers'][$index]['path'] = $ContainersTable->getPathByIdAsString($container['id']);
+            }
+            $result[$record['id']] = $record;
+        }
+
+        return $result;
     }
 }

@@ -22,44 +22,46 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+$timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 ?>
-<?php
-$timezones = CakeTime::listTimezones();
-?>
+
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-user fa-fw "></i>
-            <?php echo __('Administration'); ?>
+            <?php echo __('Users'); ?>
             <span>>
-                <?php echo __('Manage Users'); ?>
+                <?php echo __('Add'); ?>
             </span>
-            <div class="third_level"> <?php echo __('Add'); ?></div>
         </h1>
     </div>
 </div>
 
-<div class="jarviswidget" id="wid-id-0">
+<div class="jarviswidget">
     <header>
         <span class="widget-icon"> <i class="fa fa-user"></i> </span>
-        <h2><?php echo $this->action == 'edit' ? __('Edit') : __('Add') ?><?php echo __('User'); ?></h2>
+        <h2><?php echo __('Create new user'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <a ui-sref="UsersIndex" class="btn btn-default btn-xs" iconcolor="white">
-                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
-            </a>
+            <?php if ($this->Acl->hasPermission('index', 'users')): ?>
+                <a back-button fallback-state='UsersIndex' class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
+            <?php endif; ?>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <form ng-submit="submit();" class="form-horizontal">
+            <form ng-submit="submit();" class="form-horizontal"
+                  ng-init="successMessage=
+            {objectName : '<?php echo __('User'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
                 <div class="row">
-                    <div class="form-group required" ng-class="{'has-error': errors.usercontainerroles}">
+                    <div class="form-group" ng-class="{'has-error': errors.usercontainerroles}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Container Roles'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <select
-                                    id="Usercontainerroles"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="usercontainerroles"
@@ -70,28 +72,30 @@ $timezones = CakeTime::listTimezones();
                             <div ng-repeat="error in errors.usercontainerroles">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <div class="help-block">
+                                <?php echo _('Container Roles are handy to grant the same permissions to multiple users.'); ?>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Container permissions read/write -->
-                    <div class="row" ng-repeat="(containerId, value) in chosenContainerroles">
+                    <!-- User Container Roles permissions read/write -->
+                    <div class="row" ng-repeat="userContainerRole in userContainerRoleContainerPermissions">
                         <div class="col col-md-2"></div>
                         <div class="col col-md-10">
-                            <legend class="no-padding font-sm text-primary">{{getContainerName(containerId)}}
+                            <legend class="no-padding font-sm txt-ack">
+                                {{userContainerRole.path}}
                             </legend>
-                            <input type="radio" ng-value="1"
-                                   id="{{'read_'+containerId}}"
-                                   name="{{'containerrolePermissions1_'+containerId}}"
-                                   ng-model="chosenContainerroles[containerId]" disabled>
-                            <label for="userPermissionButton"
-                                   class="padding-10 font-sm"><?php echo __('read'); ?></label>
-                            <input type="radio" ng-value="2"
-                                   id="{{'write_'+containerId}}"
-                                   name="{{'containerrolePermissions2_'+containerId}}"
-                                   ng-model="chosenContainerroles[containerId]" disabled>
-                            <label for="userPermissionButton"
-                                   class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                            <input name="group-{{userContainerRole.id}}"
+                                   type="radio"
+                                   disabled="disabled"
+                                   ng-checked="userContainerRole._joinData.permission_level === 1">
+                            <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
 
+                            <input name="group-{{userContainerRole.id}}"
+                                   type="radio"
+                                   disabled="disabled"
+                                   ng-checked="userContainerRole._joinData.permission_level === 2">
+                            <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
                         </div>
                     </div>
 
@@ -107,41 +111,40 @@ $timezones = CakeTime::listTimezones();
                                     chosen="containers"
                                     multiple
                                     ng-options="container.key as container.value for container in containers"
-                                    ng-model="post.User.containers._ids">
+                                    ng-model="selectedUserContainers">
                             </select>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo _('Container assignments defined in the user will overwrite permissions inherited from Container Roles!'); ?>
                             </div>
                         </div>
                     </div>
 
                     <!-- Container permissions read/write -->
-                    <div class="row" ng-repeat="(key, containerId) in post.User.containers._ids">
-
+                    <div class="row" ng-repeat="userContainer in selectedUserContainerWithPermission">
                         <div class="col col-md-2"></div>
                         <div class="col col-md-10">
-                            <legend class="no-padding font-sm text-primary">{{getContainerName(containerId)}}
+                            <legend class="no-padding font-sm text-primary">
+                                {{userContainer.name}}
                             </legend>
-                            <input type="radio" value="1"
-                                   id="{{'read_'+containerId}}"
-                                   name="{{'containerPermissions1_'+containerId}}"
-                                   ng-model="post.User.ContainersUsersMemberships[containerId]" checked>
-                            <label for="userPermissionButton"
-                                   class="padding-10 font-sm"><?php echo __('read'); ?></label>
-                            <input type="radio" value="2"
-                                   id="{{'write_'+containerId}}"
-                                   name="{{'containerPermissions2_'+containerId}}"
-                                   ng-model="post.User.ContainersUsersMemberships[containerId]">
-                            <label for="userPermissionButton"
-                                   class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
+                            <input name="ucgroup-{{userContainer.container_id}}"
+                                   type="radio"
+                                   value="1"
+                                   ng-model="userContainer.permission_level"
+                                   ng-disabled="userContainer.container_id === 1"
+                                   ng-checked="userContainer.permission_level == 1">
+                            <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
 
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <span class="col col-xs-2 text-right"><i class="fa fa-info-circle text-info"></i></span>
-                        <div class="col col-xs-10 text-info">
-                            <?php echo __('User Container permissions override Container Role permissions!'); ?>
+                            <input name="ucgroup-{{userContainer.container_id}}"
+                                   type="radio"
+                                   value="2"
+                                   ng-model="userContainer.permission_level"
+                                   ng-disabled="userContainer.container_id === 1"
+                                   ng-checked="userContainer.permission_level == 2">
+                            <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
                         </div>
                     </div>
 
@@ -162,13 +165,15 @@ $timezones = CakeTime::listTimezones();
 
                     <div class="form-group" ng-class="{'has-error': errors.is_active}">
                         <label class="col col-md-2 control-label" for="userIsActive">
-                            <?php echo __('Is Active'); ?>
+                            <?php echo __('Is active'); ?>
                         </label>
                         <div class="col-xs-10 smart-form">
                             <label class="checkbox small-checkbox-label no-required">
                                 <input type="checkbox"
                                        id="userIsActive"
                                        name="checkbox"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
                                        ng-model="post.User.is_active">
                                 <i class="checkbox-primary"></i>
                             </label>
@@ -177,7 +182,7 @@ $timezones = CakeTime::listTimezones();
 
                     <div class="form-group required" ng-class="{'has-error': errors.email}">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('Email Address'); ?>
+                            <?php echo __('Email address'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <input
@@ -237,7 +242,7 @@ $timezones = CakeTime::listTimezones();
 
                     <div class="form-group" ng-class="{'has-error': errors.position}">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('Company Position'); ?>
+                            <?php echo __('Company position'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <input
@@ -267,7 +272,7 @@ $timezones = CakeTime::listTimezones();
 
                     <div class="form-group required" ng-class="{'has-error': errors.paginatorlength}">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('Listelement Length'); ?>
+                            <?php echo __('Length of lists'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <input class="form-control"
@@ -281,12 +286,14 @@ $timezones = CakeTime::listTimezones();
 
                     <div class="form-group" ng-class="{'has-error': errors.showstatsinmenu}">
                         <label class="col col-md-2 control-label" for="userShowstatsinmenu">
-                            <?php echo __('Show status stats in menu'); ?>
+                            <?php echo __('Show status badges in menu'); ?>
                         </label>
                         <div class="col-xs-10 smart-form">
                             <label class="checkbox small-checkbox-label no-required">
                                 <input type="checkbox" name="checkbox"
                                        id="userShowstatsinmenu"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
                                        ng-model="post.User.showstatsinmenu">
                                 <i class="checkbox-primary"></i>
                             </label>
@@ -301,6 +308,8 @@ $timezones = CakeTime::listTimezones();
                             <label class="checkbox small-checkbox-label no-required">
                                 <input type="checkbox" name="checkbox"
                                        id="userRecursiveBrowser"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
                                        ng-model="post.User.recursive_browser">
                                 <i class="checkbox-primary"></i>
                             </label>
@@ -309,7 +318,7 @@ $timezones = CakeTime::listTimezones();
 
                     <div class="form-group" ng-class="{'has-error': errors.dashboard_tab_rotation}">
                         <label class="col col-md-2 control-label" for="userDashboardTabRotation">
-                            <?php echo __('Set tab rotation interval'); ?>
+                            <?php echo __('Tab rotation interval'); ?>
                         </label>
                         <div class="col-xs-10 smart-form slidecontainer">
                             <input type="range" step="10" min="0" max="900" class="slider"
@@ -322,7 +331,7 @@ $timezones = CakeTime::listTimezones();
 
                     <div class="form-group required" ng-class="{'has-error': errors.dateformat}">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('Date Format'); ?>
+                            <?php echo __('Date format'); ?>
                         </label>
                         <div class="col col-xs-10">
 
@@ -379,14 +388,14 @@ $timezones = CakeTime::listTimezones();
 
                     <div class="form-group required" ng-class="{'has-error': errors.password}">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('New Password'); ?>
+                            <?php echo __('New password'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <input
                                     class="form-control"
                                     type="password"
                                     ng-model="post.User.password"
-                                    autocomplete="new-password">
+                                    autocomplete="off">
                             <div ng-repeat="error in errors.password">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -395,14 +404,14 @@ $timezones = CakeTime::listTimezones();
 
                     <div class="form-group required" ng-class="{'has-error': errors.confirm_password}">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('Confirm new Password'); ?>
+                            <?php echo __('Confirm new password'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <input
                                     class="form-control"
                                     type="password"
                                     ng-model="post.User.confirm_password"
-                                    autocomplete="new-password">
+                                    autocomplete="off">
                             <div ng-repeat="error in errors.confirm_password">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -410,12 +419,20 @@ $timezones = CakeTime::listTimezones();
                     </div>
 
                 </div>
+
                 <div class="col-xs-12 margin-top-10 margin-bottom-10">
                     <div class="well formactions ">
                         <div class="pull-right">
+                            <label>
+                                <input type="checkbox" ng-model="data.createAnother">
+                                <?php echo _('Create another'); ?>
+                            </label>
+
                             <input class="btn btn-primary" type="submit"
-                                   value="<?php echo __('Create new local User'); ?>">
-                            <a ui-sref="UsersIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                   value="<?php echo __('Create local user'); ?>">
+
+                            <a back-button fallback-state='UsersIndex'
+                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>
                     </div>
                 </div>

@@ -58,7 +58,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadUsergroups = function(){
-            $http.get("/usergroups/loadUsergroups.json", {
+            $http.get("/users/loadUsergroups.json", {
                 params: {
                     'angular': true
                 }
@@ -158,6 +158,10 @@ angular.module('openITCOCKPIT')
             $scope.load();
         }, true);
 
+        $scope.$watch('massChange', function(){
+            MassChangeService.setSelected($scope.massChange);
+            $scope.selectedElements = MassChangeService.getCount();
+        }, true);
 
     });
 

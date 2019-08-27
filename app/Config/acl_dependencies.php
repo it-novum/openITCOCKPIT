@@ -315,8 +315,8 @@ $config = [
             ],
             'Users'                 => [
                 'index' => ['view', 'loadUsersByContainerId', 'loadUsergroups'],
-                'add'   => ['addFromLdap', 'loadLdapUserByString', 'loadDateformats', 'loadUsergroups'],
-                'edit'  => ['resetPassword', 'loadDateformats', 'loadUsergroups'],
+                'add'   => ['addFromLdap', 'loadLdapUserByString', 'loadDateformats', 'loadUsergroups', 'loadContainerRoles', 'loadContainerPermissions'],
+                'edit'  => ['resetPassword', 'loadDateformats', 'loadUsergroups', 'loadContainerRoles', 'loadContainerPermissions'],
             ],
             'Tenants'               => [
                 'index'  => ['view'],
