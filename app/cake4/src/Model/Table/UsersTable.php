@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Utility\Security;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -75,9 +76,10 @@ class UsersTable extends Table {
 
         $this->belongsToMany('Usercontainerroles', [
             'className'        => 'Usercontainerroles',
+            'joinTable'        => 'users_to_usercontainerroles',
             'foreignKey'       => 'user_id',
             'targetForeignKey' => 'usercontainerrole_id',
-            'joinTable'        => 'users_to_usercontainerroles'
+            'saveStrategy'     => 'replace'
         ]);
     }
 
@@ -289,9 +291,45 @@ class UsersTable extends Table {
      * @return array
      */
     public function getUsersIndex(UsersFilter $UsersFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        if (!is_array($MY_RIGHTS)) {
-            $MY_RIGHTS = [$MY_RIGHTS];
+        //Get all user ids where container assigned are made directly at the user
+        $query = $this->find()
+            ->select([
+                'Users.id'
+            ])
+            ->matching('Containers')
+            ->group([
+                'Users.id'
+            ])
+            ->disableHydration();
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'ContainersUsersMemberships.container_id IN' => $MY_RIGHTS
+            ]);
         }
+
+        $userIds = Hash::extract($query->toArray(), '{n}.id');
+
+        //Get all user ids where container assigned are made through an user container role
+        $query = $this->find()
+            ->select([
+                'Users.id'
+            ])
+            ->matching('Usercontainerroles.Containers')
+            ->group([
+                'Users.id'
+            ])
+            ->disableHydration();
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $userIdsThroughContainerRoles = Hash::extract($query->toArray(), '{n}.id');
+
+        $userIds = array_unique(array_merge($userIds, $userIdsThroughContainerRoles));
 
         $where = $UsersFilter->indexFilter();
         $having = [];
@@ -310,7 +348,6 @@ class UsersTable extends Table {
             'Users.samaccountname',
             'Usergroups.id',
             'Usergroups.name',
-            'ContainersUsersMemberships.container_id',
             'full_name' => $query->func()->concat([
                 'Users.firstname' => 'literal',
                 ' ',
@@ -318,17 +355,21 @@ class UsersTable extends Table {
             ])
         ])
             ->contain([
+                'Usergroups',
                 'Containers',
-                'Usergroups'
-            ])
-            ->matching('Containers');
-        if (!empty($MY_RIGHTS)) {
+                'Usercontainerroles' => [
+                    'Containers'
+                ]
+            ]);
+
+        if (!empty($userIds)) {
             $query->where([
-                'ContainersUsersMemberships.container_id IN' => $MY_RIGHTS
+                'Users.id IN' => $userIds
             ]);
         }
+
         if (!empty($where)) {
-            $query->where($where);
+            $query->andWhere($where);
         }
         if (!empty($having)) {
             $query->having($having);

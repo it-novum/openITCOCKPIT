@@ -63,13 +63,27 @@ class UsersController extends AppController {
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $UsersFilter->getPage());
         $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, $PaginateOMat, $this->MY_RIGHTS);
 
+
         $all_users = [];
         foreach ($all_tmp_users as $index => $_user) {
             $user = $_user->toArray();
             $user['allow_edit'] = $this->hasRootPrivileges;
+
             if ($this->hasRootPrivileges === false) {
-                foreach ($user['containers'] as $key => $container) {
-                    if ($this->isWritableContainer($container['id'])) {
+                //Check permissions for non ROOT Users
+                $containerWithWritePermissionByUserContainerRoles = \Cake\Utility\Hash::extract(
+                    $user['usercontainerroles'],
+                    '{n}.containers.{n}._joinData.container_id'
+                );
+
+                $container = \Cake\Utility\Hash::extract(
+                    $user['containers'],
+                    '{n}.id'
+                );
+
+                $container = array_unique(array_merge($container, $containerWithWritePermissionByUserContainerRoles));
+                foreach ($container as $containerId) {
+                    if ($this->isWritableContainer($containerId)) {
                         $user['allow_edit'] = true;
                         break;
                     }
@@ -77,6 +91,7 @@ class UsersController extends AppController {
             }
             $all_users[] = $user;
         }
+
         $this->set('all_users', $all_users);
         $this->set('myUserId', $User->getId());
         $toJson = ['all_users', 'paging', 'myUserId'];
@@ -113,6 +128,13 @@ class UsersController extends AppController {
             //Only ship HTML template for angular
             return;
         }
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        if ($id == $User->getId()) {
+            throw new RuntimeException('You can not delete your self!');
+        }
+
         /** @var $UsersTable App\Model\Table\UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
         if (!$UsersTable->existsById($id)) {
@@ -149,7 +171,7 @@ class UsersController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
 
             $data = $this->request->data('User');
-            if(!isset($data['ContainersUsersMemberships'])){
+            if (!isset($data['ContainersUsersMemberships'])) {
                 $data['ContainersUsersMemberships'] = [];
             }
             $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
@@ -450,7 +472,7 @@ class UsersController extends AppController {
         $this->set('_serialize', ['usergroups']);
     }
 
-    public function loadContainerRoles(){
+    public function loadContainerRoles() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -465,16 +487,16 @@ class UsersController extends AppController {
         $this->set('_serialize', ['usercontainerroles']);
     }
 
-    public function loadContainerPermissions(){
+    public function loadContainerPermissions() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
         $usercontainerRoleIds = $this->request->query('usercontainerRoleIds');
-        if($usercontainerRoleIds === null){
+        if ($usercontainerRoleIds === null) {
             $usercontainerRoleIds = [];
         }
-        if(!is_array($usercontainerRoleIds)){
+        if (!is_array($usercontainerRoleIds)) {
             $usercontainerRoleIds = [$usercontainerRoleIds];
         }
 
@@ -486,15 +508,15 @@ class UsersController extends AppController {
         //WRITE_RIGHT will overwrite a READ_RIGHT
 
         $permissions = [];
-        foreach($containerPermissions as $userContainerRole){
-            foreach($userContainerRole['containers'] as $container){
-                if(isset($permissions[$container['id']])){
+        foreach ($containerPermissions as $userContainerRole) {
+            foreach ($userContainerRole['containers'] as $container) {
+                if (isset($permissions[$container['id']])) {
                     //Container permission is already set.
                     //Only overwrite it, if it is a WRITE_RIGHT
-                    if($container['_joinData']['permission_level'] === WRITE_RIGHT){
+                    if ($container['_joinData']['permission_level'] === WRITE_RIGHT) {
                         $permissions[$container['id']] = $container;
                     }
-                }else{
+                } else {
                     //Container is not yet in permissions - add it
                     $permissions[$container['id']] = $container;
                 }

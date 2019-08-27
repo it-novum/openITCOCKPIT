@@ -215,16 +215,16 @@ class AppController extends Controller {
 
             //unify the usercontainerrole permissions
             $usercontainerrolePermissions = [];
-            foreach ($_user['usercontainerroles'] as $usercontainerrole){
-                foreach ($usercontainerrole['containers'] as $usercontainerroleContainer){
+            foreach ($_user['usercontainerroles'] as $usercontainerrole) {
+                foreach ($usercontainerrole['containers'] as $usercontainerroleContainer) {
                     $currentId = $usercontainerroleContainer['id'];
-                    if(isset($usercontainerrolePermissions[$currentId])){
+                    if (isset($usercontainerrolePermissions[$currentId])) {
                         //highest usercontainerrole permission wins
-                        if($usercontainerrolePermissions[$currentId]['_joinData']['permission_level'] < $usercontainerroleContainer['_joinData']['permission_level']){
+                        if ($usercontainerrolePermissions[$currentId]['_joinData']['permission_level'] < $usercontainerroleContainer['_joinData']['permission_level']) {
                             $usercontainerrolePermissions[$currentId] = $usercontainerroleContainer;
                             continue;
                         }
-                    }else{
+                    } else {
                         $usercontainerrolePermissions[$currentId] = $usercontainerroleContainer;
                     }
                 }
@@ -234,10 +234,10 @@ class AppController extends Controller {
             //User container permissions override permissions from the role
             $containerPermissions = [];
             $containerPermissionsUser = [];
-            foreach ($usercontainerrolePermissions as $usercontainerrolePermission){
+            foreach ($usercontainerrolePermissions as $usercontainerrolePermission) {
                 $containerPermissions[$usercontainerrolePermission['id']] = $usercontainerrolePermission;
             }
-            foreach ($_user['containers'] as $container){
+            foreach ($_user['containers'] as $container) {
                 $containerPermissionsUser[$container['id']] = $container;
             }
 
