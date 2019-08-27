@@ -178,14 +178,14 @@ class UsersController extends AppController {
             return;
         }
 
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
-        if (!$Users->existsById($id)) {
+        if (!$UsersTable->existsById($id)) {
             throw new MethodNotAllowedException('Invalid User');
         }
 
-        $user = $Users->getUserWithContainerPermission($id, $this->MY_RIGHTS);
+        $user = $UsersTable->getUserWithContainerPermission($id, $this->MY_RIGHTS);
 
         $this->set('user', $user);
         $this->set('_serialize', ['user']);
@@ -198,20 +198,20 @@ class UsersController extends AppController {
 
             // save additional data to containersUsersMemberships
             if (isset($this->request->data['User']['ContainersUsersMemberships'])) {
-                $containerPermissions = $Users->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
+                $containerPermissions = $UsersTable->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
                 $this->request->data['User']['containers'] = $containerPermissions;
             }
 
             $this->request->data = $this->request->data('User');
 
-            $user = $Users->get($id);
+            $user = $UsersTable->get($id);
             //prevent multiple hash of password
             if (empty($this->request->data('password'))) {
                 unset($user->password);
             }
-            $user = $Users->patchEntity($user, $this->request->data);
+            $user = $UsersTable->patchEntity($user, $this->request->data);
 
-            $Users->save($user);
+            $UsersTable->save($user);
             if ($user->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $user->getErrors());
@@ -230,20 +230,21 @@ class UsersController extends AppController {
             return;
         }
 
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
+        /** @var $SystemsettingsTable SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $SystemsettingsTable->findAsArraySection('FRONTEND');
         $this->set('systemsettings', $systemsettings);
         $this->set('_serialize', ['systemsettings']);
 
 
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
             // save additional data to containersUsersMemberships
             if (isset($this->request->data['User']['ContainersUsersMemberships'])) {
-                $containerPermissions = $Users->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
+                $containerPermissions = $UsersTable->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
                 $this->request->data['User']['containers'] = $containerPermissions;
 
                 unset($this->request->data['User']['ContainersUsersMemberships']);
@@ -252,14 +253,14 @@ class UsersController extends AppController {
             $this->request->data = $this->request->data['User'];
 
             //remove password validation when user is imported from ldap
-            $Users->getValidator()->remove('password');
-            $Users->getValidator()->remove('confirm_password');
+            $UsersTable->getValidator()->remove('password');
+            $UsersTable->getValidator()->remove('confirm_password');
 
 
-            $user = $Users->newEntity();
-            $user = $Users->patchEntity($user, $this->request->data);
+            $user = $UsersTable->newEntity();
+            $user = $UsersTable->patchEntity($user, $this->request->data);
 
-            $Users->save($user);
+            $UsersTable->save($user);
             if ($user->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $user->getErrors());
@@ -277,15 +278,16 @@ class UsersController extends AppController {
             return;
         }
 
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
+        /** @var $SystemsettingsTable SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $SystemsettingsTable->findAsArraySection('FRONTEND');
         $this->set('systemsettings', $systemsettings);
         $this->set('_serialize', ['systemsettings']);
 
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
-        $user = $Users->getUserWithContainerPermission($id, $this->MY_RIGHTS);
+        $user = $UsersTable->getUserWithContainerPermission($id, $this->MY_RIGHTS);
         $this->set('user', $user);
         $this->set('_serialize', ['user']);
 
@@ -293,21 +295,21 @@ class UsersController extends AppController {
 
             // save additional data to containersUsersMemberships
             if (isset($this->request->data['User']['ContainersUsersMemberships'])) {
-                $containerPermissions = $Users->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
+                $containerPermissions = $UsersTable->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
                 $this->request->data['User']['containers'] = $containerPermissions;
             }
 
             $this->request->data = $this->request->data('User');
 
             //remove password validation when user is imported from ldap
-            $Users->getValidator()->remove('password');
-            $Users->getValidator()->remove('confirm_password');
+            $UsersTable->getValidator()->remove('password');
+            $UsersTable->getValidator()->remove('confirm_password');
 
 
-            $user = $Users->get($id);
-            $user = $Users->patchEntity($user, $this->request->data);
+            $user = $UsersTable->get($id);
+            $user = $UsersTable->patchEntity($user, $this->request->data);
 
-            $Users->save($user);
+            $UsersTable->save($user);
             if ($user->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $user->getErrors());
@@ -326,19 +328,19 @@ class UsersController extends AppController {
             return;
         }
 
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
-        if (!$Users->existsById($id)) {
+        if (!$UsersTable->existsById($id)) {
             throw new MethodNotAllowedException('Invalid User');
         }
 
-        $user = $Users->get($id);
-        $newPassword = $Users->generatePassword();
+        $user = $UsersTable->get($id);
+        $newPassword = $UsersTable->generatePassword();
 
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $this->_systemsettings = $Systemsettings->findAsArray();
+        /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $SystemsettingsTable->findAsArray();
 
         App::uses('CakeEmail', 'Network/Email');
         $Email = new CakeEmail();
@@ -361,7 +363,7 @@ class UsersController extends AppController {
 
         $user->password = $newPassword;
 
-        $Users->save($user);
+        $UsersTable->save($user);
         if ($user->hasErrors()) {
             $this->response->statusCode(400);
             $this->set('error', $user->getErrors());
@@ -383,13 +385,13 @@ class UsersController extends AppController {
             //Only ship HTML template for angular
             return;
         }
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
-        $dateformats = $Users->getDateformats();
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        $dateformats = $UsersTable->getDateformats();
         $options = [];
         foreach ($dateformats as $dateformat) {
-            $ut = new UserTime($this->Auth->user('timezone'), $dateformat);
-            $options[$dateformat] = $ut->format(time());
+            $UserTime = new UserTime($this->Auth->user('timezone'), $dateformat);
+            $options[$dateformat] = $UserTime->format(time());
         }
         $dateformats = Api::makeItJavaScriptAble($options);
         $defaultDateFormat = '%H:%M:%S - %d.%m.%Y'; // key 10
@@ -399,6 +401,10 @@ class UsersController extends AppController {
         $this->set('_serialize', ['dateformats', 'defaultDateFormat']);
     }
 
+    /**
+     * @throws \FreeDSx\Ldap\Exception\BindException
+     * @deprecated
+     */
     public function loadLdapUserByString() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -416,15 +422,15 @@ class UsersController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $this->request->data['container_ids'] = 1;
         $users = [];
         if (isset($this->request->data['container_ids'])) {
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
-            $users = $Users->usersByContainerId($containerIds, 'list');
+            $users = $UsersTable->usersByContainerId($containerIds, 'list');
             $users = Api::makeItJavaScriptAble($users);
         }
 
