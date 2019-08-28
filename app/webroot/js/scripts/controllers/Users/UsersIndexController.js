@@ -75,16 +75,33 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.resetPassword = function(userId, email){
-            $http.get("/users/resetPassword/" + userId + ".json", {
+        $scope.resetPasswordModal = function(user){
+            $('#angularResetUserPasswordModal').modal('show');
+            $scope.resetPasswordUser = user;
+        };
+
+        $scope.resetPassword = function(){
+            $scope.isResetting = true;
+
+            $http.post("/users/resetPassword/" + $scope.resetPasswordUser.id + ".json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
-                var msg = 'Password reset successfully. A mail with the new password was sent to ' + email;
-                NotyService.genericSuccess({message: msg});
+                $('#angularResetUserPasswordModal').modal('hide');
+                $scope.isResetting = false;
+                NotyService.genericSuccess({message: result.data.message});
+
             }, function errorCallback(result){
+                $('#angularResetUserPasswordModal').modal('hide');
+                $scope.isResetting = false;
+
                 var msg = 'Password reset failed';
+
+                if(result.data.hasOwnProperty('message')){
+                    msg = result.data.message;
+                }
+
                 NotyService.genericError({message: msg});
                 if(result.status === 403){
                     $state.go('403');

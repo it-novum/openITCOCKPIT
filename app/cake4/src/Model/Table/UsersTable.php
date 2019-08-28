@@ -180,7 +180,7 @@ class UsersTable extends Table {
             ->scalar('samaccountname')
             ->maxLength('samaccountname', 128)
             ->allowEmptyString('samaccountname', __('You have to select a user'), function ($context) {
-                if(isset($context['data']['is_ldap']) && $context['data']['is_ldap'] === true){
+                if (isset($context['data']['is_ldap']) && $context['data']['is_ldap'] === true) {
                     //User create an LDAP user - samaccountname is required
                     return false;
                 }
@@ -193,7 +193,7 @@ class UsersTable extends Table {
             ->scalar('ldap_dn')
             ->maxLength('ldap_dn', 512)
             ->allowEmptyString('ldap_dn', __('DN could not left be blank.'), function ($context) {
-                if(isset($context['data']['is_ldap']) && $context['data']['is_ldap'] === true){
+                if (isset($context['data']['is_ldap']) && $context['data']['is_ldap'] === true) {
                     //User create an LDAP user - samaccountname is required
                     return false;
                 }
@@ -526,16 +526,18 @@ class UsersTable extends Table {
     }
 
     public function getUserByEmail($email = null) {
-        $query = $this->find()
-            ->disableHydration()
+        $query = $this->find();
+        $query->disableHydration()
             ->where([
                 'Users.email' => $email,
             ])
             ->select([
                 'Users.id',
                 'Users.email',
+                'Users.password',
                 'Users.company',
                 'Users.samaccountname',
+                'Users.ldap_dn',
                 'Users.usergroup_id',
                 'Users.is_active',
                 'Users.firstname',
@@ -548,6 +550,13 @@ class UsersTable extends Table {
                 'Users.dashboard_tab_rotation',
                 'Users.paginatorlength',
                 'Users.recursive_browser',
+                'Users.image',
+                'Users.onetimetoken',
+                'full_name' => $query->func()->concat([
+                    'Users.firstname' => 'literal',
+                    ' ',
+                    'Users.lastname'  => 'literal'
+                ])
             ]);
         if (!is_null($query)) {
             return $query->first();
@@ -613,53 +622,116 @@ class UsersTable extends Table {
     }
 
     /**
-     * @param $container_ids
+     * @param array $containerIds
      * @param string $type
      * @return array
-     * @deprecated Implement container roles
      */
-    public function usersByContainerId($container_ids, $type = 'all') {
-        if (!is_array($container_ids)) {
-            $container_ids = [$container_ids];
+    public function getUsersByContainerIds($containerIds = [], $type = 'all') {
+        return $this->usersByContainerId($containerIds, $type);
+    }
+
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @return array
+     */
+    public function usersByContainerId($containerIds = [], $type = 'all') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
         }
 
-        $container_ids = array_unique($container_ids);
-
-        $query = $this->find('all')
-            ->disableHydration()
-            ->contain(['Containers'])
-            ->matching('Containers')
+        //Get all user ids where container assigned are made directly at the user
+        $query = $this->find()
             ->select([
-                'Users.id',
-                'Users.firstname',
-                'Users.lastname',
-                'ContainersUsersMemberships.container_id'
+                'Users.id'
             ])
+            ->matching('Containers')
+            ->group([
+                'Users.id'
+            ])
+            ->disableHydration();
+
+        if (!empty($containerIds)) {
+            $query->where([
+                'ContainersUsersMemberships.container_id IN' => $containerIds
+            ]);
+        }
+
+        $userIds = Hash::extract($query->toArray(), '{n}.id');
+
+        //Get all user ids where container assigned are made through an user container role
+        $query = $this->find()
+            ->select([
+                'Users.id'
+            ])
+            ->matching('Usercontainerroles.Containers')
+            ->group([
+                'Users.id'
+            ])
+            ->disableHydration();
+
+        if (!empty($containerIds)) {
+            $query->where([
+                'Containers.id IN' => $containerIds
+            ]);
+        }
+
+        $userIdsThroughContainerRoles = Hash::extract($query->toArray(), '{n}.id');
+
+        $userIds = array_unique(array_merge($userIds, $userIdsThroughContainerRoles));
+        if(empty($userIds)){
+            return [];
+        }
+
+        $query = $this->find();
+        $query->select([
+            'Users.id',
+            'Users.email',
+            'Users.password',
+            'Users.company',
+            'Users.samaccountname',
+            'Users.ldap_dn',
+            'Users.usergroup_id',
+            'Users.is_active',
+            'Users.firstname',
+            'Users.lastname',
+            'Users.position',
+            'Users.phone',
+            'Users.timezone',
+            'Users.dateformat',
+            'Users.showstatsinmenu',
+            'Users.dashboard_tab_rotation',
+            'Users.paginatorlength',
+            'Users.recursive_browser',
+            'Users.image',
+            'Users.onetimetoken',
+            'full_name' => $query->func()->concat([
+                'Users.firstname' => 'literal',
+                ' ',
+                'Users.lastname'  => 'literal'
+            ])
+        ])
             ->where([
-                'ContainersUsersMemberships.container_id IN' => $container_ids
+                'Users.id IN' => $userIds
+            ])
+            ->order([
+                'full_name' => 'asc'
             ])
             ->group([
                 'Users.id'
             ])
-            ->order([
-                'Users.lastname'  => 'ASC',
-                'Users.firstname' => 'ASC'
-            ]);
+            ->disableHydration()
+            ->all();
 
-        $results = $query->toArray();
-
-        switch ($type) {
-            case 'all':
-                return $results;
-                break;
-            case 'list':
-                $return = [];
-                foreach ($results as $result) {
-                    $return[$result['id']] = $result['lastname'] . ', ' . $result['firstname'];
-                }
-                return $return;
-                break;
+        if($type === 'list'){
+            $return = [];
+            foreach ($query->toArray() as $user) {
+                $return[$user['id']] = $user['lastname'] . ', ' . $user['firstname'];
+            }
+            return $return;
         }
+
+        return $query->toArray();
     }
 
 
@@ -682,7 +754,34 @@ class UsersTable extends Table {
      * @return array
      */
     public function getActiveUsersByEmail($email) {
-        $query = $this->find()
+        $query = $this->find();
+        $query->select([
+            'Users.id',
+            'Users.email',
+            'Users.password',
+            'Users.company',
+            'Users.samaccountname',
+            'Users.ldap_dn',
+            'Users.usergroup_id',
+            'Users.is_active',
+            'Users.firstname',
+            'Users.lastname',
+            'Users.position',
+            'Users.phone',
+            'Users.timezone',
+            'Users.dateformat',
+            'Users.showstatsinmenu',
+            'Users.dashboard_tab_rotation',
+            'Users.paginatorlength',
+            'Users.recursive_browser',
+            'Users.image',
+            'Users.onetimetoken',
+            'full_name' => $query->func()->concat([
+                'Users.firstname' => 'literal',
+                ' ',
+                'Users.lastname'  => 'literal'
+            ])
+        ])
             ->disableHydration()
             ->where([
                 'Users.email'     => $email,
@@ -697,14 +796,49 @@ class UsersTable extends Table {
      * @return array
      */
     public function findBySamaccountname($samaccountname) {
-        $query = $this->find()
+        $query = $this->find();
+        $query->select([
+            'Users.id',
+            'Users.email',
+            'Users.password',
+            'Users.company',
+            'Users.samaccountname',
+            'Users.ldap_dn',
+            'Users.usergroup_id',
+            'Users.is_active',
+            'Users.firstname',
+            'Users.lastname',
+            'Users.position',
+            'Users.phone',
+            'Users.timezone',
+            'Users.dateformat',
+            'Users.showstatsinmenu',
+            'Users.dashboard_tab_rotation',
+            'Users.paginatorlength',
+            'Users.recursive_browser',
+            'Users.image',
+            'Users.onetimetoken',
+            'full_name' => $query->func()->concat([
+                'Users.firstname' => 'literal',
+                ' ',
+                'Users.lastname'  => 'literal'
+            ])
+        ])
             ->disableHydration()
             ->where([
                 'Users.samaccountname' => $samaccountname,
                 'Users.is_active'      => 1
-            ]);
-        $result = $query->first();
-        return $this->formatFirstResultAsCake2($result);
+            ])
+            ->first();
+
+        $result = $query->toArray();
+        if ($result === null) {
+            return [];
+        }
+
+        return [
+            'User' => $result[0]
+        ];
     }
 
     /**
@@ -732,8 +866,8 @@ class UsersTable extends Table {
     /**
      * @param $usersByContainerId
      * @param $containerIds
-     * @deprecated implement container roles
      * @return array
+     * @deprecated implement container roles
      */
     public function getUsersToDelete($usersByContainerId, $containerIds) {
         if (!is_array($containerIds)) {

@@ -210,7 +210,7 @@ class UsersController extends AppController {
             $user = $UsersTable->get($id);
             $user->setAccess('id', false);
 
-            if($isLdapUser){
+            if ($isLdapUser) {
                 $data['is_ldap'] = true;
                 $user->setAccess('email', false);
                 $user->setAccess('firstname', false);
@@ -330,32 +330,43 @@ class UsersController extends AppController {
 
     /**
      * @param null $id
-     * @deprecated
      */
     public function resetPassword($id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
 
-        /** @var $UsersTable App\Model\Table\UsersTable */
+        /** @var $UsersTable UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
         if (!$UsersTable->existsById($id)) {
-            throw new MethodNotAllowedException('Invalid User');
+            throw new NotFoundException(__('User not found'));
+        }
+
+        $user = $UsersTable->getUserForEdit($id);
+        $containersToCheck = array_unique(array_merge(
+            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['User']['containers']['_ids']) //Containers defined by the user itself
+        );
+
+        if (!$this->allowedByContainerId($containersToCheck)) {
+            $this->render403();
+            return;
         }
 
         $user = $UsersTable->get($id);
         $newPassword = $UsersTable->generatePassword();
 
+        $user->set('password', $newPassword);
+
         /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-        $this->_systemsettings = $SystemsettingsTable->findAsArray();
+        $systemsettings = $SystemsettingsTable->findAsArray();
 
         App::uses('CakeEmail', 'Network/Email');
         $Email = new CakeEmail();
         $Email->config('default');
-        $Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
+        $Email->from([$systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
         $Email->to($user->email);
         $Email->subject(__('Password reset'));
 
@@ -381,8 +392,8 @@ class UsersController extends AppController {
             return;
         }
         $Email->send();
-        $this->set('user', []);
-        $this->set('_serialize', ['user']);
+        $this->set('message', __('Password reset successfully. The new password was send to %s', $user->email));
+        $this->set('_serialize', ['message']);
     }
 
     public function loadDateformats() {
@@ -424,9 +435,6 @@ class UsersController extends AppController {
         $this->set('_serialize', ['ldapUsers']);
     }
 
-    /**
-     * @deprecated
-     */
     public function loadUsersByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -435,19 +443,24 @@ class UsersController extends AppController {
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        $this->request->data['container_ids'] = 1;
-        $users = [];
-        if (isset($this->request->data['container_ids'])) {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
-            $users = $UsersTable->usersByContainerId($containerIds, 'list');
-            $users = Api::makeItJavaScriptAble($users);
-        }
 
-        $data = [
-            'users' => $users,
-        ];
-        $this->set($data);
-        $this->set('_serialize', array_keys($data));
+        $containerId = (int)$this->request->query('containerId');
+        // Due to the only filter condition is the container_id (no LIMIT or LIKE in SQL )
+        // I think the selected parameter is not required
+        //$selected = $this->request->query('selected');
+
+        if($containerId === 0){
+            //Missing parameter in URL
+            $containerId = ROOT_CONTAINER;
+        }
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        $users = Api::makeItJavaScriptAble(
+            $UsersTable->getUsersByContainerIds($containerIds, 'list')
+        );
+
+        $this->set('users', $users);
+        $this->set('_serialize', ['users']);
     }
 
     public function loadUsergroups() {

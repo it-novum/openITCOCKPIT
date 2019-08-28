@@ -25,7 +25,6 @@
 
 use App\Model\Table\RegistersTable;
 use Cake\ORM\Locator\LocatorAwareTrait;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 
 class RegistersController extends AppController {
@@ -71,8 +70,6 @@ class RegistersController extends AppController {
 
 
             $licenseResponse = $RegistersTable->checkLicenseKey($license);
-            FileDebugger::dump($licenseResponse);
-
             if ($licenseResponse['success'] === true) {
                 if (is_object($licenseResponse['license']) && property_exists($licenseResponse['license'], 'licence')) {
                     //license is valid

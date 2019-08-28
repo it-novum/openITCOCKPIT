@@ -24,6 +24,7 @@
 //	confirmation.
 
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 App::uses('Validation', 'Utility');

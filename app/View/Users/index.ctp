@@ -249,8 +249,8 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
                                                     <li ng-if="!user.samaccountname && user.allow_edit">
-                                                        <a ng-click="resetPassword(user.id, user.email)">
-                                                            <i class="fa fa-reply-all fa-flip-horizontal"></i>
+                                                        <a ng-click="resetPasswordModal(user)">
+                                                            <i class="fa fa-key"></i>
                                                             <?php echo __('Reset Password'); ?>
                                                         </a>
                                                     </li>
@@ -312,3 +312,48 @@
         </article>
     </div>
 </section>
+
+<div id="angularResetUserPasswordModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary txt-color-white">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <?php echo __('Reset user password'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Do you really want to reset the password for the selected user?'); ?>
+                    </div>
+
+                    <div class="col-xs-12 margin-top-10">
+                        <ul>
+                            <li>
+                                {{resetPasswordUser.full_name}} ({{resetPasswordUser.email}})
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-xs-12 padding-top-10 text-info">
+                        <i class="fa fa-info-circle"></i>
+                        <?php echo __('The system will send the user an email with a new random generated password.'); ?>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="resetPassword()">
+                    <i class="fa fa-refresh fa-spin" ng-show="isResetting"></i>
+                    <?php echo __('Yes - reset password'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Cancel'); ?>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

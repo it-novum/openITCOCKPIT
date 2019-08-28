@@ -617,6 +617,7 @@ class ContactsController extends AppController {
         $data = [
             'users' => $users,
         ];
+
         $this->set($data);
         $this->set('_serialize', array_keys($data));
     }
