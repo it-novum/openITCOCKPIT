@@ -27,7 +27,7 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-users fa-fw "></i>
-            <?php echo __('Users container roles'); ?>
+            <?php echo __('User container roles'); ?>
             <span>>
                 <?php echo __('Overview'); ?>
             </span>
@@ -48,9 +48,9 @@
                             <?php echo __('Refresh'); ?>
                         </button>
                         <?php if ($this->Acl->hasPermission('add', 'usercontainerroles')): ?>
-                            <a ui-sref="UsersAdd" class="btn btn-xs btn-success">
+                            <a ui-sref="UsercontainerrolesAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
-                                <?php echo __('New local user'); ?>
+                                <?php echo __('New'); ?>
                             </a>
                         <?php endif; ?>
 
@@ -116,7 +116,7 @@
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="usercontainerrole in usercontainerroles">
-                                    <td class="text-center" class="width-15">
+                                    <td class="text-center width-15">
                                         <input type="checkbox"
                                                ng-model="massChange[usercontainerrole.id]"
                                                ng-show="usercontainerrole.allow_edit">

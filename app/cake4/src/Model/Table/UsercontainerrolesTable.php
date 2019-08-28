@@ -6,6 +6,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
@@ -43,9 +44,6 @@ class UsercontainerrolesTable extends Table {
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
-        /*$this->hasMany('UsercontainerrolesToContainers', [
-            'foreignKey' => 'usercontainerrole_id'
-        ]);*/
         $this->hasMany('UsersToUsercontainerroles', [
             'foreignKey' => 'usercontainerrole_id'
         ]);
@@ -76,6 +74,13 @@ class UsercontainerrolesTable extends Table {
             ->requirePresence('name', 'create')
             ->allowEmptyString('name', null, false);
 
+        $validator
+            ->requirePresence('containers', true, __('You have to choose at least one container.'))
+            ->allowEmptyString('containers', null, false)
+            ->multipleOptions('containers', [
+                'min' => 1
+            ], __('You have to choose at least one container.'));
+
         return $validator;
     }
 
@@ -97,35 +102,31 @@ class UsercontainerrolesTable extends Table {
      * @return array
      */
     public function containerPermissionsForSave($containerPermissions = []) {
-        //ContainersUsersMemberships
-        return array_map(function ($containerId, $permissionLevel) {
-            return [
+        //ContainersUsercontainerrolesMemberships
+
+        $dataForSave = [];
+        foreach ($containerPermissions as $containerId => $permissionLevel) {
+            $containerId = (int)$containerId;
+            $permissionLevel = (int)$permissionLevel;
+            if ($permissionLevel !== READ_RIGHT && $permissionLevel !== WRITE_RIGHT) {
+                $permissionLevel = READ_RIGHT;
+            }
+            if ($containerId === ROOT_CONTAINER) {
+                // ROOT_CONTAINER is always read/write
+                $permissionLevel = WRITE_RIGHT;
+            }
+
+            $dataForSave[] = [
                 'id'        => $containerId,
                 '_joinData' => [
                     'permission_level' => $permissionLevel
                 ]
             ];
-        },
-            array_keys($containerPermissions),
-            $containerPermissions
-        );
+        }
+
+        return $dataForSave;
     }
 
-    /**
-     * @param $containers
-     * @return array
-     */
-    public function containerPermissionsForAngular($containers) {
-        if (empty($containers)) {
-            return [];
-        }
-        $ret = [];
-        foreach ($containers as $container) {
-            $ret['ContainersUsercontainerrolesMemberships'][$container['id']] = $container['_joinData']['permission_level'];
-            $ret['containers']['_ids'][] = $container['id'];
-        }
-        return $ret;
-    }
 
     /**
      * @param array $MY_RIGHTS
@@ -183,6 +184,7 @@ class UsercontainerrolesTable extends Table {
                 'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS,
                 $UsercontainerrolesFilter->indexFilter()
             ])
+            ->order($UsercontainerrolesFilter->getOrderForPaginator('Usercontainerroles.name', 'asc'))
             ->group([
                 'Usercontainerroles.id'
             ]);
@@ -202,41 +204,38 @@ class UsercontainerrolesTable extends Table {
     }
 
     /**
-     * @param $id
-     * @param $rights
-     * @return array|\Cake\Datasource\EntityInterface|null
+     * @param int $id
+     * @return array
      */
-    public function getUsercontainerole($id, $rights) {
+    public function getUserContainerRoleForEdit($id) {
         $query = $this->find()
-            ->disableHydration()
-            ->contain('Containers')
-            ->matching('Containers')
             ->where([
-                'Usercontainerroles.id'                                   => $id,
-                'ContainersUsercontainerrolesMemberships.container_id IN' => $rights,
-            ]);
+                'Usercontainerroles.id' => $id
+            ])
+            ->contain([
+                'Containers',
+            ])
+            ->disableHydration()
+            ->first();
 
-        if (!is_null($query)) {
-            return $query->first();
+
+        $usercontainerrole = $query;
+
+        $usercontainerrole['containers'] = [
+            '_ids' => Hash::extract($query, 'containers.{n}.id')
+        ];
+
+
+        //Build up data struct for radio inputs
+        $usercontainerrole['ContainersUsercontainerrolesMemberships'] = [];
+        foreach ($query['containers'] as $container) {
+            //Cast permission_level to string for AngularJS...
+            $usercontainerrole['ContainersUsercontainerrolesMemberships'][$container['id']] = (string)$container['_joinData']['permission_level'];
         }
-        return [];
-    }
 
-    /**
-     * @param $id
-     * @param $rights
-     * @return array|\Cake\Datasource\EntityInterface|null
-     */
-    public function getUsercontainerroleWithPermission($id, $rights) {
-        $usercontainerrole = $this->getUsercontainerole($id, $rights);
-
-        $containerPermissions = [];
-        if (!empty($usercontainerrole['containers'])) {
-            $containerPermissions = $this->containerPermissionsForAngular($usercontainerrole['containers']);
-            $usercontainerrole = array_merge($usercontainerrole, $containerPermissions);
-        }
-        return $usercontainerrole;
-
+        return [
+            'Usercontainerrole' => $usercontainerrole
+        ];
     }
 
     /**

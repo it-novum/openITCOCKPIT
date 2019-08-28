@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\UsercontainerrolesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -80,24 +81,20 @@ class UsercontainerrolesController extends AppController {
             return;
         }
 
-        /** @var $Usercontainerroles App\Model\Table\UsercontainerrolesTable */
-        $Usercontainerroles = TableRegistry::getTableLocator()->get('Usercontainerroles');
-
+        /** @var $UsercontainerrolesTable  UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
-            // save additional data to containersUsersMemberships
-            if (isset($this->request->data['Usercontainerrole']['ContainersUsercontainerrolesMemberships'])) {
-                $containerPermissions = $Usercontainerroles->containerPermissionsForSave($this->request->data['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
-                $this->request->data['Usercontainerrole']['containers'] = $containerPermissions;
+            $data = $this->request->data('Usercontainerrole');
+            if (!isset($data['ContainersUsercontainerrolesMemberships'])) {
+                $data['ContainersUsercontainerrolesMemberships'] = [];
             }
+            $data['containers'] = $UsercontainerrolesTable->containerPermissionsForSave($data['ContainersUsercontainerrolesMemberships']);
 
-            $this->request->data = $this->request->data('Usercontainerrole');
-
-            $usercontainerrole = $Usercontainerroles->newEntity();
-            $usercontainerrole = $Usercontainerroles->patchEntity($usercontainerrole, $this->request->data);
-
-            $Usercontainerroles->save($usercontainerrole);
+            $usercontainerrole = $UsercontainerrolesTable->newEntity();
+            $usercontainerrole = $UsercontainerrolesTable->patchEntity($usercontainerrole, $data);
+            $UsercontainerrolesTable->save($usercontainerrole);
             if ($usercontainerrole->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $usercontainerrole->getErrors());
@@ -107,7 +104,6 @@ class UsercontainerrolesController extends AppController {
 
             $this->set('usercontainerrole', $usercontainerrole);
             $this->set('_serialize', ['usercontainerrole']);
-
         }
     }
 
@@ -120,74 +116,84 @@ class UsercontainerrolesController extends AppController {
             return;
         }
 
-        /** @var $Usercontainerroles App\Model\Table\UsercontainerrolesTable */
-        $Usercontainerroles = TableRegistry::getTableLocator()->get('Usercontainerroles');
+        /** @var $UsercontainerrolesTable App\Model\Table\UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
 
-        if (!$Usercontainerroles->existsById($id)) {
+        if (!$UsercontainerrolesTable->existsById($id)) {
             throw new MethodNotAllowedException('Invalid User Container Role');
         }
 
-        $usercontainerrole = $Usercontainerroles->getUsercontainerroleWithPermission($id, $this->MY_RIGHTS);
+        $usercontainerrole = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
 
-        $this->set('usercontainerrole', $usercontainerrole);
-        $this->set('_serialize', ['usercontainerrole']);
+        if (!$this->allowedByContainerId($usercontainerrole['Usercontainerrole']['containers']['_ids'])) {
+            $this->render403();
+            return;
+        }
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return contact information
+            $this->set('usercontainerrole', $usercontainerrole['Usercontainerrole']);
+            $this->set('_serialize', ['usercontainerrole']);
+            return;
+        }
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
-            // save additional data to containersUsersMemberships
-            if (isset($this->request->data['Usercontainerrole']['ContainersUsercontainerrolesMemberships'])) {
-                $containerPermissions = $Usercontainerroles->containerPermissionsForSave($this->request->data['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
-                $this->request->data['Usercontainerrole']['containers'] = $containerPermissions;
+            $data = $this->request->data('Usercontainerrole');
+            if (!isset($data['ContainersUsercontainerrolesMemberships'])) {
+                $data['ContainersUsercontainerrolesMemberships'] = [];
             }
+            $data['containers'] = $UsercontainerrolesTable->containerPermissionsForSave($data['ContainersUsercontainerrolesMemberships']);
+            $usercontainerrole = $UsercontainerrolesTable->get($id);
+            $usercontainerrole->setAccess('id', false);
 
-            $this->request->data = $this->request->data('Usercontainerrole');
-
-            $usercontainerrole = $Usercontainerroles->get($id);
-
-            $usercontainerrole = $Usercontainerroles->patchEntity($usercontainerrole, $this->request->data);
-
-            $Usercontainerroles->save($usercontainerrole);
+            $usercontainerrole = $UsercontainerrolesTable->patchEntity($usercontainerrole, $data);
+            $UsercontainerrolesTable->save($usercontainerrole);
             if ($usercontainerrole->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $usercontainerrole->getErrors());
                 $this->set('_serialize', ['error']);
                 return;
             }
+
             $this->set('usercontainerrole', $usercontainerrole);
             $this->set('_serialize', ['usercontainerrole']);
         }
     }
 
     /**
-     * @param null $id
+     * @param int|null $id
      */
     public function delete($id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-        /** @var $Usercontainerroles App\Model\Table\UsercontainerrolesTable */
-        $Usercontainerroles = TableRegistry::getTableLocator()->get('Usercontainerroles');
-        if (!$Usercontainerroles->existsById($id)) {
+        if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        $usercontainerrole = $Usercontainerroles->get($id);
-        if (!$this->allowedByContainerId($usercontainerrole->id)) {
+
+        /** @var $UsercontainerrolesTable App\Model\Table\UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+        if (!$UsercontainerrolesTable->existsById($id)) {
+            throw new MethodNotAllowedException('Invalid User Container Role');
+        }
+
+        $usercontainerrole = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
+
+        if (!$this->allowedByContainerId($usercontainerrole['Usercontainerrole']['containers']['_ids'])) {
             $this->render403();
             return;
         }
 
-        if ($Usercontainerroles->delete($usercontainerrole)) {
+        $usercontainerrole = $UsercontainerrolesTable->get($id);
+        if ($UsercontainerrolesTable->delete($usercontainerrole)) {
             $this->set('success', true);
             $this->set('_serialize', ['success']);
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response->statusCode(400);
         $this->set('success', false);
         $this->set('_serialize', ['success']);
         return;
-
     }
 
 }

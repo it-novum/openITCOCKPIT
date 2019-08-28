@@ -244,9 +244,8 @@ class UsersController extends AppController {
      * @param int|null $id
      */
     public function delete($id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
 
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
