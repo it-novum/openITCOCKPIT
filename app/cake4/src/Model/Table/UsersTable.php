@@ -271,7 +271,7 @@ class UsersTable extends Table {
      * @return bool
      */
     public function beforeSave(Event $event, EntityInterface $entity, \ArrayObject $options) {
-        if (!empty($entity->password)) {
+        if ($entity->isDirty('password')) {
             $entity->password = $this->getPasswordHash($entity->password);
         }
         return true;
@@ -396,9 +396,91 @@ class UsersTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @return array
+     */
+    public function getUserForEdit($id) {
+        $query = $this->find()
+            ->select([
+                'Users.id',
+                'Users.usergroup_id',
+                'Users.email',
+                'Users.firstname',
+                'Users.lastname',
+                'Users.position',
+                'Users.company',
+                'Users.phone',
+                'Users.timezone',
+                'Users.dateformat',
+                'Users.samaccountname',
+                'Users.ldap_dn',
+                'Users.showstatsinmenu',
+                'Users.is_active',
+                'Users.dashboard_tab_rotation',
+                'Users.paginatorlength',
+                'Users.recursive_browser'
+            ])
+            ->where([
+                'Users.id' => $id
+            ])
+            ->contain([
+                'Usergroups',
+                'Containers',
+                'Usercontainerroles' => [
+                    'Containers'
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $user = $query;
+
+        $intCasts = [
+            'showstatsinmenu',
+            'is_active',
+            'dashboard_tab_rotation',
+            'paginatorlength',
+            'recursive_browser'
+        ];
+        foreach ($intCasts as $intCast) {
+            $user[$intCast] = (int)$user[$intCast];
+        }
+
+        $user['containers'] = [
+            '_ids' => Hash::extract($query, 'containers.{n}.id')
+        ];
+        $user['usercontainerroles'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}.id')
+        ];
+
+        $user['usercontainerroles_containerids'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}.containers.{n}.id')
+        ];
+
+        //Build up data struct for radio inputs (only of user containers - NOT for container roles)
+        $user['ContainersUsersMemberships'] = [];
+        foreach ($query['containers'] as $container) {
+            //Cast permission_level to string for AngularJS...
+            $user['ContainersUsersMemberships'][$container['id']] = (string)$container['_joinData']['permission_level'];
+        }
+
+        if (empty($user['ContainersUsersMemberships'])) {
+            //Make this an empty object {} in the JSON, not an empty array []
+            $user['ContainersUsersMemberships'] = new \stdClass();
+        }
+
+        return [
+            'User' => $user
+        ];
+    }
+
+
+    /**
      * @param $userId
      * @param $rights
      * @return array
+     * @deprecated
      */
     public function getUser($userId, $rights) {
 
@@ -580,7 +662,18 @@ class UsersTable extends Table {
      * @return string
      */
     public function generatePassword() {
-        $char = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+        $char = [
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+            'a', 'b', 'c', 'd', 'e', 'f',
+            'g', 'h', 'i', 'j', 'k', 'l',
+            'm', 'n', 'o', 'p', 'q', 'r',
+            's', 't', 'u', 'v', 'w', 'x',
+            'y', 'z', 'A', 'B', 'C', 'D',
+            'E', 'F', 'G', 'H', 'I', 'J',
+            'K', 'L', 'M', 'N', 'O', 'P',
+            'Q', 'R', 'S', 'T', 'U', 'V',
+            'W', 'X', 'Y', 'Z'
+        ];
         $size = (sizeof($char) - 1);
         $token = '';
         for ($i = 0; $i < 7; $i++) {
@@ -710,7 +803,12 @@ class UsersTable extends Table {
     public function getUserById($id) {
         $query = $this->find('all')
             ->disableHydration()
-            ->contain(['Containers', 'Usercontainerroles' => 'Containers'])
+            ->contain([
+                'Containers',
+                'Usercontainerroles' => [
+                    'Containers'
+                ]
+            ])
             ->where([
                 'Users.id' => $id
             ]);

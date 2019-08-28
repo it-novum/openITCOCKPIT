@@ -160,6 +160,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                     ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
                                     ng-model="post.User.usergroup_id">
                             </select>
+                            <div ng-repeat="error in errors.usergroup_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
                         </div>
                     </div>
 
@@ -386,6 +389,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
                     </div>
 
+                    <!-- Prevent FireFox and Chrome from filling the users email into the timezone select box  :facepalm: -->
+                    <input type="text" name="name" style="display:none">
+
                     <div class="form-group required" ng-class="{'has-error': errors.password}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('New password'); ?>
@@ -395,7 +401,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                     class="form-control"
                                     type="password"
                                     ng-model="post.User.password"
-                                    autocomplete="off">
+                                    autocomplete="new-password">
                             <div ng-repeat="error in errors.password">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -411,7 +417,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                     class="form-control"
                                     type="password"
                                     ng-model="post.User.confirm_password"
-                                    autocomplete="off">
+                                    autocomplete="new-password">
                             <div ng-repeat="error in errors.confirm_password">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>

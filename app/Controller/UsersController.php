@@ -26,6 +26,7 @@
 use App\Model\Table\ContainersTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsercontainerrolesTable;
+use App\Model\Table\UsersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
@@ -42,6 +43,7 @@ use itnovum\openITCOCKPIT\Ldap\LdapClient;
  * @property AppAuthComponent $Auth
  */
 class UsersController extends AppController {
+
     public $layout = 'blank';
 
     public function index() {
@@ -101,63 +103,35 @@ class UsersController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
+    /**
+     * @param int|null $id
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $UsersTable App\Model\Table\UsersTable */
+        /** @var $UsersTable UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
         if (!$UsersTable->existsById($id)) {
-            throw new MethodNotAllowedException('Invalid User');
+            throw new NotFoundException(__('User not found'));
         }
-        $user = $UsersTable->getUserWithContainerPermission($id, $this->MY_RIGHTS);
-        if (is_null($user)) {
+
+        $user = $UsersTable->getUserForEdit($id);
+        $containersToCheck = array_unique(array_merge(
+            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['User']['containers']['_ids']) //Containers defined by the user itself
+        );
+
+        if (!$this->allowedByContainerId($containersToCheck, false)) {
             $this->render403();
             return;
         }
-        $this->set('user', $user);
+
+        $this->set('user', $user['User']);
         $this->set('_serialize', ['user']);
     }
-
-    /**
-     * @param int|null $id
-     */
-    public function delete($id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-
-        if ($id == $User->getId()) {
-            throw new RuntimeException('You can not delete your self!');
-        }
-
-        /** @var $UsersTable App\Model\Table\UsersTable */
-        $UsersTable = TableRegistry::getTableLocator()->get('Users');
-        if (!$UsersTable->existsById($id)) {
-            throw new MethodNotAllowedException();
-        }
-        $user = $UsersTable->get($id);
-        if (!$this->allowedByContainerId($user->id)) {
-            $this->render403();
-            return;
-        }
-
-        if ($UsersTable->delete($user)) {
-            $this->set('success', true);
-            $this->set('_serialize', ['success']);
-            return;
-        }
-
-        $this->response->statusCode(400);
-        $this->set('success', false);
-        $this->set('_serialize', ['success']);
-        return;
-    }
-
 
     public function add() {
         if (!$this->isApiRequest()) {
@@ -198,39 +172,49 @@ class UsersController extends AppController {
             return;
         }
 
-        /** @var $UsersTable App\Model\Table\UsersTable */
+        /** @var $UsersTable UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
         if (!$UsersTable->existsById($id)) {
-            throw new MethodNotAllowedException('Invalid User');
+            throw new NotFoundException(__('User not found'));
         }
 
-        $user = $UsersTable->getUserWithContainerPermission($id, $this->MY_RIGHTS);
+        $user = $UsersTable->getUserForEdit($id);
+        $containersToCheck = array_unique(array_merge(
+            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['User']['containers']['_ids']) //Containers defined by the user itself
+        );
 
-        $this->set('user', $user);
-        $this->set('_serialize', ['user']);
+        if (!$this->allowedByContainerId($containersToCheck)) {
+            $this->render403();
+            return;
+        }
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return contact information
+            $this->set('user', $user['User']);
+            $this->set('_serialize', ['user']);
+            return;
+        }
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
-            /** @var $Usercontainerroles App\Model\Table\UsercontainerrolesTable */
-            /*$Usercontainerroles = TableRegistry::getTableLocator()->get('Usercontainerroles');
-            $Usercontainerroles->getUniqueRoles();*/
-
-            // save additional data to containersUsersMemberships
-            if (isset($this->request->data['User']['ContainersUsersMemberships'])) {
-                $containerPermissions = $UsersTable->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
-                $this->request->data['User']['containers'] = $containerPermissions;
+            $data = $this->request->data('User');
+            if (!isset($data['ContainersUsersMemberships'])) {
+                $data['ContainersUsersMemberships'] = [];
             }
-
-            $this->request->data = $this->request->data('User');
+            $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
 
             $user = $UsersTable->get($id);
-            //prevent multiple hash of password
-            if (empty($this->request->data('password'))) {
-                unset($user->password);
-            }
-            $user = $UsersTable->patchEntity($user, $this->request->data);
+            $user->setAccess('id', false);
 
+            //prevent multiple hash of password
+            if ($data['password'] === '' && $data['confirm_password'] === '') {
+                unset($data['password']);
+                unset($data['confirm_password']);
+            }
+
+            $user = $UsersTable->patchEntity($user, $data);
             $UsersTable->save($user);
             if ($user->hasErrors()) {
                 $this->response->statusCode(400);
@@ -238,9 +222,56 @@ class UsersController extends AppController {
                 $this->set('_serialize', ['error']);
                 return;
             }
+
             $this->set('user', $user);
             $this->set('_serialize', ['user']);
         }
+    }
+
+    /**
+     * @param int|null $id
+     */
+    public function delete($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        if ($id == $User->getId()) {
+            throw new RuntimeException('You cannot delete yourself!');
+        }
+
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        if (!$UsersTable->existsById($id)) {
+            throw new NotFoundException(__('User not found'));
+        }
+
+        $user = $UsersTable->getUserForEdit($id);
+        $containersToCheck = array_unique(array_merge(
+            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['User']['containers']['_ids']) //Containers defined by the user itself
+        );
+
+        if (!$this->allowedByContainerId($containersToCheck)) {
+            $this->render403();
+            return;
+        }
+
+        $user = $UsersTable->get($id);
+        if ($UsersTable->delete($user)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(400);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
 
@@ -327,6 +358,7 @@ class UsersController extends AppController {
 
 
             $user = $UsersTable->get($id);
+            $user->setAccess('id', false);
             $user = $UsersTable->patchEntity($user, $this->request->data);
 
             $UsersTable->save($user);
@@ -341,6 +373,11 @@ class UsersController extends AppController {
         }
 
     }
+
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
 
     public function resetPassword($id = null) {
         if (!$this->isApiRequest()) {
@@ -394,11 +431,6 @@ class UsersController extends AppController {
         $this->set('user', []);
         $this->set('_serialize', ['user']);
     }
-
-
-    /****************************
-     *       AJAX METHODS       *
-     ****************************/
 
     public function loadDateformats() {
         if (!$this->isApiRequest()) {

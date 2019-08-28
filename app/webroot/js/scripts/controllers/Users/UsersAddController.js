@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('UsersAddController', function($scope, $http, $rootScope, $state, NotyService, RedirectService){
+    .controller('UsersAddController', function($scope, $http, $state, NotyService, RedirectService){
         $scope.data = {
             createAnother: false
         };
