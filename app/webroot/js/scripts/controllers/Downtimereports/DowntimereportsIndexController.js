@@ -22,12 +22,11 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.timeperiods = {};
-
-        $('#infoButton').popover({
-            boundary: 'window',
-            trigger: 'hover',
-            placement: 'left'
-        });
+        $scope.reportData = {
+            hostsWithOutages: null,
+            hostsWithoutOutages: null,
+            downtimes: null
+        };
 
         $scope.loadTimeperiods = function(searchString){
             $http.get("/timeperiods/index.json", {
@@ -71,6 +70,10 @@ angular.module('openITCOCKPIT')
                         message: $scope.reportMessage.successMessage
                     });
                     $scope.errors = null;
+                    $scope.reportData.downtimes = result.data.downtimeReport.downtimes;
+                    $scope.reportData.hostsWithOutages = result.data.downtimeReport.hostsWithOutages;
+                    $scope.reportData.hostsWithoutOutages = result.data.downtimeReport.hostsWithoutOutages;
+
                 }, function errorCallback(result){
                     NotyService.genericError({
                         message: $scope.reportMessage.errorMessage

@@ -2714,3 +2714,30 @@ fc-left .dropdown {
 .rounded-box {
     border-radius: 20px 5px;
 }
+
+.label-group-width-auto {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    cursor: default!important;
+}
+
+.label-group-width-auto .label-small {
+    color: #ffffff;
+    text-align: center;
+    padding: 1px 4px;
+    width:30px;
+    font-size: 10px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 0;
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid transparent;
+    border-radius: 2px !important;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
