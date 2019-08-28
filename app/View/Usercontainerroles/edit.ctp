@@ -74,7 +74,7 @@
                     </div>
 
                     <div class="form-group" ng-class="{'has-error': errors.containers}">
-                        <label class="col col-md-2 control-label hintmark">
+                        <label class="col col-md-2 control-label required">
                             <?php echo __('Container'); ?>
                         </label>
                         <div class="col col-xs-10">
