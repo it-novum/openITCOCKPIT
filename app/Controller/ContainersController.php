@@ -25,8 +25,10 @@
 
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\UsersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 
 
@@ -314,21 +316,13 @@ class ContainersController extends AppController {
                         $hostIds = Hash::extract($hostsToDelete, '{n}.Host.id');
                         $allowDelete = $this->Container->__allowDelete($hostIds);
                         $allowDeleteRoot = $allowDelete;
-                        $usersToDelete = [];
 
                         //Check users to delete
-                        $usersByContainerId = $UsersTable->usersByContainerId($containerIds, 'list');
-                        if (!empty($usersByContainerId)) {
-                            $usersToDelete = $UsersTable->getUsersToDelete($usersByContainerId, $containerIds);
-                        }
-                        $usersToDelete = Hash::combine($usersToDelete, '{n}.id', '{n}.containers');
+                        $usersToDelete = $UsersTable->getUsersToDeleteByContainerIds($containerIds);
                         if ($allowDelete) {
-                            foreach ($usersByContainerId as $user => $username) {
-                                if (empty($usersToDelete[$user])) {
-                                    $userEntity = $UsersTable->get($user);
-                                    $UsersTable->delete($userEntity);
-
-                                }
+                            foreach ($usersToDelete as $user) {
+                                /** @var \App\Model\Entity\User $user */
+                                $UsersTable->delete($user);
                             }
                         }
 
@@ -488,11 +482,11 @@ class ContainersController extends AppController {
             $containers =
                 $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         } else {
-                $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
-        if($onlyWithWritePermissions === true){
-            foreach($containers as $containerId => $containerName){
+        if ($onlyWithWritePermissions === true) {
+            foreach ($containers as $containerId => $containerName) {
                 if (!isset($this->MY_RIGHTS_LEVEL[$containerId]) || $this->MY_RIGHTS_LEVEL[$containerId] !== WRITE_RIGHT) {
                     unset($containers[$containerId]);
                 }

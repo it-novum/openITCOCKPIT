@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\User;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
@@ -679,7 +680,7 @@ class UsersTable extends Table {
         $userIdsThroughContainerRoles = Hash::extract($query->toArray(), '{n}.id');
 
         $userIds = array_unique(array_merge($userIds, $userIdsThroughContainerRoles));
-        if(empty($userIds)){
+        if (empty($userIds)) {
             return [];
         }
 
@@ -723,7 +724,7 @@ class UsersTable extends Table {
             ->disableHydration()
             ->all();
 
-        if($type === 'list'){
+        if ($type === 'list') {
             $return = [];
             foreach ($query->toArray() as $user) {
                 $return[$user['id']] = $user['lastname'] . ', ' . $user['firstname'];
@@ -734,12 +735,8 @@ class UsersTable extends Table {
         return $query->toArray();
     }
 
-
     /**
-     *  May deprecated functions after fully moving to cakephp 4
-     */
-
-    /**
+     * May deprecated functions after fully moving to cakephp 4
      * get the first user
      * @return array
      */
@@ -750,6 +747,7 @@ class UsersTable extends Table {
     }
 
     /**
+     * May deprecated functions after fully moving to cakephp 4
      * @param $email
      * @return array
      */
@@ -792,6 +790,7 @@ class UsersTable extends Table {
     }
 
     /**
+     * May deprecated functions after fully moving to cakephp 4
      * @param $samaccountname
      * @return array
      */
@@ -842,6 +841,7 @@ class UsersTable extends Table {
     }
 
     /**
+     * May deprecated functions after fully moving to cakephp 4
      * @param $id
      * @return array|\Cake\Datasource\EntityInterface|null
      */
@@ -864,41 +864,110 @@ class UsersTable extends Table {
     }
 
     /**
-     * @param $usersByContainerId
+     * This method is used to fetch all users that needs to be
+     * deleted if a Container/Node gets deleted.
+     *
      * @param $containerIds
      * @return array
-     * @deprecated implement container roles
      */
-    public function getUsersToDelete($usersByContainerId, $containerIds) {
+    public function getUsersToDeleteByContainerIds($containerIds) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
-        $query = $this
-            ->find()
-            ->disableHydration()
-            ->contain(['Containers'])
+
+        //Get all user ids where container assigned are made directly at the user
+        $query = $this->find()
             ->select([
-                'Users.id',
+                'Users.id'
             ])
-            ->where(['Users.id IN' => array_keys($usersByContainerId)]);
+            ->matching('Containers')
+            ->group([
+                'Users.id'
+            ])
+            ->disableHydration();
 
-        $result = $query->toArray();
+        if (!empty($containerIds)) {
+            $query->where([
+                'ContainersUsersMemberships.container_id IN' => $containerIds
+            ]);
+        }
 
-        if (!empty($result) && is_array($result)) {
-            foreach ($result as $userkey => $user) {
-                if (!empty($user['containers'])) {
-                    foreach ($user['containers'] as $key => $container) {
-                        if (in_array($container['id'], $containerIds)) {
-                            unset($result[$userkey]['containers'][$key]);
-                        }
+        $userIds = Hash::extract($query->toArray(), '{n}.id');
+
+        //Get all user ids where container assigned are made through an user container role
+        $query = $this->find()
+            ->select([
+                'Users.id'
+            ])
+            ->matching('Usercontainerroles.Containers')
+            ->group([
+                'Users.id'
+            ])
+            ->disableHydration();
+
+        if (!empty($containerIds)) {
+            $query->where([
+                'Containers.id IN' => $containerIds
+            ]);
+        }
+
+        $userIdsThroughContainerRoles = Hash::extract($query->toArray(), '{n}.id');
+
+        $userIds = array_unique(array_merge($userIds, $userIdsThroughContainerRoles));
+        if (empty($userIds)) {
+            return [];
+        }
+
+        $query = $this->find()
+            ->where([
+                'Users.id IN' => $userIds
+            ])
+            ->group([
+                'Users.id'
+            ])
+            ->contain([
+                'Containers',
+                'Usercontainerroles' => [
+                    'Containers'
+                ]
+            ])
+            ->all();
+
+        $users = $query->toArray();
+        if ($users === null) {
+            return [];
+        }
+
+        $userToDelete = [];
+        foreach ($users as $user) {
+            /** @var User $user */
+            $containerWithWritePermissionByUserContainerRoles = Hash::extract(
+                $user['usercontainerroles'],
+                '{n}.containers.{n}._joinData.container_id'
+            );
+
+            $container = Hash::extract(
+                $user['containers'],
+                '{n}.id'
+            );
+
+            $containers = array_unique(array_merge($container, $containerWithWritePermissionByUserContainerRoles));
+
+            foreach ($containerIds as $containerId) {
+                foreach ($containers as $index => $containerId) {
+                    //Remove the container, which should get deleted, from the user assigned containers.
+                    if ((int)$containerId === (int)$containerId) {
+                        unset($containers[$index]);
                     }
                 }
-                if (empty($user['containers'])) {
-                    unset($userkey);
-                }
+            }
+
+            if (empty($containers)) {
+                //User has no containers anymore - delete this user
+                $userToDelete[] = $user;
             }
         }
 
-        return $result;
+        return $userToDelete;
     }
 }
