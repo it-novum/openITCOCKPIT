@@ -1,8 +1,45 @@
 angular.module('openITCOCKPIT')
-    .controller('UsersEditController', function($scope, $http, $stateParams, $state, NotyService, RedirectService, $q){
+    .controller('UsersLdapController', function($scope, $http, $state, NotyService, RedirectService){
+        $scope.data = {
+            selectedSamAccountNameIndex: null,
+            createAnother: false
+        };
 
-        $scope.id = $stateParams.id;
-        $scope.isLdapUser = false;
+        $scope.init = true;
+
+        var clearForm = function(){
+            $scope.selectedUserContainers = [];
+            $scope.selectedUserContainerWithPermission = {};
+            $scope.data.selectedSamAccountNameIndex = null;
+
+            $scope.post = {
+                User: {
+                    firstname: '',
+                    lastname: '',
+                    email: '',
+                    phone: '',
+                    is_active: 1,
+                    showstatsinmenu: 0,
+                    paginatorlength: 25,
+                    dashboard_tab_rotation: 0,
+                    recursive_browser: 0,
+                    dateformat: '%H:%M:%S - %d.%m.%Y',
+                    timezone: 'Europe/Berlin',
+                    password: '',
+                    confirm_password: '',
+
+                    samaccountname: '',
+                    ldap_dn: '',
+
+                    usergroup_id: 0,
+                    usercontainerroles: {
+                        _ids: []
+                    },
+                    ContainersUsersMemberships: {},
+                }
+            };
+        };
+        clearForm();
 
         var getContainerName = function(containerId){
             containerId = parseInt(containerId, 10);
@@ -17,53 +54,33 @@ angular.module('openITCOCKPIT')
 
         $scope.intervalText = 'disabled';
 
-        $scope.load = function(){
-            $scope.selectedUserContainers = [];
-            $scope.selectedUserContainerWithPermission = {};
+        $scope.loadLdapConfig = function(){
+            var params = {
+                'angular': true
+            };
 
-            $http.get("/users/edit/" + $scope.id + ".json", {
+            $http.get("/angular/ldap_configuration.json", {
+                params: params
+            }).then(function(result){
+                $scope.ldapConfig = result.data.ldapConfig;
+            });
+        };
+
+        $scope.loadLdapUsersByString = function(searchString){
+            $scope.data.selectedSamAccountNameIndex = null;
+            $http.get("/users/loadLdapUserByString.json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'samaccountname': searchString
                 }
             }).then(function(result){
-
-                $scope.isLdapUser = result.data.isLdapUser;
-
-                var data = result.data.user;
-                data.password = '';
-                data.confirm_password = '';
-
-                //Reformat data that it looks like the same like it looks in the add method...
-                $scope.selectedUserContainers = data.containers._ids;
-                delete data.containers;
-
-                //Add new selected containers
-                for(var containerId in data.ContainersUsersMemberships){
-                    $scope.selectedUserContainerWithPermission[containerId] = {
-                        name: getContainerName(containerId),
-                        container_id: parseInt(containerId, 10),
-                        permission_level: data.ContainersUsersMemberships[containerId].toString() //String is required for AngularJS Front End value="2"
-                    };
-                }
-                data.ContainersUsersMemberships = {};
-
-                $scope.post = {
-                    User: data
-                };
-
-            }, function errorCallback(result){
-                if(result.status === 403){
-                    $state.go('403');
-                }
-
-                if(result.status === 404){
-                    $state.go('404');
-                }
+                $scope.ldapUsers = result.data.ldapUsers;
+                $scope.init = false;
             });
         };
 
         $scope.loadUserContaineRoles = function(){
-            return $http.get("/users/loadContainerRoles.json", {
+            $http.get("/users/loadContainerRoles.json", {
                 params: {
                     'angular': true
                 }
@@ -73,7 +90,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainer = function(){
-            return $http.get("/containers/loadContainersForAngular.json", {
+            $http.get("/containers/loadContainersForAngular.json", {
                 params: {
                     'angular': true
                 }
@@ -83,7 +100,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadUsergroups = function(){
-            return $http.get("/users/loadUsergroups.json", {
+            $http.get("/users/loadUsergroups.json", {
                 params: {
                     'angular': true
                 }
@@ -104,11 +121,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainerPermissions = function(){
-            if(typeof $scope.post.User.usercontainerroles !== "undefined"){ //is undefined on initial page load
-                if($scope.post.User.usercontainerroles._ids.length === 0){
-                    $scope.userContainerRoleContainerPermissions = {};
-                    return;
-                }
+            if($scope.post.User.usercontainerroles._ids.length === 0){
+                $scope.userContainerRoleContainerPermissions = {};
+                return;
             }
 
             $http.get("/users/loadContainerPermissions.json", {
@@ -145,7 +160,7 @@ angular.module('openITCOCKPIT')
             }
             $scope.post.User.ContainersUsersMemberships = ContainersUsersMemberships;
 
-            $http.post("/users/edit/" + $scope.id + ".json?angular=true",
+            $http.post("/users/addFromLdap.json?angular=true",
                 $scope.post
             ).then(function(result){
                 var url = $state.href('UsersEdit', {id: result.data.user.id});
@@ -155,7 +170,15 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
 
-                RedirectService.redirectWithFallback('UsersIndex');
+
+                if($scope.data.createAnother === false){
+                    RedirectService.redirectWithFallback('UsersIndex');
+                }else{
+                    clearForm();
+                    $scope.errors = {};
+                    NotyService.scrollTop();
+                }
+
                 console.log('Data saved successfully');
             }, function errorCallback(result){
                 NotyService.genericError();
@@ -166,20 +189,10 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.$watch('post.User.usercontainerroles._ids', function(){
-            if(typeof $scope.post.User.usercontainerroles === "undefined"){
-                //Is undefined on initial page load
-                return;
-            }
-
             $scope.loadContainerPermissions();
         }, true);
 
         $scope.$watch('selectedUserContainers', function(){
-            if(typeof $scope.selectedUserContainers === "undefined"){
-                //Is undefined on initial page load
-                return;
-            }
-
             if($scope.selectedUserContainers.length === 0){
                 //No user containers selected
                 $scope.selectedUserContainerWithPermission = {};
@@ -216,14 +229,25 @@ angular.module('openITCOCKPIT')
             }
         }, true);
 
-        var promise1 = $scope.loadUserContaineRoles();
-        var promise2 = $scope.loadContainer();
+        $scope.$watch('data.selectedSamAccountNameIndex', function(){
+            if($scope.init){
+                return;
+            }
 
-        $q.all([promise1, promise2]).then(function(result){
-            //Load user config
-            $scope.load();
+            var index = parseInt($scope.data.selectedSamAccountNameIndex, 10);
+            if(typeof $scope.ldapUsers[index] !== "undefined"){
+                $scope.post.User.firstname = $scope.ldapUsers[index].givenname;
+                $scope.post.User.lastname = $scope.ldapUsers[index].sn;
+                $scope.post.User.email = $scope.ldapUsers[index].email;
+                $scope.post.User.samaccountname = $scope.ldapUsers[index].samaccountname;
+                $scope.post.User.ldap_dn = $scope.ldapUsers[index].dn;
+            }
         });
 
+        $scope.loadLdapConfig();
+        $scope.loadLdapUsersByString('');
+        $scope.loadUserContaineRoles();
+        $scope.loadContainer();
         $scope.loadUsergroups();
         $scope.loadDateformats();
 

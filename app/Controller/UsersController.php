@@ -190,10 +190,13 @@ class UsersController extends AppController {
             return;
         }
 
+        $isLdapUser = !empty($user['User']['samaccountname']);
+
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return contact information
             $this->set('user', $user['User']);
-            $this->set('_serialize', ['user']);
+            $this->set('isLdapUser', $isLdapUser);
+            $this->set('_serialize', ['user', 'isLdapUser']);
             return;
         }
 
@@ -204,9 +207,18 @@ class UsersController extends AppController {
                 $data['ContainersUsersMemberships'] = [];
             }
             $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
-
             $user = $UsersTable->get($id);
             $user->setAccess('id', false);
+
+            if($isLdapUser){
+                $data['is_ldap'] = true;
+                $user->setAccess('email', false);
+                $user->setAccess('firstname', false);
+                $user->setAccess('lastname', false);
+                $user->setAccess('password', false);
+                $user->setAccess('samaccountname', false);
+                $user->setAccess('ldap_dn', false);
+            }
 
             //prevent multiple hash of password
             if ($data['password'] === '' && $data['confirm_password'] === '') {
@@ -275,42 +287,33 @@ class UsersController extends AppController {
     }
 
 
+    /**
+     * @deprecated
+     */
     public function addFromLdap() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
 
-        /** @var $SystemsettingsTable SystemsettingsTable */
-        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsettings = $SystemsettingsTable->findAsArraySection('FRONTEND');
-        $this->set('systemsettings', $systemsettings);
-        $this->set('_serialize', ['systemsettings']);
-
-
         /** @var $UsersTable App\Model\Table\UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
-            // save additional data to containersUsersMemberships
-            if (isset($this->request->data['User']['ContainersUsersMemberships'])) {
-                $containerPermissions = $UsersTable->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
-                $this->request->data['User']['containers'] = $containerPermissions;
-
-                unset($this->request->data['User']['ContainersUsersMemberships']);
+            $data = $this->request->data('User');
+            $data['is_ldap'] = true;
+            if (!isset($data['ContainersUsersMemberships'])) {
+                $data['ContainersUsersMemberships'] = [];
             }
-
-            $this->request->data = $this->request->data['User'];
+            $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
 
             //remove password validation when user is imported from ldap
             $UsersTable->getValidator()->remove('password');
             $UsersTable->getValidator()->remove('confirm_password');
-
 
             $user = $UsersTable->newEntity();
-            $user = $UsersTable->patchEntity($user, $this->request->data);
-
+            $user = $UsersTable->patchEntity($user, $data);
             $UsersTable->save($user);
             if ($user->hasErrors()) {
                 $this->response->statusCode(400);
@@ -318,60 +321,10 @@ class UsersController extends AppController {
                 $this->set('_serialize', ['error']);
                 return;
             }
+
             $this->set('user', $user);
             $this->set('_serialize', ['user']);
         }
-    }
-
-    public function editFromLdap($id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-
-        /** @var $SystemsettingsTable SystemsettingsTable */
-        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsettings = $SystemsettingsTable->findAsArraySection('FRONTEND');
-        $this->set('systemsettings', $systemsettings);
-        $this->set('_serialize', ['systemsettings']);
-
-        /** @var $UsersTable App\Model\Table\UsersTable */
-        $UsersTable = TableRegistry::getTableLocator()->get('Users');
-
-        $user = $UsersTable->getUserWithContainerPermission($id, $this->MY_RIGHTS);
-        $this->set('user', $user);
-        $this->set('_serialize', ['user']);
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-
-            // save additional data to containersUsersMemberships
-            if (isset($this->request->data['User']['ContainersUsersMemberships'])) {
-                $containerPermissions = $UsersTable->containerPermissionsForSave($this->request->data['User']['ContainersUsersMemberships']);
-                $this->request->data['User']['containers'] = $containerPermissions;
-            }
-
-            $this->request->data = $this->request->data('User');
-
-            //remove password validation when user is imported from ldap
-            $UsersTable->getValidator()->remove('password');
-            $UsersTable->getValidator()->remove('confirm_password');
-
-
-            $user = $UsersTable->get($id);
-            $user->setAccess('id', false);
-            $user = $UsersTable->patchEntity($user, $this->request->data);
-
-            $UsersTable->save($user);
-            if ($user->hasErrors()) {
-                $this->response->statusCode(400);
-                $this->set('error', $user->getErrors());
-                $this->set('_serialize', ['error']);
-                return;
-            }
-            $this->set('user', $user);
-            $this->set('_serialize', ['user']);
-        }
-
     }
 
 
@@ -379,6 +332,10 @@ class UsersController extends AppController {
      *       AJAX METHODS       *
      ****************************/
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function resetPassword($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -455,21 +412,25 @@ class UsersController extends AppController {
 
     /**
      * @throws \FreeDSx\Ldap\Exception\BindException
-     * @deprecated
      */
     public function loadLdapUserByString() {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
         }
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $Ldap = LdapClient::fromSystemsettings($Systemsettings->findAsArraySection('FRONTEND'));
+
+        /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+
         $samaccountname = (string)$this->request->query('samaccountname');
-        $usersForSelect = $Ldap->getUsers($samaccountname);
-        $this->set('usersForSelect', $usersForSelect);
-        $this->set('_serialize', ['usersForSelect']);
+        $ldapUsers = $Ldap->getUsers($samaccountname);
+        $this->set('ldapUsers', $ldapUsers);
+        $this->set('_serialize', ['ldapUsers']);
     }
 
+    /**
+     * @deprecated
+     */
     public function loadUsersByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

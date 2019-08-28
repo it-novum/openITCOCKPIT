@@ -195,9 +195,13 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <input
                                     class="form-control"
                                     type="text"
+                                    ng-disabled="isLdapUser"
                                     ng-model="post.User.email">
                             <div ng-repeat="error in errors.email">
                                 <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info" ng-show="isLdapUser">
+                                <?php echo __('Value imported from LDAP Server'); ?>
                             </div>
                         </div>
                     </div>
@@ -210,9 +214,13 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <input
                                     class="form-control"
                                     type="text"
+                                    ng-disabled="isLdapUser"
                                     ng-model="post.User.firstname">
                             <div ng-repeat="error in errors.firstname">
                                 <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info" ng-show="isLdapUser">
+                                <?php echo __('Value imported from LDAP Server'); ?>
                             </div>
                         </div>
                     </div>
@@ -225,9 +233,13 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <input
                                     class="form-control"
                                     type="text"
+                                    ng-disabled="isLdapUser"
                                     ng-model="post.User.lastname">
                             <div ng-repeat="error in errors.lastname">
                                 <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info" ng-show="isLdapUser">
+                                <?php echo __('Value imported from LDAP Server'); ?>
                             </div>
                         </div>
                     </div>
@@ -397,7 +409,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                     <!-- Prevent FireFox and Chrome from filling the users email into the timezone select box  :facepalm: -->
                     <input type="text" name="name" style="display:none">
 
-                    <div class="form-group required" ng-class="{'has-error': errors.password}">
+                    <div class="form-group required" ng-class="{'has-error': errors.password}" ng-if="isLdapUser === false">
                         <label class="col col-md-2 control-label">
                             <?php echo __('New password'); ?>
                         </label>
@@ -413,7 +425,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
                     </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.confirm_password}">
+                    <div class="form-group required" ng-class="{'has-error': errors.confirm_password}" ng-if="isLdapUser === false">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Confirm new password'); ?>
                         </label>
@@ -437,8 +449,11 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 <div class="col-xs-12 margin-top-10 margin-bottom-10">
                     <div class="well formactions ">
                         <div class="pull-right">
-                            <input class="btn btn-primary" type="submit"
+                            <input class="btn btn-primary" type="submit" ng-if="!isLdapUser"
                                    value="<?php echo __('Update local user'); ?>">
+
+                            <input class="btn btn-primary" type="submit" ng-if="isLdapUser"
+                                   value="<?php echo __('Update LDAP user'); ?>">
 
                             <a back-button fallback-state='UsersIndex'
                                class="btn btn-default"><?php echo __('Cancel'); ?></a>

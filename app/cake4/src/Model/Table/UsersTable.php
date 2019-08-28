@@ -6,7 +6,6 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
@@ -180,13 +179,28 @@ class UsersTable extends Table {
         $validator
             ->scalar('samaccountname')
             ->maxLength('samaccountname', 128)
-            ->allowEmptyString('samaccountname');
+            ->allowEmptyString('samaccountname', __('You have to select a user'), function ($context) {
+                if(isset($context['data']['is_ldap']) && $context['data']['is_ldap'] === true){
+                    //User create an LDAP user - samaccountname is required
+                    return false;
+                }
+
+                //User create a non LDAP user
+                return true;
+            });
 
         $validator
             ->scalar('ldap_dn')
             ->maxLength('ldap_dn', 512)
-            ->allowEmptyString('ldap_dn');
+            ->allowEmptyString('ldap_dn', __('DN could not left be blank.'), function ($context) {
+                if(isset($context['data']['is_ldap']) && $context['data']['is_ldap'] === true){
+                    //User create an LDAP user - samaccountname is required
+                    return false;
+                }
 
+                //User create a non LDAP user
+                return true;
+            });
         $validator
             ->boolean('showstatsinmenu')
             ->requirePresence('showstatsinmenu', 'create')
@@ -477,59 +491,6 @@ class UsersTable extends Table {
 
 
     /**
-     * @param $userId
-     * @param $rights
-     * @return array
-     * @deprecated
-     */
-    public function getUser($userId, $rights) {
-
-        $query = $this->find()
-            ->disableHydration()
-            ->contain(['Containers', 'Usercontainerroles'])
-            ->matching('Containers')
-            ->where([
-                'Users.id'                                   => $userId,
-                'ContainersUsersMemberships.container_id IN' => $rights
-            ])
-            ->select(function (Query $query) {
-                return [
-                    'Users.id',
-                    'Users.email',
-                    'Users.company',
-                    'Users.samaccountname',
-                    'Users.usergroup_id',
-                    'Users.is_active',
-                    'Users.firstname',
-                    'Users.lastname',
-                    'Users.position',
-                    'Users.phone',
-                    'Users.timezone',
-                    'Users.dateformat',
-                    'Users.showstatsinmenu',
-                    'Users.dashboard_tab_rotation',
-                    'Users.paginatorlength',
-                    'Users.recursive_browser',
-                    'ContainersUsersMemberships.container_id',
-                    // 'Usercontainerroles.id',
-                    'full_name' => $query->func()->concat([
-                        'Users.firstname' => 'literal',
-                        ' ',
-                        'Users.lastname'  => 'literal'
-                    ])
-                ];
-            })
-            ->group([
-                'Users.id'
-            ]);
-        if (!is_null($query)) {
-            return $query->first();
-        }
-        return [];
-    }
-
-
-    /**
      * Saving additional data to through table
      * table key is the main table which is associated with this model, not the 'through' table
      * ie:
@@ -562,62 +523,6 @@ class UsersTable extends Table {
         }
 
         return $dataForSave;
-    }
-
-    /**
-     * @param $containers
-     * @return array
-     * @deprecated
-     */
-    private function containerPermissionsForAngular($containers) {
-        if (empty($containers)) {
-            return [];
-        }
-        $ret = [];
-        foreach ($containers as $container) {
-            $ret['ContainersUsersMemberships'][$container['id']] = $container['_joinData']['permission_level'];
-            $ret['containers']['_ids'][] = $container['id'];
-        }
-        return $ret;
-    }
-
-    /**
-     * @param $usercontaineroles
-     * @return array
-     */
-    private function usercontainerolePermissionsForAngular($usercontaineroles) {
-        if (empty($usercontaineroles)) {
-            return [];
-        }
-
-        $ret = [];
-        foreach ($usercontaineroles as $usercontainerole) {
-            $ret['usercontainerroles']['_ids'][] = $usercontainerole['id'];
-        }
-        return $ret;
-    }
-
-    /**
-     * @param null $userId
-     * @param $rights
-     * @return array
-     * @deprecated
-     */
-    public function getUserWithContainerPermission($userId = null, $rights) {
-        $user = $this->getUser($userId, $rights);
-        $containerPermissions = [];
-        if (!empty($user['containers'])) {
-            $containerPermissions = $this->containerPermissionsForAngular($user['containers']);
-            $user = array_merge($user, $containerPermissions);
-        }
-
-        if (!empty($user['usercontainerroles'])) {
-            $usercontainerroles = $this->usercontainerolePermissionsForAngular($user['usercontainerroles']);
-            $user = array_merge($user, $usercontainerroles);
-        } else {
-            $user['usercontainerroles'] = ['_ids' => []];
-        }
-        return $user;
     }
 
     public function getUserByEmail($email = null) {
@@ -707,6 +612,12 @@ class UsersTable extends Table {
         ];
     }
 
+    /**
+     * @param $container_ids
+     * @param string $type
+     * @return array
+     * @deprecated Implement container roles
+     */
     public function usersByContainerId($container_ids, $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -821,6 +732,7 @@ class UsersTable extends Table {
     /**
      * @param $usersByContainerId
      * @param $containerIds
+     * @deprecated implement container roles
      * @return array
      */
     public function getUsersToDelete($usersByContainerId, $containerIds) {

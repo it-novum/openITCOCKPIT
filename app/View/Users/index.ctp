@@ -54,7 +54,7 @@
                             </a>
 
                             <?php if ($isLdapAuth): ?>
-                                <a ui-sref="UsersAddFromLdap" class="btn btn-xs btn-warning">
+                                <a ui-sref="UsersLdap" class="btn btn-xs btn-warning">
                                     <i class="fa fa-plus"></i>
                                     <?php echo __('Import from LDAP'); ?>
                                 </a>
@@ -219,24 +219,19 @@
 
                                     <td class="width-50">
                                         <div class="btn-group smart-form">
-                                            <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
                                                 <a ui-sref="UsersEdit({id: user.id})"
-                                                   ng-if="user.allow_edit && !user.samaccountname"
-                                                   class="btn btn-default">
-                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                </a>
-                                                <a ui-sref="UsersEditFromLdap({id: user.id})"
-                                                   ng-if="user.allow_edit && user.samaccountname"
+                                                   ng-if="user.allow_edit"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
                                                 <a href="javascript:void(0);"
                                                    ng-if="!user.allow_edit"
-                                                   class="btn btn-default">
+                                                   class="btn btn-default disabled">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
                                             <?php else: ?>
-                                                <a href="javascript:void(0);" class="btn btn-default">
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                             <?php endif; ?>
                                             <a href="javascript:void(0);" data-toggle="dropdown"
@@ -245,21 +240,15 @@
                                             <ul class="dropdown-menu pull-right"
                                                 id="menuHack-{{user.id}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
-                                                    <li ng-if="user.allow_edit && !user.samaccountname">
+                                                    <li ng-if="user.allow_edit">
                                                         <a ui-sref="UsersEdit({id:user.id})">
                                                             <i class="fa fa-cog"></i>
                                                             <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
-                                                    <li ng-if="user.allow_edit && user.samaccountname">
-                                                        <a ui-sref="UsersEditFromLdap({id:user.id})">
-                                                            <i class="fa fa-cog"></i>
-                                                            <?php echo __('Edit Ldap'); ?>
-                                                        </a>
-                                                    </li>
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
-                                                    <li ng-if="!user.samaccountname">
+                                                    <li ng-if="!user.samaccountname && user.allow_edit">
                                                         <a ng-click="resetPassword(user.id, user.email)">
                                                             <i class="fa fa-reply-all fa-flip-horizontal"></i>
                                                             <?php echo __('Reset Password'); ?>
