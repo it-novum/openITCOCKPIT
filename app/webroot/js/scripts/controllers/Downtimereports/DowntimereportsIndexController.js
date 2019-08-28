@@ -14,6 +14,13 @@ angular.module('openITCOCKPIT')
             from_date: date('d.m.Y', now.getTime() / 1000 - (3600 * 24 * 30)),
             to_date: date('d.m.Y', now.getTime() / 1000)
         };
+
+        $scope.colors = {
+            green: '#449D44',
+            orange: '#eaba0b',
+            red: '#C9302C'
+        };
+
         $scope.timeperiods = {};
 
         $('#infoButton').popover({
@@ -30,319 +37,6 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.timeperiods = result.data.all_timeperiods;
-            });
-            var hostChart = new Chart('hostChart', {
-                type: 'bar',
-                data: {
-                    labels: ['Host1.fjdkdgjlsdg.fjkdsljfkdls.jfkdslf', 'Host2', 'Host3', 'Host4', 'Host5', 'Host6', '', '', '', ''],
-                    datasets: [{
-                        type: 'line',
-                        label: 'Availability in %',
-                        borderColor: '#317ABF',
-                        backgroundColor: '#3688D8',
-                        borderWidth: 2,
-                        fill: false,
-                        data: [85, 69, 33.456, 25, 12, 0.000]
-                    }, {
-                        type: 'bar',
-                        label: 'Up',
-                        data: [85, 69, 33, 25, 12, 3, 0, 0, 0, 0],
-                        backgroundColor: '#449D44',
-                        borderColor: '#ffffff',
-                        borderWidth: 1
-                    }, {
-                        type: 'bar',
-                        label: 'Down',
-                        data: [15, 29, 43, 70, 80, 73, 0, 0, 0, 0],
-                        backgroundColor: '#C9302C',
-                        borderColor: '#ffffff',
-                        borderWidth: 1
-                    }, {
-                        type: 'bar',
-                        label: 'Unreachable',
-                        data: [0, 2, 24, 5, 8, 24, 0, 0, 0, 0],
-                        backgroundColor: '#92a2a8',
-                        borderColor: '#ffffff',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    responsive: true,
-                    tooltips: {
-                        mode: 'label',
-                        callbacks: {
-                            title: function(tooltipItem, data){
-                                return data.labels[tooltipItem[0]['index']];
-                            },
-                            label: function(tooltipItem, data){
-                                return data.datasets[tooltipItem.datasetIndex].label + ": " + parseFloat(tooltipItem.yLabel).toFixed(3);
-                            }
-                        }
-                    },
-                    legend: {
-                        display: true,
-                        position: 'left'
-                    },
-                    scales: {
-                        yAxes: [{
-                            stacked: true,
-                            ticks: {
-                                beginAtZero: true,
-                                min: 0,
-                                max: 100
-                            },
-                            scaleLabel: {
-                                display: true,
-                                labelString: '%',
-                            }
-                        }],
-                        xAxes: [{
-                            stacked: true,
-                            ticks: {
-                                min: 10,
-                                max: 10,
-                                suggestedMin: 10,
-                                maxTicksLimit: 10,
-                                callback: function(value){
-                                    if(value.length > 20){
-                                        return value.substr(0, 20) + '...'; //truncate
-                                    }else{
-                                        return value;
-                                    }
-                                }
-                            }
-                        }]
-                    }
-                }
-            });
-
-            var hostPieChart = new Chart('hostPieChart', {
-                type: 'pie',
-                data: {
-                    labels: ['Up', 'Down', 'Unreachable'],
-                    datasets: [{
-                        backgroundColor: [
-                            '#449D44',
-                            '#C9302C',
-                            '#92A2A8'],
-                        data: [6.598, 4.001, 80.676],
-                        datalabels: {
-                            display: false //<---- values in chart
-                        },
-                        borderWidth: 1 //<---- REALLLLLLYYYYY BORDER
-                    }]
-                },
-                options: {
-                    aspectRatio: 1,
-                    layout: {
-                        padding: {
-                            top: 5,
-                            right: 5,
-                            left: 0,
-                            bottom: 5
-                        }
-                    },
-                    tooltips: {
-                        callbacks: {
-                            label: function(tooltipItem, data){
-                                return data.labels[tooltipItem.index] + ': ' +
-                                    data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] + '%';
-                            }
-                        }
-                    },
-                    responsive: true,
-                    legend: false,
-                    cutoutPercentage: 50, //inner cut circle
-                    elements: {
-                        center: {
-                            text: '79%',
-                            font: 20,
-                            color: '#ffffff'
-                        }
-                    }
-                }
-            });
-
-
-            var chart = new Chart('myChart', {
-                type: 'pie',
-                data: {
-                    labels: ['Ok', 'Warning', 'Critical', 'Unknown'],
-                    datasets: [{
-                        backgroundColor: ['#449D44',
-                            '#DF8F1D',
-                            '#C9302C',
-                            '#92A2A8'],
-                        data: [2.123, 6.598, 4.001, 80.676],
-                        datalabels: {
-                            display: false //<---- values in chart
-                        },
-                        borderWidth: 1 //<---- REALLLLLLYYYYY BORDER
-                    }]
-                },
-                options: {
-                    aspectRatio: 1,
-                    layout: {
-                        padding: {
-                            top: 5,
-                            right: 5,
-                            left: 0,
-                            bottom: 5
-                        }
-                    },
-                    tooltips: {
-                        callbacks: {
-                            label: function(tooltipItem, data){
-                                return data.labels[tooltipItem.index] + ': ' +
-                                    data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] + '%';
-                            }
-                        }
-                    },
-                    responsive: true,
-                    legend: false,
-                    cutoutPercentage: 50, //inner cut circle
-                    elements: {
-                        center: {
-                            text: '99%',
-                            font: 20,
-                            color: '#ffffff'
-                        }
-                    }
-                }
-            });
-            var chart2 = new Chart('myChart2', {
-                type: 'pie',
-                data: {
-                    labels: ['ok', 'warning', 'critical', 'unknown'],
-                    datasets: [{
-                        backgroundColor: ['#449D44',
-                            '#DF8F1D',
-                            '#C9302C',
-                            '#92A2A8'],
-                        data: [28.123, 6.598, 94.001, 40.676],
-                        datalabels: {
-                            display: false //<---- values in chart
-                        },
-                        borderWidth: 1 //<---- REALLLLLLYYYYY BORDER
-                    }]
-                },
-                options: {
-                    aspectRatio: 1,
-                    layout: {
-                        padding: {
-                            top: 5,
-                            right: 5,
-                            left: 0,
-                            bottom: 5
-                        }
-                    },
-                    tooltips: {
-                        callbacks: {
-                            label: function(tooltipItem, chart){
-                                var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-                                return datasetLabel + ': $ ---- >' + tooltipItem.yLabel;
-                            }
-                        }
-                    },
-                    responsive: true,
-                    legend: false,
-                    cutoutPercentage: 50, //inner cut circle
-                    elements: {
-                        center: {
-                            text: '10%',
-                            font: 20,
-                            color: '#ffffff'
-                        }
-                    }
-                }
-            });
-            var chart3 = new Chart('myChart3', {
-                type: 'pie',
-                data: {
-                    labels: ['ok', 'warning', 'critical', 'unknown'],
-                    datasets: [{
-                        backgroundColor: ['#449D44',
-                            '#DF8F1D',
-                            '#C9302C',
-                            '#92A2A8'],
-                        data: [28.123, 6.598, 4.001, 10.676],
-                        datalabels: {
-                            display: false //<---- values in chart
-                        },
-                        borderWidth: 1 //<---- REALLLLLLYYYYY BORDER
-                    }]
-                },
-                options: {
-                    aspectRatio: 1,
-                    layout: {
-                        padding: 0
-                    },
-                    tooltips: {
-                        callbacks: {
-                            label: function(tooltipItem, data){
-                                return data.labels[tooltipItem.index] + ': ' +
-                                    data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] + '%';
-                            }
-                        }
-                    },
-                    legend: false,
-                    responsive: true,
-                    cutoutPercentage: 50, //inner cut circle
-                    elements: {
-                        center: {
-                            text: '30%',
-                            font: 20,
-                            color: '#ffffff'
-                        }
-                    }
-                }
-            });
-            var chart4 = new Chart('myChart4', {
-                type: 'pie',
-                data: {
-                    labels: ['ok', 'warning', 'critical', 'unknown'],
-                    datasets: [{
-                        backgroundColor: ['#449D44',
-                            '#DF8F1D',
-                            '#C9302C',
-                            '#92A2A8'],
-                        data: [28.123, 86.598, 4.001, 40.676],
-                        datalabels: {
-                            display: false //<---- values in chart
-                        },
-                        borderWidth: 1 //<---- REALLLLLLYYYYY BORDER
-                    }]
-                },
-                options: {
-                    aspectRatio: 1,
-                    layout: {
-                        padding: {
-                            top: 5,
-                            right: 5,
-                            left: 0,
-                            bottom: 5
-                        }
-                    },
-                    tooltips: {
-                        callbacks: {
-                            label: function(tooltipItem, data){
-                                return data.labels[tooltipItem.index] + ': ' +
-                                    data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] + '%';
-                            }
-                        }
-                    },
-                    responsive: true,
-                    legend: false,
-                    cutoutPercentage: 50, //inner cut circle
-                    elements: {
-                        center: {
-                            text: '80%',
-                            font: 20,
-                            color: '#ffffff'
-                        }
-                    }
-                }
             });
         };
 
@@ -388,22 +82,58 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        var getBackgroundColor = function getColor(value, minimalAvailability){
-            //value from 0 to 100
-            var colorLightness = 40;
-            var hue = 120;
-            if(value < 100 && value < minimalAvailability){
-                hue = 0;
-            }else if(value < 100 && value >= minimalAvailability){
-                hue = parseInt(((value - minimalAvailability) / (100 - minimalAvailability)) * 120, 10);
-                if(hue > 120){
-                    hue = 120;
-                }
+        var getBackgroundColor = function getColor(currentAvailabilityInPercent){
+            var currentAvailabilityInPercentFloat = (currentAvailabilityInPercent / 100).toFixed(3);
+            var weight1 = (1 - currentAvailabilityInPercentFloat).toFixed(3);
+            var weight2 = currentAvailabilityInPercentFloat;
+
+            if(currentAvailabilityInPercent >= 50){
+                var colorFrom = hexToRgb($scope.colors.orange);
+                var colorTo = hexToRgb($scope.colors.green);
+
+            }else{
+                var colorFrom = hexToRgb($scope.colors.red);
+                var colorTo = hexToRgb($scope.colors.orange);
             }
-            return ['hsl(', hue, ',100%,' + colorLightness + '%)'].join('');
+
+
+            var colors = [Math.round(colorFrom[0] * weight1 + colorTo[0] * weight2),
+                Math.round(colorFrom[1] * weight1 + colorTo[1] * weight2),
+                Math.round(colorFrom[2] * weight1 + colorTo[2] * weight2)]
+
+            return '#' + rgbToHex(colors[0], colors[1], colors[2]);
+
         };
 
-        $scope.$watch('setColorDynamically', function() {
+        //from #ff0000 to array [255, 0, 0]
+        var hexToRgb = function(hex){
+            var red = parseInt(hex.substr(1, 2), 16);
+            var green = parseInt(hex.substr(3, 2), 16);
+            var blue = parseInt(hex.substr(5, 2), 16);
+            return [red, green, blue];
+        };
+
+        var rgbToHex = function(red, green, blue){
+            red = Number(red).toString(16);
+            if(red.length < 2){
+                red = "0" + red;
+            }
+            green = Number(green).toString(16);
+            if(green.length < 2){
+                green = "0" + green;
+            }
+            blue = Number(blue).toString(16);
+            if(blue.length < 2){
+                blue = "0" + blue;
+            }
+            return red + green + blue;
+        };
+
+
+        $scope.$watch('setColorDynamically', function(){
+            if($scope.init){
+                return;
+            }
             $scope.$apply();
         });
 

@@ -41,6 +41,9 @@ class DowntimeReportPieChartWidgetDataPreparer {
      * @throws \Exception
      */
     public static function getDataForHostPieChartWidget($hostData, $totalTime, UserTime $UserTime) {
+        if (empty($hostData['Host']['reportData'])) {
+            return [];
+        }
         return [
             'labels'         => [
                 __('Up'),
@@ -50,7 +53,7 @@ class DowntimeReportPieChartWidgetDataPreparer {
             'data'           => $hostData['Host']['reportData'],
             'availability'   => self::calculateAvailability(
                 $totalTime,
-                $hostData['reportData'][1] // <<---- time in seconds with host state 'DOWN'
+                $hostData['Host']['reportData'][1] // <<---- time in seconds with host state 'DOWN'
             ),
             'widgetOverview' => self::getStateTimeAsDataset(
                 $hostData['Host']['reportData'],
@@ -68,6 +71,9 @@ class DowntimeReportPieChartWidgetDataPreparer {
      * @throws \Exception
      */
     public static function getDataForServicePieChart($serviceData, $totalTime, UserTime $UserTime) {
+        if (empty($hostData['Service']['reportData'])) {
+            return [];
+        }
         return [
             'labels'         => [
                 __('Up'),
@@ -77,7 +83,7 @@ class DowntimeReportPieChartWidgetDataPreparer {
             'data'           => $serviceData['Service']['reportData'],
             'availability'   => self::calculateAvailability(
                 $totalTime,
-                $serviceData['reportData'][2] // <<---- time in seconds with service state 'CRITICAL'
+                $serviceData['Service']['reportData'][2] // <<---- time in seconds with service state 'CRITICAL'
             ),
             'widgetOverview' => self::getStateTimeAsDataset(
                 $serviceData['Service']['reportData'],
