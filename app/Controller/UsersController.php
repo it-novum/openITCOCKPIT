@@ -286,10 +286,6 @@ class UsersController extends AppController {
         return;
     }
 
-
-    /**
-     * @deprecated
-     */
     public function addFromLdap() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
