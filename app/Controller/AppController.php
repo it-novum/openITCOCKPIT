@@ -189,9 +189,9 @@ class AppController extends Controller {
         }
 
         if (ENVIRONMENT === 'development_test') {
-            /** @var $Users App\Model\Table\UsersTable */
-            $Users = TableRegistry::getTableLocator()->get('Users');
-            $autoLoginUserAdmin = $Users->getFirstUser();
+            /** @var $UsersTable App\Model\Table\UsersTable */
+            $UsersTable = TableRegistry::getTableLocator()->get('Users');
+            $autoLoginUserAdmin = $UsersTable->getFirstUser();
             if (!empty($autoLoginUserAdmin)) {
                 $this->Auth->login($autoLoginUserAdmin);
                 $this->MY_RIGHTS = [1];
@@ -201,10 +201,10 @@ class AppController extends Controller {
     }
 
     protected function __getUserRights() {
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
         //The user is loggedIn, so we need to select container permissions out of DB
-        $_user = $Users->getUserById($this->Auth->user('id'));
+        $_user = $UsersTable->getUserById($this->Auth->user('id'));
 
         $User = new User($this->Auth);
         $cacheKey = 'userPermissions_' . $User->getId();
