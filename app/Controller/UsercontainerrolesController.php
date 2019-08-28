@@ -74,39 +74,6 @@ class UsercontainerrolesController extends AppController {
     }
 
 
-    /**
-     * @param null $id
-     */
-    public function delete($id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-        /** @var $Usercontainerroles App\Model\Table\UsercontainerrolesTable */
-        $Usercontainerroles = TableRegistry::getTableLocator()->get('Usercontainerroles');
-        if (!$Usercontainerroles->existsById($id)) {
-            throw new MethodNotAllowedException();
-        }
-        $usercontainerrole = $Usercontainerroles->get($id);
-        if (!$this->allowedByContainerId($usercontainerrole->id)) {
-            $this->render403();
-            return;
-        }
-
-        if ($Usercontainerroles->delete($usercontainerrole)) {
-            $this->set('success', true);
-            $this->set('_serialize', ['success']);
-            return;
-        }
-
-        $this->response->statusCode(500);
-        $this->set('success', false);
-        $this->set('_serialize', ['success']);
-        return;
-
-    }
-
-
     public function add() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -144,7 +111,9 @@ class UsercontainerrolesController extends AppController {
         }
     }
 
-
+    /**
+     * @param int|null $id
+     */
     public function edit($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -187,6 +156,38 @@ class UsercontainerrolesController extends AppController {
             $this->set('usercontainerrole', $usercontainerrole);
             $this->set('_serialize', ['usercontainerrole']);
         }
+    }
+
+    /**
+     * @param null $id
+     */
+    public function delete($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+        /** @var $Usercontainerroles App\Model\Table\UsercontainerrolesTable */
+        $Usercontainerroles = TableRegistry::getTableLocator()->get('Usercontainerroles');
+        if (!$Usercontainerroles->existsById($id)) {
+            throw new MethodNotAllowedException();
+        }
+        $usercontainerrole = $Usercontainerroles->get($id);
+        if (!$this->allowedByContainerId($usercontainerrole->id)) {
+            $this->render403();
+            return;
+        }
+
+        if ($Usercontainerroles->delete($usercontainerrole)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
+
     }
 
 }
