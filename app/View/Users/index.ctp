@@ -47,7 +47,7 @@
                             <i class="fa fa-refresh"></i>
                             <?php echo __('Refresh'); ?>
                         </button>
-                        <?php if ($this->Acl->hasPermission('add', 'contacts')): ?>
+                        <?php if ($this->Acl->hasPermission('add', 'users')): ?>
                             <a ui-sref="UsersAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New local user'); ?>
@@ -158,7 +158,7 @@
                         <!-- End Filter -->
 
                         <div class="mobile_table">
-                            <table id="contact_list" class="table table-striped table-hover table-bordered smart-form">
+                            <table id="users_list" class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
                                     <th class="no-sort width-15">
@@ -219,7 +219,7 @@
 
                                     <td class="width-50">
                                         <div class="btn-group smart-form">
-                                            <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
                                                 <a ui-sref="UsersEdit({id: user.id})"
                                                    ng-if="user.allow_edit"
                                                    class="btn btn-default">
@@ -274,7 +274,7 @@
                             </table>
                         </div>
                         <div class="row margin-top-10 margin-bottom-10">
-                            <div class="row margin-top-10 margin-bottom-10" ng-show="contacts.length == 0">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="users.length == 0">
                                 <div class="col-xs-12 text-center txt-color-red italic">
                                     <?php echo __('No entries match the selection'); ?>
                                 </div>

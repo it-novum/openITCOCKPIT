@@ -24,16 +24,18 @@
 //	confirmation.
 
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
 
 /**
  * Class UsersController
- * @property User $User
  * @property AppPaginatorComponent $Paginator
+ * @property AppAuthComponent $Auth
+ * @property DbBackend $DbBackend
  */
 class UsercontainerrolesController extends AppController {
+
     public $layout = 'blank';
 
     public function index() {
@@ -42,33 +44,33 @@ class UsercontainerrolesController extends AppController {
             return;
         }
 
-        $usercontainerrolesFilter = new UsercontainerrolesFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $usercontainerrolesFilter->getPage());
+        $UsercontainerrolesFilter = new UsercontainerrolesFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $UsercontainerrolesFilter->getPage());
+
         /** @var $Usercontainerroles App\Model\Table\UsercontainerrolesTable */
         $Usercontainerroles = TableRegistry::getTableLocator()->get('Usercontainerroles');
-        $allUsercontainerroles = $Usercontainerroles->getUsercontainerroles($usercontainerrolesFilter, $PaginateOMat, $this->MY_RIGHTS);
+        $all_usercontainerroles = $Usercontainerroles->getUsercontainerRolesIndex($UsercontainerrolesFilter, $PaginateOMat, $this->MY_RIGHTS);
 
-        foreach ($allUsercontainerroles as $index => $usercontainerrole) {
-            $allUsercontainerroles[$index]['Usercontainerrole']['allow_edit'] = true;
+        foreach ($all_usercontainerroles as $index => $usercontainerrole) {
+            $all_usercontainerroles[$index]['allow_edit'] = $this->hasRootPrivileges;
             if ($this->hasRootPrivileges === false) {
-                foreach ($usercontainerrole['Container'] as $key => $container) {
+                foreach ($usercontainerrole['containers'] as $key => $container) {
                     if ($this->isWritableContainer($container['id'])) {
-                        $allUsercontainerroles[$index]['Usercontainerrole']['allow_edit'] = $this->isWritableContainer($container['id']);
+                        $all_usercontainerroles[$index]['allow_edit'] = $this->isWritableContainer($container['id']);
                         break;
                     }
-                    $allUsercontainerroles[$index]['Usercontainerrole']['allow_edit'] = false;
+                    $all_usercontainerroles[$index]['allow_edit'] = false;
                 }
             }
         }
 
 
-        $this->set('allUsercontainerroles', $allUsercontainerroles);
-        $toJson = ['paging', 'allUsercontainerroles'];
+        $this->set('all_usercontainerroles', $all_usercontainerroles);
+        $toJson = ['paging', 'all_usercontainerroles'];
         if ($this->isScrollRequest()) {
-            $toJson = ['scroll', 'allUsercontainerroles'];
+            $toJson = ['scroll', 'all_usercontainerroles'];
         }
         $this->set('_serialize', $toJson);
-
     }
 
 

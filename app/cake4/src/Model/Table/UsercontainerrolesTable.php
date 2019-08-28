@@ -155,7 +155,7 @@ class UsercontainerrolesTable extends Table {
             ->disableHydration();
 
         $result = [];
-        foreach($query->toArray() as $record) {
+        foreach ($query->toArray() as $record) {
             $result[$record['id']] = $record['name'];
         }
 
@@ -163,23 +163,25 @@ class UsercontainerrolesTable extends Table {
     }
 
     /**
-     * @param UsercontainerrolesFilter $usercontainerrolesFilter
+     * @param UsercontainerrolesFilter $UsercontainerrolesFilter
      * @param PaginateOMat|null $PaginateOMat
      * @param array $MY_RIGHTS
      * @return array
      */
-    public function getUsercontainerroles(UsercontainerrolesFilter $usercontainerrolesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+    public function getUsercontainerRolesIndex(UsercontainerrolesFilter $UsercontainerrolesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         if (!is_array($MY_RIGHTS)) {
             $MY_RIGHTS = [$MY_RIGHTS];
         }
 
         $query = $this->find()
             ->disableHydration()
-            ->contain('Containers')
+            ->contain([
+                'Containers'
+            ])
             ->matching('Containers')
             ->where([
                 'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS,
-                $usercontainerrolesFilter->indexFilter()
+                $UsercontainerrolesFilter->indexFilter()
             ])
             ->group([
                 'Usercontainerroles.id'
@@ -188,12 +190,12 @@ class UsercontainerrolesTable extends Table {
 
         if ($PaginateOMat === null) {
             //Just execute query
-            $result = $this->formatResultAsCake2($query->toArray(), false);
+            $result = $query->toArray();
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
-                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
             }
         }
         return $result;
@@ -241,7 +243,7 @@ class UsercontainerrolesTable extends Table {
      * @param array $ids
      * @return array
      */
-    public function getContainerPermissionsByUserContainerRoleIds($ids = []){
+    public function getContainerPermissionsByUserContainerRoleIds($ids = []) {
         $query = $this->find()
             ->contain('Containers')
             ->where([
@@ -254,8 +256,8 @@ class UsercontainerrolesTable extends Table {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $result = [];
-        foreach ($query->toArray() as $record){
-            foreach($record['containers'] as $index => $container){
+        foreach ($query->toArray() as $record) {
+            foreach ($record['containers'] as $index => $container) {
                 $record['containers'][$index]['path'] = $ContainersTable->getPathByIdAsString($container['id']);
             }
             $result[$record['id']] = $record;
