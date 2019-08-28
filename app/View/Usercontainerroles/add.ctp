@@ -70,8 +70,8 @@
                         </div>
                     </div>
 
-                    <div class="form-group" ng-class="{'has-error': errors.containers}">
-                        <label class="col col-md-2 control-label required">
+                    <div class="form-group required" ng-class="{'has-error': errors.containers}">
+                        <label class="col col-md-2 control-label">
                             <?php echo __('Container'); ?>
                         </label>
                         <div class="col col-xs-10">
