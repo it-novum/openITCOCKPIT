@@ -25,9 +25,6 @@
 //	confirmation.
 
 
-
-use App\Model\Table\ContainersTable;
-use Cake\ORM\TableRegistry;
 /**
  * @deprecated use cake4 model
  */
@@ -181,9 +178,9 @@ class User extends AppModel {
     /**
      * checks if given password matches hash in database
      *
-     * @param  array $data
-     * @deprecated
+     * @param array $data
      * @return bool
+     * @deprecated
      */
     public function checkCurrentPassword($data) {
         $this->id = AuthComponent::user('id');
@@ -200,9 +197,9 @@ class User extends AppModel {
      *
      * @param int $userId
      * @param array $data
+     * @return bool
      * @deprecated
      *
-     * @return bool
      */
     public function changePassword($userId, array $data) {
         if (!$this->checkCurrentPassword($data['User'])) {
@@ -274,9 +271,9 @@ class User extends AppModel {
     /**
      * checks if user with given id is soft deleted
      *
-     * @param  int $id
-     * @deprecated
+     * @param int $id
      * @return bool
+     * @deprecated
      */
     public function softDeleted($id = null) {
         if (empty($id)) {
@@ -297,10 +294,10 @@ class User extends AppModel {
 
     /**
      *
-     * @deprecated use cake 4 model usersByContainerId()
      * @param $container_ids
      * @param string $type
      * @return array|null
+     * @deprecated use cake 4 model usersByContainerId()
      */
     public function usersByContainerId($container_ids, $type = 'all') {
         if (!is_array($container_ids)) {

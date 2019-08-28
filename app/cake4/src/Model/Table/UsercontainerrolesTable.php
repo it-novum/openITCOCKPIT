@@ -5,7 +5,10 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
 
 
@@ -41,9 +44,6 @@ class UsercontainerrolesTable extends Table {
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
-        /*$this->hasMany('UsercontainerrolesToContainers', [
-            'foreignKey' => 'usercontainerrole_id'
-        ]);*/
         $this->hasMany('UsersToUsercontainerroles', [
             'foreignKey' => 'usercontainerrole_id'
         ]);
@@ -74,6 +74,13 @@ class UsercontainerrolesTable extends Table {
             ->requirePresence('name', 'create')
             ->allowEmptyString('name', null, false);
 
+        $validator
+            ->requirePresence('containers', true, __('You have to choose at least one container.'))
+            ->allowEmptyString('containers', null, false)
+            ->multipleOptions('containers', [
+                'min' => 1
+            ], __('You have to choose at least one container.'));
+
         return $validator;
     }
 
@@ -95,51 +102,89 @@ class UsercontainerrolesTable extends Table {
      * @return array
      */
     public function containerPermissionsForSave($containerPermissions = []) {
-        //ContainersUsersMemberships
-        return array_map(function ($containerId, $permissionLevel) {
-            return [
+        //ContainersUsercontainerrolesMemberships
+
+        $dataForSave = [];
+        foreach ($containerPermissions as $containerId => $permissionLevel) {
+            $containerId = (int)$containerId;
+            $permissionLevel = (int)$permissionLevel;
+            if ($permissionLevel !== READ_RIGHT && $permissionLevel !== WRITE_RIGHT) {
+                $permissionLevel = READ_RIGHT;
+            }
+            if ($containerId === ROOT_CONTAINER) {
+                // ROOT_CONTAINER is always read/write
+                $permissionLevel = WRITE_RIGHT;
+            }
+
+            $dataForSave[] = [
                 'id'        => $containerId,
                 '_joinData' => [
                     'permission_level' => $permissionLevel
                 ]
             ];
-        },
-            array_keys($containerPermissions),
-            $containerPermissions
-        );
+        }
+
+        return $dataForSave;
     }
 
-    /**
-     * @param $containers
-     * @return array
-     */
-    public function containerPermissionsForAngular($containers) {
-        if (empty($containers)) {
-            return [];
-        }
-        $ret = [];
-        foreach ($containers as $container) {
-            $ret['ContainersUsercontainerrolesMemberships'][$container['id']] = $container['_joinData']['permission_level'];
-            $ret['containers']['_ids'][] = $container['id'];
-        }
-        return $ret;
-    }
 
     /**
-     * @param $rights
-     * @param UsercontainerrolesFilter $usercontainerrolesFilter
-     * @param null $PaginateOMat
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getUsercontainerroles($rights, UsercontainerrolesFilter $usercontainerrolesFilter, $PaginateOMat = null) {
+    public function getUsercontainerrolesAsList($MY_RIGHTS = []) {
+        if (!is_array($MY_RIGHTS)) {
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
+
         $query = $this->find()
-            ->disableHydration()
+            ->select([
+                'Usercontainerroles.id',
+                'Usercontainerroles.name'
+            ])
             ->contain('Containers')
             ->matching('Containers')
             ->where([
-                'ContainersUsercontainerrolesMemberships.container_id IN' => $rights,
-                $usercontainerrolesFilter->indexFilter()
+                'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS
             ])
+            ->group([
+                'Usercontainerroles.id'
+            ])
+            ->order([
+                'Usercontainerroles.name' => 'asc'
+            ])
+            ->disableHydration();
+
+        $result = [];
+        foreach ($query->toArray() as $record) {
+            $result[$record['id']] = $record['name'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param UsercontainerrolesFilter $UsercontainerrolesFilter
+     * @param PaginateOMat|null $PaginateOMat
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getUsercontainerRolesIndex(UsercontainerrolesFilter $UsercontainerrolesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+        if (!is_array($MY_RIGHTS)) {
+            $MY_RIGHTS = [$MY_RIGHTS];
+        }
+
+        $query = $this->find()
+            ->disableHydration()
+            ->contain([
+                'Containers'
+            ])
+            ->matching('Containers')
+            ->where([
+                'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_RIGHTS,
+                $UsercontainerrolesFilter->indexFilter()
+            ])
+            ->order($UsercontainerrolesFilter->getOrderForPaginator('Usercontainerroles.name', 'asc'))
             ->group([
                 'Usercontainerroles.id'
             ]);
@@ -147,52 +192,76 @@ class UsercontainerrolesTable extends Table {
 
         if ($PaginateOMat === null) {
             //Just execute query
-            $result = $this->formatResultAsCake2($query->toArray(), false);
+            $result = $query->toArray();
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
-                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
             }
         }
         return $result;
     }
 
     /**
-     * @param $id
-     * @param $rights
-     * @return array|\Cake\Datasource\EntityInterface|null
+     * @param int $id
+     * @return array
      */
-    public function getUsercontainerole($id, $rights) {
+    public function getUserContainerRoleForEdit($id) {
         $query = $this->find()
-            ->disableHydration()
-            ->contain('Containers')
-            ->matching('Containers')
             ->where([
-                'Usercontainerroles.id'                                   => $id,
-                'ContainersUsercontainerrolesMemberships.container_id IN' => $rights,
-            ]);
+                'Usercontainerroles.id' => $id
+            ])
+            ->contain([
+                'Containers',
+            ])
+            ->disableHydration()
+            ->first();
 
-        if (!is_null($query)) {
-            return $query->first();
+
+        $usercontainerrole = $query;
+
+        $usercontainerrole['containers'] = [
+            '_ids' => Hash::extract($query, 'containers.{n}.id')
+        ];
+
+
+        //Build up data struct for radio inputs
+        $usercontainerrole['ContainersUsercontainerrolesMemberships'] = [];
+        foreach ($query['containers'] as $container) {
+            //Cast permission_level to string for AngularJS...
+            $usercontainerrole['ContainersUsercontainerrolesMemberships'][$container['id']] = (string)$container['_joinData']['permission_level'];
         }
-        return [];
+
+        return [
+            'Usercontainerrole' => $usercontainerrole
+        ];
     }
 
     /**
-     * @param $id
-     * @param $rights
-     * @return array|\Cake\Datasource\EntityInterface|null
+     * @param array $ids
+     * @return array
      */
-    public function getUsercontainerroleWithPermission($id, $rights) {
-        $usercontainerrole = $this->getUsercontainerole($id, $rights);
+    public function getContainerPermissionsByUserContainerRoleIds($ids = []) {
+        $query = $this->find()
+            ->contain('Containers')
+            ->where([
+                'Usercontainerroles.id IN' => $ids
+            ])
+            ->disableHydration()
+            ->all();
 
-        $containerPermissions = [];
-        if (!empty($usercontainerrole['containers'])) {
-            $containerPermissions = $this->containerPermissionsForAngular($usercontainerrole['containers']);
-            $usercontainerrole = array_merge($usercontainerrole, $containerPermissions);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $result = [];
+        foreach ($query->toArray() as $record) {
+            foreach ($record['containers'] as $index => $container) {
+                $record['containers'][$index]['path'] = $ContainersTable->getPathByIdAsString($container['id']);
+            }
+            $result[$record['id']] = $record;
         }
-        return $usercontainerrole;
 
+        return $result;
     }
 }

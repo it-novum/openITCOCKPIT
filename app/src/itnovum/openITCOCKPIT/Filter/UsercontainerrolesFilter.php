@@ -40,16 +40,4 @@ class UsercontainerrolesFilter extends Filter {
         return $this->getConditionsByFilters($filters);
     }
 
-    /**
-     * @return array
-     */
-    public function ajaxFilter() {
-        $filters = [
-            'like' => [
-                'Usercontainerroles.name',
-            ],
-        ];
-
-        return $this->getConditionsByFilters($filters);
-    }
 }

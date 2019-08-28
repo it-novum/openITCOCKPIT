@@ -4,11 +4,15 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
+use App\Model\Entity\User;
+use Cake\Datasource\EntityInterface;
+use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Utility\Security;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
 
 /**
@@ -18,12 +22,6 @@ use itnovum\openITCOCKPIT\Filter\UsersFilter;
  * @property \App\Model\Table\ApikeysTable|\Cake\ORM\Association\HasMany $Apikeys
  * @property \App\Model\Table\ChangelogsTable|\Cake\ORM\Association\HasMany $Changelogs
  * @property \App\Model\Table\ContactsTable|\Cake\ORM\Association\HasMany $Contacts
- * @property \App\Model\Table\DashboardTabsTable|\Cake\ORM\Association\HasMany $DashboardTabs
- * @property \App\Model\Table\InstantreportsToUsersTable|\Cake\ORM\Association\HasMany $InstantreportsToUsers
- * @property \App\Model\Table\MapUploadsTable|\Cake\ORM\Association\HasMany $MapUploads
- * @property \App\Model\Table\SystemfailuresTable|\Cake\ORM\Association\HasMany $Systemfailures
- * @property \App\Model\Table\UsersToAutoreportsTable|\Cake\ORM\Association\HasMany $UsersToAutoreports
- * @property \App\Model\Table\UsersToContainersTable|\Cake\ORM\Association\HasMany $UsersToContainers
  *
  * @method \App\Model\Entity\User get($primaryKey, $options = [])
  * @method \App\Model\Entity\User newEntity($data = null, array $options = [])
@@ -39,6 +37,11 @@ use itnovum\openITCOCKPIT\Filter\UsersFilter;
 class UsersTable extends Table {
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
+
+    /**
+     * Password validation regex.
+     */
+    const PASSWORD_REGEX = '/^(?=.*\d).{6,}$/i';
 
     /**
      * Initialize method
@@ -75,9 +78,10 @@ class UsersTable extends Table {
 
         $this->belongsToMany('Usercontainerroles', [
             'className'        => 'Usercontainerroles',
+            'joinTable'        => 'users_to_usercontainerroles',
             'foreignKey'       => 'user_id',
             'targetForeignKey' => 'usercontainerrole_id',
-            'joinTable'        => 'users_to_usercontainerroles'
+            'saveStrategy'     => 'replace'
         ]);
     }
 
@@ -93,15 +97,27 @@ class UsersTable extends Table {
             ->allowEmptyString('id', null, 'create');
 
         $validator
-            ->requirePresence('containers', 'create', __('You have to choose at least one option.'))
-            ->allowEmptyString('containers', null, false)
-            ->multipleOptions('containers', [
-                'min' => 1
-            ], __('You have to choose at least one option.'));
+            ->allowEmptyString('containers', __('You need to select at least one container or container role.'), function ($context) {
+                return $this->validateHasContainerOrContainerUserRolePermissions(null, $context);
+            })
+            ->add('containers', 'custom', [
+                'rule'    => [$this, 'validateHasContainerOrContainerUserRolePermissions'],
+                'message' => __('You need to select at least one container or container role.')
+            ]);
+
+        $validator
+            ->allowEmptyString('usercontainerroles', __('You need to select at least one container or container role.'), function ($context) {
+                return $this->validateHasContainerOrContainerUserRolePermissions(null, $context);
+            })
+            ->add('usercontainerroles', 'custom', [
+                'rule'    => [$this, 'validateHasContainerOrContainerUserRolePermissions'],
+                'message' => __('You need to select at least one container or container role.')
+            ]);
 
         $validator
             ->integer('usergroup_id')
             ->requirePresence('usergroup_id', 'create')
+            ->greaterThan('usergroup_id', 0, __('You have to select a user role.'))
             ->allowEmptyString('usergroup_id', null, false);
 
         $validator
@@ -164,13 +180,28 @@ class UsersTable extends Table {
         $validator
             ->scalar('samaccountname')
             ->maxLength('samaccountname', 128)
-            ->allowEmptyString('samaccountname');
+            ->allowEmptyString('samaccountname', __('You have to select a user'), function ($context) {
+                if (isset($context['data']['is_ldap']) && $context['data']['is_ldap'] === true) {
+                    //User create an LDAP user - samaccountname is required
+                    return false;
+                }
+
+                //User create a non LDAP user
+                return true;
+            });
 
         $validator
             ->scalar('ldap_dn')
             ->maxLength('ldap_dn', 512)
-            ->allowEmptyString('ldap_dn');
+            ->allowEmptyString('ldap_dn', __('DN could not left be blank.'), function ($context) {
+                if (isset($context['data']['is_ldap']) && $context['data']['is_ldap'] === true) {
+                    //User create an LDAP user - samaccountname is required
+                    return false;
+                }
 
+                //User create a non LDAP user
+                return true;
+            });
         $validator
             ->boolean('showstatsinmenu')
             ->requirePresence('showstatsinmenu', 'create')
@@ -208,9 +239,31 @@ class UsersTable extends Table {
     }
 
     /**
-     * Password validation regex.
+     * @param null $value
+     * @param array $context
+     * @return bool
      */
-    const PASSWORD_REGEX = '/^(?=.*\d).{6,}$/i';
+    public function validateHasContainerOrContainerUserRolePermissions($value, $context) {
+        if (isset($context['data']['containers']) && is_array($context['data']['containers'])) {
+            if (!empty($context['data']['containers']) && sizeof($context['data']['containers']) > 0) {
+
+                //User has own containers
+                return true;
+            }
+        }
+
+        //Has the user an user container role assignment?
+        if (isset($context['data']['usercontainerroles']['_ids']) && is_array($context['data']['usercontainerroles']['_ids'])) {
+            if (!empty($context['data']['usercontainerroles']['_ids']) && sizeof($context['data']['usercontainerroles']['_ids']) > 0) {
+
+                //User has a user container role assignment
+                return true;
+            }
+        }
+
+        //No own containers, no user container role
+        return false;
+    }
 
     /**
      * Returns a rules checker object that will be used for validating
@@ -227,13 +280,13 @@ class UsersTable extends Table {
     }
 
     /**
-     * @param $event
-     * @param $entity
-     * @param $options
+     * @param Event $event
+     * @param EntityInterface $entity
+     * @param \ArrayObject $options
      * @return bool
      */
-    public function beforeSave($event, $entity, $options) {
-        if (!empty($entity->password)) {
+    public function beforeSave(Event $event, EntityInterface $entity, \ArrayObject $options) {
+        if ($entity->isDirty('password')) {
             $entity->password = $this->getPasswordHash($entity->password);
         }
         return true;
@@ -249,103 +302,192 @@ class UsersTable extends Table {
 
 
     /**
-     * @param $rights
-     * @param null $PaginateOMat
+     * @param array $rights
+     * @param UsersFilter $UsersFilter
+     * @param PaginateOMat|null $PaginateOMat
      * @return array
      */
-    public function getUsers($rights, UsersFilter $usersFilter, $PaginateOMat = null) {
+    public function getUsersIndex(UsersFilter $UsersFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+        //Get all user ids where container assigned are made directly at the user
         $query = $this->find()
-            ->disableHydration()
-            ->contain(['Containers', 'Usergroups'])
-            ->matching('Containers')
-            ->order(['full_name' => 'asc'])
-            ->where([
-                'ContainersUsersMemberships.container_id IN' => $rights,
-                $usersFilter->indexFilter()
+            ->select([
+                'Users.id'
             ])
-            ->select(function (Query $query) {
-                return [
-                    'Users.id',
-                    'Users.email',
-                    'Users.company',
-                    'Users.phone',
-                    'Users.is_active',
-                    'Users.samaccountname',
-                    'Usergroups.id',
-                    'Usergroups.name',
-                    'ContainersUsersMemberships.container_id',
-                    'full_name' => $query->func()->concat([
-                        'Users.firstname' => 'literal',
-                        ' ',
-                        'Users.lastname'  => 'literal'
-                    ])
-                ];
-            })
+            ->matching('Containers')
             ->group([
                 'Users.id'
+            ])
+            ->disableHydration();
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'ContainersUsersMemberships.container_id IN' => $MY_RIGHTS
             ]);
+        }
+
+        $userIds = Hash::extract($query->toArray(), '{n}.id');
+
+        //Get all user ids where container assigned are made through an user container role
+        $query = $this->find()
+            ->select([
+                'Users.id'
+            ])
+            ->matching('Usercontainerroles.Containers')
+            ->group([
+                'Users.id'
+            ])
+            ->disableHydration();
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $userIdsThroughContainerRoles = Hash::extract($query->toArray(), '{n}.id');
+
+        $userIds = array_unique(array_merge($userIds, $userIdsThroughContainerRoles));
+
+        $where = $UsersFilter->indexFilter();
+        $having = [];
+        if (isset($where['full_name LIKE'])) {
+            $having['full_name LIKE'] = $where['full_name LIKE'];
+            unset($where['full_name LIKE']);
+        }
+
+        $query = $this->find();
+        $query->select([
+            'Users.id',
+            'Users.email',
+            'Users.company',
+            'Users.phone',
+            'Users.is_active',
+            'Users.samaccountname',
+            'Usergroups.id',
+            'Usergroups.name',
+            'full_name' => $query->func()->concat([
+                'Users.firstname' => 'literal',
+                ' ',
+                'Users.lastname'  => 'literal'
+            ])
+        ])
+            ->contain([
+                'Usergroups',
+                'Containers',
+                'Usercontainerroles' => [
+                    'Containers'
+                ]
+            ]);
+
+        if (!empty($userIds)) {
+            $query->where([
+                'Users.id IN' => $userIds
+            ]);
+        }
+
+        if (!empty($where)) {
+            $query->andWhere($where);
+        }
+        if (!empty($having)) {
+            $query->having($having);
+        }
+
+        $query->order($UsersFilter->getOrderForPaginator('full_name', 'asc'));
+        $query->group([
+            'Users.id'
+        ]);
+
         if ($PaginateOMat === null) {
             //Just execute query
-            $result = $this->formatResultAsCake2($query->toArray(), false);
+            $result = $query->toArray();
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
-                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
             }
         }
         return $result;
     }
 
     /**
-     * @param $userId
-     * @param $rights
+     * @param int $id
      * @return array
      */
-    public function getUser($userId, $rights) {
-
+    public function getUserForEdit($id) {
         $query = $this->find()
-            ->disableHydration()
-            ->contain(['Containers', 'Usercontainerroles'])
-            ->matching('Containers')
-            ->where([
-                'Users.id'                                   => $userId,
-                'ContainersUsersMemberships.container_id IN' => $rights
+            ->select([
+                'Users.id',
+                'Users.usergroup_id',
+                'Users.email',
+                'Users.firstname',
+                'Users.lastname',
+                'Users.position',
+                'Users.company',
+                'Users.phone',
+                'Users.timezone',
+                'Users.dateformat',
+                'Users.samaccountname',
+                'Users.ldap_dn',
+                'Users.showstatsinmenu',
+                'Users.is_active',
+                'Users.dashboard_tab_rotation',
+                'Users.paginatorlength',
+                'Users.recursive_browser'
             ])
-            ->select(function (Query $query) {
-                return [
-                    'Users.id',
-                    'Users.email',
-                    'Users.company',
-                    'Users.samaccountname',
-                    'Users.usergroup_id',
-                    'Users.is_active',
-                    'Users.firstname',
-                    'Users.lastname',
-                    'Users.position',
-                    'Users.phone',
-                    'Users.timezone',
-                    'Users.dateformat',
-                    'Users.showstatsinmenu',
-                    'Users.dashboard_tab_rotation',
-                    'Users.paginatorlength',
-                    'Users.recursive_browser',
-                    'ContainersUsersMemberships.container_id',
-                    // 'Usercontainerroles.id',
-                    'full_name' => $query->func()->concat([
-                        'Users.firstname' => 'literal',
-                        ' ',
-                        'Users.lastname'  => 'literal'
-                    ])
-                ];
-            })
-            ->group([
-                'Users.id'
-            ]);
-        if (!is_null($query)) {
-            return $query->first();
+            ->where([
+                'Users.id' => $id
+            ])
+            ->contain([
+                'Usergroups',
+                'Containers',
+                'Usercontainerroles' => [
+                    'Containers'
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $user = $query;
+
+        $intCasts = [
+            'showstatsinmenu',
+            'is_active',
+            'dashboard_tab_rotation',
+            'paginatorlength',
+            'recursive_browser'
+        ];
+        foreach ($intCasts as $intCast) {
+            $user[$intCast] = (int)$user[$intCast];
         }
-        return [];
+
+        $user['containers'] = [
+            '_ids' => Hash::extract($query, 'containers.{n}.id')
+        ];
+        $user['usercontainerroles'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}.id')
+        ];
+
+        $user['usercontainerroles_containerids'] = [
+            '_ids' => Hash::extract($query, 'usercontainerroles.{n}.containers.{n}.id')
+        ];
+
+        //Build up data struct for radio inputs (only of user containers - NOT for container roles)
+        $user['ContainersUsersMemberships'] = [];
+        foreach ($query['containers'] as $container) {
+            //Cast permission_level to string for AngularJS...
+            $user['ContainersUsersMemberships'][$container['id']] = (string)$container['_joinData']['permission_level'];
+        }
+
+        if (empty($user['ContainersUsersMemberships'])) {
+            //Make this an empty object {} in the JSON, not an empty array []
+            $user['ContainersUsersMemberships'] = new \stdClass();
+        }
+
+        return [
+            'User' => $user
+        ];
     }
 
 
@@ -360,84 +502,43 @@ class UsersTable extends Table {
      */
     public function containerPermissionsForSave($containerPermissions = []) {
         //ContainersUsersMemberships
-        return array_map(function ($containerId, $permissionLevel) {
-            return [
+
+        $dataForSave = [];
+        foreach ($containerPermissions as $containerId => $permissionLevel) {
+            $containerId = (int)$containerId;
+            $permissionLevel = (int)$permissionLevel;
+            if ($permissionLevel !== READ_RIGHT && $permissionLevel !== WRITE_RIGHT) {
+                $permissionLevel = READ_RIGHT;
+            }
+            if ($containerId === ROOT_CONTAINER) {
+                // ROOT_CONTAINER is always read/write
+                $permissionLevel = WRITE_RIGHT;
+            }
+
+            $dataForSave[] = [
                 'id'        => $containerId,
                 '_joinData' => [
                     'permission_level' => $permissionLevel
                 ]
             ];
-        },
-            array_keys($containerPermissions),
-            $containerPermissions
-        );
-    }
-
-    /**
-     * @param $containers
-     * @return array
-     */
-    public function containerPermissionsForAngular($containers) {
-        if (empty($containers)) {
-            return [];
-        }
-        $ret = [];
-        foreach ($containers as $container) {
-            $ret['ContainersUsersMemberships'][$container['id']] = $container['_joinData']['permission_level'];
-            $ret['containers']['_ids'][] = $container['id'];
-        }
-        return $ret;
-    }
-
-    /**
-     * @param $usercontaineroles
-     * @return array
-     */
-    public function usercontainerolePermissionsForAngular($usercontaineroles) {
-        if (empty($usercontaineroles)) {
-            return [];
         }
 
-        $ret = [];
-        foreach ($usercontaineroles as $usercontainerole) {
-            $ret['usercontainerroles']['_ids'][] = $usercontainerole['id'];
-        }
-        return $ret;
-    }
-
-    /**
-     * @param null $userId
-     * @param $rights
-     * @return array
-     */
-    public function getUserWithContainerPermission($userId = null, $rights) {
-        $user = $this->getUser($userId, $rights);
-        $containerPermissions = [];
-        if (!empty($user['containers'])) {
-            $containerPermissions = $this->containerPermissionsForAngular($user['containers']);
-            $user = array_merge($user, $containerPermissions);
-        }
-
-        if (!empty($user['usercontainerroles'])) {
-            $usercontainerroles = $this->usercontainerolePermissionsForAngular($user['usercontainerroles']);
-            $user = array_merge($user, $usercontainerroles);
-        } else {
-            $user['usercontainerroles'] = ['_ids' => []];
-        }
-        return $user;
+        return $dataForSave;
     }
 
     public function getUserByEmail($email = null) {
-        $query = $this->find()
-            ->disableHydration()
+        $query = $this->find();
+        $query->disableHydration()
             ->where([
                 'Users.email' => $email,
             ])
             ->select([
                 'Users.id',
                 'Users.email',
+                'Users.password',
                 'Users.company',
                 'Users.samaccountname',
+                'Users.ldap_dn',
                 'Users.usergroup_id',
                 'Users.is_active',
                 'Users.firstname',
@@ -450,6 +551,13 @@ class UsersTable extends Table {
                 'Users.dashboard_tab_rotation',
                 'Users.paginatorlength',
                 'Users.recursive_browser',
+                'Users.image',
+                'Users.onetimetoken',
+                'full_name' => $query->func()->concat([
+                    'Users.firstname' => 'literal',
+                    ' ',
+                    'Users.lastname'  => 'literal'
+                ])
             ]);
         if (!is_null($query)) {
             return $query->first();
@@ -469,7 +577,18 @@ class UsersTable extends Table {
      * @return string
      */
     public function generatePassword() {
-        $char = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+        $char = [
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+            'a', 'b', 'c', 'd', 'e', 'f',
+            'g', 'h', 'i', 'j', 'k', 'l',
+            'm', 'n', 'o', 'p', 'q', 'r',
+            's', 't', 'u', 'v', 'w', 'x',
+            'y', 'z', 'A', 'B', 'C', 'D',
+            'E', 'F', 'G', 'H', 'I', 'J',
+            'K', 'L', 'M', 'N', 'O', 'P',
+            'Q', 'R', 'S', 'T', 'U', 'V',
+            'W', 'X', 'Y', 'Z'
+        ];
         $size = (sizeof($char) - 1);
         $token = '';
         for ($i = 0; $i < 7; $i++) {
@@ -503,56 +622,121 @@ class UsersTable extends Table {
         ];
     }
 
-    public function usersByContainerId($container_ids, $type = 'all') {
-        if (!is_array($container_ids)) {
-            $container_ids = [$container_ids];
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @return array
+     */
+    public function getUsersByContainerIds($containerIds = [], $type = 'all') {
+        return $this->usersByContainerId($containerIds, $type);
+    }
+
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @return array
+     */
+    public function usersByContainerId($containerIds = [], $type = 'all') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
         }
 
-        $container_ids = array_unique($container_ids);
-
-        $query = $this->find('all')
-            ->disableHydration()
-            ->contain(['Containers'])
-            ->matching('Containers')
+        //Get all user ids where container assigned are made directly at the user
+        $query = $this->find()
             ->select([
-                'Users.id',
-                'Users.firstname',
-                'Users.lastname',
-                'ContainersUsersMemberships.container_id'
+                'Users.id'
             ])
+            ->matching('Containers')
+            ->group([
+                'Users.id'
+            ])
+            ->disableHydration();
+
+        if (!empty($containerIds)) {
+            $query->where([
+                'ContainersUsersMemberships.container_id IN' => $containerIds
+            ]);
+        }
+
+        $userIds = Hash::extract($query->toArray(), '{n}.id');
+
+        //Get all user ids where container assigned are made through an user container role
+        $query = $this->find()
+            ->select([
+                'Users.id'
+            ])
+            ->matching('Usercontainerroles.Containers')
+            ->group([
+                'Users.id'
+            ])
+            ->disableHydration();
+
+        if (!empty($containerIds)) {
+            $query->where([
+                'Containers.id IN' => $containerIds
+            ]);
+        }
+
+        $userIdsThroughContainerRoles = Hash::extract($query->toArray(), '{n}.id');
+
+        $userIds = array_unique(array_merge($userIds, $userIdsThroughContainerRoles));
+        if (empty($userIds)) {
+            return [];
+        }
+
+        $query = $this->find();
+        $query->select([
+            'Users.id',
+            'Users.email',
+            'Users.password',
+            'Users.company',
+            'Users.samaccountname',
+            'Users.ldap_dn',
+            'Users.usergroup_id',
+            'Users.is_active',
+            'Users.firstname',
+            'Users.lastname',
+            'Users.position',
+            'Users.phone',
+            'Users.timezone',
+            'Users.dateformat',
+            'Users.showstatsinmenu',
+            'Users.dashboard_tab_rotation',
+            'Users.paginatorlength',
+            'Users.recursive_browser',
+            'Users.image',
+            'Users.onetimetoken',
+            'full_name' => $query->func()->concat([
+                'Users.firstname' => 'literal',
+                ' ',
+                'Users.lastname'  => 'literal'
+            ])
+        ])
             ->where([
-                'ContainersUsersMemberships.container_id IN' => $container_ids
+                'Users.id IN' => $userIds
+            ])
+            ->order([
+                'full_name' => 'asc'
             ])
             ->group([
                 'Users.id'
             ])
-            ->order([
-                'Users.lastname'  => 'ASC',
-                'Users.firstname' => 'ASC'
-            ]);
+            ->disableHydration()
+            ->all();
 
-        $results = $query->toArray();
-
-        switch ($type) {
-            case 'all':
-                return $results;
-                break;
-            case 'list':
-                $return = [];
-                foreach ($results as $result) {
-                    $return[$result['id']] = $result['lastname'] . ', ' . $result['firstname'];
-                }
-                return $return;
-                break;
+        if ($type === 'list') {
+            $return = [];
+            foreach ($query->toArray() as $user) {
+                $return[$user['id']] = $user['lastname'] . ', ' . $user['firstname'];
+            }
+            return $return;
         }
+
+        return $query->toArray();
     }
 
-
     /**
-     *  May deprecated functions after fully moving to cakephp 4
-     */
-
-    /**
+     * May deprecated functions after fully moving to cakephp 4
      * get the first user
      * @return array
      */
@@ -563,11 +747,39 @@ class UsersTable extends Table {
     }
 
     /**
+     * May deprecated functions after fully moving to cakephp 4
      * @param $email
      * @return array
      */
     public function getActiveUsersByEmail($email) {
-        $query = $this->find()
+        $query = $this->find();
+        $query->select([
+            'Users.id',
+            'Users.email',
+            'Users.password',
+            'Users.company',
+            'Users.samaccountname',
+            'Users.ldap_dn',
+            'Users.usergroup_id',
+            'Users.is_active',
+            'Users.firstname',
+            'Users.lastname',
+            'Users.position',
+            'Users.phone',
+            'Users.timezone',
+            'Users.dateformat',
+            'Users.showstatsinmenu',
+            'Users.dashboard_tab_rotation',
+            'Users.paginatorlength',
+            'Users.recursive_browser',
+            'Users.image',
+            'Users.onetimetoken',
+            'full_name' => $query->func()->concat([
+                'Users.firstname' => 'literal',
+                ' ',
+                'Users.lastname'  => 'literal'
+            ])
+        ])
             ->disableHydration()
             ->where([
                 'Users.email'     => $email,
@@ -578,28 +790,70 @@ class UsersTable extends Table {
     }
 
     /**
+     * May deprecated functions after fully moving to cakephp 4
      * @param $samaccountname
      * @return array
      */
     public function findBySamaccountname($samaccountname) {
-        $query = $this->find()
+        $query = $this->find();
+        $query->select([
+            'Users.id',
+            'Users.email',
+            'Users.password',
+            'Users.company',
+            'Users.samaccountname',
+            'Users.ldap_dn',
+            'Users.usergroup_id',
+            'Users.is_active',
+            'Users.firstname',
+            'Users.lastname',
+            'Users.position',
+            'Users.phone',
+            'Users.timezone',
+            'Users.dateformat',
+            'Users.showstatsinmenu',
+            'Users.dashboard_tab_rotation',
+            'Users.paginatorlength',
+            'Users.recursive_browser',
+            'Users.image',
+            'Users.onetimetoken',
+            'full_name' => $query->func()->concat([
+                'Users.firstname' => 'literal',
+                ' ',
+                'Users.lastname'  => 'literal'
+            ])
+        ])
             ->disableHydration()
             ->where([
                 'Users.samaccountname' => $samaccountname,
                 'Users.is_active'      => 1
-            ]);
-        $result = $query->first();
-        return $this->formatFirstResultAsCake2($result);
+            ])
+            ->first();
+
+        $result = $query->toArray();
+        if ($result === null) {
+            return [];
+        }
+
+        return [
+            'User' => $result[0]
+        ];
     }
 
     /**
+     * May deprecated functions after fully moving to cakephp 4
      * @param $id
      * @return array|\Cake\Datasource\EntityInterface|null
      */
     public function getUserById($id) {
         $query = $this->find('all')
             ->disableHydration()
-            ->contain(['Containers', 'Usercontainerroles' => 'Containers'])
+            ->contain([
+                'Containers',
+                'Usercontainerroles' => [
+                    'Containers'
+                ]
+            ])
             ->where([
                 'Users.id' => $id
             ]);
@@ -610,40 +864,110 @@ class UsersTable extends Table {
     }
 
     /**
-     * @param $usersByContainerId
+     * This method is used to fetch all users that needs to be
+     * deleted if a Container/Node gets deleted.
+     *
      * @param $containerIds
      * @return array
      */
-    public function getUsersToDelete($usersByContainerId, $containerIds) {
+    public function getUsersToDeleteByContainerIds($containerIds) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
-        $query = $this
-            ->find()
-            ->disableHydration()
-            ->contain(['Containers'])
+
+        //Get all user ids where container assigned are made directly at the user
+        $query = $this->find()
             ->select([
-                'Users.id',
+                'Users.id'
             ])
-            ->where(['Users.id IN' => array_keys($usersByContainerId)]);
+            ->matching('Containers')
+            ->group([
+                'Users.id'
+            ])
+            ->disableHydration();
 
-        $result = $query->toArray();
+        if (!empty($containerIds)) {
+            $query->where([
+                'ContainersUsersMemberships.container_id IN' => $containerIds
+            ]);
+        }
 
-        if (!empty($result) && is_array($result)) {
-            foreach ($result as $userkey => $user) {
-                if (!empty($user['containers'])) {
-                    foreach ($user['containers'] as $key => $container) {
-                        if (in_array($container['id'], $containerIds)) {
-                            unset($result[$userkey]['containers'][$key]);
-                        }
+        $userIds = Hash::extract($query->toArray(), '{n}.id');
+
+        //Get all user ids where container assigned are made through an user container role
+        $query = $this->find()
+            ->select([
+                'Users.id'
+            ])
+            ->matching('Usercontainerroles.Containers')
+            ->group([
+                'Users.id'
+            ])
+            ->disableHydration();
+
+        if (!empty($containerIds)) {
+            $query->where([
+                'Containers.id IN' => $containerIds
+            ]);
+        }
+
+        $userIdsThroughContainerRoles = Hash::extract($query->toArray(), '{n}.id');
+
+        $userIds = array_unique(array_merge($userIds, $userIdsThroughContainerRoles));
+        if (empty($userIds)) {
+            return [];
+        }
+
+        $query = $this->find()
+            ->where([
+                'Users.id IN' => $userIds
+            ])
+            ->group([
+                'Users.id'
+            ])
+            ->contain([
+                'Containers',
+                'Usercontainerroles' => [
+                    'Containers'
+                ]
+            ])
+            ->all();
+
+        $users = $query->toArray();
+        if ($users === null) {
+            return [];
+        }
+
+        $userToDelete = [];
+        foreach ($users as $user) {
+            /** @var User $user */
+            $containerWithWritePermissionByUserContainerRoles = Hash::extract(
+                $user['usercontainerroles'],
+                '{n}.containers.{n}._joinData.container_id'
+            );
+
+            $container = Hash::extract(
+                $user['containers'],
+                '{n}.id'
+            );
+
+            $containers = array_unique(array_merge($container, $containerWithWritePermissionByUserContainerRoles));
+
+            foreach ($containerIds as $containerId) {
+                foreach ($containers as $index => $containerId) {
+                    //Remove the container, which should get deleted, from the user assigned containers.
+                    if ((int)$containerId === (int)$containerId) {
+                        unset($containers[$index]);
                     }
                 }
-                if (empty($user['containers'])) {
-                    unset($userkey);
-                }
+            }
+
+            if (empty($containers)) {
+                //User has no containers anymore - delete this user
+                $userToDelete[] = $user;
             }
         }
 
-        return $result;
+        return $userToDelete;
     }
 }

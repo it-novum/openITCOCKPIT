@@ -189,9 +189,9 @@ class AppController extends Controller {
         }
 
         if (ENVIRONMENT === 'development_test') {
-            /** @var $Users App\Model\Table\UsersTable */
-            $Users = TableRegistry::getTableLocator()->get('Users');
-            $autoLoginUserAdmin = $Users->getFirstUser();
+            /** @var $UsersTable App\Model\Table\UsersTable */
+            $UsersTable = TableRegistry::getTableLocator()->get('Users');
+            $autoLoginUserAdmin = $UsersTable->getFirstUser();
             if (!empty($autoLoginUserAdmin)) {
                 $this->Auth->login($autoLoginUserAdmin);
                 $this->MY_RIGHTS = [1];
@@ -201,10 +201,10 @@ class AppController extends Controller {
     }
 
     protected function __getUserRights() {
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
         //The user is loggedIn, so we need to select container permissions out of DB
-        $_user = $Users->getUserById($this->Auth->user('id'));
+        $_user = $UsersTable->getUserById($this->Auth->user('id'));
 
         $User = new User($this->Auth);
         $cacheKey = 'userPermissions_' . $User->getId();
@@ -215,16 +215,16 @@ class AppController extends Controller {
 
             //unify the usercontainerrole permissions
             $usercontainerrolePermissions = [];
-            foreach ($_user['usercontainerroles'] as $usercontainerrole){
-                foreach ($usercontainerrole['containers'] as $usercontainerroleContainer){
+            foreach ($_user['usercontainerroles'] as $usercontainerrole) {
+                foreach ($usercontainerrole['containers'] as $usercontainerroleContainer) {
                     $currentId = $usercontainerroleContainer['id'];
-                    if(isset($usercontainerrolePermissions[$currentId])){
+                    if (isset($usercontainerrolePermissions[$currentId])) {
                         //highest usercontainerrole permission wins
-                        if($usercontainerrolePermissions[$currentId]['_joinData']['permission_level'] < $usercontainerroleContainer['_joinData']['permission_level']){
+                        if ($usercontainerrolePermissions[$currentId]['_joinData']['permission_level'] < $usercontainerroleContainer['_joinData']['permission_level']) {
                             $usercontainerrolePermissions[$currentId] = $usercontainerroleContainer;
                             continue;
                         }
-                    }else{
+                    } else {
                         $usercontainerrolePermissions[$currentId] = $usercontainerroleContainer;
                     }
                 }
@@ -234,10 +234,10 @@ class AppController extends Controller {
             //User container permissions override permissions from the role
             $containerPermissions = [];
             $containerPermissionsUser = [];
-            foreach ($usercontainerrolePermissions as $usercontainerrolePermission){
+            foreach ($usercontainerrolePermissions as $usercontainerrolePermission) {
                 $containerPermissions[$usercontainerrolePermission['id']] = $usercontainerrolePermission;
             }
-            foreach ($_user['containers'] as $container){
+            foreach ($_user['containers'] as $container) {
                 $containerPermissionsUser[$container['id']] = $container;
             }
 

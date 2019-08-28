@@ -23,15 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-terminal fa-fw "></i>
-            <?php echo __('Administration'); ?>
+            <i class="fa fa-users fa-fw "></i>
+            <?php echo __('User container roles'); ?>
             <span>>
-                <?php echo __('Manage user container roles'); ?>
-			</span>
+                <?php echo __('Overview'); ?>
+            </span>
         </h1>
     </div>
 </div>
@@ -51,7 +50,7 @@
                         <?php if ($this->Acl->hasPermission('add', 'usercontainerroles')): ?>
                             <a ui-sref="UsercontainerrolesAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
-                                <?php echo __('Create container role'); ?>
+                                <?php echo __('New'); ?>
                             </a>
                         <?php endif; ?>
 
@@ -61,13 +60,12 @@
                         </button>
 
                     </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-terminal"></i> </span>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-users"></i> </span>
                     <h2 class="hidden-mobile">
-                        <?php echo __('Manage user container roles'); ?>
+                        <?php echo __('User container roles overview'); ?>
                     </h2>
                 </header>
 
-                <!-- widget div-->
                 <div>
                     <div class="widget-body no-padding">
                         <!-- Start Filter -->
@@ -98,10 +96,15 @@
                             </div>
                         </div>
                         <!-- End Filter -->
+
                         <div class="mobile_table">
-                            <table class="table table-striped table-hover table-bordered smart-form">
+                            <table id="usercontainerrole_list"
+                                   class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
+                                    <th class="no-sort width-15">
+                                        <i class="fa fa-check-square-o fa-lg"></i>
+                                    </th>
                                     <th class="no-sort" ng-click="orderBy('Usercontainerroles.name')">
                                         <i class="fa" ng-class="getSortClass('Usercontainerroles.name')"></i>
                                         <?php echo __('Name'); ?>
@@ -112,41 +115,49 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="usercontainerrole in Usercontainerroles">
+                                <tr ng-repeat="usercontainerrole in usercontainerroles">
+                                    <td class="text-center width-15">
+                                        <input type="checkbox"
+                                               ng-model="massChange[usercontainerrole.id]"
+                                               ng-show="usercontainerrole.allow_edit">
+                                    </td>
 
-                                    <td>{{usercontainerrole.Usercontainerrole.name}}</td>
+                                    <td>{{usercontainerrole.name}}</td>
+
                                     <td class="width-50">
                                         <div class="btn-group smart-form">
                                             <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
-                                                <a ui-sref="UsercontainerrolesEdit({id: usercontainerrole.Usercontainerrole.id})"
-                                                   ng-if="usercontainerrole.Usercontainerrole.allow_edit"
+                                                <a ui-sref="UsercontainerrolesEdit({id: usercontainerrole.id})"
+                                                   ng-if="usercontainerrole.allow_edit"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
-
                                                 <a href="javascript:void(0);"
-                                                   ng-if="!usercontainerrole.Usercontainerrole.allow_edit"
+                                                   ng-if="!usercontainerrole.allow_edit"
                                                    class="btn btn-default disabled">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                             <?php endif; ?>
                                             <a href="javascript:void(0);" data-toggle="dropdown"
                                                class="btn btn-default dropdown-toggle"><span
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right"
-                                                id="menuHack-{{usercontainerrole.Usercontainerrole.id}}">
+                                                id="menuHack-{{user.id}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'usercontainerroles')): ?>
-                                                    <li ng-if="usercontainerrole.Usercontainerrole.allow_edit">
-                                                        <a ui-sref="UsercontainerrolesEdit({id:usercontainerrole.Usercontainerrole.id})">
+                                                    <li ng-if="usercontainerrole.allow_edit">
+                                                        <a ui-sref="UsercontainerrolesEdit({id:usercontainerrole.id})">
                                                             <i class="fa fa-cog"></i>
                                                             <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('delete', 'usercontainerroles')): ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'users')): ?>
                                                     <li class="divider"
-                                                        ng-if="usercontainerrole.Usercontainerrole.allow_edit"></li>
-                                                    <li ng-if="usercontainerrole.Usercontainerrole.allow_edit">
+                                                        ng-if="usercontainerrole.allow_edit"></li>
+                                                    <li ng-if="usercontainerrole.allow_edit">
                                                         <a href="javascript:void(0);"
                                                            class="txt-color-red"
                                                            ng-click="confirmDelete(getObjectForDelete(usercontainerrole))">
@@ -161,9 +172,43 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="usercontainerroles.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-4 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                        </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>
         </article>
     </div>
 </section>
+

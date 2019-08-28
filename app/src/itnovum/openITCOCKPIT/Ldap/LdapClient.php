@@ -167,6 +167,7 @@ class LdapClient {
                     'sn'             => $entry['sn'][0],
                     'samaccountname' => $entry['samaccountname'][0],
                     'email'          => $entry['mail'][0],
+                    'dn'             => $userDn,
                     'display_name'   => sprintf(
                         '%s, %s (%s)',
                         $entry['givenname'][0],
