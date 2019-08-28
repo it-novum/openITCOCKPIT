@@ -107,7 +107,6 @@ App.Controllers.DowntimereportsIndexController = Frontend.AppController.extend({
             titleFormat: {
                 day: 'DD.MM.YYYY',
                 week: 'DD.MM.YYYY',
-                //month: 'MM.yyyy' //date format month.year 01.2015
             },
             displayEventEnd: {
                 month: true,

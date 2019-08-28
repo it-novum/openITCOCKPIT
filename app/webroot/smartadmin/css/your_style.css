@@ -2741,3 +2741,8 @@ fc-left .dropdown {
     -o-user-select: none;
     user-select: none;
 }
+/* BugFix Style Issue events are not visible*/
+.fc-time-grid .fc-event, .fc-time-grid .fc-bgevent {
+    position: relative;
+    z-index: 1;
+}

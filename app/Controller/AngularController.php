@@ -931,4 +931,9 @@ class AngularController extends AppController {
         //Only ship HTML template
         return;
     }
+
+    public function calendar() {
+        //Only ship HTML template
+        return;
+    }
 }

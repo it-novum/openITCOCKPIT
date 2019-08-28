@@ -83,7 +83,8 @@ $config = [
                 'queryhandler',
                 'hostBrowserMenu',
                 'serviceBrowserMenu',
-                'durationInput'
+                'durationInput',
+                'calendar'
             ],
             'Automaps'         => [
                 'icon'

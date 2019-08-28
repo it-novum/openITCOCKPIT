@@ -39,19 +39,19 @@
     <header>
         <span class="widget-icon"> <i class="fa fa-pencil-square-o"></i> </span>
         <h2><?php echo __('Create downtime report'); ?></h2>
-        <ul class="nav nav-tabs pull-right" ng-init="tabName='reportConfig'">
+        <ul class="nav nav-tabs pull-right">
             <li ng-class="{'active': tabName=='reportConfig'}" ng-click="tabName='reportConfig'">
-                <a href="" data-toggle="tab">
+                <a href="javascript:void()" data-toggle="tab">
                     <i class="fa fa-pencil-square-o"></i>
                 </a>
             </li>
             <li ng-class="{'active': tabName=='calendarOverview'}" ng-click="tabName='calendarOverview'" ng-show="reportData.downtimes">
-                <a href="" data-toggle="tab">
+                <a href="javascript:void()" data-toggle="tab">
                     <i class="fa fa-calendar"></i>
                 </a>
             </li>
             <li ng-class="{'active': tabName=='hostsServicesOverview'}" ng-click="tabName='hostsServicesOverview'" ng-show="reportData.downtimes">
-                <a href="" data-toggle="tab">
+                <a href="javascript:void()" data-toggle="tab">
                     <i class="fa fa-pie-chart"></i>
                 </a>
             </li>
@@ -196,7 +196,7 @@
                     </div>
                 </section>
                 <section ng-switch-when="calendarOverview" id="calendarOverview" class="tab-pane fade active in">
-                    Calendar
+                    <calendar downtimes="reportData.downtimes" from-date="post.from_date" to-date="post.to_date"></calendar>
                 </section>
                 <section ng-switch-when="hostsServicesOverview" id="hostsServicesOverview" class="tab-pane fade active in">
                     Host and Services

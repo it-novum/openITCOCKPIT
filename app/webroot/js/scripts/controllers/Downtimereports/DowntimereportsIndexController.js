@@ -6,6 +6,8 @@ angular.module('openITCOCKPIT')
         $scope.setColorDynamically = false;
         var now = new Date();
 
+        $scope.tabName='reportConfig';
+
         $scope.post = {
             evaluation_type: 0,
             report_format: 2,
@@ -73,6 +75,7 @@ angular.module('openITCOCKPIT')
                     $scope.reportData.downtimes = result.data.downtimeReport.downtimes;
                     $scope.reportData.hostsWithOutages = result.data.downtimeReport.hostsWithOutages;
                     $scope.reportData.hostsWithoutOutages = result.data.downtimeReport.hostsWithoutOutages;
+                    $scope.tabName='calendarOverview';
 
                 }, function errorCallback(result){
                     NotyService.genericError({
