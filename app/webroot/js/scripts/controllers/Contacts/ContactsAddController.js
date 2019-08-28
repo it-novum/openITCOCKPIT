@@ -79,7 +79,7 @@ angular.module('openITCOCKPIT')
         $scope.loadUsers = function(){
             $http.post("/contacts/loadUsersByContainerId.json?angular=true",
                 {
-                    container_ids: $scope.post.Contact.containers._ids
+                    containerIds: $scope.post.Contact.containers._ids
                 }
             ).then(function(result){
                 $scope.users = result.data.users;

@@ -33,8 +33,10 @@ use App\Model\Table\ServiceescalationsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
+use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Permissions\ContactContainersPermissions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -43,21 +45,11 @@ use itnovum\openITCOCKPIT\Ldap\LdapClient;
 
 
 /**
- * @property Contact $Contact
- * @property Container $Container
- * @property Timeperiod $Timeperiod
- * @property Customvariable $Customvariable
  * @property AppPaginatorComponent $Paginator
+ * @property AppAuthComponent $Auth
+ * @property DbBackend $DbBackend
  */
 class ContactsController extends AppController {
-
-    public $uses = [
-        'Contact',
-        'Container',
-        'Timeperiod',
-        'Customvariable',
-        'User'
-    ];
 
     public $layout = 'blank';
 
@@ -382,7 +374,8 @@ class ContactsController extends AppController {
             $Cache = new KeyValueStore();
 
             $postData = $this->request->data('data');
-            $userId = $this->Auth->user('id');
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $userId = $User->getId();
 
             foreach ($postData as $index => $contactData) {
                 if (!isset($contactData['Contact']['id'])) {
@@ -603,23 +596,31 @@ class ContactsController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        $users = [];
-        if (isset($this->request->data['container_ids'])) {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
-            $users = $this->User->usersByContainerId($containerIds, 'list');
-            $users = Api::makeItJavaScriptAble($users);
+        if ($this->request->is('get')) {
+            $containerIds = $this->request->query('containerIds');
         }
 
-        $data = [
-            'users' => $users,
-        ];
+        if ($this->request->is('post')) {
+            $containerIds = $this->request->data('containerIds');
+        }
 
-        $this->set($data);
-        $this->set('_serialize', array_keys($data));
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
+
+        $users = Api::makeItJavaScriptAble(
+            $UsersTable->getUsersByContainerIds($containerIds, 'list')
+        );
+
+        $this->set('users', $users);
+        $this->set('_serialize', ['users']);
     }
 
     public function loadContainers() {
