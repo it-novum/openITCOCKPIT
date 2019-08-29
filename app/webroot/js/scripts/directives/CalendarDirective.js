@@ -91,7 +91,7 @@ angular.module('openITCOCKPIT').directive('calendar', function($http){
                     }
                 },
                 allDaySlot: false,
-                eventLimit: 5, // for all non-TimeGrid views
+                eventLimit: 10, // for all non-TimeGrid views
                 //  defaultDate: $scope.fromDate,
                 navLinks: false, // can click day/week names to navigate views
                 businessHours: true, // display business hours
