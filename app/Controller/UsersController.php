@@ -193,7 +193,7 @@ class UsersController extends AppController {
         $isLdapUser = !empty($user['User']['samaccountname']);
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
-            //Return contact information
+            //Return user information
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
             $this->set('_serialize', ['user', 'isLdapUser']);

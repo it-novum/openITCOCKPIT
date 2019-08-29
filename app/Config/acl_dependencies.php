@@ -84,7 +84,8 @@ $config = [
                 'hostBrowserMenu',
                 'serviceBrowserMenu',
                 'durationInput',
-                'calendar'
+                'calendar',
+                'reload_required'
             ],
             'Automaps'         => [
                 'icon'
@@ -107,6 +108,8 @@ $config = [
             ],
             'Profile'          => [
                 'edit',
+                'changePassword',
+                'upload_profile_icon',
                 'deleteImage',
                 'apikey',
                 'edit_apikey',

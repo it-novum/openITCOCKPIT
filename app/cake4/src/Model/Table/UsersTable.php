@@ -12,6 +12,7 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Utility\Security;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
 
@@ -435,7 +436,8 @@ class UsersTable extends Table {
                 'Users.is_active',
                 'Users.dashboard_tab_rotation',
                 'Users.paginatorlength',
-                'Users.recursive_browser'
+                'Users.recursive_browser',
+                'Users.image'
             ])
             ->where([
                 'Users.id' => $id
@@ -746,6 +748,66 @@ class UsersTable extends Table {
         $query = $this->find('all')->disableHydration();
         $result = $query->first();
         return $this->formatFirstResultAsCake2($result);
+    }
+
+    /**
+     * @param int $id
+     * @return array|EntityInterface
+     */
+    public function getActiveUsersByIdForCake2Login($id) {
+        $query = $this->find();
+        $query->select([
+            'Users.id',
+            'Users.email',
+            'Users.password',
+            'Users.company',
+            'Users.samaccountname',
+            'Users.ldap_dn',
+            'Users.usergroup_id',
+            'Users.is_active',
+            'Users.firstname',
+            'Users.lastname',
+            'Users.position',
+            'Users.phone',
+            'Users.timezone',
+            'Users.dateformat',
+            'Users.showstatsinmenu',
+            'Users.dashboard_tab_rotation',
+            'Users.paginatorlength',
+            'Users.recursive_browser',
+            'Users.image',
+            'Users.onetimetoken',
+            'full_name' => $query->func()->concat([
+                'Users.firstname' => 'literal',
+                ' ',
+                'Users.lastname'  => 'literal'
+            ]),
+
+            'Usergroups.id',
+            'Usergroups.name',
+            'Usergroups.description',
+            'Usergroups.created',
+            'Usergroups.modified',
+        ])
+            ->contain([
+                'Usergroups'
+            ])
+            ->disableHydration()
+            ->where([
+                'Users.id'     => $id,
+                'Users.is_active' => 1
+            ]);
+        $rawResult = $query->firstOrFail();
+        $result = [
+            'User' => $rawResult
+        ];
+        unset($result['User']['usergroup']);
+
+        $result['User']['Usergroup'] = $rawResult['usergroup'];
+        $result['User']['Usergroup']['created'] = date('Y-m-d H:i:s', $result['User']['Usergroup']['created']->timestamp);
+        $result['User']['Usergroup']['modified'] = date('Y-m-d H:i:s', $result['User']['Usergroup']['modified']->timestamp);
+
+        return $result;
     }
 
     /**

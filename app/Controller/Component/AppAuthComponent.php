@@ -25,7 +25,6 @@
 
 
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 
 App::uses('AuthComponent', 'Controller/Component');
@@ -91,11 +90,15 @@ class AppAuthComponent extends AuthComponent {
         $this->authError = __('action_not_allowed');
         $this->authorize = ['Controller'];
 
+        /*
         $this->loginRedirect = [
             'controller' => 'dashboards',
             'action'     => 'index',
             'plugin'     => null,
         ];
+        */
+        $this->loginRedirect = '/ng/#!/dashboards/index';
+
         $this->logoutRedirect = [
             'controller' => 'login',
             'action'     => 'login',

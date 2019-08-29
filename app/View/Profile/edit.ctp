@@ -37,7 +37,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
     </div>
 </div>
 
-<div class="jarviswidget" id="wid-id-0">
+<reload-required></reload-required>
+
+<div class="jarviswidget">
     <header>
         <span class="widget-icon"> <i class="fa fa-user"></i> </span>
         <h2><?php echo __('Profile information'); ?></h2>
@@ -55,10 +57,14 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         <div class="col col-xs-10">
                             <input
                                     class="form-control"
+                                    ng-disabled="isLdapUser"
                                     type="text"
                                     ng-model="post.User.firstname">
                             <div ng-repeat="error in errors.firstname">
                                 <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info" ng-show="isLdapUser">
+                                <?php echo __('Value imported from LDAP Server'); ?>
                             </div>
                         </div>
                     </div>
@@ -71,24 +77,32 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <input
                                     class="form-control"
                                     type="text"
+                                    ng-disabled="isLdapUser"
                                     ng-model="post.User.lastname">
                             <div ng-repeat="error in errors.lastname">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
+                            <div class="help-block text-info" ng-show="isLdapUser">
+                                <?php echo __('Value imported from LDAP Server'); ?>
+                            </div>
                         </div>
                     </div>
 
-                    <div ng-if="isLdapAuth" class="form-group required" ng-class="{'has-error': errors.samaccountname}">
+                    <div ng-show="isLdapUser" class="form-group required" ng-class="{'has-error': errors.samaccountname}">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('Username'); ?>
+                            <?php echo __('SAM-Account-Name'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <input
                                     class="form-control"
                                     type="text"
+                                    ng-disabled="isLdapUser"
                                     ng-model="post.User.samaccountname">
-                            <div ng-repeat="error in errors.email">
+                            <div ng-repeat="error in errors.samaccountname">
                                 <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info">
+                                <?php echo __('Username for the login'); ?>
                             </div>
                         </div>
                     </div>
@@ -101,10 +115,13 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <input
                                     class="form-control"
                                     type="text"
-                                    ng-model="post.User.email"
-                                    ng-readonly="isLdapAuth">
+                                    ng-disabled="isLdapUser"
+                                    ng-model="post.User.email">
                             <div ng-repeat="error in errors.email">
                                 <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info" ng-show="isLdapUser">
+                                <?php echo __('Value imported from LDAP Server'); ?>
                             </div>
                         </div>
                     </div>
@@ -132,7 +149,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </label>
                         <div class="col-xs-10 smart-form">
                             <label class="checkbox small-checkbox-label no-required">
-                                <input type="checkbox" name="checkbox"
+                                <input type="checkbox"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
                                        id="userShowstatsinmenu"
                                        ng-model="post.User.showstatsinmenu">
                                 <i class="checkbox-primary"></i>
@@ -146,7 +165,9 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </label>
                         <div class="col-xs-10 smart-form">
                             <label class="checkbox small-checkbox-label no-required">
-                                <input type="checkbox" name="checkbox"
+                                <input type="checkbox"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
                                        id="userRecursiveBrowser"
                                        ng-model="post.User.recursive_browser">
                                 <i class="checkbox-primary"></i>
@@ -156,7 +177,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                     <div class="form-group required" ng-class="{'has-error': errors.paginatorlength}">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('Listelement Length'); ?>
+                            <?php echo __('Length of lists'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <input class="form-control"
@@ -164,7 +185,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                    ng-model="post.User.paginatorlength">
                             <div>
                                 <div class="help-block text-muted">
-                                    <?php echo __('This field defines the length of every list in the openITCOCKPIT System for your Profile. You can choose between 1 and 1000'); ?>
+                                    <?php echo __('This value defines how many records will load per list. You can choose between 1 and 1000'); ?>
                                 </div>
                             </div>
                             <div ng-repeat="error in errors.paginatorlength">
@@ -246,7 +267,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
     </div>
 </div>
 
-<div class="jarviswidget" id="wid-id-0">
+<div class="jarviswidget">
     <header>
         <span class="widget-icon"> <i class="fa fa-picture-o"></i> </span>
         <h2><?php echo __('Profile picture'); ?></h2>
@@ -278,13 +299,13 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                     <label class="col col-md-2 control-label">
                         <?php echo __('Select image'); ?>
                     </label>
-                    <div class="col col-xs-10">
+                    <div class="col col-xs-10 no-padding padding-top-10">
                         <div class="col-xs-12 text-info">
                             <i class="fa fa-info-circle"></i>
                             <?php echo __('Max allowed file size: '); ?>
                             {{ maxUploadLimit.string }}
                         </div>
-                        <div class="col-xs-4">
+                        <div class="col-xs-12">
                             <div class="profileImg-dropzone dropzone dropzoneStyle"
                                  action="/profile/upload_profile_icon.json?angular=true">
                             </div>
@@ -296,7 +317,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
     </div>
 </div>
 
-<div class="jarviswidget" id="wid-id-0">
+<div class="jarviswidget">
     <header>
         <span class="widget-icon"> <i class="fa fa-unlock-alt"></i> </span>
         <h2><?php echo __('Change password'); ?></h2>
@@ -304,17 +325,16 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
     <div>
         <div class="widget-body">
             <form ng-submit="submitPassword();" class="form-horizontal">
-                <div class="row">
-                    <div ng-if="isLdapAuth" class="padding-top-20">
-                        <br/>
-                        <center class="text-info">
-                            <i class="fa fa-info-circle"></i>
-                            &nbsp;
-                            <?php echo __('Due to LDAP authentication you need to change your password over the operating system or your LDAP account manager tool.'); ?>
-                        </center>
-                    </div>
 
-                    <div ng-if="!isLdapAuth" class="form-group required"
+                <div class="row" ng-show="isLdapUser">
+                    <div class="col-xs-12 text-center text-info" ng-show="apikeys.length === 0">
+                        <i class="fa fa-info-circle"></i>
+                        <?php echo __('LDAP users need to change their password through the operating system or an LDAP account manager tool.'); ?>
+                    </div>
+                </div>
+
+                <div class="row" ng-hide="isLdapUser">
+                    <div class="form-group required"
                          ng-class="{'has-error': errors.current_password}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Current Password'); ?>
@@ -322,6 +342,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         <div class="col col-xs-10">
                             <input
                                     class="form-control"
+                                    autocomplete="new-password"
                                     type="password"
                                     ng-model="post.Password.current_password">
                             <div ng-repeat="error in errors.current_password">
@@ -332,7 +353,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 
                     <hr>
 
-                    <div ng-if="!isLdapAuth" class="form-group required" ng-class="{'has-error': errors.password}">
+                    <div class="form-group required" ng-class="{'has-error': errors.password}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('New Password'); ?>
                         </label>
@@ -348,7 +369,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
                     </div>
 
-                    <div ng-if="!isLdapAuth" class="form-group required"
+                    <div class="form-group required"
                          ng-class="{'has-error': errors.confirm_password}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Confirm new password'); ?>
@@ -380,7 +401,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
     </div>
 </div>
 
-<div class="jarviswidget" id="wid-id-0">
+<div class="jarviswidget">
     <header>
         <div class="widget-toolbar" role="menu">
             <button type="button" class="btn btn-xs btn-default" ng-click="loadApiKey()">
@@ -405,11 +426,12 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 <div class="col-xs-12 text-center text-info" ng-show="apikeys.length === 0">
                     <i class="fa fa-info-circle"></i>
                     <?php echo __('No API keys created yet. You can still use the api using your username and password.'); ?>
-                    <?php echo __('In some cases it is easier to send an API key via a HTTP Header.'); ?>
+                    <br />
+                    <b><?php echo __('It\'s recommended to create a own API key for every external application.'); ?></b>
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row" ng-show="apikeys.length > 0">
                 <div class="col-xs-12 col-md-1 bold">
                     <?php echo __('ID'); ?>
                 </div>
