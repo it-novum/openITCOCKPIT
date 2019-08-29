@@ -2746,3 +2746,10 @@ fc-left .dropdown {
     position: relative;
     z-index: 1;
 }
+
+/* fullcalendar 'more+' container style settings */
+.fc-more-popover {
+    overflow-y: scroll;
+    max-height: 20%;
+    max-width: 14%;
+}
