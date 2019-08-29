@@ -9,6 +9,10 @@ angular.module('openITCOCKPIT').directive('calendar', function($http){
         },
         controller: function($scope){
             $scope.events = [];
+            var pattern = /(\d{2})\.(\d{2})\.(\d{4})/;
+            var fromDate = new Date($scope.fromDate.replace(pattern,'$3-$2-$1'));
+            var toDate = new Date($scope.toDate.replace(pattern,'$3-$2-$1'));
+
             for(var hostDowntimeKey in $scope.downtimes.Hosts){
                 $scope.events.push({
                     title: $scope.downtimes.Hosts[hostDowntimeKey].Hosts.name,
@@ -108,9 +112,9 @@ angular.module('openITCOCKPIT').directive('calendar', function($http){
                         $(this).appendTo($(this).parent());
                     });
                 },
-                dayRender: function(date, cell){
-                    if(date >= $scope.fromDate && date <= $scope.toDate){
-                        cell.addClass("evaluation-period");
+                dayRender: function(dayRenderInfo){
+                    if(dayRenderInfo.date >= fromDate && dayRenderInfo.date <= toDate){
+                        $(dayRenderInfo.el).addClass("evaluation-period");
                     }
                 },
                 editable: false

@@ -1290,8 +1290,7 @@ a.autocomplete-items {
 }
 
 .evaluation-period {
-    /*background:#FFFFF0!important;*/
-    background-color: #FFF8DC;
+    background-color: rgba(54, 136, 216, 0.1); /*#3688D8*/
     font-weight: bold;
 }
 
