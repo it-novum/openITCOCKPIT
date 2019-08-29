@@ -29,18 +29,32 @@ angular.module('openITCOCKPIT')
             }
         };
 
-
         $scope.load = function(){
             $http.get("/profile/edit.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
-                $scope.post.User = result.data.user;
+
+                $scope.isLdapUser = result.data.isLdapUser;
                 $scope.maxUploadLimit = result.data.maxUploadLimit;
                 $scope.init = false;
-                if(result.data.user.samaccountname != null){
-                    $scope.isLdapAuth = true;
+
+                var data = result.data.user;
+                data.password = '';
+                data.confirm_password = '';
+
+                $scope.post = {
+                    User: data
+                };
+
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
                 }
             });
         };
@@ -78,8 +92,8 @@ angular.module('openITCOCKPIT')
                     if(response.success){
                         $previewElement.removeClass('dz-processing');
                         $previewElement.addClass('dz-success');
-                        $scope.loadUserimage();
                         NotyService.genericSuccess({message: response.message});
+                        $scope.showPageReloadRequired(); // defined in ReloadRequiredDirective
                         return;
                     }
                     $previewElement.removeClass('dz-processing');
@@ -135,8 +149,10 @@ angular.module('openITCOCKPIT')
             $http.post("/profile/edit.json?angular=true",
                 {User: $scope.post.User}
             ).then(function(result){
+                $scope.errors = {};
                 NotyService.genericSuccess();
-                $scope.load();
+                $scope.showPageReloadRequired(); // defined in ReloadRequiredDirective
+
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
@@ -146,32 +162,23 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submitPassword = function(){
-            $http.post("/profile/edit.json?angular=true",
+            $http.post("/profile/changePassword.json?angular=true",
                 {Password: $scope.post.Password}
             ).then(function(result){
-                if(result.data.hasOwnProperty('error')){
-                    $scope.errors = result.data.error;
-                    NotyService.genericError({message: $scope.errors});
-                }else{
-                    NotyService.genericSuccess();
-                    $scope.load();
-                }
+                NotyService.genericSuccess({message: result.data.message});
+
+                $scope.post.Password = {
+                    current_password: null,
+                        password: null,
+                        confirm_password: null
+                };
+                $scope.errors = {};
+
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
-            });
-        };
-
-        $scope.loadUserimage = function(){
-            $http.get("/profile/loadUserimage.json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.post.User.image = result.data.image;
-                $scope.init = false;
             });
         };
 
@@ -182,7 +189,7 @@ angular.module('openITCOCKPIT')
                     NotyService.genericError({message: $scope.errors});
                 }else{
                     NotyService.genericSuccess();
-                    $scope.load();
+                    $scope.showPageReloadRequired(); // defined in ReloadRequiredDirective
                 }
             }, function errorCallback(result){
                 NotyService.genericError();

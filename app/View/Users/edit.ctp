@@ -187,6 +187,25 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         </div>
                     </div>
 
+                    <div ng-show="isLdapUser" class="form-group required" ng-class="{'has-error': errors.samaccountname}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('SAM-Account-Name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-disabled="isLdapUser"
+                                    ng-model="post.User.samaccountname">
+                            <div ng-repeat="error in errors.samaccountname">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block text-info">
+                                <?php echo __('Username for the login'); ?>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group required" ng-class="{'has-error': errors.email}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Email address'); ?>

@@ -182,7 +182,7 @@ class ContactgroupsController extends AppController {
         }
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
-            //Return contact information
+            //Return contact group information
             $this->set('contactgroup', $contactgroup);
             $this->set('_serialize', ['contactgroup']);
             return;
