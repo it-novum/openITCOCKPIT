@@ -100,7 +100,7 @@ class DowntimeReportPieChartWidgetDataPreparer {
      * @return array value as percent and human readable values
      * @throws \Exception
      */
-    private function getStateTimeAsDataset($compareValues, $totalTime, UserTime $UserTime) {
+    private static function getStateTimeAsDataset($compareValues, $totalTime, UserTime $UserTime) {
         $dataSet = [];
         foreach ($compareValues as $state => $value) {
             /** @var UserTime $UserTime */
@@ -117,7 +117,7 @@ class DowntimeReportPieChartWidgetDataPreparer {
      * @param $outageTime
      * @return string availability in percent
      */
-    private function calculateAvailability($totalTime, $outageTime) {
+    private static function calculateAvailability($totalTime, $outageTime) {
         return number_format((($totalTime - $outageTime) / $totalTime) * 100);
     }
 }

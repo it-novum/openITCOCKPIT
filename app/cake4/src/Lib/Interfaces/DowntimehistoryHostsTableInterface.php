@@ -42,4 +42,10 @@ interface DowntimehistoryHostsTableInterface {
      */
     public function getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId);
 
+    /**
+     * @param DowntimeHostConditions $DowntimeHostConditions
+     * @return array
+     */
+    public function getDowntimesForReporting(DowntimeHostConditions $DowntimeHostConditions);
+
 }

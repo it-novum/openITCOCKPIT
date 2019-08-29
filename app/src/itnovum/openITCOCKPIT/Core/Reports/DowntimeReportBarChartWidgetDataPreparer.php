@@ -73,7 +73,7 @@ class DowntimeReportBarChartWidgetDataPreparer {
                     $totalTime,
                     $host['Host']['reportData'][1] // <<---- time in seconds with host state 'DOWN'
                 );
-                FileDebugger::varExport($host['Host']['reportData']);
+
                 foreach ($host['Host']['reportData'] as $state => $value) {
                     if($value === 0){
                         $barChartData[$chunkNumber]['datasets'][$state]['data'][$key] = $value;
@@ -95,7 +95,7 @@ class DowntimeReportBarChartWidgetDataPreparer {
      * @param $outageTime
      * @return string availability in percent
      */
-    private function calculateAvailability($totalTime, $outageTime) {
+    private static function calculateAvailability($totalTime, $outageTime) {
         return number_format((($totalTime - $outageTime) / $totalTime) * 100, 3);
     }
 
@@ -105,7 +105,7 @@ class DowntimeReportBarChartWidgetDataPreparer {
      * @param $stateTimeInSecond
      * @return string
      */
-    private function calculatePercentvalue($totalTimeInSeconds, $stateTimeInSecond) {
+    private static function calculatePercentvalue($totalTimeInSeconds, $stateTimeInSecond) {
         return number_format(($stateTimeInSecond / $totalTimeInSeconds) * 100, 3);
     }
 }

@@ -195,15 +195,103 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
             ->disableHydration()
             ->first();
 
-        if($result === null){
+        if ($result === null) {
             return [];
         }
 
         return [
             'DowntimeHosts' => $result,
-            'Hosts' => [
+            'Hosts'         => [
                 'uuid' => $result['Objects']['name1']
             ]
         ];
+    }
+
+    /**
+     * @param DowntimeHostConditions $DowntimeHostConditions
+     * @return array
+     */
+    public function getDowntimesForReporting(DowntimeHostConditions $DowntimeHostConditions) {
+        $query = $this->find()
+            ->select([
+                'DowntimeHosts.author_name',
+                'DowntimeHosts.comment_data',
+                'DowntimeHosts.entry_time',
+                'DowntimeHosts.scheduled_start_time',
+                'DowntimeHosts.scheduled_end_time',
+                'DowntimeHosts.duration',
+                'DowntimeHosts.was_started',
+                'DowntimeHosts.internal_downtime_id',
+                'DowntimeHosts.downtimehistory_id',
+                'DowntimeHosts.was_cancelled',
+
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+
+                'HostsToContainers.container_id',
+            ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = DowntimeHosts.object_id', 'DowntimeHosts.downtime_type = 2'] //Downtime.downtime_type = 2 Host downtime
+            )
+            ->innerJoin(
+                ['Hosts' => 'hosts'],
+                ['Objects.name1 = Hosts.uuid']
+            )
+            ->leftJoin(
+                ['HostsToContainers' => 'hosts_to_containers'],
+                ['HostsToContainers.host_id = Hosts.id']
+            )
+            ->order($DowntimeHostConditions->getOrder())
+            ->group('DowntimeHosts.downtimehistory_id');
+
+
+        if ($DowntimeHostConditions->hasHostUuids()) {
+            $uuids = $DowntimeHostConditions->getHostUuids();
+            if(!is_array($uuids)){
+                $uuids = [$uuids];
+            }
+
+            $query->andWhere([
+                'Objects.name1 IN' => $uuids
+            ]);
+        }
+
+        if ($DowntimeHostConditions->includeCancelledDowntimes() === false) {
+            $query->andWhere([
+                'DowntimeHosts.was_cancelled' => 0
+            ]);
+        }
+
+        if ($DowntimeHostConditions->hasContainerIds()) {
+            $query->andWhere([
+                'HostsToContainers.container_id IN' => $DowntimeHostConditions->getContainerIds()
+            ]);
+        }
+
+        if ($DowntimeHostConditions->hasConditions()) {
+            $query->andWhere($DowntimeHostConditions->getConditions());
+        }
+
+        $startDateSqlFormat = date('Y-m-d H:i:s', $DowntimeHostConditions->getFrom());
+        $endDateSqlFormat = date('Y-m-d H:i:s', $DowntimeHostConditions->getTo());
+
+        $query->where([
+            'OR' => [
+                ['(:start1 BETWEEN DowntimeHosts.scheduled_start_time AND DowntimeHosts.scheduled_end_time)'],
+                ['(:end1   BETWEEN DowntimeHosts.scheduled_start_time AND DowntimeHosts.scheduled_end_time)'],
+                ['(DowntimeHosts.scheduled_start_time BETWEEN :start2 AND :end2)'],
+
+            ]
+        ])
+            ->bind(':start1', $startDateSqlFormat, 'date')
+            ->bind(':end1', $endDateSqlFormat, 'date')
+            ->bind(':start2', $startDateSqlFormat, 'date')
+            ->bind(':end2', $endDateSqlFormat, 'date');
+
+        $query->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
     }
 }

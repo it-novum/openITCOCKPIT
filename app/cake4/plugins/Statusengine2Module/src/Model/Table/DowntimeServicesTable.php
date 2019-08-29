@@ -229,4 +229,110 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
         $result = $records->toArray();
         return Hash::extract($result, '{n}.internal_downtime_id');
     }
+
+    public function getDowntimesForReporting(DowntimeServiceConditions $DowntimeServiceConditions) {
+        $query = $this->find();
+        $query->select([
+            'DowntimeServices.author_name',
+            'DowntimeServices.comment_data',
+            'DowntimeServices.entry_time',
+            'DowntimeServices.scheduled_start_time',
+            'DowntimeServices.scheduled_end_time',
+            'DowntimeServices.duration',
+            'DowntimeServices.was_started',
+            'DowntimeServices.internal_downtime_id',
+            'DowntimeServices.downtimehistory_id',
+            'DowntimeServices.was_cancelled',
+
+            'Services.id',
+            'Services.uuid',
+            'Services.name',
+            'Services.servicetemplate_id',
+
+            'Servicetemplates.id',
+            'Servicetemplates.name',
+
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.name',
+
+            'HostsToContainers.container_id',
+
+            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+        ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = DowntimeServices.object_id', 'DowntimeServices.downtime_type = 1'] //Downtime.downtime_type = 1 Service downtime
+            )
+            ->innerJoin(
+                ['Services' => 'services'],
+                ['Services.uuid = Objects.name2']
+            )
+            ->innerJoin(
+                ['Servicetemplates' => 'servicetemplates'],
+                ['Servicetemplates.id = Services.servicetemplate_id']
+            )
+            ->innerJoin(
+                ['Hosts' => 'hosts'],
+                ['Objects.name1 = Hosts.uuid']
+            )
+            ->leftJoin(
+                ['HostsToContainers' => 'hosts_to_containers'],
+                ['HostsToContainers.host_id = Hosts.id']
+            )
+            ->order($DowntimeServiceConditions->getOrder())
+            ->group('DowntimeServices.downtimehistory_id');
+
+
+        if ($DowntimeServiceConditions->hasContainerIds()) {
+            $query->andWhere([
+                'HostsToContainers.container_id IN' => $DowntimeServiceConditions->getContainerIds()
+            ]);
+        }
+
+
+        if ($DowntimeServiceConditions->hasHostUuids()) {
+            $hostUuids = $DowntimeServiceConditions->getHostUuids();
+            if (!is_array($hostUuids)) {
+                $hostUuids = [$hostUuids];
+            }
+            $query->andWhere([
+                'Objects.name1 IN' => $hostUuids
+            ]);
+        }
+
+        if ($DowntimeServiceConditions->hasServiceUuids()) {
+            $serviceUuids = $DowntimeServiceConditions->getServiceUuids();
+            if (!is_array($serviceUuids)) {
+                $serviceUuids = [$serviceUuids];
+            }
+            $query->andWhere([
+                'Objects.name2 IN' => $serviceUuids
+            ]);
+        }
+
+        if ($DowntimeServiceConditions->includeCancelledDowntimes() === false) {
+            $query->andWhere([
+                'DowntimeServices.was_cancelled' => 0
+            ]);
+        }
+
+        $startDateSqlFormat = date('Y-m-d H:i:s', $DowntimeServiceConditions->getFrom());
+        $endDateSqlFormat = date('Y-m-d H:i:s', $DowntimeServiceConditions->getTo());
+
+        $query->where([
+            'OR' => [
+                ['(:start1 BETWEEN DowntimeServices.scheduled_start_time AND DowntimeServices.scheduled_end_time)'],
+                ['(:end1   BETWEEN DowntimeServices.scheduled_start_time AND DowntimeServices.scheduled_end_time)'],
+                ['(DowntimeServices.scheduled_start_time BETWEEN :start2 AND :end2)'],
+
+            ]
+        ])
+            ->bind(':start1', $startDateSqlFormat, 'date')
+            ->bind(':end1', $endDateSqlFormat, 'date')
+            ->bind(':start2', $startDateSqlFormat, 'date')
+            ->bind(':end2', $endDateSqlFormat, 'date');
+
+        $query->all();
+    }
 }
