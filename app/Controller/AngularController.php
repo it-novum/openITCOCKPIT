@@ -936,4 +936,9 @@ class AngularController extends AppController {
         //Only ship HTML template
         return;
     }
+
+    public function reload_required(){
+        //Only ship HTML template
+        return;
+    }
 }

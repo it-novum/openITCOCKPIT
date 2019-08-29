@@ -131,7 +131,7 @@ class UsercontainerrolesController extends AppController {
         }
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
-            //Return contact information
+            //Return user container roles information
             $this->set('usercontainerrole', $usercontainerrole['Usercontainerrole']);
             $this->set('_serialize', ['usercontainerrole']);
             return;

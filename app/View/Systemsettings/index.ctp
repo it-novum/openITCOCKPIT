@@ -39,6 +39,8 @@
     </div>
 </div>
 
+<reload-required></reload-required>
+
 <section id="widget-grid" class="">
 
     <div class="row">

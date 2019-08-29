@@ -23,21 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\ApikeysTable;
+use App\Model\Table\UsersTable;
+use Cake\Http\Session;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 
 /**
  * Class ProfileController
- * @property User User
- * @property SessionComponent Session
- * @property AppAuthComponent Auth
- * @property Systemsetting Systemsetting
+ * @property AppAuthComponent $Auth
+ * @property Session $Session
  */
 class ProfileController extends AppController {
+
     public $layout = 'blank';
-    public $uses = [
-        'Systemsetting'
-    ];
 
     public $components = ['Upload', 'Session'];
 
@@ -47,76 +45,104 @@ class ProfileController extends AppController {
             return;
         }
 
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
-        $user = $Users->get($this->Auth->user('id'), ['contain' => 'containers', 'users_to_containers']);
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
-        $userForFrontend = [
-            'firstname'         => $user->firstname,
-            'lastname'          => $user->lastname,
-            'samaccountname'    => $user->samaccountname,
-            'email'             => $user->email,
-            'phone'             => $user->phone,
-            'showstatsinmenu'   => $user->showstatsinmenu,
-            'recursive_browser' => $user->recursive_browser,
-            'paginatorlength'   => $user->paginatorlength,
-            'dateformat'        => $user->dateformat,
-            'timezone'          => $user->timezone,
-            'image'             => $user->image
-        ];
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        if (!$UsersTable->existsById($User->getId())) {
+            throw new NotFoundException(__('User not found'));
+        }
+
+        $user = $UsersTable->getUserForEdit($User->getId());
+        $isLdapUser = !empty($user['User']['samaccountname']);
+
+        unset($user['User']['usercontainerroles']);
+        unset($user['User']['containers']);
+        unset($user['User']['usercontainerroles_containerids']);
+        unset($user['User']['ContainersUsersMemberships']);
 
         $FileUploadSize = new FileUploadSize();
-        $this->set('maxUploadLimit', $FileUploadSize->toArray());
-        $this->set('user', $userForFrontend);
-        $this->set('_serialize', ['user', 'maxUploadLimit']);
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return profile information
+            $this->set('user', $user['User']);
+            $this->set('isLdapUser', $isLdapUser);
+            $this->set('maxUploadLimit', $FileUploadSize->toArray());
+            $this->set('_serialize', ['user', 'isLdapUser', 'maxUploadLimit']);
+            return;
+        }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            /***** Change user data *****/
-            if (isset($this->request->data['User'])) {
-                if ($this->request->data['User']['paginatorlength'] < '0') {
-                    $this->request->data['User']['paginatorlength'] = '1';
-                }
-                if ($this->request->data['User']['paginatorlength'] > '1000') {
-                    $this->request->data['User']['paginatorlength'] = '1000';
-                }
-                //prevent multiple hash of password
-                unset($user->password);
+            $data = $this->request->data('User');
 
-                $userToSave = $Users->patchEntity($user, $this->request->data('User'));
+            $user = $UsersTable->get($User->getId());
+            $user->setAccess('id', false);
 
-                $Users->save($userToSave);
-                if ($userToSave->hasErrors()) {
-                    $this->response->statusCode(400);
-                    $this->set('error', $user->getErrors());
-                    $this->set('_serialize', ['error']);
-                    return;
-                }
-                $sessionUser = $this->Session->read('Auth');
-
-                $merged = Hash::merge($sessionUser, $this->request->data);
-                $this->Session->write('Auth', $merged);
+            if ($isLdapUser) {
+                $data['is_ldap'] = true;
+                $user->setAccess('email', false);
+                $user->setAccess('firstname', false);
+                $user->setAccess('lastname', false);
+                $user->setAccess('password', false);
+                $user->setAccess('samaccountname', false);
+                $user->setAccess('ldap_dn', false);
             }
 
-
-            /***** Change users password *****/
-            if (isset($this->request->data['Password'])) {
-                if ($Users->getPasswordHash($this->request->data['Password']['current_password']) != $user->password) {
-                    $this->set('error', __('Current Password is incorrect'));
-                    $this->set('_serialize', ['error']);
-                    return;
-                }
-
-                $userToSave = $Users->patchEntity($user, $this->request->data('Password'));
-
-                $Users->save($userToSave);
-                if ($userToSave->hasErrors()) {
-                    $this->response->statusCode(400);
-                    $this->set('error', $user->getErrors());
-                    $this->set('_serialize', ['error']);
-                    return;
-                }
+            //prevent multiple hash of password
+            if ($data['password'] === '' && $data['confirm_password'] === '') {
+                unset($data['password']);
+                unset($data['confirm_password']);
             }
+
+            $user = $UsersTable->patchEntity($user, $data);
+            $UsersTable->save($user);
+            if ($user->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $user->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            }
+
+            //Update user information in $_SESSION
+            $this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
+            $this->set('user', $user);
+            $this->set('_serialize', ['user']);
         }
+    }
+
+    public function changePassword() {
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        $user = $UsersTable->get($User->getId());
+
+        $data = $this->request->data('Password');
+        if ($UsersTable->getPasswordHash($data['current_password']) !== $user->get('password')) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'current_password' => [
+                    __('Current password is incorrect')
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $user = $UsersTable->patchEntity($user, $data);
+        $UsersTable->save($user);
+        if ($user->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $user->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
+        $this->set('message', __('Password changed successfully.'));
+        $this->set('_serialize', ['message']);
     }
 
     public function upload_profile_icon() {
@@ -125,9 +151,11 @@ class ProfileController extends AppController {
             return;
         }
 
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
-        $user = $Users->get($this->Auth->user('id'), ['contain' => 'containers', 'users_to_containers']);
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        $user = $UsersTable->get($this->Auth->user('id'), ['contain' => 'containers', 'users_to_containers']);
 
         /***** Change users profile image *****/
         if (!file_exists(WWW_ROOT . 'userimages')) {
@@ -142,14 +170,14 @@ class ProfileController extends AppController {
                 $user->image = $filename;
                 //prevent multiple hash of password
                 unset($user->password);
-                $Users->save($user);
+                $UsersTable->save($user);
                 if ($user->hasErrors()) {
                     $this->response->statusCode(400);
                     $this->set('error', $user->getErrors());
                     $this->set('_serialize', ['error']);
                     return;
                 }
-                $this->Session->write('Auth.User.image', $filename);
+                $this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
 
                 //Delete old image
                 $path = WWW_ROOT . 'userimages' . DS;
@@ -334,26 +362,15 @@ class ProfileController extends AppController {
 
     }
 
-    public function loadUserimage(){
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-        $Users = TableRegistry::getTableLocator()->get('Users');
-        $user = $Users->get($this->Auth->user('id'));
-        $this->set('image', $user->image);
-        $this->set('_serialize', ['image']);
-    }
-
     public function deleteImage() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
 
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
-        $user = $Users->get($this->Auth->user('id'), ['contain' => 'containers', 'users_to_containers']);
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        $user = $UsersTable->get($this->Auth->user('id'), ['contain' => 'containers', 'users_to_containers']);
         //prevent multiple hash of password
         unset($user->password);
 
@@ -365,7 +382,7 @@ class ProfileController extends AppController {
 
         $user->image = null;
 
-        $Users->save($user);
+        $UsersTable->save($user);
         if ($user->hasErrors()) {
             $this->response->statusCode(400);
             $this->set('error', $user->getErrors());
