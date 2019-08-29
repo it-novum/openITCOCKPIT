@@ -46,15 +46,11 @@ angular.module('openITCOCKPIT').directive('calendar', function($http){
                     "default": true
                 },
 
-                eventTimeFormat: { // like '14:30'
-                    hour: '2-digit',
-                    minute: '2-digit'
-                },
-
                 slotLabelFormat: {
                     hour: '2-digit',
                     minute: '2-digit',
-                    omitZeroMinute: true
+                    omitZeroMinute: false,
+                    hour12: false
                 },
                 allDaySlot:false,
                 eventLimit: 5, // for all non-TimeGrid views
