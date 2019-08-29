@@ -215,7 +215,9 @@ class UsersTable extends Table {
         $validator
             ->integer('paginatorlength')
             ->requirePresence('paginatorlength', 'create')
-            ->allowEmptyString('paginatorlength', null, false);
+            ->allowEmptyString('paginatorlength', null, false)
+            ->greaterThan('paginatorlength', 0, __('Minimum amount is 1'))
+            ->lessThanOrEqual('paginatorlength', 1000, __('Maximum amount is 1000'));
 
         $validator
             ->boolean('recursive_browser')

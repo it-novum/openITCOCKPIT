@@ -22,23 +22,25 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+$timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
 ?>
-<?php $timezones = CakeTime::listTimezones(); ?>
+
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-home fa-fw "></i>
             <?php echo __('Profile'); ?>
             <span>>
-                <?php echo __('Edit'); ?>
+                <?php echo __('Overview'); ?>
             </span>
         </h1>
     </div>
 </div>
+
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-user"></i> </span>
-        <h2><?php echo __('Change profile'); ?></h2>
+        <h2><?php echo __('Profile information'); ?></h2>
     </header>
     <div>
         <div class="widget-body">
@@ -93,7 +95,7 @@
 
                     <div class="form-group required" ng-class="{'has-error': errors.email}">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('Email Address'); ?>
+                            <?php echo __('Email address'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <input
@@ -126,7 +128,7 @@
 
                     <div class="form-group" ng-class="{'has-error': errors.showstatsinmenu}">
                         <label class="col col-md-2 control-label" for="userShowstatsinmenu">
-                            <?php echo __('Show status stats in menu'); ?>
+                            <?php echo __('Show status badges in menu'); ?>
                         </label>
                         <div class="col-xs-10 smart-form">
                             <label class="checkbox small-checkbox-label no-required">
@@ -161,7 +163,9 @@
                                    type="number"
                                    ng-model="post.User.paginatorlength">
                             <div>
-                                <div class="help-block text-muted"><?php echo __('This field defines the length of every list in the openITCOCKPIT System for your Profile. You can choose between 1 and 1000'); ?></div>
+                                <div class="help-block text-muted">
+                                    <?php echo __('This field defines the length of every list in the openITCOCKPIT System for your Profile. You can choose between 1 and 1000'); ?>
+                                </div>
                             </div>
                             <div ng-repeat="error in errors.paginatorlength">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -173,7 +177,7 @@
 
                     <div class="form-group required" ng-class="{'has-error': errors.dateformat}">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('Date Format'); ?>
+                            <?php echo __('Date format'); ?>
                         </label>
                         <div class="col col-xs-10">
 
@@ -245,7 +249,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-picture-o"></i> </span>
-        <h2><?php echo __('Your picture'); ?></h2>
+        <h2><?php echo __('Profile picture'); ?></h2>
     </header>
     <div>
         <div class="widget-body">
@@ -336,6 +340,7 @@
                             <input
                                     class="form-control"
                                     type="password"
+                                    autocomplete="new-password"
                                     ng-model="post.Password.password">
                             <div ng-repeat="error in errors.password">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -346,12 +351,13 @@
                     <div ng-if="!isLdapAuth" class="form-group required"
                          ng-class="{'has-error': errors.confirm_password}">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('Retype password'); ?>
+                            <?php echo __('Confirm new password'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <input
                                     class="form-control"
                                     type="password"
+                                    autocomplete="new-password"
                                     ng-model="post.Password.confirm_password">
                             <div ng-repeat="error in errors.confirm_password">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -363,7 +369,7 @@
                         <div class="well formactions ">
                             <div class="pull-right">
                                 <input class="btn btn-primary" type="submit"
-                                       value="<?php echo __('Update Password'); ?>">
+                                       value="<?php echo __('Change Password'); ?>">
                                 <a ui-sref="ProfileEdit" class="btn btn-default"><?php echo __('Cancel'); ?></a>
                             </div>
                         </div>

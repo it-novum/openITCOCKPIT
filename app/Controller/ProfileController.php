@@ -23,21 +23,18 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\ApikeysTable;
+use Cake\Http\Session;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 
 /**
  * Class ProfileController
- * @property User User
- * @property SessionComponent Session
- * @property AppAuthComponent Auth
- * @property Systemsetting Systemsetting
+ * @property AppAuthComponent $Auth
+ * @property Session $Session
  */
 class ProfileController extends AppController {
+
     public $layout = 'blank';
-    public $uses = [
-        'Systemsetting'
-    ];
 
     public $components = ['Upload', 'Session'];
 
