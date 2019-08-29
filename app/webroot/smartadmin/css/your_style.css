@@ -2746,3 +2746,30 @@ fc-left .dropdown {
     position: relative;
     z-index: 1;
 }
+
+/* fullcalendar 'more+' container style settings */
+.fc-more-popover .fc-event-container {
+    padding: 10px;
+}
+
+.fc-time-grid .fc-event-container {
+    position: relative;
+    z-index: 4;
+}
+
+.fc-time-grid .fc-helper-container { /* also is fc-event-container */
+    position: relative;
+    z-index: 6;
+}
+
+/* TimeGrid Event Containment
+--------------------------------------------------------------------------------------------------*/
+
+.fc-ltr .fc-time-grid .fc-event-container { /* space on the sides of events for LTR (default) */
+    margin: 0 2.5% 0 2px;
+}
+
+.fc-rtl .fc-time-grid .fc-event-container { /* space on the sides of events for RTL */
+    margin: 0 2px 0 2.5%;
+}
+
