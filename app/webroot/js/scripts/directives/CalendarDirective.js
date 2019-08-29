@@ -45,12 +45,35 @@ angular.module('openITCOCKPIT').directive('calendar', function($http){
                     basicWeek: true,
                     "default": true
                 },
-
                 slotLabelFormat: {
                     hour: '2-digit',
                     minute: '2-digit',
                     omitZeroMinute: false,
                     hour12: false
+                },
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12:false
+                },
+                views: {
+                    dayGrid: {
+                        displayEventTime: false
+                    },
+                    timeGrid: {
+                        displayEventTime: false
+                    },
+                    week: {
+                        dayGridWeek: {
+                            displayEventTime: false
+                        },
+                        timeGridWeek : {
+                            displayEventTime: true
+                        }
+                    },
+                    day: {
+                        displayEventTime: false
+                    }
                 },
                 allDaySlot:false,
                 eventLimit: 5, // for all non-TimeGrid views
@@ -63,7 +86,6 @@ angular.module('openITCOCKPIT').directive('calendar', function($http){
                 eventOverlap: false,
                 eventDurationEditable: false,
                 events: $scope.events,
-                displayEventTime: false,
                 eventRender: function(info){
                     var nonStandardFields = info.event.extendedProps; //description,...
                     if(info.event.description != ""){
