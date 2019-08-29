@@ -83,7 +83,8 @@ $config = [
                 'queryhandler',
                 'hostBrowserMenu',
                 'serviceBrowserMenu',
-                'durationInput'
+                'durationInput',
+                'calendar'
             ],
             'Automaps'         => [
                 'icon'
@@ -314,9 +315,9 @@ $config = [
                 'edit'  => ['loadContainers', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments', 'loadElementsByContainerId'],
             ],
             'Users'                 => [
-                'index' => ['view', 'loadUsersByContainerId'],
-                'add'   => ['addFromLdap', 'loadLdapUserByString', 'loadDateformats'],
-                'edit'  => ['resetPassword', 'loadDateformats'],
+                'index' => ['view', 'loadUsersByContainerId', 'loadUsergroups'],
+                'add'   => ['addFromLdap', 'loadLdapUserByString', 'loadDateformats', 'loadUsergroups', 'loadContainerRoles', 'loadContainerPermissions'],
+                'edit'  => ['resetPassword', 'loadDateformats', 'loadUsergroups', 'loadContainerRoles', 'loadContainerPermissions'],
             ],
             'Tenants'               => [
                 'index'  => ['view'],

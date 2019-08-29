@@ -33,7 +33,6 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServicetemplategroupsConditions;
@@ -147,7 +146,6 @@ class ServicetemplategroupsController extends AppController {
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
             $extDataForChangelog = $ServicetemplategroupsTable->resolveDataForChangelog($this->request->data);
-            FileDebugger::dump(array_merge($this->request->data, $extDataForChangelog));
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 'add',
                 'servicetemplategroups',
@@ -788,7 +786,7 @@ class ServicetemplategroupsController extends AppController {
             return;
         }
 
-        if(!$this->request->is('post')){
+        if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 

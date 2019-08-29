@@ -28,6 +28,7 @@ use Cake\Cache\Cache;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 class SystemsettingsController extends AppController {
+
     public $layout = 'blank';
 
     public function index() {
@@ -78,21 +79,4 @@ class SystemsettingsController extends AppController {
         }
     }
 
-
-    public function getSystemsettingsForAngularBySection(){
-        if (!$this->isApiRequest()) {
-            //Only ship template for AngularJs
-            return;
-        }
-        $systemsettings = [];
-        $section = (string)$this->request->query('section');
-
-        if(!empty($section)){
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $systemsettings = $Systemsettings->findAsArraySection($section);
-        }
-
-        $this->set('systemsettings', $systemsettings);
-        $this->set('_serialize', ['systemsettings']);
-    }
 }

@@ -820,10 +820,10 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "UsersEditController"
             })
 
-            .state('UsersAddFromLdap', {
-                url: '/users/addFromLdap',
+            .state('UsersLdap', {
+                url: '/users/ldap',
                 templateUrl: "/users/addFromLdap.html",
-                controller: "UsersAddFromLdapController"
+                controller: "UsersLdapController"
             })
 
             .state('UsersEditFromLdap', {

@@ -1131,8 +1131,9 @@ rect.unknown {
 
 .downtime-report-state-overview {
     border: 1px solid #fff;
-    text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);
+    /*text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);*/
     color: #fff;
+    margin: 1px 0px;
 }
 
 .search_list_item_active {
@@ -2687,23 +2688,25 @@ input[type=text]:focus + .input-group-addon-no-focus {
 }
 
 #countryList.dropdown-menu > li > a {
-    padding:0px 5px;
+    padding: 0px 5px;
 }
 
 .fc-left .dropdown .dropdown-menu {
     display: block;
     visibility: hidden;
     opacity: 0;
-    transition:         all 0.2s  ease;
-    -moz-transition:    all 0.2s  ease;
-    -webkit-transition: all 0.2s  ease;
-    -o-transition:      all 0.2s  ease;
-    -ms-transition:     all 0.2s  ease;
+    transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -webkit-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
 }
+
 .fc-left .dropdown:hover .dropdown-menu {
     visibility: visible;
     opacity: 1;
 }
+
 fc-left .dropdown {
     display: inline-block;
 }
@@ -2718,8 +2721,44 @@ fc-left .dropdown {
     border-radius: 2px;
 }
 
-.userrole-permission{
+.userrole-permission {
     border-left: 5px solid #92a2a8;
     border-bottom: 1px solid #eee;
     border-radius: 2px;
+}
+
+.rounded-box {
+    border-radius: 20px 5px;
+}
+
+.label-group-width-auto {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    cursor: default!important;
+}
+
+.label-group-width-auto .label-small {
+    color: #ffffff;
+    text-align: center;
+    padding: 1px 4px;
+    width:30px;
+    font-size: 10px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 0;
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid transparent;
+    border-radius: 2px !important;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+/* BugFix Style Issue events are not visible*/
+.fc-time-grid .fc-event, .fc-time-grid .fc-bgevent {
+    position: relative;
+    z-index: 1;
 }

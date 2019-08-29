@@ -117,7 +117,7 @@
                     </div>
 
                     <div class="form-group" ng-class="{'has-error': errors.email}">
-                        <label class="col col-md-2 control-label">
+                        <label class="col col-md-2 control-label hintmark">
                             <?php echo __('Email'); ?>
                         </label>
                         <div class="col col-xs-10">
@@ -133,7 +133,7 @@
                     </div>
 
                     <div class="form-group" ng-class="{'has-error': errors.phone}">
-                        <label class="col col-md-2 control-label">
+                        <label class="col col-md-2 control-label hintmark">
                             <?php echo __('Phone'); ?>
                         </label>
                         <div class="col col-xs-10">
@@ -584,7 +584,7 @@
                 <div class="col-xs-12 margin-top-10 margin-bottom-10">
                     <div class="well formactions ">
                         <div class="pull-right">
-                            <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">
+                            <input class="btn btn-primary" type="submit" value="<?php echo __('Update contact'); ?>">
                             <a back-button fallback-state='ContactsIndex'
                                class="btn btn-default"><?php echo __('Cancel'); ?></a>
                         </div>

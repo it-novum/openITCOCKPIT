@@ -78,11 +78,4 @@ class CurrentstatereportForm extends Form {
         }
         return false;
     }
-
-
-    protected function _execute(array $data) {
-        return false;
-        // Send an email.
-        return true;
-    }
 }

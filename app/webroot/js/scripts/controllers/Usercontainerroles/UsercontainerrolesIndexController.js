@@ -1,16 +1,24 @@
 angular.module('openITCOCKPIT')
     .controller('UsercontainerrolesIndexController', function($scope, $http, MassChangeService, QueryStringService, NotyService, SortService){
-        $scope.currentPage = 1;
-        $scope.deleteUrl = '/usercontainerroles/delete/';
+        SortService.setSort(QueryStringService.getValue('sort', 'Usercontainerroles.name'));
+        SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
                 Usercontainerroles: {
-                    name: '',
+                    name: ''
                 }
             };
         };
+
+        $scope.currentPage = 1;
+        $scope.useScroll = true;
+
+        $scope.massChange = {};
+        $scope.selectedElements = 0;
+        $scope.deleteUrl = '/usercontainerroles/delete/';
+
 
         $scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter === true;
@@ -33,27 +41,44 @@ angular.module('openITCOCKPIT')
             $http.get("/usercontainerroles/index.json", {
                 params: params
             }).then(function(result){
-                $scope.Usercontainerroles = result.data.allUsercontainerroles;
+                $scope.usercontainerroles = result.data.all_usercontainerroles;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
 
+        $scope.selectAll = function(){
+            if($scope.usercontainerroles){
+                for(var key in $scope.usercontainerroles){
+                    if($scope.usercontainerroles[key].allow_edit === true){
+                        var id = $scope.usercontainerroles[key].id;
+                        $scope.massChange[id] = true;
+                    }
+                }
+            }
+        };
+
+        $scope.undoSelection = function(){
+            MassChangeService.clearSelection();
+            $scope.massChange = MassChangeService.getSelected();
+            $scope.selectedElements = MassChangeService.getCount();
+        };
+
         $scope.getObjectForDelete = function(usercontainerrole){
             var object = {};
-            object[usercontainerrole.Usercontainerrole.id] = usercontainerrole.Usercontainerrole.name;
+            object[usercontainerrole.id] = usercontainerrole.name;
             return object;
         };
 
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.Usercontainerroles){
+            for(var key in $scope.usercontainerroles){
                 for(var id in selectedObjects){
-                    if(id == $scope.Usercontainerroles[key].Usercontainerrole.id){
-                        if($scope.Usercontainerroles[key].Usercontainerrole.allow_edit === true){
-                            objects[id] = $scope.Usercontainerroles[key].Usercontainerrole.name;
+                    if(id == $scope.usercontainerroles[key].id){
+                        if($scope.usercontainerroles[key].allow_edit === true){
+                            objects[id] = $scope.usercontainerroles[key].name;
                         }
                     }
                 }
@@ -61,8 +86,22 @@ angular.module('openITCOCKPIT')
             return objects;
         };
 
+        $scope.changepage = function(page){
+            $scope.undoSelection();
+            if(page !== $scope.currentPage){
+                $scope.currentPage = page;
+                $scope.load();
+            }
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
+
         //Fire on page load
         defaultFilter();
+        SortService.setCallback($scope.load);
         $scope.load();
 
         $scope.$watch('filter', function(){
@@ -70,6 +109,9 @@ angular.module('openITCOCKPIT')
             $scope.load();
         }, true);
 
-
+        $scope.$watch('massChange', function(){
+            MassChangeService.setSelected($scope.massChange);
+            $scope.selectedElements = MassChangeService.getCount();
+        }, true);
     });
 

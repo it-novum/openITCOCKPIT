@@ -44,4 +44,10 @@ interface DowntimehistoryServicesTableInterface {
      */
     public function getServiceDowntimesByHostAndDowntime($hostId, Downtime $Downtime);
 
+    /**
+     * @param DowntimeServiceConditions $DowntimeServiceConditions
+     * @return array
+     */
+    public function getDowntimesForReporting(DowntimeServiceConditions $DowntimeServiceConditions);
+
 }

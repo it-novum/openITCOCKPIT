@@ -66,6 +66,11 @@ class Hoststatus {
     private $activeChecksEnabled;
 
     /**
+     * @var int
+     */
+    private $lastHardState;
+
+    /**
      * @var string
      */
     private $lastHardStateChange;
@@ -155,6 +160,10 @@ class Hoststatus {
 
         if (isset($data['active_checks_enabled'])) {
             $this->activeChecksEnabled = (bool)$data['active_checks_enabled'];
+        }
+
+        if (isset($data['last_hard_state'])) {
+            $this->lastHardState = (int)$data['last_hard_state'];
         }
 
         if (isset($data['last_hard_state_change'])) {
@@ -320,6 +329,10 @@ class Hoststatus {
      */
     public function isHardState() {
         return (bool)$this->state_type;
+    }
+
+    public function getLastHardState() {
+        return $this->lastHardState;
     }
 
     public function getLastHardStateChange() {

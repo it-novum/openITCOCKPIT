@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use Statusengine2Module\Model\Entity\StatehistoryHost;
@@ -125,7 +126,6 @@ class StatehistoryHostsTable extends Table implements StatehistoryHostTableInter
                 ]
             ]);
         }
-
 
         if ($PaginateOMat === null) {
             //Just execute query
