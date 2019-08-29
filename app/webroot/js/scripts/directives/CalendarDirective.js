@@ -55,11 +55,6 @@ angular.module('openITCOCKPIT').directive('calendar', function($http){
                     minute: '2-digit',
                     hour12: false
                 },
-                displayEventEnd: {
-                    month: true,
-                    basicWeek: true,
-                    "default": true
-                },
                 slotLabelFormat: {
                     hour: '2-digit',
                     minute: '2-digit',
@@ -71,26 +66,8 @@ angular.module('openITCOCKPIT').directive('calendar', function($http){
                     minute: '2-digit',
                     hour12: false
                 },
-                views: {
-                    dayGrid: {
-                        displayEventTime: false
-                    },
-                    timeGrid: {
-                        displayEventTime: false
-                    },
-                    week: {
-                        dayGridWeek: {
-                            displayEventTime: false
-                        },
-                        timeGridWeek: {
-                            displayEventTime: true
-                        }
-                    },
-                    day: {
-                        displayEventTime: false
-                    }
-                },
-                allDaySlot: false,
+                displayEventEnd: true,
+                allDaySlot: true,
                 eventLimit: 10, // for all non-TimeGrid views
                 //  defaultDate: $scope.fromDate,
                 navLinks: false, // can click day/week names to navigate views
