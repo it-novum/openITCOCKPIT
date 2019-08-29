@@ -2,10 +2,11 @@
 
 namespace App\Model\Table;
 
-use Cake\ORM\Table;
-use Cake\Validation\Validator;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Table;
+use Cake\Validation\Validator;
+use Configure;
 
 /**
  * Usergroups Model
@@ -80,6 +81,18 @@ class UsergroupsTable extends Table {
         return $query->toArray();
     }
 
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Usergroups.id' => $id]);
+    }
+
+    /**
+     * @param null $PaginateOMat
+     * @return array
+     */
     public function getUsergroups($PaginateOMat = null) {
         $query = $this->find()
             ->disableHydration()
@@ -97,7 +110,29 @@ class UsergroupsTable extends Table {
                 $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
             }
         }
-      $result = $query->toArray();
+        $result = $query->toArray();
         return $result;
+    }
+
+
+    /**
+     * @param $id
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getUsergroupById($id) {
+        $query = $this->find('all')
+            ->disableHydration()
+            ->where([
+                'id' => $id
+            ]);
+        if (is_null($query)) {
+            return [];
+        }
+        return $query->first();
+    }
+
+    public function getAlwaysAllowedAcos($acosAsNest) {
+        Configure::load('acl_dependencies');
+
     }
 }
