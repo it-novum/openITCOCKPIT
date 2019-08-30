@@ -374,39 +374,46 @@ class DowntimereportsController extends AppController {
                 $downtimeReport['hostsWithoutOutages'][] = $reportResult;
             }
         }
-        $downtimeReport['hostsWithOutages'] = Hash::sort(
-            $downtimeReport['hostsWithOutages'],
-            '{n}.Host.reportdata.1',
-            'desc'
-        );
-
-        $downtimeReport['hostsWithOutages'] = array_chunk($downtimeReport['hostsWithOutages'], 10);
         if (!empty($downtimeReport['hostsWithOutages'])) {
-            $hostBarChartData = DowntimeReportBarChartWidgetDataPreparer::getDataForHostBarChart(
+            $downtimeReport['hostsWithOutages'] = Hash::sort(
                 $downtimeReport['hostsWithOutages'],
-                $totalTime
+                '{n}.Host.reportdata.1',
+                'desc'
             );
-            foreach ($downtimeReport['hostsWithOutages'] as $chunkKey => $hostsArray) {
-                $downtimeReport['hostsWithOutages'][$chunkKey]['barChartData'] = $hostBarChartData;
-                foreach ($hostsArray as $key => $hostData) {
-                    $downtimeReport['hostsWithOutages'][$chunkKey][$key]['Host']['pieChartData'] = DowntimeReportPieChartWidgetDataPreparer::getDataForHostPieChartWidget(
-                        $hostData,
-                        $totalTime,
-                        $UserTime
-                    );
-                    if (!empty($hostData['Services'])) {
-                        foreach ($hostData['Services'] as $uuid => $serviceData) {
-                            $downtimeReport['hostsWithOutages'][$chunkKey][$key]['Services'][$uuid]['pieChartData'] = DowntimeReportPieChartWidgetDataPreparer::getDataForServicePieChart(
-                                $serviceData,
-                                $totalTime,
-                                $UserTime
-                            );
+            $downtimeReport['hostsWithOutages'] = array_chunk($downtimeReport['hostsWithOutages'], 10);
+            if (!empty($downtimeReport['hostsWithOutages'])) {
+                $hostBarChartData = DowntimeReportBarChartWidgetDataPreparer::getDataForHostBarChart(
+                    $downtimeReport['hostsWithOutages'],
+                    $totalTime
+                );
+                foreach ($downtimeReport['hostsWithOutages'] as $chunkKey => $hostsArray) {
+                    $downtimeReport['hostsWithOutages'][$chunkKey]['barChartData'] = $hostBarChartData;
+                    foreach ($hostsArray as $key => $hostData) {
+                        $downtimeReport['hostsWithOutages'][$chunkKey][$key]['Host']['pieChartData'] = DowntimeReportPieChartWidgetDataPreparer::getDataForHostPieChartWidget(
+                            $hostData,
+                            $totalTime,
+                            $UserTime
+                        );
+                        if (!empty($hostData['Services'])) {
+                            foreach ($hostData['Services'] as $uuid => $serviceData) {
+                                $downtimeReport['hostsWithOutages'][$chunkKey][$key]['Services'][$uuid]['pieChartData'] = DowntimeReportPieChartWidgetDataPreparer::getDataForServicePieChart(
+                                    $serviceData,
+                                    $totalTime,
+                                    $UserTime
+                                );
+                            }
                         }
                     }
                 }
             }
         }
+
         $downtimeReport['downtimes'] = $downtimes;
         return $downtimeReport;
+    }
+
+    public function hostsBarChart() {
+        //Only ship HTML template
+        return;
     }
 }

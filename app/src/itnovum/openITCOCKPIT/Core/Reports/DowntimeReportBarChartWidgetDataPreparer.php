@@ -48,7 +48,7 @@ class DowntimeReportBarChartWidgetDataPreparer {
                     'availability' => [
                         'label' => __('Availability in %'),
                         'type'  => 'line',
-                        'data'  => $defaultSet
+                        'data'  => []
                     ],
                     0              => [
                         'label' => 'Up',

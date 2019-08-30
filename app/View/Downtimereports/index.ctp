@@ -45,12 +45,14 @@
                     <i class="fa fa-pencil-square-o"></i>
                 </a>
             </li>
-            <li ng-class="{'active': tabName=='calendarOverview'}" ng-click="tabName='calendarOverview'" ng-show="reportData.downtimes">
+            <li ng-class="{'active': tabName=='calendarOverview'}" ng-click="tabName='calendarOverview'"
+                ng-show="reportData.downtimes">
                 <a href="javascript:void()" data-toggle="tab">
                     <i class="fa fa-calendar"></i>
                 </a>
             </li>
-            <li ng-class="{'active': tabName=='hostsServicesOverview'}" ng-click="tabName='hostsServicesOverview'" ng-show="reportData.downtimes">
+            <li ng-class="{'active': tabName=='hostsServicesOverview'}" ng-click="tabName='hostsServicesOverview'"
+                ng-show="reportData.downtimes">
                 <a href="javascript:void()" data-toggle="tab">
                     <i class="fa fa-pie-chart"></i>
                 </a>
@@ -59,7 +61,8 @@
     </header>
     <div>
         <div class="widget-body">
-            <div ng-switch="tabName" ng-init="reportMessage={successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
+            <div ng-switch="tabName"
+                 ng-init="reportMessage={successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
                 <section ng-switch-when="reportConfig" id="reportConfig" class="tab-pane fade active in">
                     <?php
                     echo $this->Form->create('Downtimereport', [
@@ -196,10 +199,16 @@
                     </div>
                 </section>
                 <section ng-switch-when="calendarOverview" id="calendarOverview" class="tab-pane fade active in">
-                    <calendar downtimes="reportData.downtimes" from-date="post.from_date" to-date="post.to_date"></calendar>
+                    <downtimecalendar downtimes="reportData.downtimes" from-date="post.from_date"
+                                      to-date="post.to_date"></downtimecalendar>
                 </section>
-                <section ng-switch-when="hostsServicesOverview" id="hostsServicesOverview" class="tab-pane fade active in">
-                    Host and Services
+                <section ng-switch-when="hostsServicesOverview" id="hostsServicesOverview"
+                         class="tab-pane fade active in">
+                    <div ng-repeat="(key, hostsWithOutages) in reportData.hostsWithOutages">
+                        {{hostsWithOutages}}
+                        <hosts-bar-chart chart-id="key"
+                                         bar-chart-data="hostsWithOutages.barChartData"></hosts-bar-chart>
+                    </div>
                 </section>
             </div>
         </div>
