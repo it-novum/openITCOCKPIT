@@ -71,14 +71,15 @@ class DowntimeReportPieChartWidgetDataPreparer {
      * @throws \Exception
      */
     public static function getDataForServicePieChart($serviceData, $totalTime, UserTime $UserTime) {
-        if (empty($hostData['Service']['reportData'])) {
+        if (empty($serviceData['Service']['reportData'])) {
             return [];
         }
         return [
             'labels'         => [
-                __('Up'),
-                __('Down'),
-                __('Unreachable')
+                __('Ok'),
+                __('Warning'),
+                __('Critical'),
+                __('Unknown')
             ],
             'data'           => $serviceData['Service']['reportData'],
             'availability'   => self::calculateAvailability(

@@ -241,7 +241,7 @@ $config = [
                 'index' => ['createPdfReport', 'createHtmlReport'],
             ],
             'Downtimereports'       => [
-                'index' => ['createPdfReport', 'hostsBarChart'],
+                'index' => ['createPdfReport', 'hostsBarChart', 'hostAvailabilityOverview', 'serviceAvailabilityOverview'],
             ],
             'Hostdependencies'      => [
                 'index' => ['view'],

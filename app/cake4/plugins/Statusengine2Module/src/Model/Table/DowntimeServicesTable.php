@@ -251,6 +251,7 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
 
             'Servicetemplates.id',
             'Servicetemplates.name',
+            'Servicetemplates.template_name',
 
             'Hosts.id',
             'Hosts.uuid',
@@ -334,5 +335,8 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
             ->bind(':end2', $endDateSqlFormat, 'date');
 
         $query->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+
     }
 }

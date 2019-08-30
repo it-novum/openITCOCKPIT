@@ -204,10 +204,22 @@
                 </section>
                 <section ng-switch-when="hostsServicesOverview" id="hostsServicesOverview"
                          class="tab-pane fade active in">
-                    <div ng-repeat="(key, hostsWithOutages) in reportData.hostsWithOutages">
-                        {{hostsWithOutages}}
-                        <hosts-bar-chart chart-id="key"
-                                         bar-chart-data="hostsWithOutages.barChartData"></hosts-bar-chart>
+                    <div ng-repeat="(chunkIndex, hostsWithOutages) in reportData.hostsWithOutages">
+                        <hosts-bar-chart chart-id="chunkIndex"
+                                         bar-chart-data="hostsWithOutages.hostBarChartData"></hosts-bar-chart>
+
+                        <div class="row" ng-if="post.evaluation_type == 0">
+                            <!-- Hosts only -->
+                            <host-availability-overview data="host"
+                                                        ng-repeat="host in hostsWithOutages.hosts"></host-availability-overview>
+                        </div>
+
+                        <div class="row" ng-repeat="host in hostsWithOutages.hosts" ng-if="post.evaluation_type == 1">
+                            <!-- Host and Services -->
+                            <host-availability-overview data="host"></host-availability-overview>
+                            <service-availability-overview data="service"
+                                                           ng-repeat="service in host.Services"></service-availability-overview>
+                        </div>
                     </div>
                 </section>
             </div>
