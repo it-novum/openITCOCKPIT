@@ -411,4 +411,9 @@ class DowntimereportsController extends AppController {
         $downtimeReport['downtimes'] = $downtimes;
         return $downtimeReport;
     }
+
+    public function hostsBarChart() {
+        //Only ship HTML template
+        return;
+    }
 }
