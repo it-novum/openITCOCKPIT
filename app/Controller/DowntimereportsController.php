@@ -266,7 +266,8 @@ class DowntimereportsController extends AppController {
             if (empty($statehistoriesHost)) {
                 $HoststatusTable = $this->DbBackend->getHoststatusTable();
                 $HoststatusFields = new HoststatusFields($this->DbBackend);
-                $HoststatusFields->currentState()
+                $HoststatusFields
+                    ->currentState()
                     ->lastHardState()
                     ->isHardstate()
                     ->lastStateChange();
@@ -328,7 +329,8 @@ class DowntimereportsController extends AppController {
             if (empty($statehistoriesService)) {
                 $ServicestatusTable = $this->DbBackend->getServicestatusTable();
                 $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-                $ServicestatusFields->currentState()
+                $ServicestatusFields
+                    ->currentState()
                     ->lastHardState()
                     ->isHardstate()
                     ->lastStateChange();
