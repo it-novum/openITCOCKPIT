@@ -7,37 +7,38 @@ angular.module('openITCOCKPIT').directive('hostsBarChart', function($http, $time
             'barChartData': '='
         },
         controller: function($scope){
-            $timeout(function(){
+
+            var renderHostBarChart = function(){
                 var hostChart = new Chart('chart-' + $scope.chartId, {
                     type: 'bar',
                     data: {
-                        labels: $scope.barChartData[0].labels,
+                        labels: $scope.barChartData.labels,
                         datasets: [{
                             type: 'line',
-                            label: $scope.barChartData[0].datasets['availability'].label,
+                            label: $scope.barChartData.datasets['availability'].label,
                             borderColor: '#317ABF',
                             backgroundColor: '#3688D8',
                             borderWidth: 2,
                             fill: false,
-                            data: $scope.barChartData[0].datasets['availability'].data
+                            data: $scope.barChartData.datasets['availability'].data
                         }, {
                             type: 'bar',
-                            label: $scope.barChartData[0].datasets[0].label,
-                            data: $scope.barChartData[0].datasets[0].data,
+                            label: $scope.barChartData.datasets[0].label,
+                            data: $scope.barChartData.datasets[0].data,
                             backgroundColor: '#449D44',
                             borderColor: '#ffffff',
                             borderWidth: 1
                         }, {
                             type: 'bar',
-                            label: $scope.barChartData[0].datasets[1].label,
-                            data: $scope.barChartData[0].datasets[1].data,
+                            label: $scope.barChartData.datasets[1].label,
+                            data: $scope.barChartData.datasets[1].data,
                             backgroundColor: '#C9302C',
                             borderColor: '#ffffff',
                             borderWidth: 1
                         }, {
                             type: 'bar',
-                            label: $scope.barChartData[0].datasets[2].label,
-                            data: $scope.barChartData[0].datasets[2].data,
+                            label: $scope.barChartData.datasets[2].label,
+                            data: $scope.barChartData.datasets[2].data,
                             backgroundColor: '#92a2a8',
                             borderColor: '#ffffff',
                             borderWidth: 1
@@ -101,6 +102,10 @@ angular.module('openITCOCKPIT').directive('hostsBarChart', function($http, $time
                         }
                     }
                 });
+            };
+
+            $timeout(function(){
+                renderHostBarChart();
             });
         },
 

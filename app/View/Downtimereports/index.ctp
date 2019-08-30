@@ -61,9 +61,9 @@
     </header>
     <div>
         <div class="widget-body">
-            <div ng-switch="tabName"
+            <div
                  ng-init="reportMessage={successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
-                <section ng-switch-when="reportConfig" id="reportConfig" class="tab-pane fade active in">
+                <section ng-show="tabName == 'reportConfig'" id="reportConfig" class="tab-pane fade active in">
                     <?php
                     echo $this->Form->create('Downtimereport', [
                         'class' => 'form-horizontal clear',
@@ -198,16 +198,28 @@
                         </div>
                     </div>
                 </section>
-                <section ng-switch-when="calendarOverview" id="calendarOverview" class="tab-pane fade active in">
+                <section ng-if="tabName == 'calendarOverview'" id="calendarOverview" class="tab-pane fade active in">
                     <downtimecalendar downtimes="reportData.downtimes" from-date="post.from_date"
                                       to-date="post.to_date"></downtimecalendar>
                 </section>
-                <section ng-switch-when="hostsServicesOverview" id="hostsServicesOverview"
+                <section ng-if="tabName == 'hostsServicesOverview'" id="hostsServicesOverview"
                          class="tab-pane fade active in">
-                    <div ng-repeat="(key, hostsWithOutages) in reportData.hostsWithOutages">
-                        {{hostsWithOutages}}
-                        <hosts-bar-chart chart-id="key"
-                                         bar-chart-data="hostsWithOutages.barChartData"></hosts-bar-chart>
+                    <div ng-repeat="(chunkIndex, hostsWithOutages) in reportData.hostsWithOutages">
+                        <hosts-bar-chart chart-id="chunkIndex"
+                                         bar-chart-data="hostsWithOutages.hostBarChartData"></hosts-bar-chart>
+
+                        <div class="row" ng-if="post.evaluation_type == 0">
+                            <!-- Hosts only -->
+                            <host-availability-overview data="host" dynamic-color="setColorDynamically"
+                                                        ng-repeat="host in hostsWithOutages.hosts"></host-availability-overview>
+                        </div>
+
+                        <div class="row" ng-repeat="host in hostsWithOutages.hosts" ng-if="post.evaluation_type == 1">
+                            <!-- Host and Services -->
+                            <host-availability-overview data="host" dynamic-color="setColorDynamically"></host-availability-overview>
+                            <service-availability-overview data="service" dynamic-color="setColorDynamically"
+                                                           ng-repeat="service in host.Services"></service-availability-overview>
+                        </div>
                     </div>
                 </section>
             </div>

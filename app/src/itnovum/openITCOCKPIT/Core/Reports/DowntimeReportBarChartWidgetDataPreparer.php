@@ -24,8 +24,8 @@
 
 namespace itnovum\openITCOCKPIT\Core\Reports;
 
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 /**
  * Class DowntimeReportBarChartWidgetDataPreparer
@@ -37,56 +37,56 @@ class DowntimeReportBarChartWidgetDataPreparer {
      * @param $totalTime
      * @return $barChartData array format ['labels'=>[], 'availability'=>[], 'up'=>[], 'down'=>[], 'unreachble' => []]
      */
-    public static function getDataForHostBarChart($hostData, $totalTime) {
+    public static function getDataForHostsBarChart($hostData, $totalTime) {
         $barChartData = [];
         $labels = array_fill(0, 10, '');
         $defaultSet = array_fill(0, 10, 0); //Availability or status (single) bar chart
-        foreach ($hostData as $chunkNumber => $data) {
-            $barChartData[$chunkNumber] = [
-                'labels'   => $labels,
-                'datasets' => [
-                    'availability' => [
-                        'label' => __('Availability in %'),
-                        'type'  => 'line',
-                        'data'  => []
-                    ],
-                    0              => [
-                        'label' => 'Up',
-                        'type'  => 'bar',
-                        'data'  => $defaultSet
-                    ],
-                    1              => [
-                        'label' => 'Down',
-                        'type'  => 'bar',
-                        'data'  => $defaultSet
-                    ],
-                    2              => [
-                        'label' => 'Unreachable',
-                        'type'  => 'bar',
-                        'data'  => $defaultSet
-                    ]
+        $barChartData = [
+            'labels'   => $labels,
+            'datasets' => [
+                'availability' => [
+                    'label' => __('Availability in %'),
+                    'type'  => 'line',
+                    'data'  => []
+                ],
+                0              => [
+                    'label' => 'Up',
+                    'type'  => 'bar',
+                    'data'  => $defaultSet
+                ],
+                1              => [
+                    'label' => 'Down',
+                    'type'  => 'bar',
+                    'data'  => $defaultSet
+                ],
+                2              => [
+                    'label' => 'Unreachable',
+                    'type'  => 'bar',
+                    'data'  => $defaultSet
                 ]
-            ];
-            foreach ($data as $key => $host) {
-                $barChartData[$chunkNumber]['labels'][$key] = $host['Host']['name'];
-                $barChartData[$chunkNumber]['datasets']['availability']['data'][$key] = self::calculateAvailability(
-                    $totalTime,
-                    $host['Host']['reportData'][1] // <<---- time in seconds with host state 'DOWN'
-                );
+            ]
+        ];
 
-                foreach ($host['Host']['reportData'] as $state => $value) {
-                    if($value === 0){
-                        $barChartData[$chunkNumber]['datasets'][$state]['data'][$key] = $value;
-                    }else{
-                        $barChartData[$chunkNumber]['datasets'][$state]['data'][$key] = self::calculatePercentvalue(
-                            $totalTime,
-                            $value
-                        );
-                    }
+        foreach ($hostData as $index => $host) {
+            $barChartData['labels'][$index] = $host['Host']['name'];
+            $barChartData['datasets']['availability']['data'][$index] = self::calculateAvailability(
+                $totalTime,
+                $host['Host']['reportData'][1] // <<---- time in seconds with host state 'DOWN'
+            );
 
+            foreach ($host['Host']['reportData'] as $state => $value) {
+                if ($value === 0) {
+                    $barChartData['datasets'][$state]['data'][$index] = $value;
+                } else {
+                    $barChartData['datasets'][$state]['data'][$index] = self::calculatePercentvalue(
+                        $totalTime,
+                        $value
+                    );
                 }
+
             }
         }
+
         return $barChartData;
     }
 
