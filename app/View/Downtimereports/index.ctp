@@ -196,7 +196,7 @@
                     </div>
                 </section>
                 <section ng-switch-when="calendarOverview" id="calendarOverview" class="tab-pane fade active in">
-                    <calendar downtimes="reportData.downtimes" from-date="post.from_date" to-date="post.to_date"></calendar>
+                    <downtimecalendar downtimes="reportData.downtimes" from-date="post.from_date" to-date="post.to_date"></downtimecalendar>
                 </section>
                 <section ng-switch-when="hostsServicesOverview" id="hostsServicesOverview" class="tab-pane fade active in">
                     Host and Services
