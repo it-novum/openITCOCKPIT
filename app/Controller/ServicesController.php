@@ -41,7 +41,6 @@ use App\Model\Table\ServiceeventcommandargumentvaluesTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
-use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
@@ -1611,59 +1610,13 @@ class ServicesController extends AppController {
 
     /**
      * @param int|null $host_id
-     * @deprecated
      */
     public function serviceList($host_id = null) {
-        $this->layout = 'blank';
         $User = new User($this->Auth);
 
-        if (!$this->isApiRequest() && $host_id === null) {
-            /** @var $Systemsettings SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
-            $this->set('username', $User->getFullName());
-            //Only ship HTML template
-            return;
-        }
-
-
-        if (!$this->Host->exists($host_id) && $host_id !== null) {
-            throw new NotFoundException(__('Invalid host'));
-        }
-
-        $host = $this->Host->find('first', [
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.address',
-                'Host.host_url',
-                'Host.container_id',
-            ],
-            'conditions' => [
-                'Host.id' => $host_id,
-            ],
-            'contain'    => [
-                'Container',
-            ],
-        ]);
-
-        //Check if user is permitted to see this object
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-            $this->render403();
-            return;
-        }
-
-        if (!$this->isApiRequest()) {
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
-            $this->set('username', $User->getFullName());
-            //Only ship HTML template
-            return;
-        }
+        //Only ship HTML template
+        $this->set('username', $User->getFullName());
+        return;
     }
 
     /**
@@ -2454,15 +2407,15 @@ class ServicesController extends AppController {
         // Merge new command arguments that are missing in the service to service command arguments
         // and remove old command arguments that don't exists in the command anymore.
         $filteredCommandArgumentsValules = [];
-        foreach ($commandarguments as $commandargument){
+        foreach ($commandarguments as $commandargument) {
             $valueExists = false;
-            foreach($servicecommandargumentvalues as $servicecommandargumentvalue){
-                if($commandargument['Commandargument']['id'] === $servicecommandargumentvalue['commandargument_id']){
+            foreach ($servicecommandargumentvalues as $servicecommandargumentvalue) {
+                if ($commandargument['Commandargument']['id'] === $servicecommandargumentvalue['commandargument_id']) {
                     $filteredCommandArgumentsValules[] = $servicecommandargumentvalue;
                     $valueExists = true;
                 }
             }
-            if(!$valueExists){
+            if (!$valueExists) {
                 $filteredCommandArgumentsValules[] = [
                     'commandargument_id' => $commandargument['Commandargument']['id'],
                     'value'              => '',
@@ -2554,7 +2507,7 @@ class ServicesController extends AppController {
 
         $selected = $this->request->query('selected');
         $containerId = $this->request->query('containerId');
-        if(empty($containerId)){
+        if (empty($containerId)) {
             $containerId = $this->MY_RIGHTS;
         }
 
