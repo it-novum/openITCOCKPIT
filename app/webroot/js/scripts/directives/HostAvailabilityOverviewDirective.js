@@ -1,12 +1,21 @@
-angular.module('openITCOCKPIT').directive('hostAvailabilityOverview', function($http, $timeout){
+angular.module('openITCOCKPIT').directive('hostAvailabilityOverview', function($http, $timeout, AvailabilityColorCalculationService){
     return {
         restrict: 'E',
         templateUrl: '/downtimereports/hostAvailabilityOverview.html',
         scope: {
-            'data': '='
+            'data': '=',
+            'dynamicColor': '='
         },
         controller: function($scope){
             $timeout(function(){
+
+                $scope.color = 'rgba(76, 79, 83, 0.9)';
+                if($scope.dynamicColor){
+                    $scope.color = AvailabilityColorCalculationService.getBackgroundColor(
+                        $scope.data.pieChartData.availability
+                    );
+                }
+
                 var hostPieChart = new Chart('hostPieChart-' + $scope.data.Host.id, {
                     type: 'pie',
                     data: {

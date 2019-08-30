@@ -1,6 +1,6 @@
 <div class="col-xs-12 col-md-6 col-lg-3 padding-5">
     <div class="col col-md-12 padding-5 rounded-box"
-         ng-style="{'background': setColorDynamically ?'#65a339' : 'rgba(76, 79, 83, 0.9)'}"
+         ng-style="{'background':  color}"
          style="box-shadow: 1px 1px 3px #ccc;">
         <div class="col col-xs-4 col-md-4 col-lg-4 no-padding">
             <canvas id="hostPieChart-{{data.Host.id}}"></canvas>
