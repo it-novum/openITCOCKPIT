@@ -280,7 +280,7 @@ class DowntimereportsController extends AppController {
                                 'state'           => $Hoststatus->currentState(),
                                 'last_state'      => $Hoststatus->currentState(),
                                 'last_hard_state' => $Hoststatus->getLastHardState(),
-                                'state_type'      => $Hoststatus->getStateType()
+                                'state_type'      => (int)$Hoststatus->isHardState()
                             ]
                         ];
 
@@ -342,7 +342,7 @@ class DowntimereportsController extends AppController {
                                 'state'           => $Servicestatus->currentState(),
                                 'last_state'      => $Servicestatus->currentState(),
                                 'last_hard_state' => $Servicestatus->getLastHardState(),
-                                'state_type'      => $Servicestatus->getStateType()
+                                'state_type'      => (int)$Servicestatus->isHardState()
                             ]
                         ];
 
