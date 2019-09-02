@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('calendar', function($http){
+angular.module('openITCOCKPIT').directive('downtimecalendar', function($http){
     return {
         restrict: 'E',
         templateUrl: '/angular/calendar.html',
@@ -10,16 +10,17 @@ angular.module('openITCOCKPIT').directive('calendar', function($http){
         controller: function($scope){
             $scope.events = [];
             var pattern = /(\d{2})\.(\d{2})\.(\d{4})/;
-            var fromDate = new Date($scope.fromDate.replace(pattern,'$3-$2-$1'));
-            var toDate = new Date($scope.toDate.replace(pattern,'$3-$2-$1'));
-
+            var fromDate = new Date($scope.fromDate.replace(pattern, '$3-$2-$1'));
+            var toDate = new Date($scope.toDate.replace(pattern, '$3-$2-$1'));
+            $scope.events.isMultipleDay = true;
             for(var hostDowntimeKey in $scope.downtimes.Hosts){
                 $scope.events.push({
+                    id: $scope.downtimes.Hosts[hostDowntimeKey].id,
                     title: $scope.downtimes.Hosts[hostDowntimeKey].Hosts.name,
                     start: $scope.downtimes.Hosts[hostDowntimeKey].scheduled_start_time,
                     end: $scope.downtimes.Hosts[hostDowntimeKey].scheduled_end_time,
                     extendedProps: {
-                        description: $scope.downtimes.Hosts[hostDowntimeKey].comment_data,
+                        comment: $scope.downtimes.Hosts[hostDowntimeKey].comment_data,
                         author: $scope.downtimes.Hosts[hostDowntimeKey].author_name,
                         type: 'host'
                     }
@@ -29,18 +30,18 @@ angular.module('openITCOCKPIT').directive('calendar', function($http){
                 var serviceName = ($scope.downtimes.Services[hostDowntimeKey].Services.name === null) ?
                     $scope.downtimes.Services[hostDowntimeKey].Servicetemplates.name : $scope.downtimes.Services[hostDowntimeKey].Services.name;
                 $scope.events.push({
+                    id: $scope.downtimes.Services[hostDowntimeKey].id,
                     title: $scope.downtimes.Services[hostDowntimeKey].Hosts.name + '|' + serviceName,
                     start: $scope.downtimes.Services[hostDowntimeKey].scheduled_start_time,
                     end: $scope.downtimes.Services[hostDowntimeKey].scheduled_end_time,
                     extendedProps: {
-                        description: $scope.downtimes.Services[hostDowntimeKey].comment_data,
+                        comment: $scope.downtimes.Services[hostDowntimeKey].comment_data,
                         author: $scope.downtimes.Services[hostDowntimeKey].author_name,
                         type: 'service'
                     }
                 });
             }
             var calendarEl = document.getElementById('calendar');
-
             $scope.calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
                 defaultView: 'dayGridMonth',
@@ -73,7 +74,6 @@ angular.module('openITCOCKPIT').directive('calendar', function($http){
                 displayEventEnd: true,
                 allDaySlot: true,
                 eventLimit: 10, // for all non-TimeGrid views
-                //  defaultDate: $scope.fromDate,
                 navLinks: false, // can click day/week names to navigate views
                 businessHours: true, // display business hours
                 weekNumbers: true,
@@ -92,25 +92,19 @@ angular.module('openITCOCKPIT').directive('calendar', function($http){
                             $(info.el).addClass('bg-color-blueLight');
                             $(info.el).find('.fc-title').before('<i class="fa fa-cog fa-md"></i> ');
                         }
-                        $(info.el).find('.fc-title').append("<br/><span class='ultra-light'>" + nonStandardFields.description +
-                            "</span>");
                         $(info.el).popover({
-                            trigger: 'hover',
                             html: true,
-                            title: info.event.title,
-                            placement: "auto",
-                            content: info.event.description
+                            title: '<div class="ellipsis">' + info.event.title + '</div>',
+                            placement: 'top',
+                            trigger: 'hover',
+                            container: 'body',
+                            content: '<div class="font-xs"><i class="fa fa-hourglass-start fa-xs"></i> ' + date('d.m.Y H:i:s', info.event.start.getTime() / 1000) +
+                                '<br /><i class="fa fa-hourglass-end fa-xs"></i> ' + date('d.m.Y H:i:s', info.event.end.getTime() / 1000) +
+                                '<br /><i class="fa fa-user fa-xs"></i> ' + info.event.extendedProps.author +
+                                '<br /><i class="fa fa-comment fa-xs"></i> ' + info.event.extendedProps.comment +
+                                '</div>'
                         });
                     }
-                    if(info.event.icon != ""){
-                        $(info.el).find('.fc-title').append("<i class='air air-top-right fa " + info.event.icon +
-                            " '></i>");
-                    }
-                },
-                eventAfterAllRender: function(view) {
-                    $('.fc-more-cell').parent('tr').each(function(){
-                        $(this).appendTo($(this).parent());
-                    });
                 },
                 dayRender: function(dayRenderInfo){
                     if(dayRenderInfo.date >= fromDate && dayRenderInfo.date <= toDate){
@@ -121,7 +115,6 @@ angular.module('openITCOCKPIT').directive('calendar', function($http){
             });
             $scope.calendar.render();
         },
-
         link: function($scope, element, attr){
         }
     };

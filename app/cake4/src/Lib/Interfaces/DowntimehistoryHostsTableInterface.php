@@ -48,4 +48,11 @@ interface DowntimehistoryHostsTableInterface {
      */
     public function getDowntimesForReporting(DowntimeHostConditions $DowntimeHostConditions);
 
+    /**
+     * @param null $uuid
+     * @param bool $isRunning
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function byHostUuid($uuid = null, $isRunning = false);
+
 }

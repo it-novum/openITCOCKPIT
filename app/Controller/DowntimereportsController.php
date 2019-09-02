@@ -115,7 +115,6 @@ class DowntimereportsController extends AppController {
                 $hostsUuids,
                 $UserTime
             );
-
             $this->set('downtimeReport', $downtimeReport);
             $this->set('_serialize', ['downtimeReport']);
         }
@@ -199,7 +198,7 @@ class DowntimereportsController extends AppController {
             /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
             $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
 
-            $downtimes['Services'] = $DowntimehistoryServicesTable->getDowntimes($DowntimeServiceConditions);
+            $downtimes['Services'] = $DowntimehistoryServicesTable->getDowntimesForReporting($DowntimeServiceConditions);
             foreach ($downtimes['Services'] as $serviceDowntime) {
                 $hosts[$serviceDowntime->get('Hosts')['uuid']] = $serviceDowntime->get('Hosts');
                 $services[$serviceDowntime->get('Services')['uuid']] = [
@@ -266,7 +265,8 @@ class DowntimereportsController extends AppController {
             if (empty($statehistoriesHost)) {
                 $HoststatusTable = $this->DbBackend->getHoststatusTable();
                 $HoststatusFields = new HoststatusFields($this->DbBackend);
-                $HoststatusFields->currentState()
+                $HoststatusFields
+                    ->currentState()
                     ->lastHardState()
                     ->isHardstate()
                     ->lastStateChange();
@@ -280,7 +280,7 @@ class DowntimereportsController extends AppController {
                                 'state'           => $Hoststatus->currentState(),
                                 'last_state'      => $Hoststatus->currentState(),
                                 'last_hard_state' => $Hoststatus->getLastHardState(),
-                                'state_type'      => $Hoststatus->getStateType()
+                                'state_type'      => (int)$Hoststatus->isHardState()
                             ]
                         ];
 
@@ -328,7 +328,8 @@ class DowntimereportsController extends AppController {
             if (empty($statehistoriesService)) {
                 $ServicestatusTable = $this->DbBackend->getServicestatusTable();
                 $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-                $ServicestatusFields->currentState()
+                $ServicestatusFields
+                    ->currentState()
                     ->lastHardState()
                     ->isHardstate()
                     ->lastStateChange();
@@ -342,7 +343,7 @@ class DowntimereportsController extends AppController {
                                 'state'           => $Servicestatus->currentState(),
                                 'last_state'      => $Servicestatus->currentState(),
                                 'last_hard_state' => $Servicestatus->getLastHardState(),
-                                'state_type'      => $Servicestatus->getStateType()
+                                'state_type'      => (int)$Servicestatus->isHardState()
                             ]
                         ];
 
@@ -374,39 +375,96 @@ class DowntimereportsController extends AppController {
                 $downtimeReport['hostsWithoutOutages'][] = $reportResult;
             }
         }
-        $downtimeReport['hostsWithOutages'] = Hash::sort(
-            $downtimeReport['hostsWithOutages'],
-            '{n}.Host.reportdata.1',
-            'desc'
-        );
-
-        $downtimeReport['hostsWithOutages'] = array_chunk($downtimeReport['hostsWithOutages'], 10);
         if (!empty($downtimeReport['hostsWithOutages'])) {
-            $hostBarChartData = DowntimeReportBarChartWidgetDataPreparer::getDataForHostBarChart(
+            $downtimeReport['hostsWithOutages'] = Hash::sort(
                 $downtimeReport['hostsWithOutages'],
-                $totalTime
+                '{n}.Host.reportdata.1',
+                'desc'
             );
-            foreach ($downtimeReport['hostsWithOutages'] as $chunkKey => $hostsArray) {
-                $downtimeReport['hostsWithOutages'][$chunkKey]['barChartData'] = $hostBarChartData;
-                foreach ($hostsArray as $key => $hostData) {
-                    $downtimeReport['hostsWithOutages'][$chunkKey][$key]['Host']['pieChartData'] = DowntimeReportPieChartWidgetDataPreparer::getDataForHostPieChartWidget(
-                        $hostData,
-                        $totalTime,
-                        $UserTime
-                    );
-                    if (!empty($hostData['Services'])) {
-                        foreach ($hostData['Services'] as $uuid => $serviceData) {
-                            $downtimeReport['hostsWithOutages'][$chunkKey][$key]['Services'][$uuid]['pieChartData'] = DowntimeReportPieChartWidgetDataPreparer::getDataForServicePieChart(
+
+
+            $hostsWithOutagesChunk = $downtimeReport['hostsWithOutages'];
+            $downtimeReport['hostsWithOutages'] = [];
+            foreach (array_chunk($hostsWithOutagesChunk, 10) as $hostsChunk) {
+                $hostBarChartData = DowntimeReportBarChartWidgetDataPreparer::getDataForHostsBarChart(
+                    $hostsChunk,
+                    $totalTime
+                );
+
+                $hosts = [];
+                foreach ($hostsChunk as $index => $host) {
+                    if (isset($host['Services'])) {
+                        foreach ($host['Services'] as $uuid => $serviceData) {
+                            $host['Services'][$uuid]['pieChartData'] = DowntimeReportPieChartWidgetDataPreparer::getDataForServicePieChart(
                                 $serviceData,
                                 $totalTime,
                                 $UserTime
                             );
                         }
                     }
+
+                    $tmpHost = $host;
+                    $tmpHost['pieChartData'] = DowntimeReportPieChartWidgetDataPreparer::getDataForHostPieChartWidget(
+                        $host,
+                        $totalTime,
+                        $UserTime
+                    );
+
+                    $hosts[] = $tmpHost;
                 }
+
+                $downtimeReport['hostsWithOutages'][] = [
+                    'hosts'            => $hosts,
+                    'hostBarChartData' => $hostBarChartData
+                ];
             }
         }
+        if (!empty($downtimeReport['hostsWithoutOutages'])) {
+            $hostsWithoutOutages = $downtimeReport['hostsWithoutOutages'];
+            $downtimeReport['hostsWithoutOutages'] = [];
+            $hosts = [];
+            foreach ($hostsWithoutOutages as $index => $host) {
+                if (isset($host['Services'])) {
+                    foreach ($host['Services'] as $uuid => $serviceData) {
+                        $host['Services'][$uuid]['pieChartData'] = DowntimeReportPieChartWidgetDataPreparer::getDataForServicePieChart(
+                            $serviceData,
+                            $totalTime,
+                            $UserTime
+                        );
+                    }
+                }
+
+                $tmpHost = $host;
+                $tmpHost['pieChartData'] = DowntimeReportPieChartWidgetDataPreparer::getDataForHostPieChartWidget(
+                    $host,
+                    $totalTime,
+                    $UserTime
+                );
+
+                $hosts[] = $tmpHost;
+            }
+            $downtimeReport['hostsWithoutOutages'] = [
+                'hosts' => $hosts
+            ];
+        }
+
+
         $downtimeReport['downtimes'] = $downtimes;
         return $downtimeReport;
+    }
+
+    public function hostsBarChart() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function hostAvailabilityOverview() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function serviceAvailabilityOverview() {
+        //Only ship HTML template
+        return;
     }
 }

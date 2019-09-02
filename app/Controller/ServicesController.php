@@ -25,6 +25,10 @@
 
 use App\Lib\Constants;
 use App\Lib\Exceptions\MissingDbBackendException;
+use App\Lib\Interfaces\AcknowledgementHostsTableInterface;
+use App\Lib\Interfaces\AcknowledgementServicesTableInterface;
+use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
+use App\Lib\Interfaces\DowntimehistoryServicesTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Table\CommandargumentsTable;
@@ -47,21 +51,21 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\CommandArgReplacer;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ServiceMacroReplacer;
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
-use itnovum\openITCOCKPIT\Core\ServicetemplateMerger;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\Timeline\AcknowledgementSerializer;
@@ -73,12 +77,12 @@ use itnovum\openITCOCKPIT\Core\Timeline\TimeRangeSerializer;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
+use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
-use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 use Statusengine\PerfdataParser;
 
 /**
@@ -156,6 +160,8 @@ class ServicesController extends AppController {
 
     public function index() {
         if (!$this->isApiRequest()) {
+            $User = new User($this->Auth);
+            $this->set('username', $User->getFullName());
             //Only ship HTML template
             return;
         }
@@ -1243,209 +1249,143 @@ class ServicesController extends AppController {
     /**
      * @param int|string|null $idOrUuid
      * @throws \App\Lib\Exceptions\MissingDbBackendException
-     * @deprecated
      */
     public function browser($id = null) {
-        $this->layout = 'blank';
+        $User = new User($this->Auth);
+        $UserTime = $User->getUserTime();
 
         if (!$this->isAngularJsRequest()) {
             //Only ship template
+            $this->set('username', $User->getFullName());
             return;
         }
 
-        if (!$this->Service->exists($id)) {
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $HoststatusTable HoststatusTableInterface */
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+        /** @var $ServicestatusTable ServicestatusTableInterface */
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $AcknowledgementHostsTable AcknowledgementHostsTableInterface */
+        $AcknowledgementHostsTable = $this->DbBackend->getAcknowledgementHostsTable();
+        /** @var $AcknowledgementServicesTable AcknowledgementServicesTableInterface */
+        $AcknowledgementServicesTable = $this->DbBackend->getAcknowledgementServicesTable();
+        /** @var $DowntimehistoryHostsTable DowntimehistoryHostsTableInterface */
+        $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
+        /** @var $DowntimehistoryServicesTable DowntimehistoryServicesTableInterface */
+        $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
+
+        /** @var $SystemsettingsTable SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+        if (!$ServicesTable->existsById($id)) {
             throw new NotFoundException(__('Service not found'));
         }
 
-        /** @var $DocumentationsTable DocumentationsTable */
-        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+        $service = $ServicesTable->getServiceForBrowser($id);
+        $serviceObj = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
 
-        $rawService = $this->Service->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.host_id',
-                'Service.service_type',
-                'Service.service_url'
-            ],
-            'contain'    => [
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.name',
-                        'Servicetemplate.service_url'
-                    ]
-                ],
-                'Host'            => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.uuid',
-                        'Host.name',
-                        'Host.address'
-                    ]
-                ]
-            ],
-            'conditions' => [
-                'Service.id' => $id
-            ]
-        ]);
-
-        if ($rawService['Service']['service_url'] === '' || $rawService['Service']['service_url'] === null) {
-            $rawService['Service']['service_url'] = $rawService['Servicetemplate']['service_url'];
-        }
-
-        $ServiceMacroReplacer = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($rawService);
-        $rawService['Service']['service_url_replaced'] = $rawService['Service']['service_url'];
-        if ($rawService['Service']['service_url'] !== '' && $rawService['Service']['service_url'] !== null) {
-            $rawService['Service']['service_url_replaced'] = $ServiceMacroReplacer->replaceBasicMacros($rawService['Service']['service_url']);
-        }
-
-        $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($rawService['Service']['host_id']));
-        $host = new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost);
-        $rawHost['Host']['is_satellite_host'] = $host->isSatelliteHost();
-
-        $containerIdsToCheck = Hash::extract($rawHost, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $rawHost['Host']['container_id'];
-
-        //Check if user is permitted to see this object
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+        //Check permissions
+        $host = $HostsTable->getHostForServiceEdit($service['host_id']);
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
             return;
         }
 
-        if ($this->hasRootPrivileges) {
-            $allowEdit = true;
-        } else {
-            $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
+        $allowEdit = $this->hasRootPrivileges;
+        if ($this->hasRootPrivileges === false) {
+            $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $host['Host']['hosts_to_containers_sharing']['_ids']);
             $allowEdit = $ContainerPermissions->hasPermission();
         }
 
-        if (!$this->isAngularJsRequest()) {
-            $User = new User($this->Auth);
+        //Load required data to merge and display inheritance data
+        $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsByIdForServiceBrowser($host['Host']['id']);
+        $hosttemplateContactsAndContactgroups = $HosttemplatesTable->getContactsAndContactgroupsByIdForServiceBrowser($host['Host']['hosttemplate_id']);
+        $servicetemplate = $ServicetemplatesTable->getServicetemplateForServiceBrowser($service['servicetemplate_id']);
 
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
-            $this->set('username', $User->getFullName());
-            $this->set('host', $rawHost);
-            $this->set('service', $rawService);
-            $this->set('allowEdit', $allowEdit);
-            $this->set('docuExists', $DocumentationsTable->existsByUuid($rawService['Service']['uuid']));
-            //Only ship template
-            return;
-        }
+        //Merge service and inheritance data
+        $ServiceMergerForView = new ServiceMergerForBrowser(
+            $service,
+            $servicetemplate,
+            $hostContactsAndContactgroups,
+            $hosttemplateContactsAndContactgroups
+        );
+        $mergedService = $ServiceMergerForView->getDataForView();
 
+        //Load host
+        $hostEntity = $HostsTable->getHostById($host['Host']['id']);
+        $hostObj = new \itnovum\openITCOCKPIT\Core\Views\Host($hostEntity, $allowEdit);
+        $host = $hostObj->toArray();
+        $host['is_satellite_host'] = $hostObj->isSatelliteHost();
 
-        $serviceQuery = $this->Service->getQueryForBrowser($id);
-        $service = $this->Service->find('first', $serviceQuery);
+        //Replace macros in service url
+        $HostMacroReplacer = new HostMacroReplacer($host);
+        $ServiceMacroReplacer = new ServiceMacroReplacer($mergedService);
+        $ServiceCustomMacroReplacer = new CustomMacroReplacer($mergedService['customvariables'], OBJECT_SERVICE);
+        $mergedService['service_url_replaced'] =
+            $ServiceCustomMacroReplacer->replaceAllMacros(
+                $HostMacroReplacer->replaceBasicMacros(
+                    $ServiceMacroReplacer->replaceBasicMacros($mergedService['service_url'])
+                ));
 
-
-        $servicetemplateQuery = $this->Servicetemplate->getQueryForBrowser($service['Service']['servicetemplate_id']);
-        $servicetemplate = $this->Servicetemplate->find('first', $servicetemplateQuery);
-
-
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-
-        $hosttemplate = [
-            'Hosttemplate' => [
-                'id' => $rawHost['Hosttemplate']['id']
-            ],
-            'Contact'      => $rawHost['Hosttemplate']['Contact'],
-            'Contactgroup' => $rawHost['Hosttemplate']['Contactgroup']
-        ];
-        $HosttemplateMerger = new HosttemplateMerger($rawHost, $hosttemplate);
-
-
-        $ServicetemplateMerger = new ServicetemplateMerger($service, $servicetemplate);
-        //Use host/hosttemplate contacts and contactgroups as default
-        $contacts = $HosttemplateMerger->mergeContacts();
-        $contactgroups = $HosttemplateMerger->mergeContactgroups();
-
-        $ServicetemplateMerger->mergeContacts();
-        $ServicetemplateMerger->mergeContactgroups();
-
-        $mergedService = [
-            'Service'                     => $ServicetemplateMerger->mergeServiceWithTemplate(),
-            'CheckPeriod'                 => $ServicetemplateMerger->mergeCheckPeriod(),
-            'NotifyPeriod'                => $ServicetemplateMerger->mergeNotifyPeriod(),
-            'CheckCommand'                => $ServicetemplateMerger->mergeCheckCommand(),
-            'Customvariable'              => $ServicetemplateMerger->mergeCustomvariables(),
-            'Servicecommandargumentvalue' => $ServicetemplateMerger->mergeCommandargumentsForReplace()
-        ];
-
-        if ($ServicetemplateMerger->areContactsFromService() || $ServicetemplateMerger->areContactsFromServicetemplate()) {
-            //Overwrite contacts from service/servicetemplate
-            $contacts = $ServicetemplateMerger->mergeContacts();
-            $contactgroups = $ServicetemplateMerger->mergeContactgroups();
-            $mergedService['areContactsFromHost'] = false;
-            $mergedService['areContactsFromHosttemplate'] = false;
-            $mergedService['areContactsFromService'] = $ServicetemplateMerger->areContactsFromService();
-            $mergedService['areContactsFromServicetemplate'] = $ServicetemplateMerger->areContactsFromServicetemplate();
-        } else {
-            $mergedService['areContactsFromHost'] = $HosttemplateMerger->areContactsFromHost();
-            $mergedService['areContactsFromHosttemplate'] = $HosttemplateMerger->areContactsFromHosttemplate();
-            $mergedService['areContactsFromService'] = false;
-            $mergedService['areContactsFromServicetemplate'] = false;
-        }
-
-
-        $mergedService['Service']['allowEdit'] = $allowEdit;
-        $mergedService['checkIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['check_interval']);
-        $mergedService['retryIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['retry_interval']);
-        $mergedService['notificationIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['notification_interval']);
-
-        $ServiceMacroReplacer = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($mergedService);
-        $mergedService['Service']['service_url_replaced'] = $mergedService['Service']['service_url'];
-        if ($mergedService['Service']['service_url'] !== '' && $mergedService['Service']['service_url'] !== null) {
-            $mergedService['Service']['service_url_replaced'] = $ServiceMacroReplacer->replaceBasicMacros($mergedService['Service']['service_url']);
-        }
+        $checkCommand = $CommandsTable->getCommandById($mergedService['command_id']);
+        $checkPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedService['check_period_id']);
+        $notifyPeriod = $TimeperiodsTable->getTimeperiodByIdCake4($mergedService['notify_period_id']);
 
         // Replace $HOSTNAME$
-        $ServiceMacroReplacerCommandLine = new HostMacroReplacer($rawHost);
-        $serviceCommandLine = $ServiceMacroReplacerCommandLine->replaceBasicMacros($mergedService['CheckCommand']['command_line']);
+        $serviceCommandLine = $HostMacroReplacer->replaceBasicMacros($checkCommand['Command']['command_line']);
 
         // Replace $_SERVICEFOOBAR$
-        $ServiceCustomMacroReplacer = new CustomMacroReplacer($mergedService['Customvariable'], OBJECT_SERVICE);
         $serviceCommandLine = $ServiceCustomMacroReplacer->replaceAllMacros($serviceCommandLine);
 
         // Replace $SERVICEDESCRIPTION$
-        $ServiceMacroReplacerCommandLine = new ServiceMacroReplacer($mergedService);
-        $serviceCommandLine = $ServiceMacroReplacerCommandLine->replaceBasicMacros($serviceCommandLine);
+        $serviceCommandLine = $ServiceMacroReplacer->replaceBasicMacros($serviceCommandLine);
 
-        // Replace Command args $ARGx$
-        $serviceCommandLine = str_replace(
-            array_keys($mergedService['Servicecommandargumentvalue']),
-            array_values($mergedService['Servicecommandargumentvalue']),
-            $serviceCommandLine
-        );
+        // Replace $ARGn$
+        $ArgnReplacer = new CommandArgReplacer($mergedService['servicecommandargumentvalues']);
+        $serviceCommandLine = $ArgnReplacer->replace($serviceCommandLine);
+
         $mergedService['serviceCommandLine'] = $serviceCommandLine;
 
+        // Convert interval values for humans
+        $mergedService['checkIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['check_interval']);
+        $mergedService['retryIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['retry_interval']);
+        $mergedService['notificationIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['notification_interval']);
 
         //Check permissions for Contacts
         $contactsWithContainers = [];
         $writeContainers = $this->getWriteContainers();
-        foreach ($contacts as $key => $contact) {
+
+        foreach ($mergedService['contacts'] as $key => $contact) {
             $contactsWithContainers[$contact['id']] = [];
-            foreach ($contact['Container'] as $container) {
+            foreach ($contact['containers'] as $container) {
                 $contactsWithContainers[$contact['id']][] = $container['id'];
             }
 
-            $contacts[$key]['allowEdit'] = true;
+            $mergedService['contacts'][$key]['allowEdit'] = $this->hasRootPrivileges;
             if ($this->hasRootPrivileges === false) {
-                $all_contacts[$key]['allowEdit'] = false;
                 if (!empty(array_intersect($contactsWithContainers[$contact['id']], $writeContainers))) {
-                    $all_contacts[$key]['allowEdit'] = true;
+                    $mergedService['contacts'][$key]['allowEdit'] = true;
                 }
             }
         }
 
         //Check permissions for Contact groups
-        foreach ($contactgroups as $key => $contactgroup) {
-            $contactgroups[$key]['allowEdit'] = $this->isWritableContainer($contactgroup['Container']['parent_id']);
+        foreach ($mergedService['contactgroups'] as $key => $contactgroup) {
+            $mergedService['contactgroups'][$key]['allowEdit'] = $this->isWritableContainer($contactgroup['containers']['parent_id']);
         }
 
-        //Get host and service status
+        //Load host and service status
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields
             ->currentState()
@@ -1454,12 +1394,7 @@ class ServicesController extends AppController {
             ->lastStateChange();
 
 
-        /** @var $HoststatusTable HoststatusTableInterface */
-        $HoststatusTable = $this->DbBackend->getHoststatusTable();
-        /** @var $ServicestatusTable ServicestatusTableInterface */
-        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
-
-        $hoststatus = $HoststatusTable->byUuid($rawHost['Host']['uuid'], $HoststatusFields);
+        $hoststatus = $HoststatusTable->byUuid($hostObj->getUuid(), $HoststatusFields);
         if (empty($hoststatus)) {
             //Empty host state for Hoststatus object
             $hoststatus = [
@@ -1473,7 +1408,7 @@ class ServicesController extends AppController {
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
         $ServicestatusFields->wildcard();
 
-        $servicestatus = $ServicestatusTable->byUuid($service['Service']['uuid'], $ServicestatusFields);
+        $servicestatus = $ServicestatusTable->byUuid($service['uuid'], $ServicestatusFields);
         if (empty($servicestatus)) {
             //Empty host state for Servicestatus object
             $servicestatus = [
@@ -1482,45 +1417,48 @@ class ServicesController extends AppController {
         }
         $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus'], $UserTime);
         $servicestatus = $Servicestatus->toArrayForBrowser();
-        $servicestatus['longOutputHtml'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($Servicestatus->getLongOutput(), true));
 
+        //Parse BBCode in long output
+        $BBCodeParser = new BBCodeParser();
+        $servicestatus['longOutputHtml'] = $BBCodeParser->nagiosNl2br($BBCodeParser->asHtml($Servicestatus->getLongOutput(), true));
+
+        //Add parsed perfdata information
         $PerfdataChecker = new PerfdataChecker(
-            new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost),
-            new \itnovum\openITCOCKPIT\Core\Views\Service($rawService),
+            $hostObj,
+            $serviceObj,
             $this->PerfdataBackend,
             $Servicestatus
         );
-        $mergedService['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
+        $mergedService['has_graph'] = $PerfdataChecker->hasPerfdata();
+        $mergedService['allowEdit'] = $allowEdit;
         $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
         $mergedService['Perfdata'] = $PerfdataParser->parse();
 
+        $systemsettingsEntity = $SystemsettingsTable->getSystemsettingByKey('TICKET_SYSTEM.URL');
+        $ticketSystem = $systemsettingsEntity->get('value');
 
-        //Check for acknowledgements and downtimes
+        //Check for service acknowledgements and downtimes
         $acknowledgement = [];
         if ($Servicestatus->isAcknowledged()) {
-            $acknowledgement = $this->AcknowledgedService->byServiceUuid($service['Service']['uuid']);
+            $acknowledgement = $AcknowledgementServicesTable->byServiceUuid($serviceObj->getUuid());
             if (!empty($acknowledgement)) {
-                $Acknowledgement = new AcknowledgementService($acknowledgement['AcknowledgedService'], $UserTime);
+                $Acknowledgement = new AcknowledgementService($acknowledgement, $UserTime);
                 $acknowledgement = $Acknowledgement->toArray();
 
-                $ticketSystem = $this->Systemsetting->find('first', [
-                    'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
-                ]);
-
                 $ticketDetails = [];
-                if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $Acknowledgement->getCommentData(), $ticketDetails)) {
+                if (!empty($ticketSystem) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $Acknowledgement->getCommentData(), $ticketDetails)) {
                     $commentDataHtml = $Acknowledgement->getCommentData();
                     if (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) {
                         $commentDataHtml = sprintf(
                             '<a href="%s%s" target="_blank">%s %s</a>',
-                            $ticketSystem['Systemsetting']['value'],
+                            $ticketSystem,
                             $ticketDetails[3],
                             $ticketDetails[1],
                             $ticketDetails[2]
                         );
                     }
                 } else {
-                    $commentDataHtml = $this->Bbcode->asHtml($Acknowledgement->getCommentData(), true);
+                    $commentDataHtml = $BBCodeParser->asHtml($Acknowledgement->getCommentData(), true);
                 }
 
                 $acknowledgement['commentDataHtml'] = $commentDataHtml;
@@ -1529,185 +1467,99 @@ class ServicesController extends AppController {
 
         $downtime = [];
         if ($Servicestatus->isInDowntime()) {
-            $downtime = $this->DowntimeService->byServiceUuid($service['Service']['uuid'], true);
+            $downtime = $DowntimehistoryServicesTable->byServiceUuid($serviceObj->getUuid());
             if (!empty($downtime)) {
-                $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeService'], $allowEdit, $UserTime);
+                $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime, $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();
             }
         }
 
-        //Get Host Ack and Donwtime
-        $hostDowntime = [];
-        if ($Hoststatus->isInDowntime()) {
-            $hostDowntime = $this->DowntimeHost->byHostUuid($rawHost['Host']['uuid'], true);
-            if (!empty($hostDowntime)) {
-                $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($hostDowntime['DowntimeHost'], $allowEdit, $UserTime);
-                $hostDowntime = $DowntimeHost->toArray();
-            }
-        }
-
+        //Check for host acknowledgements and downtimes
         $hostAcknowledgement = [];
         if ($Hoststatus->isAcknowledged()) {
-            $hostAcknowledgement = $this->AcknowledgedHost->byHostUuid($rawHost['Host']['uuid']);
+            $hostAcknowledgement = $AcknowledgementHostsTable->byHostUuid($hostObj->getUuid());
             if (!empty($hostAcknowledgement)) {
-                $AcknowledgementHost = new AcknowledgementHost($hostAcknowledgement['AcknowledgedHost'], $UserTime);
+                $AcknowledgementHost = new AcknowledgementHost($hostAcknowledgement, $UserTime);
                 $hostAcknowledgement = $AcknowledgementHost->toArray();
 
-                $ticketSystem = $this->Systemsetting->find('first', [
-                    'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
-                ]);
-
                 $ticketDetails = [];
-                if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $AcknowledgementHost->getCommentData(), $ticketDetails)) {
+                if (!empty($ticketSystem) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $AcknowledgementHost->getCommentData(), $ticketDetails)) {
                     $commentDataHtml = $AcknowledgementHost->getCommentData();
                     if (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) {
                         $commentDataHtml = sprintf(
                             '<a href="%s%s" target="_blank">%s %s</a>',
-                            $ticketSystem['Systemsetting']['value'],
+                            $ticketSystem,
                             $ticketDetails[3],
                             $ticketDetails[1],
                             $ticketDetails[2]
                         );
                     }
                 } else {
-                    $commentDataHtml = $this->Bbcode->asHtml($AcknowledgementHost->getCommentData(), true);
+                    $commentDataHtml = $BBCodeParser->asHtml($AcknowledgementHost->getCommentData(), true);
                 }
 
                 $hostAcknowledgement['commentDataHtml'] = $commentDataHtml;
             }
         }
 
-        $docuExists = $DocumentationsTable->existsByUuid($mergedService['Service']['uuid']);
+        $hostDowntime = [];
+        if ($Hoststatus->isInDowntime()) {
+            $hostDowntime = $DowntimehistoryHostsTable->byHostUuid($hostObj->getUuid());
+            if (!empty($hostDowntime)) {
+                $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($hostDowntime, $allowEdit, $UserTime);
+                $hostDowntime = $DowntimeHost->toArray();
+            }
+        }
 
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
 
+        // Set data to fronend
         $this->set('mergedService', $mergedService);
-        $this->set('host', $rawHost);
-        $this->set('docuExists', $docuExists);
-        $this->set('contacts', $contacts);
-        $this->set('contactgroups', $contactgroups);
+        $this->set('host', ['Host' => $host]);
+        $this->set('areContactsInheritedFromHosttemplate', $ServiceMergerForView->areContactsInheritedFromHosttemplate());
+        $this->set('areContactsInheritedFromHost', $ServiceMergerForView->areContactsInheritedFromHost());
+        $this->set('areContactsInheritedFromServicetemplate', $ServiceMergerForView->areContactsInheritedFromServicetemplate());
         $this->set('hoststatus', $hoststatus);
         $this->set('servicestatus', $servicestatus);
         $this->set('acknowledgement', $acknowledgement);
         $this->set('downtime', $downtime);
         $this->set('hostDowntime', $hostDowntime);
         $this->set('hostAcknowledgement', $hostAcknowledgement);
+        $this->set('checkCommand', $checkCommand);
+        $this->set('checkPeriod', $checkPeriod);
+        $this->set('notifyPeriod', $notifyPeriod);
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
+
+
         $this->set('_serialize', [
             'mergedService',
             'host',
+            'areContactsInheritedFromHosttemplate',
+            'areContactsInheritedFromHost',
+            'areContactsInheritedFromServicetemplate',
             'hoststatus',
             'servicestatus',
-            'docuExists',
-            'contacts',
-            'contactgroups',
             'acknowledgement',
-            'hostAcknowledgement',
             'downtime',
             'hostDowntime',
+            'hostAcknowledgement',
+            'checkCommand',
+            'checkPeriod',
+            'notifyPeriod',
             'canSubmitExternalCommands'
         ]);
     }
 
     /**
      * @param int|null $host_id
-     * @deprecated
      */
     public function serviceList($host_id = null) {
-        $this->layout = 'blank';
         $User = new User($this->Auth);
 
-        if (!$this->isApiRequest() && $host_id === null) {
-            /** @var $Systemsettings SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
-            $this->set('username', $User->getFullName());
-            //Only ship HTML template
-            return;
-        }
-
-
-        if (!$this->Host->exists($host_id) && $host_id !== null) {
-            throw new NotFoundException(__('Invalid host'));
-        }
-
-        $host = $this->Host->find('first', [
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.address',
-                'Host.host_url',
-                'Host.container_id',
-            ],
-            'conditions' => [
-                'Host.id' => $host_id,
-            ],
-            'contain'    => [
-                'Container',
-            ],
-        ]);
-
-        //Check if user is permitted to see this object
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-            $this->render403();
-            return;
-        }
-
-        if (!$this->isApiRequest()) {
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
-            $this->set('username', $User->getFullName());
-            //Only ship HTML template
-            return;
-        }
+        //Only ship HTML template
+        $this->set('username', $User->getFullName());
+        return;
     }
-
-    /**
-     * Converts BB code to HTML
-     *
-     * @param string $uuid The services UUID you want to get the long output
-     * @param bool $parseBbcode If you want to convert BB Code to HTML
-     * @param bool $nl2br If you want to replace \n with <br>
-     *
-     * @return string
-     * @deprecated
-     */
-    function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true) {
-        $this->autoRender = false;
-        $result = $this->Service->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Service.id',
-                'Service.uuid'
-            ],
-            'conditions' => [
-                'Service.uuid' => $uuid
-            ]
-        ]);
-        if (!empty($result)) {
-            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields->longOutput();
-            $servicestatus = $this->Servicestatus->byUuid($result['Service']['uuid'], $ServicestatusFields);
-            if (isset($servicestatus['Servicestatus']['long_output'])) {
-                if ($parseBbcode === true) {
-                    if ($nl2br === true) {
-                        return $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($servicestatus['Servicestatus']['long_output'], $nl2br));
-                    } else {
-                        return $this->Bbcode->asHtml($servicestatus['Servicestatus']['long_output'], $nl2br);
-                    }
-                }
-
-                return $servicestatus['Servicestatus']['long_output'];
-            }
-        }
-
-        return '';
-    }
-
 
     public function listToPdf() {
         $this->layout = 'Admin.default';
@@ -2454,15 +2306,15 @@ class ServicesController extends AppController {
         // Merge new command arguments that are missing in the service to service command arguments
         // and remove old command arguments that don't exists in the command anymore.
         $filteredCommandArgumentsValules = [];
-        foreach ($commandarguments as $commandargument){
+        foreach ($commandarguments as $commandargument) {
             $valueExists = false;
-            foreach($servicecommandargumentvalues as $servicecommandargumentvalue){
-                if($commandargument['Commandargument']['id'] === $servicecommandargumentvalue['commandargument_id']){
+            foreach ($servicecommandargumentvalues as $servicecommandargumentvalue) {
+                if ($commandargument['Commandargument']['id'] === $servicecommandargumentvalue['commandargument_id']) {
                     $filteredCommandArgumentsValules[] = $servicecommandargumentvalue;
                     $valueExists = true;
                 }
             }
-            if(!$valueExists){
+            if (!$valueExists) {
                 $filteredCommandArgumentsValules[] = [
                     'commandargument_id' => $commandargument['Commandargument']['id'],
                     'value'              => '',
@@ -2554,7 +2406,7 @@ class ServicesController extends AppController {
 
         $selected = $this->request->query('selected');
         $containerId = $this->request->query('containerId');
-        if(empty($containerId)){
+        if (empty($containerId)) {
             $containerId = $this->MY_RIGHTS;
         }
 

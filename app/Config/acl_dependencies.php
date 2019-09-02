@@ -241,7 +241,7 @@ $config = [
                 'index' => ['createPdfReport', 'createHtmlReport'],
             ],
             'Downtimereports'       => [
-                'index' => ['createPdfReport'],
+                'index' => ['createPdfReport', 'hostsBarChart', 'hostAvailabilityOverview', 'serviceAvailabilityOverview'],
             ],
             'Hostdependencies'      => [
                 'index' => ['view'],
@@ -301,8 +301,7 @@ $config = [
             ],
             'Services'              => [
                 'deactivate'  => ['mass_deactivate'],
-                'index'       => ['serviceByHostId', 'listToPdf', 'view', 'loadServicesByContainerId', 'loadServicesByString'],
-                'browser'     => ['servicesByHostId', 'longOutputByUuid'],
+                'index'       => ['listToPdf', 'view', 'loadServicesByContainerId', 'loadServicesByString'],
                 'add'         => ['loadElementsByHostId', 'loadServicetemplate', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments'],
                 'edit'        => ['loadElementsByHostId', 'loadServicetemplate', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments'],
                 'serviceList' => ['deleted']
