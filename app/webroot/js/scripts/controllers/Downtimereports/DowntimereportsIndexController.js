@@ -6,7 +6,7 @@ angular.module('openITCOCKPIT')
         $scope.setColorDynamically = false;
         var now = new Date();
 
-        $scope.tabName='reportConfig';
+        $scope.tabName = 'reportConfig';
 
         $scope.post = {
             evaluation_type: 0,
@@ -69,7 +69,7 @@ angular.module('openITCOCKPIT')
                     $scope.reportData.downtimes = result.data.downtimeReport.downtimes;
                     $scope.reportData.hostsWithOutages = result.data.downtimeReport.hostsWithOutages;
                     $scope.reportData.hostsWithoutOutages = result.data.downtimeReport.hostsWithoutOutages;
-                    $scope.tabName='calendarOverview';
+                    $scope.tabName = 'calendarOverview';
 
                 }, function errorCallback(result){
                     NotyService.genericError({
@@ -95,9 +95,11 @@ Chart.pluginService.register({
             var txt = centerConfig.text;
             var color = centerConfig.color || '#000';
             var sidePadding = centerConfig.sidePadding || 20;
+            var fontSize = centerConfig.fontSize || 20;
+            var fontFixed = centerConfig.fontFixed || false;
             var sidePaddingCalculated = (sidePadding / 100) * (chart.innerRadius * 2)
             //Start with a base font of 30px
-            //ctx.font = "30px " + fontStyle;
+            ctx.font = fontSize + "px " + fontStyle;
 
             //Get the width of the string and also the width of the element minus 10 to give it 5px side padding
             var stringWidth = ctx.measureText(txt).width;
@@ -116,7 +118,9 @@ Chart.pluginService.register({
             ctx.textBaseline = 'middle';
             var centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
             var centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
-            ctx.font = "20px " + fontStyle;
+            if(fontFixed === false){
+                ctx.font = fontSizeToUse + "px " + fontStyle;
+            }
             ctx.fillStyle = color;
 
             //Draw text in center
@@ -124,4 +128,3 @@ Chart.pluginService.register({
         }
     }
 });
-
