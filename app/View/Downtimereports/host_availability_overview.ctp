@@ -1,57 +1,54 @@
 <div class="col-xs-12 col-md-12 col-lg-12 padding-5">
-    <div class="col col-md-12 rounded-box padding-2"
-         ng-style="{'background':  color}"
-         style="box-shadow: 1px 1px 3px #ccc;">
-        <div class="col col-xs-1 col-md-1 col-lg-1 no-padding">
-            <canvas id="hostPieChart-{{data.Host.id}}"></canvas>
-        </div>
-        <div class="col col-xs-11 col-md-11 col-lg-11 no-padding font-sm">
-            <div class="row padding-bottom-3 txt-color-white">
-                <div class="col-md-12 no-padding font-md ellipsis"
-                     style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
-                    <h5 class="no-padding">
-                        <i class="fa fa-desktop"> </i>
+    <div class="jarviswidget">
+        <header role="heading" ng-style="{'background':  color}">
+            <h2 class="txt-color-white">
+                <strong>
+                    <i class="fa fa-desktop"></i>
+                    <a href="/hosts/browser/16" class="txt-color-white">
                         {{data.Host.name}}
-                    </h5>
-
+                    </a>
+                </strong>
+            </h2>
+        </header>
+        <div class="widget-body">
+            <div class="col-md-12">
+                <div class="col-md-1">
+                    <canvas id="hostPieChart-{{data.Host.id}}"></canvas>
                 </div>
-            </div>
-            <div class="row padding-bottom-5 txt-color-white">
-                <div class="col-md-12 no-padding font-sm ellipsis"
-                     style="text-shadow: 1px 0px 1px rgba(0, 0, 0, 0.5);">
-                    <i class="fa fa-info"> </i>
-                    {{data.Host.address}}
-                </div>
-            </div>
-            <div class="row padding-bottom-3 txt-color-white">
-                <div class="col-md-12 padding-bottom-3 padding-left-0 font-sm ellipsis"
-                     title="{{data.Host.description}}">
-                    {{data.Host.description}}
-                    &nbsp;
-                </div>
-            </div>
-            <div class="row no-padding font-xs bold">
-                <div class="col-md-4 btn-success downtime-report-state-overview padding-left-2">
-                    {{data.pieChartData.widgetOverview[0].percent}} %
-                </div>
-                <div class="col-md-8 btn-success downtime-report-state-overview padding-left-2">
-                    {{data.pieChartData.widgetOverview[0].human}}
-                </div>
-            </div>
-            <div class="row no-padding font-xs bold">
-                <div class="col-md-4 btn-danger downtime-report-state-overview padding-left-2">
-                    {{data.pieChartData.widgetOverview[1].percent}} %
-                </div>
-                <div class="col-md-8 btn-danger downtime-report-state-overview padding-left-2">
-                    {{data.pieChartData.widgetOverview[1].human}}
-                </div>
-            </div>
-            <div class="row no-padding font-xs bold">
-                <div class="col-md-4 btn-unknown downtime-report-state-overview padding-left-2">
-                    {{data.pieChartData.widgetOverview[2].percent}} %
-                </div>
-                <div class="col-md-8 btn-unknown downtime-report-state-overview padding-left-2">
-                    {{data.pieChartData.widgetOverview[2].human}}
+                <div class="col-md-11">
+                    <div class="col-md-3 ">
+                        <?php echo __('Description'); ?>
+                    </div>
+                    <div class="col-md-9 no-padding">
+                        {{data.Host.description}}&nbsp;
+                    </div>
+                    <div class="col-md-3">
+                        <?php echo __('IP address'); ?>
+                    </div>
+                    <div class="col-md-9 no-padding">
+                        {{data.Host.address}}
+                    </div>
+                    <div class="col-md-3">
+                        <?php echo __('Status'); ?>
+                    </div>
+                    <div class="col-md-3 btn-success downtime-report-state-overview font-sm padding-5">
+                        <strong>
+                            {{data.pieChartData.widgetOverview[0].percent}} %
+                            ({{data.pieChartData.widgetOverview[0].human}})
+                        </strong>
+                    </div>
+                    <div class="col-md-3 btn-danger downtime-report-state-overview font-sm padding-5">
+                        <strong>
+                            {{data.pieChartData.widgetOverview[1].percent}} %
+                            ({{data.pieChartData.widgetOverview[1].human}})
+                        </strong>
+                    </div>
+                    <div class="col-md-3 btn-unknown downtime-report-state-overview font-sm padding-5">
+                        <strong>
+                            {{data.pieChartData.widgetOverview[2].percent}} %
+                            ({{data.pieChartData.widgetOverview[2].human}})
+                        </strong>
+                    </div>
                 </div>
             </div>
         </div>

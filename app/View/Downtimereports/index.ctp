@@ -256,7 +256,8 @@
                                     <div class="row" ng-if="post.evaluation_type == 0">
                                         <!-- Hosts only -->
                                         <host-availability-overview data="host" dynamic-color="setColorDynamically"
-                                                                    ng-repeat="host in reportData.hostsWithoutOutages.hosts"></host-availability-overview>
+                                                                    ng-repeat="host in reportData.hostsWithoutOutages.hosts">
+                                        </host-availability-overview>
                                     </div>
 
                                     <div class="row" ng-repeat="host in reportData.hostsWithoutOutages.hosts"
