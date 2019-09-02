@@ -155,6 +155,8 @@ class ServicesController extends AppController {
 
     public function index() {
         if (!$this->isApiRequest()) {
+            $User = new User($this->Auth);
+            $this->set('username', $User->getFullName());
             //Only ship HTML template
             return;
         }

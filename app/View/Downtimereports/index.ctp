@@ -63,7 +63,7 @@
         <div class="widget-body">
             <div
                  ng-init="reportMessage={successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
-                <section ng-show="tabName == 'reportConfig'" id="reportConfig" class="tab-pane fade active in">
+                <section ng-show="tabName == 'reportConfig'" id="reportConfig">
                     <?php
                     echo $this->Form->create('Downtimereport', [
                         'class' => 'form-horizontal clear',
@@ -198,12 +198,11 @@
                         </div>
                     </div>
                 </section>
-                <section ng-if="tabName == 'calendarOverview'" id="calendarOverview" class="tab-pane fade active in">
+                <section ng-if="tabName == 'calendarOverview'" id="calendarOverview">
                     <downtimecalendar downtimes="reportData.downtimes" from-date="post.from_date"
                                       to-date="post.to_date"></downtimecalendar>
                 </section>
-                <section ng-if="tabName == 'hostsServicesOverview'" id="hostsServicesOverview"
-                         class="tab-pane fade active in">
+                <section ng-if="tabName == 'hostsServicesOverview'" id="hostsServicesOverview">
                     <div ng-repeat="(chunkIndex, hostsWithOutages) in reportData.hostsWithOutages">
                         <hosts-bar-chart chart-id="chunkIndex"
                                          bar-chart-data="hostsWithOutages.hostBarChartData"></hosts-bar-chart>
