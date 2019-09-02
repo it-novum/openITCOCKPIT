@@ -50,4 +50,11 @@ interface DowntimehistoryServicesTableInterface {
      */
     public function getDowntimesForReporting(DowntimeServiceConditions $DowntimeServiceConditions);
 
+    /**
+     * @param null $uuid
+     * @param bool $isRunning
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function byServiceUuid($uuid = null, $isRunning = false);
+
 }

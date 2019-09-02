@@ -249,7 +249,7 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
 
         if ($DowntimeHostConditions->hasHostUuids()) {
             $uuids = $DowntimeHostConditions->getHostUuids();
-            if(!is_array($uuids)){
+            if (!is_array($uuids)) {
                 $uuids = [$uuids];
             }
 
@@ -293,5 +293,52 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
         $query->all();
 
         return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param null $uuid
+     * @param bool $isRunning
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function byHostUuid($uuid = null, $isRunning = false) {
+        if (empty($uuid)) {
+            return null;
+        }
+
+        $query = $this->find();
+        $query->select([
+            'DowntimeHosts.author_name',
+            'DowntimeHosts.comment_data',
+            'DowntimeHosts.entry_time',
+            'DowntimeHosts.scheduled_start_time',
+            'DowntimeHosts.scheduled_end_time',
+            'DowntimeHosts.duration',
+            'DowntimeHosts.was_started',
+            'DowntimeHosts.internal_downtime_id',
+            'DowntimeHosts.downtimehistory_id',
+            'DowntimeHosts.was_cancelled',
+        ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = DowntimeHosts.object_id', 'DowntimeHosts.downtime_type = 2'] //Downtime.downtime_type = 2 Host downtime
+            )
+            ->order([
+                'DowntimeServices.entry_time' => 'DESC'
+            ])
+            ->where([
+                'Objects.name1'         => $uuid,
+                'Objects.objecttype_id' => 1
+            ]);
+
+        if ($isRunning) {
+            $query->andWhere([
+                'DowntimeHosts.scheduled_end_time >' => date('Y-m-d H:i:s', time()),
+                'DowntimeHosts.was_started'          => 1,
+                'DowntimeHosts.was_cancelled'        => 0
+
+            ]);
+        }
+
+        return $query->first();
     }
 }

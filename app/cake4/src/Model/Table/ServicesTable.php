@@ -2134,4 +2134,37 @@ class ServicesTable extends Table {
             ->first();
         return $query;
     }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getServiceForBrowser($id) {
+        $query = $this->find()
+            ->where([
+                'Services.id' => $id
+            ])
+            ->contain([
+                'Contactgroups' => [
+                    'Containers'
+                ],
+                'Contacts' => [
+                    'Containers'
+                ],
+                'Servicegroups',
+                'Customvariables',
+                'Servicecommandargumentvalues'      => [
+                    'Commandarguments'
+                ],
+                'Serviceeventcommandargumentvalues' => [
+                    'Commandarguments'
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+        $service = $query;
+
+        return $service;
+    }
 }
