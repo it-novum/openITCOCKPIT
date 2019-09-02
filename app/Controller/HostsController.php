@@ -97,7 +97,9 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  * @property AppPaginatorComponent $Paginator
  */
 class HostsController extends AppController {
-    public $layout = 'Admin.default';
+
+    public $layout = 'blank';
+
     public $components = [
         'RequestHandler',
         'CustomValidationErrors',
@@ -105,6 +107,7 @@ class HostsController extends AppController {
         'AdditionalLinks',
         'Flash'
     ];
+
     public $helpers = [
         'Status',
         'Monitoring',
@@ -113,6 +116,7 @@ class HostsController extends AppController {
         'Bbcode',
         'Flash',
     ];
+
     public $uses = [
         'Host',
         MONITORING_HOSTSTATUS, //MysqlModule.Hoststatus || CrateModule.Hoststatus
@@ -142,7 +146,6 @@ class HostsController extends AppController {
      * @deprecated
      */
     public function index() {
-        $this->layout = 'blank';
         $User = new User($this->Auth);
 
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
@@ -308,13 +311,11 @@ class HostsController extends AppController {
     }
 
     public function icon() {
-        $this->layout = 'blank';
         //Only ship HTML Template
         return;
     }
 
     public function hostservicelist() {
-        $this->layout = 'blank';
         //Only ship HTML Template
         return;
     }
@@ -393,8 +394,6 @@ class HostsController extends AppController {
     }
 
     public function notMonitored() {
-        $this->layout = 'blank';
-
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         /** @var $HostsTable HostsTable */
@@ -499,8 +498,6 @@ class HostsController extends AppController {
      * @throws Exception
      */
     public function add() {
-        $this->layout = 'blank';
-
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -573,8 +570,6 @@ class HostsController extends AppController {
     }
 
     public function edit($id = null) {
-        $this->layout = 'blank';
-
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -727,8 +722,6 @@ class HostsController extends AppController {
     }
 
     public function sharing($id = null) {
-        $this->layout = 'blank';
-
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -1027,8 +1020,6 @@ class HostsController extends AppController {
 
 
     public function disabled() {
-        $this->layout = 'blank';
-
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $masterInstanceName = $Systemsettings->getMasterInstanceName();
@@ -1886,8 +1877,6 @@ class HostsController extends AppController {
      * @deprecated
      */
     public function browser($idOrUuid = null) {
-        $this->layout = 'blank';
-
         if (!$this->isAngularJsRequest() && $idOrUuid === null) {
             //AngularJS loads the HTML template via https://xxx/hosts/browser.html
             $User = new User($this->Auth);
@@ -2192,6 +2181,7 @@ class HostsController extends AppController {
      * @deprecated
      */
     public function listToPdf() {
+        $this->layout = 'Admin.default';
         $HostFilter = new HostFilter($this->request);
 
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
