@@ -62,7 +62,7 @@
     <div>
         <div class="widget-body">
             <div
-                 ng-init="reportMessage={successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
+                    ng-init="reportMessage={successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
                 <section ng-show="tabName == 'reportConfig'" id="reportConfig">
                     <?php
                     echo $this->Form->create('Downtimereport', [
@@ -203,25 +203,78 @@
                                       to-date="post.to_date"></downtimecalendar>
                 </section>
                 <section ng-if="tabName == 'hostsServicesOverview'" id="hostsServicesOverview">
-                    <div ng-repeat="(chunkIndex, hostsWithOutages) in reportData.hostsWithOutages">
-                        <hosts-bar-chart chart-id="chunkIndex"
-                                         bar-chart-data="hostsWithOutages.hostBarChartData"></hosts-bar-chart>
+                    <div class="row">
+                        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="jarviswidget jarviswidget-sortable" role="widget">
+                                <header role="heading">
+                                    <h2>
+                                        <span class="fa-stack">
+                                            <i class="fa fa-desktop fa-lg fa-stack-1x"></i>
+                                            <i class="fa fa-exclamation-triangle fa-stack-1x fa-xs cornered cornered-lr text-danger padding-bottom-2"></i>
+                                        </span>
+                                        <?php echo __('Involved in outages (Hosts):'); ?>
+                                    </h2>
+                                </header>
+                                <div class="well padding-bottom-10">
+                                    <div ng-repeat="(chunkIndex, hostsWithOutages) in reportData.hostsWithOutages">
+                                        <hosts-bar-chart chart-id="chunkIndex"
+                                                         bar-chart-data="hostsWithOutages.hostBarChartData"></hosts-bar-chart>
 
-                        <div class="row" ng-if="post.evaluation_type == 0">
-                            <!-- Hosts only -->
-                            <host-availability-overview data="host" dynamic-color="setColorDynamically"
-                                                        ng-repeat="host in hostsWithOutages.hosts"></host-availability-overview>
-                        </div>
+                                        <div class="row" ng-if="post.evaluation_type == 0">
+                                            <!-- Hosts only -->
+                                            <host-availability-overview data="host" dynamic-color="setColorDynamically"
+                                                                        ng-repeat="host in hostsWithOutages.hosts"></host-availability-overview>
+                                        </div>
 
-                        <div class="row" ng-repeat="host in hostsWithOutages.hosts" ng-if="post.evaluation_type == 1">
-                            <!-- Host and Services -->
-                            <host-availability-overview data="host" dynamic-color="setColorDynamically"></host-availability-overview>
-                            <service-availability-overview data="service" dynamic-color="setColorDynamically"
-                                                           ng-repeat="service in host.Services"></service-availability-overview>
-                        </div>
+                                        <div class="row" ng-repeat="host in hostsWithOutages.hosts"
+                                             ng-if="post.evaluation_type == 1">
+                                            <!-- Host and Services -->
+                                            <host-availability-overview data="host"
+                                                                        dynamic-color="setColorDynamically"></host-availability-overview>
+                                            <service-availability-overview data="service"
+                                                                           dynamic-color="setColorDynamically"
+                                                                           ng-repeat="service in host.Services"></service-availability-overview>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="row">
+                        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="jarviswidget jarviswidget-sortable" role="widget">
+                                <header role="heading">
+                                    <h2>
+                                        <span class="fa-stack">
+                                            <i class="fa fa-desktop fa-lg fa-stack-1x"></i>
+                                            <i class="fa fa-check-circle fa-stack-1x fa-xs cornered cornered-lr ok padding-bottom-2"></i>
+                                        </span>
+                                        <?php echo __('Hosts without outages:'); ?>
+                                    </h2>
+                                </header>
+                                <div class="well padding-bottom-10">
+                                    <div class="row" ng-if="post.evaluation_type == 0">
+                                        <!-- Hosts only -->
+                                        <host-availability-overview data="host" dynamic-color="setColorDynamically"
+                                                                    ng-repeat="host in reportData.hostsWithoutOutages.hosts"></host-availability-overview>
+                                    </div>
+
+                                    <div class="row" ng-repeat="host in reportData.hostsWithoutOutages.hosts"
+                                         ng-if="post.evaluation_type == 1">
+                                        <!-- Host and Services -->
+                                        <host-availability-overview data="host"
+                                                                    dynamic-color="setColorDynamically"></host-availability-overview>
+                                        <service-availability-overview data="service"
+                                                                       dynamic-color="setColorDynamically"
+                                                                       ng-repeat="service in host.Services"></service-availability-overview>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
                     </div>
                 </section>
             </div>
         </div>
     </div>
 </div>
+

@@ -2711,7 +2711,7 @@ fc-left .dropdown {
 }
 
 .rounded-box {
-    border-radius: 20px 5px;
+    border-radius: 20px 5px 0px 5px;
 }
 
 .label-group-width-auto {

@@ -50,7 +50,7 @@ class DowntimeReportPieChartWidgetDataPreparer {
                 __('Down'),
                 __('Unreachable')
             ],
-            'data'           => $hostData['Host']['reportData'],
+            'data'           => self::calculatePercentageValue($totalTime, $hostData['Host']['reportData']),
             'availability'   => self::calculateAvailability(
                 $totalTime,
                 $hostData['Host']['reportData'][1] // <<---- time in seconds with host state 'DOWN'
@@ -81,7 +81,7 @@ class DowntimeReportPieChartWidgetDataPreparer {
                 __('Critical'),
                 __('Unknown')
             ],
-            'data'           => $serviceData['Service']['reportData'],
+            'data'           => self::calculatePercentageValue($totalTime, $serviceData['Service']['reportData']),
             'availability'   => self::calculateAvailability(
                 $totalTime,
                 $serviceData['Service']['reportData'][2] // <<---- time in seconds with service state 'CRITICAL'
@@ -120,5 +120,18 @@ class DowntimeReportPieChartWidgetDataPreparer {
      */
     private static function calculateAvailability($totalTime, $outageTime) {
         return number_format((($totalTime - $outageTime) / $totalTime) * 100);
+    }
+
+    /**
+     * @param $totalTime
+     * @param $stateData
+     * @return array $percentValues [0 => 10, 1 => 80, 3 => 10]
+     */
+    private static function calculatePercentageValue($totalTime, $stateData) {
+        $percentValues = [];
+        foreach ($stateData as $state => $secondsValue) {
+            $percentValues[$state] = number_format($secondsValue / $totalTime * 100, 3);
+        }
+        return $percentValues;
     }
 }
