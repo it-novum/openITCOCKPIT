@@ -418,8 +418,36 @@ class DowntimereportsController extends AppController {
                     'hostBarChartData' => $hostBarChartData
                 ];
             }
-
         }
+        if (!empty($downtimeReport['hostsWithoutOutages'])) {
+            $hostsWithoutOutages = $downtimeReport['hostsWithoutOutages'];
+            $downtimeReport['hostsWithoutOutages'] = [];
+            $hosts = [];
+            foreach ($hostsWithoutOutages as $index => $host) {
+                if (isset($host['Services'])) {
+                    foreach ($host['Services'] as $uuid => $serviceData) {
+                        $host['Services'][$uuid]['pieChartData'] = DowntimeReportPieChartWidgetDataPreparer::getDataForServicePieChart(
+                            $serviceData,
+                            $totalTime,
+                            $UserTime
+                        );
+                    }
+                }
+
+                $tmpHost = $host;
+                $tmpHost['pieChartData'] = DowntimeReportPieChartWidgetDataPreparer::getDataForHostPieChartWidget(
+                    $host,
+                    $totalTime,
+                    $UserTime
+                );
+
+                $hosts[] = $tmpHost;
+            }
+            $downtimeReport['hostsWithoutOutages'] = [
+                'hosts' => $hosts
+            ];
+        }
+
 
         $downtimeReport['downtimes'] = $downtimes;
         return $downtimeReport;
