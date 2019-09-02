@@ -147,12 +147,6 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentconfigsScanController"
             })
 
-            .state('AutomapsView', {
-                url: '/automaps/view/:id',
-                templateUrl: "/automaps/view.html",
-                controller: "AutomapsViewController"
-            })
-
             .state('BrowsersIndex', {
                 url: '/browsers/index',
                 templateUrl: "/browsers/index.html",
@@ -1102,6 +1096,30 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 url: '/calendars/edit/:id',
                 templateUrl: "/calendars/edit.html",
                 controller: "CalendarsEditController"
+            })
+
+            .state('AutomapsIndex', {
+                url: '/automaps/index',
+                templateUrl: "/automaps/index.html",
+                controller: "AutomapsIndexController"
+            })
+
+            .state('AutomapsAdd', {
+                url: '/automaps/add',
+                templateUrl: "/automaps/add.html",
+                controller: "AutomapsAddController"
+            })
+
+            .state('AutomapsEdit', {
+                url: '/automaps/edit/:id',
+                templateUrl: "/automaps/edit.html",
+                controller: "AutomapsEditController"
+            })
+
+            .state('AutomapsView', {
+                url: '/automaps/view/:id',
+                templateUrl: "/automaps/view.html",
+                controller: "AutomapsViewController"
             })
 
     })
