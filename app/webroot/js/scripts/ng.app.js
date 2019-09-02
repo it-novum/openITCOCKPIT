@@ -147,12 +147,6 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "AgentconfigsScanController"
             })
 
-            .state('AutomapsView', {
-                url: '/automaps/view/:id',
-                templateUrl: "/automaps/view.html",
-                controller: "AutomapsViewController"
-            })
-
             .state('BrowsersIndex', {
                 url: '/browsers/index',
                 templateUrl: "/browsers/index.html",
