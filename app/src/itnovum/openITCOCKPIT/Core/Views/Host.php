@@ -55,6 +55,11 @@ class Host {
     private $description;
 
     /**
+     * @var int
+     */
+    private $hosttemplate_id;
+
+    /**
      * @var int|bool
      */
     private $active_checks_enabled;
@@ -122,6 +127,10 @@ class Host {
 
         if (isset($host['Host']['description'])) {
             $this->description = $host['Host']['description'];
+        }
+
+        if (isset($host['Host']['hosttemplate_id'])) {
+            $this->hosttemplate_id = (int)$host['Host']['hosttemplate_id'];
         }
 
         if (isset($host['Host']['active_checks_enabled'])) {
@@ -262,11 +271,19 @@ class Host {
     }
 
     /**
+     * @return int
+     */
+    public function getHosttemplateId() {
+        return $this->hosttemplate_id;
+    }
+
+    /**
      * @return array
      */
     public function toArray() {
         $arr = get_object_vars($this);
         $arr['is_satellite_host'] = $this->isSatelliteHost();
+        $arr['name'] = $this->hostname;
         return $arr;
     }
 

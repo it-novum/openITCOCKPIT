@@ -960,6 +960,35 @@ class HosttemplatesTable extends Table {
 
     /**
      * @param int $id
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getContactsAndContactgroupsByIdForServiceBrowser($id) {
+        $query = $this->find()
+            ->select([
+                'Hosttemplates.id'
+            ])
+            ->where([
+                'Hosttemplates.id' => $id
+            ])
+            ->contain([
+                'Contactgroups' => [
+                    'Containers'
+                ],
+                'Contacts' => [
+                    'Containers'
+                ]
+            ])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $hosttemplate = $query;
+
+        return $hosttemplate;
+    }
+
+
+    /**
+     * @param int $id
      * @return bool
      */
     public function existsById($id) {

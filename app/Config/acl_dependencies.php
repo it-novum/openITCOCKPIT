@@ -301,8 +301,7 @@ $config = [
             ],
             'Services'              => [
                 'deactivate'  => ['mass_deactivate'],
-                'index'       => ['serviceByHostId', 'listToPdf', 'view', 'loadServicesByContainerId', 'loadServicesByString'],
-                'browser'     => ['servicesByHostId', 'longOutputByUuid'],
+                'index'       => ['listToPdf', 'view', 'loadServicesByContainerId', 'loadServicesByString'],
                 'add'         => ['loadElementsByHostId', 'loadServicetemplate', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments'],
                 'edit'        => ['loadElementsByHostId', 'loadServicetemplate', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments'],
                 'serviceList' => ['deleted']

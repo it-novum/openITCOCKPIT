@@ -1420,6 +1420,34 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getContactsAndContactgroupsByIdForServiceBrowser($id) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id'
+            ])
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'Contactgroups' => [
+                    'Containers'
+                ],
+                'Contacts' => [
+                    'Containers'
+                ]
+            ])
+            ->disableHydration()
+            ->firstOrFail();
+
+        $host = $query;
+
+        return $host;
+    }
+
+    /**
      * @param int $hostId
      * @return array
      */
@@ -1668,6 +1696,32 @@ class HostsTable extends Table {
         }
 
         return $query->count();
+    }
+
+    /**
+     * @param int $id
+     * @return array|Host|null
+     */
+    public function getHostByIdForServiceBrowser($id) {
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+                'Hosts.address',
+                'Hosts.container_id',
+                'Hosts.satellite_id'
+            ])
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+                'Contacts',
+                'Contactgroups'
+            ])
+            ->first();
+        return $query;
     }
 
 }

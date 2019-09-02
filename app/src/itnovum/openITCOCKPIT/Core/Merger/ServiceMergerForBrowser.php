@@ -34,7 +34,7 @@ use itnovum\openITCOCKPIT\Core\CustomVariableMerger;
  *
  * @package itnovum\openITCOCKPIT\Core\Comparison
  */
-class ServiceMergerForView {
+class ServiceMergerForBrowser {
 
     /**
      * @var array
@@ -89,28 +89,20 @@ class ServiceMergerForView {
      * @param array $servicetemplate ServicetemplatesTable::$getServicetemplateForDiff()
      */
     public function __construct($service, $servicetemplate, $hostContactAndContactgroups = [], $hosttemplateContactAndContactgroups = []) {
-        $this->service = $service['Service'];
-        $this->servicetemplate = $servicetemplate['Servicetemplate'];
+        $this->service = $service;
+        $this->servicetemplate = $servicetemplate;
 
         if (empty($hostContactAndContactgroups)) {
             $hostContactAndContactgroups = [
-                'contacts'      => [
-                    '_ids' => []
-                ],
-                'contactgroups' => [
-                    '_ids' => []
-                ]
+                'contacts'      => [],
+                'contactgroups' => []
             ];
         }
 
         if (empty($hosttemplateContactAndContactgroups)) {
             $hosttemplateContactAndContactgroups = [
-                'contacts'      => [
-                    '_ids' => []
-                ],
-                'contactgroups' => [
-                    '_ids' => []
-                ]
+                'contacts'      => [],
+                'contactgroups' => []
             ];
         }
 
@@ -134,9 +126,7 @@ class ServiceMergerForView {
         $data['customvariables'] = $this->getDataForCustomvariables();
         $data['own_customvariables'] = (int)$this->hasOwnCustomvariables;
 
-        return [
-            'Service' => $data
-        ];
+        return $data;
     }
 
     /**
@@ -229,44 +219,32 @@ class ServiceMergerForView {
         $this->areContactsInheritedFromServicetemplate = false;
         $this->hasOwnContacts = false;
 
-        if (!empty($this->service['contacts']['_ids']) || empty(!$this->service['contactgroups']['_ids'])) {
+        if (!empty($this->service['contacts']) || empty(!$this->service['contactgroups'])) {
             $this->hasOwnContacts = true;
 
             return [
-                'contacts'      => [
-                    '_ids' => $this->service['contacts']['_ids']
-                ],
-                'contactgroups' => [
-                    '_ids' => $this->service['contactgroups']['_ids']
-                ]
+                'contacts'      => $this->service['contacts'],
+                'contactgroups' => $this->service['contactgroups']
             ];
         }
 
-        if (!empty($this->servicetemplate['contacts']['_ids']) || empty(!$this->servicetemplate['contactgroups']['_ids'])) {
+        if (!empty($this->servicetemplate['contacts']) || empty(!$this->servicetemplate['contactgroups'])) {
             $this->hasOwnContacts = false;
             $this->areContactsInheritedFromServicetemplate = true;
 
             return [
-                'contacts'      => [
-                    '_ids' => $this->servicetemplate['contacts']['_ids']
-                ],
-                'contactgroups' => [
-                    '_ids' => $this->servicetemplate['contactgroups']['_ids']
-                ]
+                'contacts'      => $this->servicetemplate['contacts'],
+                'contactgroups' => $this->servicetemplate['contactgroups']
             ];
         }
 
-        if (!empty($this->hostContactAndContactgroups['contacts']['_ids']) || empty(!$this->hostContactAndContactgroups['contactgroups']['_ids'])) {
+        if (!empty($this->hostContactAndContactgroups['contacts']) || empty(!$this->hostContactAndContactgroups['contactgroups'])) {
             $this->hasOwnContacts = false;
             $this->areContactsInheritedFromHost = true;
 
             return [
-                'contacts'      => [
-                    '_ids' => $this->hostContactAndContactgroups['contacts']['_ids']
-                ],
-                'contactgroups' => [
-                    '_ids' => $this->hostContactAndContactgroups['contactgroups']['_ids']
-                ]
+                'contacts'      => $this->hostContactAndContactgroups['contacts'],
+                'contactgroups' => $this->hostContactAndContactgroups['contactgroups']
             ];
         }
 
@@ -274,12 +252,8 @@ class ServiceMergerForView {
         $this->areContactsInheritedFromHosttemplate = true;
 
         return [
-            'contacts'      => [
-                '_ids' => $this->hosttemplateContactAndContactgroups['contacts']['_ids']
-            ],
-            'contactgroups' => [
-                '_ids' => $this->hosttemplateContactAndContactgroups['contactgroups']['_ids']
-            ]
+            'contacts'      => $this->hosttemplateContactAndContactgroups['contacts'],
+            'contactgroups' => $this->hosttemplateContactAndContactgroups['contactgroups']
         ];
 
     }
@@ -288,16 +262,12 @@ class ServiceMergerForView {
      * @return array
      */
     public function getDataForServicegroups() {
-        if (empty($this->service['servicegroups']['_ids'])) {
-            return [
-                '_ids' => $this->servicetemplate['servicegroups']['_ids']
-            ];
+        if (empty($this->service['servicegroups'])) {
+            return $this->servicetemplate['servicegroups'];
         }
 
         //Service use own service groups
-        return [
-            '_ids' => $this->service['servicegroups']['_ids']
-        ];
+        return $this->service['servicegroups'];
     }
 
     /**

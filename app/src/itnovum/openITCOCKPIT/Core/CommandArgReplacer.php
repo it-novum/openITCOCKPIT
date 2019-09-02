@@ -25,70 +25,52 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
-
-class AcknowledgedHostConditions extends ListSettingsConditions {
+class CommandArgReplacer {
 
     /**
      * @var array
      */
-    protected $order = [
-        'AcknowledgedHosts.entry_time' => 'DESC'
-    ];
-
-    protected $states = [
-        0, 1, 2
-    ];
+    private $commandargumentvalues;
 
     /**
-     * @var string
+     * CommandArgReplacer constructor.
+     * @param array $commandargumentvalues
      */
-    protected $hostUuid;
-
-    /**
-     * @var bool
-     */
-    private $useLimit = true;
-
-    /**
-     * @param string $hostUuid
-     */
-    public function setHostUuid($hostUuid) {
-        $this->hostUuid = $hostUuid;
+    public function __construct($commandargumentvalues) {
+        $this->commandargumentvalues = $commandargumentvalues;
     }
 
     /**
+     * Replace the folowing Macros:
+     * - $ARG1$
+     * - $ARG2$
+     * - $ARGn$
+     *
+     * @param string $msg
      * @return string
      */
-    public function getHostUuid() {
-        return $this->hostUuid;
+    public function replace($cmdStr) {
+        $mapping = $this->buildMapping('basic');
+
+        return str_replace($mapping['search'], $mapping['replace'], $cmdStr);
     }
 
     /**
-     * @param $value
+     * @return array
      */
-    public function setUseLimit($value) {
-        $this->useLimit = (bool)$value;
-    }
+    private function buildMapping() {
+        $mapping = [
+            'search'  => [],
+            'replace' => [],
+        ];
 
-    /**
-     * @return bool
-     */
-    public function getUseLimit() {
-        return $this->useLimit;
-    }
+        foreach ($this->commandargumentvalues as $commandargumentvalue) {
+            $argn = $commandargumentvalue['commandargument']['name'];
+            $value = $commandargumentvalue['value'];
 
-    /**
-     * @param HostStates $HostStates
-     */
-    public function setStates(HostStates $HostStates) {
-        if (sizeof($HostStates->asIntegerArray()) == 3) {
-            $this->states = [];
-            return;
+            $mapping['search'][] = $argn;
+            $mapping['replace'][] = $value;
         }
-
-        $this->states = $HostStates->asIntegerArray();
+        return $mapping;
     }
-
 }
-

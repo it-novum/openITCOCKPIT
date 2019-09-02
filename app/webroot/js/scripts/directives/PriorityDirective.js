@@ -18,11 +18,11 @@ angular.module('openITCOCKPIT').directive('priorityDirective', function($http){
             ];
 
             var colors = [
-                'txt-color-greenLight',
-                'txt-color-green',
-                'txt-color-yellow',
-                'txt-color-orangeDark',
-                'txt-color-red'
+                'ok-soft',
+                'ok',
+                'warning',
+                'critical-soft',
+                'critical'
             ];
 
             var setPriorityClasses = function(value){

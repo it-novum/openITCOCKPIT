@@ -339,4 +339,51 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
         return $this->emptyArrayIfNull($query->toArray());
 
     }
+
+    /**
+     * @param null $uuid
+     * @param bool $isRunning
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function byServiceUuid($uuid = null, $isRunning = false) {
+        if (empty($uuid)) {
+            return null;
+        }
+
+        $query = $this->find();
+        $query->select([
+            'DowntimeServices.author_name',
+            'DowntimeServices.comment_data',
+            'DowntimeServices.entry_time',
+            'DowntimeServices.scheduled_start_time',
+            'DowntimeServices.scheduled_end_time',
+            'DowntimeServices.duration',
+            'DowntimeServices.was_started',
+            'DowntimeServices.internal_downtime_id',
+            'DowntimeServices.downtimehistory_id',
+            'DowntimeServices.was_cancelled',
+        ])
+            ->innerJoin(
+                ['Objects' => 'nagios_objects'],
+                ['Objects.object_id = DowntimeServices.object_id', 'DowntimeServices.downtime_type = 1'] //Downtime.downtime_type = 1 Service downtime
+            )
+            ->order([
+                'DowntimeServices.entry_time' => 'DESC'
+            ])
+            ->where([
+                'Objects.name2'         => $uuid,
+                'Objects.objecttype_id' => 2
+            ]);
+
+        if ($isRunning) {
+            $query->andWhere([
+                'DowntimeServices.scheduled_end_time >' => date('Y-m-d H:i:s', time()),
+                'DowntimeServices.was_started'          => 1,
+                'DowntimeServices.was_cancelled'        => 0
+
+            ]);
+        }
+
+        return $query->first();
+    }
 }

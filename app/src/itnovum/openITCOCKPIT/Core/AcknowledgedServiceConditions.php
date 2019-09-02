@@ -33,7 +33,7 @@ class AcknowledgedServiceConditions extends ListSettingsConditions {
      * @var array
      */
     protected $order = [
-        'AcknowledgedService.entry_time' => 'DESC'
+        'entry_time' => 'DESC'
     ];
 
     protected $states = [

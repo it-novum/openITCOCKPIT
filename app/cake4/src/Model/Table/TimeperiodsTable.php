@@ -205,6 +205,21 @@ class TimeperiodsTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getTimeperiodByIdCake4($id, $enableHydration = true) {
+        $query = $this->find()
+            ->where([
+                'Timeperiods.id' => $id
+            ])
+            ->enableHydration($enableHydration)
+            ->first();
+        return $query->toArray();
+    }
+
+    /**
      * @return array
      */
     public function getTimeperiodWithTimeranges() {

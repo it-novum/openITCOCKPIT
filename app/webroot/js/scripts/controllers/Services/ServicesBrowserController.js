@@ -61,6 +61,15 @@ angular.module('openITCOCKPIT')
         var graphRenderEnd = 0;
 
         $scope.showFlashMsg = function(){
+
+            new Noty({
+                theme: 'metroui',
+                type: 'success',
+                layout: 'topCenter',
+                text: $scope.flashMshStr,
+                timeout: 4000
+            }).show();
+
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
             var interval = $interval(function(){
@@ -85,11 +94,15 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.mergedService = result.data.mergedService;
-                $scope.mergedService.Service.disabled = parseInt($scope.mergedService.Service.disabled, 10);
-                $scope.contacts = result.data.contacts;
-                $scope.contactgroups = result.data.contactgroups;
+                $scope.checkCommand = result.data.checkCommand;
+                $scope.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;
+                $scope.areContactsInheritedFromHost = result.data.areContactsInheritedFromHost;
+                $scope.areContactsInheritedFromServicetemplate = result.data.areContactsInheritedFromServicetemplate;
+                $scope.checkPeriod = result.data.checkPeriod;
+                $scope.notifyPeriod = result.data.notifyPeriod;
                 $scope.host = result.data.host;
-                $scope.tags = $scope.mergedService.Service.tags.split(',');
+                $scope.mergedService.disabled = parseInt($scope.mergedService.disabled, 10);
+                $scope.tags = $scope.mergedService.tags.split(',');
                 $scope.hoststatus = result.data.hoststatus;
                 $scope.servicestatus = result.data.servicestatus;
                 $scope.servicestatusForIcon = {
@@ -113,12 +126,12 @@ angular.module('openITCOCKPIT')
                     4: false,
                     5: false
                 };
-                var priority = parseInt($scope.mergedService.Service.priority, 10);
+                var priority = parseInt($scope.mergedService.priority, 10);
                 for(var i = 1; i <= priority; i++){
                     $scope.priorities[i] = true;
                 }
 
-                $scope.graphAutoRefreshInterval = parseInt($scope.mergedService.Service.check_interval, 10) * 1000;
+                $scope.graphAutoRefreshInterval = parseInt($scope.mergedService.check_interval, 10) * 1000;
 
                 var graphStart = (parseInt(new Date().getTime() / 1000, 10) - (3 * 3600));
                 var graphEnd = parseInt(new Date().getTime() / 1000, 10);
@@ -130,14 +143,14 @@ angular.module('openITCOCKPIT')
                     $scope.currentDataSource = $scope.dataSources[0];
                 }
 
-                if($scope.mergedService.Service.has_graph){
-                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, graphStart, graphEnd, true);
+                if($scope.mergedService.has_graph){
+                    loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, graphStart, graphEnd, true);
                 }
 
                 if(typeof $scope.serviceBrowserMenuConfig === "undefined"){
                     $scope.serviceBrowserMenuConfig = {
                         autoload: true,
-                        serviceId: $scope.mergedService.Service.id,
+                        serviceId: $scope.mergedService.id,
                         includeServicestatus: true,
                         showReschedulingButton: true,
                         rescheduleCallback: $scope.serviceBrowserMenuReschedulingCallback,
@@ -170,28 +183,28 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDowntimeDelete = function(){
             var object = {};
-            object[$scope.downtime.internalDowntimeId] = $scope.host.Host.name + ' / ' + $scope.mergedService.Service.name;
+            object[$scope.downtime.internalDowntimeId] = $scope.host.Host.hostname + ' / ' + $scope.mergedService.name;
             return object;
         };
 
         $scope.getObjectForHostDowntimeDelete = function(){
             var object = {};
-            object[$scope.hostDowntime.internalDowntimeId] = $scope.host.Host.name;
+            object[$scope.hostDowntime.internalDowntimeId] = $scope.host.Host.hostname;
             return object;
         };
 
         $scope.getObjectsForExternalCommand = function(){
             return [{
                 Service: {
-                    id: $scope.mergedService.Service.id,
-                    uuid: $scope.mergedService.Service.uuid,
-                    name: $scope.mergedService.Service.name
+                    id: $scope.mergedService.id,
+                    uuid: $scope.mergedService.uuid,
+                    name: $scope.mergedService.name
                 },
                 Host: {
                     id: $scope.host.Host.id,
                     uuid: $scope.host.Host.uuid,
-                    name: $scope.host.Host.name,
-                    satelliteId: $scope.host.Host.satellite_id
+                    name: $scope.host.Host.hostname,
+                    satelliteId: $scope.host.Host.satelliteId
                 }
             }];
         };
@@ -240,12 +253,12 @@ angular.module('openITCOCKPIT')
             var start = (parseInt(new Date().getTime() / 1000, 10) - (timespan * 3600));
             var end = parseInt(new Date().getTime() / 1000, 10);
             //graphTimeSpan = timespan;
-            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, start, end, true);
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, start, end, true);
         };
 
         $scope.changeDataSource = function(gaugeName){
             $scope.currentDataSource = gaugeName;
-            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, lastGraphStart, lastGraphEnd, false);
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, lastGraphStart, lastGraphEnd, false);
         };
 
         var getServicestatusTextColor = function(){
@@ -530,7 +543,7 @@ angular.module('openITCOCKPIT')
                         disableGraphAutorefresh();
                     }
 
-                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, start, end, true);
+                    loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, false, start, end, true);
                 });
             }
 
@@ -763,7 +776,7 @@ angular.module('openITCOCKPIT')
                     var start = lastTimestampInCurrentData;
                     var end = Math.floor(Date.now() / 1000);
                     if(start > 0){
-                        loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, true, start, end, false);
+                        loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, true, start, end, false);
                     }
                 }, $scope.graphAutoRefreshInterval);
             }
@@ -812,7 +825,7 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, true, lastGraphStart, lastGraphEnd, false);
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.uuid, true, lastGraphStart, lastGraphEnd, false);
         });
 
     });
