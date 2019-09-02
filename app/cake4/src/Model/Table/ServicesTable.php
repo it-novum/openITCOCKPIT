@@ -2167,4 +2167,47 @@ class ServicesTable extends Table {
 
         return $service;
     }
+
+    /**
+     * @param $id
+     * @return array|Service|null
+     */
+    public function getServiceByIdForTimeline($id) {
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.name',
+                'Services.uuid',
+                'Services.servicetemplate_id',
+                'Services.check_period_id',
+                'Services.notify_period_id',
+            ])
+            ->where([
+                'Services.id' => $id
+            ])
+            ->contain([
+                'Hosts' => function (Query $query) {
+                    $query->select([
+                        'Hosts.id',
+                        'Hosts.uuid',
+                        'Hosts.container_id'
+                    ])
+                        ->contain([
+                            'HostsToContainersSharing'
+                        ]);
+                    return $query;
+                },
+                'Servicetemplates' => function (Query $query) {
+                    $query->select([
+                        'Servicetemplates.id',
+                        'Servicetemplates.check_period_id',
+                        'Servicetemplates.notify_period_id'
+                    ]);
+                    return $query;
+                }
+            ])
+            ->first();
+
+        return $query;
+    }
 }

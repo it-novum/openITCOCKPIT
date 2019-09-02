@@ -45,7 +45,7 @@ class TimeRangeSerializer {
      * @param array $acknowledgementRecords
      * @param UserTime $UserTime
      */
-    public function __construct($timeRangeRecords = [], UserTime $UserTime) {
+    public function __construct($timeRangeRecords, UserTime $UserTime) {
         $this->records = $timeRangeRecords;
         $this->UserTime = $UserTime;
     }
