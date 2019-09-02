@@ -1706,13 +1706,11 @@ class ServicesController extends AppController {
     }
 
     public function icon() {
-        $this->layout = 'blank';
         //Only ship HTML Template
         return;
     }
 
     public function servicecumulatedstatusicon() {
-        $this->layout = 'blank';
         //Only ship HTML Template
         return;
     }
@@ -1723,10 +1721,6 @@ class ServicesController extends AppController {
      */
     public function details() {
         //Only ship template for auto maps modal
-
-        $this->layout = 'blank';
-        //Only ship HTML Template
-
         $User = new User($this->Auth);
         $this->set('username', $User->getFullName());
         return;
