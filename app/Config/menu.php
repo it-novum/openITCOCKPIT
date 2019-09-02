@@ -47,6 +47,7 @@ $config = [
                 [
                     'url'   => ['controller' => 'automaps', 'action' => 'index'],
                     'title' => 'Auto Map',
+                    'state' => 'AutomapsIndex',
                     'icon'  => 'magic',
                 ],
             ],

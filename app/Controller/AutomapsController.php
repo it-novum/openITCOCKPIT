@@ -37,7 +37,8 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
  * @property Servicestatus $Servicestatus
  */
 class AutomapsController extends AppController {
-    public $layout = 'Admin.default';
+
+    public $layout = 'blank';
 
     public $uses = [
         'Automap',
