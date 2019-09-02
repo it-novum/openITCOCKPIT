@@ -57,7 +57,7 @@ angular.module('openITCOCKPIT').directive('serviceAvailabilityOverview', functio
                         elements: {
                             center: {
                                 text: $scope.data.pieChartData.availability + '%',
-//                                color: '#ffffff', //Default black
+                                color: ($scope.dynamicColor)?'#ffffff':'#000000', //Default black
                                 fontSize: 12,
                                 fontFixed: true
                             }
