@@ -51,6 +51,12 @@
                     </div>
                 </div>
             </div>
+            <service-availability-overview data="service"
+                                           dynamic-color="dynamicColor"
+                                           ng-repeat="service in data.Services"
+                                           ng-if="evaluationType == 1">
+
+            </service-availability-overview>
         </div>
     </div>
 </div>

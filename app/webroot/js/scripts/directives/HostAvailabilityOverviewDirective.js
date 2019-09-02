@@ -4,7 +4,8 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityOverview', function($
         templateUrl: '/downtimereports/hostAvailabilityOverview.html',
         scope: {
             'data': '=',
-            'dynamicColor': '='
+            'dynamicColor': '=',
+            'evaluationType': '='
         },
         controller: function($scope){
             $timeout(function(){

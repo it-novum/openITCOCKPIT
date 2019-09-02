@@ -220,20 +220,10 @@
                                         <hosts-bar-chart chart-id="chunkIndex"
                                                          bar-chart-data="hostsWithOutages.hostBarChartData"></hosts-bar-chart>
 
-                                        <div class="row" ng-if="post.evaluation_type == 0">
-                                            <!-- Hosts only -->
-                                            <host-availability-overview data="host" dynamic-color="setColorDynamically"
-                                                                        ng-repeat="host in hostsWithOutages.hosts"></host-availability-overview>
-                                        </div>
-
-                                        <div class="row" ng-repeat="host in hostsWithOutages.hosts"
-                                             ng-if="post.evaluation_type == 1">
-                                            <!-- Host and Services -->
+                                        <div class="row" ng-repeat="host in hostsWithOutages.hosts">
                                             <host-availability-overview data="host"
+                                                                        evaluation-type="post.evaluation_type"
                                                                         dynamic-color="setColorDynamically"></host-availability-overview>
-                                            <service-availability-overview data="service"
-                                                                           dynamic-color="setColorDynamically"
-                                                                           ng-repeat="service in host.Services"></service-availability-overview>
                                         </div>
                                     </div>
                                 </div>
@@ -253,21 +243,9 @@
                                     </h2>
                                 </header>
                                 <div class="well padding-bottom-10">
-                                    <div class="row" ng-if="post.evaluation_type == 0">
-                                        <!-- Hosts only -->
-                                        <host-availability-overview data="host" dynamic-color="setColorDynamically"
-                                                                    ng-repeat="host in reportData.hostsWithoutOutages.hosts">
-                                        </host-availability-overview>
-                                    </div>
-
-                                    <div class="row" ng-repeat="host in reportData.hostsWithoutOutages.hosts"
-                                         ng-if="post.evaluation_type == 1">
-                                        <!-- Host and Services -->
-                                        <host-availability-overview data="host"
+                                    <div class="row" ng-repeat="host in reportData.hostsWithoutOutages.hosts">
+                                        <host-availability-overview data="host" evaluation-type="post.evaluation_type"
                                                                     dynamic-color="setColorDynamically"></host-availability-overview>
-                                        <service-availability-overview data="service"
-                                                                       dynamic-color="setColorDynamically"
-                                                                       ng-repeat="service in host.Services"></service-availability-overview>
                                     </div>
                                 </div>
                             </div>
