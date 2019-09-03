@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
+
 class SetPermissionsShell extends AppShell {
     public $uses = ['Usergroup', 'Aro', 'Tenant'];
 
@@ -59,7 +61,11 @@ class SetPermissionsShell extends AppShell {
             $acos = $this->Acl->Aco->find('threaded', [
                 'recursive' => -1,
             ]);
-            $alwaysAllowedAcos = $this->Usergroup->getAlwaysAllowedAcos($acos);
+
+            /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+            $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+
+            $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
             $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
             $dependenAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
 

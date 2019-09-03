@@ -97,7 +97,7 @@ class UsergroupsController extends AppController {
         $usergroup = $UsergroupsTable->getUsergroupById($id);
 
 
-        $alwaysAllowedAcos = $this->Usergroup->getAlwaysAllowedAcos($acos);
+        $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
         $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
         $dependentAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
 
@@ -191,7 +191,10 @@ class UsergroupsController extends AppController {
     public function add() {
         $acos = $this->Acl->Aco->find('threaded');
 
-        $alwaysAllowedAcos = $this->Usergroup->getAlwaysAllowedAcos($acos);
+        /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+
+        $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
         $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
         $dependenAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
 
