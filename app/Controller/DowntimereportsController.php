@@ -73,62 +73,148 @@ class DowntimereportsController extends AppController {
             $this->set('error', $downtimeReportForm->getErrors());
             $this->set('_serialize', ['error']);
             return;
-        } else {
-            /** @var $TimeperiodsTable TimeperiodsTable */
-            $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-            $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->data('timeperiod_id'));
-            if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
-                $this->response->statusCode(400);
-                $this->set('error', [
-                    'timeperiod_id' => [
-                        'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
-                    ]
-                ]);
-                $this->set('_serialize', ['error']);
-                return;
-            }
-            /** @var HostsTable $HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            $fromDate = strtotime($this->request->data('from_date') . ' 00:00:00');
-            $toDate = strtotime($this->request->data('to_date') . ' 23:59:59');
-            $evaluationType = $this->request->data('evaluation_type');
-            $reflectionState = $this->request->data('reflection_state');
-
-            $hostsUuids = $HostsTable->getHostsByContainerId($this->MY_RIGHTS, 'list', 'uuid');
-            if (empty($hostsUuids)) {
-                $this->response->statusCode(400);
-                $this->set('error', [
-                    'hosts' => [
-                        'empty' => 'There are no hosts for downtime report available.'
-                    ]
-                ]);
-                $this->set('_serialize', ['error']);
-                return;
-            }
-
-            $downtimeReport = $this->createReport(
-                $fromDate,
-                $toDate,
-                $evaluationType,
-                $reflectionState,
-                $timeperiod['Timeperiod']['timeperiod_timeranges'],
-                $hostsUuids,
-                $UserTime
-            );
-            $this->set('downtimeReport', $downtimeReport);
-            $this->set('_serialize', ['downtimeReport']);
         }
+
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->data('timeperiod_id'));
+        if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'timeperiod_id' => [
+                    'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        $fromDate = strtotime($this->request->data('from_date') . ' 00:00:00');
+        $toDate = strtotime($this->request->data('to_date') . ' 23:59:59');
+        $evaluationType = $this->request->data('evaluation_type');
+        $reflectionState = $this->request->data('reflection_state');
+
+        $hostsUuids = $HostsTable->getHostsByContainerId($this->MY_RIGHTS, 'list', 'uuid');
+        if (empty($hostsUuids)) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'hosts' => [
+                    'empty' => 'There are no hosts for downtime report available.'
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+        $downtimeReport = $this->createReport(
+            $fromDate,
+            $toDate,
+            $evaluationType,
+            $reflectionState,
+            $timeperiod['Timeperiod']['timeperiod_timeranges'],
+            $hostsUuids,
+            $UserTime
+        );
+
+        if ($downtimeReport === null) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'no_downtimes' => [
+                    'empty' => __('No downtimes within specified time found (%s - %s) !',
+                        $this->Time->format($fromDate, $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
+                        $this->Time->format($toDate, $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')))
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $this->set('downtimeReport', $downtimeReport);
+        $this->set('_serialize', ['downtimeReport']);
     }
 
+    /**
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     */
     public function createPdfReport() {
-        $this->set('downtimeReportData', $this->Session->read('downtimeReportData'));
-        $this->set('downtimeReportDetails', $this->Session->read('downtimeReportDetails'));
-        if ($this->Session->check('downtimeReportData')) {
-            $this->Session->delete('downtimeReportData');
+        //Rewrite GET to "POST"
+        $this->request->data = $this->request->query('data');
+        $this->layout = 'Admin.default';
+
+        $downtimeReportForm = new DowntimereportForm();
+        $downtimeReportForm->execute($this->request->data);
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = UserTime::fromUser($User);
+
+        if (!empty($downtimeReportForm->getErrors())) {
+            $this->response->statusCode(400);
+            $this->set('error', $downtimeReportForm->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
         }
-        if ($this->Session->check('downtimeReportDetails')) {
-            $this->Session->delete('downtimeReportDetails');
+
+        if ($this->isJsonRequest()) {
+            //Only validate parameters
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
         }
+
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->data('timeperiod_id'));
+        if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'timeperiod_id' => [
+                    'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        $fromDate = strtotime($this->request->data('from_date') . ' 00:00:00');
+        $toDate = strtotime($this->request->data('to_date') . ' 23:59:59');
+        $evaluationType = $this->request->data('evaluation_type');
+        $reflectionState = $this->request->data('reflection_state');
+
+        $hostsUuids = $HostsTable->getHostsByContainerId($this->MY_RIGHTS, 'list', 'uuid');
+        if (empty($hostsUuids)) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'hosts' => [
+                    'empty' => 'There are no hosts for downtime report available.'
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+        $downtimeReport = $this->createReport(
+            $fromDate,
+            $toDate,
+            $evaluationType,
+            $reflectionState,
+            $timeperiod['Timeperiod']['timeperiod_timeranges'],
+            $hostsUuids,
+            $UserTime
+        );
+
+        if ($downtimeReport === null) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'no_downtimes' => [
+                    'empty' => __('No downtimes within specified time found (%s - %s) !', $this->request->data('from_date'), $this->request->data('to_date'))
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $this->set('downtimeReport', $downtimeReport);
+
         $binary_path = '/usr/bin/wkhtmltopdf';
         if (file_exists('/usr/local/bin/wkhtmltopdf')) {
             $binary_path = '/usr/local/bin/wkhtmltopdf';
@@ -187,8 +273,7 @@ class DowntimereportsController extends AppController {
                 'Host' => $hostDowntime->get('Hosts')
             ];
         }
-
-        if ($this->request->data('evaluation_type') === 1) { //Evaluation with services
+        if ($evaluationType == 1) { //Evaluation with services
             $DowntimeServiceConditions = new DowntimeServiceConditions();
             $DowntimeServiceConditions->setFrom($fromDate);
             $DowntimeServiceConditions->setTo($toDate);
@@ -209,13 +294,6 @@ class DowntimereportsController extends AppController {
             }
         }
         if (empty($downtimes['Hosts']) && empty($downtimes['Services'])) {
-            $this->response->statusCode(400);
-            $this->set('error', [
-                'no_downtimes' => [
-                    'empty' => __('No downtimes within specified time found (%s - %s) !', $this->request->data('from_date'), $this->request->data('to_date'))
-                ]
-            ]);
-            $this->set('_serialize', ['error']);
             return;
         }
 
@@ -449,6 +527,9 @@ class DowntimereportsController extends AppController {
         }
 
 
+        $downtimeReport['totalTime'] = $totalTime;
+        $downtimeReport['fromDate'] = $fromDate;
+        $downtimeReport['toDate'] = $toDate;
         $downtimeReport['downtimes'] = $downtimes;
         return $downtimeReport;
     }

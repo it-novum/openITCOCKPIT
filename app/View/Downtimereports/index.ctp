@@ -61,6 +61,11 @@
     </header>
     <div>
         <div class="widget-body">
+            <div id="flashMessage" class="alert auto-hide alert-info" ng-if="errors.no_downtimes">
+                <div ng-repeat="error in errors.no_downtimes">
+                    <div class="help-block text-danger">{{ error }}</div>
+                </div>
+            </div>
             <div
                     ng-init="reportMessage={successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
                 <section ng-show="tabName == 'reportConfig'" id="reportConfig">
@@ -160,7 +165,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" ng-show="post.report_format == 2">
                             <label class="col-xs-12 col-lg-1 control-label" for="setColorDynamically">
                                 <?php echo __('Dynamic color'); ?>
                             </label>

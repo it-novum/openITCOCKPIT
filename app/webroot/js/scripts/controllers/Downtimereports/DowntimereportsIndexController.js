@@ -36,7 +36,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.createDowntimeReport = function(){
-            if($scope.post.report_format === '1'){
+            if($scope.post.report_format === 1){
                 //PDF Report
                 var GETParams = {
                     'angular': true,
