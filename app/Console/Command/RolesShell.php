@@ -1,6 +1,8 @@
 <?php
 
 
+use Cake\ORM\TableRegistry;
+
 class RolesShell extends AppShell {
     public $uses = ['Usergroup', 'Aro', 'Aco', 'Permission'];
 
@@ -18,7 +20,11 @@ class RolesShell extends AppShell {
         $acos = $this->Aco->find('threaded', [
             'recursive' => -1,
         ]);
-        $alwaysAllowedAcos = $this->Usergroup->getAlwaysAllowedAcos($acos);
+
+        /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+
+        $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
         $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
 
         $inserted = 0;
