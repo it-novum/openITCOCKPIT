@@ -11,11 +11,11 @@
             </h2>
         </header>
         <div class="widget-body">
-            <div class="col-md-12">
-                <div class="col-md-1">
+            <div class="col col-md-12 padding-2">
+                <div class="col col-xs-1 col-md-1 col-lg-1 no-padding">
                     <canvas id="hostPieChart-{{data.Host.id}}"></canvas>
                 </div>
-                <div class="col-md-11">
+                <div class="col col-xs-11 col-md-11 col-lg-11 no-padding font-sm">
                     <div class="col-md-3 ">
                         <?php echo __('Description'); ?>
                     </div>
@@ -55,8 +55,8 @@
                                            dynamic-color="dynamicColor"
                                            ng-repeat="service in data.Services"
                                            ng-if="evaluationType == 1">
-
             </service-availability-overview>
         </div>
     </div>
 </div>
+
