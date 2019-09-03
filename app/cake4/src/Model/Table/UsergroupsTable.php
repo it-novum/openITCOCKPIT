@@ -213,5 +213,83 @@ class UsergroupsTable extends Table {
     }
 
 
+    /**
+     * @param $acosAsNest
+     * @return array
+     */
+    public function getAcoDependencies($acosAsNest) {
+        Configure::load('acl_dependencies');
+
+        //Load Plugin configuration files
+        $modulePlugins = array_filter(\CakePlugin::loaded(), function ($value) {
+            return strpos($value, 'Module') !== false;
+        });
+
+        foreach ($modulePlugins as $moduleName) {
+            $pluginAclConfigFile = OLD_APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
+            if (file_exists($pluginAclConfigFile)) {
+                Configure::load($moduleName . '.acl_dependencies');
+            }
+        }
+
+        $acoDependencies = Configure::read('acl_dependencies.dependencies');
+        $appControllerAcoNames = Configure::read('acl_dependencies.AppController');
+        $result = [];
+        foreach ($acosAsNest as $usergroupAcos) {
+            foreach ($usergroupAcos['children'] as $controllerAcos) {
+                $controllerName = $controllerAcos['Aco']['alias'];
+                if (!strpos($controllerName, 'Module')) {
+                    //Core ACL
+                    //Has some of the controller actions dependencies?
+                    if (isset($acoDependencies[$controllerName])) {
+                        $acos = [];
+                        foreach ($controllerAcos['children'] as $actionAco) {
+                            $acos[$actionAco['Aco']['alias']] = $actionAco['Aco']['id'];
+                        }
+                        if (!empty($acos)) {
+                            //Match found acos to dependencies
+                            foreach ($acoDependencies[$controllerName] as $action => $dependenActions) {
+                                if (isset($acos[$action])) {
+                                    foreach ($dependenActions as $dependendAction) {
+                                        if (isset($acos[$dependendAction])) {
+                                            $result[$acos[$action]][$acos[$dependendAction]] = $controllerName . DS . $action . DS . $dependendAction;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    $pluginName = $controllerAcos['Aco']['alias'];
+                    $pluginAcos = $controllerAcos;
+                    foreach ($pluginAcos['children'] as $controllerAcos) {
+                        $controllerName = $controllerAcos['Aco']['alias'];
+                        //Has some of the controller actions dependencies?
+                        if (isset($acoDependencies[$controllerName])) {
+                            $acos = [];
+                            foreach ($controllerAcos['children'] as $actionAco) {
+                                $acos[$actionAco['Aco']['alias']] = $actionAco['Aco']['id'];
+                            }
+                            if (!empty($acos)) {
+                                //Match found acos to dependencies
+                                foreach ($acoDependencies[$controllerName] as $action => $dependenActions) {
+                                    if (isset($acos[$action])) {
+                                        foreach ($dependenActions as $dependendAction) {
+                                            if (isset($acos[$dependendAction])) {
+                                                $result[$acos[$action]][$acos[$dependendAction]] = $pluginName . DS . $controllerName . DS . $action . DS . $dependendAction;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $result;
+
+    }
 
 }

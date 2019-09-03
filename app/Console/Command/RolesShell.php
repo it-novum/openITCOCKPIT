@@ -25,7 +25,7 @@ class RolesShell extends AppShell {
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
 
         $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
-        $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
+        $acoDependencies = $UsergroupsTable->getAcoDependencies($acos);
 
         $inserted = 0;
 

@@ -98,7 +98,7 @@ class UsergroupsController extends AppController {
 
 
         $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
-        $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
+        $acoDependencies = $UsergroupsTable->getAcoDependencies($acos);
         $dependentAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -195,7 +195,7 @@ class UsergroupsController extends AppController {
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
 
         $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
-        $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
+        $acoDependencies =$UsergroupsTable->getAcoDependencies($acos);
         $dependenAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
 
         if ($this->request->is('post') || $this->request->is('put')) {
