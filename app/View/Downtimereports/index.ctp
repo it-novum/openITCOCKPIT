@@ -61,7 +61,7 @@
     </header>
     <div>
         <div class="widget-body">
-            <div id="flashMessage" class="alert auto-hide alert-info" ng-if="errors.no_downtimes">
+            <div class="alert auto-hide alert-info" ng-if="errors.no_downtimes">
                 <div ng-repeat="error in errors.no_downtimes">
                     <div class="help-block text-danger">{{ error }}</div>
                 </div>
