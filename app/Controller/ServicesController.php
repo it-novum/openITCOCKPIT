@@ -61,6 +61,8 @@ use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
+use itnovum\openITCOCKPIT\Core\PerfdataBackend;
+use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ServiceMacroReplacer;
@@ -86,76 +88,21 @@ use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use Statusengine\PerfdataParser;
 
 /**
- * @property Container $Container
+ * @property Changelog $Changelog
  * @property Service $Service
- * @property Host $Host
- * @property Servicetemplate $Servicetemplate
- * @property Servicegroup $Servicegroup
- * @property Timeperiod $Timeperiod
- * @property Contact $Contact
- * @property Contactgroup $Contactgroup
- * @property Customvariable $Customvariable
- * @property Servicecommandargumentvalue $Servicecommandargumentvalue
- * @property Serviceeventcommandargumentvalue $Serviceeventcommandargumentvalue
- * @property Servicetemplatecommandargumentvalue $Servicetemplatecommandargumentvalue
- * @property Servicetemplateeventcommandargumentvalue $Servicetemplateeventcommandargumentvalue
- * @property DeletedService $DeletedService
- * @property AcknowledgedService $AcknowledgedService
- * @property DowntimeService $DowntimeService
- * @property BbcodeComponent $Bbcode
- * @property Command $Command
+ *
  * @property DbBackend $DbBackend
+ * @property PerfdataBackend $PerfdataBackend
  * @property AppPaginatorComponent $Paginator
+ * @property AppAuthComponent $Auth
  */
 class ServicesController extends AppController {
 
     public $layout = 'blank';
 
-    public $components = [
-        'ListFilter.ListFilter',
-        'RequestHandler',
-        'CustomValidationErrors',
-        'Bbcode',
-        'GearmanClient',
-        'Flash'
-    ];
-    public $helpers = [
-        'ListFilter.ListFilter',
-        'Status',
-        'Monitoring',
-        'CustomValidationErrors',
-        'CustomVariables',
-        'Bbcode',
-    ];
     public $uses = [
-        'Service',
-        'Host',
-        'Servicetemplate',
-        'Servicegroup',
-        'Command',
-        'Timeperiod',
-        'Contact',
-        'Contactgroup',
-        'Container',
-        'Customvariable',
-        'Servicecommandargumentvalue',
-        'Serviceeventcommandargumentvalue',
-        'Servicetemplatecommandargumentvalue',
-        'Servicetemplateeventcommandargumentvalue',
-        MONITORING_HOSTSTATUS,
-        MONITORING_SERVICESTATUS,
-        MONITORING_ACKNOWLEDGED_HOST,
-        MONITORING_ACKNOWLEDGED_SERVICE,
-        MONITORING_OBJECTS,
-        'DeletedService',
-        'Container',
-        'Systemsetting',
-        MONITORING_DOWNTIME_HOST,
-        MONITORING_DOWNTIME_SERVICE,
-        MONITORING_STATEHISTORY_HOST,
-        MONITORING_STATEHISTORY_SERVICE,
-        'DateRange',
-        MONITORING_NOTIFICATION_SERVICE
+        'Changelog',
+        'Service'
     ];
 
     public function index() {
@@ -253,16 +200,17 @@ class ServicesController extends AppController {
             }
         }
 
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields
             ->currentState()
             ->isFlapping()
             ->lastHardStateChange();
-        $hoststatusCache = $this->Hoststatus->byUuid(
+        $hoststatusCache = $HoststatusTable->byUuid(
             array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
         );
-
 
         $all_services = [];
         $UserTime = $User->getUserTime();
@@ -426,9 +374,10 @@ class ServicesController extends AppController {
             }
         }
 
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->currentState();
-        $hoststatusCache = $this->Hoststatus->byUuid(
+        $hoststatusCache = $HoststatusTable->byUuid(
             array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
         );
@@ -508,9 +457,10 @@ class ServicesController extends AppController {
             }
         }
 
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->currentState();
-        $hoststatusCache = $this->Hoststatus->byUuid(
+        $hoststatusCache = $HoststatusTable->byUuid(
             array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
         );
@@ -830,6 +780,9 @@ class ServicesController extends AppController {
 
     /**
      * @param int|null $id
+     * @deprecated
+     * @todo Implement EVC in $ServicesTable->__delete
+     * @todo Implement Appcontroller::getUsedByForFrontend()
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
@@ -1632,12 +1585,13 @@ class ServicesController extends AppController {
             throw new MissingDbBackendException('MissingDbBackendException');
         }
 
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields
             ->currentState()
             ->isFlapping()
             ->lastHardStateChange();
-        $hoststatusCache = $this->Hoststatus->byUuid(
+        $hoststatusCache = $HoststatusTable->byUuid(
             array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
         );
@@ -1706,13 +1660,11 @@ class ServicesController extends AppController {
     }
 
     public function icon() {
-        $this->layout = 'blank';
         //Only ship HTML Template
         return;
     }
 
     public function servicecumulatedstatusicon() {
-        $this->layout = 'blank';
         //Only ship HTML Template
         return;
     }
@@ -1723,10 +1675,6 @@ class ServicesController extends AppController {
      */
     public function details() {
         //Only ship template for auto maps modal
-
-        $this->layout = 'blank';
-        //Only ship HTML Template
-
         $User = new User($this->Auth);
         $this->set('username', $User->getFullName());
         return;
@@ -1766,9 +1714,6 @@ class ServicesController extends AppController {
     }
 
 
-    /**
-     * @deprecated
-     */
     public function loadServicesByString() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -1797,56 +1742,41 @@ class ServicesController extends AppController {
 
     /**
      * @param int|null $id
-     * @deprecated
+     * @throws MissingDbBackendException
      */
     public function timeline($id = null) {
         session_write_close();
+
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Service->exists($id)) {
-            throw new NotFoundException(__('Invalid service'));
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$ServicesTable->existsById($id)) {
+            throw new NotFoundException(__('Service not found'));
         }
 
-        $service = $this->Service->find('first', [
-            'conditions' => [
-                'Service.id' => $id,
-            ],
-            'contain'    => [
-                'Host'            => [
-                    'Container'
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.check_period_id',
-                        'Servicetemplate.notify_period_id'
-                    ]
-                ]
-            ],
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Host.uuid',
-                'Service.check_period_id',
-                'Service.notify_period_id'
-            ]
-        ]);
+        $service = $ServicesTable->getServiceByIdForTimeline($id);
 
-        $containerIdsToCheck = Hash::extract($service['Host'], 'Container.{n}.HostsToContainer.container_id');
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+        if (!$this->allowedByContainerId($service->getContainerIds(), false)) {
             $this->render403();
             return;
         }
 
-        $timeperiodId = ($service['Service']['check_period_id']) ? $service['Service']['check_period_id'] : $service['Servicetemplate']['check_period_id'];
-        //$notifyPeriodId = ($service['Service']['notify_period_id']) ? $service['Service']['notify_period_id'] : $service['Servicetemplate']['notify_period_id'];
+        $timeperiodId = $service->get('check_period_id');
+        if ($timeperiodId === null || $timeperiodId === '') {
+            $timeperiodId = $service->get('servicetemplate')->get('check_period_id');
+        }
 
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         $checkTimePeriod = $TimeperiodsTable->getTimeperiodWithTimerangesById($timeperiodId);
 
+        $User = new User($this->Auth);
+        $UserTime = $User->getUserTime();
 
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
 
         $Groups = new Groups();
         $this->set('groups', $Groups->serialize(false));
@@ -1865,9 +1795,9 @@ class ServicesController extends AppController {
         }
 
         /*************  TIME RANGES *************/
-        $timeRanges = $this->DateRange->createDateRanges(
-            date('d-m-Y H:i:s', $start),
-            date('d-m-Y H:i:s', $end),
+        $timeRanges = DaterangesCreator::createDateRanges(
+            $start,
+            $end,
             $checkTimePeriod['Timeperiod']['timeperiod_timeranges']
         );
 
@@ -1875,13 +1805,16 @@ class ServicesController extends AppController {
         $this->set('timeranges', $TimeRangeSerializer->serialize());
         unset($TimeRangeSerializer, $timeRanges);
 
-        $hostUuid = $service['Host']['uuid'];
-        $serviceUuid = $service['Service']['uuid'];
+        $hostUuid = $service->get('host')->get('uuid');
+        $serviceUuid = $service->get('uuid');
 
         /*************  HOST STATEHISTORY *************/
+        $StatehistoryHostsTable = $this->DbBackend->getStatehistoryHostsTable();
+        $HoststatusTable = $this->DbBackend->getHoststatusTable();
+
         //Process conditions
         $Conditions = new StatehistoryHostConditions();
-        $Conditions->setOrder(['StatehistoryHost.state_time' => 'asc']);
+        $Conditions->setOrder(['StatehistoryHosts.state_time' => 'asc']);
 
         $Conditions->setFrom($start);
         $Conditions->setTo($end);
@@ -1889,84 +1822,90 @@ class ServicesController extends AppController {
         $Conditions->setUseLimit(false);
 
         //Query state history records for hosts
-        $query = $this->StatehistoryHost->getQuery($Conditions);
-        $statehistories = $this->StatehistoryHost->find('all', $query);
+        /** @var \Statusengine2Module\Model\Entity\StatehistoryHost[] $statehistoriesHost */
+        $statehistories = $StatehistoryHostsTable->getStatehistoryIndex($Conditions);
+
         $statehistoryRecords = [];
 
         //Host has no state history record for selected time range
         //Get last available state history record for this host
-        $query = $this->StatehistoryHost->getLastRecord($Conditions);
-        $record = $this->StatehistoryHost->find('first', $query);
+        $record = $StatehistoryHostsTable->getLastRecord($Conditions);
         if (!empty($record)) {
-            $record['StatehistoryHost']['state_time'] = $start;
-            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+            $record->set('state_time', $start);
+            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record->toArray());
             $statehistoryRecords[] = $StatehistoryHost;
         }
 
         if (empty($statehistories) && empty($record)) {
             $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields->currentState()
+            $HoststatusFields
+                ->currentState()
                 ->isHardstate()
                 ->lastStateChange()
                 ->lastHardStateChange();
 
-            $hoststatus = $this->Hoststatus->byUuid($hostUuid, $HoststatusFields);
+            $hoststatus = $HoststatusTable->byUuid($hostUuid, $HoststatusFields);
             if (!empty($hoststatus)) {
-                $record['StatehistoryHost']['state_time'] = $hoststatus['Hoststatus']['last_state_change'];
-                $record['StatehistoryHost']['state'] = $hoststatus['Hoststatus']['current_state'];
-                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type']) ? true : false;
-                $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+                $record = [
+                    'state_time' => $hoststatus['Hoststatus']['last_state_change'],
+                    'state'      => $hoststatus['Hoststatus']['current_state'],
+                    'state_type' => ($hoststatus['Hoststatus']['state_type']) ? true : false
+                ];
+                $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record);
                 $statehistoryRecords[] = $StatehistoryHost;
             }
         }
 
-
         foreach ($statehistories as $statehistory) {
-            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
+            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory);
             $statehistoryRecords[] = $StatehistoryHost;
         }
-
 
         $StatehistorySerializer = new StatehistorySerializer($statehistoryRecords, $UserTime, $end, 'host');
         $this->set('statehistory', $StatehistorySerializer->serialize());
         unset($StatehistorySerializer, $statehistoryRecords);
 
         /*************  SERVICE STATEHISTORY *************/
+        $StatehistoryServicesTable = $this->DbBackend->getStatehistoryServicesTable();
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+
         //Process conditions
         $StatehistoryServiceConditions = new StatehistoryServiceConditions();
-        $StatehistoryServiceConditions->setOrder(['StatehistoryService.state_time' => 'asc']);
+        $StatehistoryServiceConditions->setOrder(['StatehistoryServices.state_time' => 'asc']);
         $StatehistoryServiceConditions->setFrom($start);
         $StatehistoryServiceConditions->setTo($end);
         $StatehistoryServiceConditions->setServiceUuid($serviceUuid);
         $StatehistoryServiceConditions->setUseLimit(false);
         //Query state history records for service
-        $query = $this->StatehistoryService->getQuery($StatehistoryServiceConditions);
-        $statehistoriesService = $this->StatehistoryService->find('all', $query);
+        $statehistoriesService = $StatehistoryServicesTable->getStatehistoryIndex($StatehistoryServiceConditions);
         $statehistoryServiceRecords = [];
 
         //Service has no state history record for selected time range
         //Get last available state history record for this host
-        $query = $this->StatehistoryService->getLastRecord($StatehistoryServiceConditions);
-        $record = $this->StatehistoryService->find('first', $query);
+        $record = $StatehistoryServicesTable->getLastRecord($StatehistoryServiceConditions);
         if (!empty($record)) {
-            $record['StatehistoryService']['state_time'] = $start;
-            $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record['StatehistoryService']);
+            $record->set('state_time', $start);
+            $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record->toArray());
             $statehistoryServiceRecords[] = $StatehistoryService;
         }
 
         if (empty($statehistoriesService) && empty($record)) {
             $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields->currentState()
+            $ServicestatusFields
+                ->currentState()
                 ->isHardstate()
                 ->lastStateChange()
                 ->lastHardStateChange();
 
-            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+            $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
             if (!empty($servicestatus)) {
-                $record['StatehistoryService']['state_time'] = $servicestatus['Servicestatus']['last_state_change'];
-                $record['StatehistoryService']['state'] = $servicestatus['Servicestatus']['current_state'];
-                $record['StatehistoryService']['state_type'] = $servicestatus['Servicestatus']['state_type'];
-                $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record['StatehistoryService']);
+                $record = [
+                    'state_time' => $servicestatus['Servicestatus']['last_state_change'],
+                    'state'      => $servicestatus['Servicestatus']['current_state'],
+                    'state_type' => $servicestatus['Servicestatus']['state_type']
+                ];
+
+                $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record);
                 $statehistoryServiceRecords[] = $StatehistoryService;
             }
         }
@@ -1982,20 +1921,20 @@ class ServicesController extends AppController {
         unset($StatehistorySerializer, $statehistoryServiceRecords);
 
         /*************  SERVICE DOWNTIMES *************/
+        $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
+
         //Query downtime records for hosts
         $DowntimeServiceConditions = new DowntimeServiceConditions();
-        $DowntimeServiceConditions->setOrder(['DowntimeService.scheduled_start_time' => 'asc']);
+        $DowntimeServiceConditions->setOrder(['DowntimeServices.scheduled_start_time' => 'asc']);
         $DowntimeServiceConditions->setFrom($start);
         $DowntimeServiceConditions->setTo($end);
         $DowntimeServiceConditions->setServiceUuid($serviceUuid);
         $DowntimeServiceConditions->setIncludeCancelledDowntimes(true);
 
-
-        $query = $this->DowntimeService->getQueryForReporting($DowntimeServiceConditions);
-        $downtimes = $this->DowntimeService->find('all', $query);
+        $downtimes = $DowntimehistoryServicesTable->getDowntimesForReporting($DowntimeServiceConditions);
         $downtimeRecords = [];
         foreach ($downtimes as $downtime) {
-            $downtimeRecords[] = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeService']);
+            $downtimeRecords[] = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime);
         }
 
         $DowntimeSerializer = new DowntimeSerializer($downtimeRecords, $UserTime);
@@ -2003,19 +1942,23 @@ class ServicesController extends AppController {
         unset($DowntimeSerializer, $downtimeRecords);
 
         /*************  SERVICE NOTIFICATIONS *************/
+        $NotificationServicesTable = $this->DbBackend->getNotificationServicesTable();
+
         $Conditions = new ServiceNotificationConditions();
         $Conditions->setUseLimit(false);
         $Conditions->setFrom($start);
         $Conditions->setTo($end);
         $Conditions->setServiceUuid($serviceUuid);
-        $query = $this->NotificationService->getQuery($Conditions, []);
 
+        $notifications = $NotificationServicesTable->getNotifications($Conditions);
         $notificationRecords = [];
-        foreach ($this->NotificationService->find('all', $query) as $notification) {
+        foreach ($notifications as $notification) {
+            $notification = $notification->toArray();
+
             $notificationRecords[] = [
                 'NotificationService' => new \itnovum\openITCOCKPIT\Core\Views\NotificationService($notification),
-                'Command'             => new \itnovum\openITCOCKPIT\Core\Views\Command($notification['Command']),
-                'Contact'             => new \itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact'])
+                'Command'             => new \itnovum\openITCOCKPIT\Core\Views\Command($notification['Commands']),
+                'Contact'             => new \itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contacts'])
             ];
         }
 
@@ -2024,6 +1967,8 @@ class ServicesController extends AppController {
         unset($NotificationSerializer, $notificationRecords);
 
         /*************  SERVICE ACKNOWLEDGEMENTS *************/
+        $AcknowledgementServicesTable = $this->DbBackend->getAcknowledgementServicesTable();
+
         //Process conditions
         $Conditions = new AcknowledgedServiceConditions();
         $Conditions->setUseLimit(false);
@@ -2032,9 +1977,10 @@ class ServicesController extends AppController {
         $Conditions->setServiceUuid($serviceUuid);
 
         $acknowledgementRecords = [];
-        $query = $this->AcknowledgedService->getQuery($Conditions, []);
-        foreach ($this->AcknowledgedService->find('all', $query) as $acknowledgement) {
-            $acknowledgementRecords[] = new AcknowledgementService($acknowledgement['AcknowledgedService']);
+        $acknowledgements = $AcknowledgementServicesTable->getAcknowledgements($Conditions);
+
+        foreach ($acknowledgements as $acknowledgement) {
+            $acknowledgementRecords[] = new AcknowledgementService($acknowledgement->toArray());
         }
 
         $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);

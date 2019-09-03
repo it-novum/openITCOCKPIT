@@ -4,7 +4,8 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityOverview', function($
         templateUrl: '/downtimereports/hostAvailabilityOverview.html',
         scope: {
             'data': '=',
-            'dynamicColor': '='
+            'dynamicColor': '=',
+            'evaluationType': '='
         },
         controller: function($scope){
             $timeout(function(){
@@ -45,10 +46,12 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityOverview', function($
                         tooltips: {
                             callbacks: {
                                 label: function(tooltipItem, data){
-                                    return data.labels[tooltipItem.index] + ': ' +
+                                    return data.labels[tooltipItem.index] + ':' +
                                         data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] + '%';
                                 }
-                            }
+                            },
+                            bodyFontSize: 8,
+                            caretSize: 1
                         },
                         responsive: true,
                         legend: false,
@@ -56,8 +59,8 @@ angular.module('openITCOCKPIT').directive('hostAvailabilityOverview', function($
                         elements: {
                             center: {
                                 text: $scope.data.pieChartData.availability + '%',
-                                font: 20,
-                                color: '#ffffff'
+                                fontSize: 12,
+                                fontFixed: true
                             }
                         }
                     }

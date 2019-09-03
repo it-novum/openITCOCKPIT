@@ -37,7 +37,8 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
  * @property Servicestatus $Servicestatus
  */
 class AutomapsController extends AppController {
-    public $layout = 'Admin.default';
+
+    public $layout = 'blank';
 
     public $uses = [
         'Automap',
@@ -68,6 +69,9 @@ class AutomapsController extends AppController {
         ]
     ];
 
+    /**
+     * @deprecated
+     */
     public function index() {
         $options = [
             'conditions' => [
@@ -88,6 +92,10 @@ class AutomapsController extends AppController {
         $this->set('_serialize', ['all_automaps']);
     }
 
+    /**
+     * @throws Exception
+     * @deprecated
+     */
     public function add() {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
@@ -109,6 +117,11 @@ class AutomapsController extends AppController {
         }
     }
 
+    /**
+     * @param $id
+     * @throws Exception
+     * @deprecated
+     */
     public function edit($id) {
         if (!$this->Automap->exists($id)) {
             throw new NotFoundException(__('Invalid automap'));
@@ -141,6 +154,10 @@ class AutomapsController extends AppController {
         $this->request->data = Hash::merge($automap, $this->request->data);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function view($id = null) {
         $this->layout = 'blank';
 
@@ -321,6 +338,10 @@ class AutomapsController extends AppController {
         $this->set('_serialize', ['automap', 'hostAndServices']);
     }
 
+    /**
+     * @param null $serviceId
+     * @deprecated
+     */
     public function loadServiceDetails($serviceId = null) {
         $this->allowOnlyAjaxRequests();
 
@@ -413,6 +434,10 @@ class AutomapsController extends AppController {
         $this->set('_serialize', ['service', 'servicestatus', 'serviceName', 'hasRrdGraph', 'acknowledged']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -437,6 +462,9 @@ class AutomapsController extends AppController {
         $this->redirect(['action' => 'index']);
     }
 
+    /**
+     * @deprecated
+     */
     public function icon() {
         $this->layout = 'blank';
         //Only ship HTML Template

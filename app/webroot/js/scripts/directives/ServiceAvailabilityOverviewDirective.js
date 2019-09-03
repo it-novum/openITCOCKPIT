@@ -8,8 +8,7 @@ angular.module('openITCOCKPIT').directive('serviceAvailabilityOverview', functio
         },
         controller: function($scope){
             $timeout(function(){
-
-                $scope.color = 'rgba(146, 162, 168, 0.9)';
+                $scope.color = 'transparent';
                 if($scope.dynamicColor){
                     $scope.color = AvailabilityColorCalculationService.getBackgroundColor(
                         $scope.data.pieChartData.availability
@@ -48,7 +47,9 @@ angular.module('openITCOCKPIT').directive('serviceAvailabilityOverview', functio
                                     return data.labels[tooltipItem.index] + ': ' +
                                         data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] + '%';
                                 }
-                            }
+                            },
+                            bodyFontSize: 8,
+                            caretSize: 1
                         },
                         responsive: true,
                         legend: false,
@@ -56,8 +57,9 @@ angular.module('openITCOCKPIT').directive('serviceAvailabilityOverview', functio
                         elements: {
                             center: {
                                 text: $scope.data.pieChartData.availability + '%',
-                                font: 20,
-                                color: '#ffffff'
+                                color: ($scope.dynamicColor)?'#ffffff':'#000000', //Default black
+                                fontSize: 12,
+                                fontFixed: true
                             }
                         }
                     }

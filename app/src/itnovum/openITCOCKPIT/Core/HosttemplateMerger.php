@@ -24,7 +24,11 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
-
+/**
+ * Class HosttemplateMerger
+ * @package itnovum\openITCOCKPIT\Core
+ * @deprecated
+ */
 class HosttemplateMerger {
 
     /**
@@ -60,6 +64,7 @@ class HosttemplateMerger {
      * HosttemplateMerger constructor.
      * @param $host
      * @param $hosttemplate
+     * @deprecated
      */
     public function __construct($host, $hosttemplate) {
         $this->host = $host;
