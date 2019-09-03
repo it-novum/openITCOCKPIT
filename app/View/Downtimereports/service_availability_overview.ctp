@@ -10,7 +10,14 @@
                 <div class="col-md-12 no-padding font-md">
                     <h5 class="no-padding ellipsis">
                         <i class="fa fa-cog"> </i>
-                        {{(data.Service.name === null)?data.Servicetemplate.name:data.Service.name}}
+                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                            <a ui-sref="ServicesBrowser({id:data.Service.id})"
+                               ng-class="{'txt-color-white':dynamicColor, 'txt-color-blueDark':!dynamicColor}">
+                                {{(data.Service.name === null)?data.Servicetemplate.name:data.Service.name}}
+                            </a>
+                        <?php else: ?>
+                            {{(data.Service.name === null)?data.Servicetemplate.name:data.Service.name}}
+                        <?php endif; ?>
                     </h5>
                 </div>
             </div>

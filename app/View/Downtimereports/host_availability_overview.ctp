@@ -4,9 +4,13 @@
             <h2 class="txt-color-white">
                 <strong>
                     <i class="fa fa-desktop"></i>
-                    <a href="/hosts/browser/16" class="txt-color-white">
+                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                        <a ui-sref="HostsBrowser({id:data.Host.id})" class="txt-color-white">
+                            {{data.Host.name}}
+                        </a>
+                    <?php else: ?>
                         {{data.Host.name}}
-                    </a>
+                    <?php endif; ?>
                 </strong>
             </h2>
         </header>
