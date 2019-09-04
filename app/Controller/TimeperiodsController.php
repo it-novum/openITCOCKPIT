@@ -24,6 +24,7 @@
 //	confirmation.
 
 use App\Model\Table\ContactsTable;
+use App\Model\Table\HostescalationsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
@@ -294,30 +295,6 @@ class TimeperiodsController extends AppController {
             ],
         ]);
         if ($hostCount > 0) {
-            return false;
-        }
-
-        //Check host escalations
-        $this->loadModel('Hostescalation');
-        $hostescalationCount = $this->Hostescalation->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'timeperiod_id' => $timeperiodId,
-            ],
-        ]);
-        if ($hostescalationCount > 0) {
-            return false;
-        }
-
-        //Check service escalations
-        $this->loadModel('Serviceescalation');
-        $serviceescalationCount = $this->Serviceescalation->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'timeperiod_id' => $timeperiodId,
-            ],
-        ]);
-        if ($serviceescalationCount > 0) {
             return false;
         }
 

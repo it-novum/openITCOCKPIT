@@ -276,226 +276,228 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="serviceescalation in serviceescalations">
-                                        <td class="text-center" class="width-15">
-                                            <?php if ($this->Acl->hasPermission('delete', 'serviceescalations')): ?>
-                                                <input type="checkbox"
-                                                       ng-model="massChange[serviceescalations.id]"
-                                                       ng-show="serviceescalations.allowEdit">
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <ul class="list-unstyled">
-                                                <li ng-repeat="service in serviceescalation.services" title="{{service.servicename}}">
-                                                    <div class="label-group label-breadcrumb label-breadcrumb-success padding-2">
-                                                        <label class="label label-success label-xs">
-                                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                                        </label>
-                                                        <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                            <a ui-sref="ServicesEdit({id: service.id})"
-                                                               class="label label-light label-xs">
-                                                                {{service.servicename}}
-                                                            </a>
-                                                        <?php else: ?>
-                                                            <span class="label label-light label-xs">
-                                                                {{service.servicename}}
-                                                            </span>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                    <i ng-if="service.disabled == 1"
-                                                       class="fa fa-power-off text-danger"
-                                                       title="disabled" aria-hidden="true"></i>
-                                                </li>
-                                            </ul>
-                                        </td>
-                                        <td>
-                                            <ul class="list-unstyled">
-                                                <li ng-repeat="service in serviceescalation.services_excluded" title="{{service.servicename}}">
-                                                    <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
-                                                        <label class="label label-danger label-xs">
-                                                            <i class="fa fa-minus" aria-hidden="true"></i>
-                                                        </label>
-                                                        <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                            <a ui-sref="ServicesEdit({id: service.id})"
-                                                               class="label label-light label-xs">
-                                                                {{service.servicename}}
-                                                            </a>
-                                                        <?php else: ?>
-                                                            <span class="label label-light label-xs">
+                                <tr ng-repeat="serviceescalation in serviceescalations">
+                                    <td class="text-center" class="width-15">
+                                        <?php if ($this->Acl->hasPermission('delete', 'serviceescalations')): ?>
+                                            <input type="checkbox"
+                                                   ng-model="massChange[serviceescalation.id]"
+                                                   ng-show="serviceescalation.allowEdit">
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="service in serviceescalation.services"
+                                                title="{{service.servicename}}">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-success padding-2">
+                                                    <label class="label label-success label-xs">
+                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                    </label>
+                                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                                        <a ui-sref="ServicesEdit({id: service.id})"
+                                                           class="label label-light label-xs">
+                                                            {{service.servicename}}
+                                                        </a>
+                                                    <?php else: ?>
+                                                        <span class="label label-light label-xs">
                                                                 {{service.servicename}}
                                                             </span>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                    <i ng-if="service.disabled == 1"
-                                                       class="fa fa-power-off text-danger"
-                                                       title="disabled" aria-hidden="true"></i>
-                                                </li>
-                                            </ul>
-                                        </td>
-                                        <td>
-                                            <ul class="list-unstyled">
-                                                <li ng-repeat="servicegroup in serviceescalation.servicegroups">
-                                                    <div class="label-group label-breadcrumb label-breadcrumb-success padding-2"
-                                                    title="{{servicegroup.container.name}}">
-                                                        <label class="label label-success label-xs">
-                                                            <i class="fa fa-plus" aria-hidden="true"></i>
-                                                        </label>
-                                                        <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
-                                                            <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
-                                                               class="label label-light label-xs">
-                                                                {{servicegroup.container.name}}
-                                                            </a>
-                                                        <?php else: ?>
-                                                            <span class="label label-light label-xs">
+                                                    <?php endif; ?>
+                                                </div>
+                                                <i ng-if="service.disabled == 1"
+                                                   class="fa fa-power-off text-danger"
+                                                   title="disabled" aria-hidden="true"></i>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="service in serviceescalation.services_excluded"
+                                                title="{{service.servicename}}">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2">
+                                                    <label class="label label-danger label-xs">
+                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                    </label>
+                                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                                        <a ui-sref="ServicesEdit({id: service.id})"
+                                                           class="label label-light label-xs">
+                                                            {{service.servicename}}
+                                                        </a>
+                                                    <?php else: ?>
+                                                        <span class="label label-light label-xs">
+                                                                {{service.servicename}}
+                                                            </span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <i ng-if="service.disabled == 1"
+                                                   class="fa fa-power-off text-danger"
+                                                   title="disabled" aria-hidden="true"></i>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="servicegroup in serviceescalation.servicegroups">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-success padding-2"
+                                                     title="{{servicegroup.container.name}}">
+                                                    <label class="label label-success label-xs">
+                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                    </label>
+                                                    <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
+                                                        <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
+                                                           class="label label-light label-xs">
+                                                            {{servicegroup.container.name}}
+                                                        </a>
+                                                    <?php else: ?>
+                                                        <span class="label label-light label-xs">
                                                             {{servicegroup.container.name}}
                                                         </span>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </td>
-                                        <td>
-                                            <ul class="list-unstyled">
-                                                <li ng-repeat="servicegroup in serviceescalation.servicegroups_excluded">
-                                                    <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
-                                                    title="{{servicegroup.container.name}}">
-                                                        <label class="label label-danger label-xs">
-                                                            <i class="fa fa-minus" aria-hidden="true"></i>
-                                                        </label>
-                                                        <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
-                                                            <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
-                                                               class="label label-light label-xs">
-                                                                {{servicegroup.container.name}}
-                                                            </a>
-                                                        <?php else: ?>
-                                                            <span class="label label-light label-xs">
+                                                    <?php endif; ?>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="servicegroup in serviceescalation.servicegroups_excluded">
+                                                <div class="label-group label-breadcrumb label-breadcrumb-danger padding-2"
+                                                     title="{{servicegroup.container.name}}">
+                                                    <label class="label label-danger label-xs">
+                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                    </label>
+                                                    <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
+                                                        <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
+                                                           class="label label-light label-xs">
+                                                            {{servicegroup.container.name}}
+                                                        </a>
+                                                    <?php else: ?>
+                                                        <span class="label label-light label-xs">
                                                                 {{servicegroup.container.name}}
                                                             </span>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </td>
-                                        <td>
-                                            {{ serviceescalation.first_notification }}
-                                        </td>
-                                        <td>
-                                            {{ serviceescalation.last_notification }}
-                                        </td>
-                                        <td>
-                                            {{ serviceescalation.notification_interval }}
-                                        </td>
-                                        <td>
-                                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
-                                                <a ui-sref="TimeperiodsEdit({id: serviceescalation.timeperiod.id})">{{
-                                                    serviceescalation.timeperiod.name }}</a>
-                                            <?php else: ?>
-                                                {{ serviceescalation.timeperiod.name }}
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <ul class="list-unstyled">
-                                                <li ng-repeat="contact in serviceescalation.contacts">
-                                                    <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
-                                                        <a ui-sref="ContactsEdit({id: contact.id})">
-                                                            {{ contact.name }}
-                                                        </a>
-                                                    <?php else: ?>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        {{ serviceescalation.first_notification }}
+                                    </td>
+                                    <td>
+                                        {{ serviceescalation.last_notification }}
+                                    </td>
+                                    <td>
+                                        {{ serviceescalation.notification_interval }}
+                                    </td>
+                                    <td>
+                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                            <a ui-sref="TimeperiodsEdit({id: serviceescalation.timeperiod.id})">{{
+                                                serviceescalation.timeperiod.name }}</a>
+                                        <?php else: ?>
+                                            {{ serviceescalation.timeperiod.name }}
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="contact in serviceescalation.contacts">
+                                                <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
+                                                    <a ui-sref="ContactsEdit({id: contact.id})">
                                                         {{ contact.name }}
-                                                    <?php endif; ?>
-                                                </li>
-                                            </ul>
-                                        </td>
-                                        <td>
-                                            <ul class="list-unstyled">
-                                                <li ng-repeat="contactgroup in serviceescalation.contactgroups">
-                                                    <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
-                                                        <a ui-sref="ContactgroupsEdit({id: contactgroup.id})">
-                                                            {{ contactgroup.container.name }}
-                                                        </a>
-                                                    <?php else: ?>
+                                                    </a>
+                                                <?php else: ?>
+                                                    {{ contact.name }}
+                                                <?php endif; ?>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="contactgroup in serviceescalation.contactgroups">
+                                                <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
+                                                    <a ui-sref="ContactgroupsEdit({id: contactgroup.id})">
                                                         {{ contactgroup.container.name }}
-                                                    <?php endif; ?>
-                                                </li>
-                                            </ul>
-                                        </td>
-                                        <td class="text-align-center">
-                                            <div>
+                                                    </a>
+                                                <?php else: ?>
+                                                    {{ contactgroup.container.name }}
+                                                <?php endif; ?>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td class="text-align-center">
+                                        <div>
                                                 <span class="label-forced label-success margin-right-5"
                                                       title="<?php echo __('Recovery'); ?>"
                                                       ng-show="serviceescalation.escalate_on_recovery">
                                                     <?php echo __('R'); ?>
                                                 </span>
-                                                <span class="label-forced label-warning margin-right-5"
-                                                      title="<?php echo __('Warning'); ?>"
-                                                      ng-show="serviceescalation.escalate_on_warning">
+                                            <span class="label-forced label-warning margin-right-5"
+                                                  title="<?php echo __('Warning'); ?>"
+                                                  ng-show="serviceescalation.escalate_on_warning">
                                                     <?php echo __('W'); ?>
                                                 </span>
-                                                <span class="label-forced label-danger margin-right-5"
-                                                      title="<?php echo __('Critical'); ?>"
-                                                      ng-show="serviceescalation.escalate_on_critical">
+                                            <span class="label-forced label-danger margin-right-5"
+                                                  title="<?php echo __('Critical'); ?>"
+                                                  ng-show="serviceescalation.escalate_on_critical">
                                                     <?php echo __('C'); ?>
                                                 </span>
-                                                <span class="label-forced label-default margin-right-5"
-                                                      title="<?php echo __('Unknown'); ?>"
-                                                      ng-show="serviceescalation.escalate_on_unknown">
+                                            <span class="label-forced label-default margin-right-5"
+                                                  title="<?php echo __('Unknown'); ?>"
+                                                  ng-show="serviceescalation.escalate_on_unknown">
                                                     <?php echo __('U'); ?>
                                                 </span>
-                                            </div>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="btn-group smart-form">
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group smart-form">
+                                            <?php if ($this->Acl->hasPermission('edit', 'serviceescalations')): ?>
+                                                <a ui-sref="ServiceescalationsEdit({id: serviceescalation.id})"
+                                                   ng-if="serviceescalation.allowEdit"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                                <a href="javascript:void(0);"
+                                                   ng-if="!serviceescalation.allowEdit"
+                                                   class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{serviceescalation.id}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'serviceescalations')): ?>
-                                                    <a ui-sref="ServiceescalationsEdit({id: serviceescalation.id})"
-                                                       ng-if="serviceescalation.allowEdit"
-                                                       class="btn btn-default">
-                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                    </a>
-                                                    <a href="javascript:void(0);"
-                                                       ng-if="!serviceescalation.allowEdit"
-                                                       class="btn btn-default disabled">
-                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                    </a>
-                                                <?php else: ?>
-                                                    <a href="javascript:void(0);" class="btn btn-default">
-                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                    </a>
+                                                    <li ng-if="serviceescalation.allowEdit">
+                                                        <a ui-sref="ServiceescalationsEdit({id:serviceescalation.id})">
+                                                            <i class="fa fa-cog"></i>
+                                                            <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
                                                 <?php endif; ?>
-                                                <a href="javascript:void(0);" data-toggle="dropdown"
-                                                   class="btn btn-default dropdown-toggle"><span
-                                                            class="caret"></span></a>
-                                                <ul class="dropdown-menu pull-right"
-                                                    id="menuHack-{{serviceescalation.id}}">
-                                                    <?php if ($this->Acl->hasPermission('edit', 'serviceescalations')): ?>
-                                                        <li ng-if="serviceescalation.allowEdit">
-                                                            <a ui-sref="ServiceescalationsEdit({id:serviceescalation.id})">
-                                                                <i class="fa fa-cog"></i>
-                                                                <?php echo __('Edit'); ?>
-                                                            </a>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('delete', 'serviceescalations')): ?>
-                                                        <li class="divider"
-                                                            ng-if="serviceescalation.allowEdit"></li>
-                                                        <li ng-if="serviceescalation.allowEdit">
-                                                            <a href="javascript:void(0);"
-                                                               class="txt-color-red"
-                                                               ng-click="confirmDelete(getObjectForDelete(serviceescalation))">
-                                                                <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                                                            </a>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="13" ng-show="serviceescalations.length == 0">
-                                            <div class="col-xs-12 text-center txt-color-red italic">
-                                                <?php echo __('No entries match the selection'); ?>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                                <?php if ($this->Acl->hasPermission('delete', 'serviceescalations')): ?>
+                                                    <li class="divider"
+                                                        ng-if="serviceescalation.allowEdit"></li>
+                                                    <li ng-if="serviceescalation.allowEdit">
+                                                        <a href="javascript:void(0);"
+                                                           class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(serviceescalation))">
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="13" ng-show="serviceescalations.length == 0">
+                                        <div class="col-xs-12 text-center txt-color-red italic">
+                                            <?php echo __('No entries match the selection'); ?>
+                                        </div>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>

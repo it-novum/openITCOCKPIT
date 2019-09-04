@@ -165,42 +165,42 @@
                                    class="table table-striped table-hover table-bordered"
                                    style="">
                                 <thead>
-                                    <tr>
-                                        <th class="no-sort sorting_disabled width-15">
-                                            <i class="fa fa-check-square-o fa-lg"></i>
-                                        </th>
-                                        <th class="no-sort" ng-click="orderBy('Instantreport.name')">
-                                            <i class="fa" ng-class="getSortClass('Instantreport.name')"></i>
-                                            <?php echo __('Name'); ?>
-                                        </th>
-                                        <th class="no-sort">
-                                            <?php echo __('Evaluation'); ?>
-                                        </th>
-                                        <th class="no-sort">
-                                            <?php echo __('Type'); ?>
-                                        </th>
-                                        <th class="no-sort" ng-click="orderBy('Timeperiod.name')">
-                                            <i class="fa" ng-class="getSortClass('Timeperiod.name')"></i>
-                                            <?php echo __('Time period'); ?>
-                                        </th>
-                                        <th class="no-sort" ng-click="orderBy('Instantreport.summary')">
-                                            <i class="fa" ng-class="getSortClass('Instantreport.summary')"></i>
-                                            <?php echo __('Summary display'); ?>
-                                        </th>
-                                        <th class="no-sort" ng-click="orderBy('Instantreport.downtimes')">
-                                            <i class="fa" ng-class="getSortClass('Instantreport.downtimes')"></i>
-                                            <?php echo __('Consider downtimes'); ?>
-                                        </th>
-                                        <th class="no-sort">
-                                            <?php echo __('Send interval'); ?>
-                                        </th>
-                                        <th class="no-sort">
-                                            <?php echo __('Send to'); ?>
-                                        </th>
-                                        <th class="no-sort text-center width-70">
-                                            <i class="fa fa-cog fa-lg"></i>
-                                        </th>
-                                    </tr>
+                                <tr>
+                                    <th class="no-sort sorting_disabled width-15">
+                                        <i class="fa fa-check-square-o fa-lg"></i>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Instantreport.name')">
+                                        <i class="fa" ng-class="getSortClass('Instantreport.name')"></i>
+                                        <?php echo __('Name'); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo __('Evaluation'); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo __('Type'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Timeperiod.name')">
+                                        <i class="fa" ng-class="getSortClass('Timeperiod.name')"></i>
+                                        <?php echo __('Time period'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Instantreport.summary')">
+                                        <i class="fa" ng-class="getSortClass('Instantreport.summary')"></i>
+                                        <?php echo __('Summary display'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Instantreport.downtimes')">
+                                        <i class="fa" ng-class="getSortClass('Instantreport.downtimes')"></i>
+                                        <?php echo __('Consider downtimes'); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo __('Send interval'); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo __('Send to'); ?>
+                                    </th>
+                                    <th class="no-sort text-center width-70">
+                                        <i class="fa fa-cog fa-lg"></i>
+                                    </th>
+                                </tr>
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="instantreport in instantreports">
@@ -268,8 +268,22 @@
                                               <?php echo __('No'); ?>
                                         </span>
                                     </td>
-                                    <td>
-                                        {{ instantreport.Instantreport.send_interval }}
+                                    <td class="text-center">
+                                         <span ng-show="instantreport.Instantreport.send_interval === 0">
+                                            <?php echo __('NEVER'); ?>
+                                         </span>
+                                        <span ng-show="instantreport.Instantreport.send_interval === 1">
+                                            <?php echo __('DAY'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.send_interval === 2">
+                                            <?php echo __('WEEK'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.send_interval === 3">
+                                            <?php echo __('MONTH'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.send_interval === 4">
+                                            <?php echo __('YEAR'); ?>
+                                        </span>
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">

@@ -864,42 +864,7 @@ class InstantreportsController extends AppController {
     }
 
     public function delete($id = null) {
-        if (!$this->Instantreport->exists($id)) {
-            throw new NotFoundException(__('Invalid Instant report'));
-        }
 
-        if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
-        }
-        $instantreport = $this->Instantreport->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'conditions' => [
-                'Instantreport.id' => $id,
-            ]
-        ]);
-
-        if (!$this->allowedByContainerId(Hash::extract($instantreport, 'Container.id'))) {
-            $this->render403();
-            return;
-        }
-
-        $this->Instantreport->id = $id;
-
-        if ($this->Instantreport->delete()) {
-            $this->set('success', true);
-            $this->set('message', __('Instant report successfully deleted'));
-            $this->set('_serialize', ['success']);
-            return;
-        }
-
-        $this->response->statusCode(400);
-        $this->set('success', false);
-        $this->set('id', $id);
-        $this->set('message', __('Issue while deleting instant report'));
-        $this->set('_serialize', ['success', 'id', 'message']);
     }
 
     public function createPdfReport() {

@@ -122,7 +122,7 @@ angular.module('openITCOCKPIT')
                     'selected[]': $scope.post.Instantreport.User
                 }
             }).then(function(result){
-                $scope.users = result.data.users.users;
+                $scope.users = result.data.users;
             });
         };
 
