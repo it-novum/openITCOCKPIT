@@ -258,37 +258,43 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <?php
-                    echo $this->Form->fancyCheckbox('Instantreport.downtimes', [
-                        'caption'          => __('Consider downtimes'),
-                        'wrapGridClass'    => 'col col-md-1',
-                        'captionGridClass' => 'col col-md-2',
-                        'captionClass'     => 'control-label',
-                        'ng-model'         => 'post.Instantreport.downtimes'
-                    ]);
-                    ?>
+                    <label for="InstantreportDowntimes" class="col col-md-2 control-label">
+                        <?php echo __('Consider downtimes'); ?>
+                    </label>
+                    <div class="col-xs-12 col-lg-10 smart-form">
+                        <label class="checkbox small-checkbox-label no-required no-padding-top">
+                            <input type="checkbox"
+                                   id="InstantreportDowntimes"
+                                   ng-model="post.Instantreport.downtimes">
+                            <i class="checkbox-primary"></i>
+                        </label>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <?php
-                    echo $this->Form->fancyCheckbox('Instantreport.summary', [
-                        'caption'          => __('Summary display'),
-                        'wrapGridClass'    => 'col col-md-1',
-                        'captionGridClass' => 'col col-md-2',
-                        'captionClass'     => 'control-label',
-                        'ng-model'         => 'post.Instantreport.summary'
-                    ]);
-                    ?>
+                    <label for="InstantreportSummary" class="col col-md-2 control-label">
+                        <?php echo __('Summary display'); ?>
+                    </label>
+                    <div class="col-xs-12 col-lg-10 smart-form">
+                        <label class="checkbox small-checkbox-label no-required no-padding-top">
+                            <input type="checkbox"
+                                   id="InstantreportSummary"
+                                   ng-model="post.Instantreport.summary">
+                            <i class="checkbox-primary"></i>
+                        </label>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <?php
-                    echo $this->Form->fancyCheckbox('Instantreport.send_email', [
-                        'caption'          => __('Send email'),
-                        'wrapGridClass'    => 'col col-md-1',
-                        'captionGridClass' => 'col col-md-2',
-                        'captionClass'     => 'control-label',
-                        'ng-model'         => 'post.Instantreport.send_email'
-                    ]);
-                    ?>
+                    <label for="InstantreportSendEmail" class="col col-md-2 control-label">
+                        <?php echo __('Send email'); ?>
+                    </label>
+                    <div class="col-xs-12 col-lg-10 smart-form">
+                        <label class="checkbox small-checkbox-label no-required no-padding-top">
+                            <input type="checkbox"
+                                   id="InstantreportSendEmail"
+                                   ng-model="post.Instantreport.send_email">
+                            <i class="checkbox-primary"></i>
+                        </label>
+                    </div>
                 </div>
                 <div class="send-interval-holder" ng-if="post.Instantreport.send_email">
                     <div class="form-group">
