@@ -26,6 +26,10 @@
 
 use Cake\ORM\TableRegistry;
 
+/**
+ * Class Instantreport
+ * @deprecated
+ */
 class Instantreport extends AppModel {
 
     CONST EVALUATION_HOSTS = 1;
@@ -216,12 +220,23 @@ class Instantreport extends AppModel {
         ],
     ];
 
+    /**
+     * @param null $condition
+     * @deprecated
+     */
     public function setValidationRules($condition = null) {
         if ($condition == 'generate') {
             $this->validate = $this->validateCreateReport;
         }
     }
 
+    /**
+     * Instantreport constructor.
+     * @param bool $id
+     * @param null $table
+     * @param null $ds
+     * @deprecated
+     */
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->setValidationRules();
@@ -230,6 +245,7 @@ class Instantreport extends AppModel {
     /**
      * Here we can check some conditions to see what validation we need
      * @return boolean
+     * @deprecated
      */
     public function beforeValidate($options = []) {
         $router_params = Router::getParams();
@@ -242,6 +258,10 @@ class Instantreport extends AppModel {
         return true;
     }
 
+    /**
+     * @return bool
+     * @deprecated
+     */
     public function validateDates() {
         return (strtotime($this->data['Instantreport']['start_date']) <= strtotime($this->data['Instantreport']['end_date']));
     }
@@ -249,6 +269,10 @@ class Instantreport extends AppModel {
     /*
     Custom validation rule for "Hosts", "Services", "Hostgroups", "Servicegroups" fields
     */
+    /**
+     * @return int
+     * @deprecated
+     */
     public function atLeastOne() {
         return !empty($this->data['Instantreport']['Hostgroup'])
             ^ !empty($this->data['Instantreport']['Servicegroup'])
@@ -257,16 +281,30 @@ class Instantreport extends AppModel {
 
     }
 
+    /**
+     * @return bool
+     * @deprecated
+     */
     public function atLeastOneUser() {
         // XNOR Operator (false and false) = true and (true and true) = true
         // if send_email true and user list is not empty, if send_mail false and user list is empty
         return !(!(($this->data['Instantreport']['send_email'] === true) ^ empty($this->data['Instantreport']['User'])));
     }
 
+    /**
+     * @param $fieldName
+     * @return bool
+     * @deprecated
+     */
     public function notZero($fieldName) {
         return !($this->data[$this->name][key($fieldName)] == '0');
     }
 
+    /**
+     * @param $data
+     * @return bool
+     * @deprecated
+     */
     public function timeRanges($data) {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         $selectedTimeperiod = $TimeperiodsTable->find()
@@ -289,6 +327,7 @@ class Instantreport extends AppModel {
      *                                                  "consider_downtimes" => true
      *
      * @return array $instantreportData for host/service object
+     * @deprecated
      */
     public function generateInstantreportData($timeSlices, $stateHistoryWithObject, $checkHardState, $objectHost = false) {
         $stateArray = array_fill(0, ($objectHost) ? 3 : 4, 0); // host states => 0,1,2; service states => 0,1,2,3
@@ -348,10 +387,19 @@ class Instantreport extends AppModel {
         return $evaluationData;
     }
 
+    /**
+     * @param $timeSlice
+     * @return mixed
+     * @deprecated
+     */
     public static function calculateTotalTime($timeSlice) {
         return $timeSlice['end'] - $timeSlice['start'];
     }
 
+    /**
+     * @return array
+     * @deprecated
+     */
     public function getTypes() {
         return [
             self::TYPE_HOSTGROUPS    => __('Host groups'),
@@ -361,6 +409,10 @@ class Instantreport extends AppModel {
         ];
     }
 
+    /**
+     * @return array
+     * @deprecated
+     */
     public function getEvaluations() {
         return [
             self::EVALUATION_HOSTS          => ['label' => __('Hosts '), 'icon' => 'desktop'],
@@ -369,6 +421,10 @@ class Instantreport extends AppModel {
         ];
     }
 
+    /**
+     * @return array
+     * @deprecated
+     */
     public function getReportFormats() {
         return [
             self::FORMAT_PDF  => __('PDF'),
@@ -376,6 +432,10 @@ class Instantreport extends AppModel {
         ];
     }
 
+    /**
+     * @return array
+     * @deprecated
+     */
     public function getReflectionStates() {
         return [
             self::STATE_SOFT_HARD => __('soft and hard state'),
@@ -383,6 +443,10 @@ class Instantreport extends AppModel {
         ];
     }
 
+    /**
+     * @return array
+     * @deprecated
+     */
     public function getSendIntervals() {
         return [
             self::SEND_NEVER   => __('Never'),
@@ -393,6 +457,12 @@ class Instantreport extends AppModel {
         ];
     }
 
+    /**
+     * @param $lastSendDate
+     * @param $sendInterval
+     * @return bool
+     * @deprecated
+     */
     public function hasToBeSend($lastSendDate, $sendInterval) {
         $now = time();
         $has_to_be_send = false;
@@ -427,6 +497,12 @@ class Instantreport extends AppModel {
         return $has_to_be_send;
     }
 
+    /**
+     * @param $sendInterval
+     * @return int
+     * @throws Exception
+     * @deprecated
+     */
     public function reportStartTime($sendInterval) {
         $now = $this->reportEndTime($sendInterval);
         $dateNow = new DateTime(date('d.m.Y H:i:s', $now));
@@ -445,6 +521,12 @@ class Instantreport extends AppModel {
         return $dateNow->getTimestamp();
     }
 
+    /**
+     * @param $sendInterval
+     * @return int
+     * @throws Exception
+     * @deprecated
+     */
     public function reportEndTime($sendInterval) {
         $dateNow = new DateTime(date('d.m.o H:i', time()));
         switch ($sendInterval) {
@@ -471,6 +553,7 @@ class Instantreport extends AppModel {
      * @param array $downtimes
      * @param array $systemfailures
      * @return array
+     * @deprecated
      */
     public function mergeDowntimesWithSystemfailures($key = 'DowntimeHost', $downtimes = [], $systemfailures = []) {
         if (empty($systemfailures)) {

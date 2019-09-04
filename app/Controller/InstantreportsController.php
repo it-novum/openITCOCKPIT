@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\ContainersTable;
+use App\Model\Table\InstantreportsTable;
 use App\Model\Table\SystemfailuresTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -31,6 +32,7 @@ use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
 
 
@@ -73,47 +75,26 @@ class InstantreportsController extends AppController {
             //Only ship template for AngularJs
             return;
         }
-
         $InstantreportFilter = new InstantreportFilter($this->request);
-
-        $options = [
-            'recursive'  => -1,
-            'conditions' => [
-                'Instantreport.container_id' => $this->MY_RIGHTS
-            ],
-            'contain'    => [
-                'Timeperiod.name',
-                'User.firstname',
-                'User.lastname'
-            ],
-            'order'      => $InstantreportFilter->getOrderForPaginator('Instantreport.name', 'asc'),
-            'conditions' => $InstantreportFilter->indexFilter(),
-            'limit'      => $this->Paginator->settings['limit']
-        ];
-
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            unset($options['limit']);
-            $instantreports = $this->Instantreport->find('all', $options);
-        } else {
-            $this->Paginator->settings = $options;
-            $this->Paginator->settings['page'] = $InstantreportFilter->getPage();
-            $instantreports = $this->Paginator->paginate();
+        /** @var $InstantreportsTable InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $InstantreportFilter->getPage());
+        $MY_RIGHTS = [];
+        if($this->hasRootPrivileges === false){
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         }
-
-        $evaluations = $this->Instantreport->getEvaluations();
-        $types = $this->Instantreport->getTypes();
-        $sendIntervals = $this->Instantreport->getSendIntervals();
-
-        array_walk($instantreports, function (&$value, &$key) use ($evaluations, $types, $sendIntervals) {
-            $value['Instantreport']['evaluation'] = $evaluations[$value['Instantreport']['evaluation']];
-            $value['Instantreport']['type'] = $types[$value['Instantreport']['type']];
-            $value['Instantreport']['send_interval'] = $sendIntervals[$value['Instantreport']['send_interval']];
-        });
-
-        $this->set([
-            'instantreports' => $instantreports
-        ]);
-        $this->set('_serialize', ['instantreports', 'paging']);
+        $instantreports = $InstantreportsTable->getInstantreportsIndex($InstantreportFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($instantreports as $index => $instantreport) {
+            $instantreports[$index]['allowEdit'] = $this->isWritableContainer($instantreport['Instantreport']['container_id']);
+        }
+        $this->set('instantreports', $instantreports);
+        $toJson = ['instantreports', 'paging'];
+        if($this->isScrollRequest()){
+            $toJson = ['instantreports', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function add() {

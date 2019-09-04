@@ -48,7 +48,7 @@
                             <?php echo __('Refresh'); ?>
                         </button>
                         <?php
-                        if ($this->Acl->hasPermission('add')): ?>
+                        if ($this->Acl->hasPermission('add', 'instantreports')): ?>
                             <a ui-sref="InstantreportsAdd" class="btn btn-xs btn-success" icon="fa fa-plus">
                                 <i class="fa fa-plus"></i> <?php echo __('New'); ?>
                             </a>
@@ -162,45 +162,45 @@
                         </div>
                         <div class="mobile_table">
                             <table id="intantreport_list"
-                                   class="table table-striped table-hover table-bordered smart-form"
+                                   class="table table-striped table-hover table-bordered"
                                    style="">
                                 <thead>
-                                <tr>
-                                    <th class="no-sort sorting_disabled width-15">
-                                        <i class="fa fa-check-square-o fa-lg"></i>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Instantreport.name')">
-                                        <i class="fa" ng-class="getSortClass('Instantreport.name')"></i>
-                                        <?php echo __('Name'); ?>
-                                    </th>
-                                    <th class="no-sort">
-                                        <?php echo __('Evaluation'); ?>
-                                    </th>
-                                    <th class="no-sort">
-                                        <?php echo __('Type'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Timeperiod.name')">
-                                        <i class="fa" ng-class="getSortClass('Timeperiod.name')"></i>
-                                        <?php echo __('Time period'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Instantreport.summary')">
-                                        <i class="fa" ng-class="getSortClass('Instantreport.summary')"></i>
-                                        <?php echo __('Summary display'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Instantreport.downtimes')">
-                                        <i class="fa" ng-class="getSortClass('Instantreport.downtimes')"></i>
-                                        <?php echo __('Consider downtimes'); ?>
-                                    </th>
-                                    <th class="no-sort">
-                                        <?php echo __('Send interval'); ?>
-                                    </th>
-                                    <th class="no-sort">
-                                        <?php echo __('Send to'); ?>
-                                    </th>
-                                    <th class="no-sort text-center">
-                                        <i class="fa fa-cog fa-lg"></i>
-                                    </th>
-                                </tr>
+                                    <tr>
+                                        <th class="no-sort sorting_disabled width-15">
+                                            <i class="fa fa-check-square-o fa-lg"></i>
+                                        </th>
+                                        <th class="no-sort" ng-click="orderBy('Instantreport.name')">
+                                            <i class="fa" ng-class="getSortClass('Instantreport.name')"></i>
+                                            <?php echo __('Name'); ?>
+                                        </th>
+                                        <th class="no-sort">
+                                            <?php echo __('Evaluation'); ?>
+                                        </th>
+                                        <th class="no-sort">
+                                            <?php echo __('Type'); ?>
+                                        </th>
+                                        <th class="no-sort" ng-click="orderBy('Timeperiod.name')">
+                                            <i class="fa" ng-class="getSortClass('Timeperiod.name')"></i>
+                                            <?php echo __('Time period'); ?>
+                                        </th>
+                                        <th class="no-sort" ng-click="orderBy('Instantreport.summary')">
+                                            <i class="fa" ng-class="getSortClass('Instantreport.summary')"></i>
+                                            <?php echo __('Summary display'); ?>
+                                        </th>
+                                        <th class="no-sort" ng-click="orderBy('Instantreport.downtimes')">
+                                            <i class="fa" ng-class="getSortClass('Instantreport.downtimes')"></i>
+                                            <?php echo __('Consider downtimes'); ?>
+                                        </th>
+                                        <th class="no-sort">
+                                            <?php echo __('Send interval'); ?>
+                                        </th>
+                                        <th class="no-sort">
+                                            <?php echo __('Send to'); ?>
+                                        </th>
+                                        <th class="no-sort text-center width-70">
+                                            <i class="fa fa-cog fa-lg"></i>
+                                        </th>
+                                    </tr>
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="instantreport in instantreports">
@@ -214,35 +214,63 @@
                                         {{ instantreport.Instantreport.name }}
                                     </td>
                                     <td>
-                                        <i class="fa fa-{{ instantreport.Instantreport.evaluation.icon }}"></i>
-                                        {{ instantreport.Instantreport.evaluation.label }}
+                                        <span ng-show="instantreport.Instantreport.evaluation === 1">
+                                            <i class="fa fa-desktop"></i>
+                                            <?php echo __('Hosts'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.evaluation === 2">
+                                            <i class="fa fa-cogs"></i>
+                                            <?php echo __('Hosts and services'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.evaluation === 3">
+                                            <i class="fa fa-cog"></i>
+                                            <?php echo __('Services'); ?>
+                                        </span>
                                     </td>
                                     <td>
-                                        {{ instantreport.Instantreport.type }}
+                                        <span ng-show="instantreport.Instantreport.type === 1">
+                                            <i class="fa fa-desktop"></i>
+                                            <?php echo __('Host groups'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.type === 2">
+                                            <i class="fa fa-cogs"></i>
+                                            <?php echo __('Hosts'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.type === 3">
+                                            <i class="fa fa-cog"></i>
+                                            <?php echo __('Service groups'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.type === 4">
+                                            <i class="fa fa-cog"></i>
+                                            <?php echo __('Services'); ?>
+                                        </span>
                                     </td>
                                     <td>
-                                        {{ instantreport.Timeperiod.name }}
+                                        {{ instantreport.Instantreport.timeperiod.name }}
                                     </td>
                                     <td class="text-center">
-                                        <i class="fa
-                                        {{instantreport.Instantreport.summary === '1'
-                                            ? ' fa-check fa-lg text-success'
-                                            : ' fa-times fa-lg text-danger'
-                                        }}
-                                        "></i>
+                                        <label class="label label-success"
+                                               ng-show="instantreport.Instantreport.summary === 1">
+                                            <?php echo __('Yes'); ?>
+                                        </label>
+                                        <label class="label label-danger"
+                                               ng-show="instantreport.Instantreport.summary === 0">
+                                            <?php echo __('No'); ?>
+                                        </label>
                                     </td>
                                     <td class="text-center">
-                                        <i class="fa
-                                        {{instantreport.Instantreport.downtimes === '1'
-                                            ? ' fa-check fa-lg text-success'
-                                            : ' fa-times fa-lg text-danger'
-                                        }}
-                                        "></i>
+                                        <span class="label label-success"
+                                              ng-show="instantreport.Instantreport.downtimes === 1">
+                                              <?php echo __('Yes'); ?>
+                                        </span>
+                                        <span class="label label-danger"
+                                              ng-show="instantreport.Instantreport.downtimes === 0">
+                                              <?php echo __('No'); ?>
+                                        </span>
                                     </td>
                                     <td>
                                         {{ instantreport.Instantreport.send_interval }}
                                     </td>
-
                                     <td>
                                         <ul class="list-unstyled">
                                             <ul class="list-unstyled">
@@ -259,8 +287,8 @@
                                             </ul>
                                         </ul>
                                     </td>
-                                    <td class="width-50">
-                                        <div class="btn-group">
+                                    <td>
+                                        <div class="btn-group smart-form">
                                             <?php if ($this->Acl->hasPermission('edit')): ?>
                                                 <a ui-sref="InstantreportsEdit({id:instantreport.Instantreport.id})"
                                                    class="btn btn-default">

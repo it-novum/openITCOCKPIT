@@ -351,9 +351,7 @@ class HostescalationsTable extends Table {
             });
             unset($indexFilter['HostgroupsExcluded.name LIKE']);
         }
-        if (!empty($indexFilter['HostgroupsExcluded.name LIKE'])) {
 
-        }
         if (!empty($MY_RIGHTS)) {
             $indexFilter['Hostescalations.container_id IN'] = $MY_RIGHTS;
         }
