@@ -208,12 +208,12 @@ class UsergroupsTable extends Table {
                 }
             }
         }
-
         return $result;
     }
 
 
     /**
+     * Return an array of aco ids + dependenc aco ids
      * @param $acosAsNest
      * @return array
      */
@@ -287,9 +287,105 @@ class UsergroupsTable extends Table {
                 }
             }
         }
+        return $result;
+    }
+
+
+
+    /**
+     * Return a array of aco ids that needs to enabled for specific usergroup!
+     * @param $acosAsNest
+     * @param $userGroupName
+     * @return array
+     */
+    public function getUsergroupAcos($acosAsNest, $userGroupName) {
+        Configure::load('acl_dependencies');
+
+        //Load Plugin configuration files
+        $modulePlugins = array_filter(\CakePlugin::loaded(), function ($value) {
+            return strpos($value, 'Module') !== false;
+        });
+        foreach ($modulePlugins as $moduleName) {
+            $pluginAclConfigFile = OLD_APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
+            if (file_exists($pluginAclConfigFile)) {
+                Configure::load($moduleName . '.acl_dependencies');
+            }
+        }
+
+        $config = Configure::read('acl_dependencies');
+        $appControllerAcoNames = $config['AppController'];
+        if (!isset($config['roles_rights'][$userGroupName]))
+            return [];
+        $thisUsergroupAcos = $config['roles_rights'][$userGroupName];
+
+        unset($config);
+
+        $result = [];
+
+        foreach ($acosAsNest as $usergroupAcos) {
+            foreach ($usergroupAcos['children'] as $controllerAcos) {
+                $controllerName = $controllerAcos['Aco']['alias'];
+                if (!strpos($controllerName, 'Module')) {
+                    //Core ACLs
+                    foreach ($controllerAcos['children'] as $actionAco) {
+                        $actionName = $actionAco['Aco']['alias'];
+                        $acoId = $actionAco['Aco']['id'];
+
+                        if (isset($result[$acoId])) continue;
+
+                        if (in_array('*', $thisUsergroupAcos)) {
+                            $result[$acoId] = $controllerName . DS . $actionName;
+                            continue;
+                        }
+
+                        if (isset($thisUsergroupAcos[$controllerName]) && in_array($actionName, $thisUsergroupAcos[$controllerName])) {
+                            $result[$acoId] = $controllerName . DS . $actionName;
+                        }
+                    }
+                } else {
+                    //Plugin ACLs
+                    $pluginName = $controllerAcos['Aco']['alias'];
+                    $pluginAcos = $controllerAcos;
+                    foreach ($pluginAcos['children'] as $controllerAcos) {
+                        $controllerName = $controllerAcos['Aco']['alias'];
+                        foreach ($controllerAcos['children'] as $actionAco) {
+                            $actionName = $actionAco['Aco']['alias'];
+                            $acoId = $actionAco['Aco']['id'];
+
+                            if (isset($result[$acoId])) continue;
+
+                            if (in_array('*', $thisUsergroupAcos)) {
+                                $result[$acoId] = $controllerName . DS . $actionName;
+                                continue;
+                            }
+
+                            if (isset($thisUsergroupAcos[$controllerName]) && in_array($actionName, $thisUsergroupAcos[$controllerName])) {
+                                $result[$acoId] = $pluginName . DS . $controllerName . DS . $actionName;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+
+    /**
+     * Return an array with all aco ids that depend to an other aco, to remove them from the interface
+     * @param $acoDependencies
+     * @return array
+     */
+    public function getAcoDependencyIds($acoDependencies) {
+        $result = [];
+        foreach ($acoDependencies as $dependency) {
+            foreach (array_keys($dependency) as $acoId) {
+                $result[$acoId] = $acoId;
+            }
+        }
 
         return $result;
-
     }
 
 }

@@ -99,7 +99,7 @@ class UsergroupsController extends AppController {
 
         $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
         $acoDependencies = $UsergroupsTable->getAcoDependencies($acos);
-        $dependentAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
+        $dependentAcoIds = $UsergroupsTable->getAcoDependencyIds($acoDependencies);
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $aro = $this->Acl->Aro->find('first', [
@@ -196,7 +196,7 @@ class UsergroupsController extends AppController {
 
         $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
         $acoDependencies =$UsergroupsTable->getAcoDependencies($acos);
-        $dependenAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
+        $dependenAcoIds = $UsergroupsTable->getAcoDependencyIds($acoDependencies);
 
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Usergroup->saveAll($this->request->data)) {
