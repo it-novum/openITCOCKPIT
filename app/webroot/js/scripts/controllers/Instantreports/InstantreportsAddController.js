@@ -1,28 +1,32 @@
 angular.module('openITCOCKPIT')
     .controller('InstantreportsAddController', function($scope, $state, $http, NotyService, RedirectService){
-        $scope.types = {
-            TYPE_HOSTGROUPS: '1',
-            TYPE_HOSTS: '2',
-            TYPE_SERVICEGROUPS: '3',
-            TYPE_SERVICES: '4'
-        };
         $scope.post = {
             Instantreport: {
                 container_id: null,
-                name: '',
-                type: $scope.types.TYPE_HOSTGROUPS, // select host groups as default value
-                timeperiod_id: '0',
-                reflection: '1',
+                name: null,
+                type: 1, // 1 - host groups, 2 - hosts, 3 - service groups, 4 - services
+                timeperiod_id: null,
+                reflection: 1,
                 summary: false,
                 downtimes: false,
                 send_email: false,
-                send_interval: '1',
-                evaluation: '2', //hosts and services
-                Hostgroup: [],
-                Host: [],
-                Servicegroup: [],
-                Service: [],
-                User: []
+                send_interval: 1, // 1 - soft and hard states, 2 - only hard states
+                evaluation: 2, //hosts and services
+                hostgroups: {
+                    _ids: []
+                },
+                hosts: {
+                    _ids: []
+                },
+                servicegroups: {
+                    _ids: []
+                },
+                services: {
+                    _ids: []
+                },
+                users: {
+                    _ids: []
+                }
             }
         };
 
@@ -58,7 +62,8 @@ angular.module('openITCOCKPIT')
                 $http.get("/hostgroups/loadHosgroupsByContainerId.json", {
                     params: {
                         'angular': true,
-                        'containerId': $scope.post.Instantreport.container_id
+                        'containerId': $scope.post.Instantreport.container_id,
+                        'selected[]': $scope.post.Instantreport.hostgroups._ids
                     }
                 }).then(function(result){
                     $scope.hostgroups = result.data.hostgroups;
@@ -73,7 +78,7 @@ angular.module('openITCOCKPIT')
                         'angular': true,
                         'containerId': $scope.post.Instantreport.container_id,
                         'filter[Hosts.name]': searchString,
-                        'selected[]': $scope.post.Instantreport.Host
+                        'selected[]': $scope.post.Instantreport.hosts._ids
                     }
                 }).then(function(result){
                     $scope.hosts = result.data.hosts;
@@ -89,7 +94,9 @@ angular.module('openITCOCKPIT')
                 $http.get("/servicegroups/loadServicegroupsByContainerId.json", {
                     params: {
                         'angular': true,
-                        'containerId': $scope.post.Instantreport.container_id
+                        'containerId': $scope.post.Instantreport.container_id,
+                        'selected[]': $scope.post.Instantreport.servicegroups._ids
+
                     }
                 }).then(function(result){
                     $scope.servicegroups = result.data.servicegroups;
@@ -105,13 +112,12 @@ angular.module('openITCOCKPIT')
                         'containerId': $scope.post.Instantreport.container_id,
                         'filter[Host.name]': searchString,
                         'filter[Service.servicename]': searchString,
-                        'selected[]': $scope.post.Instantreport.Service
+                        'selected[]': $scope.post.Instantreport.services._ids
                     }
                 }).then(function(result){
                     $scope.services = result.data.services;
                 });
             }
-
         };
 
         $scope.loadUsers = function(){
@@ -119,7 +125,7 @@ angular.module('openITCOCKPIT')
                 params: {
                     'angular': true,
                     'containerId': $scope.post.Instantreport.container_id,
-                    'selected[]': $scope.post.Instantreport.User
+                    'selected[]': $scope.post.Instantreport.users._ids
                 }
             }).then(function(result){
                 $scope.users = result.data.users;
@@ -141,10 +147,10 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.resetOnTypeChange = function(){
-            $scope.post.Instantreport.Hostgroup = [];
-            $scope.post.Instantreport.Host = [];
-            $scope.post.Instantreport.Servicegroup = [];
-            $scope.post.Instantreport.Service = [];
+            $scope.Instantreport.hostgroups._ids = [];
+            $scope.Instantreport.hosts._ids = [];
+            $scope.Instantreport.servicegroups._ids = [];
+            $scope.Instantreport.services._ids = [];
         };
 
         $scope.$watch('post.Instantreport.container_id', function(){
@@ -152,16 +158,16 @@ angular.module('openITCOCKPIT')
                 return;
             }
             switch($scope.post.Instantreport.type){
-                case $scope.types.TYPE_HOSTGROUPS:
+                case 1:
                     $scope.loadHostgroups('');
                     break;
-                case $scope.types.TYPE_HOSTS:
+                case 2:
                     $scope.loadHosts('');
                     break;
-                case $scope.types.TYPE_SERVICEGROUPS:
+                case 3:
                     $scope.loadServicegroups('');
                     break;
-                case $scope.types.TYPE_SERVICES:
+                case 4:
                     $scope.loadServices('');
                     break;
             }
@@ -173,22 +179,24 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
+            if(!$scope.post.Instantreport.container_id){
+                return;
+            }
             $scope.resetOnTypeChange();
             switch($scope.post.Instantreport.type){
-                case $scope.types.TYPE_HOSTGROUPS:
+                case 1:
                     $scope.loadHostgroups('');
                     break;
-                case $scope.types.TYPE_HOSTS:
+                case 2:
                     $scope.loadHosts('');
                     break;
-                case $scope.types.TYPE_SERVICEGROUPS:
+                case 3:
                     $scope.loadServicegroups('');
                     break;
-                case $scope.types.TYPE_SERVICES:
+                case 4:
                     $scope.loadServices('');
                     break;
             }
-
         }, true);
 
         $scope.$watch('post.Instantreport.send_email', function(){
@@ -196,7 +204,7 @@ angular.module('openITCOCKPIT')
                 return;
             }
             if(!$scope.post.Instantreport.send_email){
-                $scope.post.Instantreport.send_interval = '0';
+                $scope.post.Instantreport.send_interval = 0;
                 $scope.post.Instantreport.User = [];
             }
         }, true);

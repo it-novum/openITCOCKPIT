@@ -43,7 +43,8 @@ $config = [
             'vendor/noty/noty.css',
             'flippy.css',
             'vendor/image-picker.css',
-            '/vendor/angular-gridster/dist/angular-gridster.css'
+            '/vendor/angular-gridster/dist/angular-gridster.css',
+            'vendor/radio_buttons.css'
         ],
 
         'js'                        => [
