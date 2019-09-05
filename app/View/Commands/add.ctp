@@ -121,7 +121,7 @@
                             <?php echo __('Command line'); ?>
                         </label>
                         <div class="col col-xs-10 required">
-                            <textarea class="form-control" type="text" ng-model="post.Command.command_line"
+                            <textarea class="form-control code-font" type="text" ng-model="post.Command.command_line"
                                       cols="30" rows="6">
                             </textarea>
                             <div ng-repeat="error in errors.command_line">
