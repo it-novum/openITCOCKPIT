@@ -235,7 +235,7 @@
                                                 <?php if ($this->Acl->hasPermission('view', 'automaps')): ?>
                                                     <li>
                                                         <a ui-sref="AutomapsView({id:automap.id})">
-                                                            <i class="fa fa-reply-all fa-eye"></i>
+                                                            <i class="fa fa-eye"></i>
                                                             <?php echo __('View'); ?>
                                                         </a>
                                                     </li>

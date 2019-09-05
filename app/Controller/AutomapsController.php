@@ -61,26 +61,6 @@ class AutomapsController extends AppController {
         MONITORING_ACKNOWLEDGED
     ];
 
-    public $components = [
-        'CustomValidationErrors',
-        'ListFilter.ListFilter'
-    ];
-
-    public $helpers = [
-        'CustomValidationErrors',
-        'Status',
-        'ListFilter.ListFilter'
-    ];
-
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Automap.name'        => ['label' => 'Name', 'searchType' => 'wildcard'],
-                'Automap.description' => ['label' => 'Description', 'searchType' => 'wildcard'],
-            ],
-        ]
-    ];
-
     public function index() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
@@ -183,7 +163,7 @@ class AutomapsController extends AppController {
                 'show_label',
                 'group_by_host'
             ];
-            foreach($toIntFields as $intField){
+            foreach ($toIntFields as $intField) {
                 $automap[$intField] = (int)$automap[$intField];
             }
 
@@ -623,7 +603,6 @@ class AutomapsController extends AppController {
         $this->set('hostCount', $hostCount);
         $this->set('serviceCount', $serviceCount);
         $this->set('_serialize', ['hostCount', 'serviceCount']);
-
     }
 
 }
