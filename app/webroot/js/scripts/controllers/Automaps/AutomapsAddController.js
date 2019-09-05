@@ -38,6 +38,8 @@ angular.module('openITCOCKPIT')
                     show_label: 1,
                     group_by_host: 1,
 
+                    use_paginator: 1,
+
                     font_size: "4"
                 }
             };

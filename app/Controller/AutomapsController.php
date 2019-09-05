@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Table\AutomapsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostsTable;
@@ -39,6 +40,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AutomapsFilter;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
+use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 
 /**
  * Class AutomapsController
@@ -161,7 +163,8 @@ class AutomapsController extends AppController {
                 'show_acknowledged',
                 'show_downtime',
                 'show_label',
-                'group_by_host'
+                'group_by_host',
+                'use_paginator'
             ];
             foreach ($toIntFields as $intField) {
                 $automap[$intField] = (int)$automap[$intField];
@@ -174,8 +177,8 @@ class AutomapsController extends AppController {
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update automap data
-            $automap->setAccess('id', false);
             $automap = $AutomapsTable->patchEntity($automap, $this->request->data('Automap'));
+            $automap->id = $id;
             $AutomapsTable->save($automap);
             if ($automap->hasErrors()) {
                 $this->response->statusCode(400);
@@ -189,11 +192,165 @@ class AutomapsController extends AppController {
     }
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param int|null $id
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     public function view($id = null) {
-        $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        $fontSizes = [
+            1 => 'xx-small',
+            2 => 'x-small',
+            3 => 'small',
+            4 => 'medium',
+            5 => 'large',
+            6 => 'x-large',
+            7 => 'xx-large',
+        ];
+
+        /** @var $AutomapsTable AutomapsTable */
+        $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
+
+        if (!$AutomapsTable->existsById($id)) {
+            throw new NotFoundException(__('Automap not found'));
+        }
+
+        $automap = $AutomapsTable->get($id);
+
+        if (!$this->allowedByContainerId($automap->get('container_id'), false)) {
+            $this->render403();
+            return;
+        }
+        $automap = $automap->toArray();
+        $automap['font_size_html'] = $fontSizes[$automap['font_size']];
+
+        $automap['allow_edit'] = $this->hasRootPrivileges;
+        if ($this->hasRootPrivileges === true) {
+            $automap['allow_edit'] = $this->isWritableContainer($automap['container_id']);
+        }
+
+        // Query host and services
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $ServicestatusTable ServicestatusTableInterface */
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+
+        $containerIds = [
+            $automap['container_id']
+        ];
+        if ($automap['recursive']) {
+            if ($automap['container_id'] == ROOT_CONTAINER) {
+                $containerIds = $this->MY_RIGHTS;
+            } else {
+                $tmpContainerIds = $ContainersTable->resolveChildrenOfContainerIds($automap['container_id'], false);
+                $containerIds = $ContainersTable->removeRootContainer($tmpContainerIds);
+            }
+        }
+
+        $ServicesConditions = new ServiceConditions();
+        $ServicesConditions->setContainerIds($containerIds);
+        $ServicesConditions->setHostnameRegex($automap['host_regex']);
+        $ServicesConditions->setServicenameRegex($automap['service_regex']);
+
+        $ServiceFilter = new ServiceFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+
+        if ($automap['use_paginator'] === false) {
+            $PaginateOMat = null;
+        }
+
+        try {
+            $services = $ServicesTable->getServicesByRegularExpression($ServicesConditions, $PaginateOMat, 'all');
+        } catch (\Exception $e) {
+            $services = null;
+        }
+        if (!is_array($services)) {
+            $services = [];
+        }
+        $servicesByHost = [];
+        $serviceUuids = \Cake\Utility\Hash::extract($services, '{n}.uuid');
+
+        // Load service status information
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
+        $ServicestatusFields
+            ->currentState()
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth();
+
+        $current_stateConditions = [];
+        $state_types = [
+            'show_unknown'  => 3,
+            'show_critical' => 2,
+            'show_warning'  => 1,
+            'show_ok'       => 0,
+        ];
+        foreach ($state_types as $stateName => $stateNumber) {
+            if ($automap[$stateName]) {
+                $current_stateConditions[] = $stateNumber;
+            }
+        }
+        if (sizeof($current_stateConditions) < 4) {
+            $ServicestatusConditions->currentState($current_stateConditions);
+        }
+
+        if ($automap['show_acknowledged'] === false) {
+            $ServicestatusConditions->setProblemHasBeenAcknowledged(0);
+        }
+
+        if ($automap['show_downtime'] === false) {
+            $ServicestatusConditions->setScheduledDowntimeDepth(0);
+        }
+
+        $servicestatus = $ServicestatusTable->byUuids($serviceUuids, $ServicestatusFields, $ServicestatusConditions);
+
+        foreach ($services as $service) {
+            /** @var \App\Model\Entity\Service $Service */
+            $service = $service->toArray();
+
+            if (!isset($servicestatus[$service['uuid']])) {
+                //No service status for given service - may be filtered?
+                continue;
+            }
+
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts']);
+            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus[$Service->getUuid()]['Servicestatus']);
+
+            if (!isset($servicesByHost[$Host->getId()])) {
+                $servicesByHost[$Host->getId()] = [
+                    'host'     => $Host->toArray(),
+                    'services' => []
+                ];
+            }
+
+            $servicesByHost[$Host->getId()]['services'][] = [
+                'service'       => $Service->toArray(),
+                'servicestatus' => $Servicestatus->toArray()
+            ];
+        }
+
+        //Drop keys to make in a array [] for javascript - not a hash {} !
+        $servicesByHost = array_values($servicesByHost);
+
+
+        $this->set('automap', $automap);
+        $this->set('servicesByHost', $servicesByHost);
+        $toJson = ['automap', 'servicesByHost'];
+        if ($this->isScrollRequest()) {
+            $toJson[] = 'scroll';
+        } else {
+            $toJson[] = 'paging';
+        }
+        $this->set('_serialize', $toJson);
+
+        /**** OLD CODE ***/
+        return;
 
         if (!$this->isApiRequest() && $id === null) {
             return;

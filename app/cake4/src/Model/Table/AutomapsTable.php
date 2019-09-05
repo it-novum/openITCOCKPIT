@@ -127,6 +127,10 @@ class AutomapsTable extends Table {
             ->notEmptyString('group_by_host');
 
         $validator
+            ->boolean('use_paginator')
+            ->notEmptyString('use_paginator');
+
+        $validator
             ->scalar('font_size')
             ->maxLength('font_size', 255)
             ->inList('font_size', ['1', '2', '3', '4', '5', '6', '7'], __('Font size out of range (1-7)'))

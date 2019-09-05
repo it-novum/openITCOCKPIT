@@ -152,7 +152,15 @@
                                                ng-show="automap.allow_edit">
                                     </td>
 
-                                    <td>{{automap.name}}</td>
+                                    <td>
+                                        <?php if ($this->Acl->hasPermission('view', 'automaps')): ?>
+                                            <a ui-sref="AutomapsView({id:automap.id})">
+                                                {{automap.name}}
+                                            </a>
+                                        <?php else: ?>
+                                            {{automap.name}}
+                                        <?php endif; ?>
+                                    </td>
                                     <td>{{automap.description}}</td>
                                     <td>{{automap.host_regex}}</td>
                                     <td>{{automap.service_regex}}</td>

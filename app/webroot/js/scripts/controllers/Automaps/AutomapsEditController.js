@@ -58,7 +58,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            $http.post("/automaps/add.json?angular=true",
+            $http.post("/automaps/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
                 var url = $state.href('AutomapsEdit', {id: result.data.automap.id});

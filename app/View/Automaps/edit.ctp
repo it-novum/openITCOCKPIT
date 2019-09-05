@@ -43,6 +43,7 @@
             <?php echo __('Edit auto map:'); ?>
             {{post.Automap.name}}
         </h2>
+
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'automaps')): ?>
                 <a back-button fallback-state='AutomapsIndex' class="btn btn-default btn-xs">
@@ -328,9 +329,7 @@
 
                                             <label for="show_label"
                                                    class="col col-md-4 control-label padding-top-0">
-                                            <span class="label label-primary notify-label">
                                                 <?php echo __('Show Label'); ?>
-                                            </span>
                                             </label>
 
                                             <div class="col-xs-8 smart-form">
@@ -350,9 +349,7 @@
 
                                             <label for="group_by_host"
                                                    class="col col-md-4 control-label padding-top-0">
-                                            <span class="label label-primary notify-label">
                                                 <?php echo __('Group by host'); ?>
-                                            </span>
                                             </label>
 
                                             <div class="col-xs-8 smart-form">
@@ -367,7 +364,30 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group" ng-class="{'has-error': errors.font_size}">
+                                        <div class="form-group margin-bottom-0"
+                                             ng-class="{'has-error': errors.use_paginator}">
+
+                                            <label for="use_paginator"
+                                                   class="col col-md-4 control-label padding-top-0">
+                                                <?php echo __('Use pagination'); ?>
+                                            </label>
+
+                                            <div class="col-xs-8 smart-form">
+                                                <label class="checkbox small-checkbox-label no-required">
+                                                    <input type="checkbox" name="checkbox"
+                                                           ng-true-value="1"
+                                                           ng-false-value="0"
+                                                           id="use_paginator"
+                                                           ng-model="post.Automap.use_paginator">
+                                                    <i class="checkbox-primary"></i>
+                                                </label>
+                                                <div class="help-block">
+                                                    <?php echo __('Will may decrease loading performance if disabled.'); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group padding-top-10" ng-class="{'has-error': errors.font_size}">
                                             <label class="col col-md-2 control-label">
                                                 <?php echo __('Icon size'); ?>
                                             </label>

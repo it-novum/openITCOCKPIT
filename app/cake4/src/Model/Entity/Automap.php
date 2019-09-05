@@ -52,6 +52,7 @@ class Automap extends Entity {
         'show_downtime'     => true,
         'show_label'        => true,
         'group_by_host'     => true,
+        'use_paginator'     => true,
         'font_size'         => true,
         'recursive'         => true,
         'created'           => true,

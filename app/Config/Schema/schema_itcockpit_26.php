@@ -1397,6 +1397,7 @@ class AppSchema extends CakeSchema {
         'show_downtime'     => ['type' => 'boolean', 'null' => false, 'default' => '1'],
         'show_label'        => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'group_by_host'     => ['type' => 'boolean', 'null' => false, 'default' => '0'],
+        'use_paginator'     => ['type' => 'boolean', 'null' => false, 'default' => '1'],
         'font_size'         => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'recursive'         => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'created'           => ['type' => 'datetime', 'null' => false, 'default' => null],
