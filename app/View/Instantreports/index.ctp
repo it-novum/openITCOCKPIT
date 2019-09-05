@@ -205,7 +205,7 @@
                                 <tbody>
                                 <tr ng-repeat="instantreport in instantreports">
                                     <td class="text-center" class="width-15">
-                                        <?php if ($this->Acl->hasPermission('delete')): ?>
+                                        <?php if ($this->Acl->hasPermission('delete', 'instantreports')): ?>
                                             <input type="checkbox"
                                                    ng-model="massChange[instantreport.Instantreport.id]">
                                         <?php endif; ?>
@@ -289,11 +289,6 @@
                                         <ul class="list-unstyled">
                                             <ul class="list-unstyled">
                                                 <li ng-repeat="user in instantreport.User">
-                                                    <a href="users/edit/{{user.InstantreportsToUser.user_id}}"
-                                                       ng-if="user.allowEdit">
-                                                        {{ user.firstname }} {{ user.lastname }}
-                                                    </a>
-
                                                     <span ng-if="!user.allowEdit">
                                                         {{ user.firstname }} {{ user.lastname }}
                                                     </span>
@@ -303,7 +298,7 @@
                                     </td>
                                     <td>
                                         <div class="btn-group smart-form">
-                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'instantreports')): ?>
                                                 <a ui-sref="InstantreportsEdit({id:instantreport.Instantreport.id})"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -317,21 +312,21 @@
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right"
                                                 id="menuHack-{{instantreport.Instantreport.id}}">
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'instantreports')): ?>
                                                     <li>
                                                         <a ui-sref="InstantreportsEdit({id:instantreport.Instantreport.id})">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('generate')): ?>
+                                                <?php if ($this->Acl->hasPermission('generate', 'instantreports')): ?>
                                                     <li>
                                                         <a href="/instantreports/generate/{{ instantreport.Instantreport.id}}">
                                                             <i class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('delete')): ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'instantreports')): ?>
                                                     <li class="divider"></li>
                                                     <li>
                                                         <a href="javascript:void(0);" class="txt-color-red"

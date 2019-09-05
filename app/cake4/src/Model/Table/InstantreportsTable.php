@@ -8,7 +8,6 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
 
@@ -31,6 +30,7 @@ use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
 class InstantreportsTable extends Table {
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
+
     /**
      * Initialize method
      *
@@ -57,7 +57,27 @@ class InstantreportsTable extends Table {
         ]);
 
         $this->belongsToMany('Users', [
-            'joinTable' => 'instantreports_to_users',
+            'joinTable'    => 'instantreports_to_users',
+            'saveStrategy' => 'replace'
+        ])->setDependent(true);
+
+        $this->belongsToMany('Hostgroups', [
+            'joinTable'    => 'instantreports_to_hostgroups',
+            'saveStrategy' => 'replace'
+        ])->setDependent(true);
+
+        $this->belongsToMany('Hosts', [
+            'joinTable'    => 'instantreports_to_hosts',
+            'saveStrategy' => 'replace'
+        ])->setDependent(true);
+
+        $this->belongsToMany('Servicegroups', [
+            'joinTable'    => 'instantreports_to_servicegroups',
+            'saveStrategy' => 'replace'
+        ])->setDependent(true);
+
+        $this->belongsToMany('Services', [
+            'joinTable'    => 'instantreports_to_services',
             'saveStrategy' => 'replace'
         ])->setDependent(true);
     }
@@ -85,6 +105,41 @@ class InstantreportsTable extends Table {
             ->requirePresence('name', 'create')
             ->notEmptyString('name');
 
+        $validator
+            ->scalar('timeperiod_id')
+            ->requirePresence('timeperiod_id', 'create')
+            ->notEmptyString('timeperiod_id');
+
+        $validator
+            ->add('send_email', 'custom', [
+                'rule'    => [$this, 'atLeastOneUser'],
+                'message' => __('You must specify at least one user')
+            ]);
+
+        $validator
+            ->add('hostgroups', 'custom', [
+                'rule'    => [$this, 'atLeastOneHostgroup'],
+                'message' => __('You must specify at least one host group')
+            ]);
+
+        $validator
+            ->add('hosts', 'custom', [
+                'rule'    => [$this, 'atLeastOneHost'],
+                'message' => __('You must specify at least one host')
+            ]);
+
+        $validator
+            ->add('servicegroups', 'custom', [
+                'rule'    => [$this, 'atLeastOneServicegroup'],
+                'message' => __('You must specify at least one service group')
+            ]);
+
+        $validator
+            ->add('services', 'custom', [
+                'rule'    => [$this, 'atLeastOneService'],
+                'message' => __('You must specify at least one service')
+            ]);
+
         return $validator;
     }
 
@@ -102,6 +157,55 @@ class InstantreportsTable extends Table {
     }
 
     /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for users if send_email is true
+     */
+    public function atLeastOneUser($value, $context) {
+        // XNOR Operator (false and false) = true and (true and true) = true
+        // if send_email true and user list is not empty, if send_mail = 1 and user list is empty
+        return !(!(($context['data']['send_email'] === 1) ^ empty($context['data']['users']['_ids'])));
+    }
+
+    /**
+     * @param $value
+     * @param $context
+     * @return int
+     */
+    public function atLeastOneHostgroup($value, $context) {
+        return !(!(($context['data']['type'] === 1) ^ empty($context['data']['hostgroups']['_ids'])));
+    }
+
+    /**
+     * @param $value
+     * @param $context
+     * @return int
+     */
+    public function atLeastOneHost($value, $context) {
+        return !(!(($context['data']['type'] === 2) ^ empty($context['data']['hosts']['_ids'])));
+    }
+
+    /**
+     * @param $value
+     * @param $context
+     * @return int
+     */
+    public function atLeastOneServicegroup($value, $context) {
+        return !(!(($context['data']['type'] === 3) ^ empty($context['data']['servicegroups']['_ids'])));
+    }
+
+    /**
+     * @param $value
+     * @param $context
+     * @return int
+     */
+    public function atLeastOneService($value, $context) {
+        return !(!(($context['data']['type'] === 4) ^ empty($context['data']['services']['_ids'])));
+    }
+
+    /**
      * @param InstantreportFilter $InstantreportFilter
      * @param PaginateOMat|null $PaginateOMat
      * @param array $MY_RIGHTS
@@ -110,14 +214,14 @@ class InstantreportsTable extends Table {
     public function getInstantreportsIndex(InstantreportFilter $InstantreportFilter, PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all')
             ->contain([
-                'Timeperiods'   => function (Query $q) {
+                'Timeperiods' => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Timeperiods.id',
                             'Timeperiods.name'
                         ]);
                 },
-                'Users'      => function (Query $q) {
+                'Users'       => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Users.id',
@@ -154,9 +258,9 @@ class InstantreportsTable extends Table {
             //Just execute query
             $result = $query->toArray();
         } else {
-            if($PaginateOMat->useScroll()){
+            if ($PaginateOMat->useScroll()) {
                 $result = $this->scroll($query, $PaginateOMat->getHandler());
-            } else{
+            } else {
                 $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
             }
 
@@ -170,5 +274,18 @@ class InstantreportsTable extends Table {
      */
     public function existsById($id) {
         return $this->exists(['Instantreports.id' => $id]);
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getInstantreportById($id) {
+        $query = $this->find()
+            ->where([
+                'Instantreports.id' => $id
+            ])
+            ->first();
+        return $this->formatFirstResultAsCake2($query->toArray(), false);
     }
 }

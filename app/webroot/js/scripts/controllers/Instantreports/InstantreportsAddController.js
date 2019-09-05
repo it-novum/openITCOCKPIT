@@ -6,11 +6,11 @@ angular.module('openITCOCKPIT')
                 name: null,
                 type: 1, // 1 - host groups, 2 - hosts, 3 - service groups, 4 - services
                 timeperiod_id: null,
-                reflection: 1,
-                summary: false,
-                downtimes: false,
-                send_email: false,
-                send_interval: 1, // 1 - soft and hard states, 2 - only hard states
+                reflection: 1,// 1 - soft and hard states, 2 - only hard states
+                summary: 0,
+                downtimes: 0,
+                send_email: 0,
+                send_interval: 0, // 0 - NEVER
                 evaluation: 2, //hosts and services
                 hostgroups: {
                     _ids: []
@@ -136,7 +136,13 @@ angular.module('openITCOCKPIT')
             $http.post("/instantreports/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                NotyService.genericSuccess();
+                console.log(result);
+                var url = $state.href('InstantreportsEdit', {id: result.data.instantreport.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
                 RedirectService.redirectWithFallback('InstantreportsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
@@ -147,10 +153,10 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.resetOnTypeChange = function(){
-            $scope.Instantreport.hostgroups._ids = [];
-            $scope.Instantreport.hosts._ids = [];
-            $scope.Instantreport.servicegroups._ids = [];
-            $scope.Instantreport.services._ids = [];
+            $scope.post.Instantreport.hostgroups._ids = [];
+            $scope.post.Instantreport.hosts._ids = [];
+            $scope.post.Instantreport.servicegroups._ids = [];
+            $scope.post.Instantreport.services._ids = [];
         };
 
         $scope.$watch('post.Instantreport.container_id', function(){
@@ -205,7 +211,9 @@ angular.module('openITCOCKPIT')
             }
             if(!$scope.post.Instantreport.send_email){
                 $scope.post.Instantreport.send_interval = 0;
-                $scope.post.Instantreport.User = [];
+                $scope.post.Instantreport.users._ids = [];
+            }else{
+                $scope.post.Instantreport.send_interval = 1;
             }
         }, true);
 
