@@ -88,7 +88,8 @@ $config = [
                 'reload_required'
             ],
             'Automaps'         => [
-                'icon'
+                'icon',
+                'loadContainers'
             ],
             'Calendars'        => [
                 'loadCalendarsByContainerId'
@@ -204,6 +205,8 @@ $config = [
             ],
             'Automaps'              => [
                 'view' => ['loadServiceDetails'],
+                'add'  => ['getMatchingHostAndServices'],
+                'edit' => ['getMatchingHostAndServices'],
             ],
             'Browsers'              => [
                 'index' => ['tenantBrowser', 'locationBrowser', 'nodeBrowser'],

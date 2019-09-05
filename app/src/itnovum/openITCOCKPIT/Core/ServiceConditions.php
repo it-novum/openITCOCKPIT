@@ -63,6 +63,16 @@ class ServiceConditions {
     private $hostId;
 
     /**
+     * @var string
+     */
+    private $hostnameRegex = '';
+
+    /**
+     * @var string
+     */
+    private $servicenameRegex = '';
+
+    /**
      * HostConditions constructor.
      * @param array $conditions
      */
@@ -170,4 +180,33 @@ class ServiceConditions {
     public function setServiceIds($serviceIds) {
         $this->serviceIds = $serviceIds;
     }
+
+    /**
+     * @return string
+     */
+    public function getHostnameRegex() {
+        return $this->hostnameRegex;
+    }
+
+    /**
+     * @param string $hostnameRegex
+     */
+    public function setHostnameRegex($hostnameRegex) {
+        $this->hostnameRegex = $hostnameRegex;
+    }
+
+    /**
+     * @return string
+     */
+    public function getServicenameRegex() {
+        return $this->servicenameRegex;
+    }
+
+    /**
+     * @param string $servicenameRegex
+     */
+    public function setServicenameRegex($servicenameRegex) {
+        $this->servicenameRegex = $servicenameRegex;
+    }
+
 }

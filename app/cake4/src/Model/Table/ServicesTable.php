@@ -2145,10 +2145,10 @@ class ServicesTable extends Table {
                 'Services.id' => $id
             ])
             ->contain([
-                'Contactgroups' => [
+                'Contactgroups'                     => [
                     'Containers'
                 ],
-                'Contacts' => [
+                'Contacts'                          => [
                     'Containers'
                 ],
                 'Servicegroups',
@@ -2186,7 +2186,7 @@ class ServicesTable extends Table {
                 'Services.id' => $id
             ])
             ->contain([
-                'Hosts' => function (Query $query) {
+                'Hosts'            => function (Query $query) {
                     $query->select([
                         'Hosts.id',
                         'Hosts.uuid',
@@ -2209,5 +2209,86 @@ class ServicesTable extends Table {
             ->first();
 
         return $query;
+    }
+
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param null|PaginateOMat $PaginateOMat
+     * @param string $type (all or count, list is NOT supported!)
+     * @return int|array
+     */
+    public function getServicesByRegularExpression(ServiceConditions $ServiceConditions, $PaginateOMat = null, $type = 'all') {
+        $MY_RIGHTS = $ServiceConditions->getContainerIds();
+        $query = $this->find('all');
+        $query->select([
+            'Services.id',
+            'Services.uuid',
+            'Services.name',
+            'Services.host_id',
+            'Services.description',
+            'Services.disabled',
+            'Services.active_checks_enabled',
+            'Services.tags',
+            'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+
+            'Servicetemplates.id',
+            'Servicetemplates.uuid',
+            'Servicetemplates.name',
+
+            'Hosts.name',
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.description',
+            'Hosts.address',
+            'Hosts.disabled',
+        ]);
+        $query->where([
+            'Hosts.disabled'    => 0,
+            'Hosts.name REGEXP' => $ServiceConditions->getHostnameRegex(),
+            'Services.disabled' => 0
+        ]);
+        $query->having([
+            'servicename REGEXP' => $ServiceConditions->getServicenameRegex()
+        ]);
+        $query
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    $q->where([
+                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                    ]);
+                }
+                return $q;
+            })
+            ->contain([
+                'Servicetemplates'
+            ]);
+
+        if ($type === 'all') {
+            $query->order([
+                'servicename' => 'asc'
+            ]);
+        }
+        $query->group([
+            'Services.id'
+        ]);
+
+        if ($type === 'count') {
+            return $query->count();
+        }
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
     }
 }

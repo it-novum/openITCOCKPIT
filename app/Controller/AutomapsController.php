@@ -23,17 +23,29 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\AutomapsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HostsTable;
+use App\Model\Table\ServicesTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ContainerRepository;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\AutomapsFilter;
+use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 /**
  * Class AutomapsController
  * @property DbBackend $DbBackend
+ * @property AppPaginatorComponent $Paginator
+ * @property AppAuthComponent $Auth
+ *
  * @property Servicestatus $Servicestatus
  */
 class AutomapsController extends AppController {
@@ -69,51 +81,67 @@ class AutomapsController extends AppController {
         ]
     ];
 
-    /**
-     * @deprecated
-     */
     public function index() {
-        $options = [
-            'conditions' => [
-                'Automap.container_id' => $this->MY_RIGHTS,
-            ],
-        ];
-
-        $query = Hash::merge($options, $this->Paginator->settings);
-
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_automaps = $this->Automap->find('all', $query);
-        } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_automaps = $this->Paginator->paginate();
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
         }
-        $this->set(compact(['all_automaps']));
-        $this->set('_serialize', ['all_automaps']);
+
+        /** @var $AutomapsTable AutomapsTable */
+        $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
+
+        $AutomapsFilter = new AutomapsFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AutomapsFilter->getPage());
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+        $automaps = $AutomapsTable->getAutomapsIndex($AutomapsFilter, $PaginateOMat, $MY_RIGHTS);
+        $all_automaps = [];
+
+        foreach ($automaps as $automap) {
+            /** @var \App\Model\Entity\Automap $automap */
+            $automap = $automap->toArray();
+            $automap['allow_edit'] = $this->hasRootPrivileges;
+
+            if ($this->hasRootPrivileges === true) {
+                $automap['allow_edit'] = $this->isWritableContainer($automap['container']['id']);
+            }
+
+            $all_automaps[] = $automap;
+        }
+
+        $this->set('all_automaps', $all_automaps);
+        $toJson = ['all_automaps', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_automaps', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
-    /**
-     * @throws Exception
-     * @deprecated
-     */
     public function add() {
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
 
-        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
-        $this->set(compact(['containers']));
+        /** @var $AutomapsTable AutomapsTable */
+        $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $this->Automap->create();
-            if ($this->Automap->save($this->request->data)) {
-                $this->setFlash(__('Automap saved successfully'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Data could not be saved'), false);
-                $this->CustomValidationErrors->loadModel($this->Automap);
-                $this->CustomValidationErrors->customFields(['show_ok']);
-                $this->CustomValidationErrors->fetchErrors();
+            $automap = $AutomapsTable->newEntity();
+            $automap = $AutomapsTable->patchEntity($automap, $this->request->data('Automap'));
+            $AutomapsTable->save($automap);
+            if ($automap->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $automap->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
             }
+
+            $this->set('automap', $automap);
+            $this->set('_serialize', ['automap']);
         }
     }
 
@@ -435,31 +463,38 @@ class AutomapsController extends AppController {
     }
 
     /**
-     * @param null $id
-     * @deprecated
+     * @param int|null $id
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Automap->exists($id)) {
+
+        /** @var $AutomapsTable AutomapsTable */
+        $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
+
+        if (!$AutomapsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid Automap'));
         }
 
-        $automap = $this->Automap->findById($id);
+        $automap = $AutomapsTable->get($id);
 
-        if (!$this->allowedByContainerId($automap['Automap']['container_id'])) {
+        if (!$this->allowedByContainerId($automap->get('container_id'), true)) {
             $this->render403();
-
             return;
         }
 
-        if ($this->Automap->delete($id)) {
-            $this->setFlash(__('Automap deleted'));
-            $this->redirect(['action' => 'index']);
+        if (!$AutomapsTable->delete($automap)) {
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('_serialize', ['success', 'id']);
+            return;
         }
-        $this->setFlash(__('Could not delete Automap'), false);
-        $this->redirect(['action' => 'index']);
+
+        $this->set('success', true);
+        $this->set('id', $id);
+        $this->set('_serialize', ['success', 'id']);
     }
 
     /**
@@ -469,6 +504,100 @@ class AutomapsController extends AppController {
         $this->layout = 'blank';
         //Only ship HTML Template
         return;
+    }
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+    public function loadContainers() {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        $containers = Api::makeItJavaScriptAble($containers);
+
+        $this->set('containers', $containers);
+        $this->set('_serialize', ['containers']);
+    }
+
+    public function getMatchingHostAndServices() {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $defaults = [
+            'container_id'  => 0,
+            'recursive'     => 0,
+            'host_regex'    => '',
+            'service_regex' => ''
+        ];
+
+        $hostCount = 0;
+        $serviceCount = 0;
+
+        $post = $this->request->data('Automap');
+        $post = \Cake\Utility\Hash::merge($defaults, $post);
+
+        if ($post['container_id'] > 0) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+            $containerIds = [
+                $post['container_id']
+            ];
+
+            if ($post['recursive']) {
+                if ($post['container_id'] == ROOT_CONTAINER) {
+                    $containerIds = $this->MY_RIGHTS;
+                } else {
+                    $tmpContainerIds = $ContainersTable->resolveChildrenOfContainerIds($post['container_id'], false);
+                    $containerIds = $ContainersTable->removeRootContainer($tmpContainerIds);
+                }
+            }
+
+            $HostConditions = new HostConditions();
+            $HostConditions->setContainerIds($containerIds);
+            $HostConditions->setHostnameRegex($post['host_regex']);
+            $HostFilter = new HostFilter($this->request); //Only used for order right now
+
+            if ($post['host_regex'] != '') {
+                try {
+                    $hostCount = $HostsTable->getHostsByRegularExpression($HostFilter, $HostConditions, null, 'count');
+                } catch (\Exception $e) {
+                    $hostCount = 0;
+                }
+            }
+
+            $ServicesConditions = new ServiceConditions();
+            $ServicesConditions->setContainerIds($containerIds);
+            $ServicesConditions->setHostnameRegex($post['host_regex']);
+            $ServicesConditions->setServicenameRegex($post['service_regex']);
+            if ($post['service_regex'] != '') {
+                try {
+                    $serviceCount = $ServicesTable->getServicesByRegularExpression($ServicesConditions, null, 'count');
+                } catch (\Exception $e) {
+                    $serviceCount = 0;
+                }
+            }
+        }
+
+
+        $this->set('hostCount', $hostCount);
+        $this->set('serviceCount', $serviceCount);
+        $this->set('_serialize', ['hostCount', 'serviceCount']);
+
     }
 
 }

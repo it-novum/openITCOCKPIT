@@ -22,10 +22,6 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
-/**
- * @property \itnovum\openITCOCKPIT\Monitoring\QueryHandler $QueryHandler
- */
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -39,6 +35,7 @@
     </div>
 </div>
 
+
 <?php echo $this->Flash->render('positive'); ?>
 
 
@@ -48,14 +45,7 @@
     <?php echo __('Page refresh in'); ?> <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
 </div>
 
-<?php if (!$QueryHandler->exists()): ?>
-    <div class="alert alert-danger alert-block">
-        <a href="#" data-dismiss="alert" class="close">×</a>
-        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
-        </h4>
-        <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
-    </div>
-<?php endif; ?>
+<query-handler-directive></query-handler-directive>
 
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
