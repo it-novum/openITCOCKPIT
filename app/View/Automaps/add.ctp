@@ -38,7 +38,7 @@
 
 <div class="jarviswidget">
     <header>
-        <span class="widget-icon"> <i class="fa fa-user"></i> </span>
+        <span class="widget-icon"> <i class="fa fa-magic"></i> </span>
         <h2><?php echo __('Create new auto map'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'automaps')): ?>

@@ -146,40 +146,66 @@ class AutomapsController extends AppController {
     }
 
     /**
-     * @param $id
+     * @param int|null $id
      * @throws Exception
-     * @deprecated
      */
-    public function edit($id) {
-        if (!$this->Automap->exists($id)) {
-            throw new NotFoundException(__('Invalid automap'));
-        }
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->Automap->save($this->request->data)) {
-                $this->setFlash(__('Automap saved successfully'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Data could not be saved'), false);
-                $this->CustomValidationErrors->loadModel($this->Automap);
-                $this->CustomValidationErrors->customFields(['show_ok']);
-                $this->CustomValidationErrors->fetchErrors();
-            }
-        }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
-        $automap = $this->Automap->findById($id);
-
-        if (!$this->allowedByContainerId($automap['Automap']['container_id'])) {
-            $this->render403();
-
+    public function edit($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        $this->set(compact(['automap', 'containers']));
-        $this->request->data = Hash::merge($automap, $this->request->data);
+        /** @var $AutomapsTable AutomapsTable */
+        $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
+
+        if (!$AutomapsTable->existsById($id)) {
+            throw new NotFoundException(__('Automap not found'));
+        }
+
+        $automap = $AutomapsTable->get($id);
+
+        if (!$this->allowedByContainerId($automap->get('container_id'), true)) {
+            $this->render403();
+            return;
+        }
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return contact information
+            $automap = $automap->toArray();
+            $toIntFields = [
+                'recursive',
+                'show_ok',
+                'show_warning',
+                'show_critical',
+                'show_unknown',
+                'show_acknowledged',
+                'show_downtime',
+                'show_label',
+                'group_by_host'
+            ];
+            foreach($toIntFields as $intField){
+                $automap[$intField] = (int)$automap[$intField];
+            }
+
+            $this->set('automap', $automap);
+            $this->set('_serialize', ['automap']);
+            return;
+        }
+
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            //Update automap data
+            $automap->setAccess('id', false);
+            $automap = $AutomapsTable->patchEntity($automap, $this->request->data('Automap'));
+            $AutomapsTable->save($automap);
+            if ($automap->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $automap->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            }
+            $this->set('automap', $automap);
+            $this->set('_serialize', ['automap']);
+        }
     }
 
     /**
