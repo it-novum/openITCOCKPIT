@@ -33,11 +33,11 @@ class InstantreportFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'like'   => [
-                'Instantreport.name'
+                'Instantreports.name'
             ],
             'equals' => [
-                'Instantreport.evaluation',
-                'Instantreport.type'
+                'Instantreports.evaluation',
+                'Instantreports.type'
             ]
         ];
         return $this->getConditionsByFilters($filters);

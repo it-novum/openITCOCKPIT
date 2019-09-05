@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\ContainersTable;
+use App\Model\Table\InstantreportsTable;
 use App\Model\Table\SystemfailuresTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -31,6 +32,7 @@ use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
 
 
@@ -49,7 +51,7 @@ class InstantreportsController extends AppController {
     public $cronToDate = '';
     public $cronPdfName = '';
 
-    public $layout = 'Admin.default';
+    public $layout = 'blank';
     public $components = [
         'RequestHandler',
     ];
@@ -68,139 +70,95 @@ class InstantreportsController extends AppController {
     ];
 
     public function index() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
         }
-
         $InstantreportFilter = new InstantreportFilter($this->request);
-
-        $options = [
-            'recursive'  => -1,
-            'conditions' => [
-                'Instantreport.container_id' => $this->MY_RIGHTS
-            ],
-            'contain'    => [
-                'Timeperiod.name',
-                'User.firstname',
-                'User.lastname'
-            ],
-            'order'      => $InstantreportFilter->getOrderForPaginator('Instantreport.name', 'asc'),
-            'conditions' => $InstantreportFilter->indexFilter(),
-            'limit'      => $this->Paginator->settings['limit']
-        ];
-
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            unset($options['limit']);
-            $instantreports = $this->Instantreport->find('all', $options);
-        } else {
-            $this->Paginator->settings = $options;
-            $this->Paginator->settings['page'] = $InstantreportFilter->getPage();
-            $instantreports = $this->Paginator->paginate();
+        /** @var $InstantreportsTable InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $InstantreportFilter->getPage());
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         }
-
-        $evaluations = $this->Instantreport->getEvaluations();
-        $types = $this->Instantreport->getTypes();
-        $sendIntervals = $this->Instantreport->getSendIntervals();
-
-        array_walk($instantreports, function (&$value, &$key) use ($evaluations, $types, $sendIntervals) {
-            $value['Instantreport']['evaluation'] = $evaluations[$value['Instantreport']['evaluation']];
-            $value['Instantreport']['type'] = $types[$value['Instantreport']['type']];
-            $value['Instantreport']['send_interval'] = $sendIntervals[$value['Instantreport']['send_interval']];
-        });
-
-        $this->set([
-            'instantreports' => $instantreports
-        ]);
-        $this->set('_serialize', ['instantreports', 'paging']);
+        $instantreports = $InstantreportsTable->getInstantreportsIndex($InstantreportFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($instantreports as $index => $instantreport) {
+            $instantreports[$index]['allowEdit'] = $this->isWritableContainer($instantreport['Instantreport']['container_id']);
+        }
+        $this->set('instantreports', $instantreports);
+        $toJson = ['instantreports', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['instantreports', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function add() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
         }
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['User'] = $this->request->data('Instantreport.User');
-            if ($this->request->data('Instantreport.send_email') == 0) {
-                $this->request->data['Instantreport']['send_interval'] = 0;
-                $this->request->data['User'] = [];
-            }
-            $this->request->data['Hostgroup'] = $this->request->data('Instantreport.Hostgroup');
-            $this->request->data['Host'] = $this->request->data('Instantreport.Host');
-            $this->request->data['Servicegroup'] = $this->request->data('Instantreport.Servicegroup');
-            $this->request->data['Service'] = $this->request->data('Instantreport.Service');
-            if ($this->Instantreport->saveAll($this->request->data)) {
-                if ($this->request->ext == 'json') {
-                    $this->serializeId();
-                    return;
-                }
+        /** @var $InstantreportsTable InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $instantreport = $InstantreportsTable->newEntity();
+            $instantreport = $InstantreportsTable->patchEntity($instantreport, $this->request->data('Instantreport'));
+            $InstantreportsTable->save($instantreport);
+            if ($instantreport->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->serializeCake4ErrorMessage($instantreport);
+                return;
             } else {
-                if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-                    return;
-                }
+                //No errors
+                $this->serializeCake4Id($instantreport);
             }
+            $this->set('instantreport', $instantreport);
+            $this->set('_serialize', ['instantreport']);
         }
     }
 
     public function edit($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
-            //Only ship template for AngularJs
+            //Only ship HTML template for angular
             return;
         }
-        if (!$this->Instantreport->exists($id) && $id !== null) {
-            throw new NotFoundException(__('Invalid Instant report'));
+
+        /** @var $InstantreportsTable InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+
+        if (!$InstantreportsTable->existsById($id)) {
+            throw new NotFoundException(__('Instant report not found'));
         }
-
-
-        $instantreport = $this->Instantreport->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'User.id',
-                'Host.id',
-                'Service.id',
-                'Hostgroup.id',
-                'Servicegroup.id'
-            ],
-            'conditions' => [
-                'Instantreport.id' => $id
-            ]
-        ]);
-
-        if (!$this->allowedByContainerId(Hash::extract($instantreport, 'Instantreport.container_id'))) {
+        $instantreport = $InstantreportsTable->getInstantreportForEdit($id);
+        if (!$this->allowedByContainerId($instantreport['Instantreport']['container_id'])) {
             $this->render403();
+            return;
+        }
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return instant report information
+            $this->set('instantreport', $instantreport);
+            $this->set('_serialize', ['instantreport']);
             return;
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Instantreport']['id'] = $id;
-            $this->request->data['User'] = $this->request->data('Instantreport.User');
-            if ($this->request->data('Instantreport.send_email') == 0) {
-                $this->request->data['Instantreport']['send_interval'] = 0;
-                $this->request->data['User'] = [];
+            $data = $this->request->data('Instantreport');
+            $instantreport = $InstantreportsTable->get($id);
+            $instantreport = $InstantreportsTable->patchEntity($instantreport, $data);
+            $InstantreportsTable->save($instantreport);
+            if ($instantreport->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $instantreport->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
             }
-            $this->request->data['Hostgroup'] = $this->request->data('Instantreport.Hostgroup');
-            $this->request->data['Host'] = $this->request->data('Instantreport.Host');
-            $this->request->data['Servicegroup'] = $this->request->data('Instantreport.Servicegroup');
-            $this->request->data['Service'] = $this->request->data('Instantreport.Service');
-            if ($this->Instantreport->saveAll($this->request->data)) {
-                if ($this->request->ext == 'json') {
-                    $this->serializeId();
-                    return;
-                }
-            } else {
-                if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-                    return;
-                }
-            }
+
+            $this->set('instantreport', $instantreport);
+            $this->set('_serialize', ['instantreport']);
         }
-        $this->set('instantreport', $instantreport);
-        $this->set('_serialize', ['instantreport']);
     }
 
     public function generate($id = null) {
@@ -883,42 +841,33 @@ class InstantreportsController extends AppController {
     }
 
     public function delete($id = null) {
-        if (!$this->Instantreport->exists($id)) {
-            throw new NotFoundException(__('Invalid Instant report'));
-        }
-
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        $instantreport = $this->Instantreport->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'conditions' => [
-                'Instantreport.id' => $id,
-            ]
-        ]);
 
-        if (!$this->allowedByContainerId(Hash::extract($instantreport, 'Container.id'))) {
+        /** @var $InstantreportsTable InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+
+        if (!$InstantreportsTable->exists($id)) {
+            throw new NotFoundException(__('Instant report not found'));
+        }
+
+        $instantreport = $InstantreportsTable->getInstantreportById($id);
+        if (!$this->allowedByContainerId(Hash::extract($instantreport, 'Instantreport.container_id'))) {
             $this->render403();
             return;
         }
-
-        $this->Instantreport->id = $id;
-
-        if ($this->Instantreport->delete()) {
+        $instantreportEntity = $InstantreportsTable->get($id);
+        if ($InstantreportsTable->delete($instantreportEntity)) {
             $this->set('success', true);
-            $this->set('message', __('Instant report successfully deleted'));
             $this->set('_serialize', ['success']);
             return;
         }
 
-        $this->response->statusCode(400);
+        $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('id', $id);
-        $this->set('message', __('Issue while deleting instant report'));
-        $this->set('_serialize', ['success', 'id', 'message']);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
     public function createPdfReport() {
@@ -964,7 +913,6 @@ class InstantreportsController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
@@ -974,7 +922,6 @@ class InstantreportsController extends AppController {
             $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
         }
         $containers = Api::makeItJavaScriptAble($containers);
-
 
         $this->set('containers', $containers);
         $this->set('_serialize', ['containers']);

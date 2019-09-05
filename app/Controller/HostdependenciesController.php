@@ -47,7 +47,6 @@ class HostdependenciesController extends AppController {
 
     public $layout = 'blank';
 
-
     public function index() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
@@ -60,11 +59,9 @@ class HostdependenciesController extends AppController {
         $HostdependenciesFilter = new HostdependenciesFilter($this->request);
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostdependenciesFilter->getPage());
 
-        $MY_RIGHTS = [];
-        if ($this->hasRootPrivileges === false) {
-            /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
         }
         $hostdependencies = $HostdependenciesTable->getHostdependenciesIndex($HostdependenciesFilter, $PaginateOMat, $MY_RIGHTS);
         foreach ($hostdependencies as $index => $hostdependency) {
@@ -80,38 +77,35 @@ class HostdependenciesController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
+    /**
+     * @param null $id
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
+        }
 
+        /** @var $HostdependenciesTable HostdependenciesTable */
+        $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+
+        if (!$HostdependenciesTable->exists($id)) {
+            throw new NotFoundException(__('Host dependency not found'));
         }
-        if (!$this->Hostdependency->exists($id)) {
-            throw new NotFoundException(__('Invalid hostdependency'));
-        }
-        $hostdependency = $this->Hostdependency->find('first', [
-            'conditions' => [
-                'Hostdependency.id' => $id,
-            ],
-            'contain'    => [
-                'HostdependencyHostMembership'      => [
-                    'Host',
-                ],
-                'HostdependencyHostgroupMembership' => [
-                    'Hostgroup',
-                ],
-                'Timeperiod',
-            ],
-        ]);
-        if (!$this->allowedByContainerId($hostdependency['Hostdependency']['container_id'])) {
+
+        $hostdependency = $HostdependenciesTable->getHostdependencyById($id);
+        if (!$this->allowedByContainerId(Hash::extract($hostdependency, 'Hostdependency.container_id'))) {
             $this->render403();
-
             return;
         }
 
         $this->set('hostdependency', $hostdependency);
         $this->set('_serialize', ['hostdependency']);
+
     }
 
+    /**
+     * @param null $id
+     */
     public function edit($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -125,11 +119,11 @@ class HostdependenciesController extends AppController {
         }
         $hostdependency = $HostdependenciesTable->get($id, [
             'contain' => [
-                'hosts'         => function (Query $q) {
+                'hosts'      => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id', 'name']);
                 },
-                'hostgroups'    => function (Query $q) {
+                'hostgroups' => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id']);
                 },
@@ -213,22 +207,33 @@ class HostdependenciesController extends AppController {
     }
 
     public function delete($id = null) {
-        if (!$this->Hostdependency->exists($id)) {
-            throw new NotFoundException(__('Invalid host dependency'));
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
-        $hostdependency = $this->Hostdependency->findById($id);
-        if (!$this->allowedByContainerId($hostdependency['Hostdependency']['container_id'])) {
-            $this->render403();
 
+        /** @var $HostdependenciesTable HostdependenciesTable */
+        $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+
+        if (!$HostdependenciesTable->exists($id)) {
+            throw new NotFoundException(__('Host dependency not found'));
+        }
+
+        $hostdependency = $HostdependenciesTable->getHostdependencyById($id);
+        if (!$this->allowedByContainerId(Hash::extract($hostdependency, 'Hostdependency.container_id'))) {
+            $this->render403();
+            return;
+        }
+        $hostdependencyEntity = $HostdependenciesTable->get($id);
+        if ($HostdependenciesTable->delete($hostdependencyEntity)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
             return;
         }
 
-        if ($this->Hostdependency->delete($id)) {
-            $this->set('message', __('Host dependency deleted'));
-            $this->set('_serialize', ['message']);
-        }
-        $this->set('message', __('Could not delete host dependency'));
-        $this->set('_serialize', ['message']);
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
     public function loadElementsByContainerId($containerId = null) {
@@ -277,6 +282,9 @@ class HostdependenciesController extends AppController {
         ]);
     }
 
+    /**
+     * @throws Exception
+     */
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

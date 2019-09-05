@@ -465,4 +465,17 @@ class ServicedependenciesTable extends Table {
 
         return empty($masterServicesForCfg) || empty($dependentServicesForCfg);
     }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getServicedependencyById($id) {
+        $query = $this->find()
+            ->where([
+                'Servicedependencies.id' => $id
+            ])
+            ->first();
+        return $this->formatFirstResultAsCake2($query->toArray(), false);
+    }
 }

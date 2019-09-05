@@ -59,7 +59,7 @@ class HostescalationsTable extends Table {
         ]);
         $this->belongsTo('Timeperiods', [
             'foreignKey' => 'timeperiod_id',
-            'joinType'   => 'INNER'
+            'joinType'   => 'LEFT'
         ]);
         $this->belongsToMany('Contacts', [
             'joinTable'    => 'contacts_to_hostescalations',
@@ -351,13 +351,10 @@ class HostescalationsTable extends Table {
             });
             unset($indexFilter['HostgroupsExcluded.name LIKE']);
         }
-        if (!empty($indexFilter['HostgroupsExcluded.name LIKE'])) {
 
-        }
         if (!empty($MY_RIGHTS)) {
             $indexFilter['Hostescalations.container_id IN'] = $MY_RIGHTS;
         }
-
         if (!empty($indexFilter['Hostescalations.notification_interval LIKE'])) {
             $query->where(
                 ['Hostescalations.notification_interval LIKE' => $indexFilter['Hostescalations.notification_interval LIKE']],
@@ -365,17 +362,16 @@ class HostescalationsTable extends Table {
             );
             unset($indexFilter['Hostescalations.notification_interval LIKE']);
         }
-
         $query->where($indexFilter);
         $query->order($HostescalationsFilter->getOrderForPaginator('Hostescalations.id', 'asc'));
         if ($PaginateOMat === null) {
             //Just execute query
-            $result = $query->toArray();
+            $result = $this->emptyArrayIfNull($query->toArray());
         } else {
             if ($PaginateOMat->useScroll()) {
                 $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
-                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
             }
         }
         return $result;
@@ -579,5 +575,18 @@ class HostescalationsTable extends Table {
         $result = $query->all();
 
         return $this->emptyArrayIfNull($result->toArray());
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getHostescalationById($id) {
+        $query = $this->find()
+            ->where([
+                'Hostescalations.id' => $id
+            ])
+            ->first();
+        return $this->formatFirstResultAsCake2($query->toArray(), false);
     }
 }

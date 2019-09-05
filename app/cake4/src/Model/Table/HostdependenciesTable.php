@@ -437,4 +437,16 @@ class HostdependenciesTable extends Table {
         return empty($masterHostsForCfg) || empty($dependentHostsForCfg);
     }
 
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getHostdependencyById($id) {
+        $query = $this->find()
+            ->where([
+                'Hostdependencies.id' => $id
+            ])
+            ->first();
+        return $this->formatFirstResultAsCake2($query->toArray(), false);
+    }
 }

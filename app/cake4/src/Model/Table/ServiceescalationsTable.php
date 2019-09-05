@@ -59,7 +59,7 @@ class ServiceescalationsTable extends Table {
         ]);
         $this->belongsTo('Timeperiods', [
             'foreignKey' => 'timeperiod_id',
-            'joinType'   => 'INNER'
+            'joinType'   => 'LEFT'
         ]);
         $this->belongsToMany('Contacts', [
             'joinTable'    => 'contacts_to_serviceescalations',
@@ -373,12 +373,12 @@ class ServiceescalationsTable extends Table {
         $query->order($ServiceescalationsFilter->getOrderForPaginator('Serviceescalations.id', 'asc'));
         if ($PaginateOMat === null) {
             //Just execute query
-            $result = $query->toArray();
+            $result = $this->emptyArrayIfNull($query->toArray());
         } else {
             if ($PaginateOMat->useScroll()) {
                 $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
             } else {
-                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
             }
         }
         return $result;
@@ -587,5 +587,18 @@ class ServiceescalationsTable extends Table {
         $result = $query->all();
 
         return $this->emptyArrayIfNull($result->toArray());
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getServiceescalationById($id) {
+        $query = $this->find()
+            ->where([
+                'Serviceescalations.id' => $id
+            ])
+            ->first();
+        return $this->formatFirstResultAsCake2($query->toArray(), false);
     }
 }
