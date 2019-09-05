@@ -383,7 +383,8 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group padding-top-10" ng-class="{'has-error': errors.font_size}">
+                                        <div class="form-group padding-top-10"
+                                             ng-class="{'has-error': errors.font_size}">
                                             <label class="col col-md-2 control-label">
                                                 <?php echo __('Icon size'); ?>
                                             </label>
@@ -422,23 +423,79 @@
                                 <h2><?php echo __('Icon Preview'); ?></h2>
                             </header>
                             <div role="content">
-                                <div class="widget-body padding-top-10">
+                                <div class="widget-body">
 
                                     <div class="row"
-                                         ng-if="post.Automap.show_label === 1">
-                                        <div class="col-xs-12 text-center" ng-style="getFontsize();">
+                                         ng-if="post.Automap.show_label === 1 && post.Automap.group_by_host === 1">
+
+                                        <div class="col-xs-12">
+                                            <h3 class="margin-bottom-5">
+                                                <i class="fa fa-desktop"></i>
+                                                <strong>
+                                                    <?php echo __('Example host'); ?>
+                                                </strong>
+                                            </h3>
+                                        </div>
+
+                                        <div class="col-xs-6 ellipsis" ng-style="getFontsize();">
                                             <i class="fa fa-square up"></i>
                                             <span
-                                                  title="<?php echo __('Host name'); ?>/<?php echo __('Service description'); ?>">
-                                                <?php echo __('Host name'); ?>/<?php echo __('Service description'); ?>
+                                                    title="<?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>">
+                                                <?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-6 ellipsis" ng-style="getFontsize();">
+                                            <i class="fa fa-square critical"></i>
+                                            <span
+                                                    title="<?php echo __('Example host'); ?>/<?php echo __('Service 2'); ?>">
+                                                <?php echo __('Example host'); ?>/<?php echo __('Service 2'); ?>
                                             </span>
                                         </div>
                                     </div>
 
                                     <div class="row"
-                                         ng-if="post.Automap.show_label === 0">
-                                        <div class="col-xs-12 text-center" ng-style="getFontsize();">
-                                            <i class="fa fa-square up" title="<?php echo __('Host name'); ?>/<?php echo __('Service description'); ?>"></i>
+                                         ng-if="post.Automap.show_label === 0 && post.Automap.group_by_host === 1">
+
+                                        <div class="col-xs-12">
+                                            <h3 class="margin-bottom-5">
+                                                <i class="fa fa-desktop"></i>
+                                                <strong>
+                                                    <?php echo __('Example host'); ?>
+                                                </strong>
+                                            </h3>
+                                        </div>
+
+                                        <div class="col-xs-12 ellipsis" ng-style="getFontsize();">
+                                            <i class="fa fa-square up" title="<?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>"></i>
+                                            <i class="fa fa-square critical" title="<?php echo __('Example host'); ?>/<?php echo __('Service 2'); ?>"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="row"
+                                         ng-if="post.Automap.show_label === 0 && post.Automap.group_by_host === 0">
+
+                                        <div class="col-xs-12 ellipsis" ng-style="getFontsize();">
+                                            <i class="fa fa-square up" title="<?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>"></i>
+                                            <i class="fa fa-square critical" title="<?php echo __('Example host'); ?>/<?php echo __('Service 2'); ?>"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="row"
+                                         ng-if="post.Automap.show_label === 1 && post.Automap.group_by_host === 0">
+
+                                        <div class="col-xs-6 ellipsis" ng-style="getFontsize();">
+                                            <i class="fa fa-square up"></i>
+                                            <span
+                                                    title="<?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>">
+                                                <?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-6 ellipsis" ng-style="getFontsize();">
+                                            <i class="fa fa-square critical"></i>
+                                            <span
+                                                    title="<?php echo __('Example host'); ?>/<?php echo __('Service 2'); ?>">
+                                                <?php echo __('Example host'); ?>/<?php echo __('Service 2'); ?>
+                                            </span>
                                         </div>
                                     </div>
 
