@@ -402,7 +402,7 @@
                                                     <option value="3"><?php echo __('Small'); ?></option>
                                                     <option value="4"><?php echo __('Normal'); ?></option>
                                                     <option value="5"><?php echo __('Big'); ?></option>
-                                                    <option value="6"><?php echo __('bigger'); ?></option>
+                                                    <option value="6"><?php echo __('Bigger'); ?></option>
                                                     <option value="7"><?php echo __('Biggest'); ?></option>
                                                 </select>
                                                 <div ng-repeat="error in errors.font_size">
