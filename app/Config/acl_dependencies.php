@@ -204,7 +204,6 @@ $config = [
                 'scan' => ['config', 'createService'],
             ],
             'Automaps'              => [
-                'view' => ['loadServiceDetails'],
                 'add'  => ['getMatchingHostAndServices'],
                 'edit' => ['getMatchingHostAndServices'],
             ],

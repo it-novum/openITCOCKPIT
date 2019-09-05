@@ -35,6 +35,8 @@
     </div>
 </div>
 
+<query-handler-directive></query-handler-directive>
+
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-magic"></i> </span>
