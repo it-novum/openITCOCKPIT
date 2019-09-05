@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
@@ -287,5 +288,59 @@ class InstantreportsTable extends Table {
             ])
             ->first();
         return $this->formatFirstResultAsCake2($query->toArray(), false);
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getInstantreportForEdit($id) {
+        $query = $this->find()
+            ->select([
+                'Instantreports.id',
+                'Instantreports.name',
+                'Instantreports.container_id',
+                'Instantreports.evaluation',
+                'Instantreports.type',
+                'Instantreports.timeperiod_id',
+                'Instantreports.reflection',
+                'Instantreports.downtimes',
+                'Instantreports.summary',
+                'Instantreports.send_email',
+                'Instantreports.send_interval'
+            ])
+            ->where([
+                'Instantreports.id' => $id
+            ])
+            ->contain([
+                'Users',
+                'Hostgroups',
+                'Hosts',
+                'Servicegroups',
+                'Services'
+            ])
+            ->disableHydration()
+            ->first();
+
+        $instantreport = $query;
+
+        $instantreport['users'] = [
+            '_ids' => Hash::extract($query, 'users.{n}.id')
+        ];
+        $instantreport['hostgroups'] = [
+            '_ids' => Hash::extract($query, 'hostgroups.{n}.id')
+        ];
+        $instantreport['hosts'] = [
+            '_ids' => Hash::extract($query, 'hosts.{n}.id')
+        ];
+        $instantreport['servicegroups'] = [
+            '_ids' => Hash::extract($query, 'servicegroups.{n}.id')
+        ];
+        $instantreport['services'] = [
+            '_ids' => Hash::extract($query, 'services.{n}.id')
+        ];
+        return [
+            'Instantreport' => $instantreport
+        ];
     }
 }

@@ -106,7 +106,7 @@ angular.module('openITCOCKPIT')
 
         $scope.loadServices = function(searchString){
             if($scope.post.Instantreport.container_id){
-                $http.get("/services/loadServicesByContainerId.json", {
+                $http.get("/services/loadServicesByStringCake4.json", {
                     params: {
                         'angular': true,
                         'containerId': $scope.post.Instantreport.container_id,
@@ -136,7 +136,6 @@ angular.module('openITCOCKPIT')
             $http.post("/instantreports/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                console.log(result);
                 var url = $state.href('InstantreportsEdit', {id: result.data.instantreport.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '

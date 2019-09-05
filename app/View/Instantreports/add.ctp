@@ -175,11 +175,9 @@
                                     class="form-control"
                                     chosen="services"
                                     callback="loadServices"
-                                    ng-options="service.value.Service.id as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
+                                    ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
                                     ng-model="post.Instantreport.services._ids">
                             </select>
-
-
                             <div ng-repeat="error in errors.services">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -317,7 +315,6 @@
                                     data-placeholder="<?php __('Please select...'); ?>"
                                     class="chosen form-control"
                                     id="InstantreportSendInterval"
-                                    chosen="send_interval"
                                     ng-model="post.Instantreport.send_interval">
                                 <option ng-value="0" ng-if="!post.Instantreport.send_interval">
                                     <?php echo __('NEVER'); ?>
