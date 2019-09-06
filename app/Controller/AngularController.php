@@ -30,6 +30,7 @@ use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServiceMacroReplacer;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
@@ -47,7 +48,7 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 class AngularController extends AppController {
 
     public $layout = 'blank';
-    public $components = ['GearmanClient'];
+
     public $uses = [
         'Host',
         'Service',
@@ -496,8 +497,9 @@ class AngularController extends AppController {
         $cache['gearman_reachable'] = false;
         $cache['gearman_worker_running'] = false;
 
-        $this->GearmanClient->client->setTimeout(5000);
-        $cache['gearman_reachable'] = @$this->GearmanClient->client->ping(true);
+        $GearmanClient = new Gearman();
+        $GearmanClient->setTimeout(5000);
+        $cache['gearman_reachable'] = $GearmanClient->ping();
 
 
         exec('ps -eaf |grep gearman_worker |grep -v \'grep\'', $output);
@@ -937,7 +939,7 @@ class AngularController extends AppController {
         return;
     }
 
-    public function reload_required(){
+    public function reload_required() {
         //Only ship HTML template
         return;
     }
