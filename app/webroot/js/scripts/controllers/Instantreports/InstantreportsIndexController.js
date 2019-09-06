@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('InstantreportsIndexController', function($scope, $http, SortService, MassChangeService){
 
-        SortService.setSort('Instantreport.name');
+        SortService.setSort('Instantreports.name');
         SortService.setDirection('asc');
         $scope.currentPage = 1;
 
@@ -32,29 +32,21 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.showFilter = false;
         $scope.load = function(){
-            var evaluationTypes = [];
-            for(var key in $scope.filter.instantreport.evaluation){
-                if($scope.filter.instantreport.evaluation[key] !== false){
-                    evaluationTypes.push($scope.filter.instantreport.evaluation[key]);
-                }
-            }
-
-            var objectTypes = [];
-            for(var key in $scope.filter.instantreport.type){
-                if($scope.filter.instantreport.type[key] !== false){
-                    objectTypes.push($scope.filter.instantreport.type[key]);
-                }
-            }
-
+            var evaluationTypes = _.filter($scope.filter.instantreport.evaluation, function(value){
+                return value !== false;
+            });
+            var objectTypes = _.filter($scope.filter.instantreport.type, function(value){
+                return value !== false;
+            });
             $http.get("/instantreports/index.json", {
                 params: {
                     'angular': true,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[Instantreport.name]': $scope.filter.instantreport.name,
-                    'filter[Instantreport.evaluation][]': evaluationTypes,
-                    'filter[Instantreport.type][]': objectTypes
+                    'filter[Instantreports.name]': $scope.filter.instantreport.name,
+                    'filter[Instantreports.evaluation][]': evaluationTypes,
+                    'filter[Instantreports.type][]': objectTypes
                 }
             }).then(function(result){
                 $scope.instantreports = result.data.instantreports;

@@ -121,8 +121,9 @@ class DowntimereportsController extends AppController {
             $this->set('error', [
                 'no_downtimes' => [
                     'empty' => __('No downtimes within specified time found (%s - %s) !',
-                        $this->Time->format($fromDate, $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
-                        $this->Time->format($toDate, $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')))
+                        date('d.m.Y', $fromDate),
+                        date('d.m.Y', $toDate)
+                    )
                 ]
             ]);
             $this->set('_serialize', ['error']);
@@ -178,6 +179,11 @@ class DowntimereportsController extends AppController {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         $fromDate = strtotime($this->request->data('from_date') . ' 00:00:00');
         $toDate = strtotime($this->request->data('to_date') . ' 23:59:59');
+
+        $this->set('fromDate', $fromDate);
+        $this->set('toDate', $toDate);
+
+
         $evaluationType = $this->request->data('evaluation_type');
         $reflectionState = $this->request->data('reflection_state');
 
@@ -203,14 +209,15 @@ class DowntimereportsController extends AppController {
         );
 
         if ($downtimeReport === null) {
-            $this->response->statusCode(400);
             $this->set('error', [
                 'no_downtimes' => [
-                    'empty' => __('No downtimes within specified time found (%s - %s) !', $this->request->data('from_date'), $this->request->data('to_date'))
+                    'empty' => __('! No downtimes within specified time found (%s - %s) !',
+                        date('d.m.Y', $fromDate),
+                        date('d.m.Y', $toDate)
+                    )
                 ]
             ]);
             $this->set('_serialize', ['error']);
-            return;
         }
 
         $this->set('downtimeReport', $downtimeReport);
@@ -528,8 +535,6 @@ class DowntimereportsController extends AppController {
 
 
         $downtimeReport['totalTime'] = $totalTime;
-        $downtimeReport['fromDate'] = $fromDate;
-        $downtimeReport['toDate'] = $toDate;
         $downtimeReport['downtimes'] = $downtimes;
         return $downtimeReport;
     }

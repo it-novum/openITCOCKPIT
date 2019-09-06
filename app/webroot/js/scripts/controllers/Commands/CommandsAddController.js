@@ -18,6 +18,26 @@ angular.module('openITCOCKPIT')
         $scope.macros = [];
         $scope.jqConsole = null;
 
+        $scope.load = function(){
+            $http.get("/commands/add/.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.defaultMacros = result.data.defaultMacros;
+                setTimeout($scope.highlightCommandLine, 250);
+
+            }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
+                if(result.status === 404){
+                    $state.go('404');
+                }
+            });
+        };
+
         $scope.removeArg = function(arg){
             var args = [];
             for(var i in $scope.args){
@@ -43,8 +63,30 @@ angular.module('openITCOCKPIT')
             $scope.args = _.sortBy($scope.args, 'id');
         };
 
+        $scope.checkForMisingArguments = function(){
+            var commandLine = $scope.post.Command.command_line;
+
+            var usedCommandLineArgs = commandLine.match(/(\$ARG\d+\$)/g);
+            if(usedCommandLineArgs !== null){
+                usedCommandLineArgs = usedCommandLineArgs.length;
+            }else{
+                usedCommandLineArgs = 0;
+            }
+
+            $scope.usedCommandLineArgs = usedCommandLineArgs;
+            $scope.definedCommandArguments = $scope.args.length;
+
+            if($scope.usedCommandLineArgs === $scope.definedCommandArguments){
+                $scope.submit();
+            }else{
+                $('#argumentMisMatchModal').modal('show');
+            }
+
+        };
 
         $scope.submit = function(){
+            $('#argumentMisMatchModal').modal('hide');
+
             var index = 0;
             for(var i in $scope.args){
                 if(!/\S/.test($scope.args[i].human_name)){
@@ -125,5 +167,56 @@ angular.module('openITCOCKPIT')
             };
             newLineInPromt();
         };
+
+        $scope.showDefaultMacros = function(){
+            $('#defaultMacrosOverview').modal('show');
+        };
+
+        $scope.highlightCommandLine = function(){
+            var highlight = [
+                {
+                    highlight: /(\$ARG\d+\$)/g,
+                    className: 'highlight-blue'
+                },
+                {
+                    highlight: /(\$USER\d+\$)/g,
+                    className: 'highlight-green'
+                },
+                {
+                    highlight: /(\$_HOST.*\$)/g,
+                    className: 'highlight-purple'
+                },
+                {
+                    highlight: /(\$_SERVICE.*\$)/g,
+                    className: 'highlight-purple'
+                },
+                {
+                    highlight: /(\$_CONTACT.*\$)/g,
+                    className: 'highlight-purple'
+                }
+            ];
+
+            var escapeDollar = new RegExp('\\$', 'g');
+
+            for(var index in $scope.defaultMacros){
+                for(var i in $scope.defaultMacros[index].macros){
+                    var macroName = $scope.defaultMacros[index].macros[i].macro;
+                    macroName = macroName.replace(escapeDollar, '\\$');
+                    highlight.push({
+                        highlight: new RegExp(macroName, "g"),
+                        className: $scope.defaultMacros[index].class
+                    });
+                }
+            }
+
+            $('#commandLineTextArea').highlightWithinTextarea({
+                highlight: [
+                    highlight
+                ]
+            });
+        };
+
+        //Fire on page load
+        $scope.load();
         setTimeout($scope.createJQConsole, 250);
     });

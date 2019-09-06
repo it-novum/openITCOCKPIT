@@ -28,7 +28,7 @@ use Cake\ORM\Entity;
  *
  * @property \App\Model\Entity\Container $container
  */
-class Automap extends Entity {
+class Instantreport extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -39,24 +39,23 @@ class Automap extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'name'              => true,
-        'container_id'      => true,
-        'description'       => true,
-        'host_regex'        => true,
-        'service_regex'     => true,
-        'show_ok'           => true,
-        'show_warning'      => true,
-        'show_critical'     => true,
-        'show_unknown'      => true,
-        'show_acknowledged' => true,
-        'show_downtime'     => true,
-        'show_label'        => true,
-        'group_by_host'     => true,
-        'use_paginator'     => true,
-        'font_size'         => true,
-        'recursive'         => true,
-        'created'           => true,
-        'modified'          => true,
-        'container'         => true
+        'name'           => true,
+        'container_id'   => true,
+        'evaluation'     => true,
+        'type'           => true,
+        'timeperiod_id'  => true,
+        'reflection'     => true,
+        'downtimes'      => true,
+        'summary'        => true,
+        'send_email'     => true,
+        'send_interval'  => true,
+        'last_send_date' => true,
+        'hostgroups'     => true,
+        'hosts'          => true,
+        'servicegroups'  => true,
+        'services'       => true,
+        'users'           => true,
+        'created'        => true,
+        'modified'       => true
     ];
 }

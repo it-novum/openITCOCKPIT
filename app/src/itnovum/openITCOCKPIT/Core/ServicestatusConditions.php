@@ -73,9 +73,9 @@ class ServicestatusConditions {
      */
     public function currentState($currentStateId) {
         if (is_array($currentStateId)) {
-            $this->conditions['Servicestatus.current_state'] = $currentStateId;
+            $this->conditions['Servicestatus.current_state IN'] = $currentStateId;
         } else {
-            $this->conditions['Servicestatus.current_state'][] = $currentStateId;
+            $this->conditions['Servicestatus.current_state IN'][] = $currentStateId;
         }
         return $this;
     }

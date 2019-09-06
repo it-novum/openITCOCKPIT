@@ -27,7 +27,9 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-terminal fa-fw "></i>
-            <?php echo __('Commands'); ?>
+            <?php use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
+
+            echo __('Commands'); ?>
             <span>>
                 <?php echo __('Add'); ?>
             </span>
@@ -48,9 +50,12 @@
         <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
         <h2><?php echo __('Create new command'); ?></h2>
         <div class="widget-toolbar" role="menu">
+            <button ng-click="showDefaultMacros()"
+                    class="btn btn-primary btn-xs"><i
+                        class="fa fa-usd"></i> <?php echo __('Default macros overview'); ?></button>
             <?php if ($this->Acl->hasPermission('index', 'macros')): ?>
-                <a ng-click="showMacros()"
-                   class="btn btn-primary btn-xs"><i class="fa fa-usd"></i> <?php echo __('Macros overview'); ?></a>
+                <button ng-click="showMacros()"
+                        class="btn btn-primary btn-xs"><?php echo __('$USERn$ overview'); ?></button>
             <?php endif; ?>
             <a class="btn btn-default" ui-sref="CommandsIndex">
                 <i class="fa fa-arrow-left"></i>
@@ -120,9 +125,9 @@
                         <label class="col col-md-2 control-label">
                             <?php echo __('Command line'); ?>
                         </label>
-                        <div class="col col-xs-10 required">
+                        <div class="col col-xs-10 required code-font">
                             <textarea class="form-control" type="text" ng-model="post.Command.command_line"
-                                      cols="30" rows="6">
+                                      cols="30" rows="6" id="commandLineTextArea">
                             </textarea>
                             <div ng-repeat="error in errors.command_line">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -136,7 +141,7 @@
                         <?php
                         $link = __('user defined macro');
                         if ($this->Acl->hasPermission('index', 'macros')):
-                            $link = sprintf('<a href="/macros">%s</a>', $link);
+                            $link = sprintf('<a ui-sref="MacrosIndex">%s</a>', $link);
                         endif;
                         ?>
 
@@ -216,7 +221,8 @@
             <div class="col-xs-12 margin-top-10">
                 <div class="well formactions ">
                     <div class="pull-right">
-                        <input class="btn btn-primary" type="submit" value="<?php echo __('Create command'); ?>">
+                        <button class="btn btn-primary" type="button"
+                                ng-click="checkForMisingArguments()"><?php echo __('Create command'); ?></button>
                         <a ui-sref="CommandsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
                     </div>
                 </div>
@@ -299,3 +305,96 @@
         </div>
     </div>
 <?php endif; ?>
+
+<div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="argumentMisMatchModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning txt-color-white">
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+                <h4 class="modal-title"
+                    id="myModalLabel"><?php echo __('Mismatch in number of defined arguments detected'); ?></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Different amount of used %s variables compared to defined arguments!', '<code>$ARGn$</code>'); ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Number of used %s variables:', '<code>$ARGn$</code>'); ?> <strong>{{usedCommandLineArgs}}</strong>
+                    </div>
+                    <div class="col-xs-12">
+                        <?php echo __('Number of defined arguments:'); ?> <strong>{{definedCommandArguments}}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" ng-click="submit()">
+                    <?php echo __('Save anyway'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Cancel'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="defaultMacrosOverview">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel"><?php echo __('List of all available default macros'); ?></h4>
+            </div>
+            <div class="modal-body padding-5">
+                <div class="row">
+                    <div class="col-xs-12">
+
+                        <?php foreach (DefaultMacros::getMacros() as $macroCategory): ?>
+                            <h3>
+                                <?php echo h($macroCategory['category']); ?>
+                            </h3>
+                            <table id="macrosTable" class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th class="no-sort">
+                                        <?php echo __('Macro'); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo __('Description'); ?>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($macroCategory['macros'] as $macro): ?>
+                                    <tr>
+                                        <td class="text-primary bold">
+                                            <?php echo h($macro['macro']); ?>
+                                        </td>
+                                        <td>
+                                            <?php echo h($macro['description']); ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php endforeach; ?>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

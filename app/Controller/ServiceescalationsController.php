@@ -63,11 +63,9 @@ class ServiceescalationsController extends AppController {
         $ServiceescalationsFilter = new ServiceescalationsFilter($this->request);
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceescalationsFilter->getPage());
 
-        $MY_RIGHTS = [];
-        if ($this->hasRootPrivileges === false) {
-            /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
         }
         $serviceescalations = $ServiceescalationsTable->getServiceescalationsIndex($ServiceescalationsFilter, $PaginateOMat, $MY_RIGHTS);
         foreach ($serviceescalations as $index => $serviceescalation) {
@@ -86,32 +84,18 @@ class ServiceescalationsController extends AppController {
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
+        }
 
+        /** @var $ServiceescalationsTable ServiceescalationsTable */
+        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+
+        if (!$ServiceescalationsTable->exists($id)) {
+            throw new NotFoundException(__('Service escalation not found'));
         }
-        if (!$this->Serviceescalation->exists($id)) {
-            throw new NotFoundException(__('Invalid service escalation'));
-        }
-        $serviceescalation = $this->Serviceescalation->find('first', [
-            'conditions' => [
-                'Serviceescalation.id' => $id,
-            ],
-            'contain'    => [
-                'ServiceescalationServiceMembership'      => [
-                    'Service',
-                ],
-                'Contact',
-                'Contactgroup'                      => [
-                    'Container',
-                ],
-                'ServiceescalationServicegroupMembership' => [
-                    'Servicegroup',
-                ],
-                'Timeperiod',
-            ],
-        ]);
-        if (!$this->allowedByContainerId($serviceescalation['Serviceescalation']['container_id'])) {
+
+        $serviceescalation = $ServiceescalationsTable->getServiceescalationById($id);
+        if (!$this->allowedByContainerId(Hash::extract($serviceescalation, 'Serviceescalation.container_id'))) {
             $this->render403();
-
             return;
         }
 
@@ -228,22 +212,33 @@ class ServiceescalationsController extends AppController {
     }
 
     public function delete($id = null) {
-        if (!$this->Serviceescalation->exists($id)) {
-            throw new NotFoundException(__('Invalid service escalation'));
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
-        $serviceescalation = $this->Serviceescalation->findById($id);
-        if (!$this->allowedByContainerId($serviceescalation['Serviceescalation']['container_id'])) {
-            $this->render403();
 
+        /** @var $ServiceescalationsTable ServiceescalationsTable */
+        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+
+        if (!$ServiceescalationsTable->exists($id)) {
+            throw new NotFoundException(__('Service escalation not found'));
+        }
+
+        $serviceescalation = $ServiceescalationsTable->getServiceescalationById($id);
+        if (!$this->allowedByContainerId(Hash::extract($serviceescalation, 'Serviceescalation.container_id'))) {
+            $this->render403();
+            return;
+        }
+        $serviceescalationEntity = $ServiceescalationsTable->get($id);
+        if ($ServiceescalationsTable->delete($serviceescalationEntity)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
             return;
         }
 
-        if ($this->Serviceescalation->delete($id)) {
-            $this->set('message', __('Service escalation deleted'));
-            $this->set('_serialize', ['message']);
-        }
-        $this->set('message', __('Could not delete service escalation'));
-        $this->set('_serialize', ['message']);
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
     public function loadElementsByContainerId($containerId = null) {

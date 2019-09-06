@@ -61,12 +61,11 @@ class HostescalationsController extends AppController {
         $HostescalationsFilter = new HostescalationsFilter($this->request);
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostescalationsFilter->getPage());
 
-        $MY_RIGHTS = [];
-        if ($this->hasRootPrivileges === false) {
-            /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
         }
+
         $hostescalations = $HostescalationsTable->getHostescalationsIndex($HostescalationsFilter, $PaginateOMat, $MY_RIGHTS);
         foreach ($hostescalations as $index => $hostescalation) {
             $hostescalations[$index]['allowEdit'] = $this->isWritableContainer($hostescalation['container_id']);
@@ -81,35 +80,24 @@ class HostescalationsController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
+    /**
+     * @param null $id
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
+        }
 
+        /** @var $HostescalationsTable HostescalationsTable */
+        $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
+
+        if (!$HostescalationsTable->exists($id)) {
+            throw new NotFoundException(__('Host escalation not found'));
         }
-        if (!$this->Hostescalation->exists($id)) {
-            throw new NotFoundException(__('Invalid hostescalation'));
-        }
-        $hostescalation = $this->Hostescalation->find('first', [
-            'conditions' => [
-                'Hostescalation.id' => $id,
-            ],
-            'contain'    => [
-                'HostescalationHostMembership'      => [
-                    'Host',
-                ],
-                'Contact',
-                'Contactgroup'                      => [
-                    'Container',
-                ],
-                'HostescalationHostgroupMembership' => [
-                    'Hostgroup',
-                ],
-                'Timeperiod',
-            ],
-        ]);
-        if (!$this->allowedByContainerId($hostescalation['Hostescalation']['container_id'])) {
+
+        $hostescalation = $HostescalationsTable->getHostescalationById($id);
+        if (!$this->allowedByContainerId(Hash::extract($hostescalation, 'Hostescalation.container_id'))) {
             $this->render403();
-
             return;
         }
 
@@ -226,22 +214,33 @@ class HostescalationsController extends AppController {
     }
 
     public function delete($id = null) {
-        if (!$this->Hostescalation->exists($id)) {
-            throw new NotFoundException(__('Invalid hostescalation'));
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
-        $hostescalation = $this->Hostescalation->findById($id);
-        if (!$this->allowedByContainerId($hostescalation['Hostescalation']['container_id'])) {
-            $this->render403();
 
+        /** @var $HostescalationsTable HostescalationsTable */
+        $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
+
+        if (!$HostescalationsTable->exists($id)) {
+            throw new NotFoundException(__('Host escalation not found'));
+        }
+
+        $hostescalation = $HostescalationsTable->getHostescalationById($id);
+        if (!$this->allowedByContainerId(Hash::extract($hostescalation, 'Hostescalation.container_id'))) {
+            $this->render403();
+            return;
+        }
+        $hostescalationEntity = $HostescalationsTable->get($id);
+        if ($HostescalationsTable->delete($hostescalationEntity)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
             return;
         }
 
-        if ($this->Hostescalation->delete($id)) {
-            $this->set('message', __('Hostescalation deleted'));
-            $this->set('_serialize', ['message']);
-        }
-        $this->set('message', __('Could not delete hostescalation'));
-        $this->set('_serialize', ['message']);
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
     public function loadElementsByContainerId($containerId = null) {

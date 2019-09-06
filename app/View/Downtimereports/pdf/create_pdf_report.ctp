@@ -54,10 +54,10 @@ $Logo = new Logo();
                 <i class="fa fa-calendar txt-color-blueDark"></i>
                 <?php
                 echo __('Analysis period: ');
-                echo h($this->Time->format($downtimeReport['fromDate'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>
+                echo h($this->Time->format($fromDate, $this->Auth->user('dateformat'), false)); ?>
                 <i class="fa fa-long-arrow-right"></i>
                 <?php
-                echo h($this->Time->format($downtimeReport['toDate'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')));
+                echo h($this->Time->format($toDate, $this->Auth->user('dateformat'), false));
                 ?>
             </div>
             <div class="col-md-3 text-left">
@@ -65,6 +65,9 @@ $Logo = new Logo();
             </div>
         </div>
         <?php
+        if(!empty($error['no_downtimes']['empty'])):
+            echo $error['no_downtimes']['empty'];
+        endif;
         if (!empty($downtimeReport['hostsWithOutages'])):?>
             <section>
                 <div class="row">

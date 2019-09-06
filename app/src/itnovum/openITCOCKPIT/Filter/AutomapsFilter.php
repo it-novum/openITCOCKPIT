@@ -25,21 +25,20 @@
 namespace itnovum\openITCOCKPIT\Filter;
 
 
-class InstantreportFilter extends Filter {
+class AutomapsFilter extends Filter {
 
     /**
      * @return array
      */
     public function indexFilter() {
         $filters = [
-            'like'   => [
-                'Instantreports.name'
-            ],
-            'equals' => [
-                'Instantreports.evaluation',
-                'Instantreports.type'
+            'like' => [
+                'Automaps.name',
+                'Automaps.description'
             ]
         ];
+
         return $this->getConditionsByFilters($filters);
     }
+
 }

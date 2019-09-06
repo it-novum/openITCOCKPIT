@@ -126,7 +126,7 @@ class Hosttemplate extends Entity {
         'contacts'                          => true,
         'contactgroups'                     => true,
         'hostgroups'                        => true,
-        'check_command'                     => true
+        //'check_command'                     => true
     ];
 
     /**

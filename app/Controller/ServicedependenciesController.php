@@ -26,7 +26,6 @@
 use App\Model\Table\ContainersTable;
 use App\Model\Table\ServicedependenciesTable;
 use App\Model\Table\ServicegroupsTable;
-use App\Model\Table\ServicesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
@@ -62,12 +61,11 @@ class ServicedependenciesController extends AppController {
         $ServicedependenciesFilter = new ServicedependenciesFilter($this->request);
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicedependenciesFilter->getPage());
 
-        $MY_RIGHTS = [];
-        if ($this->hasRootPrivileges === false) {
-            /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
         }
+
         $servicedependencies = $ServicedependenciesTable->getServicedependenciesIndex($ServicedependenciesFilter, $PaginateOMat, $MY_RIGHTS);
         foreach ($servicedependencies as $index => $servicedependency) {
             $servicedependencies[$index]['allowEdit'] = $this->isWritableContainer($servicedependency['container_id']);
@@ -82,31 +80,24 @@ class ServicedependenciesController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
+    /**
+     * @param null $id
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
+        }
 
+        /** @var $ServicedependenciesTable ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+
+        if (!$ServicedependenciesTable->exists($id)) {
+            throw new NotFoundException(__('Service dependency not found'));
         }
-        if (!$this->Servicedependency->exists($id)) {
-            throw new NotFoundException(__('Invalid service dependency'));
-        }
-        $servicedependency = $this->Servicedependency->find('first', [
-            'conditions' => [
-                'Servicedependency.id' => $id,
-            ],
-            'contain'    => [
-                'ServicedependencyServiceMembership'      => [
-                    'Service',
-                ],
-                'ServicedependencyServicegroupMembership' => [
-                    'Servicegroup',
-                ],
-                'Timeperiod',
-            ],
-        ]);
-        if (!$this->allowedByContainerId($servicedependency['Servicedependency']['container_id'])) {
+
+        $servicedependency = $ServicedependenciesTable->getServicedependencyById($id);
+        if (!$this->allowedByContainerId(Hash::extract($servicedependency, 'Servicedependency.container_id'))) {
             $this->render403();
-
             return;
         }
 
@@ -167,11 +158,11 @@ class ServicedependenciesController extends AppController {
         }
         $servicedependency = $ServicedependenciesTable->get($id, [
             'contain' => [
-                'services'         => function (Query $q) {
+                'services'      => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id', 'name']);
                 },
-                'servicegroups'    => function (Query $q) {
+                'servicegroups' => function (Query $q) {
                     return $q->enableAutoFields(false)
                         ->select(['id']);
                 },
@@ -212,24 +203,37 @@ class ServicedependenciesController extends AppController {
         $this->set('_serialize', ['servicedependency']);
     }
 
-
+    /**
+     * @param null $id
+     */
     public function delete($id = null) {
-        if (!$this->Servicedependency->exists($id)) {
-            throw new NotFoundException(__('Invalid service dependency'));
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
-        $servicedependency = $this->Servicedependency->findById($id);
-        if (!$this->allowedByContainerId($servicedependency['Servicedependency']['container_id'])) {
-            $this->render403();
 
+        /** @var $ServicedependenciesTable ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+
+        if (!$ServicedependenciesTable->exists($id)) {
+            throw new NotFoundException(__('Service dependency not found'));
+        }
+
+        $servicedependency = $ServicedependenciesTable->getServicedependencyById($id);
+        if (!$this->allowedByContainerId(Hash::extract($servicedependency, 'Servicedependency.container_id'))) {
+            $this->render403();
+            return;
+        }
+        $servicedependencyEntity = $ServicedependenciesTable->get($id);
+        if ($ServicedependenciesTable->delete($servicedependencyEntity)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
             return;
         }
 
-        if ($this->Servicedependency->delete($id)) {
-            $this->set('message', __('Service dependency deleted'));
-            $this->set('_serialize', ['message']);
-        }
-        $this->set('message', __('Could not delete service dependency'));
-        $this->set('_serialize', ['message']);
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
     public function loadElementsByContainerId($containerId = null) {

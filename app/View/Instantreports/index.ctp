@@ -48,7 +48,7 @@
                             <?php echo __('Refresh'); ?>
                         </button>
                         <?php
-                        if ($this->Acl->hasPermission('add')): ?>
+                        if ($this->Acl->hasPermission('add', 'instantreports')): ?>
                             <a ui-sref="InstantreportsAdd" class="btn btn-xs btn-success" icon="fa fa-plus">
                                 <i class="fa fa-plus"></i> <?php echo __('New'); ?>
                             </a>
@@ -162,7 +162,7 @@
                         </div>
                         <div class="mobile_table">
                             <table id="intantreport_list"
-                                   class="table table-striped table-hover table-bordered smart-form"
+                                   class="table table-striped table-hover table-bordered"
                                    style="">
                                 <thead>
                                 <tr>
@@ -197,7 +197,7 @@
                                     <th class="no-sort">
                                         <?php echo __('Send to'); ?>
                                     </th>
-                                    <th class="no-sort text-center">
+                                    <th class="no-sort text-center width-70">
                                         <i class="fa fa-cog fa-lg"></i>
                                     </th>
                                 </tr>
@@ -205,7 +205,7 @@
                                 <tbody>
                                 <tr ng-repeat="instantreport in instantreports">
                                     <td class="text-center" class="width-15">
-                                        <?php if ($this->Acl->hasPermission('delete')): ?>
+                                        <?php if ($this->Acl->hasPermission('delete', 'instantreports')): ?>
                                             <input type="checkbox"
                                                    ng-model="massChange[instantreport.Instantreport.id]">
                                         <?php endif; ?>
@@ -214,44 +214,81 @@
                                         {{ instantreport.Instantreport.name }}
                                     </td>
                                     <td>
-                                        <i class="fa fa-{{ instantreport.Instantreport.evaluation.icon }}"></i>
-                                        {{ instantreport.Instantreport.evaluation.label }}
+                                        <span ng-show="instantreport.Instantreport.evaluation === 1">
+                                            <i class="fa fa-desktop"></i>
+                                            <?php echo __('Hosts'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.evaluation === 2">
+                                            <i class="fa fa-cogs"></i>
+                                            <?php echo __('Hosts and services'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.evaluation === 3">
+                                            <i class="fa fa-cog"></i>
+                                            <?php echo __('Services'); ?>
+                                        </span>
                                     </td>
                                     <td>
-                                        {{ instantreport.Instantreport.type }}
+                                        <span ng-show="instantreport.Instantreport.type === 1">
+                                            <i class="fa fa-desktop"></i>
+                                            <?php echo __('Host groups'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.type === 2">
+                                            <i class="fa fa-cogs"></i>
+                                            <?php echo __('Hosts'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.type === 3">
+                                            <i class="fa fa-cog"></i>
+                                            <?php echo __('Service groups'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.type === 4">
+                                            <i class="fa fa-cog"></i>
+                                            <?php echo __('Services'); ?>
+                                        </span>
                                     </td>
                                     <td>
-                                        {{ instantreport.Timeperiod.name }}
+                                        {{ instantreport.Instantreport.timeperiod.name }}
                                     </td>
                                     <td class="text-center">
-                                        <i class="fa
-                                        {{instantreport.Instantreport.summary === '1'
-                                            ? ' fa-check fa-lg text-success'
-                                            : ' fa-times fa-lg text-danger'
-                                        }}
-                                        "></i>
+                                        <label class="label label-success"
+                                               ng-show="instantreport.Instantreport.summary === 1">
+                                            <?php echo __('Yes'); ?>
+                                        </label>
+                                        <label class="label label-danger"
+                                               ng-show="instantreport.Instantreport.summary === 0">
+                                            <?php echo __('No'); ?>
+                                        </label>
                                     </td>
                                     <td class="text-center">
-                                        <i class="fa
-                                        {{instantreport.Instantreport.downtimes === '1'
-                                            ? ' fa-check fa-lg text-success'
-                                            : ' fa-times fa-lg text-danger'
-                                        }}
-                                        "></i>
+                                        <span class="label label-success"
+                                              ng-show="instantreport.Instantreport.downtimes === 1">
+                                              <?php echo __('Yes'); ?>
+                                        </span>
+                                        <span class="label label-danger"
+                                              ng-show="instantreport.Instantreport.downtimes === 0">
+                                              <?php echo __('No'); ?>
+                                        </span>
                                     </td>
-                                    <td>
-                                        {{ instantreport.Instantreport.send_interval }}
+                                    <td class="text-center">
+                                         <span ng-show="instantreport.Instantreport.send_interval === 0">
+                                            <?php echo __('NEVER'); ?>
+                                         </span>
+                                        <span ng-show="instantreport.Instantreport.send_interval === 1">
+                                            <?php echo __('DAY'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.send_interval === 2">
+                                            <?php echo __('WEEK'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.send_interval === 3">
+                                            <?php echo __('MONTH'); ?>
+                                        </span>
+                                        <span ng-show="instantreport.Instantreport.send_interval === 4">
+                                            <?php echo __('YEAR'); ?>
+                                        </span>
                                     </td>
-
                                     <td>
                                         <ul class="list-unstyled">
                                             <ul class="list-unstyled">
                                                 <li ng-repeat="user in instantreport.User">
-                                                    <a href="users/edit/{{user.InstantreportsToUser.user_id}}"
-                                                       ng-if="user.allowEdit">
-                                                        {{ user.firstname }} {{ user.lastname }}
-                                                    </a>
-
                                                     <span ng-if="!user.allowEdit">
                                                         {{ user.firstname }} {{ user.lastname }}
                                                     </span>
@@ -259,9 +296,9 @@
                                             </ul>
                                         </ul>
                                     </td>
-                                    <td class="width-50">
-                                        <div class="btn-group">
-                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                    <td>
+                                        <div class="btn-group smart-form">
+                                            <?php if ($this->Acl->hasPermission('edit', 'instantreports')): ?>
                                                 <a ui-sref="InstantreportsEdit({id:instantreport.Instantreport.id})"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -275,21 +312,21 @@
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right"
                                                 id="menuHack-{{instantreport.Instantreport.id}}">
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'instantreports')): ?>
                                                     <li>
                                                         <a ui-sref="InstantreportsEdit({id:instantreport.Instantreport.id})">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('generate')): ?>
+                                                <?php if ($this->Acl->hasPermission('generate', 'instantreports')): ?>
                                                     <li>
                                                         <a href="/instantreports/generate/{{ instantreport.Instantreport.id}}">
                                                             <i class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('delete')): ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'instantreports')): ?>
                                                     <li class="divider"></li>
                                                     <li>
                                                         <a href="javascript:void(0);" class="txt-color-red"

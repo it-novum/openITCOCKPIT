@@ -47,7 +47,8 @@
         </div>
     </header>
     <div class="widget-body">
-        <form ng-submit="submit();" class="form-horizontal">
+        <form ng-submit="submit();" class="form-horizontal" ng-init="successMessage=
+            {objectName : '<?php echo __('Instant report'); ?>' , message: '<?php echo __('updated successfully'); ?>'}">
             <div class="row">
                 <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                     <label class="col col-md-2 control-label">
@@ -81,20 +82,17 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="form-group required">
                     <label class="col col-md-2 control-label" for="InstantreportType">
                         <?php echo __('Type'); ?>
                     </label>
                     <div class="col col-xs-10">
                         <select ng-model="post.Instantreport.type"
-                                chosen="types"
-                                id="InstantreportType" required="required" class="form-control chosen"
-                                ng-change="changeType()">
-                            <option value="1"><?php echo __('Host groups'); ?></option>
-                            <option value="2"><?php echo __('Hosts'); ?></option>
-                            <option value="3"><?php echo __('Service groups'); ?></option>
-                            <option value="4"><?php echo __('Services'); ?></option>
+                                class="form-control chosen">
+                            <option ng-value="1"><?php echo __('Host groups'); ?></option>
+                            <option ng-value="2"><?php echo __('Hosts'); ?></option>
+                            <option ng-value="3"><?php echo __('Service groups'); ?></option>
+                            <option ng-value="4"><?php echo __('Services'); ?></option>
                         </select>
                     </div>
                     <div class="col col-md-offset-2 col-md-10">
@@ -104,7 +102,7 @@
                     </div>
                 </div>
                 <div ng-switch="post.Instantreport.type">
-                    <div class="form-group required" ng-class="{'has-error': errors.Hostgroup}"
+                    <div class="form-group required" ng-class="{'has-error': errors.hostgroups}"
                          ng-switch-when="1">
                         <label class="col col-md-2 control-label">
                             <i class="fa fa-sitemap"></i>
@@ -117,14 +115,14 @@
                                     class="form-control"
                                     chosen="hostgroups"
                                     ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
-                                    ng-model="post.Instantreport.Hostgroup">
+                                    ng-model="post.Instantreport.hostgroups._ids">
                             </select>
-                            <div ng-repeat="error in errors.Hostgroup">
+                            <div ng-repeat="error in errors.hostgroups">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group required" ng-class="{'has-error': errors.Host}" ng-switch-when="2">
+                    <div class="form-group required" ng-class="{'has-error': errors.hosts}" ng-switch-when="2">
                         <label class="col col-md-2 control-label">
                             <i class="fa fa-desktop"></i>
                             <?php echo __('Hosts'); ?>
@@ -137,14 +135,14 @@
                                     chosen="hosts"
                                     callback="loadHosts"
                                     ng-options="host.key as host.value for host in hosts"
-                                    ng-model="post.Instantreport.Host">
+                                    ng-model="post.Instantreport.hosts._ids">
                             </select>
-                            <div ng-repeat="error in errors.Host">
+                            <div ng-repeat="error in errors.hosts">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group required" ng-class="{'has-error': errors.Servicegroup}"
+                    <div class="form-group required" ng-class="{'has-error': errors.servicegroups}"
                          ng-switch-when="3">
                         <label class="col col-md-2 control-label">
                             <i class="fa fa-cogs"></i>
@@ -157,15 +155,15 @@
                                     class="form-control"
                                     chosen="servicegroups"
                                     ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
-                                    ng-model="post.Instantreport.Servicegroup">
+                                    ng-model="post.Instantreport.servicegroups._ids">
                             </select>
-                            <div ng-repeat="error in errors.Servicegroup">
+                            <div ng-repeat="error in errors.servicegroups">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.Service}" ng-switch-when="4">
+                    <div class="form-group required" ng-class="{'has-error': errors.services}" ng-switch-when="4">
                         <label class="col col-md-2 control-label">
                             <i class="fa fa-cog"></i>
                             <?php echo __('Services'); ?>
@@ -177,12 +175,10 @@
                                     class="form-control"
                                     chosen="services"
                                     callback="loadServices"
-                                    ng-options="service.value.Service.id as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
-                                    ng-model="post.Instantreport.Service">
+                                    ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
+                                    ng-model="post.Instantreport.services._ids">
                             </select>
-
-
-                            <div ng-repeat="error in errors.Service">
+                            <div ng-repeat="error in errors.services">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
@@ -193,36 +189,41 @@
                     <label class="col col-md-2 control-label">
                         <?php echo __('Evaluation'); ?>
                     </label>
-                    <div class="col col-xs-10">
-                        <label class="padding-right-10" for="InstantreportEvaluation1">
+                    <div class="col col-md-10">
+                        <div class="radio radio-primary radio-inline">
                             <input type="radio"
-                                   ng-model="post.Instantreport.evaluation"
                                    id="InstantreportEvaluation1"
-                                   value="1">
-                            <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
-                        </label>
-                        <label class="padding-right-10" for="InstantreportEvaluation2">
-                            <input type="radio"
                                    ng-model="post.Instantreport.evaluation"
+                                   ng-value="1">
+                            <label for="InstantreportEvaluation1">
+                                <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
+                            </label>
+                        </div>
+                        <div class="radio radio-primary radio-inline">
+                            <input type="radio"
                                    id="InstantreportEvaluation2"
-                                   value="2">
-                            <i class="fa fa-cogs"></i> <?php echo __('Host and Services'); ?>
-                        </label>
-                        <label class="padding-right-10" for="InstantreportEvaluation3">
-                            <input type="radio"
                                    ng-model="post.Instantreport.evaluation"
+                                   ng-value="2">
+                            <label for="InstantreportEvaluation2">
+                                <i class="fa fa-cogs"></i> <?php echo __('Host and Services'); ?>
+                            </label>
+                        </div>
+                        <div class="radio radio-primary radio-inline">
+                            <input type="radio"
                                    id="InstantreportEvaluation3"
-                                   value="3">
-                            <i class="fa fa-cog"></i> <?php echo __('Services'); ?>
-                        </label>
+                                   ng-model="post.Instantreport.evaluation"
+                                   ng-value="3">
+                            <label for="InstantreportEvaluation3">
+                                <i class="fa fa-cog"></i> <?php echo __('Services'); ?>
+                            </label>
+                        </div>
                     </div>
                     <div class="col col-md-offset-2 col-md-10">
                         <div class="help-block">
-                            <?php echo __('Choose if only host, host and services or only services should be evaluated.'); ?>
+                            <?php echo __('Choose if <b><u>only</u></b> host, host and services or <b><u>only</u></b> services should be evaluated.'); ?>
                         </div>
                     </div>
                 </div>
-
                 <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
                     <label class="col col-md-2 control-label">
                         <?php echo __('Timeperiod'); ?>
@@ -250,43 +251,59 @@
                                 id="InstantreportReflection"
                                 chosen="states"
                                 ng-model="post.Instantreport.reflection">
-                            <option value="1"><?php echo __('soft and hard state'); ?></option>
-                            <option value="2"><?php echo __('only hard state'); ?></option>
+                            <option ng-value="1">
+                                <?php echo __('soft and hard state'); ?>
+                            </option>
+                            <option ng-value="2">
+                                <?php echo __('only hard state'); ?>
+                            </option>
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <?php
-                    echo $this->Form->fancyCheckbox('Instantreport.downtimes', [
-                        'caption'          => __('Consider downtimes'),
-                        'wrapGridClass'    => 'col col-md-1',
-                        'captionGridClass' => 'col col-md-2',
-                        'captionClass'     => 'control-label',
-                        'ng-model'         => 'post.Instantreport.downtimes'
-                    ]);
-                    ?>
+                    <label for="InstantreportDowntimes" class="col col-md-2 control-label">
+                        <?php echo __('Consider downtimes'); ?>
+                    </label>
+                    <div class="col-xs-12 col-lg-10 smart-form">
+                        <label class="checkbox small-checkbox-label no-required no-padding-top">
+                            <input type="checkbox"
+                                   id="InstantreportDowntimes"
+                                   ng-false-value="0"
+                                   ng-true-value="1"
+                                   ng-model="post.Instantreport.downtimes">
+                            <i class="checkbox-primary"></i>
+                        </label>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <?php
-                    echo $this->Form->fancyCheckbox('Instantreport.summary', [
-                        'caption'          => __('Summary display'),
-                        'wrapGridClass'    => 'col col-md-1',
-                        'captionGridClass' => 'col col-md-2',
-                        'captionClass'     => 'control-label',
-                        'ng-model'         => 'post.Instantreport.summary'
-                    ]);
-                    ?>
+                    <label for="InstantreportSummary" class="col col-md-2 control-label">
+                        <?php echo __('Summary display'); ?>
+                    </label>
+                    <div class="col-xs-12 col-lg-10 smart-form">
+                        <label class="checkbox small-checkbox-label no-required no-padding-top">
+                            <input type="checkbox"
+                                   id="InstantreportSummary"
+                                   ng-false-value="0"
+                                   ng-true-value="1"
+                                   ng-model="post.Instantreport.summary">
+                            <i class="checkbox-primary"></i>
+                        </label>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <?php
-                    echo $this->Form->fancyCheckbox('Instantreport.send_email', [
-                        'caption'          => __('Send email'),
-                        'wrapGridClass'    => 'col col-md-1',
-                        'captionGridClass' => 'col col-md-2',
-                        'captionClass'     => 'control-label',
-                        'ng-model'         => 'post.Instantreport.send_email'
-                    ]);
-                    ?>
+                    <label for="InstantreportSendEmail" class="col col-md-2 control-label">
+                        <?php echo __('Send email'); ?>
+                    </label>
+                    <div class="col-xs-12 col-lg-10 smart-form">
+                        <label class="checkbox small-checkbox-label no-required no-padding-top">
+                            <input type="checkbox"
+                                   id="InstantreportSendEmail"
+                                   ng-false-value="0"
+                                   ng-true-value="1"
+                                   ng-model="post.Instantreport.send_email">
+                            <i class="checkbox-primary"></i>
+                        </label>
+                    </div>
                 </div>
                 <div class="send-interval-holder" ng-if="post.Instantreport.send_email">
                     <div class="form-group">
@@ -300,14 +317,25 @@
                                     id="InstantreportSendInterval"
                                     chosen="send_interval"
                                     ng-model="post.Instantreport.send_interval">
-                                <option value="1"><?php echo __('DAY'); ?></option>
-                                <option value="2"><?php echo __('WEEK'); ?></option>
-                                <option value="3"><?php echo __('MONTH'); ?></option>
-                                <option value="4"><?php echo __('YEAR'); ?></option>
+                                <option ng-value="0" ng-if="!post.Instantreport.send_interval">
+                                    <?php echo __('NEVER'); ?>
+                                </option>
+                                <option ng-value="1">
+                                    <?php echo __('DAY'); ?>
+                                </option>
+                                <option ng-value="2">
+                                    <?php echo __('WEEK'); ?>
+                                </option>
+                                <option ng-value="3">
+                                    <?php echo __('MONTH'); ?>
+                                </option>
+                                <option ng-value="4">
+                                    <?php echo __('YEAR'); ?>
+                                </option>
                             </select>
                         </div>
                     </div>
-                    <div class="form-group required" ng-class="{'has-error': errors.User}">
+                    <div class="form-group required" ng-class="{'has-error': errors.send_email}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Users to send'); ?>
                         </label>
@@ -318,9 +346,9 @@
                                     class="form-control"
                                     chosen="users"
                                     ng-options="user.key as user.value for user in users"
-                                    ng-model="post.Instantreport.User">
+                                    ng-model="post.Instantreport.users._ids">
                             </select>
-                            <div ng-repeat="error in errors.User">
+                            <div ng-repeat="error in errors.send_email">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
