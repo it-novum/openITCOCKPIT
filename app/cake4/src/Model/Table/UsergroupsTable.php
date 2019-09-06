@@ -291,7 +291,6 @@ class UsergroupsTable extends Table {
     }
 
 
-
     /**
      * Return a array of aco ids that needs to enabled for specific usergroup!
      * @param $acosAsNest
@@ -384,8 +383,43 @@ class UsergroupsTable extends Table {
                 $result[$acoId] = $acoId;
             }
         }
-
         return $result;
     }
 
+
+
+    public function getUsergroupAcosForAddEdit($acos){
+        $alwaysAllowedAcos = $this->getAlwaysAllowedAcos($acos);
+        $acoDependencies = $this->getAcoDependencies($acos);
+        $dependentAcoIds = $this->getAcoDependencyIds($acoDependencies);
+
+     //   debug($acos);
+
+        function walkTree($acos, $alwaysAllowedAcos, $acoDependencies, $dependentAcoIds){
+            foreach($acos as $key => $aco){
+                //debug($aco);
+                if(isset($alwaysAllowedAcos[$aco['Aco']['id']]) || isset($dependentAcoIds[$aco['Aco']['id']])){
+                    debug($alwaysAllowedAcos[$aco['Aco']['id']]);
+                    debug($dependentAcoIds[$aco['Aco']['id']]);
+                    debug($aco);
+                    debug($key);
+                    //remove all always allowed acos and dependent aco ids from the array
+                    unset($acos[$key]);
+                }
+
+                if(!empty($aco['children'])){
+                    walkTree($aco['children'], $alwaysAllowedAcos, $acoDependencies, $dependentAcoIds);
+                }else{
+                    return;
+                }
+            }
+        }
+
+
+        walkTree($acos, $alwaysAllowedAcos, $acoDependencies, $dependentAcoIds);
+        //debug($acos);
+
+
+
+    }
 }

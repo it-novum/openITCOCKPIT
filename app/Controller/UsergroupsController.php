@@ -90,17 +90,23 @@ class UsergroupsController extends AppController {
         $aros = Hash::extract($permissions, '{n}.Permission.aco_id');
         unset($permissions);
 
-        $acos = $this->Acl->Aco->find('threaded', [
+        /*$acos = $this->Acl->Aco->find('threaded', [
             'recursive' => -1,
         ]);
-
+*/
         $usergroup = $UsergroupsTable->getUsergroupById($id);
 
-
+/*
         $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
         $acoDependencies = $UsergroupsTable->getAcoDependencies($acos);
         $dependentAcoIds = $UsergroupsTable->getAcoDependencyIds($acoDependencies);
+*/
+        $allAcos = $this->Acl->Aco->find('threaded', [
+            'recursive' => -1,
+        ]);
+        $UsergroupsTable->getUsergroupAcosForAddEdit($allAcos);
 
+        die();
         if ($this->request->is('post') || $this->request->is('put')) {
             $aro = $this->Acl->Aro->find('first', [
                 'recursive'  => -1,
