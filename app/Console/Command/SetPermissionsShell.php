@@ -66,8 +66,8 @@ class SetPermissionsShell extends AppShell {
             $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
 
             $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
-            $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
-            $dependenAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
+            $acoDependencies = $UsergroupsTable->getAcoDependencies($acos);
+            $dependenAcoIds = $UsergroupsTable->getAcoDependencyIds($acoDependencies);
 
 
             foreach ($acos as $rootElement => $rootArray) {

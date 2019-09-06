@@ -25,7 +25,7 @@ class RolesShell extends AppShell {
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
 
         $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
-        $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
+        $acoDependencies = $UsergroupsTable->getAcoDependencies($acos);
 
         $inserted = 0;
 
@@ -105,7 +105,7 @@ class RolesShell extends AppShell {
                 }
 
                 // checking user rights
-                $acoUsergroups = $this->Usergroup->getUsergroupAcos($acos, $userGroup['Usergroup']['name']);
+                $acoUsergroups = $UsergroupsTable->getUsergroupAcos($acos, $userGroup['Usergroup']['name']);
                 foreach ($acoUsergroups as $acoId => $acoUsergroup) {
                     if (!in_array($acoId, $myPermissions[$myAroId])) {
                         if ($usergroupCount == 0)
