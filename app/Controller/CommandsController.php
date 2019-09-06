@@ -35,6 +35,7 @@ use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
+use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
 
 /**
  * Class CommandsController
@@ -93,6 +94,13 @@ class CommandsController extends AppController {
     public function add() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
+            return;
+        }
+
+        if($this->request->is('get')){
+            $DefaultMacros = DefaultMacros::getMacros();
+            $this->set('defaultMacros', $DefaultMacros);
+            $this->set('_serialize', ['defaultMacros']);
             return;
         }
 
@@ -191,8 +199,11 @@ class CommandsController extends AppController {
             }
         }
 
+        $DefaultMacros = DefaultMacros::getMacros();
+
         $this->set('command', $command);
-        $this->set('_serialize', ['command']);
+        $this->set('defaultMacros', $DefaultMacros);
+        $this->set('_serialize', ['command', 'defaultMacros']);
     }
 
     /**

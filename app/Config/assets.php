@@ -44,7 +44,8 @@ $config = [
             'flippy.css',
             'vendor/image-picker.css',
             '/vendor/angular-gridster/dist/angular-gridster.css',
-            'vendor/radio_buttons.css'
+            'vendor/radio_buttons.css',
+            '/css/vendor/highlight-within-textarea/jquery.highlight-within-textarea.css'
         ],
 
         'js'                        => [

@@ -26,6 +26,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.command = result.data.command;
+                $scope.defaultMacros = result.data.defaultMacros;
 
 
                 for(key in $scope.command.commandarguments){
@@ -40,6 +41,9 @@ angular.module('openITCOCKPIT')
                 $scope.post.Command.command_line = $scope.command.command_line;
                 $scope.post.Command.description = $scope.command.description;
                 $scope.init = false;
+
+                setTimeout($scope.highlightCommandLine, 250);
+
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
@@ -167,6 +171,55 @@ angular.module('openITCOCKPIT')
             newLineInPromt();
         };
 
+        $scope.showDefaultMacros = function(){
+            $('#defaultMacrosOverview').modal('show');
+        };
+
+        $scope.highlightCommandLine = function(){
+            var highlight = [
+                {
+                    highlight: /(\$ARG\d+\$)/g,
+                    className: 'highlight-blue'
+                },
+                {
+                    highlight: /(\$USER\d+\$)/g,
+                    className: 'highlight-green'
+                },
+                {
+                    highlight: /(\$_HOST.*\$)/g,
+                    className: 'highlight-purple'
+                },
+                {
+                    highlight: /(\$_SERVICE.*\$)/g,
+                    className: 'highlight-purple'
+                },
+                {
+                    highlight: /(\$_CONTACT.*\$)/g,
+                    className: 'highlight-purple'
+                }
+            ];
+
+            var escapeDollar = new RegExp('\\$', 'g');
+
+            for(var index in $scope.defaultMacros){
+                for(var i in $scope.defaultMacros[index].macros){
+                    var macroName = $scope.defaultMacros[index].macros[i].macro;
+                    macroName = macroName.replace(escapeDollar, '\\$');
+                    highlight.push({
+                        highlight: new RegExp(macroName, "g"),
+                        className: $scope.defaultMacros[index].class
+                    });
+                }
+            }
+
+            $('#commandLineTextArea').highlightWithinTextarea({
+                highlight: [
+                    highlight
+                ]
+            });
+        };
+
+        //Fire on page load
         $scope.load();
         setTimeout($scope.createJQConsole, 250);
     })

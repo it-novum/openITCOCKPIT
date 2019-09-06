@@ -2772,3 +2772,15 @@ fc-left .dropdown {
     max-height: 20%;
     max-width: 14%;
 }
+
+.highlight-blue {
+    background-color: rgba(0,192,239, 0.2);
+}
+
+.highlight-green {
+    background-color: rgba(68,157,68, 0.2);
+}
+
+.highlight-purple {
+    background-color: rgba(155,102,160, 0.2);
+}

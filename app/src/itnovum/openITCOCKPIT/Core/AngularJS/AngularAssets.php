@@ -85,6 +85,7 @@ class AngularAssets implements AngularAssetsInterface {
         'smartadmin/js/plugin/fullcalendar-4.2.0/packages/list/main.js',               //  <-- NEW FC 4.2.0
         'js/vendor/Chart.min.js',
     //    'js/vendor/chartjs-plugin-piechart-outlabels.min.js'
+        'js/lib/highlight-within-textarea/jquery.highlight-within-textarea.js'
     ];
 
     /**
