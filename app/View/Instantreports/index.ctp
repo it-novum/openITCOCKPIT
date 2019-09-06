@@ -321,7 +321,7 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('generate', 'instantreports')): ?>
                                                     <li>
-                                                        <a href="/instantreports/generate/{{ instantreport.Instantreport.id}}">
+                                                        <a ui-sref="InstantreportsGenerate({id:instantreport.Instantreport.id})">
                                                             <i class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>
                                                         </a>
                                                     </li>

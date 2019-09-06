@@ -9,6 +9,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
 
@@ -292,6 +293,21 @@ class InstantreportsTable extends Table {
 
     /**
      * @param int $id
+     * @param bool $enableHydration
+     * @return array
+     */
+    public function getInstantreportByIdCake4($id, $enableHydration = true) {
+        $query = $this->find()
+            ->where([
+                'Instantreports.id' => $id
+            ])
+            ->enableHydration($enableHydration)
+            ->first();
+        return $query->toArray();
+    }
+
+    /**
+     * @param int $id
      * @return array
      */
     public function getInstantreportForEdit($id) {
@@ -342,5 +358,20 @@ class InstantreportsTable extends Table {
         return [
             'Instantreport' => $instantreport
         ];
+    }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getAllInstanreportsAsCake2($MY_RIGHTS) {
+        $query = $this->find()
+            ->where([
+                'Instantreports.container_id IN' => $MY_RIGHTS
+            ])
+            ->order(['Instantreports.name' => 'asc'])
+            ->disableHydration()
+            ->all();
+        return $this->formatResultAsCake2($query->toArray(), false);
     }
 }

@@ -1,57 +1,47 @@
 angular.module('openITCOCKPIT')
-    .controller('DowntimereportsIndexController', function($rootScope, $scope, $http, $timeout, NotyService, QueryStringService, $httpParamSerializer){
+    .controller('InstantreportsGenerateController', function($rootScope, $scope, $stateParams, $http, $timeout, NotyService, QueryStringService, $httpParamSerializer){
         $scope.init = true;
         $scope.errors = null;
-        $scope.hasEntries = null;
-        $scope.setColorDynamically = false;
         var now = new Date();
 
         $scope.tabName = 'reportConfig';
 
         $scope.post = {
-            evaluation_type: 0,
+            instantreport_id: null,
             report_format: 2,
-            reflection_state: 1,
-            timeperiod_id: null,
             from_date: date('d.m.Y', now.getTime() / 1000 - (3600 * 24 * 30)),
             to_date: date('d.m.Y', now.getTime() / 1000)
         };
+        $scope.post.instantreport_id = parseInt($stateParams.id, 10);
 
-        $scope.timeperiods = {};
-        $scope.reportData = {
-            hostsWithOutages: null,
-            hostsWithoutOutages: null,
-            downtimes: null
-        };
+        $scope.reportData = {};
+        $scope.instantreports = [];
 
-        $scope.loadTimeperiods = function(searchString){
-            $http.get("/timeperiods/index.json", {
+        $scope.loadInstantreports = function(searchString){
+            $http.get("/instantreports/index.json", {
                 params: {
                     'angular': true,
-                    'filter[Timeperiod.name]': searchString
+                    'filter[Instantreport.name]': searchString
                 }
             }).then(function(result){
-                $scope.timeperiods = result.data.all_timeperiods;
+                $scope.instantreports = result.data.instantreports;
             });
         };
 
-        $scope.createDowntimeReport = function(){
+        $scope.createInstantReport = function(){
             if($scope.post.report_format === 1){
                 //PDF Report
                 var GETParams = {
                     'angular': true,
                     'data[from_date]': $scope.post.from_date,
-                    'data[to_date]': $scope.post.to_date,
-                    'data[evaluation_type]': $scope.post.evaluation_type,
-                    'data[reflection_state]': $scope.post.reflection_state,
-                    'data[timeperiod_id]': $scope.post.timeperiod_id
+                    'data[to_date]': $scope.post.to_date
                 };
 
-                $http.get("/downtimereports/createPdfReport.json", {
+                $http.get("/instantreports/createPdfReport.json", {
                         params: GETParams
                     }
                 ).then(function(result){
-                    window.location = '/downtimereports/createPdfReport.pdf?' + $httpParamSerializer(GETParams);
+                    window.location = '/instantreports/createPdfReport.pdf?' + $httpParamSerializer(GETParams);
                 }, function errorCallback(result){
                     if(result.data.hasOwnProperty('error')){
                         $scope.errors = result.data.error;
@@ -60,16 +50,13 @@ angular.module('openITCOCKPIT')
 
             }else{
                 //HTML Report
-                $http.post("/downtimereports/index.json", $scope.post
+                $http.post("/instantreports/generate/" + $scope.post.instantreport_id + ".json", $scope.post
                 ).then(function(result){
                     NotyService.genericSuccess({
                         message: $scope.reportMessage.successMessage
                     });
                     $scope.errors = null;
-                    $scope.reportData.downtimes = result.data.downtimeReport.downtimes;
-                    $scope.reportData.hostsWithOutages = result.data.downtimeReport.hostsWithOutages;
-                    $scope.reportData.hostsWithoutOutages = result.data.downtimeReport.hostsWithoutOutages;
-                    $scope.tabName = 'calendarOverview';
+                    $scope.reportData = result.data.instantReport.reportData;
 
                 }, function errorCallback(result){
                     NotyService.genericError({
@@ -81,5 +68,6 @@ angular.module('openITCOCKPIT')
                 });
             }
         };
-        $scope.loadTimeperiods();
+
+        $scope.loadInstantreports();
     });

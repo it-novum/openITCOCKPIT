@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Form\InstantreportForm;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\InstantreportsTable;
 use App\Model\Table\SystemfailuresTable;
@@ -29,6 +30,7 @@ use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
@@ -44,30 +46,11 @@ use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
  * @property StatehistoryHost $StatehistoryHost
  * @property DowntimeHost $DowntimeHost
  * @property StatehistoryService $StatehistoryService
+ * @property AppPaginatorComponent $Paginator
  */
 class InstantreportsController extends AppController {
-
-    public $cronFromDate = '';
-    public $cronToDate = '';
-    public $cronPdfName = '';
-
     public $layout = 'blank';
-    public $components = [
-        'RequestHandler',
-    ];
-    public $uses = [
-        'Instantreport',
-        'User',
-        'Hostgroup',
-        'Servicegroup',
-        'Host',
-        'Service',
-        'Timeperiod',
-        MONITORING_STATEHISTORY_HOST,
-        MONITORING_STATEHISTORY_SERVICE,
-        MONITORING_DOWNTIME_HOST,
-        MONITORING_DOWNTIME_SERVICE
-    ];
+
 
     public function index() {
         if (!$this->isApiRequest()) {
@@ -77,6 +60,7 @@ class InstantreportsController extends AppController {
         $InstantreportFilter = new InstantreportFilter($this->request);
         /** @var $InstantreportsTable InstantreportsTable */
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $InstantreportFilter->getPage());
         $MY_RIGHTS = [];
         if ($this->hasRootPrivileges === false) {
@@ -162,74 +146,120 @@ class InstantreportsController extends AppController {
     }
 
     public function generate($id = null) {
-        $instantReport = $this->Instantreport->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Instantreport.id' => $id,
-            ]
-        ]);
-
-        if (empty($instantReport)) {
-            throw new NotFoundException(__('Invalid Instant report'));
-        }
-        if (!empty($this->cronFromDate)) {
-            $this->generateReport($instantReport, date('d.m.Y', $this->cronFromDate), date('d.m.Y', $this->cronToDate), Instantreport::FORMAT_PDF);
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
             return;
-        } else {
-            $options = [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Instantreport.container_id' => $this->MY_RIGHTS,
-                ],
-                'order'      => [
-                    'Instantreport.name' => 'asc'
-                ]
-            ];
-
-            $allInstantReports = $this->Instantreport->find('all', $options);
-
-            $reportFormats = $this->Instantreport->getReportFormats();
-            $this->Instantreport->setValidationRules('generate');
-            $this->Instantreport->set($this->request->data);
-
-            if ($this->request->is('post') || $this->request->is('put')) {
-                if ($this->Instantreport->validates()) {
-                    $instantReport = $this->Instantreport->find('first', [
-                        'recursive'  => -1,
-                        'conditions' => [
-                            'Instantreport.id' => $this->request->data['Instantreport']['id'],
-                        ]
-                    ]);
-                    if (empty($instantReport)) {
-                        throw new NotFoundException(__('Invalid Instant report'));
-                    }
-
-                    if (!$this->allowedByContainerId(Hash::extract($instantReport, 'Instantreport.container_id'))) {
-                        $this->render403();
-                        return;
-                    }
-
-
-                    $this->generateReport($instantReport, $this->request->data['Instantreport']['start_date'], $this->request->data['Instantreport']['end_date'], $this->request->data['Instantreport']['report_format']);
-                }
-            }
         }
-        $this->set([
-            'id'                => $id,
-            'allInstantReports' => $allInstantReports,
-            'reportFormats'     => $reportFormats
-        ]);
 
+        $instantreportForm = new InstantreportForm();
+        $instantreportForm->execute($this->request->data);
+
+        if(!empty($instantreportForm->getErrors())){
+            $this->response->statusCode(400);
+            $this->set('error', $instantreportForm->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $instantreportId = $this->request->data('instantreport_id');
+        $fromDate = strtotime($this->request->data('from_date') . ' 00:00:00');
+        $toDate = strtotime($this->request->data('to_date') . ' 23:59:59');
+        $instantReportData = $this->generateReport(
+            $instantreportId,
+            $fromDate,
+            $toDate
+        );
+
+        return;
+        $downtimeReportForm = new DowntimereportForm();
+        $downtimeReportForm->execute($this->request->data);
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = UserTime::fromUser($User);
+
+        if (!empty($downtimeReportForm->getErrors())) {
+            $this->response->statusCode(400);
+            $this->set('error', $downtimeReportForm->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->data('timeperiod_id'));
+        if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'timeperiod_id' => [
+                    'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        $fromDate = strtotime($this->request->data('from_date') . ' 00:00:00');
+        $toDate = strtotime($this->request->data('to_date') . ' 23:59:59');
+        $evaluationType = $this->request->data('evaluation_type');
+        $reflectionState = $this->request->data('reflection_state');
+
+        $hostsUuids = $HostsTable->getHostsByContainerId($this->MY_RIGHTS, 'list', 'uuid');
+        if (empty($hostsUuids)) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'hosts' => [
+                    'empty' => 'There are no hosts for downtime report available.'
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+        $downtimeReport = $this->createReport(
+            $fromDate,
+            $toDate,
+            $evaluationType,
+            $reflectionState,
+            $timeperiod['Timeperiod']['timeperiod_timeranges'],
+            $hostsUuids,
+            $UserTime
+        );
+
+        if ($downtimeReport === null) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'no_downtimes' => [
+                    'empty' => __('No downtimes within specified time found (%s - %s) !',
+                        date('d.m.Y', $fromDate),
+                        date('d.m.Y', $toDate)
+                    )
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $this->set('downtimeReport', $downtimeReport);
+        $this->set('_serialize', ['downtimeReport']);
     }
 
-    private function generateReport($instantReport, $baseStartDate, $baseEndDate, $reportFormat) {
-        $startDate = $baseStartDate . ' 00:00:00';
-        $endDate = $baseEndDate . ' 23:59:59';
+    /**
+     * @param $instantReportId
+     * @param $fromDate
+     * @param $toDate
+     */
+    private function generateReport($instantReportId, $fromDate, $toDate) {
+        FileDebugger::dump('test ***************'.$instantReportId);
+        /** @var $InstantreportsTable InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
 
-        $instantReportDetails = [
-            'startDate' => $startDate,
-            'endDate'   => $endDate,
-        ];
+        if (!$InstantreportsTable->existsById($instantReportId)) {
+            throw new NotFoundException(__('Instant report not found'));
+        }
+        $instantreport = $InstantreportsTable->getInstantreportByIdCake4($instantReportId);
+        FileDebugger::dump($instantreport);
+
+        return;
         $instantReportDetails['onlyHosts'] = ($instantReport['Instantreport']['evaluation'] == 1);
         $instantReportDetails['onlyServices'] = ($instantReport['Instantreport']['evaluation'] == 3);
         $instantReportDetails['summary'] = $instantReport['Instantreport']['summary'];
@@ -926,4 +956,5 @@ class InstantreportsController extends AppController {
         $this->set('containers', $containers);
         $this->set('_serialize', ['containers']);
     }
+
 }

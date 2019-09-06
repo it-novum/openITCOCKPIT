@@ -249,6 +249,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "InstantreportsEditController"
             })
 
+            .state('InstantreportsGenerate', {
+                url: '/instantreports/generate/:id',
+                templateUrl: "/instantreports/generate.html",
+                controller: "InstantreportsGenerateController"
+            })
+
             .state('LogentriesIndex', {
                 url: '/logentries/index',
                 templateUrl: "/logentries/index.html",
