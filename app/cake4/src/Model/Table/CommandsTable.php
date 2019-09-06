@@ -40,7 +40,7 @@ class CommandsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) {
+    public function initialize(array $config) :void {
         parent::initialize($config);
 
         $this->setTable('commands');
@@ -66,7 +66,7 @@ class CommandsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) {
+    public function validationDefault(Validator $validator) :Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -115,7 +115,7 @@ class CommandsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) {
+    public function buildRules(RulesChecker $rules) :RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
 
         return $rules;
