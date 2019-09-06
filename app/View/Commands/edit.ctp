@@ -221,7 +221,9 @@
             <div class="col-xs-12 margin-top-10">
                 <div class="well formactions ">
                     <div class="pull-right">
-                        <input class="btn btn-primary" type="submit" value="<?php echo __('Update command'); ?>">
+                        <button class="btn btn-primary" type="button" ng-click="checkForMisingArguments()">
+                            <?php echo __('Update command'); ?>
+                        </button>
                         <a ui-sref="CommandsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
                     </div>
                 </div>
@@ -304,6 +306,44 @@
         </div>
     </div>
 <?php endif; ?>
+
+<div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="argumentMisMatchModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning txt-color-white">
+                <button type="button" class="close" data-dismiss="modal">
+                    &times;
+                </button>
+                <h4 class="modal-title"
+                    id="myModalLabel"><?php echo __('Mismatch in number of defined arguments detected'); ?></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Different amount of used %s variables compared to defined arguments!', '<code>$ARGn$</code>'); ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Number of used %s variables:', '<code>$ARGn$</code>'); ?> <strong>{{usedCommandLineArgs}}</strong>
+                    </div>
+                    <div class="col-xs-12">
+                        <?php echo __('Number of defined arguments:'); ?> <strong>{{definedCommandArguments}}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" ng-click="submit()">
+                    <?php echo __('Save anyway'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Cancel'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="defaultMacrosOverview">
     <div class="modal-dialog modal-lg">

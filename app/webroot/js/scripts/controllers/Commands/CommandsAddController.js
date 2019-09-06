@@ -63,8 +63,30 @@ angular.module('openITCOCKPIT')
             $scope.args = _.sortBy($scope.args, 'id');
         };
 
+        $scope.checkForMisingArguments = function(){
+            var commandLine = $scope.post.Command.command_line;
+
+            var usedCommandLineArgs = commandLine.match(/(\$ARG\d+\$)/g);
+            if(usedCommandLineArgs !== null){
+                usedCommandLineArgs = usedCommandLineArgs.length;
+            }else{
+                usedCommandLineArgs = 0;
+            }
+
+            $scope.usedCommandLineArgs = usedCommandLineArgs;
+            $scope.definedCommandArguments = $scope.args.length;
+
+            if($scope.usedCommandLineArgs === $scope.definedCommandArguments){
+                $scope.submit();
+            }else{
+                $('#argumentMisMatchModal').modal('show');
+            }
+
+        };
 
         $scope.submit = function(){
+            $('#argumentMisMatchModal').modal('hide');
+
             var index = 0;
             for(var i in $scope.args){
                 if(!/\S/.test($scope.args[i].human_name)){

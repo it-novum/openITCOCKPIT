@@ -1,7 +1,7 @@
 <div id="angularConfirmDeactivate" class="modal" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-color-orange txt-color-white">
+            <div class="modal-header bg-warning txt-color-white">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title"><?php echo __('Attention!'); ?></h4>
             </div>
