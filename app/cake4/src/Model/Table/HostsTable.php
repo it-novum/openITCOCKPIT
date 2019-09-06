@@ -13,7 +13,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
@@ -57,7 +56,7 @@ class HostsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) {
+    public function initialize(array $config) :void {
         parent::initialize($config);
 
         $this->setTable('hosts');
@@ -167,7 +166,7 @@ class HostsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) {
+    public function validationDefault(Validator $validator) :Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -431,7 +430,7 @@ class HostsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) {
+    public function buildRules(RulesChecker $rules) :RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
 
         return $rules;
@@ -1435,7 +1434,7 @@ class HostsTable extends Table {
                 'Contactgroups' => [
                     'Containers'
                 ],
-                'Contacts' => [
+                'Contacts'      => [
                     'Containers'
                 ]
             ])
@@ -1643,7 +1642,7 @@ class HostsTable extends Table {
                 'Hosts.uuid',
                 'Hosts.address'
             ])
-            ->innerJoinWith('Services', function(Query $query){
+            ->innerJoinWith('Services', function (Query $query) {
                 $query->where([
                     'Services.service_type' => OITC_AGENT_SERVICE
                 ]);
@@ -1655,24 +1654,24 @@ class HostsTable extends Table {
             ->all();
 
         $rawHosts = $query->toArray();
-        if($rawHosts === null){
+        if ($rawHosts === null) {
             return [];
         }
 
         $hosts = [];
-        foreach($rawHosts as $host) {
+        foreach ($rawHosts as $host) {
             $hosts[$host['id']] = $host;
         }
 
         return $hosts;
     }
 
-    public function hasHostServiceFromServicetemplateId($hostId, $servicetemplateId){
+    public function hasHostServiceFromServicetemplateId($hostId, $servicetemplateId) {
         $count = $this->find()
             ->where([
                 'Hosts.id' => $hostId,
             ])
-            ->innerJoinWith('Services', function(Query $query) use ($servicetemplateId){
+            ->innerJoinWith('Services', function (Query $query) use ($servicetemplateId) {
                 $query->where([
                     'Services.servicetemplate_id' => $servicetemplateId
                 ]);
@@ -1687,9 +1686,9 @@ class HostsTable extends Table {
      * @param bool $includeDisabled
      * @return int|null
      */
-    public function getHostsCountForStats($includeDisabled = true){
+    public function getHostsCountForStats($includeDisabled = true) {
         $query = $this->find();
-        if($includeDisabled === false){
+        if ($includeDisabled === false) {
             $query->where([
                 'Hosts.disabled' => 0
             ]);
@@ -1722,6 +1721,73 @@ class HostsTable extends Table {
             ])
             ->first();
         return $query;
+    }
+
+    /**
+     * @param HostFilter $HostFilter
+     * @param HostConditions $HostConditions
+     * @param null|PaginateOMat $PaginateOMat
+     * @param string $type (all or count, list is NOT supported!)
+     * @return int|array
+     */
+    public function getHostsByRegularExpression(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null, $type = 'all') {
+        $MY_RIGHTS = $HostConditions->getContainerIds();
+
+        $query = $this->find('all');
+        $query->select([
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.name',
+            'Hosts.description',
+            'Hosts.address',
+            'Hosts.satellite_id',
+            'Hosts.container_id'
+        ]);
+
+        $where = [
+            'Hosts.disabled'    => (int)$HostConditions->includeDisabled(),
+            'Hosts.name REGEXP' => $HostConditions->getHostnameRegex()
+        ];
+
+        $query->where($where);
+        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+        $query->contain([
+            'HostsToContainersSharing',
+            'Hosttemplates' => [
+                'fields' => [
+                    'Hosttemplates.id',
+                    'Hosttemplates.name'
+                ]
+            ]
+
+        ]);
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
+        if ($type === 'all') {
+            $query->order($HostFilter->getOrderForPaginator('Hosts.name', 'asc'));
+        }
+
+        if ($type === 'count') {
+            $count = $query->count();
+            return $count;
+        }
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
+        return $result;
     }
 
 }

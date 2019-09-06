@@ -92,3 +92,4 @@ app/Config/perfdatabackend.php
 app/Config/graphite.php
 app/Plugin/NagiosModule/Config/config.php
 !app/cake4/tests
+app/cake4/plugins/DistributedMonitoringModule

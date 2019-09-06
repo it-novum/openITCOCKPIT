@@ -90,17 +90,23 @@ class UsergroupsController extends AppController {
         $aros = Hash::extract($permissions, '{n}.Permission.aco_id');
         unset($permissions);
 
-        $acos = $this->Acl->Aco->find('threaded', [
+        /*$acos = $this->Acl->Aco->find('threaded', [
             'recursive' => -1,
         ]);
-
+*/
         $usergroup = $UsergroupsTable->getUsergroupById($id);
 
-
+/*
         $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
-        $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
-        $dependentAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
+        $acoDependencies = $UsergroupsTable->getAcoDependencies($acos);
+        $dependentAcoIds = $UsergroupsTable->getAcoDependencyIds($acoDependencies);
+*/
+        $allAcos = $this->Acl->Aco->find('threaded', [
+            'recursive' => -1,
+        ]);
+        $UsergroupsTable->getUsergroupAcosForAddEdit($allAcos);
 
+        die();
         if ($this->request->is('post') || $this->request->is('put')) {
             $aro = $this->Acl->Aro->find('first', [
                 'recursive'  => -1,
@@ -195,8 +201,8 @@ class UsergroupsController extends AppController {
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
 
         $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
-        $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
-        $dependenAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
+        $acoDependencies =$UsergroupsTable->getAcoDependencies($acos);
+        $dependenAcoIds = $UsergroupsTable->getAcoDependencyIds($acoDependencies);
 
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Usergroup->saveAll($this->request->data)) {

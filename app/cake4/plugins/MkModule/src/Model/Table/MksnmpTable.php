@@ -1,7 +1,7 @@
 <?php
+
 namespace MkModule\Model\Table;
 
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -22,8 +22,7 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class MksnmpTable extends Table
-{
+class MksnmpTable extends Table {
 
     /**
      * Initialize method
@@ -31,8 +30,7 @@ class MksnmpTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) :void {
         parent::initialize($config);
 
         $this->setTable('mksnmp');
@@ -43,8 +41,8 @@ class MksnmpTable extends Table
 
         $this->belongsTo('Hosts', [
             'foreignKey' => 'host_id',
-            'joinType' => 'INNER',
-            'className' => 'MkModule.Hosts'
+            'joinType'   => 'INNER',
+            'className'  => 'MkModule.Hosts'
         ]);
     }
 
@@ -54,8 +52,7 @@ class MksnmpTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) :Validator {
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
@@ -106,8 +103,7 @@ class MksnmpTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules)
-    {
+    public function buildRules(RulesChecker $rules) :RulesChecker {
         $rules->add($rules->isUnique(['username']));
         $rules->add($rules->existsIn(['host_id'], 'Hosts'));
 

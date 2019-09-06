@@ -58,6 +58,11 @@ class HostConditions {
     private $order = [];
 
     /**
+     * @var string
+     */
+    private $hostnameRegex = '';
+
+    /**
      * HostConditions constructor.
      * @param array $conditions
      */
@@ -185,4 +190,19 @@ class HostConditions {
     public function setHostIds($hostIds) {
         $this->hostIds = $hostIds;
     }
+
+    /**
+     * @return string
+     */
+    public function getHostnameRegex() {
+        return $this->hostnameRegex;
+    }
+
+    /**
+     * @param string $hostnameRegex
+     */
+    public function setHostnameRegex($hostnameRegex) {
+        $this->hostnameRegex = $hostnameRegex;
+    }
+
 }

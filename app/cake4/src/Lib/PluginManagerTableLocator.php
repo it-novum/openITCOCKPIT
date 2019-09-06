@@ -26,6 +26,7 @@ namespace App\Lib;
 
 
 use Cake\ORM\Locator\TableLocator;
+use Cake\ORM\Table;
 
 class PluginManagerTableLocator extends TableLocator {
 
@@ -34,7 +35,7 @@ class PluginManagerTableLocator extends TableLocator {
      * @param array $options
      * @return \Cake\ORM\Table
      */
-    public function get($alias, array $options = []) {
+    public function get($alias, array $options = []) :Table {
         $table = parent::get($alias, $options);
 
         //Associated Plugins with Core models

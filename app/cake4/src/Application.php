@@ -21,6 +21,7 @@ use Cake\Core\Exception\MissingPluginException;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
+use Cake\Http\MiddlewareQueue;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
 
@@ -34,7 +35,7 @@ class Application extends BaseApplication {
     /**
      * {@inheritDoc}
      */
-    public function bootstrap() {
+    public function bootstrap() :void {
         // Call parent to load bootstrap from files.
         parent::bootstrap();
 
@@ -67,7 +68,7 @@ class Application extends BaseApplication {
      * @param \Cake\Routing\RouteBuilder $routes A route builder to add routes into.
      * @return void
      */
-    public function routes($routes) {
+    public function routes($routes) :void {
         // Register scoped middleware for use in routes.php
         $routes->registerMiddleware('csrf', new CsrfProtectionMiddleware([
             'httpOnly' => true
@@ -83,7 +84,7 @@ class Application extends BaseApplication {
      * @param \Cake\Http\MiddlewareQueue $middlewareQueue The middleware queue to setup.
      * @return \Cake\Http\MiddlewareQueue The updated middleware queue.
      */
-    public function middleware($middlewareQueue) {
+    public function middleware($middlewareQueue) :MiddlewareQueue {
         $middlewareQueue
             // Catch any exceptions in the lower layers,
             // and make an error page/response
