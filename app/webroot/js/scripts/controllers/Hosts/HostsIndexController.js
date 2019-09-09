@@ -36,7 +36,7 @@ angular.module('openITCOCKPIT')
                 }
             };
         };
-        /*** Filter end ***/filterMainMenu
+        /*** Filter end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/hosts/delete/';
