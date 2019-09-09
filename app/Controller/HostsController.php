@@ -27,6 +27,7 @@
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
@@ -98,6 +99,8 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  */
 class HostsController extends AppController {
 
+    use PluginManagerTableTrait;
+
     public $layout = 'blank';
 
     public $components = [
@@ -155,6 +158,9 @@ class HostsController extends AppController {
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
+            /** @var $SatellitesTable \DistributedMonitoringModule\Model\Table\SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributedMonitoringModule.Satellites');
+
             $Satellite = $ModuleManager->loadModel('Satellite');
             $SatelliteNames = $Satellite->find('list');
             $SatelliteNames[0] = $masterInstanceName;
