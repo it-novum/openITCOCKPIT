@@ -33,16 +33,16 @@ use Cake\Validation\Validator;
 
 class CurrentstatereportForm extends Form {
 
-    protected function _buildSchema(Schema $schema) {
+    protected function _buildSchema(Schema $schema): Schema {
         return $schema
             ->addField('services', ['type' => 'array'])
             ->addField('current_state', ['type' => 'array']);
     }
 
-    protected function _buildValidator(Validator $validator) {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->requirePresence('services', true, __('You must specify at least one service.'))
-            ->allowEmptyArray('services',  __('You must specify at least one service.'), false);
+            ->allowEmptyArray('services', __('You must specify at least one service.'), false);
 
         $validator
             ->requirePresence('current_state')
