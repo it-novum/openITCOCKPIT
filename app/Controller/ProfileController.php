@@ -316,7 +316,7 @@ class ProfileController extends AppController {
                 'user_id'     => $User->getId()
             ];
 
-            $apikeyEntity = $ApikeysTable->newEntity();
+            $apikeyEntity = $ApikeysTable->newEmptyEntity();
             $apikeyEntity = $ApikeysTable->patchEntity($apikeyEntity, $apikey);
 
             $ApikeysTable->save($apikeyEntity);

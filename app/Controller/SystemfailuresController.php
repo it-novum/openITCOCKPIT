@@ -103,7 +103,7 @@ class SystemfailuresController extends AppController {
             }
 
 
-            $systemfailure = $SystemfailuresTable->newEntity();
+            $systemfailure = $SystemfailuresTable->newEmptyEntity();
             $systemfailure = $SystemfailuresTable->patchEntity($systemfailure, $this->request->data('Systemfailure'));
 
             $SystemfailuresTable->save($systemfailure);

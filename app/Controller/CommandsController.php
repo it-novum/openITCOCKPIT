@@ -108,7 +108,7 @@ class CommandsController extends AppController {
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $command = $CommandsTable->newEntity();
+            $command = $CommandsTable->newEmptyEntity();
 
             $command = $CommandsTable->patchEntity($command, $this->request->data('Command'));
             $command->set('uuid', \itnovum\openITCOCKPIT\Core\UUID::v4());

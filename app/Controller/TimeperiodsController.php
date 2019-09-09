@@ -193,7 +193,7 @@ class TimeperiodsController extends AppController {
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $timeperiod = $TimeperiodsTable->newEntity();
+            $timeperiod = $TimeperiodsTable->newEmptyEntity();
             $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->data('Timeperiod'));
             $timeperiod->set('uuid', \itnovum\openITCOCKPIT\Core\UUID::v4());
             $TimeperiodsTable->checkRules($timeperiod);

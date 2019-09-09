@@ -150,7 +150,7 @@ class UsersController extends AppController {
             }
             $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
 
-            $user = $UsersTable->newEntity();
+            $user = $UsersTable->newEmptyEntity();
             $user = $UsersTable->patchEntity($user, $data);
             $UsersTable->save($user);
             if ($user->hasErrors()) {
@@ -307,7 +307,7 @@ class UsersController extends AppController {
             $UsersTable->getValidator()->remove('password');
             $UsersTable->getValidator()->remove('confirm_password');
 
-            $user = $UsersTable->newEntity();
+            $user = $UsersTable->newEmptyEntity();
             $user = $UsersTable->patchEntity($user, $data);
             $UsersTable->save($user);
             if ($user->hasErrors()) {

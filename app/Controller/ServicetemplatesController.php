@@ -140,7 +140,7 @@ class ServicetemplatesController extends AppController {
             }
 
 
-            $servicetemplate = $ServicetemplatesTable->newEntity();
+            $servicetemplate = $ServicetemplatesTable->newEmptyEntity();
             $servicetemplate = $ServicetemplatesTable->patchEntity($servicetemplate, $this->request->data('Servicetemplate'));
 
             $ServicetemplatesTable->save($servicetemplate);

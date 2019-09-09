@@ -131,7 +131,7 @@ class ServicetemplategroupsController extends AppController {
         $this->request->data['Servicetemplategroup']['container']['containertype_id'] = CT_SERVICETEMPLATEGROUP;
 
 
-        $servicetemplategroup = $ServicetemplategroupsTable->newEntity();
+        $servicetemplategroup = $ServicetemplategroupsTable->newEmptyEntity();
         $servicetemplategroup = $ServicetemplategroupsTable->patchEntity($servicetemplategroup, $this->request->data('Servicetemplategroup'));
 
         $ServicetemplategroupsTable->save($servicetemplategroup);

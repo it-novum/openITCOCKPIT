@@ -143,7 +143,7 @@ class ServicegroupsController extends AppController {
             $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
             $this->request->data['Servicegroup']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
             $this->request->data['Servicegroup']['container']['containertype_id'] = CT_SERVICEGROUP;
-            $servicegroup = $ServicegroupsTable->newEntity();
+            $servicegroup = $ServicegroupsTable->newEmptyEntity();
             $servicegroup = $ServicegroupsTable->patchEntity($servicegroup, $this->request->data('Servicegroup'));
 
             $ServicegroupsTable->save($servicegroup);

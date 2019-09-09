@@ -92,7 +92,7 @@ class UsercontainerrolesController extends AppController {
             }
             $data['containers'] = $UsercontainerrolesTable->containerPermissionsForSave($data['ContainersUsercontainerrolesMemberships']);
 
-            $usercontainerrole = $UsercontainerrolesTable->newEntity();
+            $usercontainerrole = $UsercontainerrolesTable->newEmptyEntity();
             $usercontainerrole = $UsercontainerrolesTable->patchEntity($usercontainerrole, $data);
             $UsercontainerrolesTable->save($usercontainerrole);
             if ($usercontainerrole->hasErrors()) {

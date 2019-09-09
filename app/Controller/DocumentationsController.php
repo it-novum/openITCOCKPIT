@@ -183,7 +183,7 @@ class DocumentationsController extends AppController {
             if ($DocumentationsTable->existsByUuid($uuid)) {
                 $entity = $DocumentationsTable->getDocumentationByUuid($uuid);
             } else {
-                $entity = $DocumentationsTable->newEntity();
+                $entity = $DocumentationsTable->newEmptyEntity();
             }
 
             $entity = $DocumentationsTable->patchEntity($entity, [

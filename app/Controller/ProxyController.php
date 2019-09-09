@@ -48,7 +48,7 @@ class ProxyController extends AppController {
             $entity = $Proxy->find()->first();
             if (is_null($entity)) {
                 //No proxy configuration found
-                $entity = $Proxy->newEntity();
+                $entity = $Proxy->newEmptyEntity();
             }
 
             $entity = $Proxy->patchEntity($entity, $this->request->data['Proxy']);

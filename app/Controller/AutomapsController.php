@@ -100,7 +100,7 @@ class AutomapsController extends AppController {
         $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $automap = $AutomapsTable->newEntity();
+            $automap = $AutomapsTable->newEmptyEntity();
             $automap = $AutomapsTable->patchEntity($automap, $this->request->data('Automap'));
             $AutomapsTable->save($automap);
             if ($automap->hasErrors()) {

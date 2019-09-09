@@ -77,7 +77,7 @@ class RegistersController extends AppController {
                     $licenseEntity = $RegistersTable->getLicenseEntity();
                     if (is_null($licenseEntity)) {
                         //no license yet
-                        $licenseEntity = $RegistersTable->newEntity();
+                        $licenseEntity = $RegistersTable->newEmptyEntity();
                     }
 
                     $licenseEntity = $RegistersTable->patchEntity($licenseEntity, ['license' => $license]);

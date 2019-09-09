@@ -97,7 +97,7 @@ class CronjobsController extends AppController {
         /** @var $Cronjobs App\Model\Table\CronjobsTable */
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
         $data = $this->request->data['Cronjob'];
-        $cronjob = $Cronjobs->newEntity();
+        $cronjob = $Cronjobs->newEmptyEntity();
         $cronjob = $Cronjobs->patchEntity($cronjob, $data);
         $Cronjobs->save($cronjob);
 

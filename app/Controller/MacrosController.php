@@ -67,7 +67,7 @@ class MacrosController extends AppController {
         /** @var $Macros MacrosTable */
         $Macros = $TableLocator->get('Macros');
 
-        $macro = $Macros->newEntity();
+        $macro = $Macros->newEmptyEntity();
         $macro = $Macros->patchEntity($macro, $this->request->data('Macro'));
         $Macros->save($macro);
 

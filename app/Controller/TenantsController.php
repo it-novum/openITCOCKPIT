@@ -117,7 +117,7 @@ class TenantsController extends AppController {
         $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $tenant = $TenantsTable->newEntity();
+            $tenant = $TenantsTable->newEmptyEntity();
             $tenant = $TenantsTable->patchEntity($tenant, $this->request->data);
 
             $tenant->container->parent_id = ROOT_CONTAINER;

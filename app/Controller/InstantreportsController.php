@@ -88,7 +88,7 @@ class InstantreportsController extends AppController {
         /** @var $InstantreportsTable InstantreportsTable */
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $instantreport = $InstantreportsTable->newEntity();
+            $instantreport = $InstantreportsTable->newEmptyEntity();
             $instantreport = $InstantreportsTable->patchEntity($instantreport, $this->request->data('Instantreport'));
             $InstantreportsTable->save($instantreport);
             if ($instantreport->hasErrors()) {

@@ -180,7 +180,7 @@ class AgentconfigsTable extends Table {
             ->first();
 
         if ($record === null) {
-            return $this->newEntity();
+            return $this->newEmptyEntity();
         }
 
         return $record;

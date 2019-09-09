@@ -137,7 +137,7 @@ class HosttemplatesController extends AppController {
                 $this->request->data['Hosttemplate']['hosttemplatetype_id'] = $hosttemplatetype_id;
             }
 
-            $hosttemplate = $HosttemplatesTable->newEntity();
+            $hosttemplate = $HosttemplatesTable->newEmptyEntity();
             $hosttemplate = $HosttemplatesTable->patchEntity($hosttemplate, $this->request->data('Hosttemplate'));
 
             $HosttemplatesTable->save($hosttemplate);
