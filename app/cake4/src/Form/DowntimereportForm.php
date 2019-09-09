@@ -36,14 +36,14 @@ use Cake\Validation\Validator;
  * @package App\Form
  */
 class DowntimereportForm extends Form {
-    protected function _buildSchema(Schema $schema) {
+    protected function _buildSchema(Schema $schema): Schema {
         return $schema
             ->addField('timeperiod_id', ['type' => 'int'])
             ->addField('from_date', ['type' => 'string'])
             ->addField('to_date', ['type' => 'string']);
     }
 
-    protected function _buildValidator(Validator $validator) {
+    protected function buildValidator(Validator $validator) {
         $validator
             ->integer('timeperiod_id')
             ->allowEmptyString('timeperiod_id', null, false)

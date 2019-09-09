@@ -36,7 +36,7 @@ use Cake\Validation\Validator;
  * @package App\Form
  */
 class InstantreportForm extends Form {
-    protected function _buildSchema(Schema $schema) {
+    protected function _buildSchema(Schema $schema): Schema {
         return $schema
             ->addField('id', ['type' => 'string'])
             ->addField('from_date', ['type' => 'string'])
