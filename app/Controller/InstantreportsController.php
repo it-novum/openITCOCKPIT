@@ -154,7 +154,7 @@ class InstantreportsController extends AppController {
         $instantreportForm = new InstantreportForm();
         $instantreportForm->execute($this->request->data);
 
-        if(!empty($instantreportForm->getErrors())){
+        if (!empty($instantreportForm->getErrors())) {
             $this->response->statusCode(400);
             $this->set('error', $instantreportForm->getErrors());
             $this->set('_serialize', ['error']);
@@ -249,16 +249,17 @@ class InstantreportsController extends AppController {
      * @param $toDate
      */
     private function generateReport($instantReportId, $fromDate, $toDate) {
-        FileDebugger::dump('test ***************'.$instantReportId);
         /** @var $InstantreportsTable InstantreportsTable */
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
-
+        $MY_RIGHTS = [];
+        if (!$this->hasRootPrivileges) {
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
         if (!$InstantreportsTable->existsById($instantReportId)) {
             throw new NotFoundException(__('Instant report not found'));
         }
-        $instantreport = $InstantreportsTable->getInstantreportByIdCake4($instantReportId);
-        FileDebugger::dump($instantreport);
-
+        $instantReport = $InstantreportsTable->getInstantreportByIdCake4($instantReportId);
+        $instantReportData = $InstantreportsTable->getHostsAndServicesByInstantreport($instantReport, $MY_RIGHTS);
         return;
         $instantReportDetails['onlyHosts'] = ($instantReport['Instantreport']['evaluation'] == 1);
         $instantReportDetails['onlyServices'] = ($instantReport['Instantreport']['evaluation'] == 3);
@@ -582,293 +583,6 @@ class InstantreportsController extends AppController {
         }
     }
 
-    private function getAllHostsServices($instantReport) {
-        /**
-         *  $containArray = [
-         *      1 => [], // Type Only Hosts
-         *      2 => [], // Type Hosts and Services
-         *      3 => []  // Type Only Services
-         *  ];
-         */
-
-        $objectsForInstantReport = [
-            'Hosts'    => [],
-            'Services' => []
-        ];
-        switch ($instantReport['Instantreport']['type']) {
-            case Instantreport::TYPE_HOSTGROUPS:      //-> 1
-                $containArray = [
-                    Instantreport::EVALUATION_HOSTS          => [
-                        'Host' => [
-                            'fields'     => [
-                                'Host.uuid',
-                                'Host.name'
-                            ],
-                            'conditions' => [
-                                'Host.disabled' => 0
-                            ]
-                        ]
-                    ],
-                    Instantreport::EVALUATION_HOSTS_SERVICES => [
-                        'Host' => [
-                            'fields'     => [
-                                'Host.uuid',
-                                'Host.name'
-                            ],
-                            'Service'    => [
-                                'fields'          => [
-                                    'Service.uuid',
-                                    'Service.name'
-                                ],
-                                'Servicetemplate' => [
-                                    'fields' => [
-                                        'Servicetemplate.name'
-                                    ]
-                                ],
-                                'conditions'      => [
-                                    'Service.disabled' => 0
-                                ]
-                            ],
-                            'conditions' => [
-                                'Host.disabled' => 0
-                            ]
-                        ]
-                    ],
-                    Instantreport::EVALUATION_SERVICES       => [
-                        'Host' => [
-                            'fields'     => [
-                                'Host.uuid',
-                                'Host.name'
-                            ],
-                            'conditions' => [
-                                'Host.disabled' => 0
-                            ],
-                            'Service'    => [
-                                'fields'          => [
-                                    'Service.uuid',
-                                    'Service.name'
-                                ],
-                                'conditions'      => [
-                                    'Service.disabled' => 0
-                                ],
-                                'Servicetemplate' => [
-                                    'fields' => [
-                                        'Servicetemplate.name'
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ],
-                ];
-                $instantReportHostgroups = $this->Instantreport->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Hostgroup' =>
-                            $containArray[$instantReport['Instantreport']['evaluation']]
-                    ],
-                    'conditions' => [
-                        'Instantreport.id' => $instantReport['Instantreport']['id']
-                    ]
-                ]);
-                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS) {
-                    $objectsForInstantReport['Hosts'] = array_unique(
-                        Hash::combine($instantReportHostgroups['Hostgroup'], '{n}.Host.{n}.uuid', '{n}.Host.{n}.name')
-                    );
-                }
-                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES) {
-                    foreach ($instantReportHostgroups['Hostgroup'] as $hostgroup) {
-                        foreach ($hostgroup['Host'] as $host) {
-                            $objectsForInstantReport['Hosts'][$host['uuid']] = $host['name'];
-                            foreach ($host['Service'] as $service) {
-                                $serviceName = $service['name'];
-                                if ($serviceName === null || $serviceName === '') {
-                                    $serviceName = $service['Servicetemplate']['name'];
-                                }
-                                $objectsForInstantReport['Services'][$host['uuid']][$service['uuid']] = $serviceName;
-                            }
-                        }
-                    }
-                }
-                return $objectsForInstantReport;
-            case Instantreport::TYPE_HOSTS:           //-> 2
-                $containArray = [
-                    Instantreport::EVALUATION_HOSTS          => [
-                        'Host' => [
-                            'fields'     => [
-                                'Host.name',
-                                'Host.uuid'
-                            ],
-                            'conditions' => [
-                                'Host.disabled' => 0
-                            ]
-                        ]
-                    ],
-                    Instantreport::EVALUATION_HOSTS_SERVICES => [
-                        'Host' => [
-                            'fields'     => [
-                                'Host.name',
-                                'Host.uuid'
-                            ],
-                            'conditions' => [
-                                'Host.disabled' => 0
-                            ],
-                            'Service'    => [
-                                'fields'          => [
-                                    'Service.uuid',
-                                    'Service.name'
-                                ],
-                                'Servicetemplate' => [
-                                    'fields' => [
-                                        'Servicetemplate.name'
-                                    ]
-                                ],
-                                'conditions'      => [
-                                    'Service.disabled' => 0
-                                ]
-                            ]
-                        ]
-                    ]
-                ];
-                $containArray[Instantreport::EVALUATION_SERVICES] = $containArray[Instantreport::EVALUATION_HOSTS_SERVICES];
-                $instantReportHosts = $this->Instantreport->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => $containArray[$instantReport['Instantreport']['evaluation']],
-                    'conditions' => [
-                        'Instantreport.id' => $instantReport['Instantreport']['id']
-                    ]
-                ]);
-
-                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS) {
-                    $objectsForInstantReport['Hosts'] = array_unique(
-                        Hash::combine($instantReportHosts['Host'], '{n}.uuid', '{n}.name')
-                    );
-                }
-                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES) {
-
-                    foreach ($instantReportHosts['Host'] as $host) {
-                        $objectsForInstantReport['Hosts'][$host['uuid']] = $host['name'];
-                        foreach ($host['Service'] as $service) {
-                            $serviceName = $service['name'];
-                            if ($serviceName === null || $serviceName === '') {
-                                $serviceName = $service['Servicetemplate']['name'];
-                            }
-                            $objectsForInstantReport['Services'][$host['uuid']][$service['uuid']] = $serviceName;
-                        }
-                    }
-                }
-                return $objectsForInstantReport;
-            case Instantreport::TYPE_SERVICEGROUPS:   //-> 3
-
-                $instantReportServicegroups = $this->Instantreport->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Servicegroup' => [
-                            'Service' => [
-                                'fields'          => [
-                                    'Service.uuid',
-                                    'Service.name'
-                                ],
-                                'conditions'      => [
-                                    'Service.disabled' => 0
-                                ],
-                                'Servicetemplate' => [
-                                    'fields' => [
-                                        'Servicetemplate.name'
-                                    ]
-                                ],
-                                'Host'            => [
-                                    'fields'     => [
-                                        'Host.name',
-                                        'Host.uuid'
-                                    ],
-                                    'conditions' => [
-                                        'Host.disabled' => 0
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ],
-                    'conditions' => [
-                        'Instantreport.id' => $instantReport['Instantreport']['id']
-                    ]
-                ]);
-                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS) {
-                    $objectsForInstantReport['Hosts'] = array_unique(
-                        Hash::combine($instantReportServicegroups['Servicegroup'], '{n}.Service.{n}.Host.uuid', '{n}.Service.{n}.Host.name')
-                    );
-                }
-
-                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES) {
-                    foreach ($instantReportServicegroups['Servicegroup'] as $servicegroup) {
-                        foreach ($servicegroup['Service'] as $service) {
-                            $serviceName = $service['name'];
-                            if ($serviceName === null || $serviceName === '') {
-                                $serviceName = $service['Servicetemplate']['name'];
-                            }
-                            $objectsForInstantReport['Hosts'][$service['Host']['uuid']] = $service['Host']['name'];
-                            $objectsForInstantReport['Services'][$service['Host']['uuid']][$service['uuid']] = $serviceName;
-                        }
-                    }
-                }
-                return $objectsForInstantReport;
-            case Instantreport::TYPE_SERVICES:        //-> 4
-                $instantReportServices = $this->Instantreport->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Service' => [
-                            'Servicetemplate' => [
-                                'fields' => [
-                                    'Servicetemplate.name'
-                                ]
-                            ],
-                            'Host'            => [
-                                'fields'     => [
-                                    'Host.uuid',
-                                    'Host.name'
-                                ],
-                                'conditions' => [
-                                    'Host.disabled' => 0
-                                ]
-                            ],
-                            'fields'          => [
-                                'Service.name',
-                                'Service.uuid'
-                            ],
-                            'conditions'      => [
-                                'Service.disabled' => 0
-                            ]
-                        ]
-                    ],
-                    'conditions' => [
-                        'Instantreport.id' => $instantReport['Instantreport']['id']
-                    ]
-                ]);
-
-
-                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS) {
-                    $objectsForInstantReport['Hosts'] = array_unique(
-                        Hash::combine($instantReportServices['Service'], '{n}.Host.uuid', '{n}.Host.name')
-                    );
-                }
-
-                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES) {
-
-                    foreach ($instantReportServices['Service'] as $service) {
-                        $serviceName = $service['name'];
-                        if ($serviceName === null || $serviceName === '') {
-                            $serviceName = $service['Servicetemplate']['name'];
-                        }
-                        $objectsForInstantReport['Hosts'][$service['Host']['uuid']] = $service['Host']['name'];
-                        $objectsForInstantReport['Services'][$service['Host']['uuid']][$service['uuid']] = $serviceName;
-                    }
-                }
-                return $objectsForInstantReport;
-        }
-    }
 
     public function delete($id = null) {
         if (!$this->request->is('post')) {
