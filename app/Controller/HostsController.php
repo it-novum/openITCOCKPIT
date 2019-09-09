@@ -155,15 +155,14 @@ class HostsController extends AppController {
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $masterInstanceName = $Systemsettings->getMasterInstanceName();
 
-        $SatelliteNames = [];
+        $satellites = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
             /** @var $SatellitesTable \DistributedMonitoringModule\Model\Table\SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributedMonitoringModule.Satellites');
 
-            $Satellite = $ModuleManager->loadModel('Satellite');
-            $SatelliteNames = $Satellite->find('list');
-            $SatelliteNames[0] = $masterInstanceName;
+            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
+            $satellites[0] = $masterInstanceName;
         }
 
         if (!$this->isApiRequest()) {
@@ -171,7 +170,7 @@ class HostsController extends AppController {
             $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
             $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
-            $this->set('satellites', $SatelliteNames);
+            $this->set('satellites', $satellites);
             //Only ship HTML template
             return;
         }
@@ -289,7 +288,7 @@ class HostsController extends AppController {
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
             if ($Host->isSatelliteHost()) {
-                $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
+                $satelliteName = $satellites[$Host->getSatelliteId()];
                 $satellite_id = $Host->getSatelliteId();
             }
 
