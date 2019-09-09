@@ -43,19 +43,19 @@ class DowntimereportForm extends Form {
             ->addField('to_date', ['type' => 'string']);
     }
 
-    protected function buildValidator(Validator $validator) {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('timeperiod_id')
             ->allowEmptyString('timeperiod_id', null, false)
             ->requirePresence('timeperiod_id')
             ->greaterThan('timeperiod_id', 0);
         $validator
-            ->date('from_date', 'dmy')
+            ->date('from_date', ['dmy'])
             ->requirePresence('from_date')
             ->allowEmptyDateTime('from_date', null, false);
 
         $validator
-            ->date('to_date', 'dmy')
+            ->date('to_date', ['dmy'])
             ->requirePresence('to_date')
             ->allowEmptyDateTime('to_date', null, false)
             ->add('to_date', 'custom', [

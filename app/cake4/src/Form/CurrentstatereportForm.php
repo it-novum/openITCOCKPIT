@@ -39,7 +39,7 @@ class CurrentstatereportForm extends Form {
             ->addField('current_state', ['type' => 'array']);
     }
 
-    protected function buildValidator(Validator $validator) {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->requirePresence('services', true, __('You must specify at least one service.'))
             ->allowEmptyArray('services', __('You must specify at least one service.'), false);

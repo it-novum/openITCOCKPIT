@@ -43,18 +43,18 @@ class InstantreportForm extends Form {
             ->addField('to_date', ['type' => 'string']);
     }
 
-    protected function _buildValidator(Validator $validator) {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->requirePresence('instantreport_id')
             ->allowEmptyString('instantreport_id', null, false);
 
         $validator
-            ->date('from_date', 'dmy')
+            ->date('from_date', ['dmy'])
             ->requirePresence('from_date')
             ->allowEmptyDateTime('from_date', null, false);
 
         $validator
-            ->date('to_date', 'dmy')
+            ->date('to_date', ['dmy'])
             ->requirePresence('to_date')
             ->allowEmptyDateTime('to_date', null, false)
             ->add('to_date', 'custom', [
