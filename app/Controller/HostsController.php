@@ -158,8 +158,8 @@ class HostsController extends AppController {
         $satellites = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
-            /** @var $SatellitesTable \DistributedMonitoringModule\Model\Table\SatellitesTable */
-            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributedMonitoringModule.Satellites');
+            /** @var $SatellitesTable \DistributeModule\Model\Table\SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
             $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
