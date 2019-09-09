@@ -3,6 +3,9 @@
 //$group_info = posix_getgrnam('itcockpit');
 //posix_setgid($group_info['gid']);
 
+use App\Lib\PluginManagerTableLocator;
+use Cake\ORM\TableRegistry;
+
 require_once OLD_APP . 'Vendor' . DS . 'autoload.php';
 
 App::uses('Component', 'Controller');
@@ -18,6 +21,9 @@ if (php_sapi_name() != 'cli') {
 }
 
 CakePlugin::loadAll();
+
+// Set cakephp4 default table locator
+TableRegistry::setTableLocator(new PluginManagerTableLocator());
 
 //HtmlPurifier Config
 //CakePlugin::load('HtmlPurifier', array('bootstrap' => true));

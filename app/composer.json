@@ -17,7 +17,8 @@
             "Adldap\\": "Vendor/adldap/adldap/src/",
             "App\\": "cake4/src/",
             "MkModule\\": "cake4/plugins/MkModule/src/",
-            "Statusengine2Module\\": "cake4/plugins/Statusengine2Module/src/"
+            "Statusengine2Module\\": "cake4/plugins/Statusengine2Module/src/",
+            "DistributeModule\\": "cake4/plugins/DistributeModule/src/"
         },
         "files": [
             "Vendor/imageSmoothArc.php"

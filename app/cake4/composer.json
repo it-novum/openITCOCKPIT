@@ -1,0 +1,12 @@
+{
+    "autoload": {
+        "psr-4": {
+            "DistributeModule\\": "./plugins/DistributeModule/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DistributeModule\\Test\\": "./plugins/DistributeModule/tests/"
+        }
+    }
+}

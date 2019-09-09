@@ -27,6 +27,7 @@ namespace App\Lib;
 
 use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\Table;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class PluginManagerTableLocator extends TableLocator {
 
@@ -36,6 +37,7 @@ class PluginManagerTableLocator extends TableLocator {
      * @return \Cake\ORM\Table
      */
     public function get($alias, array $options = []) :Table {
+        FileDebugger::dump($alias);
         $table = parent::get($alias, $options);
 
         //Associated Plugins with Core models

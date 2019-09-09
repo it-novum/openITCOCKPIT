@@ -34,8 +34,8 @@ class SatelliteFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'like' => [
-                'Satellite.name',
-                'Satellite.address'
+                'Satellites.name',
+                'Satellites.address'
             ]
         ];
         return $this->getConditionsByFilters($filters);
