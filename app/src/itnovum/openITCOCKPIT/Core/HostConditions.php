@@ -63,6 +63,11 @@ class HostConditions {
     private $hostnameRegex = '';
 
     /**
+     * @var null|int
+     */
+    private $satellite_id = null;
+
+    /**
      * HostConditions constructor.
      * @param array $conditions
      */
@@ -123,6 +128,9 @@ class HostConditions {
 
         if ($this->includeDisabled() === false) {
             $conditions['Hosts.disabled'] = 0;
+        }
+        if($this->getSatelliteId() !== null){
+            $conditions['Hosts.satellite_id'] = $this->getSatelliteId();
         }
 
         return $conditions;
@@ -203,6 +211,21 @@ class HostConditions {
      */
     public function setHostnameRegex($hostnameRegex) {
         $this->hostnameRegex = $hostnameRegex;
+    }
+
+    /**
+     * @param int $satellite_id
+     * @return mixed
+     */
+    public function setSatelliteId($satellite_id) {
+        $this->satellite_id = $satellite_id;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getSatelliteId() {
+        return $this->satellite_id;
     }
 
 }
