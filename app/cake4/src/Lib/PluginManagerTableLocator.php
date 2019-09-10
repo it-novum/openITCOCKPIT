@@ -37,7 +37,6 @@ class PluginManagerTableLocator extends TableLocator {
      * @return \Cake\ORM\Table
      */
     public function get($alias, array $options = []) :Table {
-        FileDebugger::dump($alias);
         $table = parent::get($alias, $options);
 
         //Associated Plugins with Core models
