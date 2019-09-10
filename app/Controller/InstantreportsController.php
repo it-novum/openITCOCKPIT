@@ -26,11 +26,13 @@ use App\Form\InstantreportForm;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\InstantreportsTable;
 use App\Model\Table\SystemfailuresTable;
+use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
@@ -259,7 +261,56 @@ class InstantreportsController extends AppController {
             throw new NotFoundException(__('Instant report not found'));
         }
         $instantReport = $InstantreportsTable->getInstantreportByIdCake4($instantReportId);
-        $instantReportData = $InstantreportsTable->getHostsAndServicesByInstantreport($instantReport, $MY_RIGHTS);
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($instantReport->get('timeperiod_id'));
+        if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'timeperiod_id' => [
+                    'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+        $instantReportObjects = $InstantreportsTable->getHostsAndServicesByInstantreport($instantReport, $MY_RIGHTS);
+        if (empty($instantReportObjects)) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'instantreport_objects' => [
+                    'empty' => 'There are no elements for instant report available.'
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $timeSlices = Hash::insert(
+            DaterangesCreator::createDateRanges(
+                $fromDate,
+                $toDate,
+                $timeperiod['Timeperiod']['timeperiod_timeranges']
+            ), '{n}.is_downtime', false);
+        $totalTime = Hash::apply(
+            array_map(function ($timeSlice) {
+                return $timeSlice['end'] - $timeSlice['start'];
+            }, $timeSlices),
+            '{n}',
+            'array_sum'
+        );
+
+        if($instantReport->get('downtimes') === 1){
+            /** @var $SystemfailuresTable SystemfailuresTable */
+            $SystemfailuresTable = TableRegistry::getTableLocator()->get('Systemfailures');
+            $globalDowntimes = $SystemfailuresTable->getSystemfailuresForReporting(
+                $fromDate,
+                $toDate
+            );
+FileDebugger::dump($globalDowntimes);
+        }
+
+
         return;
         $instantReportDetails['onlyHosts'] = ($instantReport['Instantreport']['evaluation'] == 1);
         $instantReportDetails['onlyServices'] = ($instantReport['Instantreport']['evaluation'] == 3);

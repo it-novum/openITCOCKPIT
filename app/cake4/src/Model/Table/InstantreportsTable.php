@@ -402,6 +402,7 @@ class InstantreportsTable extends Table {
                 if (empty($hostgroupsIds)) {
                     return $instantReportObjects;
                 }
+
                 $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
                 $hostgroups = $HostgroupsTable->find()
                     ->contain([
@@ -831,6 +832,9 @@ class InstantreportsTable extends Table {
                     ->toArray();
 
                 foreach ($services as $service) {
+                    if(!isset($instantReportObjects['Hosts'])){
+                        $instantReportObjects['Hosts'] = [];
+                    }
                     if (!array_key_exists($service['Hosts']['id'], $instantReportObjects['Hosts'])) {
                         $instantReportObjects['Hosts'][$service['Hosts']['id']] = [
                             'id'   => $service['Hosts']['id'],
