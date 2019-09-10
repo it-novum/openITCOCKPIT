@@ -18,7 +18,8 @@
             "App\\": "cake4/src/",
             "MkModule\\": "cake4/plugins/MkModule/src/",
             "Statusengine2Module\\": "cake4/plugins/Statusengine2Module/src/",
-            "DistributeModule\\": "cake4/plugins/DistributeModule/src/"
+            "DistributeModule\\": "cake4/plugins/DistributeModule/src/",
+            "EventcorrelationModule\\": "cake4/plugins/EventcorrelationModule/src/"
         },
         "files": [
             "Vendor/imageSmoothArc.php"
