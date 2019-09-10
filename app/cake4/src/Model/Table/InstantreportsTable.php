@@ -11,7 +11,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
 
@@ -400,8 +399,10 @@ class InstantreportsTable extends Table {
             case 1: //Host groups
                 /** @var  $HostgroupsTable HostgroupsTable */
                 $hostgroupsIds = Hash::extract($instantReport, 'hostgroups.{n}.id');
+                if (empty($hostgroupsIds)) {
+                    return $instantReportObjects;
+                }
                 $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-
                 $hostgroups = $HostgroupsTable->find()
                     ->contain([
                         'Containers',
@@ -410,7 +411,7 @@ class InstantreportsTable extends Table {
                         'hosttemplates' => function (Query $query) use ($instantReport, $MY_RIGHTS) {
                             $query->disableAutoFields()
                                 ->select([
-                                    'id',
+                                    'id'
                                 ])
                                 ->contain([
                                     'hosts' => function (Query $query) use ($instantReport, $MY_RIGHTS) {
@@ -548,6 +549,9 @@ class InstantreportsTable extends Table {
                 break;
             case 2: //Hosts
                 $hostsIds = Hash::extract($instantReport, 'hosts.{n}.id');
+                if (empty($hostsIds)) {
+                    return $instantReportObjects;
+                }
                 /** @var  $HostsTable HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
                 if ($instantReport->get('evaluation') === 1) {
@@ -632,52 +636,57 @@ class InstantreportsTable extends Table {
             case 3: //Service groups
                 /** @var  $ServicegroupsTable ServicegroupsTable */
                 $servicegroupsIds = Hash::extract($instantReport, 'servicegroups.{n}.id');
+                if (empty($servicegroupsIds)) {
+                    return $instantReportObjects;
+                }
                 $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
                 $servicegroups = $ServicegroupsTable->find()
                     ->contain([
+                        'Containers',
                         // Get all services that are in this service group through the service template AND
                         // which does NOT have any own service groups
                         'servicetemplates' => function (Query $query) use ($MY_RIGHTS) {
                             $query->disableAutoFields()
                                 ->select([
-                                    'id',
+                                    'Servicetemplates.id'
                                 ])
                                 ->contain([
                                     'services' => function (Query $query) use ($MY_RIGHTS) {
                                         $query->disableAutoFields()
-                                            ->contain([
-                                                'Servicetemplates' => [
-                                                    'fields' => [
-                                                        'Servicetemplates.name'
-                                                    ]
-                                                ],
-                                                'hosts'            => function (Query $q) use ($MY_RIGHTS) {
-                                                    $q->disableAutoFields()
-                                                        ->select([
-                                                            'Hosts.id',
-                                                            'Hosts.uuid',
-                                                            'Hosts.name'
-                                                        ]);
-                                                    if (empty($MY_RIGHTS)) {
-                                                        return $q;
-                                                    }
-                                                    $q->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                                                        if (!empty($MY_RIGHTS)) {
-                                                            return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
-                                                        }
-                                                        return $q;
-                                                    });
-                                                }
-                                            ])
                                             ->select([
                                                 'Services.id',
                                                 'Services.uuid',
                                                 'Services.name',
                                                 'Services.servicetemplate_id',
                                                 'Servicegroups.id'
-                                            ])
-                                            ->leftJoinWith('Servicegroups')
+                                            ]);
+
+                                        $query->contain([
+                                            'servicetemplates' => [
+                                                'fields' => [
+                                                    'Servicetemplates.name'
+                                                ]
+                                            ],
+                                            'hosts'            => function (Query $q) use ($MY_RIGHTS) {
+                                                $q->disableAutoFields()
+                                                    ->select([
+                                                        'Hosts.id',
+                                                        'Hosts.uuid',
+                                                        'Hosts.name'
+                                                    ]);
+                                                if (empty($MY_RIGHTS)) {
+                                                    return $q;
+                                                }
+                                                $q->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                                                    if (!empty($MY_RIGHTS)) {
+                                                        return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+                                                    }
+                                                    return $q;
+                                                });
+                                            }
+                                        ]);
+                                        $query->leftJoinWith('Servicegroups')
                                             ->whereNull('Servicegroups.id');
                                         return $query;
                                     }
@@ -731,73 +740,114 @@ class InstantreportsTable extends Table {
                     ->disableHydration()
                     ->all()
                     ->toArray();
-                FileDebugger::dump($servicegroups);
+
                 foreach ($servicegroups as $servicegroup) {
-                    FileDebugger::dump('Services');
-                    FileDebugger::dump($servicegroup['services']);
+                    // services from service group
                     foreach ($servicegroup['services'] as $service) {
-                        //    FileDebugger::dump($service);
-                    }
-                }
-                if (!empty($servicegroup['servicetemplates']['services'])) {
-                    //    FileDebugger::dump('Servicestemplates');
-                    foreach ($servicegroup['servicetemplates']['services'] as $service) {
-                        //        FileDebugger::dump($service);
-                    }
-                }
-                /*
-                foreach ($hostgroups as $hostgroup) {
-                    foreach ($hostgroup['hosts'] as $host) {
-                        $instantReportObjects['Hosts'][$host['id']] = [
-                            'id'   => $host['id'],
-                            'uuid' => $host['uuid'],
-                            'name' => $host['name']
-                        ];
-                        if (!empty($host['services'])) {
-                            foreach ($host['services'] as $service) {
-                                $instantReportObjects['Hosts'][$host['id']]['Services'][$service['id']] = [
-                                    'id'   => $service['id'],
-                                    'uuid' => $service['uuid'],
-                                    'name' => ($service['name']) ? $service['name'] : $service['servicetemplate']['name']
-                                ];
-                            }
+                        if (!array_key_exists($service['Hosts']['id'], $instantReportObjects['Hosts'])) {
+                            $instantReportObjects['Hosts'][$service['Hosts']['id']] = [
+                                'id'   => $service['Hosts']['id'],
+                                'uuid' => $service['Hosts']['uuid'],
+                                'name' => $service['Hosts']['name']
+                            ];
+                        }
+                        if ($instantReport->get('evaluation') > 1) {
+                            $instantReportObjects['Hosts'][$service['Hosts']['id']]['Services'][$service['id']] = [
+                                'id'   => $service['id'],
+                                'uuid' => $service['uuid'],
+                                'name' => ($service['name']) ? $service['name'] : $service['Servicetemplates']['name']
+                            ];
                         }
                     }
 
-                    if (!empty($hostgroup['hosttemplates']['hosts'])) {
-                        foreach ($hostgroup['hosttemplates']['hosts'] as $host) {
-                            if (isset($instantReportObjects['Hosts'][$host['id']])) {
-                                continue;
-                            }
-                            $instantReportObjects['Hosts'][$host['id']] = [
-                                'id'   => $host['id'],
-                                'uuid' => $host['uuid'],
-                                'name' => $host['name']
-                            ];
-                            if (!empty($host['services'])) {
+                    // services from service group over service template association
+                    if (!empty($servicegroup['servicetemplates'])) {
+                        foreach ($servicegroup['servicetemplates'] as $servicetemplateWithServices) {
+                            foreach ($servicetemplateWithServices['services'] as $service) {
+                                if (!array_key_exists($service['Hosts']['id'], $instantReportObjects['Hosts'])) {
+                                    $instantReportObjects['Hosts'][$service['Hosts']['id']] = [
+                                        'id'   => $service['Hosts']['id'],
+                                        'uuid' => $service['Hosts']['uuid'],
+                                        'name' => $service['Hosts']['name']
+                                    ];
+                                }
+                                if ($instantReport->get('evaluation') > 1) {
 
-                                foreach ($host['services'] as $service) {
-                                    if (isset($instantReportObjects['Hosts'][$host['id']]['Services'][$service['id']])) {
-                                        continue;
-                                    }
-                                    $instantReportObjects['Hosts'][$host['id']]['Services'][$service['id']] = [
+                                    $instantReportObjects['Hosts'][$service['Hosts']['id']]['Services'][$service['id']] = [
                                         'id'   => $service['id'],
                                         'uuid' => $service['uuid'],
-                                        'name' => ($service['name']) ? $service['name'] : $service['servicetemplate']['name']
+                                        'name' => ($service['name']) ? $service['name'] : $service['Servicetemplates']['name']
                                     ];
                                 }
                             }
                         }
                     }
+
                 }
-                */
                 break;
             case 4: //Services
+                $servicesIds = Hash::extract($instantReport, 'services.{n}.id');
+                if (empty($servicesIds)) {
+                    return $instantReportObjects;
+                }
                 /** @var  $ServicesTable ServicesTable */
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                $services = $ServicesTable->find()
+                    ->select([
+                        'Services.id',
+                        'Services.name',
+                        'Services.uuid'
+                    ])
+                    ->contain([
+                        'servicetemplates' => [
+                            'fields' => [
+                                'Servicetemplates.name'
+                            ]
+                        ],
+                        'hosts'            => function (Query $q) use ($MY_RIGHTS) {
+                            $q->disableAutoFields()
+                                ->select([
+                                    'Hosts.id',
+                                    'Hosts.uuid',
+                                    'Hosts.name'
+                                ]);
+                            if (empty($MY_RIGHTS)) {
+                                return $q;
+                            }
+                            $q->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                                if (!empty($MY_RIGHTS)) {
+                                    return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+                                }
+                                return $q;
+                            });
+                        }
+                    ])
+                    ->where([
+                        'Services.id IN ' => $servicesIds
+                    ])
+                    ->distinct()
+                    ->disableHydration()
+                    ->all()
+                    ->toArray();
+
+                foreach ($services as $service) {
+                    if (!array_key_exists($service['Hosts']['id'], $instantReportObjects['Hosts'])) {
+                        $instantReportObjects['Hosts'][$service['Hosts']['id']] = [
+                            'id'   => $service['Hosts']['id'],
+                            'uuid' => $service['Hosts']['uuid'],
+                            'name' => $service['Hosts']['name']
+                        ];
+                    }
+                    if ($instantReport->get('evaluation') > 1) {
+                        $instantReportObjects['Hosts'][$service['Hosts']['id']]['Services'][$service['id']] = [
+                            'id'   => $service['id'],
+                            'uuid' => $service['uuid'],
+                            'name' => ($service['name']) ? $service['name'] : $service['Servicetemplates']['name']
+                        ];
+                    }
+                }
                 break;
         }
-        //FileDebugger::dump($instantReportObjects);
         return $instantReportObjects;
     }
 }
