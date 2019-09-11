@@ -95,13 +95,13 @@ class HoststatusIcon {
 
         switch ($this->state) {
             case 0:
-                return 'txt-color-green';
+                return 'up';
 
             case 1:
-                return 'txt-color-red';
+                return 'down';
 
             default:
-                return 'txt-color-blueLight';
+                return 'unreachable';
         }
     }
 

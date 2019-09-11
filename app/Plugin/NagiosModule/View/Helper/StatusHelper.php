@@ -23,40 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class StatusHelper
+ * @deprecated
+ */
 class StatusHelper extends AppHelper {
 
-    public function humanHostStatus($state = 2, $href = 'javascript:void(0)') {
-        switch ($state) {
-            case 0:
-                return ['state' => 0, 'human_state' => __('Ok'), 'html_icon' => '<a href="' . $href . '" class="btn btn-success status-circle"></a>', 'icon' => 'glyphicon glyphicon-ok'];
-                break;
+    // Delete with CakePHP 4
 
-            case 1:
-                return ['state' => 1, 'human_state' => __('Down'), 'html_icon' => '<a href="' . $href . '" class="btn btn-danger status-circle" ></a>', 'icon' => 'fa fa-exclamation'];
-                break;
-
-            default:
-                return ['state' => 2, 'human_state' => __('Unreachable'), 'html_icon' => '<a href="' . $href . '" class="btn btn-default status-circle" ></a>', 'icon' => 'fa fa-warning'];
-        }
-    }
-
-    public function humanServiceStatus($state = 3, $href = 'javascript:void(0)') {
-        switch ($state) {
-            case 0:
-                return ['state' => 0, 'human_state' => __('Ok'), 'html_icon' => '<a href="' . $href . '" class="btn btn-success status-circle"></a>', 'icon' => 'glyphicon glyphicon-ok'];
-                break;
-
-            case 1:
-                return ['state' => 1, 'human_state' => __('Warning'), 'html_icon' => '<a href="' . $href . '" class="btn btn-warning status-circle" ></a>', 'icon' => 'fa fa-exclamation'];
-                break;
-            case 2:
-                return ['state' => 2, 'human_state' => __('Critical'), 'html_icon' => '<a href="' . $href . '" class="btn btn-danger status-circle" ></a>', 'icon' => 'fa fa-exclamation'];
-                break;
-            default:
-                return ['state' => 3, 'human_state' => __('Unreachable'), 'html_icon' => '<a href="' . $href . '" class="btn btn-default status-circle" ></a>', 'icon' => 'fa fa-warning'];
-        }
-    }
-
+    /**
+     * @param int $state
+     * @return string
+     * @deprecated
+     */
     function HostStatusColor($state = 2) {
         switch ($state) {
             case 0:
@@ -70,19 +49,4 @@ class StatusHelper extends AppHelper {
         }
     }
 
-    function ServiceStatusColor($state = 2) {
-        switch ($state) {
-            case 0:
-                return 'txt-color-green';
-
-            case 1:
-                return 'txt-color-orangeDark';
-
-            case 2:
-                return 'txt-color-red';
-
-            default:
-                return 'txt-color-blueLight';
-        }
-    }
 }

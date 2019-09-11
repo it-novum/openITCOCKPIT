@@ -102,16 +102,16 @@ class ServicestatusIcon {
 
         switch ($this->state) {
             case 0:
-                return 'txt-color-green';
+                return 'ok';
 
             case 1:
                 return 'warning';
 
             case 2:
-                return 'txt-color-red';
+                return 'critical';
 
             default:
-                return 'txt-color-blueLight';
+                return 'unknown';
         }
     }
 

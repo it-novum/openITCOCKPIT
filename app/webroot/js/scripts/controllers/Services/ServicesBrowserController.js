@@ -265,7 +265,7 @@ angular.module('openITCOCKPIT')
             switch($scope.servicestatus.currentState){
                 case 0:
                 case '0':
-                    return 'txt-color-green';
+                    return 'ok';
 
                 case 1:
                 case '1':
@@ -273,11 +273,11 @@ angular.module('openITCOCKPIT')
 
                 case 2:
                 case '2':
-                    return 'txt-color-red';
+                    return 'critical';
 
                 case 3:
                 case '3':
-                    return 'txt-color-blueLight';
+                    return 'unknown';
             }
             return 'txt-primary';
         };

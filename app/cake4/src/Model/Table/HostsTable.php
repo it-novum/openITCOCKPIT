@@ -56,7 +56,7 @@ class HostsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('hosts');
@@ -166,7 +166,7 @@ class HostsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -430,7 +430,7 @@ class HostsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
 
         return $rules;
@@ -924,6 +924,90 @@ class HostsTable extends Table {
 
         $query->disableHydration();
         $query->group(['Hosts.id']);
+        if (!empty($HostConditions->getOrder())) {
+            $query->order($HostConditions->getOrder());
+        }
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param HostConditions $HostConditions
+     * @param null|PaginateOMat $PaginateOMat
+     * @return array
+     */
+    public function getHostsByHostConditionsWithServices(HostConditions $HostConditions, $PaginateOMat = null) {
+        $MY_RIGHTS = $HostConditions->getContainerIds();
+
+        $query = $this->find('all');
+        $query->select([
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.name',
+            'Hosts.description',
+            'Hosts.active_checks_enabled',
+            'Hosts.address',
+            'Hosts.satellite_id',
+            'Hosts.container_id',
+            'Hosts.tags',
+        ]);
+
+        $query->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+        $query->contain([
+            'HostsToContainersSharing'
+        ]);
+
+        $where = $HostConditions->getWhereForFind();
+
+        if ($HostConditions->getHostIds()) {
+            $hostIds = $HostConditions->getHostIds();
+            if (!is_array($hostIds)) {
+                $hostIds = [$hostIds];
+            }
+
+            $where['Hosts.id IN'] = $hostIds;
+        }
+
+        if (isset($where['Hosts.keywords rlike'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $where['Hosts.keywords rlike'],
+                'string',
+                'RLIKE'
+            );
+            unset($where['Hosts.keywords rlike']);
+        }
+
+        if (isset($where['Hosts.not_keywords not rlike'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $where['Hosts.not_keywords not rlike'],
+                'string',
+                'NOT RLIKE'
+            );
+            unset($where['Hosts.not_keywords not rlike']);
+        }
+
+
+        $query->where($where);
+
+        $query->disableHydration();
+        $query->group(['Hosts.id']);
         $query->order([
             'Hosts.name' => 'asc'
         ]);
@@ -955,7 +1039,7 @@ class HostsTable extends Table {
         $containerIds = array_unique($containerIds);
 
         $_where = [
-            'Hosts.disabled' => 0
+            'Hosts.disabled IN' => [0]
         ];
 
         $where = Hash::merge($_where, $where);
@@ -1587,6 +1671,17 @@ class HostsTable extends Table {
      */
     public function existsById($id) {
         return $this->exists(['Hosts.id' => $id]);
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsByIdAndType($id, $type) {
+        return $this->exists([
+            'Hosts.id'        => $id,
+            'Hosts.host_type' => $type
+        ]);
     }
 
     /**

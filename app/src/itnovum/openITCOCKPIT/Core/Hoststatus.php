@@ -217,16 +217,11 @@ class Hoststatus {
         $this->UserTime = $UserTime;
     }
 
-    public function getHumanHoststatus($href = 'javascript:void(0)', $style = '') {
-        $Icon = new HoststatusIcon($this->currentState, $href, $style);
-        return $Icon->asArray();
-    }
-
     public function getHostFlappingIconColored($class = '') {
         $stateColors = [
             0 => 'ok',
             1 => 'critical',
-            2 => '',
+            2 => 'unreachable',
         ];
         if ($this->isFlapping() === true) {
             if ($this->currentState !== null) {
@@ -256,13 +251,13 @@ class Hoststatus {
 
         switch ($this->currentState) {
             case 0:
-                return 'txt-color-green';
+                return 'up';
 
             case 1:
-                return 'txt-color-red';
+                return 'down';
 
             default:
-                return 'txt-color-blueDark';
+                return 'unreachable';
         }
     }
 
@@ -271,22 +266,25 @@ class Hoststatus {
      *
      * @param int $state the current status of a Host
      *
-     * @return array which contains the human state and the css class
+     * @return string
      */
     function HostStatusBackgroundColor() {
-        $state = ($this->currentState === null) ? 2 : $this->currentState;
+        if($this->currentState === null){
+            return 'bg-primary';
+        }
+
         $background_color = [
-            0 => 'bg-color-green',
-            1 => 'bg-color-red',
-            2 => 'bg-color-blueLight',
+            0 => 'bg-up',
+            1 => 'bg-down',
+            2 => 'bg-unreachable',
         ];
 
-        return $background_color[$state];
+        return $background_color[$this->currentState()];
     }
 
     /**
      * Return the host state as string
-     * @return state as string (up, down, unreachable)
+     * @return  string (up, down, unreachable)
      */
     function HostStatusAsString() {
         if ($this->currentState === null) {
@@ -437,34 +435,6 @@ class Hoststatus {
     }
 
     /**
-     * Check if there is a difference between monitoring hoststatus flap_detection_ebabled and the itcockpit database
-     * configuration If yes it will return the current setting from $hostatus This can happen, if a user disable the
-     * flap detection with an external command, but not in the host configuration
-     *
-     * @param array $host ['Host']['flap_detection_enabled']
-     *
-     * @return array with the flap detection settings. Array keys: 'string', 'html' and 'value'
-     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-     * @since  3.0
-     */
-    public function compareHostFlapDetectionWithMonitoring($flapDetectionEnabledFromConfig) {
-        if ($flapDetectionEnabledFromConfig != $this->flap_detection_enabled) {
-            //Flapdetection was temporary en- or disabled by an external command
-            if ($this->flap_detection_enabled) {
-                return ['string' => __('Temporary on'), 'html' => '<a data-original-title="' . __('Difference to configuration detected') . '" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-greenLight">' . __('Temporary on') . '</span>', 'value' => $this->flap_detection_enabled];
-            }
-
-            return ['string' => __('Temporary off'), 'html' => '<a data-original-title="' . __('Difference to configuration detected') . '" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-redLight">' . __('Temporary off') . '</span>', 'value' => $this->flap_detection_enabled];
-        }
-
-        if ($flapDetectionEnabledFromConfig == 1) {
-            return ['string' => __('On'), 'html' => '<span class="label bg-color-green">' . __('On') . '</span>', 'value' => $flapDetectionEnabledFromConfig];
-        }
-
-        return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">' . __('Off') . '</span>', 'value' => $flapDetectionEnabledFromConfig];
-    }
-
-    /**
      * @return array
      */
     public function toArray() {
@@ -489,6 +459,7 @@ class Hoststatus {
         $arr['problemHasBeenAcknowledged'] = $this->isAcknowledged();
         $arr['isInMonitoring'] = $this->isInMonitoring();
         $arr['humanState'] = $this->HostStatusAsString();
+        $arr['cssClass'] = $this->HostStatusBackgroundColor();
         return $arr;
     }
 

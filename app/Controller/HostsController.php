@@ -332,7 +332,6 @@ class HostsController extends AppController {
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
 
         /** @var $HostsTable HostsTable */

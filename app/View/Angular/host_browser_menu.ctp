@@ -69,7 +69,7 @@
                         <i class="fa fa-book fa-lg"></i>
                     </a>
 
-                    <span ng-show="config.docuExists" class="badge bg-color-green docu-badge">
+                    <span ng-show="config.docuExists" class="badge bg-up docu-badge">
             <i class="fa fa-check"></i>
         </span>
                 </div>
