@@ -84,11 +84,13 @@ class StatehistoryConverter {
         return $evaluationData;
     }
 
+
     /**
      * @param $timeSlices
      * @param $stateHistoryArray
      * @param $checkHardState
      * @param bool $isHost
+     * @param bool $outagesSummary
      * @return mixed
      */
     public function generateReportDataWithOutages($timeSlices, $stateHistoryArray, $checkHardState, $isHost = false) {

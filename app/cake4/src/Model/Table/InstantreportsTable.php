@@ -295,7 +295,7 @@ class InstantreportsTable extends Table {
     /**
      * @param int $id
      * @param bool $enableHydration
-     * @return array
+     * @return array| Instantreport
      */
     public function getInstantreportByIdCake4($id, $enableHydration = true) {
         $query = $this->find()
