@@ -23,21 +23,26 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Form\InstantreportForm;
+use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\InstantreportsTable;
 use App\Model\Table\SystemfailuresTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
+use Statusengine2Module\Model\Table\StatehistoryHostsTable;
 
 
 /**
@@ -48,6 +53,7 @@ use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
  * @property StatehistoryHost $StatehistoryHost
  * @property DowntimeHost $DowntimeHost
  * @property StatehistoryService $StatehistoryService
+ * @property DbBackend $DbBackend
  * @property AppPaginatorComponent $Paginator
  */
 class InstantreportsController extends AppController {
@@ -245,12 +251,16 @@ class InstantreportsController extends AppController {
         $this->set('_serialize', ['downtimeReport']);
     }
 
+
     /**
      * @param $instantReportId
      * @param $fromDate
      * @param $toDate
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     private function generateReport($instantReportId, $fromDate, $toDate) {
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = UserTime::fromUser($User);
         /** @var $InstantreportsTable InstantreportsTable */
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
         $MY_RIGHTS = [];
@@ -300,14 +310,114 @@ class InstantreportsController extends AppController {
             'array_sum'
         );
 
-        if($instantReport->get('downtimes') === 1){
+        $globalDowntimes = [];
+        if ($instantReport->get('downtimes') === 1) {
             /** @var $SystemfailuresTable SystemfailuresTable */
             $SystemfailuresTable = TableRegistry::getTableLocator()->get('Systemfailures');
             $globalDowntimes = $SystemfailuresTable->getSystemfailuresForReporting(
                 $fromDate,
                 $toDate
             );
-FileDebugger::dump($globalDowntimes);
+        }
+        $instantReportObjects['Hosts'] = Hash::sort($instantReportObjects['Hosts'], '{n}.name', 'ASC');
+        foreach ($instantReportObjects['Hosts'] as $hostId => $instantReportHostData) {
+            if ($instantReport->get('downtimes') === 1) {
+                $DowntimeHostConditions = new DowntimeHostConditions();
+                $DowntimeHostConditions->setFrom($fromDate);
+                $DowntimeHostConditions->setTo($toDate);
+                $DowntimeHostConditions->setContainerIds($this->MY_RIGHTS);
+                $DowntimeHostConditions->setOrder(['DowntimeHosts.scheduled_start_time' => 'asc']);
+                $DowntimeHostConditions->setHostUuid($instantReportHostData['uuid']);
+                /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
+                $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
+                $instantReportObjects['Hosts'][$hostId]['downtimes'] = $DowntimehistoryHostsTable->getDowntimesForReporting(
+                    $DowntimeHostConditions
+                );
+            }
+            //Process conditions
+            /** @var $StatehistoryHostConditions StatehistoryHostConditions */
+            $StatehistoryHostConditions = new StatehistoryHostConditions();
+            $StatehistoryHostConditions->setOrder(['StatehistoryHosts.state_time' => 'desc']);
+            if ($instantReport->get('reflection') === 2) { // type 2 hard state only
+                $StatehistoryHostConditions->setHardStateTypeAndUpState(true); // 1 => Hard State
+            }
+            $StatehistoryHostConditions->setFrom($fromDate);
+            $StatehistoryHostConditions->setTo($toDate);
+            $StatehistoryHostConditions->setHostUuid($instantReportHostData['uuid']);
+
+            /** @var StatehistoryHostsTable $StatehistoryHostsTable */
+            $StatehistoryHostsTable = $this->DbBackend->getStatehistoryHostsTable();
+
+            /** @var \Statusengine2Module\Model\Entity\StatehistoryHost[] $statehistoriesHost */
+            $statehistoriesHost = $StatehistoryHostsTable->getStatehistoryIndex($StatehistoryHostConditions);
+
+            if (empty($statehistoriesHost)) {
+                $record = $StatehistoryHostsTable->getLastRecord($StatehistoryHostConditions);
+                if (!empty($record)) {
+                    $statehistoriesHost[] = $record->set('state_time', $fromDate);
+                }
+            }
+
+            if (empty($statehistoriesHost)) {
+                $HoststatusTable = $this->DbBackend->getHoststatusTable();
+                $HoststatusFields = new HoststatusFields($this->DbBackend);
+                $HoststatusFields
+                    ->currentState()
+                    ->lastHardState()
+                    ->isHardstate()
+                    ->lastStateChange();
+                $hoststatus = $HoststatusTable->byUuid($instantReportHostData['uuid'], $HoststatusFields);
+                if (!empty($hoststatus)) {
+                    /** @var \itnovum\openITCOCKPIT\Core\Hoststatus $Hoststatus */
+                    $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
+                    if ($Hoststatus->getLastStateChange() <= $fromDate) {
+                        $stateHistoryHostTmp = [
+                            'StatehistoryHost' => [
+                                'state_time'      => $fromDate,
+                                'state'           => $Hoststatus->currentState(),
+                                'last_state'      => $Hoststatus->currentState(),
+                                'last_hard_state' => $Hoststatus->getLastHardState(),
+                                'state_type'      => (int)$Hoststatus->isHardState()
+                            ]
+                        ];
+
+                        /** @var \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost $StatehistoryHost */
+                        $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
+                        $statehistoriesHost[] = $StatehistoryHost;
+                    }
+                }
+            }
+
+            foreach ($statehistoriesHost as $statehistoryHost) {
+                /** @var StatehistoryHostsTable|\itnovum\openITCOCKPIT\Core\Views\StatehistoryHost $statehistoryHost */
+                $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistoryHost->toArray(), $UserTime);
+                $allStatehistories[] = $StatehistoryHost->toArray();
+            }
+
+            FileDebugger::dump($allStatehistories);
+
+            $hostUuid = $instantReportHostData['uuid'];
+
+            if (!empty($instantReportHostData['Services'])) {
+                $instantReportHostData['Services'] = Hash::sort($instantReportHostData['Services'], '{n}.name', 'ASC');
+                foreach ($instantReportHostData['Services'] as $serviceId => $service) {
+                    if ($instantReport->get('downtimes') === 1) {
+                        $DowntimeServiceConditions = new DowntimeServiceConditions();
+                        $DowntimeServiceConditions->setFrom($fromDate);
+                        $DowntimeServiceConditions->setTo($toDate);
+                        $DowntimeServiceConditions->setContainerIds($this->MY_RIGHTS);
+                        $DowntimeServiceConditions->setOrder(['DowntimeServices.scheduled_start_time' => 'asc']);
+                        $DowntimeServiceConditions->setServiceUuid($service['uuid']);
+                        /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
+                        $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
+                        $instantReportObjects['Hosts'][$hostId]['Services'][$serviceId]['downtimes'] = $DowntimehistoryServicesTable->getDowntimesForReporting(
+                            $DowntimeServiceConditions
+                        );
+                    }
+                    $serviceUuid = $service['uuid'];
+
+                }
+            }
         }
 
 

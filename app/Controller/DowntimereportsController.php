@@ -291,6 +291,7 @@ class DowntimereportsController extends AppController {
             $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
 
             $downtimes['Services'] = $DowntimehistoryServicesTable->getDowntimesForReporting($DowntimeServiceConditions);
+            /** @var \Statusengine2Module\Model\Entity\DowntimeService $serviceDowntime */
             foreach ($downtimes['Services'] as $serviceDowntime) {
                 $hosts[$serviceDowntime->get('Hosts')['uuid']] = $serviceDowntime->get('Hosts');
                 $services[$serviceDowntime->get('Services')['uuid']] = [

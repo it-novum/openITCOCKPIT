@@ -58,7 +58,7 @@
         <div class="btn-group">
             <?php if ($this->Acl->hasPermission('edit')): ?>
                 <a ui-sref="HostgroupsEdit({id:post.Hostgroup.id})"
-                   class="btn btn-default btn-md">&nbsp;<i class="fa fa-md fa-cog"></i>
+                   class="btn btn-default btn-md" ng-show="hostgroup.Hostgroup.allowEdit">&nbsp;<i class="fa fa-md fa-cog"></i>
                 </a>
             <?php else: ?>
                 <a href="javascript:void(0);" class="btn btn-default btn-md">&nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -70,7 +70,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-right" ng-if="hostgroup.Hosts.length > 0">
                 <?php if ($this->Acl->hasPermission('edit')): ?>
-                    <li>
+                    <li ng-show="hostgroup.Hostgroup.allowEdit">
                         <a ui-sref="HostgroupsEdit({id:post.Hostgroup.id})">
                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                         </a>
