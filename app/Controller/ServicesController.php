@@ -1335,7 +1335,7 @@ class ServicesController extends AppController {
 
         //Check permissions for Contact groups
         foreach ($mergedService['contactgroups'] as $key => $contactgroup) {
-            $mergedService['contactgroups'][$key]['allowEdit'] = $this->isWritableContainer($contactgroup['containers']['parent_id']);
+            $mergedService['contactgroups'][$key]['allowEdit'] = $this->isWritableContainer($contactgroup['container']['parent_id']);
         }
 
         //Load host and service status
