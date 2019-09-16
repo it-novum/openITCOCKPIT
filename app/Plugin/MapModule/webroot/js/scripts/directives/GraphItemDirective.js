@@ -177,8 +177,8 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout,
 
                 var gaugeData = [];
                 for(var timestamp in performance_data.data){
-                    //graph_data[dsCount].push([timestamp, performance_data[dsCount].data[timestamp]]);
-                    gaugeData.push([timestamp, performance_data.data[timestamp]]);
+                    var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_offset * 1000));
+                    gaugeData.push([frontEndTimestamp, performance_data.data[timestamp]]);
                 }
 
 
