@@ -223,8 +223,8 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
 
                     var gaugeData = [];
                     for(var timestamp in performance_data[dsCount].data){
-                        //graph_data[dsCount].push([timestamp, performance_data[dsCount].data[timestamp]]);
-                        gaugeData.push([timestamp, performance_data[dsCount].data[timestamp]]);
+                        var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_offset * 1000));
+                        gaugeData.push([frontEndTimestamp, performance_data[dsCount].data[timestamp]]);
                     }
                     graph_data.push({
                         label: performance_data[dsCount].datasource.label,

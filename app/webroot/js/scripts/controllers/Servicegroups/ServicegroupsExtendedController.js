@@ -158,9 +158,9 @@ angular.module('openITCOCKPIT')
             for(var dsCount in performance_data){
                 graph_data[dsCount] = [];
                 for(var timestamp in performance_data[dsCount].data){
-                    graph_data[dsCount].push([timestamp, performance_data[dsCount].data[timestamp]]);
+                    var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_offset * 1000));
+                    graph_data[dsCount].push([frontEndTimestamp, performance_data[dsCount].data[timestamp]]);
                 }
-                //graph_data.push(performance_data[key].data);
             }
 
 

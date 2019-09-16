@@ -335,7 +335,8 @@ angular.module('openITCOCKPIT')
                         if(result.data.performance_data.length > 0){
                             //Append new data to current graph
                             for(var timestamp in result.data.performance_data[0].data){
-                                $scope.perfdata.data[timestamp] = result.data.performance_data[0].data[timestamp];
+                                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_offset * 1000));
+                                $scope.perfdata.data[frontEndTimestamp] = result.data.performance_data[0].data[timestamp];
                             }
                         }
                     }
@@ -482,7 +483,8 @@ angular.module('openITCOCKPIT')
 
             var graph_data = [];
             for(var timestamp in performance_data.data){
-                graph_data.push([timestamp, performance_data.data[timestamp]]);
+                var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_offset * 1000));
+                graph_data.push([frontEndTimestamp, performance_data.data[timestamp]]);
             }
 
             var options = GraphDefaultsObj.getDefaultOptions();
