@@ -2600,6 +2600,7 @@ class ServicesController extends AppController {
     }
 
     public function listToPdf() {
+        $User = new User($this->Auth);
         $ServiceFilter = new ServiceFilter($this->request);
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions();
@@ -2607,6 +2608,33 @@ class ServicesController extends AppController {
             $ServiceConditions->setIncludeDisabled(false);
             $ServiceConditions->setContainerIds($this->MY_RIGHTS);
         }
+
+        if ($ServiceControllerRequest->isRequestFromBrowser() === true) {
+            $browserContainerIds = $ServiceControllerRequest->getBrowserContainerIdsByRequest();
+            foreach ($browserContainerIds as $containerIdToCheck) {
+                if (!in_array($containerIdToCheck, $this->MY_RIGHTS)) {
+                    $this->render403();
+                    return;
+                }
+            }
+
+            $ServiceConditions->setIncludeDisabled(false);
+            $ServiceConditions->setContainerIds($browserContainerIds);
+
+            if ($User->isRecursiveBrowserEnabled()) {
+                //get recursive container ids
+                $containerIdToResolve = $browserContainerIds;
+                $containerIds = Hash::extract($this->Container->children($containerIdToResolve[0], false, ['Container.id']), '{n}.Container.id');
+                $recursiveContainerIds = [];
+                foreach ($containerIds as $containerId) {
+                    if (in_array($containerId, $this->MY_RIGHTS)) {
+                        $recursiveContainerIds[] = $containerId;
+                    }
+                }
+                $ServiceConditions->setContainerIds(array_merge($ServiceConditions->getContainerIds(), $recursiveContainerIds));
+            }
+        }
+
 
         //Default order
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([

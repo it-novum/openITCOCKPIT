@@ -2922,9 +2922,36 @@ class HostsController extends AppController {
 
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
+        $User = new User($this->Auth);
         if ($HostControllerRequest->isRequestFromBrowser() === false) {
             $HostCondition->setIncludeDisabled(false);
             $HostCondition->setContainerIds($this->MY_RIGHTS);
+        }
+
+        if ($HostControllerRequest->isRequestFromBrowser() === true) {
+            $browserContainerIds = $HostControllerRequest->getBrowserContainerIdsByRequest();
+            foreach ($browserContainerIds as $containerIdToCheck) {
+                if (!in_array($containerIdToCheck, $this->MY_RIGHTS)) {
+                    $this->render403();
+                    return;
+                }
+            }
+
+            $HostCondition->setIncludeDisabled(false);
+            $HostCondition->setContainerIds($browserContainerIds);
+
+            if ($User->isRecursiveBrowserEnabled()) {
+                //get recursive container ids
+                $containerIdToResolve = $browserContainerIds;
+                $containerIds = Hash::extract($this->Container->children($containerIdToResolve[0], false, ['Container.id']), '{n}.Container.id');
+                $recursiveContainerIds = [];
+                foreach ($containerIds as $containerId) {
+                    if (in_array($containerId, $this->MY_RIGHTS)) {
+                        $recursiveContainerIds[] = $containerId;
+                    }
+                }
+                $HostCondition->setContainerIds(array_merge($HostCondition->getContainerIds(), $recursiveContainerIds));
+            }
         }
 
         $HostCondition->setOrder($HostControllerRequest->getOrder([

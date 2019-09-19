@@ -285,7 +285,7 @@ angular.module('openITCOCKPIT')
                 passive = !$scope.filter.Servicestatus.passive;
             }
 
-            return baseUrl + $httpParamSerializer({
+            var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
@@ -301,7 +301,13 @@ angular.module('openITCOCKPIT')
                 'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Servicestatus.active_checks_enabled]': passive
-            });
+            };
+
+            if(QueryStringService.hasValue('BrowserContainerId')){
+                params['BrowserContainerId'] = QueryStringService.getValue('BrowserContainerId');
+            }
+
+            return baseUrl + $httpParamSerializer(params);
 
         };
 
