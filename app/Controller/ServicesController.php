@@ -2601,6 +2601,7 @@ class ServicesController extends AppController {
 
     public function listToPdf() {
         $User = new User($this->Auth);
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
         $ServiceFilter = new ServiceFilter($this->request);
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions();
@@ -2669,6 +2670,7 @@ class ServicesController extends AppController {
 
 
         $this->set('all_services', $all_services);
+        $this->set('UserTime', $UserTime);
 
         $filename = 'Services_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';

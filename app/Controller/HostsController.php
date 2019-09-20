@@ -2923,6 +2923,8 @@ class HostsController extends AppController {
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
         $User = new User($this->Auth);
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+
         if ($HostControllerRequest->isRequestFromBrowser() === false) {
             $HostCondition->setIncludeDisabled(false);
             $HostCondition->setContainerIds($this->MY_RIGHTS);
@@ -2982,6 +2984,7 @@ class HostsController extends AppController {
         $all_hosts = $this->{$modelName}->find('all', $query);
 
         $this->set('all_hosts', $all_hosts);
+        $this->set('UserTime', $UserTime);
 
         $filename = 'Hosts_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';
