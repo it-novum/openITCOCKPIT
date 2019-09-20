@@ -2293,7 +2293,7 @@ class MapeditorsController extends MapModuleAppController {
         $id = $this->request->data('Mapicon.id');
 
 
-        if (!$this->Maptext->exists($id)) {
+        if (!$this->Mapicon->exists($id)) {
             throw new NotFoundException();
         }
 
