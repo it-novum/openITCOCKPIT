@@ -54,7 +54,10 @@ class MemoryUsage {
             }
         }
 
-        $percentage = $meminfo['Active'] / $meminfo['MemTotal'] * 100;
+        $cached = $meminfo['Cached'] + $meminfo['SReclaimable'] - $meminfo['Shmem'];
+        $used = $meminfo['MemTotal'] - $meminfo['MemFree'] - $meminfo['Buffers'] - $cached;
+        $percentage = $used / $meminfo['MemTotal'] * 100;
+
         $state = 'ok';
         if ($percentage > 80) {
             $state = 'warning';
@@ -65,10 +68,10 @@ class MemoryUsage {
 
         $memory['memory'] = [
             'total'      => $meminfo['MemTotal'],
-            'used'       => $meminfo['Active'],
+            'used'       => $used,
             'free'       => $meminfo['MemFree'],
             'buffers'    => $meminfo['Buffers'],
-            'cached'     => $meminfo['Cached'],
+            'cached'     => $cached,
             'percentage' => round($percentage),
             'state'      => $state
         ];
