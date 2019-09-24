@@ -31,10 +31,6 @@ angular.module('openITCOCKPIT').directive('mapWidget', function($http){
             };
 
             $scope.loadMaps = function(searchString){
-                if(typeof selected === "undefined"){
-                    selected = [];
-                }
-
                 $http.get("/map_module/mapeditors/loadMapsByString.json", {
                     params: {
                         'angular': true,

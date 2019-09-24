@@ -382,7 +382,13 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             })
 
             .state('SystemdowntimesAddHostgroupdowntime', {
-                url: '/systemdowntimes/addHostgroupdowntime',
+                url: '/systemdowntimes/addHostgroupdowntime/:id',
+                params: {
+                    id: {
+                        value: null,
+                        squash: true
+                    }
+                },
                 templateUrl: "/systemdowntimes/addHostgroupdowntime.html",
                 controller: "SystemdowntimesAddHostgroupdowntimeController"
             })

@@ -55,6 +55,7 @@ angular.module('openITCOCKPIT')
                 params: {
                     'angular': true,
                     'filter[Containers.name]': searchString,
+                    'selected[]': $scope.post.Hostgroup.id
                 }
             }).then(function(result){
                 $scope.hostgroups = result.data.hostgroups;

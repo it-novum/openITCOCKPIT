@@ -113,6 +113,10 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
 
 
             var loadServices = function(searchString, selected){
+                if($scope.currentServiceId){
+                    selected = [$scope.currentServiceId];
+                }
+
                 if(typeof selected === "undefined"){
                     selected = [];
                 }

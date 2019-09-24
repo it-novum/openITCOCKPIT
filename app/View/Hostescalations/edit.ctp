@@ -93,6 +93,7 @@ Once a host escalated, contacts, contact group and notification options will be 
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="hosts"
+                                        callback="loadHosts"
                                         ng-options="host.key as host.value disable when host.disabled for host in hosts"
                                         ng-model="post.Hostescalation.hosts._ids">
                                 </select>
@@ -119,6 +120,7 @@ Once a host escalated, contacts, contact group and notification options will be 
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="hosts_excluded"
+                                        callback="loadExcludedHosts"
                                         ng-options="host.key as host.value disable when host.disabled for host in hosts_excluded"
                                         ng-model="post.Hostescalation.hosts_excluded._ids">
                                 </select>

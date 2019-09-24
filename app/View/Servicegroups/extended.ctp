@@ -49,7 +49,6 @@
 <div class="row padding-bottom-10" ng-if="servicegroups.length > 0">
     <div class="col col-xs-11">
         <select
-                ng-if="servicegroups.length > 0"
                 class="form-control"
                 chosen="servicegroups"
                 callback="loadServicegroupsCallback"

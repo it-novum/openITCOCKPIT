@@ -19,7 +19,8 @@ angular.module('openITCOCKPIT')
         $scope.loadServicetemplategroups = function(searchString, selected){
             var params = {
                 'angular': true,
-                'filter[Containers.name]': searchString
+                'filter[Containers.name]': searchString,
+                'selected[]': $scope.id
             };
 
             if(typeof selected !== "undefined"){
@@ -46,6 +47,10 @@ angular.module('openITCOCKPIT')
                 if(selected > 0){
                     params['selected[]'] = selected;
                 }
+            }
+
+            if($scope.hostId){
+                params['selected[]'] = [$scope.hostId];
             }
 
             $http.get("/hosts/loadHostsByString/1.json", {
@@ -153,7 +158,7 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            if($scope.hostId < 0){
+            if($scope.hostId <= 0){
                 return;
             }
 

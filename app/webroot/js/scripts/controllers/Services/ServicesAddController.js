@@ -171,7 +171,7 @@ angular.module('openITCOCKPIT')
 
         $scope.loadHosts = function(searchString, selected){
             if(typeof selected === "undefined"){
-                selected = [];
+                selected = $scope.post.Service.host_id;
             }
 
             $http.get("/hosts/loadHostsByString.json", {

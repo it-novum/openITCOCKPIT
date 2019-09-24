@@ -11,16 +11,12 @@ angular.module('openITCOCKPIT')
             return;
         }
 
-        $scope.loadHosts = function(searchString, selected){
-            if(typeof selected === "undefined"){
-                selected = [];
-            }
-
+        $scope.loadHosts = function(searchString){
             $http.get("/hosts/loadHostsByString/1.json", {
                 params: {
                     'angular': true,
                     'filter[Hosts.name]': searchString,
-                    'selected[]': selected,
+                    'selected[]': $scope.hostId,
                     'includeDisabled': 'false'
                 }
             }).then(function(result){

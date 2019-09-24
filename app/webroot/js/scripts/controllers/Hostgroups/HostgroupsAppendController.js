@@ -30,10 +30,15 @@ angular.module('openITCOCKPIT')
                 selected = [];
             }
 
+            if($scope.post.Hostgroup.id){
+                selected = [$scope.post.Hostgroup.id];
+            }
+
             $http.get("/hostgroups/loadHostgroupsByString.json", {
                 params: {
                     'angular': true,
-                    'filter[Containers.name]': searchString
+                    'filter[Containers.name]': searchString,
+                    'selected[]': selected
                 }
             }).then(function(result){
                 $scope.hostgroups = result.data.hostgroups;
