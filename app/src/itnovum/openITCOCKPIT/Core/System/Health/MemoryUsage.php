@@ -54,6 +54,7 @@ class MemoryUsage {
             }
         }
 
+        $cached = $meminfo['Cached'] + $meminfo['SReclaimable'] - $meminfo['Shmem'];
         $used = $meminfo['MemTotal'] - $meminfo['MemFree'] - $meminfo['Buffers'] - $meminfo['Cached'] - $meminfo['SReclaimable'];
         $percentage = $used / $meminfo['MemTotal'] * 100;
 
@@ -70,7 +71,7 @@ class MemoryUsage {
             'used'       => $used,
             'free'       => $meminfo['MemFree'],
             'buffers'    => $meminfo['Buffers'],
-            'cached'     => $meminfo['Cached'],
+            'cached'     => $cached,
             'percentage' => round($percentage),
             'state'      => $state
         ];
