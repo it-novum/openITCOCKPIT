@@ -41,9 +41,9 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 
 
         this.ContainerSelectbox.setup(this.Ajaxloader);
-        this.ContainerSelectbox.addContainerEventListener({ // Bind change event for Container Selectbox
+        this.ContainerSelectbox.addContainerEventListener({ // Bind change event for Host Selectbox
             selectBoxSelector: '#ServiceHostId',
-            event: 'change.serviceHost',
+            event: 'change.serviceHost', //callback if the host was selected to load service templates and stuff
             ajaxUrl: '/services/loadElementsByHostId/:selectBoxValue:.json',
             fieldTypes: {
                 timeperiods: '#ServiceNotifyPeriodId',
@@ -148,7 +148,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
                     'selected[]': $('#ServiceHostId').val()
                 },
                 success: function(response){
-                    ChosenAjaxObj.addOptions(response.hosts);
+                    ChosenAjaxObj.addOptions(response.hosts, true);
                 }
             });
         });
@@ -857,6 +857,8 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
             requestParams['selected'] = this.selectedHostId;
         }
 
+        //Load a few hosts to the host select box on page load.
+        //This is not the search callback!
         $.ajax({
             dataType: "json",
             url: '/hosts/loadHostsByString.json',
