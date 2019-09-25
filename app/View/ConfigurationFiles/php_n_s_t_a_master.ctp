@@ -23,9 +23,9 @@
 //  confirmation.
 
 
-use itnovum\openITCOCKPIT\ConfigGenerator\phpNstaMaster;
+use itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster;
 
-/** @var phpNstaMaster $phpNstaMaster */
+/** @var phpNSTAMaster $phpNstaMaster */
 ?>
 
 
