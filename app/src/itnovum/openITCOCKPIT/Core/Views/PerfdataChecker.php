@@ -25,8 +25,12 @@
 namespace itnovum\openITCOCKPIT\Core\Views;
 
 
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
+use itnovum\openITCOCKPIT\Graphite\GraphiteConfig;
+use itnovum\openITCOCKPIT\Graphite\GraphiteLoader;
+use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 
 class PerfdataChecker {
 
@@ -51,17 +55,24 @@ class PerfdataChecker {
     private $Servicestatus;
 
     /**
+     * @var DbBackend
+     */
+    private $DbBackend;
+
+    /**
      * PerfdataChecker constructor.
      * @param Host $Host
      * @param Service $Service
      * @param PerfdataBackend $PerfdataBackend
-     * @param Servicestatus $Servicestatus #
+     * @param Servicestatus $Servicestatus
+     * @param DbBackend $DbBackend
      */
-    public function __construct(Host $Host, Service $Service, PerfdataBackend $PerfdataBackend, Servicestatus $Servicestatus) {
+    public function __construct(Host $Host, Service $Service, PerfdataBackend $PerfdataBackend, Servicestatus $Servicestatus, DbBackend $DbBackend) {
         $this->hostUuid = $Host->getUuid();
         $this->serviceUuid = $Service->getUuid();
         $this->PerfdataBackend = $PerfdataBackend;
         $this->Servicestatus = $Servicestatus;
+        $this->DbBackend = $DbBackend;
     }
 
     /**
@@ -70,6 +81,18 @@ class PerfdataChecker {
     public function hasPerfdata() {
         if ($this->PerfdataBackend->isRrdtool()) {
             return file_exists(sprintf('/opt/openitc/nagios/share/perfdata/%s/%s.rrd', $this->hostUuid, $this->serviceUuid));
+        }
+
+        if($this->PerfdataBackend->isWhisper()) {
+            if (!empty($this->Servicestatus->getPerfdata())) {
+                return true;
+            }
+
+            //Query Graphite if metrics exists
+            $GraphiteConfig = new GraphiteConfig();
+            $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
+            return !empty($GraphiteLoader->findMetricsByUuid($this->hostUuid, $this->serviceUuid));
+
         }
 
         return !empty($this->Servicestatus->getPerfdata());

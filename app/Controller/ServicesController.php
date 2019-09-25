@@ -85,6 +85,8 @@ use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
+use itnovum\openITCOCKPIT\Graphite\GraphiteConfig;
+use itnovum\openITCOCKPIT\Graphite\GraphiteLoader;
 use Statusengine\PerfdataParser;
 
 /**
@@ -224,7 +226,7 @@ class ServicesController extends AppController {
             }
             $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
             $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
-            $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus);
+            $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus, $this->DbBackend);
 
             $tmpRecord = [
                 'Service'       => $Service->toArray(),
@@ -1201,7 +1203,8 @@ class ServicesController extends AppController {
 
     /**
      * @param int|string|null $idOrUuid
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function browser($id = null) {
         $User = new User($this->Auth);
@@ -1380,12 +1383,37 @@ class ServicesController extends AppController {
             $hostObj,
             $serviceObj,
             $this->PerfdataBackend,
-            $Servicestatus
+            $Servicestatus,
+            $this->DbBackend
         );
         $mergedService['has_graph'] = $PerfdataChecker->hasPerfdata();
         $mergedService['allowEdit'] = $allowEdit;
-        $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
-        $mergedService['Perfdata'] = $PerfdataParser->parse();
+
+        if(empty($Servicestatus->getPerfdata()) && $mergedService['has_graph'] === true && $this->PerfdataBackend->isWhisper()){
+            //Query graphite backend to get available metrics - used if perfdata string is empty for example on unknown state
+
+            $mergedService['Perfdata'] = [];
+
+            $GraphiteConfig = new GraphiteConfig();
+            $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
+            $metrics = $GraphiteLoader->findMetricsByUuid($hostObj->getUuid(), $serviceObj->getUuid());
+
+            foreach($metrics as $metric){
+                $mergedService['Perfdata'][$metric] = [
+                    'current' => null,
+                    'unit' => null,
+                    'warning' => null,
+                    'critical' => null,
+                    'min' => null,
+                    'max' => null
+                ];
+            }
+
+        }else{
+            //Parse perfdata string from database to get metrics - this is the default
+            $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
+            $mergedService['Perfdata'] = $PerfdataParser->parse();
+        }
 
         $systemsettingsEntity = $SystemsettingsTable->getSystemsettingByKey('TICKET_SYSTEM.URL');
         $ticketSystem = $systemsettingsEntity->get('value');

@@ -329,10 +329,6 @@
                                     </th>
 
                                     <th class="no-sort text-center">
-                                        <i class="fa fa fa-area-chart fa-lg" title="<?php echo __('Grapher'); ?>"></i>
-                                    </th>
-
-                                    <th class="no-sort text-center">
                                         <i title="<?php echo __('Shared'); ?>" class="fa fa-sitemap fa-lg"></i>
                                     </th>
 
@@ -404,20 +400,6 @@
                                     <td class="text-center">
                                         <i class="fa fa-lg fa-power-off"
                                            ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"></i>
-                                    </td>
-
-                                    <td class="text-center">
-                                        <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                            <a ui-sref="ServicesServiceList({id: host.Host.id})"
-                                               class="txt-color-blueDark"
-                                               ng-if="host.Host.has_graphs">
-                                                <i class="fa fa-lg fa-area-chart"></i>
-                                            </a>
-                                        <?php else: ?>
-                                            <i class="fa fa-lg fa-area-chart txt-color-blueDark"
-                                               ng-if="host.Host.has_graphs">
-                                            </i>
-                                        <?php endif; ?>
                                     </td>
 
                                     <td class="text-center">

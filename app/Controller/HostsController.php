@@ -68,7 +68,6 @@ use itnovum\openITCOCKPIT\Core\Timeline\TimeRangeSerializer;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
-use itnovum\openITCOCKPIT\Core\Views\HostPerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -271,7 +270,6 @@ class HostsController extends AppController {
 
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host['Host']);
             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Host']['Hoststatus'], $UserTime);
-            $PerfdataChecker = new HostPerfdataChecker($Host, $this->PerfdataBackend);
 
             $hostSharingPermissions = new HostSharingPermissions(
                 $Host->getContainerId(), $this->hasRootPrivileges, $Host->getContainerIds(), $this->MY_RIGHTS
@@ -297,7 +295,6 @@ class HostsController extends AppController {
                 'Hoststatus'           => $Hoststatus->toArray(),
                 'ServicestatusSummary' => $serviceStateSummary
             ];
-            $tmpRecord['Host']['has_graphs'] = $PerfdataChecker->hasPerfdata();
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
             $tmpRecord['Host']['satelliteName'] = $satelliteName;
             $tmpRecord['Host']['satelliteId'] = $satellite_id;
@@ -2584,7 +2581,7 @@ class HostsController extends AppController {
         $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
         $this->set('_serialize', ['GrafanaDashboardExists', 'iframeUrl']);
     }
-    
+
 
     /****************************
      *       AJAX METHODS       *
@@ -2848,15 +2845,15 @@ class HostsController extends AppController {
         // Merge new command arguments that are missing in the host to host command arguments
         // and remove old command arguments that don't exists in the command anymore.
         $filteredCommandArgumentsValules = [];
-        foreach ($commandarguments as $commandargument){
+        foreach ($commandarguments as $commandargument) {
             $valueExists = false;
-            foreach($hostcommandargumentvalues as $hostcommandargumentvalue){
-                if($commandargument['Commandargument']['id'] === $hostcommandargumentvalue['commandargument_id']){
+            foreach ($hostcommandargumentvalues as $hostcommandargumentvalue) {
+                if ($commandargument['Commandargument']['id'] === $hostcommandargumentvalue['commandargument_id']) {
                     $filteredCommandArgumentsValules[] = $hostcommandargumentvalue;
                     $valueExists = true;
                 }
             }
-            if(!$valueExists){
+            if (!$valueExists) {
                 $filteredCommandArgumentsValules[] = [
                     'commandargument_id' => $commandargument['Commandargument']['id'],
                     'value'              => '',

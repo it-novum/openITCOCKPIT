@@ -90,12 +90,33 @@ class PerfdataLoader {
             $ServicestatusFields = new ServicestatusFields($this->DbBackend);
             $ServicestatusFields->perfdata();
             $servicestatus = $ServicestatusTable->byUuid($serviceUuid, $ServicestatusFields);
+
             if (!empty($servicestatus)) {
-                $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
-                $perfdataMetadata = $PerfdataParser->parse();
 
                 $GraphiteConfig = new GraphiteConfig();
                 $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
+
+                if(!empty($servicestatus['Servicestatus']['perfdata'])) {
+                    //Use parse perfdata string from database
+                    $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
+                    $perfdataMetadata = $PerfdataParser->parse();
+                }else{
+                    //Query graphite backend for available metrics - for example if service state is unknown
+                    $metrics = $GraphiteLoader->findMetricsByUuid($hostUuid, $serviceUuid);
+
+                    $perfdataMetadata = [];
+                    foreach($metrics as $metric){
+                        $perfdataMetadata[$metric] = [
+                            'current' => null,
+                            'unit' => null,
+                            'warning' => null,
+                            'critical' => null,
+                            'min' => null,
+                            'max' => null
+                        ];
+                    }
+                }
+
                 $GraphiteLoader->setUseJsTimestamp($jsTimestamp);
                 $GraphiteLoader->setAbsoluteDate($start, $end);
 
