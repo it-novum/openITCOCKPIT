@@ -1863,7 +1863,9 @@ class MapeditorsController extends MapModuleAppController {
 
             $item['Mapitem']['x'] = (int)$this->request->data('Mapitem.x');
             $item['Mapitem']['y'] = (int)$this->request->data('Mapitem.y');
-            $item['Mapitem']['show_label'] = (int)$this->request->data('Mapitem.show_label');
+            if($this->request->data('Mapitem.show_label') !== null) {
+                $item['Mapitem']['show_label'] = (int)$this->request->data('Mapitem.show_label');
+            }
             if ($this->Mapitem->save($item)) {
                 $mapitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapitem($item['Mapitem']);
 
@@ -2291,7 +2293,7 @@ class MapeditorsController extends MapModuleAppController {
         $id = $this->request->data('Mapicon.id');
 
 
-        if (!$this->Maptext->exists($id)) {
+        if (!$this->Mapicon->exists($id)) {
             throw new NotFoundException();
         }
 

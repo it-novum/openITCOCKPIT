@@ -1845,6 +1845,10 @@ class Service extends AppModel {
 
         }
 
+        if (!empty($ServiceConditions->getContainerIds())) {
+            $query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
+        }
+
         $servicesWithLimit = $this->find('all', $query);
         $servicesWithLimit = Hash::combine($servicesWithLimit, '{n}.Service.id', '{n}');
 
