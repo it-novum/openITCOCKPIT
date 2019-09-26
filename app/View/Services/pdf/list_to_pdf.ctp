@@ -30,6 +30,9 @@ use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
+
+/** @var $UserTime UserTime */
 
 $Logo = new Logo();
 ?>
@@ -80,7 +83,7 @@ $Logo = new Logo();
                 <th class="no-sort text-center"><i class="fa fa-user fa-lg"></i></th>
                 <th class="no-sort text-center"><i class="fa fa-power-off fa-lg"></i></th>
                 <th><?php echo __('Servicename'); ?></th>
-                <th><?php echo __('Status since'); ?></th>
+                <th><?php echo __('Last state change'); ?></th>
                 <th><?php echo __('Last check'); ?></th>
                 <th><?php echo __('Next check'); ?></th>
                 <th><?php echo __('Service output'); ?></th>
@@ -148,25 +151,15 @@ $Logo = new Logo();
                         </td>
                         <!-- Status Since -->
                         <td>
-                            <?php echo h($this->Utils->secondsInHumanShort(time() - $Servicestatus->getLastStateChange())); ?>
+                            <?php echo h($UserTime->format($Servicestatus->getLastStateChange())); ?>
                         </td>
                         <!-- Last check -->
                         <td>
-                            <?php echo $this->Time->format(
-                                $Servicestatus->getLastCheck(),
-                                $this->Auth->user('dateformat'),
-                                false,
-                                $this->Auth->user('timezone')
-                            ); ?>
+                            <?php echo h($UserTime->format($Servicestatus->getLastCheck())); ?>
                         </td>
                         <!-- Next check -->
                         <td>
-                            <?php echo $this->Time->format(
-                                $Servicestatus->getNextCheck(),
-                                $this->Auth->user('dateformat'),
-                                false,
-                                $this->Auth->user('timezone')
-                            ); ?>
+                            <?php echo h($UserTime->format($Servicestatus->getNextCheck())); ?>
                         </td>
                         <td class="wrapWords">
                             <?php echo h($Servicestatus->getOutput()); ?>
