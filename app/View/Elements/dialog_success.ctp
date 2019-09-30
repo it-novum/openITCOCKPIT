@@ -29,7 +29,7 @@
 </div>
 <div class="modal-body">
     <div class="alert alert-info">
-        <?php echo isset($message) ? $message : __('dialog.action_successful') ?>
+        <?php echo isset($message) ? $message : __('Success') ?>
     </div>
 </div>
 <div class="modal-footer">

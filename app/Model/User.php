@@ -123,15 +123,15 @@ class User extends AppModel {
         ],
         'current_password'     => [
             'rule'    => 'checkCurrentPassword',
-            'message' => 'user_model.incorrect_password',
+            'message' => 'Incorrect password.',
         ],
         'new_password'         => [
             'rule'    => ['custom', self::PASSWORD_REGEX],
-            'message' => 'user_model.password_requirement_notice',
+            'message' => 'The password must consist of 6 alphanumeric characters and must contain at least one digit.',
         ],
         'confirm_new_password' => [
             'rule'    => ['custom', self::PASSWORD_REGEX],
-            'message' => 'user_model.password_requirement_notice',
+            'message' => 'The password must consist of 6 alphanumeric characters and must contain at least one digit.',
         ],
         'usergroup_id'         => [
             'notZero' => [

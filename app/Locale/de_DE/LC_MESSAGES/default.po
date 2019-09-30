@@ -8682,7 +8682,7 @@ msgid "Recurring downtime"
 msgstr ""
 
 msgid "Weekdays"
-msgstr ""
+msgstr "Wochentage"
 
 msgid "1,2,3,4,5 or <blank>"
 msgstr ""
@@ -8691,7 +8691,7 @@ msgid "Days of month"
 msgstr ""
 
 msgid "Create new container downtime"
-msgstr ""
+msgstr "Erstelle neue Container Downtime"
 
 msgid "Recursive container lookup"
 msgstr ""

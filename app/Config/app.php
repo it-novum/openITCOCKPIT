@@ -13,13 +13,14 @@ $config = [
         'path'              => OLD_APP . 'webroot/files/images/',
     ],
     'languages'   => [
-        'en-us' => 'english',
+        'en_US' => 'english',
+        'de_DE' => 'german',
     ],
     'paths'       => [
         'lessc' => [
             Environments::DEVELOPMENT => 'lessc',
             Environments::STAGING     => '/root/node_modules/less/bin/lessc',
             Environments::PRODUCTION  => '/root/node_modules/less/bin/lessc',
-        ],
-    ],
+        ]
+    ]
 ];

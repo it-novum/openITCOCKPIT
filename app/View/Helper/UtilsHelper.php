@@ -283,7 +283,7 @@ class UtilsHelper extends AppHelper {
         ], $options);
         $title = '<i class="' . $options['icon'] . '"></i> ' . $title;
         if ($confirm) {
-            return $this->Form->postLink($title, $url, $options, __('confirm_delete') . ' ' . $postText);
+            return $this->Form->postLink($title, $url, $options, __('Really delete?') . ' ' . $postText);
         }
 
         return $this->Form->postLink($title, $url, $options);
@@ -301,7 +301,7 @@ class UtilsHelper extends AppHelper {
      */
     public function backButton($title = null, $url = null, $options = []) {
         if (!$title) {
-            $title = __('back_to_list');
+            $title = __('Back to list');
         }
         if (!$url) {
             $url = ['action' => 'index'];
@@ -328,11 +328,11 @@ class UtilsHelper extends AppHelper {
      */
     public function formActions($saveText = null, array $options = []) {
         if (!$saveText) {
-            $saveText = __('formactions.save');
+            $saveText = __('Save');
         }
         $options = Set::merge([
             'cancelButton' => [
-                'title' => __('formactions.cancel'),
+                'title' => __('Cancel'),
                 'url'   => ['action' => 'index'],
             ],
             'delete'       => null,

@@ -87,7 +87,7 @@ class AppAuthComponent extends AuthComponent {
             'Api',
         ];
 
-        $this->authError = __('action_not_allowed');
+        $this->authError = __('This action is not allowed.');
         $this->authorize = ['Controller'];
 
         /*
@@ -366,7 +366,7 @@ class AppAuthComponent extends AuthComponent {
                 //$this->Session->write('hasRootPrivileges', $hasRootPrivileges);
 
                 $this->Flash->set(
-                    __('login.automatically_logged_in'), [
+                    __('You have been automatically logged in.'), [
                     'element' => 'default',
                     'params'  => [
                         'class' => 'alert alert-success'

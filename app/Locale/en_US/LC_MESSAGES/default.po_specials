@@ -1,0 +1,83 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2019-09-26 15:55+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+
+
+msgid "You have been automatically logged in."
+msgstr ""
+
+msgid "The Login was successful."
+msgstr ""
+
+msgid "Email and password do not match any user in our database."
+msgstr ""
+
+msgid "The Logout was successful."
+msgstr ""
+
+msgid "This action is not allowed."
+msgstr ""
+
+msgid "filter_fieldset_title"
+msgstr "Filter List"
+
+msgid "list_filter.close"
+msgstr "close"
+
+msgid "list_filter.open"
+msgstr "open"
+
+msgid "dialog.action_successful"
+msgstr "Success"
+
+msgid "select_image"
+msgstr "Select Image"
+
+msgid "change_image"
+msgstr "Change Image"
+
+msgid "formactions.submit"
+msgstr "Save"
+
+msgid "formactions.cancel"
+msgstr "Cancel"
+
+msgid "confirm_delete"
+msgstr "Really delete?"
+
+msgid "back_to_list"
+msgstr "Back to list"
+
+msgid "formactions.save"
+msgstr "Save"
+
+msgid "user_model.password_requirement_notice"
+msgstr "The password must consist of 6 alphanumeric characters and must contain at least one digit."
+
+msgid "list.details"
+msgstr "details"
+
+msgid "list.edit"
+msgstr "edit"
+
+msgid "list.delete"
+msgstr "delete"
+
+msgid "list.really_delete"
+msgstr "Really delete?"
+
+msgid "user_model.incorrect_password"
+msgstr "Incorrect password."

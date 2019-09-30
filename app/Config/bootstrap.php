@@ -63,8 +63,8 @@ if (isset($_GET['cdbg']) || env('HTTP_CKDBG') !== null) {
 
 
 // Localization settings
-Configure::write('Config.language', 'en-us');
-setlocale(LC_ALL, 'en_US');
+Configure::write('Config.language', 'en_US');
+//Configure::write('Config.language', 'de_DE');
 
 $defaultTimeZone = 'Europe/Berlin';
 if ($dateDefaultTimeZone = date_default_timezone_get()) {

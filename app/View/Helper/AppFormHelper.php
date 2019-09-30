@@ -204,9 +204,9 @@ class AppFormHelper extends BoostCakeFormHelper {
 
         if ($imageName == '') {
             $selectedImage = '';
-            $buttonTitle = __('select_image');
+            $buttonTitle = __('Select Image');
         } else {
-            $buttonTitle = __('change_image');
+            $buttonTitle = __('Change Image');
             $selectedImage = 'Path: <span class="image-name">:imageName</span><br>';
         }
 
@@ -311,7 +311,7 @@ class AppFormHelper extends BoostCakeFormHelper {
     public function formActions($saveText = null, array $options = []) {
 
         if (empty($saveText)) {
-            $saveText = __('formactions.submit');
+            $saveText = __('Save');
         }
         $options = Set::merge([
             'cancelButton' => true,
@@ -327,7 +327,7 @@ class AppFormHelper extends BoostCakeFormHelper {
         if ($options['cancelButton']) {
             if (!is_array($options['cancelButton'])) {
                 $options['cancelButton'] = [];
-                $options['cancelButton']['title'] = __('formactions.cancel');
+                $options['cancelButton']['title'] = __('Cancel');
                 $options['cancelButton']['url'] = ['action' => 'index'];
             }
             $out .= '&nbsp;' . $this->Html->link($options['cancelButton']['title'], $options['cancelButton']['url'], ['class' => 'btn btn-default']);

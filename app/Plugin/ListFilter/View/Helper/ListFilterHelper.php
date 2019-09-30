@@ -236,7 +236,7 @@ class ListFilterHelper extends AppHelper
         }
 
         if ($title == null) {
-            $title = __('filter_fieldset_title');
+            $title = __('Filter List');
         }
 
         if ($filterActive) {
@@ -250,7 +250,7 @@ class ListFilterHelper extends AppHelper
         $ret .= "<div class='pull-left'><h3>{$title}</h3></div>";
         $ret .= "<div class='pull-right'>";
         if ($showButton) {
-            $ret .= $this->Html->link($filterActive ? __('list_filter.close') : __('list_filter.open'), 'javascript:', [
+            $ret .= $this->Html->link($filterActive ? __('close') : __('open'), 'javascript:', [
                 'class' => 'btn btn-xs btn-primary toggle'
             ]);
         }

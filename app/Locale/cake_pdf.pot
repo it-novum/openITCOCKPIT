@@ -5,7 +5,6 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2014-03-21 15:25+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -14,20 +13,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: Lib/AppExceptionRenderer.php:28
-msgid "Not Found"
+msgid "Engine is not loaded"
 msgstr ""
 
-#: View/Errors/error400.ctp:22
-#: View/Errors/error500.ctp:22
-msgid "Error"
+msgid "Pdf engine \"%s\" not found"
 msgstr ""
 
-#: View/Errors/error400.ctp:24
-msgid "The requested address %s was not found on this server."
+msgid "Pdf engines must extend \"AbstractPdfEngine\""
 msgstr ""
 
-#: View/Errors/error500.ctp:23
-msgid "An Internal Error Has Occurred."
+msgid "Crypto is not loaded"
+msgstr ""
+
+msgid "Pdf crypto \"%s\" not found"
+msgstr ""
+
+msgid "Crypto engine must extend \"AbstractPdfCrypto\""
 msgstr ""
 

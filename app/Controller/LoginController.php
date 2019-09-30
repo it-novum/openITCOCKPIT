@@ -80,7 +80,7 @@ class LoginController extends AppController {
                 }
 
                 $this->Session->delete('Message.auth');
-                $this->setFlash(__('login.automatically_logged_in'));
+                $this->setFlash(__('You have been automatically logged in.'));
                 $this->redirect($this->Auth->loginRedirect);
             } else {
                 echo $result['message'] . $errorPostMess;
@@ -162,7 +162,7 @@ class LoginController extends AppController {
                 }
                 if (!empty($user) && $this->Auth->login($user)) {
                     $this->Session->delete('Message.auth');
-                    $this->setFlash(__('login.automatically_logged_in'));
+                    $this->setFlash(__('You have been automatically logged in.'));
                     $this->redirect($this->Auth->loginRedirect);
                 }
             }
@@ -220,7 +220,7 @@ class LoginController extends AppController {
                 } else {
                     if ($this->request->ext != 'json') {
                         //Only redirect for normal browser POST request, not for rest API
-                        $this->setFlash(__('login.login_successful'));
+                        $this->setFlash(__('The Login was successful.'));
                         $this->redirect($this->Auth->loginRedirect);
 
                         return;
@@ -233,7 +233,7 @@ class LoginController extends AppController {
                 }
             } else {
                 if ($redirectBack) {
-                    $this->setFlash(__('login.username_and_password_dont_match'), false);
+                    $this->setFlash(__('Email and password do not match any user in our database.'), false);
                     $this->redirect($this->request->referer());
 
                     return;
@@ -246,7 +246,7 @@ class LoginController extends AppController {
                             $this->setFlash(__('Bad username or password'), false);
                         }
                     } else {
-                        $this->setFlash(__('login.username_and_password_dont_match'), false);
+                        $this->setFlash(__('Email and password do not match any user in our database.'), false);
                     }
                 }
             }
@@ -277,7 +277,7 @@ class LoginController extends AppController {
                         ]);
                     }
 
-                    $this->setFlash(__('login.logout_successfull'));
+                    $this->setFlash(__('The Logout was successful.'));
                     $this->redirect('/login/login');
                 }
                 $this->setFlash(__('Wrong One-time password'), false);
@@ -352,7 +352,7 @@ class LoginController extends AppController {
         if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' && !empty($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK'])) {
             $this->redirect($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK']);
         } else {
-            $this->setFlash(__('login.logout_successfull'));
+            $this->setFlash(__('The Logout was successful.'));
         }
         $this->redirect([
             'controller' => 'login',
