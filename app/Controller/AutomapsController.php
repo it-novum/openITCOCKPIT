@@ -200,7 +200,7 @@ class AutomapsController extends AppController {
         }
 
         if ($automap['Automap']['show_downtime'] == false) {
-            $ServicestatusConditions->setScheduledDowntimeDepth(0);
+            $ServicestatusConditions->setScheduledDowntimeDepth(0, false);
         }
 
         $hosts = $this->Host->find('list', [
