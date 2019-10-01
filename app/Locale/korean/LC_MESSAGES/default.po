@@ -8,7 +8,7 @@ msgstr ""
 "PO-Revision-Date: 2014-02-11 17:33+0100\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
-"Language: zh-Hans\n"
+"Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -17,83 +17,83 @@ msgstr ""
 
 #: Controller/LoginController.php:55
 msgid "login.login_successful"
-msgstr "登录是成功的。"
+msgstr "로그인에 성공했습니다."
 
 #: Controller/LoginController.php:59;62
 msgid "login.username_and_password_dont_match"
-msgstr "电子邮件和密码不匹配任何用户在我们的数据库中。"
+msgstr "이메일 및 비밀번호가 데이터베이스의 사용자와 일치하지 않습니다."
 
 #: Controller/LoginController.php:74
 msgid "login.logout_successfull"
-msgstr "注销成功。"
+msgstr "로그 아웃에 성공했습니다."
 
 #: Controller/Component/AppAuthComponent.php:81
 msgid "action_not_allowed"
-msgstr "这种行为是不允许的。"
+msgstr "이 작업은 허용되지 않습니다."
 
 #: Controller/Component/AppAuthComponent.php:118
 msgid "login.automatically_logged_in"
-msgstr "你已经自动登录。"
+msgstr "자동 로그인되었습니다."
 
 #: Plugin/Admin/Controller/BeaconsController.php:54;84;109
 msgid "Invalid beacon"
-msgstr "无效的灯塔"
+msgstr ""
 
 #: Plugin/Admin/Controller/BeaconsController.php:67;88
 msgid "The beacon has been saved"
-msgstr "灯塔已经保存"
+msgstr ""
 
 #: Plugin/Admin/Controller/BeaconsController.php:70;91
 msgid "The beacon could not be saved. Please, try again."
-msgstr "灯塔不能得救。请再试一次。"
+msgstr ""
 
 #: Plugin/Admin/Controller/BeaconsController.php:113
 msgid "Beacon deleted"
-msgstr "灯塔删除"
+msgstr ""
 
 #: Plugin/Admin/Controller/BeaconsController.php:116
 msgid "Beacon was not deleted"
-msgstr "灯塔不删除"
+msgstr ""
 
 #: Plugin/Admin/Controller/LocationsController.php:39;69;94
 msgid "Invalid location"
-msgstr "无效的位置"
+msgstr ""
 
 #: Plugin/Admin/Controller/LocationsController.php:52;73
 msgid "The location has been saved"
-msgstr "位置已经保存"
+msgstr ""
 
 #: Plugin/Admin/Controller/LocationsController.php:55;76
 msgid "The location could not be saved. Please, try again."
-msgstr "位置不能得救。请再试一次。"
+msgstr ""
 
 #: Plugin/Admin/Controller/LocationsController.php:98
 msgid "Location deleted"
-msgstr "位置删除"
+msgstr ""
 
 #: Plugin/Admin/Controller/LocationsController.php:101
 msgid "Location was not deleted"
-msgstr "位置没有删除"
+msgstr ""
 
 #: Plugin/Admin/Controller/UsersController.php:32;87
 msgid "Ungültiger Nutzer"
-msgstr "Ungultiger打工天天"
+msgstr ""
 
 #: Plugin/Admin/Controller/UsersController.php:53
 msgid "invalid_user"
-msgstr "invalid_user"
+msgstr ""
 
 #: Plugin/Admin/Controller/UsersController.php:56
 msgid "user.user_deleted"
-msgstr "用户被删除。"
+msgstr "사용자가 삭제되었습니다."
 
 #: Plugin/Admin/Controller/UsersController.php:59
 msgid "user.user_not_deleted"
-msgstr "用户不能被删除。"
+msgstr "사용자를 삭제할 수 없습니다."
 
 #: Plugin/Admin/Controller/UsersController.php:73;94
 msgid "user.data_invalid"
-msgstr "请检查你的输入。"
+msgstr "입력 내용을 확인하십시오."
 
 #: Plugin/Admin/View/Beacons/index.ctp:4
 msgid "beacon.add"
@@ -105,335 +105,335 @@ msgstr ""
 #: Plugin/Admin/View/Locations/view.ctp:67;93;140
 #: Plugin/Admin/View/Users/view.ctp:72
 msgid "Actions"
-msgstr "行动"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/index.ctp:36
 #: Plugin/Admin/View/Locations/index.ctp:43
 msgid "list.edit"
-msgstr "编辑"
+msgstr "편집하다"
 
 #: Plugin/Admin/View/Beacons/index.ctp:37
 msgid "list.delete"
-msgstr "删除"
+msgstr "지우다"
 
 #: Plugin/Admin/View/Beacons/index.ctp:37
 msgid "list.really_delete"
-msgstr "真的删除吗?"
+msgstr "정말로 삭제 하시겠습니까?"
 
 #: Plugin/Admin/View/Beacons/view.ctp:2
 msgid "Beacon"
-msgstr "灯塔"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:4
 #: Plugin/Admin/View/Locations/view.ctp:4;84;127
 #: Plugin/Admin/View/Users/view.ctp:4
 msgid "Id"
-msgstr "Id"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:9 Plugin/Admin/View/Locations/view.ctp:2
 msgid "Location"
-msgstr "位置"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:14
 #: Plugin/Admin/View/Locations/view.ctp:9;86
 msgid "Name"
-msgstr "的名字"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:19
 #: Plugin/Admin/View/Locations/view.ctp:87
 msgid "Notes"
-msgstr "笔记"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:24
 #: Plugin/Admin/View/Locations/view.ctp:88
 msgid "Minor"
-msgstr "小"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:29
 #: Plugin/Admin/View/Locations/view.ctp:89
 msgid "Major"
-msgstr "主要"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:34
 #: Plugin/Admin/View/Locations/view.ctp:90
 msgid "Location Detail"
-msgstr "位置的细节"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:39
 #: Plugin/Admin/View/Locations/view.ctp:54;91;138
 #: Plugin/Admin/View/Users/view.ctp:59
 msgid "Created"
-msgstr "创建"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:44
 #: Plugin/Admin/View/Locations/view.ctp:59;92;139
 #: Plugin/Admin/View/Users/view.ctp:64
 msgid "Modified"
-msgstr "修改"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:54
 msgid "Edit Beacon"
-msgstr "编辑的灯塔"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:55
 msgid "Delete Beacon"
-msgstr "删除灯塔"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:55
 #: Plugin/Admin/View/Locations/view.ctp:70;109;160
 #: Plugin/Admin/View/Users/view.ctp:75
 msgid "Are you sure you want to delete # %s?"
-msgstr "你确定你要删除吗 # %s?"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:56
 #: Plugin/Admin/View/Locations/view.ctp:73
 msgid "List Beacons"
-msgstr "列表灯塔"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:57
 #: Plugin/Admin/View/Locations/view.ctp:74;118
 msgid "New Beacon"
-msgstr "新标"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:58
 #: Plugin/Admin/View/Locations/view.ctp:71
 msgid "List Locations"
-msgstr "位置列表"
+msgstr ""
 
 #: Plugin/Admin/View/Beacons/view.ctp:59
 #: Plugin/Admin/View/Locations/view.ctp:72
 msgid "New Location"
-msgstr "新位置"
+msgstr ""
 
 #: Plugin/Admin/View/Elements/layout/header.ctp:21
 msgid "header.my_profile"
-msgstr "header.my_profile"
+msgstr ""
 
 #: Plugin/Admin/View/Elements/layout/header.ctp:25
 msgid "logout"
-msgstr "注销"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/index.ctp:4
 msgid "location.add"
-msgstr "location.add"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/index.ctp:42
 msgid "list.details"
-msgstr "细节"
+msgstr "세부"
 
 #: Plugin/Admin/View/Locations/view.ctp:14;135
 #: Plugin/Admin/View/Users/view.ctp:44
 msgid "Company"
-msgstr "公司"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:19
 msgid "Address 1"
-msgstr "地址1"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:24
 msgid "Address 2"
-msgstr "地址2"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:29
 msgid "Zip Code"
-msgstr "邮政编码"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:34
 msgid "City"
-msgstr "城市"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:39
 msgid "Country"
-msgstr "国家"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:44
 msgid "Latitude"
-msgstr "纬度"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:49
 msgid "Longitude"
-msgstr "经度"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:69
 msgid "Edit Location"
-msgstr "编辑位置"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:70
 msgid "Delete Location"
-msgstr "删除的位置"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:75 Plugin/Admin/View/Users/view.ctp:76
 msgid "List Users"
-msgstr "用户列表"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:76;169
 #: Plugin/Admin/View/Users/view.ctp:77
 msgid "New User"
-msgstr "新用户"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:80
 msgid "Related Beacons"
-msgstr "相关的灯塔"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:85
 msgid "Location Id"
-msgstr "位置标识"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:107;158
 msgid "View"
-msgstr "视图"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:108;159
 msgid "Edit"
-msgstr "编辑"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:109;160
 msgid "Delete"
-msgstr "删除"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:123
 msgid "Related Users"
-msgstr "相关用户"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:128 Plugin/Admin/View/Users/view.ctp:9
 msgid "Status"
-msgstr "状态"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:129
 #: Plugin/Admin/View/Users/view.ctp:14
 msgid "Role"
-msgstr "角色"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:130
 #: Plugin/Admin/View/Users/view.ctp:19
 msgid "Email"
-msgstr "电子邮件"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:131
 #: Plugin/Admin/View/Users/view.ctp:24
 msgid "Password"
-msgstr "密码"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:132
 #: Plugin/Admin/View/Users/view.ctp:29
 msgid "Firstname"
-msgstr "Firstname"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:133
 #: Plugin/Admin/View/Users/view.ctp:34
 msgid "Lastname"
-msgstr "姓"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:134
 #: Plugin/Admin/View/Users/view.ctp:39
 msgid "Position"
-msgstr "位置"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:136
 #: Plugin/Admin/View/Users/view.ctp:49
 msgid "Phone"
-msgstr "电话"
+msgstr ""
 
 #: Plugin/Admin/View/Locations/view.ctp:137
 #: Plugin/Admin/View/Users/view.ctp:54
 msgid "Linkedin Id"
-msgstr "Linkedin Id"
+msgstr ""
 
 #: Plugin/Admin/View/Users/add_edit.ctp:73 View/Helper/AppFormHelper.php:212
 #: View/Helper/UtilsHelper.php:208;278
 msgid "delete"
-msgstr "删除"
+msgstr ""
 
 #: Plugin/Admin/View/Users/index.ctp:25 View/Helper/UtilsHelper.php:127
 msgid "edit"
-msgstr "编辑"
+msgstr ""
 
 #: Plugin/Admin/View/Users/view.ctp:2
 msgid "User"
-msgstr "用户"
+msgstr ""
 
 #: Plugin/Admin/View/Users/view.ctp:74
 msgid "Edit User"
-msgstr "编辑用户"
+msgstr ""
 
 #: Plugin/Admin/View/Users/view.ctp:75
 msgid "Delete User"
-msgstr "删除用户"
+msgstr ""
 
 #: Plugin/BoostCake/Controller/BoostCakeController.php:18
 msgid "Debug setting does not allow access to this url."
-msgstr "调试设置不允许访问这个url。"
+msgstr ""
 
 #: Plugin/BoostCake/Controller/BoostCakeController.php:27
 #: Plugin/BoostCake/View/Elements/bootstrap2/alerts.ctp:6
 msgid "Alert notice message testing..."
-msgstr "警报通知消息测试……"
+msgstr ""
 
 #: Plugin/BoostCake/Controller/BoostCakeController.php:30;41
 #: Plugin/BoostCake/View/Elements/bootstrap2/alerts.ctp:10
 #: Plugin/BoostCake/View/Elements/bootstrap3/alerts.ctp:6
 msgid "Alert success message testing..."
-msgstr "提醒成功消息测试……"
+msgstr ""
 
 #: Plugin/BoostCake/Controller/BoostCakeController.php:34
 #: Plugin/BoostCake/View/Elements/bootstrap2/alerts.ctp:15
 msgid "Alert error message testing..."
-msgstr "警报错误消息测试……"
+msgstr ""
 
 #: Plugin/BoostCake/Controller/BoostCakeController.php:45
 #: Plugin/BoostCake/View/Elements/bootstrap3/alerts.ctp:11
 msgid "Alert info message testing..."
-msgstr "警报信息消息测试……"
+msgstr ""
 
 #: Plugin/BoostCake/Controller/BoostCakeController.php:49
 #: Plugin/BoostCake/View/Elements/bootstrap3/alerts.ctp:16
 msgid "Alert warning message testing..."
-msgstr "警报警告消息测试……"
+msgstr ""
 
 #: Plugin/BoostCake/Controller/BoostCakeController.php:53
 #: Plugin/BoostCake/View/Elements/bootstrap3/alerts.ctp:21
 msgid "Alert danger message testing..."
-msgstr "危险警报消息测试……"
+msgstr ""
 
 #: Plugin/ClearCache/Console/Command/ClearCacheShell.php:66
 msgid "<success>Engines cleaned:</success> %d"
-msgstr "<success>发动机清洗:</success> %d"
+msgstr ""
 
 #: Plugin/ClearCache/Console/Command/ClearCacheShell.php:81
 msgid "<success>Files cleaned:</success> %d"
-msgstr "<success>文件清理:</success> %d"
+msgstr ""
 
 #: Plugin/ClearCache/Console/Command/ClearCacheShell.php:99
 msgid "<success>Groups cleaned:</success> %d"
-msgstr "<success>清洗:</success> %d"
+msgstr ""
 
 #: Plugin/ListFilter/View/Helper/ListFilterHelper.php:58
 msgid "from"
-msgstr "从"
+msgstr ""
 
 #: Plugin/ListFilter/View/Helper/ListFilterHelper.php:62
 msgid "to"
-msgstr "来"
+msgstr ""
 
 #: Plugin/ListFilter/View/Helper/ListFilterHelper.php:111
 msgid "filter_fieldset_title"
-msgstr "过滤器列表"
+msgstr "필터 목록"
 
 #: Plugin/ListFilter/View/Helper/ListFilterHelper.php:123
 msgid "list_filter.close"
-msgstr "关闭"
+msgstr "닫기"
 
 #: Plugin/ListFilter/View/Helper/ListFilterHelper.php:123
 msgid "list_filter.open"
-msgstr "开放"
+msgstr "열다"
 
 #: Plugin/ListFilter/View/Helper/ListFilterHelper.php:149
 msgid "list_filter.search"
-msgstr "过滤器"
+msgstr "필터"
 
 #: Plugin/ListFilter/View/Helper/ListFilterHelper.php:156
 msgid "list_filter.reset"
-msgstr "重置过滤器"
+msgstr "필터 재설정"
 
 #: Vendor/qqFileUploader.php:81
 msgid "upload.file_name_empty"
@@ -453,31 +453,31 @@ msgstr ""
 
 #: View/Elements/dialog_success.ctp:3
 msgid "success"
-msgstr "成功"
+msgstr ""
 
 #: View/Elements/dialog_success.ctp:7
 msgid "dialog.action_successful"
-msgstr "成功"
+msgstr "성공"
 
 #: View/Helper/AppFormHelper.php:149
 msgid "select_image"
-msgstr "选择图像"
+msgstr "이미지 선택"
 
 #: View/Helper/AppFormHelper.php:151
 msgid "change_image"
-msgstr "改变形象"
+msgstr "이미지 변경"
 
 #: View/Helper/AppFormHelper.php:166
 msgid "forms.remove_image"
-msgstr "删除图片"
+msgstr "이미지 제거"
 
 #: View/Helper/AppFormHelper.php:187
 msgid "formactions.submit"
-msgstr "保存"
+msgstr "저장하기"
 
 #: View/Helper/AppFormHelper.php:201 View/Helper/UtilsHelper.php:260
 msgid "formactions.cancel"
-msgstr "取消"
+msgstr "취소"
 
 #: View/Helper/UtilsHelper.php:149
 msgid "add"
@@ -485,15 +485,15 @@ msgstr ""
 
 #: View/Helper/UtilsHelper.php:219
 msgid "confirm_delete"
-msgstr "真的删除吗?"
+msgstr "정말 삭제?"
 
 #: View/Helper/UtilsHelper.php:232
 msgid "back_to_list"
-msgstr "返回列表"
+msgstr "다시 목록으로"
 
 #: View/Helper/UtilsHelper.php:256
 msgid "formactions.save"
-msgstr "保存"
+msgstr "저장하기"
 
 #: View/Helper/UtilsHelper.php:300
 msgid "details"
@@ -513,11 +513,11 @@ msgstr ""
 
 #: View/Login/login.ctp:2
 msgid "login.please_log_in"
-msgstr "请登录"
+msgstr "로그인 해주세요"
 
 #: View/Login/login.ctp:6
 msgid "email"
-msgstr "电子邮件"
+msgstr ""
 
 #: View/Login/login.ctp:9
 msgid "password"
@@ -525,11 +525,11 @@ msgstr ""
 
 #: View/Login/login.ctp:13
 msgid "login.remember_me"
-msgstr "记得我"
+msgstr "날 기억해"
 
 #: View/Login/login.ctp:16
 msgid "login.submit"
-msgstr "登录"
+msgstr "로그인"
 
 #: Model/Beacon.php:validation for field name
 msgid "Please enter a name for this beacon."
@@ -557,11 +557,11 @@ msgstr ""
 
 #: Model/User.php:validation for field email
 msgid "user_model.invalid_email"
-msgstr "请输入一个有效的电子邮件地址。"
+msgstr "유효한 이메일 주소를 입력하세요."
 
 #: Model/User.php:validation for field email
 msgid "user_model.email_already_exists"
-msgstr "这已经是一个用户的电子邮件地址。" # RELEVANT FOR THE MIGRATION SCRIPT! An adaption needs to be made in the migration script also!
+msgstr "이 이메일 주소를 가진 사용자가 이미 있습니다." # RELEVANT FOR THE MIGRATION SCRIPT! An adaption needs to be made in the migration script also!
 
 #: Model/User.php:validation for field firstname
 msgid "user_model.empty_firstname"
@@ -577,11 +577,11 @@ msgstr ""
 
 #: Model/User.php:validation for field current_password
 msgid "user_model.incorrect_password"
-msgstr "不正确的密码。"
+msgstr "잘못된 비밀번호."
 
 #: Model/User.php:validation for field new_password;validation
 #: confirm_new_password
 msgid "user_model.password_requirement_notice"
 msgstr ""
-"密码必须包含6个字母数字字符,必须包含 "
-"至少一个数字。"
+"비밀번호는 6 자리 영숫자로 구성되어야하며 "
+"적어도 하나의 숫자."
