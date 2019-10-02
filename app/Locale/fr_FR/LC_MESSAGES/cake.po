@@ -14,288 +14,288 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 msgid "Not Found"
-msgstr ""
+msgstr "Introuvable"
 
 msgid "Error"
-msgstr ""
+msgstr "Erreur"
 
 msgid "The requested address %s was not found on this server."
-msgstr ""
+msgstr "L'adresse demandée %s n'a pas été trouvée sur ce serveur."
 
 msgid "An Internal Error Has Occurred."
-msgstr ""
+msgstr "Une erreur interne s'est produite."
 
 msgid "Scaffold :: "
-msgstr ""
+msgstr "Échafaudage :: "
 
 msgid "Invalid %s"
-msgstr ""
+msgstr "%s non valide"
 
 msgid "updated"
-msgstr ""
+msgstr "mis à jour"
 
 msgid "saved"
-msgstr ""
+msgstr "enregistré"
 
 msgid "The %1$s has been %2$s"
-msgstr ""
+msgstr "Le %1$s a été %2$s"
 
 msgid "Please correct errors below."
-msgstr ""
+msgstr "Veuillez corriger les erreurs ci-dessous."
 
 msgid "The %1$s with id: %2$s has been deleted."
-msgstr ""
+msgstr "Le %1$s avec l'id : %2$s a été supprimé."
 
 msgid "There was an error deleting the %1$s with id: %2$s"
-msgstr ""
+msgstr "Une erreur s'est produite lors de la suppression de %1$s avec l'id : %2$s"
 
 msgid "You are not authorized to access that location."
-msgstr ""
+msgstr "Vous n'êtes pas autorisé à accéder à cet emplacement."
 
 msgid "This field cannot be left blank"
-msgstr ""
+msgstr "Cette case ne peut pas être laissée vide"
 
 msgid "The requested file was not found"
-msgstr ""
+msgstr "Le fichier demandé n'a pas été trouvé"
 
 msgid "%s KB"
-msgstr ""
+msgstr "%s KB"
 
 msgid "%s MB"
-msgstr ""
+msgstr "%s MB"
 
 msgid "%s GB"
-msgstr ""
+msgstr "%s GB"
 
 msgid "%s TB"
-msgstr ""
+msgstr "%s TB"
 
 msgid "%d Byte"
 msgid_plural "%d Bytes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d octet"
+msgstr[1] "%d octet"
 
 msgid "and"
-msgstr ""
+msgstr "et"
 
 msgid "Today, %s"
-msgstr ""
+msgstr "Aujourd'hui, %s"
 
 msgid "Yesterday, %s"
-msgstr ""
+msgstr "Hier, %s"
 
 msgid "Tomorrow, %s"
-msgstr ""
+msgstr "Demain, %s"
 
 msgid "Sunday"
-msgstr ""
+msgstr "Dimanche"
 
 msgid "Monday"
-msgstr ""
+msgstr "Lundi"
 
 msgid "Tuesday"
-msgstr ""
+msgstr "Mardi"
 
 msgid "Wednesday"
-msgstr ""
+msgstr "Mercredi"
 
 msgid "Thursday"
-msgstr ""
+msgstr "Jeudi"
 
 msgid "Friday"
-msgstr ""
+msgstr "Vendredi"
 
 msgid "Saturday"
-msgstr ""
+msgstr "Samedi"
 
 msgid "On %s %s"
-msgstr ""
+msgstr "Sur %s %s"
 
 msgid "%s ago"
-msgstr ""
+msgstr "Il y a %s"
 
 msgid "in %s"
-msgstr ""
+msgstr "dans %s"
 
 msgid "on %s"
-msgstr ""
+msgstr "sur %s"
 
 msgid "just now"
-msgstr ""
+msgstr "juste maintenant"
 
 msgid "in about a second"
-msgstr ""
+msgstr "dans environ une seconde"
 
 msgid "in about a minute"
-msgstr ""
+msgstr "dans environ une minute"
 
 msgid "in about an hour"
-msgstr ""
+msgstr "dans environ une heure"
 
 msgid "in about a day"
-msgstr ""
+msgstr "dans environ un jour"
 
 msgid "in about a week"
-msgstr ""
+msgstr "dans environ une semaine"
 
 msgid "in about a year"
-msgstr ""
+msgstr "dans environ un an"
 
 msgid "about a second ago"
-msgstr ""
+msgstr "il y a environ une seconde"
 
 msgid "about a minute ago"
-msgstr ""
+msgstr "Il y a environ une minute"
 
 msgid "about an hour ago"
-msgstr ""
+msgstr "il y a environ une heure"
 
 msgid "about a day ago"
-msgstr ""
+msgstr "il y a environ un jour"
 
 msgid "about a week ago"
-msgstr ""
+msgstr "il y a environ une semaine"
 
 msgid "about a year ago"
-msgstr ""
+msgstr "Il ya environ un an"
 
 msgid "days"
-msgstr ""
+msgstr "journées"
 
 msgid "%d year"
 msgid_plural "%d years"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d année"
+msgstr[1] "%d année"
 
 msgid "%d month"
 msgid_plural "%d months"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d mois"
+msgstr[1] "%d mois"
 
 msgid "%d week"
 msgid_plural "%d weeks"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d semaine"
+msgstr[1] "%d semaine"
 
 msgid "%d day"
 msgid_plural "%d days"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d jour"
+msgstr[1] "%d jour"
 
 msgid "%d hour"
 msgid_plural "%d hours"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d heure"
+msgstr[1] "%d heure"
 
 msgid "%d minute"
 msgid_plural "%d minutes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d minute"
+msgstr[1] "%d minute"
 
 msgid "%d second"
 msgid_plural "%d seconds"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d seconde"
+msgstr[1] "%d seconde"
 
 msgid "A view block with the name '%s' is already/still open."
-msgstr ""
+msgstr "Un bloc de vue portant le nom '%s' est déjà/toujours ouvert."
 
 msgid "Error in field %s"
-msgstr ""
+msgstr "Erreur dans le champ %s"
 
 msgid "New %s"
-msgstr ""
+msgstr "Nouveau %s"
 
 msgid "Edit %s"
-msgstr ""
+msgstr "Modifier %s"
 
 msgid "empty"
-msgstr ""
+msgstr "vide"
 
 msgid "Submit"
-msgstr ""
+msgstr "Soumettre"
 
 msgid "January"
-msgstr ""
+msgstr "Janvier"
 
 msgid "February"
-msgstr ""
+msgstr "Février"
 
 msgid "March"
-msgstr ""
+msgstr "Mars"
 
 msgid "April"
-msgstr ""
+msgstr "Avril"
 
 msgid "May"
-msgstr ""
+msgstr "Mai"
 
 msgid "June"
-msgstr ""
+msgstr "Juin"
 
 msgid "July"
-msgstr ""
+msgstr "Juillet"
 
 msgid "August"
-msgstr ""
+msgstr "Août"
 
 msgid "September"
-msgstr ""
+msgstr "Septembre"
 
 msgid "October"
-msgstr ""
+msgstr "Octobre"
 
 msgid "November"
-msgstr ""
+msgstr "Novembre"
 
 msgid "December"
-msgstr ""
+msgstr "Décembre"
 
 msgid "Home"
-msgstr ""
+msgstr "Accueil"
 
 msgid "Unable to find the requested image to output as base64!"
-msgstr ""
+msgstr "Impossible de trouver l'image demandée en base64 !"
 
 msgid " of "
-msgstr ""
+msgstr " de "
 
 msgid "Actions"
-msgstr ""
+msgstr "Actions"
 
 msgid "Delete"
-msgstr ""
+msgstr "Effacer"
 
 msgid "Are you sure you want to delete # %s?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir supprimer # %s ?"
 
 msgid "List"
-msgstr ""
+msgstr "Liste"
 
 msgid "List %s"
-msgstr ""
+msgstr "Liste %s"
 
 msgid "View"
-msgstr ""
+msgstr "Vue"
 
 msgid "Edit"
-msgstr ""
+msgstr "Modifier"
 
 msgid "Page {:page} of {:pages}, showing {:current} records out of {:count} total, starting on record {:start}, ending on {:end}"
-msgstr ""
+msgstr "Page {:page} de {:pages}, affichant les enregistrements {:current} sur {:count}, commençant par l'enregistrement {:start} et se terminant par {:end}"
 
 msgid "previous"
-msgstr ""
+msgstr "précédent"
 
 msgid "next"
-msgstr ""
+msgstr "suivant"
 
 msgid "View %s"
-msgstr ""
+msgstr "Voir %s"
 
 msgid "Delete %s"
-msgstr ""
+msgstr "Supprimer %s"
 
 msgid "Related %s"
-msgstr ""
+msgstr "%s liés"
 

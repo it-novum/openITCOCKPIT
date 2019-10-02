@@ -14,668 +14,668 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 msgid "Cannot load configuration files with ../ in them."
-msgstr ""
+msgstr "Impossible de charger les fichiers de configuration contenant ../."
 
 msgid "No variable %s found in %s"
-msgstr ""
+msgstr "Aucune variable %s trouvée dans %s"
 
 msgid "Encountered unexpected %s. Cannot generate SQL log."
-msgstr ""
+msgstr "Inopinément rencontré %s. Impossible de générer le journal SQL."
 
 msgid "CakePHP: the rapid development php framework"
-msgstr ""
+msgstr "CakePHP : le framework PHP de développement rapide"
 
 msgid "The request has been black-holed"
-msgstr ""
+msgstr "La demande a été détruite"
 
 msgid "Debug setting does not allow access to this url."
-msgstr ""
+msgstr "Le paramètre de débogage n'autorise pas l'accès à cette URL."
 
 msgid "Cache engine %s is not available."
-msgstr ""
+msgstr "Le moteur de cache %s n'est pas disponible."
 
 msgid "Cache engines must use %s as a base class."
-msgstr ""
+msgstr "Les moteurs de cache doivent utiliser %s comme classe de base."
 
 msgid "Cache engine \"%s\" is not properly configured. Ensure required extensions are installed, and credentials/permissions are correct"
-msgstr ""
+msgstr "Le moteur de cache \"%s\" n'est pas configuré correctement. Assurez-vous que les extensions requises sont installées et que les informations d'identification / autorisations sont correctes"
 
 msgid "%s cache was unable to write '%s' to %s cache"
-msgstr ""
+msgstr "%s cache %s n'a pas pu écrire '%s' dans le cache %s"
 
 msgid "Invalid cache group %s"
-msgstr ""
+msgstr "Groupe de cache non valide %s"
 
 msgid "Files cannot be atomically decremented."
-msgstr ""
+msgstr "Les fichiers ne peuvent pas être décrémentés de manière atomique."
 
 msgid "Files cannot be atomically incremented."
-msgstr ""
+msgstr "Les fichiers ne peuvent pas être incrémentés de manière atomique."
 
 msgid "Could not apply permission mask \"%s\" on cache file \"%s\""
-msgstr ""
+msgstr "Impossible d'appliquer le masque d'autorisation \"%s\" sur le fichier de cache \"%s\""
 
 msgid "%s is not writable"
-msgstr ""
+msgstr "%s n'est pas accessible en écriture"
 
 msgid "Method %s not implemented for compressed cache in %s"
-msgstr ""
+msgstr "La méthode %s n'est pas implémentée pour le cache compressé dans %s"
 
 msgid "Memcached extension is not build with SASL support"
-msgstr ""
+msgstr "L'extension Memcached n'est pas construite avec le support SASL"
 
 msgid "%s is not a valid serializer engine for Memcached"
-msgstr ""
+msgstr "%s n'est pas un moteur de sérialiseur valide pour Memcached"
 
 msgid "Memcached extension is not compiled with %s support"
-msgstr ""
+msgstr "L'extension Memcached n'est pas compilée avec le support %s"
 
 msgid "Could not load configuration file: %s"
-msgstr ""
+msgstr "Impossible de charger le fichier de configuration : %s"
 
 msgid "%s modified"
-msgstr ""
+msgstr "%s modifié"
 
 msgid "Could not find %s."
-msgstr ""
+msgstr "Impossible de trouver %s."
 
 msgid "AclComponent adapters must implement AclInterface"
-msgstr ""
+msgstr "Les adaptateurs AclComponent doivent implémenter AclInterface"
 
 msgid "%s is deprecated, use %s instead"
-msgstr ""
+msgstr "%s est obsolète, utilisez %s à la place"
 
 msgid "Authorization adapter \"%s\" was not found."
-msgstr ""
+msgstr "La carte d’autorisation \"%s\" est introuvable."
 
 msgid "Authorization objects must implement an %s method."
-msgstr ""
+msgstr "Les objets d'autorisation doivent implémenter une méthode %s."
 
 msgid "Authentication adapter \"%s\" was not found."
-msgstr ""
+msgstr "L'adaptateur d'authentification \"%s\" est introuvable."
 
 msgid "Authentication objects must implement an %s method."
-msgstr ""
+msgstr "Les objets d'authentification doivent implémenter une méthode %s."
 
 msgid "You must use cipher, rijndael or aes for cookie encryption type"
-msgstr ""
+msgstr "Vous devez utiliser cipher, rijndael ou aes pour le type de cryptage de cookie"
 
 msgid "You must give a handler callback."
-msgstr ""
+msgstr "Vous devez donner un rappel au gestionnaire."
 
 msgid "\"roles\" section not found in configuration."
-msgstr ""
+msgstr "Section \"roles\" introuvable dans la configuration."
 
 msgid "Neither \"allow\" nor \"deny\" rules were provided in configuration."
-msgstr ""
+msgstr "Ni les règles \"allow\" ni \"deny\" n'étaient fournies dans la configuration."
 
 msgid "cycle detected when inheriting %s from %s. Path: %s"
-msgstr ""
+msgstr "cycle détecté lors de l'héritage de %s partir de %s. Chemin : %s"
 
 msgid "Password hasher class \"%s\" was not found."
-msgstr ""
+msgstr "La classe de hashage de mot de passe \"%s\" est introuvable."
 
 msgid "Password hasher must extend AbstractPasswordHasher class."
-msgstr ""
+msgstr "Le hasheur de mot de passe doit étendre la classe AbstractPasswordHasher."
 
 msgid "$controller needs to be an instance of Controller"
-msgstr ""
+msgstr "$controller doit être une instance de Controller"
 
 msgid "$controller does not implement an %s method."
-msgstr ""
+msgstr "$controller n'implémente pas la méthode %s."
 
 msgid "CrudAuthorize::authorize() - Attempted access of un-mapped action \"%1$s\" in controller \"%2$s\""
-msgstr ""
+msgstr "CrudAuthorize::authorize() - Tentative d'accès à l'action non mappée \"%1$s\" dans le contrôleur \"%2$s\""
 
 msgid "Can't find application core file. Please create %s, and make sure it is readable by PHP."
-msgstr ""
+msgstr "Impossible de trouver le fichier de base de l'application. Veuillez créer %s et assurez-vous qu'il est lisible par PHP."
 
 msgid "Can't find application bootstrap file. Please create %s, and make sure it is readable by PHP."
-msgstr ""
+msgstr "Impossible de trouver le fichier de démarrage de l'application. Veuillez créer %s et assurez-vous qu'il est lisible par PHP."
 
 msgid "There is no \"%s\" adapter."
-msgstr ""
+msgstr "Il n'y a pas d'adaptateur \"%s\"."
 
 msgid "The \"%s\" adapter, does not have a %s method."
-msgstr ""
+msgstr "L'adaptateur \"%s\" n'a pas de méthode %s."
 
 msgid "The eventKey variable is required"
-msgstr ""
+msgstr "La variable eventKey est obligatoire"
 
 msgid "You cannot use \"\" as a domain."
-msgstr ""
+msgstr "Vous ne pouvez pas utiliser \"\" comme domaine."
 
 msgid "Missing plural form translation for \"%s\" in \"%s\" domain, \"%s\" locale.  Check your po file for correct plurals and valid Plural-Forms header."
-msgstr ""
+msgstr "Traduction manquant de forme plurielle pour \"%s\" dans le domaine \"%s\", locale \"%s\". Vérifiez votre fichier po pour les pluriels corrects et l'en-tête valide de Plural-Forms."
 
 msgid "Invalid key name"
-msgstr ""
+msgstr "Nom de clé invalide"
 
 msgid "Missing logger class name"
-msgstr ""
+msgstr "Nom de classe de l'enregistreur manquant"
 
 msgid "Stream %s not found"
-msgstr ""
+msgstr "Flux %s non trouvé"
 
 msgid "logger class %s does not implement a %s method."
-msgstr ""
+msgstr "La classe d'enregistreur %s n'implémente pas de méthode %s."
 
 msgid "Could not load class %s"
-msgstr ""
+msgstr "Impossible de charger la classe %s"
 
 msgid "Could not apply permission mask \"%s\" on log file \"%s\""
-msgstr ""
+msgstr "Impossible d'appliquer le masque d'autorisation \"%s\" sur le fichier journal \"%s\""
 
 msgid "AclNode::node() - Couldn't find %s node identified by \"%s\""
-msgstr ""
+msgstr "AclNode::node() - Impossible de trouver le nœud %s identifié par \"%s\""
 
 msgid "%s - Method %s not found in any attached behavior"
-msgstr ""
+msgstr "%s - La méthode %s ne figure dans aucun comportement attaché"
 
 msgid "Schema generation error: invalid column type %s for %s.%s does not exist in DBO"
-msgstr ""
+msgstr "Erreur de génération de schéma: type de colonne non valide %s pour %s.%s n'existe pas dans DBO"
 
 msgid "(Model::getColumnTypes) Unable to build model field data. If you are using a model without a database table, try implementing schema()"
-msgstr ""
+msgstr "(Model::getColumnTypes) Impossible de générer les données de champ du modèle. Si vous utilisez un modèle sans table de base de données, essayez d'implémenter schema()."
 
 msgid "Invalid join model settings in %s. The association parameter has the wrong type, expecting a string or array, but was passed type: %s"
-msgstr ""
+msgstr "Paramètres de modèle de jointure non valides dans %s. Le paramètre d'association a un type incorrect, attend une chaîne ou un tableau, mais le type est passé : %s"
 
 msgid "%s - Failed ARO node lookup in permissions check. Node references:\nAro: %s\nAco: %s"
-msgstr ""
+msgstr "%s - Echec de la recherche du noeud ARO dans la vérification des autorisations. Références de nœud: \nAro : %s\nAco : %s"
 
 msgid "%s - Failed ACO node lookup in permissions check. Node references:\nAro: %s\nAco: %s"
-msgstr ""
+msgstr "%s - Echec de la recherche du noeud ACO dans la vérification des autorisations. Références de nœud : \nAro : %s\nAco : %s"
 
 msgid "ACO permissions key %s does not exist in %s"
-msgstr ""
+msgstr "La clé d'autorisations ACO %s n'existe pas dans %s"
 
 msgid "%s - Invalid node"
-msgstr ""
+msgstr "%s - Noeud invalide"
 
 msgid "Invalid permission key \"%s\""
-msgstr ""
+msgstr "Clé d'autorisation non valide \"%s\""
 
 msgid "Callback %s not defined in %s"
-msgstr ""
+msgstr "Le rappel %s n'est pas défini dans %s"
 
 msgid "AclBehavior is setup with more then one type, please specify type parameter for node()"
-msgstr ""
+msgstr "AclBehavior est configuré avec plus d'un type, veuillez spécifier le paramètre type pour node()"
 
 msgid "Model \"%s\" is not associated with model \"%s\""
-msgstr ""
+msgstr "Le modèle \"%s\" n'est pas associé au modèle \"%s\""
 
 msgid "Datasource %s for TranslateBehavior of model %s is not connected"
-msgstr ""
+msgstr "La source de données %s pour TranslateBehavior du modèle %s n'est pas connectée"
 
 msgid "You cannot bind a translation named \"name\"."
-msgstr ""
+msgstr "Vous ne pouvez pas lier une traduction nommée \"name\"."
 
 msgid "Association %s is already bound to model %s"
-msgstr ""
+msgstr "L'association %s est déjà liée au modèle %s"
 
 msgid "Unable to configure the session, setting %s failed."
-msgstr ""
+msgstr "Impossible de configurer la session, le réglage de %s échoué."
 
 msgid "Could not load %s to handle the session."
-msgstr ""
+msgstr "Impossible de charger %s pour gérer la session."
 
 msgid "Chosen SessionHandler does not implement CakeSessionHandlerInterface it cannot be used with an engine key."
-msgstr ""
+msgstr "SessionHandler choisi n'implémente pas CakeSessionHandlerInterface, il ne peut pas être utilisé avec une clé de moteur."
 
 msgid "Selected driver is not enabled"
-msgstr ""
+msgstr "Le pilote sélectionné n'est pas activé"
 
 msgid "Error in Model %s"
-msgstr ""
+msgstr "Erreur dans le modèle %s"
 
 msgid "Invalid schema object"
-msgstr ""
+msgstr "Objet de schéma non valide"
 
 msgid "Column name or type not defined in schema"
-msgstr ""
+msgstr "Nom de colonne ou type non défini dans le schéma"
 
 msgid "Column type %s does not exist"
-msgstr ""
+msgstr "Le type de colonne %s n'existe pas"
 
 msgid "Could not describe table for %s"
-msgstr ""
+msgstr "Impossible de décrire la table pour %s"
 
 msgid "Could not find validation handler %s for %s"
-msgstr ""
+msgstr "Impossible de trouver le gestionnaire de validation %s pour %s"
 
 msgid "Method %s does not exist"
-msgstr ""
+msgstr "La méthode %s n'existe pas"
 
 msgid "Unknown status code"
-msgstr ""
+msgstr "Code de statut inconnu"
 
 msgid "Invalid status code"
-msgstr ""
+msgstr "Code de statut invalide"
 
 msgid "The requested file contains `..` and will not be read."
-msgstr ""
+msgstr "Le fichier demandé contient `..` et ne sera pas lu."
 
 msgid "The requested file %s was not found or not readable"
-msgstr ""
+msgstr "Le fichier demandé %s est introuvable ou illisible"
 
 msgid "Connection timed out"
-msgstr ""
+msgstr "La connexion a expiré"
 
 msgid "Invalid encryption scheme chosen"
-msgstr ""
+msgstr "Schéma de chiffrement non valide choisi"
 
 msgid "Unable to perform enableCrypto operation on CakeSocket"
-msgstr ""
+msgstr "Impossible d'effectuer l'opération enableCrypto sur CakeSocket"
 
 msgid "From requires only 1 email address."
-msgstr ""
+msgstr "De nécessite seulement 1 adresse email."
 
 msgid "Sender requires only 1 email address."
-msgstr ""
+msgstr "L'expéditeur n'a besoin que d'une seule adresse électronique."
 
 msgid "Reply-To requires only 1 email address."
-msgstr ""
+msgstr "Reply-To nécessite seulement 1 adresse email."
 
 msgid "Disposition-Notification-To requires only 1 email address."
-msgstr ""
+msgstr "Disposition-Notification-To nécessite une seule adresse e-mail."
 
 msgid "Return-Path requires only 1 email address."
-msgstr ""
+msgstr "Return-Path nécessite seulement 1 adresse email."
 
 msgid "Invalid email: \"%s\""
-msgstr ""
+msgstr "Email invalide : \"%s\""
 
 msgid "$headers should be an array."
-msgstr ""
+msgstr "$headers devrait être une liste."
 
 msgid "Format not available."
-msgstr ""
+msgstr "Format non disponible."
 
 msgid "Class \"%s\" not found."
-msgstr ""
+msgstr "Classe \"%s\" introuvable."
 
 msgid "The \"%s\" does not have a %s method."
-msgstr ""
+msgstr "Le \"%s\" n'a pas de méthode %s."
 
 msgid "Invalid format for Message-ID. The text should be something like \"<uuid@server.com>\""
-msgstr ""
+msgstr "Format non valide pour Message-ID. Le texte devrait être quelque chose comme \"<uuid@server.com>\""
 
 msgid "No file or data specified."
-msgstr ""
+msgstr "Aucun fichier ou donnée spécifié."
 
 msgid "No filename specified."
-msgstr ""
+msgstr "Aucun nom de fichier spécifié."
 
 msgid "File not found: \"%s\""
-msgstr ""
+msgstr "Fichier non trouvé : \"%s\""
 
 msgid "From is not specified."
-msgstr ""
+msgstr "De n'est pas spécifié."
 
 msgid "You need to specify at least one destination for to, cc or bcc."
-msgstr ""
+msgstr "Vous devez spécifier au moins une destination pour to, cc ou bcc."
 
 msgid "%s not found."
-msgstr ""
+msgstr "%s non trouvé."
 
 msgid "Unknown email configuration \"%s\"."
-msgstr ""
+msgstr "Configuration de messagerie inconnue \"%s\"."
 
 msgid "Unable to connect to SMTP server."
-msgstr ""
+msgstr "Impossible de se connecter au serveur SMTP."
 
 msgid "SMTP server did not accept the connection or trying to connect to non TLS SMTP server using TLS."
-msgstr ""
+msgstr "Le serveur SMTP n'a pas accepté la connexion ou n'a pas essayé de se connecter à un serveur SMTP non TLS à l'aide de TLS."
 
 msgid "SMTP server did not accept the connection."
-msgstr ""
+msgstr "Le serveur SMTP n'a pas accepté la connexion."
 
 msgid "SMTP server did not accept the username."
-msgstr ""
+msgstr "Le serveur SMTP n'a pas accepté le nom d'utilisateur."
 
 msgid "SMTP server did not accept the password."
-msgstr ""
+msgstr "Le serveur SMTP n'a pas accepté le mot de passe."
 
 msgid "SMTP authentication method not allowed, check if SMTP server requires TLS."
-msgstr ""
+msgstr "Méthode d'authentification SMTP non autorisée, vérifiez si le serveur SMTP requiert TLS."
 
 msgid "AUTH command not recognized or not implemented, SMTP server may not require authentication."
-msgstr ""
+msgstr "Commande AUTH non reconnue ou non implémentée, le serveur SMTP peut ne pas nécessiter d'authentification."
 
 msgid "SMTP timeout."
-msgstr ""
+msgstr "Délai d'attente SMTP."
 
 msgid "SMTP Error: %s"
-msgstr ""
+msgstr "Erreur SMTP : %s"
 
 msgid "HttpResponse is deprecated due to naming conflicts. Use HttpSocketResponse instead."
-msgstr ""
+msgstr "HttpResponse est obsolète en raison de conflits de noms. Utilisez HttpSocketResponse à la place."
 
 msgid "Invalid resource."
-msgstr ""
+msgstr "Ressource invalide."
 
 msgid "Class %s not found."
-msgstr ""
+msgstr "Classe %s non trouvée."
 
 msgid "Unknown authentication method."
-msgstr ""
+msgstr "Méthode d'authentification inconnue."
 
 msgid "The %s does not support authentication."
-msgstr ""
+msgstr "Le %s ne supporte pas l'authentification."
 
 msgid "Unknown authentication method for proxy."
-msgstr ""
+msgstr "Méthode d'authentification inconnue pour le proxy."
 
 msgid "The %s does not support proxy authentication."
-msgstr ""
+msgstr "Le %s ne prend pas en charge l'authentification par proxy."
 
 msgid "HttpSocket::_buildRequestLine - Passed an invalid request line string. Activate quirks mode to do this."
-msgstr ""
+msgstr "HttpSocket::_buildRequestLine - A passé une chaîne de requête invalide. Activer le mode quirks pour faire cela."
 
 msgid "HttpSocket::_buildRequestLine - The \"*\" asterisk character is only allowed for the following methods: %s. Activate quirks mode to work outside of HTTP/1.1 specs."
-msgstr ""
+msgstr "HttpSocket::_buildRequestLine - Le caractère astérisque \"* \" n'est autorisé que pour les méthodes suivantes : %s. Activer le mode quirks pour travailler en dehors des spécifications HTTP/1.1."
 
 msgid "Invalid response."
-msgstr ""
+msgstr "Réponse invalide."
 
 msgid "Invalid HTTP response."
-msgstr ""
+msgstr "Réponse HTTP invalide."
 
 msgid "Route class not found, or route class is not a subclass of CakeRoute"
-msgstr ""
+msgstr "Classe de route non trouvée ou classe de route n'est pas une sous-classe de CakeRoute"
 
 msgid "No unit type."
-msgstr ""
+msgstr "Aucun type d'unité."
 
 msgid "(ClassRegistry::init() Attempted to create instance of a class with a numeric name"
-msgstr ""
+msgstr "(ClassRegistry::init() Tentative de créer une instance d'une classe avec un nom numérique"
 
 msgid "Cannot create instance of %s, as it is abstract or is an interface"
-msgstr ""
+msgstr "Impossible de créer une instance de %s, car elle est abstraite ou constitue une interface"
 
 msgid "Invalid Debugger output format."
-msgstr ""
+msgstr "Format de sortie du débogueur invalide."
 
 msgid "Please change the value of %s in %s to a salt value specific to your application."
-msgstr ""
+msgstr "Veuillez modifier la valeur de %s dans %s en une valeur de sel spécifique à votre application."
 
 msgid "Please change the value of %s in %s to a numeric (digits only) seed value specific to your application."
-msgstr ""
+msgstr "Modifiez la valeur de %s dans %s en une valeur de départ numérique (chiffres uniquement) spécifique à votre application."
 
 msgid "The $path argument is expected to be an absolute path."
-msgstr ""
+msgstr "L'argument $path devrait être un chemin absolu."
 
 msgid "%s changed to %s"
-msgstr ""
+msgstr "%s changé en %s"
 
 msgid "%s NOT changed to %s"
-msgstr ""
+msgstr "%s PAS changé en %s"
 
 msgid "%s is a file"
-msgstr ""
+msgstr "%s est un fichier"
 
 msgid "%s created"
-msgstr ""
+msgstr "%s créé"
 
 msgid "%s NOT created"
-msgstr ""
+msgstr "%s NON créé"
 
 msgid "%s removed"
-msgstr ""
+msgstr "%s enlevé"
 
 msgid "%s NOT removed"
-msgstr ""
+msgstr "%s NON enlevé"
 
 msgid "%s not found"
-msgstr ""
+msgstr "%s non trouvé"
 
 msgid "%s not writable"
-msgstr ""
+msgstr "%s non accessible en écriture"
 
 msgid "%s copied to %s"
-msgstr ""
+msgstr "%s copié dans %s"
 
 msgid "%s NOT copied to %s"
-msgstr ""
+msgstr "%s NON copié dans %s"
 
 msgid "%s not created"
-msgstr ""
+msgstr "%s non créé"
 
 msgid "Invalid path parameter: %s, should be dot separated path or array."
-msgstr ""
+msgstr "Paramètre de chemin non valide : %s , doit être un chemin ou un tableau séparé par des points."
 
 msgid "Hash::combine() needs an equal number of keys + values."
-msgstr ""
+msgstr "Hash::combine() a besoin d'un nombre égal de clés et de valeurs."
 
 msgid "Invalid data array to nest."
-msgstr ""
+msgstr "Tableau de données non valide pour imbriquer."
 
 msgid "Cannot use modParams with indexes that do not exist."
-msgstr ""
+msgstr "Impossible d'utiliser modParams avec des index qui n'existent pas."
 
 msgid "Invalid value, cost must be between %s and %s"
-msgstr ""
+msgstr "Valeur non valide, le coût doit être compris entre %s et %s"
 
 msgid "You cannot use an empty key for %s"
-msgstr ""
+msgstr "Vous ne pouvez pas utiliser une clé vide pour %s"
 
 msgid "You must specify the operation for Security::rijndael(), either encrypt or decrypt"
-msgstr ""
+msgstr "Vous devez spécifier l'opération pour Security::rijndael(), chiffrer ou déchiffrer"
 
 msgid "You must use a key larger than 32 bytes for Security::rijndael()"
-msgstr ""
+msgstr "Vous devez utiliser une clé supérieure à 32 octets pour Security::rijndael()"
 
 msgid "Invalid salt: %s for %s Please visit http://www.php.net/crypt and read the appropriate section for building %s salts."
-msgstr ""
+msgstr "Sel non valide : %s pour %s Veuillez visiter http://www.php.net/crypt et lire la section appropriée pour la construction des sels %s."
 
 msgid "Invalid key for %s, key must be at least 256 bits (32 bytes) long."
-msgstr ""
+msgstr "Clé invalide pour %s, la clé doit avoir une longueur minimale de 256 bits (32 octets)."
 
 msgid "The data to decrypt cannot be empty."
-msgstr ""
+msgstr "Les données à déchiffrer ne peuvent pas être vides."
 
 msgid "You must define the $operator parameter for %s"
-msgstr ""
+msgstr "Vous devez définir le paramètre $operator pour %s"
 
 msgid "You must define a regular expression for %s"
-msgstr ""
+msgstr "Vous devez définir une expression régulière pour %s"
 
 msgid "Could not find %s class, unable to complete validation."
-msgstr ""
+msgstr "Impossible de trouver la classe %s, impossible d'achever la validation."
 
 msgid "Method %s does not exist on %s unable to complete validation."
-msgstr ""
+msgstr "Méthode %s n'existe pas sur %s incapables de terminer la validation."
 
 msgid "Can not determine the mimetype."
-msgstr ""
+msgstr "Impossible de déterminer le type MIME."
 
 msgid "XML cannot be read."
-msgstr ""
+msgstr "XML ne peut pas être lu."
 
 msgid "Invalid input."
-msgstr ""
+msgstr "Entrée invalide."
 
 msgid "Xml cannot be read."
-msgstr ""
+msgstr "Xml ne peut pas être lu."
 
 msgid "The key of input must be alphanumeric"
-msgstr ""
+msgstr "La clé de saisie doit être alphanumérique"
 
 msgid "Invalid array"
-msgstr ""
+msgstr "Tableau invalide"
 
 msgid "The input is not instance of SimpleXMLElement, DOMDocument or DOMNode."
-msgstr ""
+msgstr "L'entrée n'est pas une instance de SimpleXMLElement, DOMDocument ou DOMNode."
 
 msgid "Method %1$s::%2$s does not exist"
-msgstr ""
+msgstr "La méthode %1$s::%2$s n'existe pas"
 
 msgid "Element Not Found: %s"
-msgstr ""
+msgstr "Élément introuvable : %s"
 
 msgid "You cannot extend an element which does not exist (%s)."
-msgstr ""
+msgstr "Vous ne pouvez pas étendre un élément qui n'existe pas (%s)."
 
 msgid "You cannot have views extend themselves."
-msgstr ""
+msgstr "Vous ne pouvez pas avoir de vues s'étendre."
 
 msgid "You cannot have views extend in a loop."
-msgstr ""
+msgstr "Vous ne pouvez pas avoir de vues étendues en boucle."
 
 msgid "The \"%s\" block was left open. Blocks are not allowed to cross files."
-msgstr ""
+msgstr "Le bloc \"%s\" est resté ouvert. Les blocs ne sont pas autorisés à traverser des fichiers."
 
 msgid "Fatal Error"
-msgstr ""
+msgstr "Erreur fatale"
 
 msgid "Error"
-msgstr ""
+msgstr "Erreur"
 
 msgid "File"
-msgstr ""
+msgstr "Fichier"
 
 msgid "Line"
-msgstr ""
+msgstr "Ligne"
 
 msgid "Notice"
-msgstr ""
+msgstr "Remarquer"
 
 msgid "If you want to customize this error message, create %s"
-msgstr ""
+msgstr "Si vous souhaitez personnaliser ce message d'erreur, créez %s"
 
 msgid "Missing Method in %s"
-msgstr ""
+msgstr "Méthode manquante en %s"
 
 msgid "The action %1$s is not defined in controller %2$s"
-msgstr ""
+msgstr "L'action %1$s n'est pas définie dans le contrôleur %2$s"
 
 msgid "Create %1$s%2$s in file: %3$s."
-msgstr ""
+msgstr "Créez %1$s %2$s dans le fichier : %3$s ."
 
 msgid "Missing Behavior"
-msgstr ""
+msgstr "Comportement manquant"
 
 msgid "%s could not be found."
-msgstr ""
+msgstr "%s n'a pas pu être trouvé."
 
 msgid "Create the class %s below in file: %s"
-msgstr ""
+msgstr "Créez la classe %s ci-dessous dans le fichier : %s"
 
 msgid "Missing Component"
-msgstr ""
+msgstr "Composant manquant"
 
 msgid "Missing Database Connection"
-msgstr ""
+msgstr "Connexion de base de données manquante"
 
 msgid "A Database connection using \"%s\" was missing or unable to connect."
-msgstr ""
+msgstr "Une connexion à la base de données utilisant \"%s\" était manquante ou impossible de se connecter."
 
 msgid "The database server returned this error: %s"
-msgstr ""
+msgstr "Le serveur de base de données a renvoyé cette erreur : %s"
 
 msgid "%s driver is NOT enabled"
-msgstr ""
+msgstr "Le pilote %s n'est PAS activé"
 
 msgid "Missing Controller"
-msgstr ""
+msgstr "Contrôleur manquant"
 
 msgid "Scaffold requires a database connection"
-msgstr ""
+msgstr "L'échafaudage nécessite une connexion à la base de données"
 
 msgid "Confirm you have created the file: %s"
-msgstr ""
+msgstr "Confirmez que vous avez créé le fichier : %s"
 
 msgid "Missing Datasource"
-msgstr ""
+msgstr "Source de données manquante"
 
 msgid "Datasource class %s could not be found."
-msgstr ""
+msgstr "La classe de source de données %s est introuvable."
 
 msgid "Missing Datasource Configuration"
-msgstr ""
+msgstr "Configuration de source de données manquante"
 
 msgid "The datasource configuration %1$s was not found in database.php."
-msgstr ""
+msgstr "La configuration de la source de données %1$s n'a pas été trouvée dans database.php."
 
 msgid "Missing Helper"
-msgstr ""
+msgstr "Aide manquante"
 
 msgid "Missing Layout"
-msgstr ""
+msgstr "Disposition manquante"
 
 msgid "The layout file %s can not be found or does not exist."
-msgstr ""
+msgstr "Le fichier de mise en page %s est introuvable ou n'existe pas."
 
 msgid "Missing Plugin"
-msgstr ""
+msgstr "Plug-in manquant"
 
 msgid "The application is trying to load a file from the %s plugin"
-msgstr ""
+msgstr "L'application tente de charger un fichier depuis le plugin %s"
 
 msgid "Make sure your plugin %s is in the %s directory and was loaded"
-msgstr ""
+msgstr "Assurez-vous que votre plugin %s est dans le répertoire %s et a été chargé"
 
 msgid "Loading all plugins"
-msgstr ""
+msgstr "Chargement de tous les plugins"
 
 msgid "If you wish to load all plugins at once, use the following line in your %s file"
-msgstr ""
+msgstr "Si vous souhaitez charger tous les plugins à la fois, utilisez la ligne suivante dans votre fichier %s"
 
 msgid "Missing Database Table"
-msgstr ""
+msgstr "Table de base de données manquante"
 
 msgid "Table %1$s for model %2$s was not found in datasource %3$s."
-msgstr ""
+msgstr "La table %1$s du modèle %2$s est introuvable dans la source de données %3$s ."
 
 msgid "Missing View"
-msgstr ""
+msgstr "Vue manquante"
 
 msgid "The view for %1$s%2$s was not found."
-msgstr ""
+msgstr "La vue pour %1$s %2$s n'a pas été trouvée."
 
 msgid "Database Error"
-msgstr ""
+msgstr "Erreur de la base de données"
 
 msgid "SQL Query"
-msgstr ""
+msgstr "Requête SQL"
 
 msgid "SQL Query Params"
-msgstr ""
+msgstr "Paramètres de requête SQL"
 
 msgid "Private Method in %s"
-msgstr ""
+msgstr "Méthode privée en %s"
 
 msgid "%s%s cannot be accessed directly."
-msgstr ""
+msgstr "%s%s ne peut pas être consulté directement."
 
 msgid "Scaffold Error"
-msgstr ""
+msgstr "Erreur d'échafaudage"
 
 msgid "Method _scaffoldError in was not found in the controller"
-msgstr ""
+msgstr "La méthode _scaffoldError dans est introuvable dans le contrôleur"
 
 msgid "Unable to write view cache file: \"%s\" for \"%s\""
-msgstr ""
+msgstr "Impossible d'écrire dans le fichier cache de la vue : \"%s\" pour \"%s\""
 
 msgid "Missing field name for FormHelper::%s"
-msgstr ""
+msgstr "Nom de champ manquant pour FormHelper::%s"
 
 msgid "Cannot load the configuration file. Wrong \"configFile\" configuration."
-msgstr ""
+msgstr "Impossible de charger le fichier de configuration. Mauvaise configuration \"configFile\"."
 
 msgid "Cannot load the configuration file. Unknown reader."
-msgstr ""
+msgstr "Impossible de charger le fichier de configuration. Lecteur inconnu."
 
 msgid "JsHelper:: Missing Method %s is undefined"
-msgstr ""
+msgstr "JsHelper:: La méthode manquante %s n'est pas défini"
 
 msgid "%s requires a \"drag\" option to properly function"
-msgstr ""
+msgstr "%s nécessite une option \"drag\" pour fonctionner correctement"
 
 msgid "%s could not be found"
-msgstr ""
+msgstr "%s n'a pas pu être trouvé"
 
 msgid "%s does not implement a %s method, it is incompatible with %s"
-msgstr ""
+msgstr "%s n'implémente pas de méthode %s, elle est incompatible avec %s"
 

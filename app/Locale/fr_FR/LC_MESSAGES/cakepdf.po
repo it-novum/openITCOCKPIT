@@ -14,5 +14,5 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 msgid "Controller attribute $pdfConfig is not correct or missing"
-msgstr ""
+msgstr "L'attribut $pdfConfig du Controller est manquant ou invalide"
 

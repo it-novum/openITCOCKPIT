@@ -14,191 +14,191 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 msgid "-> Testing :url"
-msgstr ""
+msgstr "→ Teste :url"
 
 msgid "Total Requests made: :requests"
-msgstr ""
+msgstr "Nombre de requêtes effectuées : :requests"
 
 msgid "Total Time elapsed: :duration (seconds)"
-msgstr ""
+msgstr "Durée totale : :duration (secondes)"
 
 msgid "Requests/Second: :rps req/sec"
-msgstr ""
+msgstr "Requêtes/seconde : :rps req/sec"
 
 msgid "Average request time: :average-time seconds"
-msgstr ""
+msgstr "Durée moyenne des requêtes : :average-time secondes"
 
 msgid "Standard deviation of average request time: :std-dev"
-msgstr ""
+msgstr "Déviation standard de la durée moyenne des requêtes : :std-dev"
 
 msgid "Longest/shortest request: :longest sec/:shortest sec"
-msgstr ""
+msgstr "Requête plus longue/plus courte : :longest sec/:shortest sec"
 
 msgid "Allows you to obtain some rough benchmarking statisticsabout a fully qualified URL."
-msgstr ""
+msgstr "Vous permet d'obtenir des statistiques approximatives sur une URL entièrement qualifiée."
 
 msgid "The URL to request."
-msgstr ""
+msgstr "L'URL à demander."
 
 msgid "Number of iterations to perform."
-msgstr ""
+msgstr "Nombre d'itérations à effectuer."
 
 msgid "Maximum total time for all iterations, in seconds.If a single iteration takes more than the tiemout, only one request will be made"
-msgstr ""
+msgstr "Temps total maxmum pour toutes les itérations en secondes. Si une seule itération dure plus longtemps, une seule requête sera exécutée"
 
 msgid "Example Use: `cake benchmark --n 10 --t 100 http://localhost/testsite`. <info>Note:</info> this benchmark does not include browser render times."
-msgstr ""
+msgstr "Exemple d'usage : `cake benchmark --n 10 --t 100 http://localhost/testsite`. <info>Note :</info> ce benchmark n'inclus pas le temps de rendu du navigateur."
 
 msgid "Component initialization"
-msgstr ""
+msgstr "Initialisation du composant"
 
 msgid "Controller action"
-msgstr ""
+msgstr "Action du controller"
 
 msgid "Controller action start"
-msgstr ""
+msgstr "Début de l'action du controller"
 
 msgid "Processing toolbar state"
-msgstr ""
+msgstr "Traitement de l'état de la barre d'outils"
 
 msgid "Processing toolbar data"
-msgstr ""
+msgstr "Traitement des données de la barre d'outils"
 
 msgid "Controller render start"
-msgstr ""
+msgstr "Début du rendu du controller"
 
 msgid "Could not load DebugToolbar panel %s"
-msgstr ""
+msgstr "Impossible de charger le panneau de DebugToolbar %s"
 
 msgid "Core Processing (Derived from $_SERVER[\"REQUEST_TIME\"])"
-msgstr ""
+msgstr "Traitement de base (dérivé de $_SERVER[\"REQUEST_TIME\"])"
 
 msgid "Headers already sent in %s on line %s. Cannot send log data to FirePHP."
-msgstr ""
+msgstr "Headers déjà envoyés dans %s à la ligne %s. Impossible d'envoyer le log dans FirePHP."
 
 msgid "Incorrect parameter count for FireCake::fb()"
-msgstr ""
+msgstr "Nombre de paramètres incorrect pour FireCake::fb()"
 
 msgid "Maximum number (99,999) of messages reached!"
-msgstr ""
+msgstr "Nombre maximum (99'999) de messages atteint !"
 
 msgid "There are no active panels. You must enable a panel to see its output."
-msgstr ""
+msgstr "Il n'y a pas de panneau actif. Vous devez activer un panneau pour voir sa sortie."
 
 msgid "App Constants"
-msgstr ""
+msgstr "Constantes de l'app"
 
 msgid "CakePHP Constants"
-msgstr ""
+msgstr "Constantes CakePHP"
 
 msgid "PHP Environment"
-msgstr ""
+msgstr "Environnement PHP"
 
 msgid "Hidef Environment"
-msgstr ""
+msgstr "Environnement Hidef"
 
 msgid "Request History"
-msgstr ""
+msgstr "Historique des requêtes"
 
 msgid "No previous requests logged."
-msgstr ""
+msgstr "Pas de requêtes enregistrées."
 
 msgid "previous requests available"
-msgstr ""
+msgstr "précédentes requêtes disponibles"
 
 msgid "Restore to current request"
-msgstr ""
+msgstr "Restaurer à la requête actuelle"
 
 msgid "Included Files"
-msgstr ""
+msgstr "Fichiers inclus"
 
 msgid "Logs"
-msgstr ""
+msgstr "Journaux"
 
 msgid "Time"
-msgstr ""
+msgstr "Heure"
 
 msgid "Message"
-msgstr ""
+msgstr "Message"
 
 msgid "There were no log entries made this request"
-msgstr ""
+msgstr "Cette requête n'a pas généré de journal"
 
 msgid "Request"
-msgstr ""
+msgstr "Requête"
 
 msgid "No post data."
-msgstr ""
+msgstr "Pas de données post."
 
 msgid "No querystring data."
-msgstr ""
+msgstr "Pas de données querystring."
 
 msgid "Current Route"
-msgstr ""
+msgstr "Route actuelle"
 
 msgid "Session"
-msgstr ""
+msgstr "Session"
 
 msgid "Sql Logs"
-msgstr ""
+msgstr "Journal sql"
 
 msgid "Total Time: %s ms <br />Total Queries: %s queries"
-msgstr ""
+msgstr "Durée totale : %s ms <br />Nombre de requêtes : %s requêtes"
 
 msgid "Query Explain:"
-msgstr ""
+msgstr "Explication de la requête :"
 
 msgid "Click an \"Explain\" link above, to see the query explanation."
-msgstr ""
+msgstr "Cliquez sur le lien \"Expliquer\" ci-dessus pour voir l'explication."
 
 msgid "No active database connections"
-msgstr ""
+msgstr "Pas de connections de base de donnée actives"
 
 msgid "Memory"
-msgstr ""
+msgstr "Mémoire"
 
 msgid "Peak Memory Use"
-msgstr ""
+msgstr "Usage mémoire maximal"
 
 msgid "Memory use"
-msgstr ""
+msgstr "Usage mémoire"
 
 msgid "Timers"
-msgstr ""
+msgstr "Timers"
 
 msgid "%s (ms)"
-msgstr ""
+msgstr "%s (ms)"
 
 msgid "Total Request Time:"
-msgstr ""
+msgstr "Temps total :"
 
 msgid "Time in ms"
-msgstr ""
+msgstr "Durée en ms"
 
 msgid "Graph"
-msgstr ""
+msgstr "Graphique"
 
 msgid "View Variables"
-msgstr ""
+msgstr "Voir les variables"
 
 msgid "Rendering View"
-msgstr ""
+msgstr "Rendu de la vue en cours"
 
 msgid "Rendering %s"
-msgstr ""
+msgstr "Rendu de %s en cours"
 
 msgid "View render complete"
-msgstr ""
+msgstr "Afficher le rendu"
 
 msgid "Explain"
-msgstr ""
+msgstr "Expliquer"
 
 msgid "Starting %sms into the request, taking %sms"
-msgstr ""
+msgstr "Démarre à %s ms dans la requête, en prenant %s ms"
 
 msgid "No markup errors found"
-msgstr ""
+msgstr "Pas d'erreur de balisage trouvée"
 
 msgid "maybe slow"
-msgstr ""
+msgstr "peut-être lent"
 

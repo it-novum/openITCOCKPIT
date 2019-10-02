@@ -14,20 +14,20 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 msgid "Engine is not loaded"
-msgstr ""
+msgstr "Le moteur n'est pas chargé"
 
 msgid "Pdf engine \"%s\" not found"
-msgstr ""
+msgstr "Moteur Pdf \"%s\" introuvable"
 
 msgid "Pdf engines must extend \"AbstractPdfEngine\""
-msgstr ""
+msgstr "Les moteurs Pdf doivent étendre \"AbstractPdfEngine\""
 
 msgid "Crypto is not loaded"
-msgstr ""
+msgstr "La crypto n'est pas chargée"
 
 msgid "Pdf crypto \"%s\" not found"
-msgstr ""
+msgstr "La crypto Pdf \"%s\" n'est pas chargée"
 
 msgid "Crypto engine must extend \"AbstractPdfCrypto\""
-msgstr ""
+msgstr "Les moteurs crypto doivent étendre \"AbstractPdfCrypto\""
 

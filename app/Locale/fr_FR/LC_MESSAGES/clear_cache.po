@@ -14,59 +14,59 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 msgid "Clear Cache"
-msgstr ""
+msgstr "Vider le cache"
 
 msgid "Engine Name"
-msgstr ""
+msgstr "Nom du moteur"
 
 msgid "Result"
-msgstr ""
+msgstr "Résultat"
 
 msgid "File Name (%s)"
-msgstr ""
+msgstr "Nom du fichier (%s)"
 
 msgid "No files found."
-msgstr ""
+msgstr "Pas de fichier trouvé."
 
 msgid "Group Name"
-msgstr ""
+msgstr "Nom du groupe"
 
 msgid "Cleared Engines"
-msgstr ""
+msgstr "Cleared Engines"
 
 msgid "Failed Engines"
-msgstr ""
+msgstr "Moteurs défectueux"
 
 msgid "No configured/allowed folder names."
-msgstr ""
+msgstr "Pas de noms de dossiers configurés/autorisés."
 
 msgid "Files"
-msgstr ""
+msgstr "Fichiers"
 
 msgid "All Cached Files"
-msgstr ""
+msgstr "Tous les fichiers mis en cache"
 
 msgid "No configured/allowed cache engines."
-msgstr ""
+msgstr "Pas de moteur de cache configuré/autorisé."
 
 msgid "Engines"
-msgstr ""
+msgstr "Moteurs"
 
 msgid "All Cache Engines"
-msgstr ""
+msgstr "Tous les moteurs de cache"
 
 msgid "No configured/allowed cache groups."
-msgstr ""
+msgstr "Pas de groupe de cache configuré/autorisé."
 
 msgid "Groups"
-msgstr ""
+msgstr "Groupes"
 
 msgid "All Cache Groups"
-msgstr ""
+msgstr "Tous les groupes de cache"
 
 msgid "Click on some link above."
-msgstr ""
+msgstr "Cliquez sur un lien ci-dessus."
 
 msgid "Could not fetch ClearCache output."
-msgstr ""
+msgstr "Impossible de récupérer la sortie ClearCache."
 
