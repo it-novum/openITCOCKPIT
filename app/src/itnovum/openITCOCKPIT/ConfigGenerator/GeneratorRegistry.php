@@ -35,7 +35,7 @@ class GeneratorRegistry {
             new NagiosCfg(),
             new AfterExport(),
             new NagiosModuleConfig(),
-            new phpNstaMaster(),
+            new phpNSTAMaster(),
             new DbBackend(),
             new PerfdataBackend(),
             new GraphingDocker(),
@@ -63,7 +63,7 @@ class GeneratorRegistry {
                 new StatusengineCfg()
             ],
             __('phpNSTA')                                     => [
-                new phpNstaMaster()
+                new phpNSTAMaster()
             ],
             __('Carbon and Whisper (Graphing)')               => [
                 new GraphingDocker()

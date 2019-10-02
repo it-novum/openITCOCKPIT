@@ -1545,22 +1545,22 @@ class ServicesController extends AppController {
     public function listToPdf() {
         $this->layout = 'Admin.default';
 
+        $User = new User($this->Auth);
+        $UserTime = $User->getUserTime();
+
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
         $ServiceFilter = new ServiceFilter($this->request);
-        $User = new User($this->Auth);
-
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions(
             $ServiceFilter->indexFilter()
         );
-        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
 
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
         if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
             $ServiceConditions->setIncludeDisabled(false);
             $ServiceConditions->setContainerIds($this->MY_RIGHTS);
@@ -1574,10 +1574,8 @@ class ServicesController extends AppController {
                     return;
                 }
             }
-
             $ServiceConditions->setIncludeDisabled(false);
             $ServiceConditions->setContainerIds($browserContainerIds);
-
             if ($User->isRecursiveBrowserEnabled()) {
                 //get recursive container ids
                 $containerIdToResolve = $browserContainerIds;
@@ -1592,27 +1590,20 @@ class ServicesController extends AppController {
                 $ServiceConditions->setContainerIds(array_merge($ServiceConditions->getContainerIds(), $recursiveContainerIds));
             }
         }
-
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
             'Hosts.name'  => 'asc',
             'servicename' => 'asc'
         ]));
-
-
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
-
         if ($this->DbBackend->isNdoUtils()) {
             $services = $ServicesTable->getServiceIndex($ServiceConditions, $PaginateOMat);
         }
-
         if ($this->DbBackend->isCrateDb()) {
             throw new MissingDbBackendException('MissingDbBackendException');
         }
-
         if ($this->DbBackend->isStatusengine3()) {
             throw new MissingDbBackendException('MissingDbBackendException');
         }
-
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields
@@ -1623,8 +1614,6 @@ class ServicesController extends AppController {
             array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
         );
-
-
         $all_services = [];
         $UserTime = $User->getUserTime();
         foreach ($services as $service) {
@@ -1636,7 +1625,6 @@ class ServicesController extends AppController {
             }
             $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null);
             $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
-
             $tmpRecord = [
                 'Service'       => $Service,
                 'Host'          => $Host,
@@ -1645,9 +1633,8 @@ class ServicesController extends AppController {
             ];
             $all_services[] = $tmpRecord;
         }
-
         $this->set('all_services', $all_services);
-
+        $this->set('UserTime', $UserTime);
         $filename = 'Services_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';
         if (file_exists('/usr/local/bin/wkhtmltopdf')) {

@@ -15,7 +15,7 @@
                 <span>
                     <div class="bar-holder no-padding">
                         <p class="margin-bottom-5">
-                            <i class="fa fa-warning text-danger"></i>
+                            <i class="fa fa-warning down"></i>
                             <strong><?php echo __('Critical'); ?></strong>
                             <br/>
                             <i><?php echo __('Monitoring engine is not running!'); ?></i>
@@ -28,7 +28,7 @@
                 <span>
                     <div class="bar-holder no-padding">
                         <p class="margin-bottom-5">
-                            <i class="fa fa-warning text-danger"></i>
+                            <i class="fa fa-warning down"></i>
                             <strong><?php echo __('Critical'); ?></strong>
                             <br/>
                             <i><?php echo __('Gearman job server not reachable!'); ?></i>
@@ -41,7 +41,7 @@
                 <span>
                     <div class="bar-holder no-padding">
                         <p class="margin-bottom-5">
-                            <i class="fa fa-warning text-danger"></i>
+                            <i class="fa fa-warning down"></i>
                             <strong><?php echo __('Critical'); ?></strong>
                             <br/>
                             <i><?php echo __('Service gearman_worker is not running!'); ?></i>
@@ -54,7 +54,7 @@
                 <span>
                     <div class="bar-holder no-padding">
                         <p class="margin-bottom-5">
-                            <i class="fa fa-warning text-danger"></i>
+                            <i class="fa fa-warning down"></i>
                             <strong><?php echo __('Critical'); ?></strong>
                             <br/>
                             <i><?php echo __('Database connector NDOUtils is not running!'); ?></i>
@@ -67,7 +67,7 @@
                 <span>
                     <div class="bar-holder no-padding">
                         <p class="margin-bottom-5">
-                            <i class="fa fa-warning text-danger"></i>
+                            <i class="fa fa-warning down"></i>
                             <strong><?php echo __('Critical'); ?></strong>
                             <br/>
                             <i><?php echo __('Database connector Statusengine is not running!'); ?></i>
@@ -158,9 +158,6 @@
                 <span>
                     <div class="bar-holder no-padding">
                         <p class="margin-bottom-5">
-                            <i class="fa fa-warning text-danger"></i>
-                            <strong><?php echo __('Critical'); ?></strong>
-                            <br/>
                             <i><?php echo __('Current CPU load is too high!'); ?></i>
                             <br/>
                             <i>{{ systemHealth.load.load1 }}, {{ systemHealth.load.load5 }}, {{ systemHealth.load.load15 }}</i>
@@ -238,8 +235,8 @@
                 <span>
                     <div class="bar-holder no-padding">
                         <p class="margin-bottom-5">
-                            <i class="fa fa-check txt-color-green"></i>
-                            <i class="txt-color-green"><?php echo __('No issues detected. System operates normally.'); ?></i>
+                            <i class="fa fa-check up"></i>
+                            <i class="up"><?php echo __('No issues detected. System operates normally.'); ?></i>
                         </p>
                     </div>
                 </span>

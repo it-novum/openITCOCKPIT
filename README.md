@@ -162,6 +162,11 @@ openITCOCKPIT's development is publicly available in GitHub. Everybody is welcom
 * Join [#openitcockpit](http://webchat.freenode.net/?channels=openitcockpit) on freenode.net
 * [it-novum GmbH](https://it-novum.com/en/it-service-management/openitcockpit/openitcockpit-enterprise-subscription-license) provides commercial support
 
+# Security
+Please send security vulnerabilities found in openITCOCKPIT or software that is used by openITCOCKPIT to: `security@openitcockpit.io`.
+
+All disclosed vulnerabilities are available here: [https://openitcockpit.io/security/](https://openitcockpit.io/security/)
+
 # License
 ```
 Copyright (C) 2015-2017  it-novum GmbH
