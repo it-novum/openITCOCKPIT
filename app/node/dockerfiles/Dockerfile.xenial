@@ -18,7 +18,7 @@ ENV http_proxy="http://proxy.master.dns:8080"
 ENV https_proxy="http://proxy.master.dns:8080"
 ENV no_proxy=localhost,127.0.0.0/8,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,172.16.166.0/24,172.16.76.0/24,jenkins.oitc.itn,apt.oitc.itn,proxmox.oitc.itn,.oitc.itn
 
-RUN echo "deb http://172.16.166.5:3142/de.archive.ubuntu.com/ubuntu/ xenial main restricted" > /etc/apt/sources.list \
+RUN echo "deb http://172.16.166.5:3142/de.archive.ubuntu.com/ubuntu/ xenial main restricted universe" > /etc/apt/sources.list \
 && echo "deb http://172.16.166.5:3142/de.archive.ubuntu.com/ubuntu/ xenial-updates main restricted" >> /etc/apt/sources.list \
 && echo "deb http://172.16.166.5:3142/de.archive.ubuntu.com/ubuntu/ xenial-updates universe" >> /etc/apt/sources.list \
 && echo "deb http://172.16.166.5:3142/de.archive.ubuntu.com/ubuntu/ xenial multiverse" >> /etc/apt/sources.list \
