@@ -97,16 +97,37 @@ class AngularController extends AppController {
         }
         $UserTime = new DateTime($userTimezone);
         $ServerTime = new DateTime();
-
+        $ServerTimeZone = new DateTimeZone($ServerTime->getTimezone()->getName());
         $timezone = [
-            'user_timezone'          => $userTimezone,
-            'user_offset'            => $UserTime->getOffset(),
-            'server_time_utc'        => time(),
-            'server_time'            => date('F d, Y H:i:s'),
-            'server_timezone_offset' => $ServerTime->getOffset()
+            'user_timezone'              => $userTimezone,
+            'user_time_to_server_offset' => $this->get_timezone_offset($ServerTimeZone->getName(), $userTimezone),
+            'user_offset'                => $UserTime->getOffset(),
+            'server_time_utc'            => time(),
+            'server_time'                => date('F d, Y H:i:s'),
+            'server_timezone_offset'     => $ServerTime->getOffset()
         ];
         $this->set('timezone', $timezone);
         $this->set('_serialize', ['timezone']);
+    }
+
+    /**
+     * @param $remote_tz
+     * @param null $origin_tz
+     * @return bool|int
+     * @throws Exception
+     */
+    public function get_timezone_offset($remote_tz, $origin_tz = null) {
+        if ($origin_tz === null) {
+            if (!is_string($origin_tz = date_default_timezone_get())) {
+                return false; // A UTC timestamp was returned -- bail out!
+            }
+        }
+        $origin_dtz = new DateTimeZone($origin_tz);
+        $remote_dtz = new DateTimeZone($remote_tz);
+        $origin_dt = new DateTime("now", $origin_dtz);
+        $remote_dt = new DateTime("now", $remote_dtz);
+        $offset = $origin_dtz->getOffset($origin_dt) - $remote_dtz->getOffset($remote_dt);
+        return $offset;
     }
 
     public function version_check() {

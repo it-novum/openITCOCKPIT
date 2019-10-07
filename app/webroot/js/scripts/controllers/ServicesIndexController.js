@@ -374,7 +374,8 @@ angular.module('openITCOCKPIT')
         };
 
         var loadGraph = function(host, service){
-            graphEnd = Math.floor(Date.now() / 1000);
+            var serverTime = new Date($scope.timezone.server_time);
+            graphEnd = Math.floor(serverTime.getTime() / 1000);
             graphStart = graphEnd - (3600 * 4);
 
             $http.get('/Graphgenerators/getPerfdataByUuid.json', {
@@ -397,7 +398,7 @@ angular.module('openITCOCKPIT')
             for(var dsCount in performance_data){
                 graph_data[dsCount] = [];
                 for(var timestamp in performance_data[dsCount].data){
-                    var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_offset * 1000));
+                    var frontEndTimestamp = (parseInt(timestamp, 10) + ($scope.timezone.user_time_to_server_offset * 1000));
                     graph_data[dsCount].push([frontEndTimestamp, performance_data[dsCount].data[timestamp]]);
                 }
                 //graph_data.push(performance_data[key].data);
@@ -411,19 +412,21 @@ angular.module('openITCOCKPIT')
             var options = GraphDefaultsObj.getDefaultOptions();
             options.height = '500px';
             options.colors = colors.border;
+
             options.xaxis.tickFormatter = function(val, axis){
-                var fooJS = new Date(val + ($scope.timezone.user_offset * 1000));
+                var fooJS = new Date(val);
                 var fixTime = function(value){
                     if(value < 10){
                         return '0' + value;
                     }
                     return value;
                 };
-                return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
+                return fixTime(fooJS.getDate()) + '.' + fixTime(fooJS.getMonth() + 1) + '.' + fooJS.getFullYear() + ' ' + fixTime(fooJS.getHours()) + ':' + fixTime(fooJS.getMinutes());
             };
-            options.xaxis.min = graphStart * 1000;
-            options.xaxis.max = graphEnd * 1000;
-
+            options.xaxis.mode = 'time';
+            options.xaxis.timeBase = 'milliseconds';
+            options.xaxis.min = (graphStart + $scope.timezone.user_time_to_server_offset) * 1000;
+            options.xaxis.max = (graphEnd + $scope.timezone.user_time_to_server_offset) * 1000;
 
             self.plot = $.plot('#serviceGraphFlot', graph_data, options);
         };
