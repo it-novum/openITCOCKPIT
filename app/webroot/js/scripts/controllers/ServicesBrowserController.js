@@ -537,8 +537,8 @@ angular.module('openITCOCKPIT')
 
                         $scope.changeGraphTimespan = function(timespan){
                             $scope.currentSelectedTimerange = timespan;
-                            var start = (parseInt($scope.timezone.server_time.getTime() / 1000, 10) - (timespan * 3600));
-                            var end = parseInt($scope.timezone.server_time.getTime() / 1000, 10);
+                            var start = (parseInt($scope.serverTimeDateObject.getTime() / 1000, 10) - (timespan * 3600));
+                            var end = parseInt($scope.serverTimeDateObject.getTime() / 1000, 10);
                             //graphTimeSpan = timespan;
                             loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, start, end, true);
                         };
@@ -813,6 +813,8 @@ angular.module('openITCOCKPIT')
                                     var start = parseInt(ranges.xaxis.from / 1000, 10);
                                     var end = parseInt(ranges.xaxis.to / 1000);
 
+                                    start -= $scope.timezone.user_time_to_server_offset;
+                                    end -= $scope.timezone.user_time_to_server_offset;
 
                                     //Zoomed from right to left?
                                     if(start > end){
@@ -1035,7 +1037,7 @@ angular.module('openITCOCKPIT')
                                     lastTimestampInCurrentData = lastTimestampInCurrentData / 1000;
 
                                     var start = lastTimestampInCurrentData;
-                                    $scope.serverTimeDateObject = new Date($scope.serverTimeDateObject.getTime()+ $scope.graphAutoRefreshInterval);
+                                    $scope.serverTimeDateObject = new Date($scope.serverTimeDateObject.getTime() + $scope.graphAutoRefreshInterval);
                                     var end = $scope.serverTimeDateObject.getTime();
                                     if(start > 0){
                                         loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, true, start, end, false);
@@ -1269,8 +1271,10 @@ angular.module('openITCOCKPIT')
             if(zoomCallbackWasBind === false){
                 $("#graphCanvas").bind("plotselected", function(event, ranges){
                     var start = parseInt(ranges.xaxis.from / 1000, 10);
-                    var end = parseInt(ranges.xaxis.to / 1000);
+                    var end = parseInt(ranges.xaxis.to / 1000, 10);
 
+                    start -= $scope.timezone.user_time_to_server_offset;
+                    end -= $scope.timezone.user_time_to_server_offset;
 
                     //Zoomed from right to left?
                     if(start > end){
@@ -1493,7 +1497,7 @@ angular.module('openITCOCKPIT')
                     lastTimestampInCurrentData = lastTimestampInCurrentData / 1000;
 
                     var start = lastTimestampInCurrentData;
-                    $scope.serverTimeDateObject = new Date($scope.serverTimeDateObject.getTime()+ $scope.graphAutoRefreshInterval);
+                    $scope.serverTimeDateObject = new Date($scope.serverTimeDateObject.getTime() + $scope.graphAutoRefreshInterval);
                     var end = Math.floor($scope.serverTimeDateObject.getTime() / 1000);
                     if(start > 0){
                         loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, true, start, end, false);
