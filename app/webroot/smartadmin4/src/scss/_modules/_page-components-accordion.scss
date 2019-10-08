@@ -1,0 +1,88 @@
+.accordion {
+	.card {
+		.card-header {
+			cursor: pointer;
+			margin: 0;
+			padding: 0;
+			border-bottom: 0;
+			background-color: $frame-border-color;
+			.card-title {
+				padding: 1rem $card-spacer-x;
+				margin: 0;
+				font-size: $h6-font-size;	
+				font-weight: 500;
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+				color: $primary-500;
+
+				&.collapsed {
+					color: $fusion-100;
+				}
+			}
+		}
+	}
+	&.accordion-clean {
+
+		&:not(.accordion-outline):not(.accordion-hover) {
+			.card-title,
+			.card-body {
+				padding-left: 0 !important;
+				padding-right: 0 !important;
+			}
+			.card-body {
+				padding-top:0;
+			}			
+		}
+
+		.card-header {
+			background: $white;
+		}
+		.card {
+			border-left: 0;
+    		border-right: 0;
+
+    		&:first-child {
+    			border-top: 0;
+    		}
+    		&:last-child {
+    			border-bottom: 0;
+    		}
+		}
+
+		&.accordion-outline,
+		&.accordion-hover {
+			.card-title,
+			.card-body {
+				padding-left: $card-spacer-x !important;
+				padding-right: $card-spacer-x !important;
+			}
+		}
+	}
+	&.accordion-outline {
+		.card {
+			margin-bottom: 1rem;
+			border: 2px solid $card-border-color !important;
+			border-radius: $border-radius !important;
+		}
+	}
+	&.accordion-hover {
+		.card-title {
+			transition: background-color 0.5s ease
+		}
+		.card-header {
+			background:$white;
+			&:hover {
+				.card-title.collapsed {
+					color: $white;
+					background-color: $primary-300;
+				}
+			}
+		}
+		.card-title:not(.collapsed) {
+			color: $white;
+			background-color: $primary-500;
+			
+		}
+	}
+}

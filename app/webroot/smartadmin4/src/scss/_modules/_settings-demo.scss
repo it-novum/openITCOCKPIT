@@ -1,0 +1,174 @@
+.settings-panel {
+
+	&:first-child {
+		h5 {
+			margin-top:0;
+			padding-top:5px;
+		}
+	}
+
+	h5 {
+		margin:0;
+		font-weight:500;
+		font-size: rem($fs-base + 1);
+		padding: $p-3 $p-3 5px;
+		box-sizing: content-box;
+		display: block;
+		overflow:hidden;
+		text-decoration: none;
+		margin-top: 5px;
+		color: $fusion-500;
+		text-align: left;
+
+		small {
+			display: inline;
+		}
+	}
+
+	.list {
+		font-weight: 400;
+		min-height: 45px;
+		padding: 0.25rem 1rem 0.25rem 2rem;
+		color:darken($white, 60%);
+		position: relative;
+
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+
+		@extend %common-animation;
+
+		&:hover{
+			color:darken($white, 80%);
+			background:rgba( $white, .7 );
+
+			.onoffswitch {
+				@include scale(1.13);
+			}
+		}
+
+		.onoffswitch,
+		&:hover .onoffswitch {
+			@extend %common-animation;
+		}
+
+		.btn-switch {
+			position: absolute;
+			right: 1rem;
+			margin: 0;
+			top: 30%;
+		}
+
+		.onoffswitch-title {
+			margin-top:0.5px;
+			font-size: rem($fs-base);
+			display: block;
+		}
+
+		.onoffswitch-title-desc {
+			display: block;
+			font-size: rem(12px);
+			color: #989da5;
+			text-transform: lowercase;
+		}
+
+	}
+
+	.expanded {
+		@extend %expanded-box;
+		position: relative;
+		display: none;
+
+		&:before {
+			border-bottom-color: $fusion-400;
+			bottom: 1px;
+		}
+
+		> ul {
+			padding: 0;
+			margin: 0;
+			margin: 0 0 0 1rem;
+			height: 50px;
+			
+			> li {
+				display: inline-block;
+				margin:0;
+				padding:0;
+
+				[data-action] {
+					width: 50px;
+					height: 50px;
+					border-radius: 50%;
+					margin-right: 2px;
+					display: block;
+					cursor: pointer;
+					position: relative;
+
+					box-shadow: 0 1px 10px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+				}
+
+			}
+		}
+
+		.list {
+			padding: 0;
+			min-height: auto;
+			margin: 0.5rem 0 0 1rem;
+
+			.btn-switch {
+				margin-top:2px;
+				top: -2px;
+				right: 0;
+			}
+
+			&:hover {
+				background:transparent;
+			}
+		} 
+	}
+}
+
+#saving {
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	left: -40px;
+	display: none;
+}
+
+/* localstorage success fade animation */
+.saving {
+
+	#saving {
+		@extend %spin-loader;
+		display: block;
+	}
+
+	[data-action="app-reset"] {
+		opacity: 0.5;
+		cursor: not-allowed !important;
+	}
+
+}
+
+@include set-settings(header-function-fixed);
+@include set-settings(nav-function-fixed);
+@include set-settings(nav-function-minify);
+@include set-settings(nav-function-hidden);
+@include set-settings(nav-function-top);
+@include set-settings(nav-mobile-push);
+@include set-settings(nav-mobile-no-overlay);
+@include set-settings(nav-mobile-slide-out);
+@include set-settings(mod-main-boxed);
+@include set-settings(mod-fixed-bg);
+@include set-settings(mod-clean-page-bg);
+@include set-settings(mod-pace-custom);
+@include set-settings(mod-bigger-font);
+@include set-settings(mod-high-contrast);
+@include set-settings(mod-color-blind);
+@include set-settings(mod-hide-nav-icons);
+@include set-settings(mod-hide-info-card);
+@include set-settings(mod-lean-subheader);
+@include set-settings(mod-disable-animation);
+@include set-settings(mod-nav-link);
+@include set-settings(mod-app-rtl);

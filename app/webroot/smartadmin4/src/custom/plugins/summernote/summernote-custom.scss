@@ -1,0 +1,70 @@
+@import './src/scss/_imports/_global-import';
+
+@font-face {
+  font-family: "summernote";
+  font-style: normal;
+  font-weight: normal;
+  src: 	url("../../../webfonts/summernote.eot");
+  src: 	url("../../../webfonts/summernote.eot") format("embedded-opentype"), 
+		url("../../../webfonts/summernote.woff") format("woff"),
+		url("../../../webfonts/summernote.ttf") format("truetype"); 
+}
+
+.note-editor.note-frame {
+	border-color: $card-border-color;
+}
+
+
+.note-para .note-btn-group .dropdown-menu.show {
+	display: flex;
+}
+
+.card-header.note-toolbar > .btn-group {
+	margin-top: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.card-header.note-toolbar {
+	padding: 0 0 0.5rem 0.5rem;
+}
+
+.note-btn.btn-light {
+	color: #7b7b7b;
+}
+
+.note-popover .popover-content {
+	padding: 0.3rem;
+	border-radius: 5px;
+}
+
+.note-hint-popover .popover-content .note-hint-group .note-hint-item.active, 
+.note-hint-popover .popover-content .note-hint-group .note-hint-item:hover {
+	background-color: $info-500;
+}
+
+.note-hint-popover .popover-content .note-hint-group .note-hint-item {
+	display: block !important;
+	padding: 5px;
+	border-radius: 4px;
+	padding-left: 0.7rem;
+	padding-right: 0.7rem;
+	margin: 3px 0;
+}
+
+.note-btn-group .dropdown-item {
+	padding: 0.5rem 0.5rem;
+}
+
+.note-popover .popover-content > .btn-group {
+	margin-top: 0;
+}
+
+.note-popover {
+	.note-btn-group:last-child {
+		margin-right:0;
+	}
+}
+
+.note-editor.note-frame .note-editing-area {
+	border-radius: 4px;
+}

@@ -1,0 +1,11 @@
+:-webkit-full-screen  {
+   	[data-action="app-fullscreen"] {
+		color: $disabled;
+	} 
+}
+
+:-moz-full-screen {
+   	[data-action="app-fullscreen"] {
+		color: $disabled;
+	} 
+}

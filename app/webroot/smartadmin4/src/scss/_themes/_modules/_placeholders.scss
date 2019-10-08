@@ -1,0 +1,139 @@
+/* PLACEHOLDER 
+============================================= 
+
+EXAMPLE:
+
+%bg-image {
+    width: 100%;
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.image-one {
+    @extend %bg-image;
+    background-image:url(/img/image-one.jpg");
+}
+
+RESULT:
+
+.image-one, .image-two {
+    width: 100%;
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+*/
+
+%nav-bg {
+  background-image: -webkit-linear-gradient(270deg, $nav-background-shade, transparent);
+  background-image: linear-gradient(270deg, $nav-background-shade, transparent); 
+  background-color: $nav-background;
+}
+
+/*
+%shadow-hover {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 0 2px rgba(0,0,0,0.24);
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 -1px 6px rgba(0,0,0,0.23);
+  }
+}
+*/
+%btn-default {
+  @include gradient-img($start: #f5f5f5,$stop: #f1f1f1);
+  color: #444;
+
+  &:hover {
+    border: 1px solid #c6c6c6;
+  }
+
+  &:focus {
+    border-color: $primary-200 !important;
+  }
+}
+
+%custom-scroll {
+
+ &::-webkit-scrollbar-thumb:vertical {
+    background-color: #666;
+  }
+
+
+}
+
+
+%font-smoothing {
+     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+%set-settings {
+  color:$white;
+  background:$color-primary !important;
+  &:after {
+    background:$white !important;
+    color:$color-primary !important;
+  }
+  + .onoffswitch-title {
+    color: $primary-500;
+  }
+}
+
+
+%not-compatible {
+
+    .onoffswitch-title {
+      color: $settings-incompat-title;
+    }
+    .onoffswitch-title-desc {
+      color: $settings-incompat-desc;
+    }
+    &:after {
+      @extend %incompatible;
+    }
+}
+
+
+%ping-badge {
+  background-color: $nav-badge-bg-color;
+  color: $nav-badge-color;
+  border: 1px solid $nav-background;
+}
+
+
+%header-btn {
+  border: 1px solid lighten($fusion-50, 30%);
+  color:$header-btn-color;
+
+  &:hover {
+    border-color: $primary-500;
+    background: $primary-300;
+    color:$white;
+
+  }
+
+}
+
+%expanded-box {
+  background: $white;
+}
+
+%header-btn-active {
+  background: $header-btn-active-bg;
+  border-color: darken($header-btn-active-bg, 10%) !important;
+  color:$header-btn-active-color !important;
+}
+
+
+%spin-loader {
+  border: 2px solid $color-primary;
+}
+
+%incompatible {
+  background: $settings-incompat-bg;
+  border: 1px solid $settings-incompat-border;
+  color:$fusion-900;
+}

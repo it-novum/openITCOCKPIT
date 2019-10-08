@@ -61,7 +61,7 @@ class AngularController extends AppController {
     public function index() {
         //Shipp the AngularJS Single Page Application layout
         //URL: /spa#!/<state>
-        $this->layout = 'angularjs_spa';
+        $this->layout = 'angularjs_spa_bootstrap4';
         return;
     }
 

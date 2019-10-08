@@ -1,0 +1,73 @@
+{{#> 
+	layouts/main 
+	title="Inbox Write" 
+	pagename="page_inbox_write" 
+	heading="inbox" 
+	category_1="Page Views"
+	preemptiveclass="nav-function-minify layout-composed"
+}}
+{{#*inline "head-block"}}
+<link rel="stylesheet" media="screen, print" href="css/fa-solid.css">
+<link rel="stylesheet" media="screen, print" href="css/fa-brands.css">
+{{/inline}}
+{{#*inline "content-block"}}
+
+<div class="d-flex flex-grow-1 p-0">
+
+	<!-- left slider -->
+	{{> include/pages/inbox/_menu}}
+	<!-- end left slider -->
+
+	<!-- inbox container -->
+	<div class="d-flex flex-column flex-grow-1 bg-white">
+		<!-- inbox header -->
+		<div class="flex-grow-0">
+			<!-- inbox title -->
+			<div class="d-flex align-items-center pl-2 pr-3 py-3 pl-sm-3 pr-sm-4 py-sm-4 px-lg-5 py-lg-4  border-faded border-top-0 border-left-0 border-right-0 flex-shrink-0">
+				<!-- button for mobile -->
+				<a href="javascript:void(0);" class="pl-3 pr-3 py-2 d-flex d-lg-none align-items-center justify-content-center mr-2 btn" data-action="toggle" data-class="slide-on-mobile-left-show" data-target="#js-inbox-menu">
+				<i class="fal fa-ellipsis-v h1 mb-0 "></i>
+				</a>
+				<!-- end button for mobile -->
+				<h1 class="subheader-title"> 
+					New message
+				</h1>
+				<div class="d-flex position-relative ml-auto hidden-lg-down" style="max-width: 23rem;">
+					<i class="fas fa-search position-absolute pos-left fs-lg px-3 py-2 mt-1"></i>
+					<input type="text" class="form-control bg-subtlelight pl-6" placeholder="Filter emails">
+				</div>
+			</div>
+			<!-- end inbox title -->
+		</div>
+		<!-- end inbox header -->
+		<!-- inbox message -->
+		<div class="flex-wrap align-items-center flex-grow-1 position-relative bg-white mx-lg-3">
+			<div class=" position-absolute pos-top pos-bottom w-100">
+				<div class="d-flex h-100 flex-column">
+
+					{{> include/pages/inbox/_compose_layout}}
+
+				</div>
+			</div>
+		</div>
+		<!-- end inbox message -->
+	</div>
+	<!-- end inbox container -->
+
+	<!-- compose message -->
+	{{> include/pages/inbox/_compose}}
+	<!-- end compose message -->
+
+</div>
+
+{{/inline}}
+{{#*inline "scripts-block"}}
+<script type="text/javascript">
+
+	// push settings with "false" save to local
+	initApp.pushSettings("nav-function-minify layout-composed", false);
+	$('.shortcut-menu').addClass('d-none');
+
+</script>
+{{/inline}}
+{{/layouts/main}}

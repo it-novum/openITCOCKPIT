@@ -1,0 +1,47 @@
+.nav-mobile-slide-out {
+	#nmp,
+	#nmno {
+		@extend %not-compatible;
+	}
+}
+
+.nav-function-top,
+.nav-function-minify,
+.mod-hide-nav-icons {
+	#mnl {
+		@extend %not-compatible;
+	}
+}
+
+@include media-breakpoint-up($mobile-breakpoint-size) {
+	.nav-function-top {
+		#nfh {
+			@extend %not-compatible;
+		}
+	}
+}
+
+@media only screen and (max-width: $mobile-breakpoint-size) {
+
+	.mobile-view-activated {
+		#nff,
+		#nfm,
+		#nfh,
+		#nft,
+		#mmb {
+		      position:relative;
+		    
+		    .onoffswitch-title {
+		      color: $settings-incompat-title !important; 
+		    }
+		    .onoffswitch-title-desc {
+		      color: $settings-incompat-desc !important;
+		    }
+		    &:after {
+		      background: $settings-incompat-bg;
+		      border: 1px solid $settings-incompat-border;
+		      color:$fusion-900;
+		    }
+		}
+	}
+}

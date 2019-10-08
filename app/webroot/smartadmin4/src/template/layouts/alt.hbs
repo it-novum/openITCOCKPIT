@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{{> include/_copyright-header}}
+<html lang="en">
+	<head>
+		{{> include/_head}}
+
+		<!-- Optional: page related CSS-->
+		{{#>head-block}}{{/head-block}}
+	</head>
+	<body>
+			
+		<!-- BEGIN Page Wrapper -->
+		<div class="page-wrapper alt">
+
+			<!-- BEGIN Page Content --> 
+			<!-- the #js-page-content id is needed for some plugins to initialize -->
+			<main id="js-page-content" role="main" class="page-content">
+				{{#>content-block}}{{/content-block}}
+			</main>
+			<!-- END Page Content -->
+
+			<!-- BEGIN Page Footer -->
+			{{> include/_page-footer }}
+			<!-- END Page Footer -->
+
+		</div>
+		<!-- END Page Wrapper -->
+
+		<!-- BEGIN Quick Menu -->
+		{{> include/_shortcut-menu }}
+		<!-- END Quick Menu -->
+
+		{{!-- Google Analytics  code if GOOGLE_ANALYTICS_ID id available --}}
+		{{> include/_google_analytics }}
+		
+		{{> include/_scripts-base-plugins}}
+		{{#>scripts-block}}
+			{{!-- Custom scripts per page can be added. --}}
+		{{/scripts-block}}
+	</body>
+</html>

@@ -1,0 +1,10 @@
+{{#if preemptiveclass}}
+	<!-- Page heading removed for composed layout -->
+{{else}}
+	{{> include/_page-breadcrumb }}
+	<div class="subheader">
+		{{> include/_page-heading }}
+		{{#> subheader-block}}{{/subheader-block}}
+	</div>
+{{/if}}
+{{#>content-block}}{{/content-block}}

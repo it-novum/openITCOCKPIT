@@ -1,0 +1,82 @@
+.header-function-fixed {
+
+	&:not(.nav-function-top) {
+
+		.page-header {
+			left:0;
+			position:fixed !important;
+			right:0;
+			top:0;
+			
+			@extend %general-animation;
+		}
+
+		.page-content {
+			margin-top: $header-height;
+		}
+
+		&:not(.nav-function-fixed) {
+
+			.page-logo {
+				width:$nav-width;
+				position:fixed;
+				top:0;
+				z-index: $cloud;
+
+				//@extend %fixed-header-shadow;
+			}
+
+			.page-sidebar {
+				.primary-nav {
+					margin-top:$header-height;
+				}
+			}
+
+			/* bug fix for nav hidden other than chrome...*/
+			&.desktop.nav-function-hidden {
+				.page-logo {
+					position: absolute;
+					transition: none !important;
+				}
+			}
+		}
+	}
+}
+
+@include media-breakpoint-up($mobile-breakpoint) {
+
+	.header-function-fixed {
+
+		&:not(.nav-function-top) {
+
+			.page-header {
+				margin-left: $nav-width;
+			}
+
+			&.nav-function-minify {
+				.page-sidebar {
+					.page-logo {
+						width: $nav-minify-width;
+					}
+				}
+			}
+		}
+
+		&.nav-function-top {
+			.page-header {
+				position: fixed !important;
+				/*top: 0;
+				right: 0;
+				left: 0;*/
+
+				box-shadow: 0px 0px 28px 2px $header-border-bottom-color;
+
+				/*chrome flickering solution*/
+				-webkit-transform: translateZ(0);
+			}
+			/*.page-wrapper {
+				padding-top: $header-height-nav-top;
+			}*/			
+		}
+	}
+}

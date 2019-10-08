@@ -1,0 +1,68 @@
+.app-list {
+	margin:0 auto;
+	display: block;
+	width: $header-applist-rows-width !important;
+	height: $header-applist-rows-height !important;
+	font-size:0; //removes wierd spacing
+	padding: $header-applist-box-padding-x $header-applist-box-padding-y;
+	text-align: center;
+
+	> li {
+		display: inline-block;
+		text-align: center;
+		padding:0;
+	}
+}
+
+.app-list-item {
+	height: $header-applist-link-block-height;
+	width: $header-applist-link-block-width;
+	display: block;
+	text-decoration: none;
+	color:$base-text-color;
+	margin: 10px 2px;
+	border: 1px solid transparent !important;
+	outline: none;
+	@include rounded($border-radius - 1);
+	padding-top: 8px;
+
+	border-radius: 100%;
+	
+
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+
+	.icon-stack {
+		font-size: $header-applist-icon-size;
+		margin-top:4px;
+	}
+
+	&:hover {
+		border: 1px solid lighten(lighten($black, 75%), 14%);
+		padding-top: 7px;
+
+		> .icon-stack {
+			font-size: $header-applist-icon-size + 0.0625rem;
+		}
+
+	}
+
+	&:active {
+		border-color: $primary-500;
+		padding-top: 8px;
+
+		> .icon-stack {
+			font-size: $header-applist-icon-size;
+		}
+	}
+}
+
+.app-list-name {
+	text-align: center;
+	font-size: rem($fs-base);
+	text-overflow: ellipsis;
+	display: block;
+	white-space: nowrap;
+	overflow: hidden;
+}

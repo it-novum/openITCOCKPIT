@@ -1,0 +1,10 @@
+.subheader-icon {
+	color: $nav-icon-hover-color;
+}
+.subheader-title {
+	color: $fusion-500;
+	text-shadow: $white 0 1px;
+	small {
+		color: $fusion-100; //$fusion-100;
+	}
+}

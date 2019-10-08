@@ -1,0 +1,10 @@
+.mod-hide-info-card {
+	/*.page-logo {
+		border-bottom: 1px solid lighten($header-logo-border-bottom, 13%);
+	}*/
+	.page-sidebar {
+		.info-card {
+			display: none;
+		}
+	}
+}

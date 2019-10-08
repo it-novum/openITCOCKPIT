@@ -1,0 +1,23 @@
+{{#if appSidebar}}
+<!-- BEGIN Left Aside -->
+<aside class="page-sidebar">
+
+	{{> include/_logo }}
+
+	<!-- BEGIN PRIMARY NAVIGATION -->
+	<nav id="js-primary-nav" class="primary-nav" role="navigation">
+
+		{{> include/_nav-filter }}
+		{{> include/_nav-info-card }}	
+		{{> include/_nav }}
+		{{> include/_nav-filter-msg }}
+	</nav>
+	<!-- END PRIMARY NAVIGATION -->
+
+	<!-- NAV FOOTER -->
+	{{> include/_nav-footer }}
+	<!-- END NAV FOOTER -->
+
+</aside>
+<!-- END Left Aside -->
+{{/if}}

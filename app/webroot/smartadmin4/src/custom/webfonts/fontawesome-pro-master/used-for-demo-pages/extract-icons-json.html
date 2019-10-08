@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Extract
+	</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+</head>
+<body class="p-5">
+
+<div class="container">
+	<div class="card">
+		<div class="card-body p-2">
+			
+			<h1>
+				Extract Icons
+			</h1>
+
+			<textarea id="extracted" class="w-100" style="height:500px"></textarea>
+
+		</div>
+	</div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+<script>
+	var eContainer = $('#extracted');
+	// file that will be filtered
+	var keepStrURL = "../scss/_icons.scss";
+	var removeStrURL = "fa-brand-list.json";
+	var keepStr, removeStr, arr;
+
+	$.ajaxSetup({
+		cache:false
+	});
+
+	$.when(
+	    $.get(keepStrURL, function(data) {
+	        keepStr = data.match(/(?<=})-.*?(?=:)/g);
+	        console.log(keepStr)
+	    }, 'text'),
+	    $.getJSON(removeStrURL, function(data) {
+	        removeStr = data;
+	        console.log(removeStr)
+	    })
+	).then(function() {
+	    if (keepStr && removeStr) {
+	    	// both data loaded
+			var arr = keepStr;
+				// filter it out
+				arr = arr.filter(function(val){
+					return (removeStr.indexOf(val) == -1 ? true : false)
+				})
+
+			eContainer.text(JSON.stringify(arr));	
+			console.log(JSON.stringify(arr));
+			$('.card-body').prepend("<div class='alert alert-success'><strong>Success!</strong> All icons sorted to array.</div>");			
+	    }
+	    else {
+	        $('.card-body').prepend("<div class='alert alert-danger'>Something went wrong</div>");
+	    }
+	});	
+
+</script>
+
+
+</body>
+</html>

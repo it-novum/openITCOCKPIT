@@ -1,0 +1,40 @@
+.notification {
+	li {
+		&.unread {
+			background: lighten($warning-50, 9%);
+		}
+
+		> :first-child {
+			border-bottom: 1px solid rgba($black, 0.06);
+			&:hover {
+				background-image: linear-gradient(rgba(29, 33, 41, .03), rgba(29, 33, 41, .04));
+			}
+		}
+	}
+
+	.name {
+		color: lighten($black, 13.5%);
+	}
+
+	.msg-a,
+	.msg-b {
+		color: lighten($black, 33.5%);
+	}
+
+	&.notification-layout-2 {
+		li {
+			background: $gray-50;
+			&.unread {
+				background: $white;
+			}
+			> :first-child {
+				border-bottom: 1px solid rgba($black, 0.04);
+			}
+		}
+
+		&:hover {
+			cursor: pointer;
+		}
+	}
+
+}

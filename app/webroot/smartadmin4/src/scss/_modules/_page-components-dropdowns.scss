@@ -1,0 +1,165 @@
+.dropdown-header.bg-trans-gradient {
+	padding: 1.25rem 1.5rem;
+}
+
+/* dropdown-item hover menu*/
+.dropdown-menu-animated {
+	@include transform( scale(0.8) !important);
+	transition: all 270ms cubic-bezier(0.34, 1.25, 0.3, 1);
+	opacity: 0;
+	visibility: hidden;
+	display: block;
+}
+
+/* various sizes */
+.dropdown-menu {
+	box-shadow: $dropdown-shadow;
+	-webkit-user-select: text;
+
+	.dropdown-item {
+		font-weight: 400;
+		cursor: pointer;
+	}
+
+	&.dropdown-sm {
+		width: $dropdown-sm-width;
+		height: auto;
+	}
+
+	&.dropdown-md {
+		width: $dropdown-md-width;
+		height: auto;
+	}  
+
+	&.dropdown-lg {
+		width: $dropdown-lg-width;
+		height: auto;
+	} 
+
+	&.dropdown-xl {
+		width: $dropdown-xl-width;
+		height: auto;
+	}	
+
+	.dropdown-item {
+
+		&:first-child,
+		&:last-child {
+			@include border-radius(0px);
+		}
+
+	}
+}
+
+/* replace bootstrap's default arrow */
+.dropdown-toggle:after,
+.dropleft .dropdown-toggle:before {
+	text-align: center;
+	display: inline;
+	border: 0 !important;
+	font-family: 'Font Awesome 5 Pro';
+	content: "\f107" !important;
+	vertical-align: top !important;
+	position: relative;	
+}
+
+.dropup .dropdown-toggle:after {
+	content: "\f106" !important;
+}
+
+.dropright .dropdown-toggle:after {
+	content: "\f105" !important;
+}
+
+.dropleft .dropdown-toggle:before {
+	content: "\f104" !important;
+}
+
+//very wierd bug... 
+.nav-item .dropdown-toggle:after {
+	font-size: 0.90em;
+}
+
+
+/* remove arrow */
+.dropdown-toggle {
+	&.no-arrow {
+		&:before,
+		&:after {
+			display: none !important;
+		}
+	}
+}
+
+/* dropdown menu multi-level */
+.dropdown-menu {
+
+	.dropdown-menu {
+		margin: 0;
+		padding: 0;
+		border-radius: 0;
+		position: absolute;
+		top: -1px;
+		left: 100%;
+		background:$white;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+
+		@include transform( scale(0.8) );
+		transition: all 270ms cubic-bezier(0.34, 1.25, 0.3, 1);
+		transition-delay: 500ms;
+		opacity: 0;
+		visibility: hidden;
+		display: block;
+
+		.dropdown-item {
+			padding-top: 0.5rem !important;
+			padding-bottom: 0.5rem !important;
+		}
+	}
+
+	.dropdown-multilevel {
+		position: relative;
+
+		/* it is displayed on right by default */
+		&.dropdown-multilevel-left {
+
+			> .dropdown-menu {
+				right: 100%;
+				left: auto;
+			}
+		}
+
+		/* add arrow */
+		> .dropdown-item:first-child {
+			&:after {
+				content: "\f2fb";
+				font-family: 'nextgen-icons';
+				font-size: inherit;
+				position: absolute;
+				right: 0;
+				top: 0;
+				bottom: 0;
+				display: flex;
+				align-items: center;
+				padding-right: $dropdown-item-padding-x;
+			}
+		}
+
+		&:hover {
+			> .dropdown-item:not(.disabled) {
+
+				background: $gray-100;
+				color: $dropdown-link-hover-color;
+
+				& + .dropdown-menu {
+					transition-delay: 0ms;
+					@include transform( scale(1) );
+					@include transform-origin( 29px -50px )
+					opacity: 1;
+					visibility: visible;	
+				}
+			}
+		}
+	}
+	
+}

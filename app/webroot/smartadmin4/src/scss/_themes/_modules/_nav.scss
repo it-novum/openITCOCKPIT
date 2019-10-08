@@ -1,0 +1,216 @@
+
+
+.nav-title {
+	color: $nav-title-color;
+}
+
+.nav-menu {
+
+	li {
+	
+
+		&.open {
+			> a {
+				@include text-contrast($nav-background);
+			}
+		}
+
+		&.active {
+
+			> a {
+				@include text-contrast($nav-background);
+				background-color: rgba($white,0.04);
+				@include box-shadow(inset 3px 0 0 $color-primary);
+
+				&:hover {
+
+					>[class*='fa-'],
+					>.#{$cust-icon-prefix} {
+					    color: $nav-icon-hover-color;
+					}
+
+				}
+
+			}
+
+			> ul {
+				display: block;
+			}
+
+			/* arrow that appears next to active/selected items */
+			&:not(.open) > a:before {
+				color: #24b3a4;
+			}
+		}
+
+		a {
+			color: $nav-link-color;
+			.dl-ref {
+				&.label {
+					color: rgba(255,255,255,0.7);
+				}
+			}
+
+			>[class*='fa-'],
+			>.#{$cust-icon-prefix} {
+			    color:$nav-icon-color;
+			} 
+
+
+			&.collapsed {
+				.nav-menu-btn-sub-collapse {
+					@include rotate(180);
+				}
+			}
+
+			&:hover {
+				@include text-contrast(rgba(lighten($nav-base-color, 1%), (80/100)))
+				background-color: rgba($black, 0.1);
+
+				.badge {
+					color: $nav-badge-color;
+				}
+
+				>[class*='fa-'],
+				>.#{$cust-icon-prefix} {
+					color:$nav-icon-hover-color;
+				}
+
+				> .badge {
+					box-shadow: 0 0 0 1px rgba(lighten($nav-base-color, 1%), (80/100));
+					border: 1px solid rgba(lighten($nav-base-color, 1%), (80/100));
+				}
+			
+			}
+
+			&:focus {
+				@include text-contrast( rgba(darken($nav-base-color, 5% ), (50/100)) );
+
+				.badge {
+					color: $nav-badge-color;
+				}
+			}
+		} 
+
+		b.collapse-sign {
+			color: $primary-400;
+		}
+
+		// Sub nav level 1
+		> ul {
+			background-color: rgba($black,0.1);
+
+			li {
+
+				a {
+					color: darken($nav-link-color, 5%);
+
+					>[class*='fa-'],
+					>.#{$cust-icon-prefix} {
+						color: $nav-icon-color;
+					}
+
+					> .badge {
+						color: $nav-badge-color;
+						background-color: $nav-badge-bg-color;
+					}
+					
+					&:hover {
+						@include text-contrast(rgba(($black), (10/100)));
+						background-color: rgba(($black), (10/100));
+
+						> .nav-link-text {
+							>[class*='fa-'],
+							>.#{$cust-icon-prefix} {
+							    color:$nav-icon-hover-color;
+							}
+						}
+					}
+				}
+
+				&.active {
+					
+					> a {
+						@include text-contrast(rgba(lighten(darken($nav-base-color, 11%), 5%), (45/100)))
+						background-color:transparent;
+
+						> .nav-link-text {
+							>[class*='fa-'],
+							>.#{$cust-icon-prefix} {
+							    @include text-contrast(rgba(lighten(darken($nav-base-color, 11%), 5%), (45/100)));
+							}
+						}	
+
+						&:hover {
+							> .nav-link-text {
+								>[class*='fa-'],
+								>.#{$cust-icon-prefix} {
+								    color:$nav-icon-hover-color;
+								}
+							}			
+						}
+					}
+				}
+
+				// Sub nav level 2
+				> ul {
+
+					li {
+
+						&.active {
+							> a {
+								@include text-contrast( rgba(lighten(darken($nav-base-color, 11%), 5%), (20/100)) )
+							}
+						}
+
+						a {
+							color: darken($nav-link-color, 7%);
+							
+							&:hover {
+								@include text-contrast( rgba(lighten(darken($nav-base-color, 11%), 5%), (45/100)) )
+							}
+
+							> .badge {
+								color: $nav-badge-color;
+								background-color: $nav-badge-bg-color;
+								border: 1px solid darken($color-fusion, 0%);
+							}
+
+						}
+					}
+				}
+			}
+		} 
+
+	}
+
+} 
+
+/* nav clean elements */
+.nav-menu-clean {
+	background:$white;
+	
+	li {
+		a {
+			color: $fusion-500 !important;
+			span {
+				color: $fusion-500 !important;
+			}
+
+			&:hover {
+				background-color: #f4f4f4 !important;
+			}
+		}	
+	}
+
+}
+
+/* nav bordered elements */
+.nav-menu-bordered {
+	border: 1px solid $card-border-color;
+
+	li a {
+		border-bottom: 1px solid $card-border-color;
+	}
+
+}

@@ -1,0 +1,307 @@
+@import "./src/scss/_modules/variables";
+
+table.dataTable > tbody > tr.child ul.dtr-details { width: 100% }
+
+.sorting_asc,
+.sorting_desc, 
+.even .sorting_1 {
+	background-color: rgba($primary-500, 0.03);
+}
+
+.odd .sorting_1 {
+	background-color: rgba($primary-500, 0.04);
+}
+
+.table-dark {
+	.sorting_asc,
+	.sorting_desc, 
+	.even .sorting_1 {
+		background-color: rgba($warning-500, 0.15);
+	}
+
+	.odd .sorting_1 {
+		background-color: rgba($warning-500, 0.15);
+	}
+}
+
+/* some idiot put "important" rule on the main css file now I have to put important here to override it... eghhh */
+/* I had to set it to 0 because auto fill cannot "compute" for the margin ... nice job Allan >.> */
+table.dataTable {
+	margin-top: 0 !important;
+	margin-bottom: 1rem !important;
+}
+
+
+table.dataTable.dtr-column > tbody > tr > td.control, 
+table.dataTable.dtr-column > tbody > tr > th.control {
+	padding-left: 30px;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child:before, 
+table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th:first-child:before,
+table.dataTable.dtr-column > tbody > tr > td.control:before, 
+table.dataTable.dtr-column > tbody > tr > th.control:before {
+
+	top: 0;
+	bottom: 0;
+	left: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height:100%;
+	width: 1rem;
+	box-shadow: none;
+	border-radius: 0;
+	border: 0;
+	margin: 0;
+	background-color: $primary-500;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child:before, 
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child:before,
+table.dataTable.dtr-column > tbody > tr.parent td.control:before, 
+table.dataTable.dtr-column > tbody > tr.parent th.control:before {
+	background-color: $success-500;
+}
+
+table.dataTable thead .sorting:before,
+table.dataTable thead .sorting_asc:before,
+table.dataTable thead .sorting_desc:before,
+table.dataTable thead .sorting_asc_disabled:before,
+table.dataTable thead .sorting_desc_disabled:before {
+	right: 1rem !important;
+	content: "\f175";
+	font-size: 14px;
+	font-family: 'Font Awesome 5 Pro';
+}
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_asc_disabled:after,
+table.dataTable thead .sorting_desc_disabled:after {
+	right: 0.5rem !important;
+	content: "\f176";
+	font-size: 14px;
+	font-family: 'Font Awesome 5 Pro';
+}
+
+.dataTables_empty {
+	color: $danger-500;
+	font-size: 2rem;
+	padding-top: 2.5rem !important;
+	padding-bottom: 2.5rem !important;
+}
+
+.dataTables_wrapper .dataTables_filter label {
+	display: inline-flex;
+}
+
+.dataTables_wrapper tr.child td.child {
+	padding: 0;
+
+	.dtr-details {
+		padding: 1rem 1rem 1.5rem 1.95rem;
+		position: relative;
+
+		&:before {
+			content: "\f149";
+			font-family: 'Font Awesome 5 Pro';
+			color: $success-400;
+			width: 20px;
+			height: 30px;
+			position: absolute;
+			top: -15px;
+			right: 0px;
+			font-size: 1.2rem;
+		}
+
+		&:after {
+			content: "";
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			width: 1rem;
+			background: $success-200;
+
+		}
+	}
+
+}
+
+@media screen and (max-width: 767px) {
+	div.dataTables_wrapper div.dataTables_length,
+	div.dataTables_wrapper div.dataTables_filter,
+	div.dataTables_wrapper div.dataTables_info,
+	div.dataTables_wrapper div.dataTables_paginate {
+		display: flex;
+		justify-content: center;
+	}
+}
+
+
+//take out elipsis background during pagination
+.paginate_button.page-item.disabled .page-link {
+	background: transparent;
+}
+
+.dataTables_wrapper .dataTables_paginate .pagination .page-item > .page-link {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 1.85rem;
+	min-width: 1.85rem;
+	padding: 0.5rem;
+	font-size: 0.825rem;
+	line-height: 0.825rem;
+}
+
+div.dataTables_wrapper div.dataTables_filter {
+	text-align: inherit;
+}
+
+/* AutoFill */
+div.dt-autofill-list {
+	border-width: 0px;
+	padding: 1rem 0;
+
+	box-shadow: 0 0 20px 0 rgba($black, 0.2); 
+
+	div.dt-autofill-question,
+	div.dt-autofill-button {
+		border-width: 0px;
+	}
+
+	.dt-autofill-button {
+		text-align: right !important;
+	}
+}
+
+div.dt-autofill-background {
+	opacity: 0.2;
+	background-color: $black;
+}
+
+.dt-autofill-question {
+	padding-left: 2rem !important;
+}
+
+.dt-autofill-button {
+	padding-right: 2rem !important;
+}
+
+div.dt-autofill-handle {
+	background: $primary-500;
+	height: 0.875rem;
+    width: 0.875rem;
+}
+
+div.dt-autofill-select {
+  background-color: $primary-500;
+}
+
+/* FixedColumns */
+.DTFC_LeftHeadWrapper,
+.DTFC_LeftBodyWrapper,
+.DTFC_LeftFootWrapper {
+	
+	&:before {
+		content:"";
+		position:absolute;
+		right:0px;
+		top:1px;
+		bottom:0px;
+		width:1px;
+		background: $danger-500;
+		z-index: 1;
+    	box-shadow: -4px 0px 4px rgba($black,0.4);
+	}
+
+	table.table-bordered {
+		border-right-width: 0;
+	}
+
+}
+
+/* KeyTable */
+table.dataTable tbody th.focus, 
+table.dataTable tbody td.focus {
+    box-shadow: inset 0 0 0px 1px $primary-500;
+    background: rgba($primary-500, 0.1);
+    font-weight: 500;
+}
+
+/* RowGroup */
+table.dataTable tr.dtrg-group td {
+	background: transparent;
+	font-size: 1rem;
+    font-weight: 400;	
+    padding-top: 1.25rem;
+}
+
+table.dataTable.table-sm tr.dtrg-group td {
+	padding-top: 1rem;
+}
+
+table.dataTable:not(.table-dark) tr.dtrg-group td {
+	background: $white;
+}
+
+/* FixedHeader */
+table.dataTable.fixedHeader-floating {
+	opacity: 0.9;
+}
+
+/* RowReorder */
+table.dataTable td.reorder {
+	text-align: inherit;
+}
+
+tr.dt-rowReorder-moving {
+  outline: 2px solid $success-500;
+  outline-offset: -2px; }
+
+table.dt-rowReorder-float {
+  outline: 2px solid $primary-500;
+  outline-offset: -2px; }  
+
+
+/* w-100 bug for some tables */
+.DTCR_clonedTable.w-100,
+.dt-rowReorder-float.w-100,
+.fixedHeader-floating.w-100 {
+	width: inherit !important;
+}
+
+/* fix z-index for processing message */
+.dataTables_processing {
+	z-index: 2;
+}
+
+/* Select */
+table.dataTable  {
+
+	&.table-bordered {
+		.selected {
+			td {
+				border-color: rgba($black,0.1);
+			}
+		}
+		td.selected {
+			border-color: rgba($black,0.1);
+		}
+	}
+
+	tbody {
+		> tr.selected, 
+		> tr > .selected {
+			box-shadow: inset 0 0 0px 1px $primary-500;
+			background: rgba($primary-500, 0.1);
+			font-weight: 500;
+			color: inherit;
+		}
+	}
+
+		
+}
+

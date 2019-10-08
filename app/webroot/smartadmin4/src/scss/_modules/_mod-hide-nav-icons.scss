@@ -1,0 +1,48 @@
+.mod-hide-nav-icons:not(.nav-function-top):not(.nav-function-minify) {
+	.page-sidebar {
+		.primary-nav {
+			.nav-menu {
+
+				a {
+					> [class*='fa-'], 
+					> .#{$cust-icon-prefix},
+					> img {
+						display: none;
+					}
+					> .badge {
+						right: 40px;
+						left: auto;
+						top: 30%;
+					}
+				}
+
+				span {
+					> [class*='fa-'], 
+					> .#{$cust-icon-prefix},
+					> img {
+						display: none;
+					}
+				}
+
+				.dl-ref {
+					display: none;
+				}
+
+				li > ul > li > a {
+					padding-left: $nav-padding-x + 0.9375rem;
+					& + ul > li > a {
+						padding-left: $nav-padding-x + 2.1875rem;
+					}
+				}
+
+			}
+		}
+	}
+}
+
+.nav-function-top,
+.nav-function-minify {
+	#mhni {
+		@extend %not-compatible;
+	}
+}

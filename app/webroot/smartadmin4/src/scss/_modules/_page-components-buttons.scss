@@ -1,0 +1,299 @@
+/* btn switch */
+.btn-switch {
+	background: $fusion-300;
+	padding: 2px 8px 1px 22px;
+	font-size: 10px;
+	line-height: 15px;
+	border-radius: 20px;
+	text-transform: uppercase;
+	@include text-contrast($fusion-300);
+	font-weight: 500;
+	min-width:55px;
+	height:20px;
+	margin-top:5%;
+	position:relative;
+	overflow: hidden;
+	
+	@extend %common-animation;
+
+	&:hover{
+		@include scale(1.10);
+		@include text-contrast($fusion-300);
+	}
+
+	&:before {
+		content:"OFF";
+		position:absolute;
+		right:7px;
+	}
+
+	&:after{
+		content: " ";
+		text-align: center;
+		@include text-contrast(#828282);
+		width: 16px;
+		height: 16px;
+		position: absolute;
+		background: $white;
+		padding:1px;
+		left: 0;
+		top: 0;
+		line-height: normal;
+		margin: 1px;
+		border-radius: 50%;
+		box-shadow: 0 10px 20px rgba(0,0,0,0.19),0 6px 6px rgba(0,0,0,0.23);
+	}
+
+	&.active {
+		color:$white;
+		background:$color-primary;
+		&:before {
+			content:"ON";
+			left:7px;
+			right:auto;
+			@include text-contrast($color-primary);
+		}
+
+		&:after {
+			content: " ";
+			right:0;
+			left:auto;
+			background:$white;
+			color:$color-primary;
+		}
+
+	}
+}
+
+/* button used to close filter and mobile search */
+.btn-search-close {
+	position: absolute !important;
+	display: flex;
+	align-items:center;
+	justify-content:center;
+	padding: 0px 5px;
+	border-radius: $border-radius - 1px;
+	color: $white;
+	right: 8px;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	margin: auto 0 auto auto;
+	width: 20px;
+	height: 20px;
+}
+
+/* buttons used in the header section of the page */
+.header-btn {
+	@extend %header-btn;
+
+	&[data-class='mobile-nav-on'] {
+		border-color: $danger-700;
+		@include gradient-img($start: $danger-600,$stop: $danger-800);
+		color:$white;
+		width: $header-btn-width + 0.625rem;
+	}
+
+}
+
+/* btn widths */
+.btn-w-m {
+	min-width: 85px;
+}
+
+.btn-w-l {
+	min-width: 130px;
+}
+
+.btn-m-s {
+	margin: 3px 1px;
+}
+
+.btn-m-l {
+	margin: 3px 2.5px;
+}
+
+/* dropdown btn */
+/* used on info card pulldown filter */
+.pull-trigger-btn {
+	position: absolute !important;
+	top: -5px;
+	left: 0;
+	right: 0;
+	margin-left: auto;
+	margin-right: auto;
+	background: rgba($black, .4);
+	padding: 0px 9px;
+	border: 1px solid rgba($black, .4);
+	border-radius: 0 0 20px 20px;
+	text-decoration: none;
+	font-size: 17px;
+	height: 21px;
+	width: 31px;
+	color: $white !important;
+	line-height: 20px;
+	text-align: center;
+	transition: all 200ms cubic-bezier(0.34, 1.25, 0.6, 1);
+	box-shadow: 0px 0px 2px rgba($primary-500, 0.3);
+	opacity: 1;
+
+	&:hover {
+		font-size: 23px;
+		height: 25px;
+		width: 35px;
+		line-height: 23px;
+		background: $primary-500;
+		border-color: $primary-600;
+		box-shadow: 0px 0px 10px #5790b3;
+	}
+}
+
+/* buttons dropshadow */
+/*[class*='btn-']:not(.btn-switch):not(.btn-group):not([class*='btn-w-']),
+[class*='btn-']:not(.btn-switch):not(.btn-group):not([class*='btn-w-']):focus {*/
+.btn-shadow,
+.btn-shadow:focus {	
+	box-shadow: 0 2px 6px rgba(0,0,0,.2), 0 2px 3px rgba(0,0,0,.05);
+
+	&:active,
+	.active {
+		box-shadow: 0 0px 0px 0 rgba(0,0,0,.3) !important;
+	}
+
+	&:not(.disabled):not([disabled]) {
+		&:hover {
+			box-shadow: 0 6px 17px 0 rgba(0,0,0,.3);
+		}
+	}
+}
+
+.btn:active {
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15) inset !important;
+}
+
+/*.btn-group {
+	[class*='btn-'] {
+		box-shadow: 0 0px 0px 0 rgba(0,0,0,.3) !important;
+	}
+}*/
+
+.btn-light {
+	border-color: rgba(0, 0, 0, 0.15);
+	&:not(:disabled):not(.disabled):active,
+	&:not(:disabled):not(.disabled).active,
+	&:hover {
+		border-color: rgba($black, 0.25);
+	}
+}
+.show > .btn-light.dropdown-toggle {
+	border-color: rgba($black, 0.25);
+}
+
+/* btn misc */
+.btn-default {
+	@extend %btn-default;
+}
+
+.btn-outline-default {
+	//@include button-outline-variant($body-color, $body-color, lighten($input-border-color, 8%), $input-border-color);
+	background-color: transparent;
+	color: $body-color;
+	border-color: $input-border-color;
+
+	&:hover,
+	&:not(:disabled):not(.disabled):active,
+	&:not(:disabled):not(.disabled).active,
+	.show > &.dropdown-toggle {
+		color: $body-color;
+		background-color: lighten($input-border-color, 8%);
+		border-color: $input-border-color;
+	}
+
+	&.disabled,
+	&:disabled {
+		color: $body-color;
+		background-color: transparent;
+	}
+
+}
+
+[class*="btn-outline-"] {
+	@extend %common-animation;
+}
+
+.btn-pills {
+	@include rounded(15px);
+}
+
+/* new btn size */
+.btn-xs, 
+.btn-group-xs > .btn {
+	padding: 1px $input-btn-padding-x-sm;
+	font-size: .7rem;
+	line-height: 1.5;
+	border-radius: .25rem;
+}
+
+/* btn shadows */
+@mixin button-shadow($value) {
+  box-shadow: 0 2px 6px 0 rgba($value, .5);
+}
+@each $color, $value in $theme-colors {
+  .btn-#{$color} {
+	@include button-shadow($value);
+  }
+}
+
+/* btn icon */
+.btn-icon {
+	width: calc(2.1rem + 2px);
+	padding: 0;
+	line-height: 2.1rem;
+
+	&:not([class*="-primary"]):not([class*="-secondary"]):not([class*="-default"]):not([class*="-success"]):not([class*="-info"]):not([class*="-warning"]):not([class*="-danger"]):not([class*="-dark"]):not([class*="-light"]):not(.nav-item) {
+		&:hover {
+			background-color: rgba($black,0.05);
+			border-color: transparent;
+		}
+
+		&:not(.active):not(:active):not(:hover):not(:focus) {
+			background: transparent;
+			color: $fusion-600;
+		}
+
+		&:focus {
+			border-color: rgba($fusion-500, 0.1) !important;
+		}
+	}
+
+	&.btn-xs {
+		width: calc(1.15rem + 2px);
+		line-height: 1.15rem;
+	}
+
+	&.btn-sm {
+		width: calc(1.5rem + 2px);
+		line-height: 1.5rem;
+	}
+
+	&.btn-lg {
+		width: calc(3rem + 2px);
+		line-height: 3rem;
+	}
+}
+
+.btn-icon-light {
+
+	color: rgba($white, 0.7) !important;
+	border-color: transparent !important;
+
+	&:not(.active):not(:active):not(:hover):not(:focus) {
+		color: rgba($white, 0.7) !important;
+	}
+
+	&:hover {
+		color: $white !important;
+		background-color: rgba($white,0.2) !important;
+		
+	}	
+}

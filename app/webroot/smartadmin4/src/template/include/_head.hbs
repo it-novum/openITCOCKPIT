@@ -1,0 +1,23 @@
+<meta charset="utf-8">
+
+<title>
+{{#if title}}
+	{{title}} - {{category_1}} - {{app}} v{{version}}
+{{else}}
+	{{app}}
+{{/if}}
+</title>
+
+<meta name="description" content="{{title}}">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, minimal-ui">
+<!-- Call App Mode on ios devices -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<!-- Remove Tap Highlight on Windows Phone IE -->
+<meta name="msapplication-tap-highlight" content="no">
+<!-- base css -->
+<link rel="stylesheet" media="screen, print" href="css/vendors.bundle.css">
+<link rel="stylesheet" media="screen, print" href="css/app.bundle.css">
+
+<!-- Place favicon.ico in the root directory -->
+{{> include/_favicon}}

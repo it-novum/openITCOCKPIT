@@ -1,0 +1,111 @@
+/* btn switch */
+.btn-switch {
+	background: $fusion-300;
+	@include text-contrast($fusion-300);
+
+	&:hover{
+		@include text-contrast($fusion-300);
+	}
+
+	&:after{
+		@include text-contrast(#828282);
+	}
+
+	&.active {
+		color:$white;
+		background:$color-primary;
+		&:before {
+			@include text-contrast($color-primary);
+		}
+
+		&:after {
+			background:$white;
+			color:$color-primary;
+		}
+
+	}
+}
+
+/* button used to close filter and mobile search */
+.btn-search-close {
+	color: $white;
+}
+
+/* buttons used in the header section of the page */
+.header-btn {
+	@extend %header-btn;
+
+	&[data-class='mobile-nav-on'] {
+		border-color: $danger-700;
+		@include gradient-img($danger-600,$danger-800);
+		color:$white;
+	}
+
+}
+
+
+/* dropdown btn */
+/* used on info card pulldown filter */
+.pull-trigger-btn {
+	background: rgba($black, .4);
+	border: 1px solid rgba($black, .4);
+	color: $white !important;
+	box-shadow: 0px 0px 2px rgba($primary-500, 0.3);
+
+	&:hover {
+		background: $primary-500;
+		border-color: $primary-600;
+	}
+}
+
+/* btn misc */
+.btn-default {
+	@extend %btn-default;
+}
+
+.btn-outline-default {
+	color: $body-color;
+	border-color: $input-border-color;
+
+	&:hover,
+	&:not(:disabled):not(.disabled):active,
+	&:not(:disabled):not(.disabled).active,
+	.show > &.dropdown-toggle {
+		color: $body-color;
+		background-color: lighten($input-border-color, 8%);
+		border-color: $input-border-color;
+	}
+
+	&.disabled,
+	&:disabled {
+		color: $body-color;
+	}
+
+}
+
+
+/* btn shadows */
+@mixin button-shadow($value) {
+  box-shadow: 0 2px 6px 0 rgba($value, .5);
+}
+@each $color, $value in $theme-colors {
+  .btn-#{$color} {
+	@include button-shadow($value);
+  }
+}
+
+.btn-icon-light {
+
+	color: rgba($white, 0.7) !important;
+	border-color: transparent !important;
+
+	&:not(.active):not(:active):not(:hover):not(:focus) {
+		color: rgba($white, 0.7) !important;
+	}
+
+	&:hover {
+		color: $white !important;
+		background-color: rgba($white,0.2) !important;
+		
+	}	
+}

@@ -1,0 +1,49 @@
+.settings-panel {
+
+
+	h5 {
+		color: $fusion-500;
+
+	}
+
+	.list {
+		color:darken($white, 60%);
+
+		&:hover{
+			color:darken($white, 80%);
+			background:rgba( $white, .7 );
+		}
+
+	}
+
+	.expanded {
+
+		&:before {
+			border-bottom-color: $fusion-400;
+		}
+ 
+	}
+}
+
+
+@include set-settings(header-function-fixed);
+@include set-settings(nav-function-fixed);
+@include set-settings(nav-function-minify);
+@include set-settings(nav-function-hidden);
+@include set-settings(nav-function-top);
+@include set-settings(nav-mobile-push);
+@include set-settings(nav-mobile-no-overlay);
+@include set-settings(nav-mobile-slide-out);
+@include set-settings(mod-main-boxed);
+@include set-settings(mod-fixed-bg);
+@include set-settings(mod-clean-page-bg);
+@include set-settings(mod-pace-custom);
+@include set-settings(mod-bigger-font);
+@include set-settings(mod-high-contrast);
+@include set-settings(mod-color-blind);
+@include set-settings(mod-hide-nav-icons);
+@include set-settings(mod-hide-info-card);
+@include set-settings(mod-lean-subheader);
+@include set-settings(mod-disable-animation);
+@include set-settings(mod-nav-link);
+@include set-settings(mod-app-rtl);

@@ -1,0 +1,4 @@
+We added a new function as the bootbox author will not add this into their build.
+
+https://github.com/makeusabrew/bootbox/pull/606
+https://github.com/makeusabrew/bootbox/pull/606/commits/170aea61d9ca2f51819d482f1423fd019125d870

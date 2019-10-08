@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{{> include/_copyright-header}}
+<html lang="en">
+	<head>
+		{{> include/_head}}
+		
+		<!-- Optional: page related CSS-->
+		{{#>head-block}}{{/head-block}}
+	</head>
+	<body>
+
+		{{#>content-block}}{{/content-block}}
+
+		{{!-- Google Analytics  code if GOOGLE_ANALYTICS_ID id available --}}
+		{{> include/_google_analytics }}
+		
+		{{> include/_scripts-base-plugins}}
+		{{#>scripts-block}}
+			{{!-- Custom scripts per page can be added. --}}
+		{{/scripts-block}}
+	</body>
+</html>

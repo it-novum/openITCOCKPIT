@@ -1,0 +1,98 @@
+.nav-function-fixed:not(.nav-function-top)  {
+	.page-sidebar{
+		position: fixed !important;
+		top:0;
+		bottom:0;
+
+		.primary-nav {
+			overflow: auto;
+			overflow-x: hidden;
+			-webkit-overflow-scrolling: touch;
+			height: unquote("calc(100% - #{$header-height + $footer-height})");
+		}
+
+		.slimScrollDiv {
+
+			height: unquote("calc(100% - #{$header-height + $footer-height})") !important;
+
+			.primary-nav {
+				padding-bottom: 0;
+			}
+		}
+
+	}
+	
+	.page-header {
+		[data-class="nav-function-fixed"] {
+			@extend %header-btn-active;
+		}
+	}
+
+}	
+
+@include media-breakpoint-up(lg) {
+
+	.nav-function-fixed {
+
+		/*
+		 * top navigation fixed for larger screens with nav on LEFT
+		 */
+		&:not(.nav-function-top){
+			&.mod-main-boxed {
+				.page-sidebar{
+					position: fixed !important;
+				}	
+			}
+
+			&:not(.nav-function-hidden):not(.nav-function-minify) .page-content-wrapper {
+				padding-left: $nav-width;
+			}
+		}
+
+		/*
+		 * top navigation fixed for larger screens with nav on TOP
+		 */
+		&.nav-function-top {
+			&.header-function-fixed {
+
+				.page-sidebar {
+					position: fixed !important;
+
+					box-shadow: 0px 0px 28px 2px $header-border-bottom-color;
+				}
+			}
+		}
+
+
+		/*
+		 * center for left nav fixed with boxed layout 
+		 */
+		&.nav-function-top {
+			&.mod-main-boxed {
+				.page-sidebar {
+					right: 0;
+					left: 0;
+					margin-right: auto;
+					margin-left: auto;
+					max-width: $mod-main-boxed-width - 2px;
+				}
+			}
+		}
+	}
+}
+
+@include media-breakpoint-up(xl) {
+	.nav-function-fixed {
+
+		/*
+		 * top navigation fixed for extra large screens with nav on LEFT
+		 */
+		&:not(.nav-function-top){
+			&.mod-main-boxed {
+				.page-sidebar{
+					position: absolute !important;
+				}	
+			}
+		}
+	}
+}

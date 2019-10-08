@@ -1,0 +1,52 @@
+.page-logo {
+	height: $header-height;
+	width: $nav-width;
+
+	@extend %nav-bg;
+
+	box-shadow: 0px 0px 28px 0px rgba(0, 0, 0, 0.13);
+
+	overflow: hidden; 
+	text-align: center;
+	display: flex;
+	align-items: center;
+
+    -ms-flex-positive: 0;
+    flex-grow: 0;
+
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+
+    min-height: 1px;
+
+	padding: 0 $nav-padding-x;
+
+	@extend %general-animation;
+
+	img {
+		width: $header-logo-width;
+		height: $header-logo-height;
+	}
+
+	.page-logo-link {
+		flex: 1 0 auto;
+	}
+
+}
+
+.page-logo-text {
+	margin-left: 0.5rem;
+	font-weight: 300;
+	font-size: 1rem; //1.125rem; this is the old size for the previous name
+	color: $white;
+	display: block;
+	flex: 1 0 auto;
+	text-align: left;
+}
+
+body:not(.header-function-fixed) {
+	.page-logo {
+		@extend %general-animation;
+	}
+}
+

@@ -1,0 +1,19 @@
+// here we are attemping to fool the browser and harness the power of GPU usage
+// using "transform: translate3d(0, 0, 0);" will use the Graphic Processor (GPU) and avoid the CSS transition using CPU...
+
+@include media-breakpoint-up(xl) {
+	.page-sidebar {
+		@include translate3d(0,0,0);
+	}
+
+	&.header-function-fixed,
+	&.nav-function-fixed,
+	&.header-function-fixed.nav-function-fixed {
+		 .page-wrapper,
+		 .page-sidebar {
+            transform: none;
+    -webkit-transform: none;
+        -ms-transform: none;
+		 }
+	}
+}

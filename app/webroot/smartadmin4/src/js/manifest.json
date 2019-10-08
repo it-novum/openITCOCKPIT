@@ -1,0 +1,31 @@
+{
+  "short_name": "Arrivals",
+  "name": "Arrivals at Sky High",
+  "icons": [
+    {
+      "src": "launcher-icon.png",
+      "sizes": "48x48",
+      "type": "img/png"
+    },
+    {
+      "src": "launcher-icon-2x.png",
+      "sizes": "96x96",
+      "type": "img/png"
+    },
+    {
+      "src": "launcher-icon-4x.png",
+      "sizes": "192x192",
+      "type": "img/png"
+    },
+    {
+      "src": "launcher-icon-8x.png",
+      "sizes": "256x256",
+      "type": "img/png"
+    }
+  ],
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#29BDBB",
+  "background_color": "#29BDBB"
+}
