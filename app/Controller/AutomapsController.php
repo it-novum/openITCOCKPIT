@@ -292,7 +292,7 @@ class AutomapsController extends AppController {
         }
 
         if ($automap['show_downtime'] === false) {
-            $ServicestatusConditions->setScheduledDowntimeDepth(0);
+            $ServicestatusConditions->setScheduledDowntimeDepth(0, false);
         }
 
         $servicestatus = $ServicestatusTable->byUuids($serviceUuids, $ServicestatusFields, $ServicestatusConditions);

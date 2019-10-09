@@ -85,7 +85,9 @@ class ConfigSymlink {
     public function link() {
         if ($this->requireNewSymlink && $this->realOutfile !== $this->linkedOutfile) {
             if (file_exists($this->realOutfile)) {
-                symlink($this->realOutfile, $this->linkedOutfile);
+                if (is_dir(dirname($this->linkedOutfile))) {
+                    symlink($this->realOutfile, $this->linkedOutfile);
+                }
             }
         }
     }

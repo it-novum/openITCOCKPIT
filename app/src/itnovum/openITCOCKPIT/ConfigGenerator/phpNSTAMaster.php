@@ -27,7 +27,7 @@ namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
 
-class phpNstaMaster extends ConfigGenerator implements ConfigInterface {
+class phpNSTAMaster extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'phpNSTA';
 

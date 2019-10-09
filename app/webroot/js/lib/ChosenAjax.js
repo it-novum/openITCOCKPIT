@@ -71,16 +71,34 @@ function ChosenAjax(conf){
         this.callback = callback;
     };
 
-    this.addOptions = function(options){
+    this.addOptions = function(options, keepLastElementSelected){
+        if(typeof keepLastElementSelected === "undefined"){
+            keepLastElementSelected = false;
+        }
+
         var $element = $('#' + this.id);
+
+        var lastSelectedElement = $element.val();
+
         $element.empty();
 
         if(options.length === 0){
             $element.append('<option></option>');
         }else{
+            //No object select, add empty placeholder object to avoid that chosen selectes the first element in select box
+            if(keepLastElementSelected === true){
+                $element.append('<option></option>');
+            }
+
             for(var key in options){
                 var current = options[key];
                 $element.append('<option value="' + current.key + '">' + htmlspecialchars(current.value) + '</option>');
+            }
+
+            if(keepLastElementSelected === true){
+                if(lastSelectedElement){
+                    $element.val(lastSelectedElement);
+                }
             }
         }
         this.triggerUpdate();

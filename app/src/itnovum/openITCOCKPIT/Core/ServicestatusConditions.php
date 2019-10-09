@@ -97,12 +97,13 @@ class ServicestatusConditions {
     /**
      * @param int $value
      */
-    public function setScheduledDowntimeDepth($value) {
+    public function setScheduledDowntimeDepth($value, $greaterOrEqThan = true) {
         $value = (int)$value;
-        if ($value === 0) {
-            $this->conditions['Servicestatus.scheduled_downtime_depth'] = $value;
+
+        if ($value === 0 && $greaterOrEqThan === true) {
+            $this->conditions['Servicestatus.scheduled_downtime_depth >'] = $value;
         } else {
-            $this->conditions['Servicestatus.scheduled_downtime_depth > '] = 0;
+            $this->conditions['Servicestatus.scheduled_downtime_depth'] = $value;
         }
     }
 

@@ -23,11 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/** @var $UserTime UserTime */
 
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 $Logo = new Logo();
 ?>
@@ -77,7 +79,7 @@ $Logo = new Logo();
                 <th class="no-sort text-center width-20"><i class="fa fa-user fa-lg"></i></th>
                 <th class="no-sort text-center width-20"><i class="fa fa-power-off fa-lg"></i></th>
                 <th><?php echo __('Host'); ?></th>
-                <th class="width-70"><?php echo __('Status since'); ?></th>
+                <th class="width-70"><?php echo __('Last state change'); ?></th>
                 <th class="width-60"><?php echo __('Last check'); ?></th>
                 <th class="width-60"><?php echo __('Next check'); ?></th>
             </tr>
@@ -113,21 +115,13 @@ $Logo = new Logo();
                     <td class="font-xs"><?php echo $host['Host']['name']; ?></td>
                     <?php if ($Hoststatus->isInMonitoring()): ?>
                         <td class="font-xs">
-                            <?php echo h($this->Utils->secondsInHumanShort(time() - $Hoststatus->getLastStateChange())); ?>
+                            <?php echo $UserTime->format($Hoststatus->getLastStateChange()) ?>
                         </td>
                         <td class="font-xs">
-                            <?php echo $this->Time->format(
-                                $Hoststatus->getLastCheck(),
-                                $this->Auth->user('dateformat'),
-                                false, $this->Auth->user('timezone')
-                            ); ?>
+                            <?php echo $UserTime->format($Hoststatus->getLastCheck()) ?>
                         </td>
                         <td class="font-xs">
-                            <?php echo $this->Time->format(
-                                $Hoststatus->getNextCheck(),
-                                $this->Auth->user('dateformat'),
-                                false,
-                                $this->Auth->user('timezone')); ?>
+                            <?php echo $UserTime->format($Hoststatus->getNextCheck()) ?>
                         </td>
                     <?php else: ?>
                         <td><?php echo __('n/a'); ?></td>
