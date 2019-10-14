@@ -42,11 +42,17 @@ angular.module('openITCOCKPIT', ['gridster', 'ng-nestable'])
 
 
                 var onlyShowMenuLoader = false;
-                if(response.hasOwnProperty('params')){
+                if(response.hasOwnProperty('params')){ //GET
                     if(response.params.hasOwnProperty('disableGlobalLoader')){
                         onlyShowMenuLoader = true;
                     }
                 }
+                if(response.hasOwnProperty('data')){ //POST
+                    if(response.data.hasOwnProperty('disableGlobalLoader')){
+                        onlyShowMenuLoader = true;
+                    }
+                }
+
                 $('#global_ajax_loader').show();
                 if(onlyShowMenuLoader === false){
                     $('#global-loading').show();

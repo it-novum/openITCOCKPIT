@@ -43,7 +43,8 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                     }),
                     $http.get("/angular/user_timezone.json", {
                         params: {
-                            'angular': true
+                            'angular': true,
+                            'disableGlobalLoader': true
                         }
                     })
                 ]).then(function(results){
