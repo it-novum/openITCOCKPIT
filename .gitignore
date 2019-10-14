@@ -64,6 +64,7 @@ app/Plugin/MasterSelfMonitoringModule
 app/Plugin/SatelliteSelfMonitoringModule
 app/Plugin/ServicenowModule
 app/Plugin/UCSModule
+app/Plugin/IndustrialModule
 app/Lib/AvailableVersion.php
 app/docs/en/administration/systemsettings.md
 app/docs/en/api/systemsettings.md
