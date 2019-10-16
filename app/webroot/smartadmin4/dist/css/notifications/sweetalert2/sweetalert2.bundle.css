@@ -2,7 +2,7 @@
 /*  THEME COLORs
 ========================================================================== */
 /* Looks good on chrome default color profile */
-/* looks good in sRGB but washed up on chrome default 
+/* looks good in sRGB but washed up on chrome default
 $color-primary:						#826bb0;
 $color-success:						#31cb55;
 $color-info:						#5e93ec;
@@ -105,7 +105,7 @@ http://www.standardista.com/px-to-rem-conversion-if-root-font-size-is-16px/
 /*  Z-INDEX declearation
 ========================================================================== */
 /* we adjust bootstrap z-index to be higher than our higest z-index*/
-/*  CUSTOM ICON PREFIX 
+/*  CUSTOM ICON PREFIX
 ========================================================================== */
 /*  PRINT CSS (landscape or portrait)
 ========================================================================== */
@@ -143,11 +143,11 @@ aside.page-sidebar ($nav-width, $nav-background)
 		ul.nav-menu
 			li
 				a (parent level-0..., $nav-link-color, $nav-link-hover-color, $nav-link-hover-bg-color, $nav-link-hover-left-border-color)
-					icon 
+					icon
 					span
-					collapse-sign 
-					
-				ul.nav-menu-sub-one  
+					collapse-sign
+
+				ul.nav-menu-sub-one
 					li
 						a ($nav-level-1... $nav-sub-link-height)
 							span
@@ -183,13 +183,13 @@ aside.page-sidebar ($nav-width, $nav-background)
 /* List Table */
 /*   PAGE SETTINGS
 ========================================================================== */
-/*   PAGE BREADCRUMB 
+/*   PAGE BREADCRUMB
 ========================================================================== */
-/*   PAGE COMPONENT PANELS 
+/*   PAGE COMPONENT PANELS
 ========================================================================== */
-/*   PAGE COMPONENT PROGRESSBARS 
+/*   PAGE COMPONENT PROGRESSBARS
 ========================================================================== */
-/*   PAGE COMPONENT MESSENGER 
+/*   PAGE COMPONENT MESSENGER
 ========================================================================== */
 /*   FOOTER
 ========================================================================== */
@@ -595,7 +595,7 @@ body.swal2-toast-column .swal2-toast {
       -webkit-box-shadow: 0 0 0 0.0625em #fff, 0 0 0 0.125em rgba(50, 100, 150, 0.4);
               box-shadow: 0 0 0 0.0625em #fff, 0 0 0 0.125em rgba(50, 100, 150, 0.4); }
   .swal2-popup.swal2-toast .swal2-success {
-    border-color: #1dc9b7; }
+    border-color: #00C851; }
     .swal2-popup.swal2-toast .swal2-success [class^='swal2-success-circular-line'] {
       position: absolute;
       width: 1.6em;
@@ -1093,7 +1093,7 @@ body.swal2-no-backdrop .swal2-shown {
     border: 0;
     border-radius: 0.25em;
     background: initial;
-    background-color: #886ab5;
+    background-color: #4285F4;
     color: #fff;
     font-size: 0.875em; }
   .swal2-styled.swal2-cancel {
@@ -1152,7 +1152,7 @@ body.swal2-no-backdrop .swal2-shown {
     -webkit-transform: none;
             transform: none;
     background: transparent;
-    color: #fd3995; }
+    color: #CC0000; }
 
 .swal2-content {
   z-index: 1;
@@ -1161,7 +1161,7 @@ body.swal2-no-backdrop .swal2-shown {
           justify-content: center;
   margin: 0;
   padding: 0;
-  color: #909090;
+  color: #9297a4;
   font-size: 0.875em;
   font-weight: normal;
   line-height: normal;
@@ -1196,13 +1196,13 @@ body.swal2-no-backdrop .swal2-shown {
   .swal2-input.swal2-inputerror,
   .swal2-file.swal2-inputerror,
   .swal2-textarea.swal2-inputerror {
-    border-color: #fd3995 !important;
-    -webkit-box-shadow: 0 0 2px #fd3995 !important;
-            box-shadow: 0 0 2px #fd3995 !important; }
+    border-color: #CC0000 !important;
+    -webkit-box-shadow: 0 0 2px #CC0000 !important;
+            box-shadow: 0 0 2px #CC0000 !important; }
   .swal2-input:focus,
   .swal2-file:focus,
   .swal2-textarea:focus {
-    border: 1px solid #886ab5;
+    border: 1px solid #4285F4;
     outline: none;
     -webkit-box-shadow: transparent;
             box-shadow: transparent; }
@@ -1307,7 +1307,7 @@ body.swal2-no-backdrop .swal2-shown {
     margin: 0 .625em;
     zoom: normal;
     border-radius: 50%;
-    background-color: #fd3995;
+    background-color: #CC0000;
     color: #fff;
     font-weight: 600;
     line-height: 1.5em;
@@ -1359,7 +1359,7 @@ body.swal2-no-backdrop .swal2-shown {
     height: 92%;
     font-size: 3.75em; }
   .swal2-icon.swal2-error {
-    border-color: #fd3995; }
+    border-color: #CC0000; }
     .swal2-icon.swal2-error .swal2-x-mark {
       position: relative;
       -webkit-box-flex: 1;
@@ -1372,7 +1372,7 @@ body.swal2-no-backdrop .swal2-shown {
       width: 2.9375em;
       height: .3125em;
       border-radius: .125em;
-      background-color: #fd3995; }
+      background-color: #CC0000; }
       .swal2-icon.swal2-error [class^='swal2-x-mark-line'][class$='left'] {
         left: 1.0625em;
         -webkit-transform: rotate(45deg);
@@ -1382,24 +1382,24 @@ body.swal2-no-backdrop .swal2-shown {
         -webkit-transform: rotate(-45deg);
                 transform: rotate(-45deg); }
   .swal2-icon.swal2-warning {
-    border-color: #ffcd65;
-    color: #ffc241; }
+    border-color: #ffc757;
+    color: #ffbb33; }
     .swal2-icon.swal2-warning::before {
       content: '!'; }
   .swal2-icon.swal2-info {
-    border-color: #82c4f8;
-    color: #2196F3; }
+    border-color: #8dd6f1;
+    color: #33b5e5; }
     .swal2-icon.swal2-info::before {
       content: 'i'; }
   .swal2-icon.swal2-question {
-    border-color: #beaed7;
-    color: #886ab5; }
+    border-color: #a2c3fa;
+    color: #4285F4; }
     .swal2-icon.swal2-question::before {
       content: '?'; }
     .swal2-icon.swal2-question.swal2-arabic-question-mark::before {
       content: '؟'; }
   .swal2-icon.swal2-success {
-    border-color: #1dc9b7; }
+    border-color: #00C851; }
     .swal2-icon.swal2-success [class^='swal2-success-circular-line'] {
       position: absolute;
       width: 3.75em;
@@ -1432,7 +1432,7 @@ body.swal2-no-backdrop .swal2-shown {
               box-sizing: content-box;
       width: 100%;
       height: 100%;
-      border: 0.25em solid rgba(29, 201, 183, 0.3);
+      border: 0.25em solid rgba(0, 200, 81, 0.3);
       border-radius: 50%; }
     .swal2-icon.swal2-success .swal2-success-fix {
       position: absolute;
@@ -1449,7 +1449,7 @@ body.swal2-no-backdrop .swal2-shown {
       z-index: 2;
       height: .3125em;
       border-radius: .125em;
-      background-color: #1dc9b7; }
+      background-color: #00C851; }
       .swal2-icon.swal2-success [class^='swal2-success-line'][class$='tip'] {
         top: 2.875em;
         left: .875em;
@@ -1479,23 +1479,23 @@ body.swal2-no-backdrop .swal2-shown {
     width: 2em;
     height: 2em;
     border-radius: 2em;
-    background: #886ab5;
+    background: #4285F4;
     color: #fff;
     line-height: 2em;
     text-align: center; }
     .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
-      background: #886ab5; }
+      background: #4285F4; }
       .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step {
-        background: #beaed7;
+        background: #a2c3fa;
         color: #fff; }
       .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step-line {
-        background: #beaed7; }
+        background: #a2c3fa; }
   .swal2-progress-steps .swal2-progress-step-line {
     z-index: 10;
     width: 2.5em;
     height: .4em;
     margin: 0 -1px;
-    background: #886ab5; }
+    background: #4285F4; }
 
 [class^='swal2'] {
   -webkit-tap-highlight-color: transparent; }

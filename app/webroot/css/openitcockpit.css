@@ -1,0 +1,40 @@
+a:not([href]):not([tabindex]) {
+    color: #b1b3b2;
+    text-decoration: none;
+}
+
+.code-font {
+    font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+}
+
+.ok, .up {
+    color: #449D44 !important;
+}
+
+.warning {
+    color: #DF8F1D !important;
+}
+
+.critical, .down {
+    color: #C9302C !important;
+}
+
+.unknown, .unreachable {
+    color: #92A2A8 !important;
+}
+
+.ok-soft, .up-soft {
+    color: #8BC08B !important;
+}
+
+.warning-soft {
+    color: #f2c68a !important;
+}
+
+.critical-soft, .down-soft {
+    color: #C5706D !important;
+}
+
+.unknown-soft, .unreachable-soft {
+    color: #CFCFCF !important;
+}

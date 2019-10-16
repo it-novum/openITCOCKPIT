@@ -99,7 +99,7 @@
 /*  THEME COLORs
 ========================================================================== */
 /* Looks good on chrome default color profile */
-/* looks good in sRGB but washed up on chrome default 
+/* looks good in sRGB but washed up on chrome default
 $color-primary:						#826bb0;
 $color-success:						#31cb55;
 $color-info:						#5e93ec;
@@ -202,7 +202,7 @@ http://www.standardista.com/px-to-rem-conversion-if-root-font-size-is-16px/
 /*  Z-INDEX declearation
 ========================================================================== */
 /* we adjust bootstrap z-index to be higher than our higest z-index*/
-/*  CUSTOM ICON PREFIX 
+/*  CUSTOM ICON PREFIX
 ========================================================================== */
 /*  PRINT CSS (landscape or portrait)
 ========================================================================== */
@@ -240,11 +240,11 @@ aside.page-sidebar ($nav-width, $nav-background)
 		ul.nav-menu
 			li
 				a (parent level-0..., $nav-link-color, $nav-link-hover-color, $nav-link-hover-bg-color, $nav-link-hover-left-border-color)
-					icon 
+					icon
 					span
-					collapse-sign 
-					
-				ul.nav-menu-sub-one  
+					collapse-sign
+
+				ul.nav-menu-sub-one
 					li
 						a ($nav-level-1... $nav-sub-link-height)
 							span
@@ -280,13 +280,13 @@ aside.page-sidebar ($nav-width, $nav-background)
 /* List Table */
 /*   PAGE SETTINGS
 ========================================================================== */
-/*   PAGE BREADCRUMB 
+/*   PAGE BREADCRUMB
 ========================================================================== */
-/*   PAGE COMPONENT PANELS 
+/*   PAGE COMPONENT PANELS
 ========================================================================== */
-/*   PAGE COMPONENT PROGRESSBARS 
+/*   PAGE COMPONENT PROGRESSBARS
 ========================================================================== */
-/*   PAGE COMPONENT MESSENGER 
+/*   PAGE COMPONENT MESSENGER
 ========================================================================== */
 /*   FOOTER
 ========================================================================== */
@@ -1162,7 +1162,7 @@ body:not(.lg-from-hash) .lg-outer.lg-start-zoom .lg-item.lg-complete .lg-object 
   transition: all 0.2s ease; }
   .lg-actions .lg-next:hover,
   .lg-actions .lg-prev:hover {
-    background-color: #2196F3; }
+    background-color: #33b5e5; }
   .lg-actions .lg-next:active,
   .lg-actions .lg-prev:active {
     -webkit-transform: scale(0.95);
@@ -1170,7 +1170,7 @@ body:not(.lg-from-hash) .lg-outer.lg-start-zoom .lg-item.lg-complete .lg-object 
 
 .lg-outer .lg-thumb-item.active,
 .lg-outer .lg-thumb-item:hover {
-  border-color: #fd3995; }
+  border-color: #CC0000; }
 
 .lg-toolbar .lg-icon {
   font-size: 1.3rem; }

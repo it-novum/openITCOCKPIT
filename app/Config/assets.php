@@ -2,13 +2,13 @@
 $config = [
     'assets' => [
         'css_bs4' => [
-            'lib/jquery-jvectormap-1.2.2.css',
+            /*'lib/jquery-jvectormap-1.2.2.css',
             'lib/jquery.imgareaselect-0.9.10/imgareaselect-animated.css',
-            'lib/jquery.svg.css',
-            '/vendor/node_modules/bootstrap/dist/js/bootstrap.css',
-            '/vendor/node_modules/bootstrap/dist/js/bootstrap-grid.css',
+            'lib/jquery.svg.css',*/
+            /*'/vendor/node_modules/bootstrap/dist/js/bootstrap.css',
+            '/vendor/node_modules/bootstrap/dist/js/bootstrap-grid.css',*/
             //'vendor/jquery.gridster.css',
-            'vendor/chosen/chosen',
+            /*'vendor/chosen/chosen',
             'vendor/chosen/chosen-bootstrap',
             'list_filter',
             'vendor/fineuploader/fineuploader-3.2',
@@ -16,7 +16,8 @@ $config = [
             'vendor/select2/select2-bootstrap',
             'vendor/bootstrap-datepicker.css',
             'vendor/bootstrap-datetimepicker.min.css',
-            'vendor/gauge/css/gauge.css',
+            'vendor/gauge/css/gauge.css',*/
+            '/vendor/node_modules/jquery-ui-dist/jquery-ui.css',
             '/vendor/node_modules/font-awesome/css/font-awesome.css',
             '/smartadmin4/dist/css/fa-brands.css',
             '/smartadmin4/dist/css/fa-regular.css',
@@ -24,14 +25,15 @@ $config = [
             '/smartadmin4/dist/css/vendors.bundle.css',
             '/smartadmin4/dist/css/app.bundle.css',
             '/smartadmin4/dist/css/themes/cust-theme-10.css',
-            '/vendor/node_modules/@fullcalendar/core/main.css',
+            'openitcockpit.css'
+            /*'/vendor/node_modules/@fullcalendar/core/main.css',
             '/vendor/node_modules/@fullcalendar/daygrid/main.css',
             '/vendor/node_modules/@fullcalendar/timegrid/main.css',
-            '/vendor/node_modules/@fullcalendar/list/main.css',
+            '/vendor/node_modules/@fullcalendar/list/main.css',*/
             //'/smartadmin/css/your_style.css',                             //check if we need this anymore
             //'/smartadmin/css/animate.css',
 
-            'lockscreen.css',
+            /*'lockscreen.css',
             'base',
             'app',
             'status',
@@ -40,15 +42,15 @@ $config = [
             'console',
             'animate_new',
             'vendor/prism.css',
-            'vendor/gridstack/gridstack.min.css',
-            'vendor/vis-4.21.0/dist/vis.css',
-            'my_vis.css',
-            'vendor/noty/noty.css',
+            'vendor/gridstack/gridstack.min.css',*/
+            //'vendor/vis-4.21.0/dist/vis.css',
+            //'my_vis.css',
+           /* 'vendor/noty/noty.css',
             'flippy.css',
-            'vendor/image-picker.css',
-            '/vendor/node_modules/angular-gridster/dist/angular-gridster.css',
-            'vendor/radio_buttons.css',
-            '/css/vendor/highlight-within-textarea/jquery.highlight-within-textarea.css'
+            'vendor/image-picker.css',*/
+          //  '/vendor/node_modules/angular-gridster/dist/angular-gridster.css',
+            /*'vendor/radio_buttons.css',
+            '/css/vendor/highlight-within-textarea/jquery.highlight-within-textarea.css'*/
         ],
         'css' => [
             'lib/jquery-jvectormap-1.2.2.css',

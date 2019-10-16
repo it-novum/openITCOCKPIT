@@ -189,7 +189,7 @@ button.toast-close-button {
 /*  THEME COLORs
 ========================================================================== */
 /* Looks good on chrome default color profile */
-/* looks good in sRGB but washed up on chrome default 
+/* looks good in sRGB but washed up on chrome default
 $color-primary:						#826bb0;
 $color-success:						#31cb55;
 $color-info:						#5e93ec;
@@ -292,7 +292,7 @@ http://www.standardista.com/px-to-rem-conversion-if-root-font-size-is-16px/
 /*  Z-INDEX declearation
 ========================================================================== */
 /* we adjust bootstrap z-index to be higher than our higest z-index*/
-/*  CUSTOM ICON PREFIX 
+/*  CUSTOM ICON PREFIX
 ========================================================================== */
 /*  PRINT CSS (landscape or portrait)
 ========================================================================== */
@@ -330,11 +330,11 @@ aside.page-sidebar ($nav-width, $nav-background)
 		ul.nav-menu
 			li
 				a (parent level-0..., $nav-link-color, $nav-link-hover-color, $nav-link-hover-bg-color, $nav-link-hover-left-border-color)
-					icon 
+					icon
 					span
-					collapse-sign 
-					
-				ul.nav-menu-sub-one  
+					collapse-sign
+
+				ul.nav-menu-sub-one
 					li
 						a ($nav-level-1... $nav-sub-link-height)
 							span
@@ -370,13 +370,13 @@ aside.page-sidebar ($nav-width, $nav-background)
 /* List Table */
 /*   PAGE SETTINGS
 ========================================================================== */
-/*   PAGE BREADCRUMB 
+/*   PAGE BREADCRUMB
 ========================================================================== */
-/*   PAGE COMPONENT PANELS 
+/*   PAGE COMPONENT PANELS
 ========================================================================== */
-/*   PAGE COMPONENT PROGRESSBARS 
+/*   PAGE COMPONENT PROGRESSBARS
 ========================================================================== */
-/*   PAGE COMPONENT MESSENGER 
+/*   PAGE COMPONENT MESSENGER
 ========================================================================== */
 /*   FOOTER
 ========================================================================== */
@@ -385,7 +385,7 @@ aside.page-sidebar ($nav-width, $nav-background)
 /* ACCESSIBILITIES */
 /* SHORTCUT BUTTON (appears on bottom right of the page) */
 .toast {
-  background-color: #886ab5;
+  background-color: #4285F4;
   background-image: none !important; }
   .toast:before {
     content: "\f05a";
@@ -403,22 +403,22 @@ aside.page-sidebar ($nav-width, $nav-background)
             align-items: center; }
 
 .toast-success {
-  background-color: #1ab3a3; }
+  background-color: #00af47; }
   .toast-success:before {
     content: "\f2f7"; }
 
 .toast-error {
-  background-color: #fd3995; }
+  background-color: #CC0000; }
   .toast-error:before {
     content: "\f2f0"; }
 
 .toast-info {
-  background-color: #2196F3; }
+  background-color: #33b5e5; }
   .toast-info:before {
     content: "\f05a"; }
 
 .toast-warning {
-  background-color: #ffb20e; }
+  background-color: #ffaa00; }
   .toast-warning > div,
   .toast-warning .toast-close-button {
     color: #000; }

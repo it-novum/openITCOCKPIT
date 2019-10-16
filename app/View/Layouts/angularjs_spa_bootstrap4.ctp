@@ -96,12 +96,13 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <![endif]-->
     <?php echo $this->Html->charset(); ?>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, minimal-ui">
     <script data-pace-options='{ "ajax": false }' src='/smartadmin/js/plugin/pace/pace.min.js'></script>
     <title>
         <?php echo $title_for_layout; ?> - <?php echo Configure::read('general.site_name') ?>
     </title>
     <?php
+
     $fileVersion = '?v' . time();
     if (ENVIRONMENT === Environments::PRODUCTION) {
         Configure::load('version');
@@ -119,30 +120,25 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     foreach ($appScripts as $appScript):
         printf('<script src="/%s%s"></script>%s', $appScript, $fileVersion, PHP_EOL);
     endforeach;
+
     ?>
 </head>
-<body ng-cloak class="<?= $bodyClass ?> mod-bg-1 ng-cloak">
+<body class="mod-bg-1">
 <div class="page-wrapper">
     <div class="page-inner">
         <script>
             Dropzone.autoDiscover = false;
         </script>
-
-        <!--  <div id="global-loading">
-              <i class="fa fa-refresh fa-spin"></i>
-          </div>
-  -->
-        <?php // echo $this->element('Admin.layout/sidebar') ?>
-        <!-- SIDEBAR START -->
-        <aside id="page-sidebar">
-            <div class="login-info page-logo" aria-roledescription="logo">
-                <span id="logo">
-                    <div id="logo-image"></div>
-                    <p id="logo-text"><?php echo $systemname; ?></p>
-                </span>
+        <!-- BEGIN Left Aside -->
+        <aside class="page-sidebar">
+            <div class="page-logo">
+                   <span id="logo">
+                        <div id="logo-image"></div>
+                        <p id="logo-text"><?php echo $systemname; ?></p>
+                    </span>
             </div>
+            <!-- BEGIN PRIMARY NAVIGATION -->
             <nav id="js-primary-nav" class="primary-nav" role="navigation">
-
                 <div class="nav-filter">
                     <div class="position-relative">
                         <input type="text" id="nav_filter_input" placeholder="Filter menu" class="form-control"
@@ -189,10 +185,10 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
                         <i class="fal fa-angle-down"></i>
                     </a>
                 </div>
-                <span menu></span>
-
+                <ul menu id="js-nav-menu" class="nav-menu"></ul>
                 <div class="filter-message js-filter-message bg-success-600"></div>
             </nav>
+            <!-- END PRIMARY NAVIGATION -->
             <!-- NAV FOOTER -->
             <div class="nav-footer shadow-top">
                 <a href="#" onclick="return false;" data-action="toggle" data-class="nav-function-minify"
@@ -219,11 +215,9 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
                 </ul>
             </div> <!-- END NAV FOOTER -->
         </aside>
-        <!-- SIDEBAR END -->
-
-
-        <?php // echo $this->element('Admin.layout/header') ?>
+        <!-- END Left Aside -->
         <div class="page-content-wrapper">
+
             <!-- HEADER START -->
             <header id="header" class="page-header" role="banner">
 
@@ -310,23 +304,26 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 
             </header>
             <!-- HEADER END -->
-            <!-- PAGE CONTENT START -->
+            <!-- END Page Header -->
+            <!-- BEGIN Page Content -->
+            <!-- the #js-page-content id is needed for some plugins to initialize -->
             <main id="js-page-content" role="main" class="page-content" ng-controller="LayoutController">
-                    <ol class="breadcrumb page-breadcrumb">
-                        <li class="breadcrumb-item"><a href="<?php echo $this->webroot; ?>"><i class="fa fa-home"></i> <?php echo __('Home'); ?>
-                            </a></li>
-                        <li class="breadcrumb-item"><?php echo $this->Html->link($title_for_layout, ['action' => 'index'], ['icon' => 'fa fa-cube']); ?></li>
-                    </ol>
+                <ol class="breadcrumb page-breadcrumb">
+                    <li class="breadcrumb-item"><a href="<?php echo $this->webroot; ?>"><i
+                                    class="fa fa-home"></i> <?php echo __('Home'); ?>
+                        </a></li>
+                    <li class="breadcrumb-item"><?php echo $this->Html->link($title_for_layout, ['action' => 'index'], ['icon' => 'fa fa-cube']); ?></li>
+                </ol>
 
-                    <?php if ($loggedIn && $this->Auth->user('showstatsinmenu')): ?>
-                        <menustats></menustats>
-                    <?php endif; ?>
+                <?php if ($loggedIn && $this->Auth->user('showstatsinmenu')): ?>
+                    <menustats></menustats>
+                <?php endif; ?>
 
-                    <div class="pull-right">
+                <div class="pull-right">
                         <span id="global_ajax_loader">
                             <i class="fa fa-refresh fa-spin"></i> <?php echo __('Loading data'); ?>
                         </span>
-                    </div>
+                </div>
 
                 <div id="content" style="opacity: 1;">
                     <?php echo $this->Flash->render(); ?>
@@ -343,10 +340,77 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
                     <?php echo $this->element('Admin.sql_dump'); ?>
                 </div>
             </main>
-            <!-- PAGE CONTENT END -->
         </div>
     </div>
 </div>
+
+<!-- COMMENTING THIS OUT CAUSES rgb is undefined error from vendors.bundle.js -->
+<!-- BEGIN Color profile -->
+<!-- this area is hidden and will not be seen on screens or screen readers -->
+<!-- we use this only for CSS color refernce for JS stuff -->
+<p id="js-color-profile" class="d-none">
+    <span class="color-primary-50"></span>
+    <span class="color-primary-100"></span>
+    <span class="color-primary-200"></span>
+    <span class="color-primary-300"></span>
+    <span class="color-primary-400"></span>
+    <span class="color-primary-500"></span>
+    <span class="color-primary-600"></span>
+    <span class="color-primary-700"></span>
+    <span class="color-primary-800"></span>
+    <span class="color-primary-900"></span>
+    <span class="color-info-50"></span>
+    <span class="color-info-100"></span>
+    <span class="color-info-200"></span>
+    <span class="color-info-300"></span>
+    <span class="color-info-400"></span>
+    <span class="color-info-500"></span>
+    <span class="color-info-600"></span>
+    <span class="color-info-700"></span>
+    <span class="color-info-800"></span>
+    <span class="color-info-900"></span>
+    <span class="color-danger-50"></span>
+    <span class="color-danger-100"></span>
+    <span class="color-danger-200"></span>
+    <span class="color-danger-300"></span>
+    <span class="color-danger-400"></span>
+    <span class="color-danger-500"></span>
+    <span class="color-danger-600"></span>
+    <span class="color-danger-700"></span>
+    <span class="color-danger-800"></span>
+    <span class="color-danger-900"></span>
+    <span class="color-warning-50"></span>
+    <span class="color-warning-100"></span>
+    <span class="color-warning-200"></span>
+    <span class="color-warning-300"></span>
+    <span class="color-warning-400"></span>
+    <span class="color-warning-500"></span>
+    <span class="color-warning-600"></span>
+    <span class="color-warning-700"></span>
+    <span class="color-warning-800"></span>
+    <span class="color-warning-900"></span>
+    <span class="color-success-50"></span>
+    <span class="color-success-100"></span>
+    <span class="color-success-200"></span>
+    <span class="color-success-300"></span>
+    <span class="color-success-400"></span>
+    <span class="color-success-500"></span>
+    <span class="color-success-600"></span>
+    <span class="color-success-700"></span>
+    <span class="color-success-800"></span>
+    <span class="color-success-900"></span>
+    <span class="color-fusion-50"></span>
+    <span class="color-fusion-100"></span>
+    <span class="color-fusion-200"></span>
+    <span class="color-fusion-300"></span>
+    <span class="color-fusion-400"></span>
+    <span class="color-fusion-500"></span>
+    <span class="color-fusion-600"></span>
+    <span class="color-fusion-700"></span>
+    <span class="color-fusion-800"></span>
+    <span class="color-fusion-900"></span>
+</p>
+<!-- END Color profile -->
 <!--
 <div id="scroll-top-container">
     <i class="fa fa-arrow-up fa-2x" title="<?php echo __('Scroll back to top'); ?>"></i>

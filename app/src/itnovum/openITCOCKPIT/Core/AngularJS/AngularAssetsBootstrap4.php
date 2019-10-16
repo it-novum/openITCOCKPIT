@@ -32,7 +32,7 @@ class AngularAssetsBootstrap4 implements AngularAssetsInterface {
      * @var array
      */
     private $jsFiles = [
-        'vendor/node_modules/jquery/dist/jquery.min.js',
+        'vendor/node_modules/jquery/dist/jquery.js',
         'vendor/node_modules/jquery-ui-dist/jquery-ui.js',
         'vendor/node_modules/popper.js/dist/umd/popper.js',
         'vendor/node_modules/popper.js/dist/umd/popper-utils.js',
@@ -41,31 +41,29 @@ class AngularAssetsBootstrap4 implements AngularAssetsInterface {
         'vendor/node_modules/angular-ui-router/release/angular-ui-router.min.js',
         'vendor/node_modules/jquery.cookie/jquery.cookie.js',
         'js/vendor/chosen.jquery.min.js',
-        /*'vendor/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.js',
+        'vendor/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.js',
         'js/app/layoutfix.js',
         'js/lib/ColorGenerator.js',
         'js/lib/colr.js',
-        'js/lib/php.js',*/
-        //'smartadmin4/dist/js/vendors.bundle.js',
-        //'smartadmin4/dist/js/app.bundle.js',
-        /*'smartadmin/js/plugin/flot/jquery.flot.cust.js',
+        'js/lib/php.js',
+       /* 'smartadmin/js/plugin/flot/jquery.flot.cust.js',                        //legacy but no new alternative
         'vendor/node_modules/flot-axislabels/jquery.flot.axislabels.js',
         'vendor/node_modules/flot/jquery.flot.time.js',
         'vendor/node_modules/flot/jquery.flot.fillbetween.js',
         'vendor/node_modules/flot/jquery.flot.resize.js',
         'vendor/node_modules/flot/jquery.flot.threshold.js',
-        'vendor/node_modules/flot/jquery.flot.selection.js',
-        'vendor/node_modules/jquery-nestable/jquery.nestable.js', */
+        'vendor/node_modules/flot/jquery.flot.selection.js',*/
+        'vendor/node_modules/jquery-nestable/jquery.nestable.js',
         'js/lib/angular-nestable.js',
-        /*'js/lib/parseuri.js',
-        'js/vendor/vis-4.21.0/dist/vis.js',*/
+        'js/lib/parseuri.js',
+        //'js/vendor/vis-4.21.0/dist/vis.js',
         'js/scripts/ng.app.js',
-        /*'js/vendor/UUID.js-4.0.3/dist/uuid.core.js',
+        'js/vendor/UUID.js-4.0.3/dist/uuid.core.js',
         'vendor/node_modules/underscore/underscore-min.js',
-        'js/vendor/noty/noty.min.js',
+       // 'js/vendor/noty/noty.min.js',
         'js/vendor/gauge.min.js',
         'js/lib/jquery.svg.min.js',
-        'js/lib/jquery.svgfilter.min.js',*/
+        'js/lib/jquery.svgfilter.min.js',
         'vendor/node_modules/dropzone/dist/min/dropzone.min.js',
         /*'smartadmin/js/notification/SmartNotification.js',
         'vendor/node_modules/noty/lib/noty.min.js',

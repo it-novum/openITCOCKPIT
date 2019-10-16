@@ -952,7 +952,7 @@ table.dataTable tbody td.selected a {
 /*  THEME COLORs
 ========================================================================== */
 /* Looks good on chrome default color profile */
-/* looks good in sRGB but washed up on chrome default 
+/* looks good in sRGB but washed up on chrome default
 $color-primary:						#826bb0;
 $color-success:						#31cb55;
 $color-info:						#5e93ec;
@@ -1055,7 +1055,7 @@ http://www.standardista.com/px-to-rem-conversion-if-root-font-size-is-16px/
 /*  Z-INDEX declearation
 ========================================================================== */
 /* we adjust bootstrap z-index to be higher than our higest z-index*/
-/*  CUSTOM ICON PREFIX 
+/*  CUSTOM ICON PREFIX
 ========================================================================== */
 /*  PRINT CSS (landscape or portrait)
 ========================================================================== */
@@ -1093,11 +1093,11 @@ aside.page-sidebar ($nav-width, $nav-background)
 		ul.nav-menu
 			li
 				a (parent level-0..., $nav-link-color, $nav-link-hover-color, $nav-link-hover-bg-color, $nav-link-hover-left-border-color)
-					icon 
+					icon
 					span
-					collapse-sign 
-					
-				ul.nav-menu-sub-one  
+					collapse-sign
+
+				ul.nav-menu-sub-one
 					li
 						a ($nav-level-1... $nav-sub-link-height)
 							span
@@ -1133,13 +1133,13 @@ aside.page-sidebar ($nav-width, $nav-background)
 /* List Table */
 /*   PAGE SETTINGS
 ========================================================================== */
-/*   PAGE BREADCRUMB 
+/*   PAGE BREADCRUMB
 ========================================================================== */
-/*   PAGE COMPONENT PANELS 
+/*   PAGE COMPONENT PANELS
 ========================================================================== */
-/*   PAGE COMPONENT PROGRESSBARS 
+/*   PAGE COMPONENT PROGRESSBARS
 ========================================================================== */
-/*   PAGE COMPONENT MESSENGER 
+/*   PAGE COMPONENT MESSENGER
 ========================================================================== */
 /*   FOOTER
 ========================================================================== */
@@ -1153,18 +1153,18 @@ table.dataTable > tbody > tr.child ul.dtr-details {
 .sorting_asc,
 .sorting_desc,
 .even .sorting_1 {
-  background-color: rgba(136, 106, 181, 0.03); }
+  background-color: rgba(66, 133, 244, 0.03); }
 
 .odd .sorting_1 {
-  background-color: rgba(136, 106, 181, 0.04); }
+  background-color: rgba(66, 133, 244, 0.04); }
 
 .table-dark .sorting_asc,
 .table-dark .sorting_desc,
 .table-dark .even .sorting_1 {
-  background-color: rgba(255, 194, 65, 0.15); }
+  background-color: rgba(255, 187, 51, 0.15); }
 
 .table-dark .odd .sorting_1 {
-  background-color: rgba(255, 194, 65, 0.15); }
+  background-color: rgba(255, 187, 51, 0.15); }
 
 /* some idiot put "important" rule on the main css file now I have to put important here to override it... eghhh */
 /* I had to set it to 0 because auto fill cannot "compute" for the margin ... nice job Allan >.> */
@@ -1199,13 +1199,13 @@ table.dataTable.dtr-column > tbody > tr > th.control:before {
   border-radius: 0;
   border: 0;
   margin: 0;
-  background-color: #886ab5; }
+  background-color: #4285F4; }
 
 table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child:before,
 table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child:before,
 table.dataTable.dtr-column > tbody > tr.parent td.control:before,
 table.dataTable.dtr-column > tbody > tr.parent th.control:before {
-  background-color: #1dc9b7; }
+  background-color: #00C851; }
 
 table.dataTable thead .sorting:before,
 table.dataTable thead .sorting_asc:before,
@@ -1228,7 +1228,7 @@ table.dataTable thead .sorting_desc_disabled:after {
   font-family: 'Font Awesome 5 Pro'; }
 
 .dataTables_empty {
-  color: #fd3995;
+  color: #CC0000;
   font-size: 2rem;
   padding-top: 2.5rem !important;
   padding-bottom: 2.5rem !important; }
@@ -1246,7 +1246,7 @@ table.dataTable thead .sorting_desc_disabled:after {
     .dataTables_wrapper tr.child td.child .dtr-details:before {
       content: "\f149";
       font-family: 'Font Awesome 5 Pro';
-      color: #21dfcb;
+      color: #00e25b;
       width: 20px;
       height: 30px;
       position: absolute;
@@ -1260,7 +1260,7 @@ table.dataTable thead .sorting_desc_disabled:after {
       bottom: 0;
       left: 0;
       width: 1rem;
-      background: #4de5d5; }
+      background: #16ff74; }
 
 @media screen and (max-width: 767px) {
   div.dataTables_wrapper div.dataTables_length,
@@ -1319,12 +1319,12 @@ div.dt-autofill-background {
   padding-right: 2rem !important; }
 
 div.dt-autofill-handle {
-  background: #886ab5;
+  background: #4285F4;
   height: 0.875rem;
   width: 0.875rem; }
 
 div.dt-autofill-select {
-  background-color: #886ab5; }
+  background-color: #4285F4; }
 
 /* FixedColumns */
 .DTFC_LeftHeadWrapper:before,
@@ -1336,7 +1336,7 @@ div.dt-autofill-select {
   top: 1px;
   bottom: 0px;
   width: 1px;
-  background: #fd3995;
+  background: #CC0000;
   z-index: 1;
   -webkit-box-shadow: -4px 0px 4px rgba(0, 0, 0, 0.4);
           box-shadow: -4px 0px 4px rgba(0, 0, 0, 0.4); }
@@ -1349,9 +1349,9 @@ div.dt-autofill-select {
 /* KeyTable */
 table.dataTable tbody th.focus,
 table.dataTable tbody td.focus {
-  -webkit-box-shadow: inset 0 0 0px 1px #886ab5;
-          box-shadow: inset 0 0 0px 1px #886ab5;
-  background: rgba(136, 106, 181, 0.1);
+  -webkit-box-shadow: inset 0 0 0px 1px #4285F4;
+          box-shadow: inset 0 0 0px 1px #4285F4;
+  background: rgba(66, 133, 244, 0.1);
   font-weight: 500; }
 
 /* RowGroup */
@@ -1376,11 +1376,11 @@ table.dataTable td.reorder {
   text-align: inherit; }
 
 tr.dt-rowReorder-moving {
-  outline: 2px solid #1dc9b7;
+  outline: 2px solid #00C851;
   outline-offset: -2px; }
 
 table.dt-rowReorder-float {
-  outline: 2px solid #886ab5;
+  outline: 2px solid #4285F4;
   outline-offset: -2px; }
 
 /* w-100 bug for some tables */
@@ -1402,9 +1402,9 @@ table.dataTable.table-bordered td.selected {
 
 table.dataTable tbody > tr.selected,
 table.dataTable tbody > tr > .selected {
-  -webkit-box-shadow: inset 0 0 0px 1px #886ab5;
-          box-shadow: inset 0 0 0px 1px #886ab5;
-  background: rgba(136, 106, 181, 0.1);
+  -webkit-box-shadow: inset 0 0 0px 1px #4285F4;
+          box-shadow: inset 0 0 0px 1px #4285F4;
+  background: rgba(66, 133, 244, 0.1);
   font-weight: 500;
   color: inherit; }
 

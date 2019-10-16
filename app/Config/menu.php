@@ -31,24 +31,28 @@ $config = [
             'title' => 'Dashboard',
             'icon'  => 'dashboard',
             'order' => 1,
+            'tags'  => 'dashboard',
         ],
 
         'maps' => [
             'title'    => 'Maps',
             'icon'     => 'map-marker',
             'order'    => 2,
+            'tags'     => 'maps',
             'children' => [
                 [
                     'url'   => ['controller' => 'statusmaps', 'action' => 'index'],
                     'state' => 'StatusmapsIndex',
                     'title' => 'Status Map',
                     'icon'  => 'globe',
+                    'tags'  => 'status map statusmap',
                 ],
                 [
                     'url'   => ['controller' => 'automaps', 'action' => 'index'],
                     'title' => 'Auto Maps',
                     'state' => 'AutomapsIndex',
                     'icon'  => 'magic',
+                    'tags'  => 'auto maps automaps',
                 ],
             ],
         ],

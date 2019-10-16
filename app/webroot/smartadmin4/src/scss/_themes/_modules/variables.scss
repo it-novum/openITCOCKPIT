@@ -1,14 +1,14 @@
 /*  THEME COLORs
 ========================================================================== */
 /* Looks good on chrome default color profile */
-$color-primary:						#886ab5 !default;
+$color-primary:						#868e96 !default;
 $color-success:						#1dc9b7 !default;
 $color-info:						#2196F3 !default;
 $color-warning:						#ffc241 !default;
 $color-danger:						#fd3995 !default;
-$color-fusion:						darken(desaturate(adjust-hue($color-primary, 5), 80%), 25%) !default; 
+$color-fusion:						darken(desaturate(adjust-hue($color-primary, 5), 80%), 25%) !default;
 
-/* looks good in sRGB but washed up on chrome default 
+/* looks good in sRGB but washed up on chrome default
 $color-primary:						#826bb0;
 $color-success:						#31cb55;
 $color-info:						#5e93ec;
@@ -24,7 +24,7 @@ $disabled:							darken($white, 20%) !default;
 
 /*  PAINTBUCKET MIXER
 ========================================================================== */
-/* the grays */ 
+/* the grays */
 $gray-50:							#f9f9f9 !default;
 $gray-100:							#f8f9fa !default;
 $gray-200:							#f3f3f3 !default;
@@ -37,10 +37,10 @@ $gray-800:							#343a40 !default;
 $gray-900:							#212529 !default;
 
 /* the sapphires */
-$primary-50:						lighten($color-primary, 25%) !default;	
-$primary-100:						lighten($color-primary, 20%) !default;	
-$primary-200:						lighten($color-primary, 15%) !default;	
-$primary-300:						lighten($color-primary, 10%) !default;	
+$primary-50:						lighten($color-primary, 25%) !default;
+$primary-100:						lighten($color-primary, 20%) !default;
+$primary-200:						lighten($color-primary, 15%) !default;
+$primary-300:						lighten($color-primary, 10%) !default;
 $primary-400:						lighten($color-primary, 5%) !default;
 $primary-500:						$color-primary !default;
 $primary-600:						darken($color-primary, 5%) !default;
@@ -49,10 +49,10 @@ $primary-800:						darken($color-primary, 15%) !default;
 $primary-900:						darken($color-primary, 20%) !default;
 
 /* the emeralds */
-$success-50:						lighten($color-success, 25%) !default;	
-$success-100:						lighten($color-success, 20%) !default;	
-$success-200:						lighten($color-success, 15%) !default;	
-$success-300:						lighten($color-success, 10%) !default;	
+$success-50:						lighten($color-success, 25%) !default;
+$success-100:						lighten($color-success, 20%) !default;
+$success-200:						lighten($color-success, 15%) !default;
+$success-300:						lighten($color-success, 10%) !default;
 $success-400:						lighten($color-success, 5%) !default;
 $success-500:						$color-success !default;
 $success-600:						darken($color-success, 5%) !default;
@@ -61,10 +61,10 @@ $success-800:						darken($color-success, 15%) !default;
 $success-900:						darken($color-success, 20%) !default;
 
 /* the amethyths */
-$info-50:							lighten($color-info, 25%) !default;	
-$info-100:							lighten($color-info, 20%) !default;	
-$info-200:							lighten($color-info, 15%) !default;	
-$info-300:							lighten($color-info, 10%) !default;	
+$info-50:							lighten($color-info, 25%) !default;
+$info-100:							lighten($color-info, 20%) !default;
+$info-200:							lighten($color-info, 15%) !default;
+$info-300:							lighten($color-info, 10%) !default;
 $info-400:							lighten($color-info, 5%) !default;
 $info-500:							$color-info !default;
 $info-600:							darken($color-info, 5%) !default;
@@ -73,10 +73,10 @@ $info-800:							darken($color-info, 15%) !default;
 $info-900:							darken($color-info, 20%) !default;
 
 /* the topaz */
-$warning-50:						lighten($color-warning, 25%) !default;	
-$warning-100:						lighten($color-warning, 20%) !default;	
-$warning-200:						lighten($color-warning, 15%) !default;	
-$warning-300:						lighten($color-warning, 10%) !default;	
+$warning-50:						lighten($color-warning, 25%) !default;
+$warning-100:						lighten($color-warning, 20%) !default;
+$warning-200:						lighten($color-warning, 15%) !default;
+$warning-300:						lighten($color-warning, 10%) !default;
 $warning-400:						lighten($color-warning, 5%) !default;
 $warning-500:						$color-warning !default;
 $warning-600:						darken($color-warning, 5%) !default;
@@ -85,10 +85,10 @@ $warning-800:						darken($color-warning, 15%) !default;
 $warning-900:						darken($color-warning, 20%) !default;
 
 /* the rubies */
-$danger-50:							lighten($color-danger, 25%) !default;	
-$danger-100:						lighten($color-danger, 20%) !default;	
-$danger-200:						lighten($color-danger, 15%) !default;	
-$danger-300:						lighten($color-danger, 10%) !default;	
+$danger-50:							lighten($color-danger, 25%) !default;
+$danger-100:						lighten($color-danger, 20%) !default;
+$danger-200:						lighten($color-danger, 15%) !default;
+$danger-300:						lighten($color-danger, 10%) !default;
 $danger-400:						lighten($color-danger, 5%) !default;
 $danger-500:						$color-danger !default;
 $danger-600:						darken($color-danger, 5%) !default;
@@ -97,10 +97,10 @@ $danger-800:						darken($color-danger, 15%) !default;
 $danger-900:						darken($color-danger, 20%) !default;
 
 /* the graphites */
-$fusion-50:							lighten($color-fusion, 25%) !default;	
-$fusion-100:						lighten($color-fusion, 20%) !default;	
-$fusion-200:						lighten($color-fusion, 15%) !default;	
-$fusion-300:						lighten($color-fusion, 10%) !default;	
+$fusion-50:							lighten($color-fusion, 25%) !default;
+$fusion-100:						lighten($color-fusion, 20%) !default;
+$fusion-200:						lighten($color-fusion, 15%) !default;
+$fusion-300:						lighten($color-fusion, 10%) !default;
 $fusion-400:						lighten($color-fusion, 5%) !default;
 $fusion-500:						$color-fusion !default;
 $fusion-600:						darken($color-fusion, 5%) !default;
@@ -149,7 +149,7 @@ $theme-colors-extended: map-merge((
 	"warning-600":					$warning-600,
 	"warning-700":					$warning-700,
 	"warning-800":					$warning-800,
-	"warning-900":					$warning-900,  
+	"warning-900":					$warning-900,
 	"danger-50":					$danger-50,
 	"danger-100":					$danger-100,
 	"danger-200":					$danger-200,
@@ -189,7 +189,7 @@ $grid-breakpoints: (
 	// Large screen / desktop
 	lg: 992px, // also change 'mobileResolutionTrigger' in app.config.js
 	// Decently size screen / wide laptop
-	xl: 1399px 
+	xl: 1399px
 );
 
 $mobile-breakpoint:						lg !default;                               /* define when mobile menu activates, here we are declearing (lg) so it targets the one after it */
@@ -198,11 +198,11 @@ $grid-gutter-width-base:				3rem;
 $grid-gutter-width:						1.5rem;
 
 $grid-gutter-widths: (
-	xs: $grid-gutter-width-base / 2,         
-	sm: $grid-gutter-width-base / 2,          
-	md: $grid-gutter-width-base / 2,        
-	lg: $grid-gutter-width-base / 2,        
-	xl: $grid-gutter-width-base / 2        
+	xs: $grid-gutter-width-base / 2,
+	sm: $grid-gutter-width-base / 2,
+	md: $grid-gutter-width-base / 2,
+	lg: $grid-gutter-width-base / 2,
+	xl: $grid-gutter-width-base / 2
 );
 
 
@@ -232,7 +232,7 @@ $p-5:									2rem;
 
 
 /*   BOOTSTRAP OVERRIDES (bootstrap variables)
-========================================================================== */ 
+========================================================================== */
 $grays: (
 	"100": $gray-100,
 	"200": $gray-200,
@@ -273,7 +273,7 @@ $theme-colors: (
 $input-border-color:					#E5E5E5;
 $input-focus-border-color:				$color-primary;
 $input-btn-focus-color:					transparent;
-$input-padding-y:						.5rem;  
+$input-padding-y:						.5rem;
 $input-padding-x:						.875rem;
 $label-margin-bottom:					.3rem;
 $form-group-margin-bottom:				1.5rem;
@@ -282,7 +282,7 @@ $form-group-margin-bottom:				1.5rem;
 $link-color:							$primary-500;
 $link-hover-color:						$primary-400;
 
-/* checkbox */ 
+/* checkbox */
 $custom-control-indicator-size:					1.125rem;
 $custom-checkbox-indicator-border-radius:		2px;
 $custom-control-indicator-border-width: 		2px;
@@ -370,11 +370,11 @@ $table-dark-accent-bg:					rgba($white, .05);
 $table-dark-hover-bg:					$color-primary;
 
 /* dropdowns */
-$dropdown-border-width:					$theme-border-utility-size; 
+$dropdown-border-width:					$theme-border-utility-size;
 $dropdown-padding-y:					.3125rem;
 $dropdown-item-padding-y:				.75rem;
-$dropdown-item-padding-x:				1.5rem; 
-$dropdown-link-active-bg:				lighten($primary-50, 13%);  
+$dropdown-item-padding-x:				1.5rem;
+$dropdown-link-active-bg:				lighten($primary-50, 13%);
 $dropdown-link-active-color:			$primary-900;
 $dropdown-link-hover-color:				$primary-700;
 
@@ -383,7 +383,7 @@ $dropdown-xl-width:						21.875rem !default;
 $dropdown-lg-width:						17.5rem !default;
 $dropdown-md-width:						14rem !default;
 $dropdown-sm-width:						8rem !default;
-$dropdown-shadow:						0 0 15px 1px rgba(desaturate($primary-900, 20%), (20/100));   
+$dropdown-shadow:						0 0 15px 1px rgba(desaturate($primary-900, 20%), (20/100));
 
 /* popovers */
 $popover-border-color:					rgba(0, 0, 0, 0.2);
@@ -470,7 +470,7 @@ $display3-size:							3.5rem;
 $display4-size:							2.5rem;
 
 $navbar-toggler-font-size:				21px;
-$navbar-toggler-padding-y:				7.5px; 
+$navbar-toggler-padding-y:				7.5px;
 $navbar-toggler-padding-x:				18px;
 
 /* carousel */
@@ -479,7 +479,7 @@ $carousel-indicator-width:				13px;
 
 /*  BASE VARS
 ========================================================================== */
-// usage: background-image: url("#{$baseURL}img/bg.png"); 
+// usage: background-image: url("#{$baseURL}img/bg.png");
 
 $baseURL:								"../" !default;
 $webfontsURL:							"../webfonts" !default;
@@ -501,7 +501,7 @@ $fs-xxl: 								$fs-base + 15;  /* 28px   */
 $font-import:							"https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900" !default;
 $page-font:								"Roboto", 'Helvetica Neue', Helvetica, Arial !default;
 $nav-font:								$page-font !default;
-$heading-font-family:					$page-font !default; 
+$heading-font-family:					$page-font !default;
 $mobile-page-font:						'HelveticaNeue-Light','Helvetica Neue Light','Helvetica Neue',Helvetica,Arial,sans-serif;
 
 /*  ANIMATIONS
@@ -524,7 +524,7 @@ $zindex-panel-fullscreen:				$space + 1055;
 $zindex-popover:						$space + 1060;
 $zindex-tooltip:						$space + 1070;
 
-/*  CUSTOM ICON PREFIX 
+/*  CUSTOM ICON PREFIX
 ========================================================================== */
 $cust-icon-prefix:						ni;
 
@@ -555,7 +555,7 @@ $frame-border-color:					#f7f9fa !default;
 /* colors */
 $header-bg:								$white !default;
 $header-border-color:					#ccc !default;
-$header-border-bottom-color:			rgba(darken($primary-700, 10%), (13/100)) !default;		
+$header-border-bottom-color:			rgba(darken($primary-700, 10%), (13/100)) !default;
 $header-link-color:						$primary-500 !default;
 $header-link-hover-color:				darken($header-bg, 75%) !default;
 
@@ -578,7 +578,7 @@ $header-icon-size:						21px;
 $header-search-border-color:			transparent !default;								/* suggestion: #ccced0*/
 $header-search-bg:						transparent !default;
 $header-search-width:					25rem !default;
-$header-search-height:					$header-height - 1.5rem !default; 
+$header-search-height:					$header-height - 1.5rem !default;
 $header-search-font-size:				$fs-base + 2;
 $header-search-padding:					$spacer * 0.38;
 
@@ -598,7 +598,7 @@ $header-dropdown-arrow-color:			$primary-700 !default;
 $header-applist-link-block-height:		5.9375rem;
 $header-applist-link-block-width:		6.25rem;
 $header-applist-rows-width:				21.875rem;
-$header-applist-rows-height:			22.5rem; 
+$header-applist-rows-height:			22.5rem;
 $header-applist-box-padding-x:			$p-2;
 $header-applist-box-padding-y:			$p-3;
 $header-applist-icon-size:				3.125rem;
@@ -606,7 +606,7 @@ $header-applist-icon-size:				3.125rem;
 /* badge */
 $header-badge-min-width:				1.25rem !default;
 $header-badge-left:						1.5625rem !default;
-$header-badge-top:						($header-height / 2 - $header-badge-min-width) + 0.28125rem !default; 
+$header-badge-top:						($header-height / 2 - $header-badge-min-width) + 0.28125rem !default;
 
 /* COMPONENTS & MODS */
 $nav-tabs-clean-link-height:			45px !default;
@@ -622,11 +622,11 @@ aside.page-sidebar ($nav-width, $nav-background)
 		ul.nav-menu
 			li
 				a (parent level-0..., $nav-link-color, $nav-link-hover-color, $nav-link-hover-bg-color, $nav-link-hover-left-border-color)
-					icon 
+					icon
 					span
-					collapse-sign 
-					
-				ul.nav-menu-sub-one  
+					collapse-sign
+
+				ul.nav-menu-sub-one
 					li
 						a ($nav-level-1... $nav-sub-link-height)
 							span
@@ -645,15 +645,15 @@ aside.page-sidebar ($nav-width, $nav-background)
 /* main navigation */
 /* left panel */
 $nav-background:						desaturate($primary-900, 7%) !default;
-$nav-background-shade:					rgba(desaturate($info-500, 15%), 0.18) !default;                  
+$nav-background-shade:					rgba(desaturate($info-500, 15%), 0.18) !default;
 $nav-base-color:						lighten($nav-background, 7%) !default;
-$nav-width:								16.875rem !default; 
+$nav-width:								16.875rem !default;
 
 /* nav parent level-0 */
 $nav-link-color: 						lighten($nav-base-color, 32%) !default;
 $nav-font-link-size: 					$fs-base + 1 !default;
-$nav-collapse-sign-font-size:			inherit !default;	
-$nav-padding-x:							2rem !default; 
+$nav-collapse-sign-font-size:			inherit !default;
+$nav-padding-x:							2rem !default;
 $nav-padding-y:							0.8125rem !default;
 
 /* nav icon sizes */
@@ -681,11 +681,11 @@ $nav-minify-hover-bg:					darken($nav-base-color, 3%) !default;
 $nav-minify-hover-text:					$white !default;
 $nav-minify-width:						4.6875rem !default;
 /* when the menu pops on hover */
-$nav-minify-sub-width:					$nav-width - ($nav-minify-width - 1.5625rem) !default; 				
+$nav-minify-sub-width:					$nav-width - ($nav-minify-width - 1.5625rem) !default;
 
 /* navigation Width */
 /* partial visibility of the menu */
-$nav-hidden-visiblity:					0.625rem !default; 											
+$nav-hidden-visiblity:					0.625rem !default;
 
 /* top navigation */
 $nav-top-height:						3.5rem !default;
@@ -697,7 +697,7 @@ $nav-top-drowndown-hover-color:			$white;
 
 /* nav Info Card (appears below the logo) */
 $nav-infocard-height:					9.530rem !default;
-$profile-image-width:					3.125rem !default; 
+$profile-image-width:					3.125rem !default;
 $profile-image-width-md:				2rem !default;
 $profile-image-width-sm:				1.5625rem !default;
 $image-share-height:					2.8125rem !default; /* width is auto */
@@ -722,11 +722,11 @@ $settings-incompat-desc:				#ec9f28 !default;
 $settings-incompat-bg:					$warning-50 !default;
 $settings-incompat-border:				$warning-700 !default;
 
-/*   PAGE BREADCRUMB 
+/*   PAGE BREADCRUMB
 ========================================================================== */
 $page-breadcrumb-maxwidth:				200px;
 
-/*   PAGE COMPONENT PANELS 
+/*   PAGE COMPONENT PANELS
 ========================================================================== */
 $panel-spacer-y:						1rem;
 $panel-spacer-x:						1rem;
@@ -739,14 +739,14 @@ $panel-hdr-background:					$white; //#fafafa;
 $panel-edge-radius:						$border-radius;
 $panel-placeholder-color:				lighten(desaturate($primary-50, 20%), 10%);
 
-/*   PAGE COMPONENT PROGRESSBARS 
+/*   PAGE COMPONENT PROGRESSBARS
 ========================================================================== */
 $progress-height:						.75rem;
 $progress-font-size:					.625rem;
 $progress-bg:							lighten($fusion-50, 40%);
 $progress-border-radius:				10rem;
 
-/*   PAGE COMPONENT MESSENGER 
+/*   PAGE COMPONENT MESSENGER
 ========================================================================== */
 $msgr-list-width:						14.563rem;
 $msgr-list-width-collapsed:				3.125rem;
