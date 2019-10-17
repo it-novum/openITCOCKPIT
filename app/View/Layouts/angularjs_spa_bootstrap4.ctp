@@ -309,9 +309,11 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
             <!-- the #js-page-content id is needed for some plugins to initialize -->
             <main id="js-page-content" role="main" class="page-content" ng-controller="LayoutController">
                 <ol class="breadcrumb page-breadcrumb">
-                    <li class="breadcrumb-item"><a href="<?php echo $this->webroot; ?>"><i
-                                    class="fa fa-home"></i> <?php echo __('Home'); ?>
-                        </a></li>
+                    <li class="breadcrumb-item">
+                        <a href="<?php echo $this->webroot; ?>">
+                            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+                        </a>
+                    </li>
                     <li class="breadcrumb-item"><?php echo $this->Html->link($title_for_layout, ['action' => 'index'], ['icon' => 'fa fa-cube']); ?></li>
                 </ol>
 
