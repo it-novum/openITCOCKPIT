@@ -315,7 +315,8 @@ class GearmanWorkerShell extends AppShell {
                         escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
                         escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
                         escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'])
-                    ));                }
+                    ));
+                }
 
                 $return = $output;
                 break;
@@ -486,6 +487,7 @@ class GearmanWorkerShell extends AppShell {
             case 'create_apt_config':
                 exec('lsb_release -sc', $output);
                 $repo = '';
+                $usesAuthConfig = false;
                 switch ($output[0]) {
                     case 'trusty':
                         $repo = 'packages.openitcockpit.com/repositories/trusty trusty';
@@ -495,6 +497,7 @@ class GearmanWorkerShell extends AppShell {
                         break;
                     case 'bionic':
                         $repo = 'packages.openitcockpit.com/repositories/bionic bionic';
+                        $usesAuthConfig = true;
                         break;
                     case 'jessie':
                         $repo = 'packages.openitcockpit.com/repositories/jessie jessie';
@@ -504,8 +507,18 @@ class GearmanWorkerShell extends AppShell {
                         break;
                 }
                 $file = fopen('/etc/apt/sources.list.d/openitcockpit.list', 'w+');
-                fwrite($file, 'deb https://secret:' . $payload['key'] . '@' . $repo . '  main' . PHP_EOL);
-                //fwrite($file, 'deb http://secret:'.$payload['key'].'@apt.open-itcockpit.com nightly  main'.PHP_EOL);
+                if ($usesAuthConfig) {
+                    //bionic and newer
+                    fwrite($file, 'deb https://' . $repo . '  main' . PHP_EOL);
+
+                    $authFile = fopen('/etc/apt/auth.conf.d/openitcockpit.conf', 'w+');
+                    fwrite($authFile, 'machine packages.openitcockpit.com login secret password ' . $payload['key'] . PHP_EOL);
+                    fclose($authFile);
+
+                } else {
+                    // trusty / xenial
+                    fwrite($file, 'deb https://secret:' . $payload['key'] . '@' . $repo . '  main' . PHP_EOL);
+                }
                 fclose($file);
                 unset($payload);
                 exec('apt-get update');
@@ -691,7 +704,7 @@ class GearmanWorkerShell extends AppShell {
                 $fileToDelete = $payload['path'];
 
                 $return = false;
-                if(isset($backup_files[$fileToDelete]) && is_file($fileToDelete)){
+                if (isset($backup_files[$fileToDelete]) && is_file($fileToDelete)) {
                     $return = unlink($fileToDelete);
                 }
 
@@ -1125,7 +1138,7 @@ class GearmanWorkerShell extends AppShell {
      * The signal handler is called by the linux kernel or pcntl_signal_dispatch and will handel singals^^
      * Delete oitc.cmd and exit on SIGTERM and SIGINT
      *
-     * @param    int $signo , the signal catched by pcntl_signal_dispatch()
+     * @param int $signo , the signal catched by pcntl_signal_dispatch()
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>

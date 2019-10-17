@@ -118,8 +118,8 @@ class MapsController extends MapModuleAppController {
             if (empty($this->request->data['Map']['refresh_interval'])) {
                 $this->request->data['Map']['refresh_interval'] = 90000;
             } else {
-                if ($this->request->data['Map']['refresh_interval'] < 10) {
-                    $this->request->data['Map']['refresh_interval'] = 10;
+                if ($this->request->data['Map']['refresh_interval'] < 5) {
+                    $this->request->data['Map']['refresh_interval'] = 5;
                 }
 
                 $this->request->data['Map']['refresh_interval'] = ((int)$this->request->data['Map']['refresh_interval'] * 1000);
@@ -199,8 +199,8 @@ class MapsController extends MapModuleAppController {
             if (empty($this->request->data['Map']['refresh_interval'])) {
                 $this->request->data['Map']['refresh_interval'] = 90000;
             } else {
-                if ($this->request->data['Map']['refresh_interval'] < 10) {
-                    $this->request->data['Map']['refresh_interval'] = 10;
+                if ($this->request->data['Map']['refresh_interval'] < 5) {
+                    $this->request->data['Map']['refresh_interval'] = 5;
                 }
 
                 $this->request->data['Map']['refresh_interval'] = ((int)$this->request->data['Map']['refresh_interval'] * 1000);

@@ -86,7 +86,7 @@ class ConfigurationFilesController extends AppController {
     public function phpNSTAMaster() {
         $this->layout = 'blank';
 
-        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\phpNstaMaster', 'phpNstaMaster');
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\phpNSTAMaster', 'phpNstaMaster');
     }
 
     public function DbBackend() {

@@ -181,7 +181,7 @@ angular.module('openITCOCKPIT')
                 inDowntime = $scope.filter.Hoststatus.in_downtime === true;
             }
 
-            return baseUrl + $httpParamSerializer({
+            var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
@@ -196,8 +196,12 @@ angular.module('openITCOCKPIT')
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Host.address]': $scope.filter.Host.address,
                 'filter[Host.satellite_id][]': $scope.filter.Host.satellite_id
-
-            });
+            };
+            if(QueryStringService.hasValue('BrowserContainerId')){
+                params['BrowserContainerId'] = QueryStringService.getValue('BrowserContainerId');
+            }
+            
+            return baseUrl + $httpParamSerializer(params);
 
         };
 

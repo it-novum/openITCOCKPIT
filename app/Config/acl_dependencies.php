@@ -376,7 +376,6 @@ $config = [
                 'DeletedHosts'          => ['index'],
                 'Documentations'        => ['index', 'view', 'wiki'],
                 'Downtimereports'       => ['index', 'host', 'service'],
-                'Exports'               => ['index'],
                 'GraphCollections'      => ['index', 'display'],
                 'Hostchecks'            => ['index'],
                 'Hostdependencies'      => ['index'],

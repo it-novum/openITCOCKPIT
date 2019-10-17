@@ -50,11 +50,14 @@ class MemoryUsage {
         foreach ($data as $line) {
             $temp = explode(":", $line);
             if (isset($temp[1])) {
-                $meminfo[$temp[0]] = intval(trim(intval(substr($temp[1], 0, strpos($temp[1], "kB")))) / 1000);
+                $meminfo[$temp[0]] = intval(trim(intval(substr($temp[1], 0, strpos($temp[1], "kB")))) / 1024);
             }
         }
 
-        $percentage = $meminfo['Active'] / $meminfo['MemTotal'] * 100;
+        $cached = $meminfo['Cached'] + $meminfo['SReclaimable'] - $meminfo['Shmem'];
+        $used = $meminfo['MemTotal'] - $meminfo['MemFree'] - $meminfo['Buffers'] - $meminfo['Cached'] - $meminfo['SReclaimable'];
+        $percentage = $used / $meminfo['MemTotal'] * 100;
+
         $state = 'ok';
         if ($percentage > 80) {
             $state = 'warning';
@@ -65,10 +68,10 @@ class MemoryUsage {
 
         $memory['memory'] = [
             'total'      => $meminfo['MemTotal'],
-            'used'       => $meminfo['Active'],
+            'used'       => $used,
             'free'       => $meminfo['MemFree'],
             'buffers'    => $meminfo['Buffers'],
-            'cached'     => $meminfo['Cached'],
+            'cached'     => $cached,
             'percentage' => round($percentage),
             'state'      => $state
         ];

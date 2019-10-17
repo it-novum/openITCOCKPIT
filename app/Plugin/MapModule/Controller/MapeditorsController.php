@@ -1338,8 +1338,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($hostgroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Container.{n}.HostsToContainer.container_id'), false)) {
-                            $this->render403();
+                        if (!$this->allowedByContainerId(array_unique(Hash::extract($hostgroup['Host'], '{n}.Container.{n}.HostsToContainer.container_id')), false)) { $this->render403();
                             return;
                         }
                     }
@@ -1864,7 +1863,9 @@ class MapeditorsController extends MapModuleAppController {
 
             $item['Mapitem']['x'] = (int)$this->request->data('Mapitem.x');
             $item['Mapitem']['y'] = (int)$this->request->data('Mapitem.y');
-            $item['Mapitem']['show_label'] = (int)$this->request->data('Mapitem.show_label');
+            if($this->request->data('Mapitem.show_label') !== null) {
+                $item['Mapitem']['show_label'] = (int)$this->request->data('Mapitem.show_label');
+            }
             if ($this->Mapitem->save($item)) {
                 $mapitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapitem($item['Mapitem']);
 
@@ -2292,7 +2293,7 @@ class MapeditorsController extends MapModuleAppController {
         $id = $this->request->data('Mapicon.id');
 
 
-        if (!$this->Maptext->exists($id)) {
+        if (!$this->Mapicon->exists($id)) {
             throw new NotFoundException();
         }
 

@@ -33,13 +33,13 @@ angular.module('openITCOCKPIT').directive('systemHealth', function($http, $inter
             $scope.getHealthClass = function(){
                 switch($scope.systemHealth.state){
                     case 'ok':
-                        return 'txt-color-green';
+                        return 'up';
 
                     case 'warning':
                         return 'warning';
 
                     case 'critical':
-                        return 'txt-color-red';
+                        return 'down';
 
                     default:
                         return 'text-primary';
