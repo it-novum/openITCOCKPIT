@@ -107,7 +107,7 @@
                             <?php echo __('Refresh interval'); ?>
                         </label>
                         <div class="col col-xs-10">
-                            <input class="form-control" type="number" ng-model="post.Map.refresh_interval" min="10"
+                            <input class="form-control" type="number" ng-model="post.Map.refresh_interval" min="5"
                                    max="180" step="5">
                         </div>
                     </div>
