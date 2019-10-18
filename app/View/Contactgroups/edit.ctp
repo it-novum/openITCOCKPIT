@@ -41,7 +41,7 @@
         <span class="widget-icon"> <i class="fa fa-users"></i> </span>
         <h2>
             <?php echo __('Edit contact group'); ?>:
-            {{post.Contactgroup.name}}
+            {{post.Contactgroup.container.name}}
         </h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'contactgroups')): ?>
