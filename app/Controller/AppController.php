@@ -982,6 +982,10 @@ class AppController extends Controller {
         return $this->request->ext === 'xml';
     }
 
+    protected function isHtmlRequest() {
+        return $this->request->ext === 'html';
+    }
+
     /**
      * @param array $usedBy
      * @param string $type
