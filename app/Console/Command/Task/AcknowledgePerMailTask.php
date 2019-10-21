@@ -97,7 +97,10 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface {
             }
 //debug($body);
             $parsedValues = $this->parseAckInformation($body);
-            if (empty($parsedValues)) continue;
+            if (empty($parsedValues)){
+                $message->delete();
+                continue;
+            }
             $author = empty($message->getFrom()->getName()) ? $message->getFrom()->getAddress() : $message->getFrom()->getName();
             $acknowledged++;
             if (empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
