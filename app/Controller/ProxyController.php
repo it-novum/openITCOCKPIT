@@ -36,22 +36,24 @@ class ProxyController extends AppController {
     use LocatorAwareTrait;
 
     function index() {
-        if (!$this->isApiRequest()) {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
             return;
         }
+
         $TableLocator = $this->getTableLocator();
 
-        /** @var $Proxy ProxiesTable */
-        $Proxy = $TableLocator->get('Proxies');
+        /** @var $ProxiesTable ProxiesTable */
+        $ProxiesTable = $TableLocator->get('Proxies');
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $entity = $Proxy->find()->first();
+            $entity = $ProxiesTable->find()->first();
             if (is_null($entity)) {
                 //No proxy configuration found
-                $entity = $Proxy->newEmptyEntity();
+                $entity = $ProxiesTable->newEmptyEntity();
             }
 
-            $entity = $Proxy->patchEntity($entity, $this->request->data['Proxy']);
+            $entity = $ProxiesTable->patchEntity($entity, $this->request->data('Proxy'));
 
             if ($entity->hasErrors()) {
                 $this->response->statusCode(400);
@@ -60,10 +62,10 @@ class ProxyController extends AppController {
                 return;
             }
 
-            $Proxy->save($entity);
+            $ProxiesTable->save($entity);
         }
 
-        $settings = $Proxy->getSettings();
+        $settings = $ProxiesTable->getSettings();
         $this->set('proxy', $settings);
         $this->set('_serialize', ['proxy']);
     }

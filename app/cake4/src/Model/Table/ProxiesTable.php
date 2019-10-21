@@ -52,8 +52,10 @@ class ProxiesTable extends Table {
             ->notEmptyString('ipaddress');
 
         $validator
-            ->integer('port', 'This field needs to be numeric.')
+            ->integer('port', __('This field needs to be numeric.'))
             ->requirePresence('port', 'create')
+            ->greaterThanOrEqual('port', 0, __('Port needs to be between 0 and 65535'))
+            ->lessThanOrEqual('port', 65535, __('Port needs to be between 0 and 65535'))
             ->notEmptyString('port');
 
         $validator
