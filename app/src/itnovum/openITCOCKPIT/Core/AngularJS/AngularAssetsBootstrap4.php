@@ -32,11 +32,15 @@ class AngularAssetsBootstrap4 implements AngularAssetsInterface {
      * @var array
      */
     private $jsFiles = [
-        'vendor/node_modules/jquery/dist/jquery.js',
-        'vendor/node_modules/jquery-ui-dist/jquery-ui.js',
-        'vendor/node_modules/popper.js/dist/umd/popper.js',
-        'vendor/node_modules/popper.js/dist/umd/popper-utils.js',
+        'vendor/node_modules/jquery/dist/jquery.min.js',
+        'vendor/node_modules/jquery-ui-dist/jquery-ui.min.js',
+        'vendor/node_modules/popper.js/dist/umd/popper.min.js',
+        'vendor/node_modules/popper.js/dist/umd/popper-utils.min.js',
         'vendor/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
+        'vendor/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js',
+        'vendor/jquery-snippets/jquery-snippets.js',
+        'vendor/node_modules/jquery-slimscroll/jquery.slimscroll.js',
+        'vendor/node_modules/node-waves/dist/waves.js',
         'vendor/node_modules/angular/angular.min.js',
         'vendor/node_modules/angular-ui-router/release/angular-ui-router.min.js',
         'vendor/node_modules/jquery.cookie/jquery.cookie.js',

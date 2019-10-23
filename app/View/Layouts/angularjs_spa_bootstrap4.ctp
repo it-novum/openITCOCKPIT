@@ -169,18 +169,18 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
                         <a class="d-flex align-items-center text-white" ui-sref="ProfileEdit">
                             <span class="text-truncate text-truncate-sm d-inline-block">
                                 <?php echo h($this->Auth->user('full_name')); ?>
-                                <?php if ($hasRootPrivileges === true): ?>
-                                    <span class="text-info pull-right" style="margin-top: 11px;">
-                                        <i class="fa fa-lg fa-trophy"
-                                           style="color:#FFD700; text-shadow: 0px 0px 9px rgba(255, 255, 0, 0.50)"
-                                           id="userRootIcon"
-                                           data-html="true"
-                                           data-original-title="<?php echo __('Administrator privileges'); ?>"
-                                           data-placement="right" rel="tooltip"></i>
-                                    </span>
-                                <?php endif; ?>
-                          </span>
+                            </span>
                         </a>
+                        <?php if ($hasRootPrivileges === true): ?>
+                            <span class="d-inline-block text-truncate text-truncate-sm">
+                                <i class="fa fa-trophy"
+                                   style="color:#FFD700; text-shadow: 0px 0px 9px rgba(255, 255, 0, 0.50)"
+                                   id="userRootIcon"
+                                   data-html="true"
+                                   data-original-title="<?php echo __('Administrator privileges'); ?>"
+                                   data-placement="right" rel="tooltip"></i>
+                            </span>
+                        <?php endif; ?>
                     </div>
                     <img src="/smartadmin4/dist/img/card-backgrounds/cover-6-lg.png" class="cover" alt="cover">
                     <a href="#" onclick="return false;" class="pull-trigger-btn" data-action="toggle"
@@ -263,12 +263,15 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
                 <div class="ml-auto d-flex">
                     <?php if ($loggedIn): ?>
                         <div class="header-icon">
+                            <version-check></version-check>
+                        </div>
+                        <div class="header-icon">
                             <?php if ($this->Auth->user('showstatsinmenu')): ?>
                                 <menustats></menustats>
                             <?php endif; ?>
                         </div>
                         <div class="header-icon">
-                            <system-health></system-health>
+                           <system-health></system-health>
                         </div>
                         <div class="header-icon">
                             <server-time></server-time>
@@ -296,12 +299,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
                                 <i class="fa fa-sign-out"></i>
                             </a>
                         </div>
-                        <div class="header-icon">
-                            <version-check></version-check>
-                        </div>
-                        <div class="header-icon">
-                            <push-notifications></push-notifications>
-                        </div>
+                        <push-notifications></push-notifications>
                     <?php endif; ?>
                 </div>
 
@@ -350,32 +348,35 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 </div>
 
 <!-- BEGIN Shortcuts -->
-<div class="modal fade modal-backdrop-transparent" id="modal-shortcut" tabindex="-1" role="dialog" aria-labelledby="modal-shortcut" aria-hidden="true">
+<div class="modal fade modal-backdrop-transparent" id="modal-shortcut" tabindex="-1" role="dialog"
+     aria-labelledby="modal-shortcut" aria-hidden="true">
     <div class="modal-dialog modal-dialog-top modal-transparent" role="document">
         <div class="modal-content">
             <div class="modal-body">
                 <ul class="app-list w-auto h-auto p-0 text-left">
                     <li>
-                        <a href="intel_introduction.html" class="app-list-item text-white border-0 m-0">
-                            <div class="icon-stack">
-                                <i class="base base-7 icon-stack-3x opacity-100 color-primary-500 "></i>
-                                <i class="base base-7 icon-stack-2x opacity-100 color-primary-300 "></i>
-                                <i class="fal fa-home icon-stack-1x opacity-100 color-white"></i>
+                        <a ui-sref="RegistersIndex" class="app-list-item text-white border-0 m-0">
+                            <div class='icon-stack'>
+                                <i class="base base-7 icon-stack-3x opacity-100 color-success-500"></i>
+                                <i class="base base-7 icon-stack-2x opacity-100 color-success-300"></i>
+                                <i class="fal fa-key icon-stack-1x opacity-100 color-fusion-900"></i>
                             </div>
                             <span class="app-list-name">
-                                                    I-Doit
+                                                    Internal Link Registers
                                                 </span>
                         </a>
                     </li>
+
+
                     <li>
-                        <a href="page_inbox_general.html" class="app-list-item text-white border-0 m-0">
-                            <div class="icon-stack">
-                                <i class="base base-7 icon-stack-3x opacity-100 color-success-500 "></i>
-                                <i class="base base-7 icon-stack-2x opacity-100 color-success-300 "></i>
-                                <i class="ni ni-envelope icon-stack-1x text-white"></i>
+                        <a href="https://google.com" class="app-list-item text-white border-0 m-0">
+                            <div class='icon-stack'>
+                                <i class="base base-7 icon-stack-3x opacity-100 color-success-500"></i> <i
+                                        class="base base-7 icon-stack-2x opacity-100 color-success-300"></i> <i
+                                        class="fal fa-link icon-stack-1x opacity-100 color-fusion-900"></i>
                             </div>
                             <span class="app-list-name">
-                                                    OTRS
+                                                    Google
                                                 </span>
                         </a>
                     </li>
@@ -464,13 +465,35 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     <span class="color-fusion-900"></span>
 </p>
 <!-- END Color profile -->
-<!--
-<div id="scroll-top-container">
-    <i class="fa fa-arrow-up fa-2x" title="<?php echo __('Scroll back to top'); ?>"></i>
-</div>
--->
+<!-- to add more items, please make sure to change the variable '$menu-items: number;' in your _page-components-shortcut.scss -->
+<nav class="shortcut-menu d-none d-sm-block">
+    <input type="checkbox" class="menu-open" name="menu-open" id="menu_open"/>
+    <label for="menu_open" class="menu-open-button ">
+        <span class="app-shortcut-icon d-block"></span>
+    </label>
+    <a href="#" class="menu-item btn" data-toggle="tooltip" data-placement="left" title="Scroll Top">
+        <i class="fal fa-arrow-up"></i>
+    </a>
+    <a href="page_login_alt.html" class="menu-item btn" data-toggle="tooltip" data-placement="left" title="Logout">
+        <i class="fal fa-sign-out"></i>
+    </a>
+    <a href="#" class="menu-item btn" data-action="app-fullscreen" data-toggle="tooltip" data-placement="left"
+       title="Full Screen">
+        <i class="fal fa-expand"></i>
+    </a>
+    <a href="#" class="menu-item btn" data-action="app-print" data-toggle="tooltip" data-placement="left"
+       title="Print page">
+        <i class="fal fa-print"></i>
+    </a>
+    <a href="#" class="menu-item btn" data-action="app-voice" data-toggle="tooltip" data-placement="left"
+       title="Voice command">
+        <i class="fal fa-microphone"></i>
+    </a>
+</nav>
+<!-- END Quick Menu -->
+
 <?php //printf('<script src="/%s"></script>', 'smartadmin/js/app.js'); ?>
-<?php printf('<script src="/%s"></script>', 'smartadmin4/dist/js/vendors.bundle.js'); ?>
+<?php //printf('<script src="/%s"></script>', 'smartadmin4/dist/js/vendors.bundle.js'); ?>
 <?php printf('<script src="/%s"></script>', 'smartadmin4/dist/js/app.bundle.js'); ?>
 
 </body>

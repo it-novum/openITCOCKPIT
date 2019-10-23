@@ -18,6 +18,7 @@ $config = [
             'vendor/bootstrap-datetimepicker.min.css',
             'vendor/gauge/css/gauge.css',*/
             '/vendor/node_modules/jquery-ui-dist/jquery-ui.css',
+            '/vendor/node_modules/node-waves/dist/waves.js',
             '/vendor/node_modules/font-awesome/css/font-awesome.css',
             '/smartadmin4/dist/css/fa-brands.css',
             '/smartadmin4/dist/css/fa-regular.css',

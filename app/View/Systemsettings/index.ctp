@@ -52,9 +52,6 @@
             <div class="panel-container show">
                 <div class="panel-content">
                     <form ng-submit="submit();">
-                        <h5 class="frame-heading">
-                            Pattern
-                        </h5>
                         <div class="frame-wrap">
                             <table class="table table-striped m-0 table-bordered">
                                 <thead>

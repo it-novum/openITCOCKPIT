@@ -31,6 +31,8 @@
         "flot-axislabels": "^1.0.0",
         "underscore": "^1.9.1",
         "dropzone": "^5.5.1",
-        "rangyinputs": "^1.2.0"
+        "rangyinputs": "^1.2.0",
+        "jquery-slimscroll": "^1.3.8",
+        "node-waves": "^0.7.6"
     }
 }
