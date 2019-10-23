@@ -103,7 +103,7 @@ angular.module('openITCOCKPIT')
             $http.post("/timeperiods/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                var url = $state.href('HostsEdit', {id: result.data.timeperiod.id});
+                var url = $state.href('TimeperiodsEdit', {id: result.data.timeperiod.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName

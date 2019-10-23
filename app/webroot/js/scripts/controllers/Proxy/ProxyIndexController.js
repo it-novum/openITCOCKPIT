@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ProxyIndexController', function($scope, $http, QueryStringService){
+    .controller('ProxyIndexController', function($scope, $http, NotyService){
 
         $scope.post = {
             Proxy: {
@@ -30,20 +30,11 @@ angular.module('openITCOCKPIT')
             $http.post("/proxy/index.json?angular=true",
                 $scope.post
             ).then(function(result){
-                console.log('Data saved successfully');
-                new Noty({
-                    theme: 'metroui',
-                    type: 'success',
-                    text: 'Data saved successfully',
-                    timeout: 3500
-                }).show();
+                NotyService.genericSuccess({
+                    message: $scope.successMessage.objectName + ' ' + $scope.successMessage.message
+                });
             }, function errorCallback(result){
-                new Noty({
-                    theme: 'metroui',
-                    type: 'error',
-                    text: 'Error while saving data',
-                    timeout: 3500
-                }).show();
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

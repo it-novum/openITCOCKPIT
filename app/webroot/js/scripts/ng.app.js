@@ -46,9 +46,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                         onlyShowMenuLoader = true;
                     }
                 }
+                
                 if(response.hasOwnProperty('data')){ //POST
-                    if(response.data.hasOwnProperty('disableGlobalLoader')){
-                        onlyShowMenuLoader = true;
+                    if(typeof response.data !== "undefined"){
+                        if(response.data.hasOwnProperty('disableGlobalLoader')){
+                            onlyShowMenuLoader = true;
+                        }
                     }
                 }
 
