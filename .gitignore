@@ -19,6 +19,7 @@ app/tmp_cli/*
 /nbproject/private/*
 *.swp
 *.swo
+*.scss
 __Plugins
 __Plugins/*
 node_modules
