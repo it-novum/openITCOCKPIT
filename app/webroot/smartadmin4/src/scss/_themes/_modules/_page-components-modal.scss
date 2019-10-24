@@ -1,9 +1,0 @@
-/* transparent modal */
-.modal-transparent {
-	.modal-content {
-		box-shadow: 0 1px 15px 1px rgba($primary-900, 0.3);
-	}
-	.modal-content {
-		background: rgba(desaturate(darken($primary-800, 25%), 20%), 0.85); 
-	}
-}

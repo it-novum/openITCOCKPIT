@@ -16,6 +16,7 @@ app/tmp_cli/*
 .nfs*
 .idea
 .vagrant
+.scss
 /nbproject/private/*
 *.swp
 *.swo

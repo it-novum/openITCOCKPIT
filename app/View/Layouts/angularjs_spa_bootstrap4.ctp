@@ -124,6 +124,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     ?>
 </head>
 <body class="mod-bg-1">
+<script>var classHolder = document.getElementsByTagName("BODY")[0];</script>
 <div class="page-wrapper">
     <div class="page-inner">
         <script>
