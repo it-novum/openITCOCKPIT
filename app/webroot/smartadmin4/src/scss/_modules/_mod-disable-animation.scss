@@ -1,0 +1,12 @@
+.mod-disable-animation *,
+.mod-disable-animation *:before,
+.mod-disable-animation *:after {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
+
+  -webkit-animation:  none !important; 
+  animation: none !important;
+}

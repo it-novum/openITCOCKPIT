@@ -1,0 +1,41 @@
+// infinite spin
+@-webkit-keyframes spin {
+    from { 
+      -webkit-transform: rotate(0deg); 
+    }
+
+    to { 
+      -webkit-transform: rotate(360deg); 
+    }
+}
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+
+    to {
+        transform:rotate(360deg);
+    }
+}
+
+
+// spin loader
+/*.spinner {
+  margin: 5px;
+  height: 20px;
+  width: 20px;
+  animation: rotate 0.7s infinite linear;
+  border: 2px solid $color-primary;
+  border-right-color: transparent;
+  border-radius: 50%;
+}*/
+
+// fontawesome spinner faster
+.fa-spin-4x {
+  animation: spin 0.5s infinite linear;
+}
+
+.fa-spin-2x {
+  animation: spin 1s infinite linear;
+}

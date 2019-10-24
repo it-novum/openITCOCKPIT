@@ -1,0 +1,54 @@
+.mod-color-blind .page-wrapper {
+	-webkit-filter: grayscale(65%);
+	filter: grayscale(55%);
+}
+
+.mod-color-blind .page-sidebar .primary-nav .nav-menu > li.active > a + ul > li.active > a,
+.pattern-1 {
+	@extend %pattern-1;
+}
+
+.mod-color-blind .page-sidebar .primary-nav .nav-menu > li.active > a,
+.mod-color-blind [class*="bg-danger-"],
+.mod-color-blind .btn-danger,
+.mod-color-blind .btn-outline-danger,
+.mod-color-blind .alert-danger,
+.pattern-0 {
+	@extend %pattern-0;
+}
+
+.mod-color-blind [class*="bg-primary-"],
+.mod-color-blind .btn-primary,
+.mod-color-blind .btn-outline-primary,
+.mod-color-blind .alert-primary,
+.pattern-2 {
+	@extend %pattern-2;
+}
+
+.mod-color-blind [class*="bg-success-"],
+.mod-color-blind .btn-success,
+.mod-color-blind .btn-outline-success,
+.mod-color-blind .alert-success,
+.pattern-3 {
+	@extend %pattern-3;
+}
+
+.mod-color-blind  [class*="bg-info-"],
+.mod-color-blind  .btn-info,
+.mod-color-blind  .btn-outline-info,
+.mod-color-blind .alert-info,
+.pattern-4 {
+	@extend %pattern-4;
+}
+
+.mod-color-blind [class*="bg-warning-"],
+.mod-color-blind .btn-warning,
+.mod-color-blind .btn-outline-warning,
+.mod-color-blind .alert-warning,
+.pattern-5 {
+	@extend %pattern-5;
+}
+
+.mod-color-blind [class*="btn-"].active {
+	background-image: none !important;
+}

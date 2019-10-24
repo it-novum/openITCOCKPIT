@@ -1,0 +1,451 @@
+/*---------------------------------------------------
+    SASS ELements (based on LESS Elements 0.9 http://lesselements.com) 
+  -------------------------------- -------------------
+    LESS ELEMENTS made by Dmitry Fadeyev (http://fadeyev.net)
+    SASS port by Samuel Beek (http://samuelbeek.com) 
+  ---------------------------------------------------*/
+ 
+@mixin gradient-img($start: #EEE,$stop: #FFF) {
+  background-color: $start;
+  background-image: -webkit-linear-gradient(top,$start,$stop);
+  background-image: linear-gradient(to top,$start,$stop);
+}
+
+@mixin gradient($color: #F5F5F5,$start: #EEE,$stop: #FFF) {
+    background:$color;
+    background:-webkit-gradient(linear,left bottom,left top,color-stop(0,$start),color-stop(1,$stop));
+    background:-ms-linear-gradient(bottom,$start,$stop);
+    background:-moz-linear-gradient(center bottom,$start 0%,$stop 100%);
+    background:-o-linear-gradient($stop,$start);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=$start,endColorstr=$stop)
+}
+
+@mixin bw-gradient($color: #F5F5F5,$start: 0,$stop: 255) {
+    background:$color;
+    background:-webkit-gradient(linear,left bottom,left top,color-stop(0,#000),color-stop(1,#000));
+    background:-ms-linear-gradient(bottom,#000 0%,#000 100%);
+    background:-moz-linear-gradient(center bottom,#000 0%,#000 100%);
+    background:-o-linear-gradient(#000,#000);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=rgb($start,$start,$start),endColorstr=rgb($stop,$stop,$stop))
+}
+
+@mixin bordered($top-color: #EEE,$right-color: #EEE,$bottom-color: #EEE,$left-color: #EEE) {
+    border-top:solid 1px $top-color;
+    border-left:solid 1px $left-color;
+    border-right:solid 1px $right-color;
+    border-bottom:solid 1px $bottom-color
+}
+
+@mixin drop-shadow($x-axis: 0,$y-axis: 1px,$blur: 2px,$alpha: 0.1) {
+    //-webkit-box-shadow:$x-axis $y-axis $blur rgba(0,0,0,$alpha);
+    //-moz-box-shadow:$x-axis $y-axis $blur rgba(0,0,0,$alpha);
+    box-shadow:$x-axis $y-axis $blur rgba(0,0,0,$alpha)
+}
+
+@mixin rounded($radius: 2px) {
+    border-radius:$radius
+}
+
+@mixin border-radius($topright: 0,$bottomright: 0,$bottomleft: 0,$topleft: 0) {
+    border-top-right-radius:$topright;
+    border-bottom-right-radius:$bottomright;
+    border-bottom-left-radius:$bottomleft;
+    border-top-left-radius:$topleft
+}
+
+@mixin opacity($opacity: 0.5) {
+    -moz-opacity:$opacity;
+    -khtml-opacity:$opacity;
+    -webkit-opacity:$opacity;
+    opacity:$opacity;
+    $opperc:$opacity * 100
+/*
+  -ms-filter: ~"progid:DXImageTransform.Microsoft.Alpha(opacity=${opperc})";
+  filter: ~"alpha(opacity=${opperc})";
+*/
+}
+
+@mixin transition-duration($duration: 0.2s) {
+    -moz-transition-duration:$duration;
+    -webkit-transition-duration:$duration;
+    -o-transition-duration:$duration;
+    transition-duration:$duration
+}
+
+@mixin transform($arguments) {
+    -webkit-transform:$arguments;
+    -moz-transform:$arguments;
+    -o-transform:$arguments;
+    -ms-transform:$arguments;
+    transform:$arguments
+}
+
+@mixin rotation($deg:5deg) {
+}
+
+@mixin scale($ratio:1.5) {
+}
+
+@mixin transition($duration:0.2s,$ease:ease-out) {
+    -webkit-transition:all $duration $ease;
+    -moz-transition:all $duration $ease;
+    -o-transition:all $duration $ease;
+    transition:all $duration $ease
+}
+
+@mixin transition-color($duration:0.2s,$ease:ease-out) {
+    -webkit-transition:color $duration $ease;
+    -moz-transition:color $duration $ease;
+    -o-transition:color $duration $ease;
+    transition:color $duration $ease
+}
+
+@mixin transition-border($duration:0.2s,$ease:ease-out) {
+    -webkit-transition:border $duration $ease;
+    -moz-transition:border $duration $ease;
+    -o-transition:border $duration $ease;
+    transition:border $duration $ease
+}
+
+@mixin transition-background-color($duration:0.2s,$ease:ease) {
+    -webkit-transition:background-color $duration $ease;
+    -moz-transition:background-color $duration $ease;
+    -o-transition:background-color $duration $ease;
+    transition:background-color $duration $ease
+}
+
+@mixin transition-fill($duration:0.2s,$ease:ease) {
+    -webkit-transition:fill $duration $ease;
+    -moz-transition:fill $duration $ease;
+    -o-transition:fill $duration $ease;
+    transition:fill $duration $ease
+}
+
+@mixin inner-shadow($horizontal:0,$vertical:1px,$blur:2px,$alpha: 0.4) {
+    -webkit-box-shadow:inset $horizontal $vertical $blur rgba(0,0,0,$alpha);
+    -moz-box-shadow:inset $horizontal $vertical $blur rgba(0,0,0,$alpha);
+    box-shadow:inset $horizontal $vertical $blur rgba(0,0,0,$alpha)
+}
+
+@mixin box-shadow($arguments) {
+    //-webkit-box-shadow:$arguments;
+    //-moz-box-shadow:$arguments;
+    box-shadow:$arguments
+}
+
+@mixin box-sizing($sizing: border-box) {
+    //-ms-box-sizing:$sizing;
+    //-moz-box-sizing:$sizing;
+    //-webkit-box-sizing:$sizing;
+    box-sizing:$sizing
+}
+
+@mixin user-select($argument: none) {
+    -webkit-user-select:$argument;
+    -moz-user-select:$argument;
+    -ms-user-select:$argument;
+    user-select:$argument
+}
+
+@mixin columns($colwidth: 250px,$colcount: 0,$colgap: 50px,$columnRuleColor: #EEE,$columnRuleStyle: solid,$columnRuleWidth: 1px) {
+    -moz-column-width:$colwidth;
+    -moz-column-count:$colcount;
+    -moz-column-gap:$colgap;
+    -moz-column-rule-color:$columnRuleColor;
+    -moz-column-rule-style:$columnRuleStyle;
+    -moz-column-rule-width:$columnRuleWidth;
+    -webkit-column-width:$colwidth;
+    -webkit-column-count:$colcount;
+    -webkit-column-gap:$colgap;
+    -webkit-column-rule-color:$columnRuleColor;
+    -webkit-column-rule-style:$columnRuleStyle;
+    -webkit-column-rule-width:$columnRuleWidth;
+    column-width:$colwidth;
+    column-count:$colcount;
+    column-gap:$colgap;
+    column-rule-color:$columnRuleColor;
+    column-rule-style:$columnRuleStyle;
+    column-rule-width:$columnRuleWidth
+}
+
+@mixin translate($x:0,$y:0) {
+    -webkit-transform: translate($x,$y);
+    -moz-transform: translate($x,$y);
+    -ms-transform: translate($x,$y);
+    -o-transform: translate($x,$y);
+    transform: translate($x,$y);
+}
+
+@mixin translate3d($x:0,$y:0,$z:0) {
+  -webkit-transform: translate3d($x, $y, $z);
+      -ms-transform: translate3d($x, $y, $z); 
+          transform: translate3d($x, $y, $z); 
+}
+
+@mixin background-clip($argument: padding-box) {
+    -moz-background-clip:$argument;
+    -webkit-background-clip:$argument;
+    background-clip:$argument
+}
+
+@mixin transform($transforms) {
+     -moz-transform: $transforms;
+       -o-transform: $transforms;
+      -ms-transform: $transforms;
+  -webkit-transform: $transforms;
+          transform: $transforms;
+}
+// rotate
+@mixin rotate ($deg) {
+  @include transform(rotate(#{$deg}deg));
+}
+ 
+// scale
+@mixin scale($scale) {
+   @include transform(scale($scale));
+} 
+// translate
+@mixin translate ($x, $y) {
+   @include transform(translate($x, $y));
+}
+// skew
+@mixin skew ($x, $y) {
+   @include transform(skew(#{$x}deg, #{$y}deg));
+}
+//transform origin
+@mixin transform-origin ($origin) {
+    -moz-transform-origin: $origin;
+       -o-transform-origin: $origin;
+      -ms-transform-origin: $origin;
+  -webkit-transform-origin: $origin;
+          transform-origin: $origin;
+}
+
+//Rem size support
+
+/*------------------------
+    Usage
+
+    h1 {
+      font-size: rem(32);
+    }
+
+    OR:
+
+    h1 {
+      font-size: rem(32px);
+    }
+------------------------*/
+
+$browser-context: 16;
+
+@function rem($pixels, $context: $browser-context) {
+  @if (unitless($pixels)) {
+    $pixels: $pixels * 1px;
+  }
+
+  @if (unitless($context)) {
+    $context: $context * 1px;
+  }
+
+  @return $pixels / $context * 1rem;
+}
+
+/*------------------------
+  FADE IN
+  e.g. @include fadeIn( 2s );
+------------------------*/
+
+//$prefix:'-moz-', '-webkit-', '-o-', '-ms-', '';
+//
+//@mixin keyframe-fadeIn {
+//  0%   { opacity:0; }
+//  100% { opacity:1; }
+//}
+//
+//@-moz-keyframes fadeIn {
+//  @include keyframe-fadeIn;
+//}
+//@-webkit-keyframes fadeIn {
+//  @include keyframe-fadeIn;
+//}
+//@-o-keyframes fadeIn {
+//  @include keyframe-fadeIn;
+//}
+//@-ms-keyframes fadeIn {
+//  @include keyframe-fadeIn;
+//}
+//@keyframes fadeIn {
+//  @include keyframe-fadeIn;
+//}
+//
+//@mixin fadeIn( $arg ) {
+//  $keyframe-name:fadeIn;
+//  $duration:$arg;
+//  @each $p in $prefix {
+//    #{$p}animation:$keyframe-name $duration;
+//  }
+//}
+
+/*------------------------
+mixin that calculates if text needs to be light or dark
+depending on the background color passed.
+
+From this W3C document: http://www.webmasterworld.com/r.cgi?f=88&d=9769&url=http://www.w3.org/TR/AERT#color-contrast
+
+usage:
+@include text-contrast($bgcolor)
+      
+Color brightness is determined by the following formula: 
+((Red value X 299) + (Green value X 587) + (Blue value X 114)) / 1000
+------------------------*/
+
+@mixin text-contrast($n:#333) {
+  $color-brightness: round((red($n) * 299) + (green($n) * 587) + (blue($n) * 114) / 1000);
+  $light-color: round((red(#ffffff) * 299) + (green(#ffffff) * 587) + (blue(#ffffff) * 114) / 1000);
+  
+  @if abs($color-brightness) < ($light-color/1.70){
+    color: rgba(255,255,255,1);
+  }
+
+  @else {
+    color: rgba(0,0,0,0.8);
+  }
+}
+
+/*------------------------
+ color factory 
+  eg: @include paint($blue-grey-50, bg-blue-grey-50);
+------------------------*/
+
+
+@mixin paint($paint:#333333,$make:bg-blue-grey-50) {
+
+    .#{$make} {
+      background-color: $paint;
+      @include text-contrast($paint)
+      &:hover {
+        @include text-contrast($paint)
+      }
+    }
+}
+
+@mixin brush($brush: #333,$make: red-50) {
+    .#{$make} {
+      color: $brush;
+    }
+}
+
+//mixen for settings side buttons
+@mixin set-settings($class-element: nav-function-fixed) {
+
+    .#{$class-element} .btn-switch[data-class="#{$class-element}"] {
+      @extend %set-settings;
+    }
+
+}
+
+//mixen for settings side buttons
+@mixin paint-gradient($paint: $fusion-500, $make:bg-fusion-gradient) {
+
+    .#{$make} {
+      background-image: -webkit-linear-gradient(250deg, rgba($paint, 0.7), transparent);
+      background-image: linear-gradient(250deg, rgba($paint, 0.7), transparent);
+    }
+
+}
+
+/* backface visibility */
+@mixin backface-visibility($argument: none) {
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility:    hidden;
+  -ms-backface-visibility:     hidden;
+   backface-visibility:        hidden;
+}
+
+/* generate theme button */
+@mixin theme-button-color ($theme-fusion:none, $theme-primary:none, $theme-info:none, $theme-success:none, $theme-warning:none, $theme-danger:none) {
+  background-image: -webkit-linear-gradient(left, #{$theme-fusion}, #{$theme-fusion} 70%, #{$theme-primary} 70%, #{$theme-primary} 76%, #{$theme-info} 76%, #{$theme-info} 82%, #{$theme-success} 82%, #{$theme-success} 88%, #{$theme-warning} 88%, #{$theme-warning} 94%, #{$theme-danger} 94%, #{$theme-danger} 94%, #{$theme-danger} 100%);
+  background-image: -moz-linear-gradient(left, #{$theme-fusion}, #{$theme-fusion} 70%, #{$theme-primary} 70%, #{$theme-primary} 76%, #{$theme-info} 76%, #{$theme-info} 82%, #{$theme-success} 82%, #{$theme-success} 88%, #{$theme-warning} 88%, #{$theme-warning} 94%, #{$theme-danger} 94%, #{$theme-danger} 94%, #{$theme-danger} 100%);
+  background-image: -ms-linear-gradient(left, #{$theme-fusion}, #{$theme-fusion} 70%, #{$theme-primary} 70%, #{$theme-primary} 76%, #{$theme-info} 76%, #{$theme-info} 82%, #{$theme-success} 82%, #{$theme-success} 88%, #{$theme-warning} 88%, #{$theme-warning} 94%, #{$theme-danger} 94%, #{$theme-danger} 94%, #{$theme-danger} 100%);
+  background-image: linear-gradient(to right, #{$theme-fusion}, #{$theme-fusion} 70%, #{$theme-primary} 70%, #{$theme-primary} 76%, #{$theme-info} 76%, #{$theme-info} 82%, #{$theme-success} 82%, #{$theme-success} 88%, #{$theme-warning} 88%, #{$theme-warning} 94%, #{$theme-danger} 94%, #{$theme-danger} 94%, #{$theme-danger} 100%);
+}
+
+// IE flexbox details:
+//
+// - Flexbox in IE 10:
+//   https://msdn.microsoft.com/en-us/library/hh673531(v=vs.85).aspx
+//
+// - IE 11 flexbox changes (includes property/value names for IE 10)
+//   https://msdn.microsoft.com/library/dn265027(v=vs.85).aspx
+
+@mixin flexbox ($important: false) {
+  display: unquote("-ms-flexbox #{if($important, '!important', null)}");
+  display: unquote("flex #{if($important, '!important', null)}");
+}
+
+@mixin inline-flexbox ($important: false) {
+  display: unquote("-ms-inline-flexbox #{if($important, '!important', null)}");
+  display: unquote("inline-flex #{if($important, '!important', null)}");
+}
+
+@mixin align-content ($value) {
+  $ms-map: (
+    flex-start: start,
+    flex-end: end
+  );
+  -ms-flex-line-pack: map-get($ms-map, $value) or $value;
+  align-content: $value;
+}
+
+@mixin align-items ($value) {
+  $ms-map: (
+    flex-start: start,
+    flex-end: end
+  );
+  -ms-flex-align: map-get($ms-map, $value) or $value;
+  align-items: $value;
+}
+
+@mixin align-self ($value) {
+  $ms-map: (
+    flex-start: start,
+    flex-end: end
+  );
+  -ms-flex-item-align: map-get($ms-map, $value) or $value;
+  align-self: $value;
+}
+
+@mixin flex ($value) {
+  -ms-flex: $value;
+  flex: $value;
+}
+
+@mixin flex-direction ($value) {
+  -ms-flex-direction: $value;
+  flex-direction: $value;
+}
+
+@mixin flex-wrap ($value) {
+  $ms-map: (
+    nowrap: none
+  );
+  -ms-flex-wrap: map-get($ms-map, $value) or $value;
+  flex-wrap: $value;
+}
+
+@mixin justify-content ($value) {
+  $ms-map: (
+    flex-start: start,
+    flex-end: end,
+    space-around: distribute,
+    space-between: justify
+  );
+  -ms-flex-pack: map-get($ms-map, $value) or $value;
+  justify-content: $value;
+}
+
+@mixin order ($value) {
+  -ms-flex-order: $value;
+  order: $value;
+}

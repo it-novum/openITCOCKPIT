@@ -1,0 +1,117 @@
+.lg-icon {
+	font-family: 'Font Awesome 5 Pro';
+}
+
+.lg-actions {
+	.lg-next:before {
+    	content: "\f178";
+	}
+	.lg-prev:after {
+		content: "\f177";
+	}
+}
+
+.lg-outer {
+	.lg-toogle-thumb:after {
+		content: "\f07d";
+	}
+}
+
+.lg-toolbar {
+	.lg-close:after {
+		content: "\f00d";
+	}
+	.lg-download:after {
+		content: "\f33d";
+	}
+	.lg-fullscreen:after {
+		content: "\f320"
+	}
+	
+}
+
+.lg-autoplay-button:after {
+	content: "\f144"
+}
+
+.lg-show-autoplay .lg-autoplay-button:after {
+	content: "\f28b"
+}
+
+#lg-zoom-in:after {
+	content: "\f00e"
+}
+
+#lg-zoom-out:after {
+	content: "\f010"
+}
+
+#lg-actual-size:after {
+	content: "\f002"
+}
+
+.lg-outer #lg-share:after {
+	content: "\f1e0"
+}
+
+#lg-download {
+	border-bottom: 0 !important;
+}
+
+.lg-toolbar {
+	 background: linear-gradient(to bottom, rgba($black,1) 0%,rgba($black,0) 100%);
+	 padding-right: 1rem;
+
+	.lg-icon {
+		height: 5rem;
+		line-height: 5rem;
+		padding: 0;
+	}
+}
+
+
+#lg-counter {
+	padding-top: 26px;
+}
+
+.lg-outer .lg-toogle-thumb {
+	font-size: 21px;
+	height: 50px;
+	top: -50px;
+    line-height: 50px;
+    padding: 0;
+    border-radius: 50% 50% 0 0;
+
+    .lg-thumb {
+    	padding: 1rem 0;
+    }
+}
+
+.lg-actions .lg-next, 
+.lg-actions .lg-prev {
+	height: 50px;
+	width: 50px;
+	line-height: 50px;
+	padding: 0;
+	border-radius: 50%;
+
+    transition: all 0.2s ease;
+
+	&:hover {
+		background-color: $info-500;
+	}
+
+	&:active {
+		transform: scale(0.95);
+	}
+}
+
+
+.lg-outer .lg-thumb-item.active, 
+.lg-outer .lg-thumb-item:hover {
+	border-color: $danger-500;
+}
+
+.lg-toolbar .lg-icon {
+	font-size: 1.3rem;
+}

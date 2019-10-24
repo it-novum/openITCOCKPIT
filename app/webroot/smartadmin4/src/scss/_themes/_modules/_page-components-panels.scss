@@ -1,0 +1,131 @@
+.panel {
+
+	background-color: $white;
+
+	//experimental ...
+	border-bottom: 1px solid #e0e0e0;
+
+	/* panel fullscreen */
+	&.panel-fullscreen {
+
+		/* make panel header bigger */
+		.panel-hdr {
+			box-shadow: 0 0.125rem 0.125rem -0.0625rem  rgba(darken($primary-800, 10%), (10/100));	
+		}
+
+	}
+
+	/* panel locked */
+	&.panel-locked:not(.panel-fullscreen) {
+
+		.panel-hdr {
+			&:active {
+
+				h2:before {
+					color: $danger-500;
+				}
+			}
+		}
+
+	}
+
+}
+
+/* panel tag can be used globally */
+.panel-tag {
+	background: #eef7fd;
+}
+
+/* panel header */
+.panel-hdr {
+	background: $panel-hdr-background;
+}
+
+/* panel tap highlight */
+.panel-sortable:not(.panel-locked) {
+	.panel-hdr {
+		&:active {
+			border-top-color: rgba($primary-300, 0.7);
+			border-left-color: rgba($primary-500, 0.7);
+			border-right-color: rgba($primary-500, 0.7);
+
+			& + .panel-container {
+
+				border-color: transparent rgba($primary-500, 0.7) rgba($primary-600, 0.7);
+			}
+		}
+	}
+}
+
+/*.panel-sortable .panel-hdr:active,
+.panel-sortable .panel-hdr:active + .panel-container {
+	@include transition-border(0.4s, ease-out);
+}*/
+
+.panel-sortable.panel-locked {
+	.panel-hdr {
+		&:active {
+			border-top-color: $danger-300;
+			border-left-color: $danger;
+			border-right-color: $danger;
+
+			& + .panel-container {
+				border-color: transparent $danger $danger;
+			}
+		}
+	}
+}
+
+/* panel toolbar (sits inside panel header) */
+.panel-toolbar {
+
+	.btn-panel {
+
+		/* add default colors for action buttons */
+		&[data-action="panel-collapse"],
+		&.js-panel-collapse {
+			background: $success-500;
+		}
+
+		&[data-action="panel-fullscreen"],
+		&.js-panel-fullscreen {
+			background: $warning-500;
+		}
+
+		&[data-action="panel-close"],
+		&.js-panel-close {
+			background: $danger-500;
+		}
+
+	}
+
+}
+
+/* placeholder */
+.panel-placeholder {
+	background-color: $panel-placeholder-color;
+
+	&:before {
+		background: $panel-placeholder-color;
+	}
+}
+
+.mod-panel-clean {
+
+	.panel-hdr {
+		background: $white;
+		background-image: linear-gradient(to bottom,#f7f7f7, $white);
+		
+	}
+
+}	
+
+@media only screen and ( max-width: 420px ){
+	/* making mobile spacing a little narrow */
+	.panel {
+		.panel-hdr {
+			color: #060606;
+		}
+
+	}
+}

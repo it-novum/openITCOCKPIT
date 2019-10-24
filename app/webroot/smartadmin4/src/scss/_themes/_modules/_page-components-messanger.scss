@@ -1,0 +1,11 @@
+.chat-segment-get {
+	.chat-message {
+		background: $msgr-get-background;		
+	}
+}
+
+.chat-segment-sent {
+	.chat-message {
+		background: $msgr-sent-background;
+	}
+}

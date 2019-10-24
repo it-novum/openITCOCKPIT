@@ -1,0 +1,9 @@
+/* select background */
+::selection {
+  background: $color-fusion;
+  color: $white;
+}
+::-moz-selection {
+  background: $color-fusion;
+  color: $white;
+}

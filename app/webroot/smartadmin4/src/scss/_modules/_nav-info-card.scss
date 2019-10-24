@@ -1,0 +1,82 @@
+.info-card {
+	position: relative;
+	width: $nav-width;
+	height: $nav-infocard-height;
+	color:$white;
+	overflow: hidden;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    padding: 0 $nav-padding-x;
+
+	transition: all 700ms cubic-bezier(0.34, 1.25, 0.3, 1);
+
+	img.cover {
+		opacity: 0.5;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		position: absolute;
+		@extend %bg-img-cover;
+		@extend %common-animation-opacity;
+
+		//height: 100%; //it was pixelating
+		height: auto;
+	}
+
+	.profile-image {
+		width: $profile-image-width;
+		height: auto;
+		display: inline-block;
+		z-index: 2;
+		position: relative;
+	}	
+
+	.info-card-text {
+		margin-left: 1rem;
+		color: inherit;
+		text-shadow: $black 0 1px;
+		z-index: 1;
+		position: relative;
+		line-height: normal;
+
+		> span {
+			font-weight: 300;
+		}
+	}
+	
+}
+
+@include media-breakpoint-up(xl) {
+	.info-card {
+
+		&:hover {
+			@include transition(0.10s,ease-in-out); 
+			will-change: opacity;
+		}
+
+		&:hover {
+			img.cover {
+				opacity: 0.7;
+				@include backface-visibility;
+			}
+		}
+	}
+}
+
+.info-card-text {
+	font-size: rem($fs-md);
+	display: inline-block;
+	vertical-align: middle;
+	font-weight: 500;
+	line-height: 1.35;
+
+	> span {
+		font-size: rem($fs-md);
+		display: block;
+		font-weight: 300;
+	}
+}

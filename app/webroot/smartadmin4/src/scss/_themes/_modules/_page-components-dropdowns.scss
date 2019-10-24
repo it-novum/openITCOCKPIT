@@ -1,0 +1,15 @@
+/* dropdown menu multi-level */
+.dropdown-menu {
+	.dropdown-menu {
+		background:$white;
+	}
+	.dropdown-multilevel {
+		&:hover {
+			> .dropdown-item:not(.disabled) {
+				background: $gray-100;
+				color: $dropdown-link-hover-color;
+			}
+		}
+	}
+	
+}

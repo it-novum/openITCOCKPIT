@@ -1,0 +1,38 @@
+.filter-message {
+	display: block;
+	text-align: center;
+	padding: 2px;
+	font-size: rem($fs-nano);
+	text-transform: capitalize;
+	font-style: italic;
+	width: calc(100% - 60px);
+	max-width: 180px;
+	border-radius: $border-radius;
+	margin: $p-3 auto;
+
+	&:empty {
+		display: none;
+	}
+}
+
+.js-list-filter:not(.primary-nav) {
+
+	/* these classes are triggered by JS */
+	.js-filter-hide {
+		display:none !important;
+	}
+
+	// this is not needed as it will already be visible
+	// -- actually its needed for nested elements
+	/*.js-filter-show {
+		display:block !important;
+	}*/
+
+}
+
+// we do this for nav-menu items to display parent as well
+.js-list-filter.nav-menu:not(.primary-nav) {
+	.js-filter-show {
+		display:block !important;
+	}	
+}

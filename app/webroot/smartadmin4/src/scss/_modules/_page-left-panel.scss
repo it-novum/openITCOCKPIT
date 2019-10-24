@@ -1,0 +1,14 @@
+.page-sidebar {
+	left: 0;
+	top: 0;
+	bottom:0;
+	position: absolute;
+	width: $nav-width;
+	z-index: $depth-nav;
+
+	@extend %nav-bg;
+
+	order: 2;
+
+	will-change: left, right;
+}

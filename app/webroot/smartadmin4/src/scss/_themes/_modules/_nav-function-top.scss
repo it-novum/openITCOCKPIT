@@ -1,0 +1,140 @@
+$nav-function-top-menu-item-bg: $primary-500;
+
+@include media-breakpoint-up($mobile-breakpoint) {
+
+	.nav-function-top {
+
+		/* correct search field color */
+		#search-field {
+			color: $white;
+		}
+
+		&:not(.header-function-fixed) {
+				
+			#nff {
+				position:relative;
+
+				.onoffswitch-title {
+					color: $settings-incompat-title;
+				}
+				.onoffswitch-title-desc {
+					color: $settings-incompat-desc;
+				}
+				&:after {
+					background: $settings-incompat-bg;
+					border: 1px solid $settings-incompat-border;
+					color:$fusion-900;
+				}
+			}
+
+		}
+
+		.page-header {
+			background-image: -webkit-linear-gradient(270deg, $nav-background-shade, transparent);
+			background-image: linear-gradient(270deg, $nav-background-shade, transparent); 
+			background-color: $nav-background; 
+			box-shadow: 0px 0px 14px 0px $header-border-bottom-color;
+
+			.header-icon:not(.btn) > [class*='fa-']:first-child, 
+			.header-icon:not(.btn) > .ni:first-child {
+				color:  lighten($header-link-color, 10%);
+
+				&:hover {
+					color:  lighten($header-link-color, 20%);
+				}
+			}
+
+
+
+			.badge.badge-icon {
+				box-shadow: 0 0 0 1px $primary-600;
+			}
+			
+		}
+
+		.page-sidebar {
+			background: $white;
+
+			box-shadow: 0px 0px 14px 0px $header-border-bottom-color;
+
+			.primary-nav {
+
+				.nav-menu {
+
+					> li {
+
+						&.active {
+							> a {
+
+								&:before {
+									color: #24b3a4;
+								}
+							}
+						}
+
+
+
+						> a {
+
+
+							>.#{$cust-icon-prefix},
+							>[class*='fa-'] {
+								color: inherit;
+							}
+
+							>.collapse-sign {
+								color: lighten($nav-background, 30%);
+							}
+
+						}	
+
+						// all children
+						a {
+							color: $nav-background;
+						}
+
+						> ul {
+							background: $nav-top-drowndown-background;
+
+							li {
+
+								a {
+									color: $nav-top-drowndown-color;
+								}
+
+								ul {
+									background: $nav-top-drowndown-background;
+								}
+
+								&:hover {
+									> a {
+										background: $nav-top-drowndown-hover;
+										color: $nav-top-drowndown-hover-color;
+									}
+								}
+							}
+
+							&:after {
+								background: transparent;
+
+							}
+
+							&:before {
+								color: $nav-top-drowndown-background;
+							}
+						}
+
+						//first child hover
+						&:hover {
+
+							> a {
+								color: $primary-500;
+								background: transparent;
+							}						
+						}
+					}
+				}
+			}
+		}
+	}	
+}

@@ -1,0 +1,22 @@
+/* Hierarchical Navigation */
+
+.mod-nav-link:not(.nav-function-top):not(.nav-function-minify):not(.mod-hide-nav-icons) {
+	ul.nav-menu:not(.nav-menu-compact) {
+		> li {
+			> ul {
+				&:before {
+					border-left: 1px solid darken($nav-icon-color, 15%);
+				}
+
+				/* addressing all second, third children */
+				> li {
+					a {
+						&:after {
+							background-color: $nav-icon-color;				
+						}
+					}
+				}
+			}
+		}
+	}
+}

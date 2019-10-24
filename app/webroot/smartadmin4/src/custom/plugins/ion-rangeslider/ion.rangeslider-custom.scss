@@ -1,0 +1,101 @@
+@import './src/scss/_imports/_global-import';
+
+.irs--flat .irs-bar,
+.irs--flat .irs-from, 
+.irs--flat .irs-to, 
+.irs--flat .irs-single,
+.irs--flat .irs-handle > i:first-child {
+	background-color: $primary-500;
+}
+
+.irs--flat .irs-from, 
+.irs--flat .irs-to, 
+.irs--flat .irs-single {
+	font-size: 12px;
+}
+
+.irs--flat .irs-from:before, 
+.irs--flat .irs-to:before, 
+.irs--flat .irs-single:before {
+	border-top-color: $primary-500;
+}
+
+.irs--flat .irs-handle.state_hover > i:first-child, 
+.irs--flat .irs-handle:hover > i:first-child {
+	background-color: $primary-600;
+}
+
+
+.irs--big .irs-bar {
+	background-color: $primary-300;
+    border-color: $primary-500;
+	background: linear-gradient(to bottom, #ffffff 0%, $primary-300 30%, $primary-500 100%);
+}
+
+.irs--big .irs-from, 
+.irs--big .irs-to, 
+.irs--big .irs-single {
+	background: $primary-500;
+}
+
+
+.irs--modern .irs-bar {
+	background: $success-600;
+	background: linear-gradient(to bottom, $success-400 0%, $success-600 100%);
+}
+
+.irs--modern .irs-from, 
+.irs--modern .irs-to, 
+.irs--modern .irs-single {
+	background-color: $success-500
+}
+
+.irs--modern .irs-from:before, 
+.irs--modern .irs-to:before,
+.irs--modern .irs-single:before {
+	border-top-color: $success-500;
+}
+
+//fix
+.irs--modern .irs-handle > i:nth-child(1) {
+    width: 8px;
+    height: 8px;
+}
+
+
+.irs--sharp .irs-bar,
+.irs--sharp .irs-handle,
+.irs--sharp .irs-from, 
+.irs--sharp .irs-to, 
+.irs--sharp .irs-single {
+	background-color: $danger-500;
+}
+
+.irs--sharp .irs-handle > i:first-child,
+.irs--sharp .irs-from:before, 
+.irs--sharp .irs-to:before, 
+.irs--sharp .irs-single:before {
+	border-top-color: $danger-500;
+}
+
+.irs--sharp .irs-min, 
+.irs--sharp .irs-max {
+	background-color: $danger-800;
+}
+
+.irs--round .irs-handle {
+	border-color: $info-500;
+}
+
+.irs--round .irs-bar,
+.irs--round .irs-from, 
+.irs--round .irs-to, 
+.irs--round .irs-single {
+	background-color: $info-500;
+}
+
+.irs--round .irs-from:before, 
+.irs--round .irs-to:before, 
+.irs--round .irs-single:before {
+	border-top-color: $info-500;
+}

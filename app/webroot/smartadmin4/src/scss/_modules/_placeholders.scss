@@ -1,0 +1,422 @@
+/* PLACEHOLDER 
+============================================= 
+
+EXAMPLE:
+
+%bg-image {
+		width: 100%;
+		background-position: center center;
+		background-size: cover;
+		background-repeat: no-repeat;
+}
+
+.image-one {
+		@extend %bg-image;
+		background-image:url(/img/image-one.jpg");
+}
+
+RESULT:
+
+.image-one, .image-two {
+		width: 100%;
+		background-position: center center;
+		background-size: cover;
+		background-repeat: no-repeat;
+}
+
+*/
+
+%nav-bg {
+	background-image: -webkit-linear-gradient(270deg, $nav-background-shade, transparent);
+	background-image: linear-gradient(270deg, $nav-background-shade, transparent); 
+	background-color: $nav-background;
+}
+
+/*
+%shadow-hover {
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 0 2px rgba(0,0,0,0.24);
+	transition: all 0.2s ease-in-out;
+
+	&:hover {
+		box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 -1px 6px rgba(0,0,0,0.23);
+	}
+}
+*/
+%btn-default {
+	@include gradient-img($start: #f5f5f5,$stop: #f1f1f1);
+	color: #444;
+	border: 1px solid rgba(0,0,0,0.1);
+	box-shadow: none;
+
+	&:hover {
+		box-shadow: none;
+		border: 1px solid #c6c6c6;
+		color: #333;
+		z-index: 2;
+	}
+
+	&:focus {
+		border-color: $primary-200 !important;
+		z-index: 3;
+	}
+
+	&.active {
+		background: $primary-300;
+		color: $white;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15) inset !important;
+	}
+}
+
+%custom-scroll {
+
+	&::-webkit-scrollbar-track-piece {
+		background-color: transparent;
+	}
+
+ &::-webkit-scrollbar-thumb:vertical {
+		background-color: #666;
+	}
+
+	&::-webkit-scrollbar {
+		height: 4px;
+		width: 4px;
+	}
+
+ &::-webkit-scrollbar-corner {
+		width: 40px;
+	}
+
+	&::-webkit-scrollbar-thumb:vertical {
+	background-color: #666;
+	}
+
+	overflow: hidden;
+	overflow-y: scroll;
+	-webkit-overflow-scrolling: touch;
+
+}
+
+%user-select {
+		-webkit-user-select: none; 
+			 -moz-user-select: none; 
+				-ms-user-select: none;
+}
+
+%content-box {
+	box-sizing: content-box;
+}
+
+%flex-0-0-auto {
+	flex: 0 0 auto;
+}
+
+%transform-3d {
+	@include translate3d(0,0,0);
+}
+
+
+%stop-transform-3d {
+						transform: none;
+		-webkit-transform: none;
+				-ms-transform: none;
+}
+
+%general-animation {
+	transition: $nav-hide-animate;      
+}
+
+%common-animation-slow {
+	@include transition(0.3s,ease-in-out);
+
+}
+
+%common-animation {
+	@include transition(0.2s,ease-in-out);
+}
+
+%common-animation-easeout {
+	@include transition(0.4s,ease-out);
+}
+
+%common-animation-opacity {
+	transition: opacity 0.5s ease-in-out;
+}
+
+%common-animation-opacity-faster {
+	transition: opacity 0.1s ease-in-out;
+}
+
+%stop-animation {
+	transition: none;
+}
+
+%font-smoothing {
+		 -webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+}
+
+%set-settings {
+	color:$white;
+	background:$color-primary !important;
+	&:before {
+		content:"ON" !important;
+		left:7px !important;
+		right:auto !important;
+	}
+	&:after {
+		content: " " !important;
+		right:0 !important;
+		left:auto !important;
+		background:$white !important;
+		color:$color-primary !important;
+	}
+
+	+ .onoffswitch-title {
+		font-weight:500;
+		color: $primary-500;
+	}
+}
+
+%bg-img-cover {
+	background-size: cover;
+}
+
+%not-compatible {
+		position:relative;
+		
+		.onoffswitch-title {
+			color: $settings-incompat-title !important;
+		}
+		.onoffswitch-title-desc {
+			color: $settings-incompat-desc !important;
+		}
+		&:after {
+			content: "DISABLED";
+			@extend %incompatible;
+		}
+}
+
+%not-compatible-override {
+		&:before {
+			display:none !important;
+		}
+}
+
+%ping-badge {
+	position: absolute;
+	display: block;
+	border-radius: 1rem;
+	background-color: $nav-badge-bg-color;
+	color: $nav-badge-color;
+	text-align: center;
+	cursor: pointer;
+	@include box-shadow(0 0 0 1px $nav-background);
+	border: 1px solid $nav-background;
+	min-width: 2rem;
+	max-width: 1.5rem;
+	padding: 2px;
+	font-weight: 500;
+	line-height: normal;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+
+
+/*%fixed-header-shadow {
+	@include box-shadow(0 2px 2px -1px rgba(0,0,0,.1));
+}*/
+
+%header-btn {
+	//@extend %btn-default;
+	@include rounded($header-btn-border-radius);
+	border: 1px solid lighten($fusion-50, 30%);
+	height: $header-btn-height;
+	width: $header-btn-width;
+	vertical-align: middle;
+	line-height: $header-btn-height - 0.125rem;
+	margin-right: $grid-gutter-width-base/4 + 0.1875rem;
+	font-size: $header-btn-font-size;
+	padding: $list-table-padding-y $list-table-padding-x;
+	cursor: default;
+	color:$header-btn-color;
+	position: relative;
+		//background: $primary-200;
+		//color:$primary-200;
+/*
+	&.active {
+		@extend %header-btn-active;
+	}*/
+
+	&:hover {
+		box-shadow: none;
+		border-color: $primary-500;
+		background: $primary-300;
+		color:$white;
+
+	}
+
+}
+
+%expanded-box {
+	box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.125);
+	border-bottom: 1px solid rgba(0,0,0,0.06);
+	border-width: 0 0 1px 0;
+	background: $white;
+	padding: 16px 16px 10px;
+}
+
+%header-btn-active {
+	background: $header-btn-active-bg;
+	border-color: darken($header-btn-active-bg, 10%) !important;
+	@include box-shadow(inset 0 0 3px 1px rgba(0,0,0,.37));
+	color:$header-btn-active-color !important;
+}
+
+//@include media-breakpoint-up($mobile-breakpoint) {
+/*  %selected-dot {
+		&:before {
+			content: " ";
+			display: block;
+			border-radius: 50%;
+			background: inherit;
+			background-image: none;
+			border: 2px solid rgba(0,0,0,0.2);
+			position: absolute;
+			top: 15px;
+			left: 15px;
+			height: 20px;
+			width: 20px;
+		}
+		&:after {
+			content: " ";
+			height: inherit;
+			width: inherit;
+			border: 5px solid rgba(0,0,0,0.1);
+			position: absolute;
+			left: 0;
+			top: 0;
+			border-radius: 50%;
+		} 
+	}*/
+//}
+
+%spin-loader {
+	margin: 5px;
+	height: 20px;
+	width: 20px;
+	animation: spin 0.5s infinite linear;
+	border: 2px solid $color-primary;
+	border-right-color: transparent;
+	border-radius: 50%;
+}
+
+%incompatible {
+	display: block;
+	position: absolute;
+	background: $settings-incompat-bg;
+	font-size: 10px;
+	width: 65px;
+	text-align: center;
+	border: 1px solid $settings-incompat-border;
+	height: 22px;
+	line-height: 20px;
+	border-radius: $border-radius-plus;
+	right: 13px;
+	top: 26%;
+	color:$fusion-900;
+}
+
+/* patterns */
+%pattern-0 {
+	background-size: 10px 10px;
+	background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .05) 25%, transparent 25%,
+										transparent 50%, rgba(255, 255, 255, .05) 50%, rgba(255, 255, 255, .05) 75%,
+										transparent 75%, transparent);
+	background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, .05) 25%, transparent 25%,
+										transparent 50%, rgba(255, 255, 255, .05) 50%, rgba(255, 255, 255, .05) 75%,
+										transparent 75%, transparent);
+	background-image: linear-gradient(45deg, rgba(255, 255, 255, .07) 25%, transparent 25%,
+										transparent 50%, rgba(255, 255, 255, .07) 50%, rgba(255, 255, 255, .05) 75%,
+										transparent 75%, transparent);
+	-pie-background: linear-gradient(45deg, rgba(255, 255, 255, .05) 25%, transparent 25%,
+									 transparent 50%, rgba(255, 255, 255, .05) 50%, rgba(255, 255, 255, .05) 75%,
+									 transparent 75%, transparent) 0 0 / 10px 10px transparent;
+}
+
+%pattern-1 {
+	background-size: 5px 5px;
+	background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .04) 25%, transparent 25%,
+										transparent 50%, rgba(255, 255, 255, .04) 50%, rgba(255, 255, 255, .04) 75%,
+										transparent 75%, transparent);
+	background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, .04) 25%, transparent 25%,
+										transparent 50%, rgba(255, 255, 255, .04) 50%, rgba(255, 255, 255, .04) 75%,
+										transparent 75%, transparent);
+	background-image: linear-gradient(45deg, rgba(255, 255, 255, .04) 25%, transparent 25%,
+										transparent 50%, rgba(255, 255, 255, .04) 50%, rgba(255, 255, 255, .04) 75%,
+										transparent 75%, transparent);
+	-pie-background: linear-gradient(45deg, rgba(255, 255, 255, .04) 25%, transparent 25%,
+									 transparent 50%, rgba(255, 255, 255, .04) 50%, rgba(255, 255, 255, .04) 75%,
+									 transparent 75%, transparent) 0 0 / 5px 5px transparent;
+}
+
+%pattern-2 {
+	background-size: 15px 15px;
+	background-image: -webkit-linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+	background-image: -moz-linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+	background-image: linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+	-pie-background: linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%, transparent) 0 0 / 15px transparent;
+}
+
+%pattern-3 {
+	background-size: 15px 15px;
+	background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+	background-image: -moz-linear-gradient(0deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+	background-image: linear-gradient(90deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent);
+	-pie-background: linear-gradient(90deg, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent) 0 0 / 15px 15px transparent;
+}
+
+%pattern-4 {
+	background-size: 37px 37px;
+	background-position: 0 0, 18.5px 18.5px;
+	background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2)),
+										-webkit-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2));
+	background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2)),
+										-moz-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2));
+	background-image: linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2)),
+										linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2));
+	-pie-background: linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2)) 0 0 / 37px,
+									 linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2)) 37px 37px / 74px,
+									 transparent;
+}
+
+%pattern-5 {
+	background-size: 37px 37px;
+	background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2)),
+										-webkit-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2));
+	background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2)),
+										-moz-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2));
+	background-image: linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2)),
+										linear-gradient(135deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2));
+	-pie-background: linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2)) 0 0 / 60px,
+									 linear-gradient(135deg, rgba(255, 255, 255, .2) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, .2) 75%, rgba(255, 255, 255, .2)) 0 0 / 60px,
+									 #eee;
+}
+
+%pattern-6 {
+	background-size: 50px 50px;
+	background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+										transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+										transparent 75%, transparent);
+	background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+										transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+										transparent 75%, transparent);
+	background-image: linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+										transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+										transparent 75%, transparent);
+	-pie-background: linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+									 transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+									 transparent 75%, transparent) 0 0 / 50px 50px transparent;
+}
+

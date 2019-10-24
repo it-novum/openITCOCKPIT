@@ -1,0 +1,80 @@
+@media print {
+    @page {
+        size: $print-page-size $print-page-type;
+        margin: $print-page-margin;
+		padding: 0;
+		border: none;
+		border-collapse: collapse;
+    }
+
+    *:not(.keep-print-font) {
+    	color:#333 !important;
+    	background: transparent !important;
+    	font-family: Arial, Helvetica, sans-serif !important;
+    	letter-spacing: normal !important;
+    	font-size: 10pt !important;
+    	line-height: 1.7 !important;
+    	text-transform: none !important;
+    	transition: none !important;
+    }
+
+    table { font-size: 80%; }
+
+    .card,
+    .card-body,
+    .container {
+    	display: inline;
+    	padding: 0;
+    	margin: 0;
+    	border: 0;
+    }
+
+
+	a:link { 
+		font-weight: bold; 
+		text-decoration: underline; 
+		color: #06c;
+	}
+
+	.subheader-title {
+		font-size: 14pt !important;
+
+		small {
+			font-size: 12pt !important;
+		}
+	}
+
+	h1, h2, h3, h4, h5, h6 {
+		font-weight: bold !important;
+	}
+
+	.page-sidebar,
+	.btn,
+	.page-header,
+	.page-footer {
+		display: none !important;
+	}
+
+	.page-wrapper,
+	.page-content,
+	.container.card {
+	   	padding: 0;
+	   	display: block;
+	   	margin:0;
+	   	border:0 !important;
+	   	width:auto;
+	   	float: none;
+	}
+	.panel-header > * {
+		font-weight: bold !important;
+	}
+	.card.panel {
+		border-color: #333 !important;
+	}
+
+	.clearfix:after {
+	    content: '';
+	    clear: both;
+	    display: table;
+	}
+}

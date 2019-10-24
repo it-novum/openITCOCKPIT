@@ -1,0 +1,40 @@
+/* text area */
+[contenteditable="true"] {
+
+	&:empty:not(:focus):before{
+		content: attr(data-placeholder);
+		color: $fusion-50;
+	}
+
+	&::selection {
+		background: rgba(0, 132, 255, .2);
+		color: $black;
+	}
+
+	&::-moz-selection {
+		background: rgba(0, 132, 255, .2);
+		color: $black;
+	}
+}
+/* add background to focused inpur prepend and append */
+.form-control:focus ~ .input-group-prepend {
+	background: $primary-500;
+}
+.has-length {
+	.input-group-text {
+		border-color: $primary-500;
+		& + .input-group-text {
+			border-left: 1px solid rgba($black, 0.1);
+		}
+	}
+	.input-group-text:not([class^="bg-"]):not([class*=" bg-"]) {
+		background: $primary-500;
+		color: $white !important;
+	}
+
+}
+
+/* help block and validation feedback texts*/
+.help-block {
+	color: $fusion-50;
+}

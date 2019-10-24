@@ -1,0 +1,11 @@
+.page-footer {
+	height: $footer-height;
+	display: flex;
+	flex: 0 0 auto;
+	align-items:center;
+	background: $footer-bg;
+    color:$footer-text-color;
+    font-size: rem($footer-font-size);
+    padding: 0 $header-inner-padding-x;
+    order: 4;
+}

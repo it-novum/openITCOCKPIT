@@ -1,0 +1,15 @@
+.nav-filter {
+	input[type="text"] {
+		background: rgba($black, 0.4); 
+		color: $white;
+
+		&:not(:focus) {
+			border-color: rgba(0, 0, 0, 0.1);
+		}
+
+		&:focus {
+			border-color: lighten($nav-background, 13%);
+		}
+		
+	}
+}

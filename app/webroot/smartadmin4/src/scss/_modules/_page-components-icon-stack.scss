@@ -1,0 +1,45 @@
+$icon-stack-size: 3em;
+
+.icon-stack {
+	position: relative;
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	line-height: 1em;
+	vertical-align: middle;
+	text-align: center;
+	//transition: $nav-hide-animate;
+}
+.icon-stack-1x,
+.icon-stack-2x,
+.icon-stack-3x {
+	position: absolute;
+	left: 0;
+	bottom:0;
+	width: 100%;
+	text-align: center;
+	line-height: inherit !important;
+}
+.icon-stack-1x {
+	font-size: 0.5em;
+}
+.icon-stack-2x {
+	font-size: 0.70em;
+	/*padding-right: 0.025em;*/
+}
+.icon-stack-3x {
+	font-size: 1em;
+}
+
+.icon-stack-xl {
+	font-size: rem(50px);
+}
+.icon-stack-lg {
+	font-size: rem(40px);
+}
+.icon-stack-md {
+	font-size: rem(34px);
+}
+.icon-stack-sm {
+	font-size: rem(30px);
+}

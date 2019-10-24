@@ -1,0 +1,251 @@
+/* 
+	Usage
+
+	<span class="onoffswitch-title"><i class="fa fa-location-arrow"></i> Realtime</span>
+	<span class="onoffswitch">
+		<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" checked="checked" id="myonoffswitch">
+		<label class="onoffswitch-label" for="myonoffswitch"> <span class="onoffswitch-inner" data-swchon-text="YES" data-swchoff-text="NO"></span> 
+		<span class="onoffswitch-switch"></span> </label> 
+	</span>
+
+*/
+
+.onoffswitch-container {
+	margin-top:4px;
+	margin-left:7px;
+	display:inline-block;
+}
+
+.onoffswitch {
+    position: relative; 
+    width: 50px;
+	@extend %user-select;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    margin-left: 5px;
+    display:inline-block;
+    vertical-align:middle;
+
+}
+.onoffswitch-checkbox {
+    display: none;
+}
+.onoffswitch-label {
+    display: block; 
+    overflow: hidden; 
+    cursor: pointer;
+    border: 1px solid lighten($gray, 5%); 
+    border-radius: 50px;
+    border-color: lighten($gray-light, 8%) lighten($gray-light, 10%) lighten($gray-light, 2%);
+
+	@extend %content-box;
+}
+.onoffswitch-inner {
+    width: 200%; 
+    margin-left: -100%;
+    display:block;
+
+}
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+    float: left; 
+    width: 50%; 
+    height: 15px; 
+    padding: 0; 
+    line-height: 15px;
+    font-size: rem($fs-base - 2); 
+    color: $white; 
+    font-weight: 500;
+
+    
+}
+.onoffswitch-inner:before {
+    content: attr(data-swchon-text);
+    text-shadow: 0 -1px 0 $gray-dark;
+    padding-left: 7px;
+    background-color: $color-primary; 
+    color: $white;
+
+    box-shadow: inset 0 2px 6px rgba(red($black), green($black), blue($black), 0.5), 0 1px 2px rgba(red($black), green($black), blue($black), 0.05);
+
+    text-align:left;
+    
+}
+.onoffswitch-inner:after {
+    content: attr(data-swchoff-text);
+    padding-right: 7px;
+    text-shadow: 0 -1px 0 $white;
+    background-color: $white; 
+    color: $gray;
+    text-align: right;
+
+    box-shadow: inset 0 2px 4px rgba(red($black), green($black), blue($black),.15), 0 1px 2px rgba(red($black), green($black), blue($black),.05);
+
+}
+.onoffswitch-switch {
+	width: 19px;
+	height:19px;
+	margin: -2px;
+	background: white;
+	border: 1px solid lighten($gray-light, .5%);
+	border-radius: 50px;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 32px;
+	@extend %content-box;
+
+	@include gradient($gray-lightest,$white,$gray-lighter);
+
+}
+
+.onoffswitch-checkbox + .onoffswitch-label .onoffswitch-switch:before, 
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch:before {
+	content: "\f00d";
+	color:$color-danger;
+	display:block;
+	text-align:center;
+	line-height:19px;
+	font-size: rem($fs-base - 2);
+	text-shadow: 0 -1px 0 $white;
+	font-weight:bold;
+	font-family:FontAwesome;
+}
+
+/* checked */
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch:before {
+	content: "\f00c";
+	color: $color-primary;
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
+    display:block;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+    right: 0; 
+}
+
+.onoffswitch-switch:hover {
+	background-color: $gray-lighter;
+}
+.onoffswitch-switch:active {
+	background-color: $gray-lighter;
+	box-shadow: (inset 0 2px 4px rgba(red($black), green($black), blue($black),.15), 0 1px 2px rgba(red($black), green($black), blue($black),.05));
+}
+
+/*
+ * Disabled state
+ */
+.onoffswitch-checkbox:disabled + .onoffswitch-label .onoffswitch-inner:after, 
+.onoffswitch-checkbox:checked:disabled + .onoffswitch-label .onoffswitch-inner:before {
+	text-shadow: 0 1px 0 $white;
+	background: $gray-mid-light;
+	color: $gray-dark;
+}
+
+.onoffswitch-checkbox:checked:disabled + .onoffswitch-label .onoffswitch-switch, 
+.onoffswitch-checkbox:disabled + .onoffswitch-label .onoffswitch-switch {
+	@include gradient($gray-lightest,$gray-mid-light,$gray-lightest)
+	box-shadow: none !important;
+}
+
+.onoffswitch-checkbox:disabled + .onoffswitch-label,
+.onoffswitch-checkbox:checked:disabled + .onoffswitch-label .onoffswitch-label {
+	border-color: lighten($gray-light, 7%) $gray-light darken($gray-light, 7%) !important;
+}
+
+.onoffswitch-checkbox:checked + .onoffswitch-label{
+	border-color: $color-primary darken($color-primary, 7%) darken($color-primary, 12%);
+}
+
+.onoffswitch + span, .onoffswitch-title {
+	display: inline-block;
+	vertical-align: text-top;
+	margin-top: -3px;
+	font-size: rem($fs-base - 1);
+}
+
+/* alternate switch */
+/*input[data-switch] {
+    display: none;
+
+    + label {
+        width: 56px;
+        height: 24px;
+        background-color: $light;
+        background-image: none;
+        border-radius: 2rem;
+        cursor: pointer;
+        display: inline-block;
+        text-align: center;
+        position: relative;
+        transition: all 0.1s ease-in-out;
+
+        &:before {
+            color: $dark;
+            content: attr(data-off-label);
+            display: block;
+            font-family: inherit;
+            font-weight: $font-weight-semibold;
+            font-size: 0.75rem;
+            line-height: 24px;
+            position: absolute;
+            right: 3px;
+            margin: 0 .21667rem;
+            top: 0;
+            text-align: center;
+            min-width: 1.66667rem;
+            overflow: hidden;
+            transition: all 0.1s ease-in-out;
+        }
+        &:after {
+            content: '';
+            position: absolute;
+            left: 4px;
+            background-color: $gray-500;
+            box-shadow: none;
+            border-radius: 2rem;
+            height: 18px;
+            width: 18px;
+            top: 3px;
+            transition: all 0.1s ease-in-out;
+        }
+    }
+    &:checked {
+        +label {
+            background-color: $primary;
+            &:before {
+                color: $white;
+                content: attr(data-on-label);
+                right: auto;
+                left: 4px;
+            }
+            &:after {
+                left: 34px;
+                background-color: $gray-100;
+            }
+        }
+    }
+}
+
+input[data-switch="bool"] {
+    + label {
+        background-color: $danger;
+    }
+}
+
+input[data-switch="bool"]+label:before,
+input[data-switch="bool"]:checked+label:before {
+    color: $white !important;
+}
+
+input[data-switch="bool"]+label:after {
+    background-color: $gray-100;
+}
+
+@each $color,$value in $theme-colors {
+    input[data-switch="#{$color}"]:checked+label {
+        background-color: #{$value};
+    }
+}
+*/

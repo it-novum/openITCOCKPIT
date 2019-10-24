@@ -1,0 +1,40 @@
+.subheader {
+	margin-bottom: calc(1.5rem + 0.625rem); //moved the 0.625rem; from .subheader-title > small
+	position: relative;
+
+	display: flex;
+	flex-direction: row;
+	align-items: center; 
+}
+
+.subheader-icon {
+	color: $nav-icon-hover-color;
+	margin-right: 0.25rem;
+}
+
+.subheader-title {
+	font-size: 1.375rem; //unquote("calc(16px + 5 * ((100vw - 320px) / 680))") //$fs-xxl;
+	font-weight: 500;
+	color: $fusion-500;
+	text-shadow: $white 0 1px;
+	margin: 0;
+
+	flex: 1;
+
+	sup.badge {
+		text-shadow: none;
+		position: absolute;
+		margin-top: 0.4rem;
+		margin-left: $p-1;
+		font-size: 40%;
+    	padding: 2px 5px;
+    	line-height: normal;
+	}
+
+	small {
+		font-weight: 400;
+		color: $fusion-100; //$fusion-100;
+		margin-bottom: 0;
+		font-size: 0.875rem;
+	}
+}

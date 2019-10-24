@@ -1,0 +1,94 @@
+
+@media only screen and ( max-width: $mobile-breakpoint-size ){
+
+
+	.page-wrapper {
+		background: $white;
+
+		.page-header {
+			border-bottom: 1px solid rgba($black,0.09);
+		}
+
+
+
+		.page-content {
+			color: #222;
+
+			.subheader {
+
+				.subheader-title {
+					color: #22282d;
+
+					small {
+						color: #181c21;
+					}
+				}
+			}
+
+			.p-g {
+				padding: map-get($grid-gutter-widths, xs);
+			}
+		}
+
+		.page-footer {
+			border-top: 1px solid rgba($black,0.09);
+		}
+
+	}
+
+	/* Off canvas */
+	&.nav-mobile-slide-out {
+
+		.page-wrapper {
+
+			.page-content {
+				background: $page-bg;
+			}
+		}
+	}
+
+	/* mobile nav show & hide button */
+	/* general */
+	&.mobile-nav-on {
+
+		.page-sidebar {
+			border-right:1px solid rgba(0,0,0,0.03);
+			@include box-shadow( 0 3px 35px 3px rgba(0,0,0,0.52) );
+		}
+
+		.page-content-overlay {
+			background: rgba($black,0.09);
+		}		
+
+	}
+
+}
+
+@media only screen and ( max-width: map-get($grid-breakpoints, sm) ){
+
+	/* here we turn on mobile font for smaller screens */
+	/*body {
+		font-family: $mobile-page-font !important;
+	}*/
+
+	/* mobile nav search */
+	.mobile-search-on:not(.mobile-nav-on) {
+
+		.search {
+
+			.app-forms {
+
+				#search-field {
+					background: $white;
+
+
+					&:focus {
+						border-color: $primary-500;
+					}
+				}
+			}
+		}	
+
+	}
+
+}

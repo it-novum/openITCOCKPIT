@@ -1,0 +1,16 @@
+/* #THEME COLOR (variable overrides)
+========================================================================== */
+$color-primary:						#9fcb3d;
+
+/* #GLOBAL IMPORTS
+========================================================================== */
+@import './src/scss/_imports/_theme-modules-import';
+
+/* #Reset userselect
+========================================================================== */
+#myapp-0 {
+	box-shadow: none !important;
+}
+#myapp-2 {
+	box-shadow: 0 0 0 3px #000000;
+}

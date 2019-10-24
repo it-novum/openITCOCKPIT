@@ -1,0 +1,27 @@
+.search{
+	flex: 1;
+
+	.app-forms {
+		padding:0;
+
+		&.has-length {
+			position: relative;
+		}
+
+		&:before {
+			content: none;
+		}
+	}
+}
+
+#search-field {
+	max-width: $header-search-width - 3.125rem;
+	height: $header-search-height;
+	line-height: normal;
+	border-radius: $header-btn-border-radius;
+	background: $header-search-bg;
+	border: 1px solid $header-search-border-color;
+	box-shadow: none;
+	font-size: rem($header-search-font-size);
+	padding: $header-search-padding;
+}

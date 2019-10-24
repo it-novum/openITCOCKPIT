@@ -1,0 +1,12 @@
+.slimScrollBar {
+	border-radius: 3px !important;
+}
+
+body:not(.no-slimscroll) {
+
+	.custom-scroll {
+		overflow: hidden;
+	}
+
+}
+

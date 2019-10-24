@@ -1,0 +1,77 @@
+@include media-breakpoint-up($mobile-breakpoint) {
+
+	.nav-function-minify:not(.nav-function-top) {
+
+		.page-sidebar {
+				
+			.primary-nav {
+	
+				.nav-menu {
+				
+					li {
+						
+						&.active {
+							&.open > a:before {
+								color: #24b3a4;
+		
+							}
+						}
+
+					}
+
+					// first level
+					> li {
+
+						> a {
+
+							> .nav-link-text {
+								background: trasparent;
+							}
+
+							// sub 1
+							& + ul {
+								background-color: $nav-background;
+
+								//arrow
+							    &:before {
+									color: $nav-background;
+							    }
+							}
+
+						}
+
+					}
+				}
+				
+
+				&:hover {
+					overflow: visible;
+					
+					.nav-menu > li:hover {
+
+						> a {
+							background: $nav-minify-hover-bg;
+							color: $white;
+
+							>.nav-link-text:last-child {
+									background: $nav-background;
+
+								&:before {
+									color: $nav-background;
+							    }
+							}
+						}
+					} 
+				}
+			}
+		}
+
+		.page-header {
+			[data-class="nav-function-minify"] {
+				background: $header-btn-active-bg;
+				border-color: darken($header-btn-active-bg, 10%) !important;
+				color:$header-btn-active-color !important;
+			}
+		}	
+	}
+}

@@ -1,0 +1,54 @@
+@import "./src/scss/_modules/variables";
+
+.dropzone {
+  border: 2px dashed #dedede;
+  border-radius: 5px;
+  background: #f5f5f5;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0.5rem;
+  //justify-content: center;
+}
+
+.dropzone i{
+  font-size: 3rem;
+}
+
+.dropzone .dz-message {
+  color: rgba(0,0,0,.54);
+  font-weight: 500;
+  font-size: initial;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+.dropzone .dz-preview .dz-image {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0;
+
+	img {
+		border-radius: $border-radius
+	}
+}
+
+.dropzone .dz-preview.dz-image-preview {
+	background: transparent;
+}
+
+.dropzone .dz-message {
+	font-weight: normal;
+	text-transform: none;
+	color: inherit;
+}
+
+.dropzone.dz-drag-hover {
+	border-style: dashed;
+	border-color: $primary-500;
+}
+
+.dropzone .dz-preview.dz-file-preview .dz-image {
+	border-radius: $border-radius;
+
+}

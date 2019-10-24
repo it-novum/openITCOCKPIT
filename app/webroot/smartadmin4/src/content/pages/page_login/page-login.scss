@@ -1,0 +1,76 @@
+/* Theme IMPORTS
+========================================================================== */
+@import './src/scss/_imports/_global-import';
+
+/* Page Layout Starts below...
+========================================================================== */
+
+html {
+	body {
+
+		background: $page-bg;
+
+		.blankpage-logo {
+			padding: 20px 0 30px;
+		}
+
+		.blankpage-form-field {
+			position: fixed;
+			top: 45%;
+			left: 50%;
+			width:320px;
+			height: auto;
+			@include translate(-50%,-50%);
+
+			.card {
+				margin:0;
+				padding: 13.5px 20px 15.5px;
+				box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+			}
+
+			.blankpage-btn {
+				font-size: rem($fs-xl);
+				font-weight: 400;
+				padding:10px 15px;
+				margin:10px 0 5px;
+			}
+		}
+
+		.blankpage-footer {
+			padding: 10px 0;
+			font-size: rem($fs-xs);
+			color: darken($page-bg, 50%);
+		}
+
+		.login-footer {
+			//position: absolute;
+			//bottom: 0;
+			color: rgba(255,255,255,0.9);
+			//width: 100%;
+			font-size: rem($fs-nano);
+		}
+
+
+		/* NEW*/
+		video { 
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			min-width: 100%;
+			min-height: 100%;
+			width: auto;
+			height: auto;
+			z-index: -100;
+			transform: translateX(-50%) translateY(-50%);
+			background: url('../img/clouds.png') no-repeat;
+			background-size: cover;
+			transition: 1s opacity;
+		}
+
+		@media screen and (max-device-width: 800px) {
+			html { background: url("../img/clouds.png") #FFF no-repeat center center fixed; }
+			#bgvid { display: none; }
+		}
+
+	}
+}

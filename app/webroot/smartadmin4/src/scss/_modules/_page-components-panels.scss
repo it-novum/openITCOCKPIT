@@ -1,0 +1,496 @@
+.panel-fullscreen {
+	overflow:hidden;
+	max-width: 100%;
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+
+	position: relative;
+	background-color: $white;
+	box-shadow: 0px 0px 13px 0px rgba(darken($primary-800, 15%), (8/100));
+ 
+	margin-bottom: $grid-gutter-width;
+	border-radius: $border-radius;
+
+	//experimental ...
+	border: 1px solid rgba(0, 0, 0, 0.09);
+	border-bottom: 1px solid #e0e0e0;
+
+	border-radius: $panel-edge-radius;
+
+	transition : border 500ms ease-out;
+
+	/* panel container */
+	.panel-container {
+
+		//this cosigns with header animation 'all'
+		//@include transition-border(0.4s, ease-out);
+
+		position: relative;
+
+		//border: 1px solid transparent;
+		//border-top-width: 0;
+
+    	border-radius: 0 0 $panel-edge-radius $panel-edge-radius;
+
+		.panel-content {
+			padding: $panel-spacer-y $panel-spacer-x;
+
+			&:only-child,
+			&:last-child {
+				border-radius: 0 0 $panel-edge-radius $panel-edge-radius;
+			}
+		}
+	}
+
+	/* panel refresh */
+	&.panel-refresh {
+
+		.js-panel-refresh {
+			opacity: 0.5;
+			cursor: wait;
+		}
+	}
+
+	/* panel fullscreen */
+	&.panel-fullscreen {
+		position: fixed !important; /* there is a bug with jquery ui, so we have to add !important rule here */
+		z-index: $zindex-panel-fullscreen;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 100vh !important;
+		max-height: 100vh !important;
+    	width: 100vw !important;
+    	max-width: 100vw !important;
+		border-radius: 0;
+		border:0;
+
+		/*display: flex;
+		flex-direction: column;*/
+
+		[data-action="panel-collapse"],
+		.js-panel-collapse,
+		[data-action="panel-close"],
+		.js-panel-close  {
+			display: none;
+		}
+
+		/* make panel header bigger */
+		.panel-hdr {
+			height: $header-height;
+			border-radius: 0;
+			box-shadow: 0 0.125rem 0.125rem -0.0625rem  rgba(darken($primary-800, 10%), (10/100));
+
+			/* make panel header bigger */
+			h2 {
+				font-size: rem($panel-hdr-font-size + 4);
+				font-weight:400;
+			}
+		}
+
+		.js-panel-locked {
+			display: none;
+		}
+
+		.btn-panel[data-action="panel-fullscreen"],
+		.js-panel-fullscreen {
+			width:$panel-hdr-height/2;
+			height:$panel-hdr-height/2;
+		}
+
+		.panel-container {
+			flex: 1;
+			overflow-y: auto;
+			border-radius: 0;
+			display: block !important; //incase user had it collapsed
+		}
+	}
+
+	/* panel collapse */
+	/*&.panel-collapsed:not(.panel-fullscreen) {
+
+		.panel-container {
+			display:none;
+		}
+
+	}*/
+
+	/* panel locked */
+	&.panel-locked:not(.panel-fullscreen) {
+
+		.js-panel-locked {
+			font-weight: bold;
+		}
+
+		.panel-hdr {
+			//&:active {
+
+				h2:before {
+					font-family: 'nextgen-icons';
+					content: "\f2ae";
+					position: absolute;
+					top: 0;
+					bottom: 0;
+					right: 5px;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					font-size: 1.1rem;
+					color: $danger-500;
+				}
+			//}
+		}
+
+	}
+
+	&.ui-sortable-helper {
+		box-shadow: 0 5px 16px 0 rgba(0,0,0,0.05), 0 5px 20px 0 rgba(0,0,0,0.09);
+		/*.panel-toolbar {
+			-webkit-filter: grayscale(100%);  Safari 6.0 - 9.0 
+			filter: grayscale(100%);
+		}*/
+	}
+}
+
+/* panel tag can be used globally */
+.panel-tag {
+	padding: 1rem $panel-spacer-x;
+	margin-bottom: 2rem;
+	border-left: 3px solid $success-500;
+	background: #eef7fd;
+	opacity: 0.8;
+	font-weight: 400;
+	font-size: 0.875rem;
+	border-radius: 0px 8px 8px 0px;	
+
+	//remove p tag margin
+	>*:last-child,
+	>*:only-child {
+		margin-bottom: 0;
+	}	
+
+	&:only-child {
+		margin-bottom: 0;
+	}
+}
+
+/* panel header */
+.panel-hdr {
+	display: flex;
+	align-items:center;
+	background: $panel-hdr-background;
+	min-height: $panel-hdr-height;
+	//@include box-sizing(border-box); //why did we need this?
+	//border: 1px solid transparent;
+	border-bottom:  1px solid rgba(0, 0, 0, 0.07);
+	//box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.05);
+	border-radius: $panel-edge-radius $panel-edge-radius 0 0;
+
+	//@extend %common-animation-easeout;
+
+	@include transition-background-color(0.4s, ease-out)
+
+	.panel-collapsed & {
+		border-radius: $panel-edge-radius;
+	}
+	
+	/* add padding to first and last child */
+	> :first-child {
+		padding-left: $panel-spacer-x;
+	}
+	> :last-child {
+		padding-right: $panel-spacer-x;
+	}
+
+	/* adjusts title */
+	h2 {
+		flex: 1;
+		font-size: rem($panel-hdr-font-size);
+		margin: 0;
+		display: flex;
+		align-items:center;
+		line-height: $panel-hdr-height;
+		color: inherit;
+		color: #333;
+		position: relative;
+
+		font-weight: 500;
+
+		&:not(:only-child) {
+			margin-right: $panel-spacer-x / 1.5;
+		}
+
+		> [class*='fw-'] {
+			margin-left: 4px;
+		}
+
+		small {
+			display: inline-block;
+			margin:0;
+			opacity: 0.8;
+			font-weight: 400;
+			font-size: rem($panel-hdr-font-size - 2);
+			margin-left: $spacer * 0.5;
+		}
+
+		/* panel header icon */
+		.panel-icon {
+			margin-right: $p-2;
+		}
+
+	}
+
+}
+
+.panel-hdr[class^="bg-"], 
+.panel-hdr[class*=" bg-"] {
+	h2 {
+		color: inherit;
+	}
+}
+
+
+
+/* panel tap highlight */
+.panel-sortable:not(.panel-locked).ui-sortable-helper {
+
+	&:active {
+		border-color: rgba($black,  0.15);
+	}
+
+	/*.panel-hdr {
+		&:active {
+			border-top-color: rgba($primary-300, 0.7);
+			border-left-color: rgba($primary-500, 0.7);
+			border-right-color: rgba($primary-500, 0.7);
+
+			& + .panel-container {
+
+				border-color: transparent rgba($primary-500, 0.7) rgba($primary-600, 0.7);
+			}
+		}
+	}*/
+}
+
+/*.panel-sortable .panel-hdr:active,
+.panel-sortable .panel-hdr:active + .panel-container {
+	@include transition-border(0.4s, ease-out);
+}*/
+
+.panel-sortable.panel-locked {
+	/*.panel-hdr {
+		&:active {
+			border-top-color: $danger-300;
+			border-left-color: $danger;
+			border-right-color: $danger;
+
+			& + .panel-container {
+				border-color: transparent $danger $danger;
+			}
+		}
+	}*/
+}
+
+/* panel toolbar (sits inside panel header) */
+.panel-toolbar {
+	display: flex;
+	align-items:center;
+
+	.btn-panel {
+		margin-left: $panel-btn-spacing;
+
+		padding: 0;
+		width: $panel-btn-size;
+		height: $panel-btn-size;
+
+		@include box-sizing(border-box);
+
+		border-radius: 50%;
+		opacity: 0.8;
+
+		@extend %common-animation;
+
+		&:hover {
+			opacity: 1;
+		}
+
+		/* add default colors for action buttons */
+		&[data-action="panel-collapse"],
+		&.js-panel-collapse {
+			background: $success-500;
+		}
+
+		&[data-action="panel-fullscreen"],
+		&.js-panel-fullscreen {
+			background: $warning-500;
+		}
+
+		&[data-action="panel-close"],
+		&.js-panel-close {
+			background: $danger-500;
+		}
+
+		/*&:after {
+			content: "";
+			position: absolute;
+			border: 1px solid rgba($white, 0.6);
+			border-radius: 50%;
+			width: calc(100% + 2px);
+			height: calc(100% + 2px);
+			right: -1px;
+			top: -1px;
+		}*/
+
+	}
+
+	.btn-toolbar-master {
+		height: $panel-hdr-height;
+		width:  1.826875rem; /* stop flickering bug due to cpu latency */
+		border-radius: 0;
+		margin-right: -$panel-spacer-x;
+		border-top-right-radius: 3px;
+		margin-left: 0.5rem;
+		padding: 0 13px;
+		background: transparent;
+		border: 0;
+		font-size: $panel-toolbar-icon;
+		color: inherit;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		&[aria-expanded="true"] {
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15) inset
+		}
+
+		& + .dropdown-menu {
+			right: 0;
+			top: $panel-hdr-height;
+			left: auto !important;
+			margin:0;
+			border-radius:0;
+			//min-width: 150px;
+		}
+	}
+
+	/* we curve the last button to make it seamless with panel's border radius */
+	.btn-panel-flat:last-child {
+		border-top-right-radius: $border-radius - 1px;
+	}
+
+}
+
+.panel-sortable:not(.panel-fullscreen):not(.panel-locked) .ui-sortable-handle {
+	cursor: move;
+}
+
+/* placeholder */
+.panel-placeholder {
+	background-color: $panel-placeholder-color;
+	box-sizing: border-box;
+	margin-bottom: $grid-gutter-width;
+	border-radius: $border-radius + 1;
+	position: relative;
+	overflow: hidden;
+	//exprimental...
+	border: 1px solid transparent;
+	/* placeholder border animation */
+	&:before,
+	&:after {
+		content:" ";
+		background-image: url(data:image/gif;base64,R0lGODlhCAAIAJAAAAAAAP///yH/C05FVFNDQVBFMi4wAwEAAAAh+QQECgD/ACwAAAAACAAIAAACD4SDYZB6udpiaMJYsXuoAAAh+QQECgD/ACwAAAAACAAIAAACDYQRGadrzVRMB9FZ5SwAIfkEBAoA/wAsAAAAAAgACAAAAg8MDqGYaudeW9ChyOyltQAAIfkEBAoA/wAsAAAAAAgACAAAAg9MgGCXm+rQYtC0WGl9oQAAIfkEBAoA/wAsAAAAAAgACAAAAg+MgWCRernaYmjCWLF7qAAAIfkEBAoA/wAsAAAAAAgACAAAAg2MAwmna81UTAfRWeUsACH5BAQKAP8ALAAAAAAIAAgAAAIPRB6gmGrnXlvQocjspbUAACH5BAQKAP8ALAAAAAAIAAgAAAIPBIJhl5vq0GLQtFhpfaAAADs=);
+		border-radius: $border-radius + 1;
+		position: absolute;
+		top:0;
+		right:0;
+		bottom:0;
+		left:0;
+		opacity: 0.3;
+	}
+
+	&:before {
+		background: $panel-placeholder-color;
+		margin: 1px;
+		box-sizing: border-box;
+		opacity: 1;
+		z-index: 1;
+	}
+}
+
+.mod-panel-clean {
+
+	.panel-hdr {
+		background: $white;
+		background-image: linear-gradient(to bottom,#f7f7f7, $white);
+		box-shadow: none;
+		
+		h2 {
+			color: #333;
+			font-weight: 500;
+		}
+
+	}
+
+	/*.panel-container {
+		.panel-content:first-child {
+			padding-top: $p-1;
+		}
+	}*/
+	
+}	
+
+@media only screen and ( max-width: 420px ){
+	/* making mobile spacing a little narrow */
+	.panel {
+		.panel-hdr {
+			font-size: rem($panel-hdr-font-size);
+			//color: #060606;
+			min-height: $panel-hdr-height - 4;
+
+			> :first-child {
+				padding-left: 10px;
+			}
+			> :last-child {
+			  	padding-right: 10px;
+			}
+
+			.panel-toolbar .btn-toolbar-master {
+				margin-right: -10px;
+			}
+		}
+
+
+
+		.panel-container {
+			.panel-content:first-child {
+				padding: 10px;
+			}
+		}
+	}
+}
+
+/* print only selected panel when on fullscreen */
+@media print {
+	.panel-fullscreen {
+		.subheader,
+		.page-breadcrumb,
+		.page-content .panel:not(.panel-fullscreen) {
+			display: none;
+		}
+
+		.panel-hdr,
+		.panel-container,
+		.panel-content,
+		h2 {
+			border: none;
+			padding: 0 !important;
+		}
+
+		.panel {
+			margin: 0;
+		}
+	}
+}
