@@ -24,6 +24,10 @@
 
 namespace itnovum\openITCOCKPIT\ImportTemplates;
 
+/**
+ * Class ImportTemplates
+ * @package itnovum\openITCOCKPIT\ImportTemplates
+ */
 class ImportTemplates {
     public $mapping = [];
     //root path for json and check files
@@ -31,6 +35,16 @@ class ImportTemplates {
     public $contactId = [1];
     public $macroNames;
 
+    /**
+     * ImportTemplates constructor.
+     * @param \Model $servicetemplate
+     * @param \Model $servicetemplategroup
+     * @param \Model $hosttemplate
+     * @param \Model $contact
+     * @param \Model $command
+     * @param \Model $commandargument
+     * @param \Model $macro
+     */
     public function __construct(\Model $servicetemplate, \Model $servicetemplategroup, \Model $hosttemplate, \Model $contact, \Model $command, \Model $commandargument, \Model $macro) {
         $this->Servicetemplate = $servicetemplate;
         $this->Servicetemplategroup = $servicetemplategroup;
@@ -41,9 +55,10 @@ class ImportTemplates {
         $this->Macro = $macro;
     }
 
+
     /**
      * check if dependencies for installing the templates
-     * @throws Exception
+     * @throws \Exception
      */
     public function checkDependencies() {
         $contact = $this->Contact->find('first', [
@@ -61,6 +76,9 @@ class ImportTemplates {
         $this->contactId = \Hash::extract($contact, 'Contact.id');
     }
 
+    /**
+     * @param $files
+     */
     public function startInstall($files) {
         foreach ($files as $key => $file) {
             $stData = $this->readJsonFile($file);
@@ -77,6 +95,9 @@ class ImportTemplates {
                 case 'Servicetemplategroup':
                     $dataToSave = $this->modifyServicetemplategroupdata($stData);
                     break;
+                case 'Hosttemplate':
+                    $dataToSave = $this->modifyHosttemplatedata($stData);
+                    break;
             }
             $this->saveData($dataToSave);
         }
@@ -85,9 +106,7 @@ class ImportTemplates {
 
     /**
      * saves the Template Data into the Database
-     *
-     * @param $dataToSave - the array data to save
-     *
+     * @param $dataToSave
      * @return bool
      */
     private function saveData($dataToSave) {
@@ -162,10 +181,8 @@ class ImportTemplates {
 
     /**
      * reads a json file and return the json representation as php array
-     *
      * @param $file - the json file to read
-     *
-     * @return array - the php array representation of the json
+     * @return mixed - the php array representation of the json
      */
     private function readJsonFile($file) {
         try {
@@ -185,9 +202,35 @@ class ImportTemplates {
     }
 
     /**
+     * @param $hosttemplateData
+     * @return mixed
+     */
+    private function modifyHosttemplatedata($hosttemplateData) {
+        if (!empty($this->mapping['Commandarguments'])) {
+            foreach ($hosttemplateData as $key => $hosttemplate) {
+                $commandId = $this->mapping['Command'][$hosttemplate['Hosttemplate']['command_id']];
+                //replacing the command uuid with the command id
+                $hosttemplateData[$key]['Hosttemplate']['command_id'] = $commandId;
+                $i = 0;
+                //go through the hosttemplatecommandarguments
+                if (!empty($hosttemplate['Hosttemplatecommandargumentvalue'])) {
+                    foreach ($hosttemplate['Hosttemplatecommandargumentvalue'] as $stcavKey => $stcav) {
+                        //replace the commandargument ids from the servicetemplatecommandarguments
+                        // with the commandargument ids (the id they have after save)
+                        if (array_key_exists($commandId, $this->mapping['Commandarguments']) && !empty($this->mapping['Commandarguments'][$commandId])) {
+                            $hosttemplateData[$key]['Hosttemplatecommandargumentvalue'][$stcavKey]['commandargument_id'] = $this->mapping['Commandarguments'][$commandId][$i];
+                            $i++;
+                        }
+                    }
+                }
+            }
+        }
+        return $hosttemplateData;
+    }
+
+    /**
      * @param $servicetemplateData
-     *
-     * @return array
+     * @return mixed
      */
     private function modifyServicetemplatedata($servicetemplateData) {
         if (!empty($this->mapping['Commandarguments'])) {
@@ -216,8 +259,7 @@ class ImportTemplates {
 
     /**
      * @param $servicetemplategroupData
-     *
-     * @return array
+     * @return mixed
      */
     private function modifyServicetemplategroupdata($servicetemplategroupData) {
         foreach ($servicetemplategroupData as $keyGroup => $servicetemplate) {
@@ -231,10 +273,7 @@ class ImportTemplates {
 
     /**
      * maps the command ids with the commandargument ids
-     *
      * @param $commandId
-     *
-     * @return void
      */
     private function mapCommandArgs($commandId) {
         $commands = $this->Command->find('all', [
@@ -246,6 +285,10 @@ class ImportTemplates {
         $this->mapping['Commandarguments'][$commandId] = $commandargIds;
     }
 
+    /**
+     * @param $macros
+     * @return mixed
+     */
     private function setMacroNames($macros) {
         $lastMacro = $this->Macro->find('first', [
             'order' => [
@@ -267,6 +310,11 @@ class ImportTemplates {
         return $macros;
     }
 
+    /**
+     * @param $commands
+     * @param $macros
+     * @return mixed
+     */
     private function replaceMacros($commands, $macros) {
         if (empty($macros)) {
             return $commands;
