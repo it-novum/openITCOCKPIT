@@ -3,6 +3,14 @@
 [![Chat on Matrix](https://img.shields.io/badge/style-matrix-blue.svg?style=flat&label=chat)](https://riot.im/app/#/room/#openitcockpit:matrix.org)
 [![IRC: #openitcockpit on chat.freenode.net](https://img.shields.io/badge/%23openitcockpit-freenode-blue.svg)](https://kiwiirc.com/client/chat.freenode.net/#openitcockpit)
 
+
+| Distribution | Stable                                                                                                      | Nightly                                                                                                      |
+|--------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| Bionic       | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=bionic-openitcockpit-stable&style=flat-square)  | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=bionic-openitcockpit-nightly&style=flat-square)  |
+| Xenial       | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=xenial-openitcockpit-stable&style=flat-square)  | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=xenial-openitcockpit-nightly&style=flat-square)  |
+| Stretch      | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=stretch-openitcockpit-stable&style=flat-square) | ![status](https://jenkins.it-novum.com/buildStatus/icon?job=stretch-openitcockpit-nightly&style=flat-square) |
+
+
 # What is openITCOCKPIT?
 openITCOCKPIT is an Open Source system monitoring tool built for different monitoring engines like [Nagios](https://www.nagios.org/) or [Naemon](http://www.naemon.org/).
 
