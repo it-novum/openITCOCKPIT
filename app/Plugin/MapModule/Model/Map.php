@@ -1571,6 +1571,10 @@ class Map extends MapModuleAppModel {
                 'order'      => [
                     'Map.name' => 'ASC',
                 ],
+                'fields'     => [
+                    'Map.id',
+                    'Map.name'
+                ],
                 'group'      => [
                     'Map.id'
                 ]
