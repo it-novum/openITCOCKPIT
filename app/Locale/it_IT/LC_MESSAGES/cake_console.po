@@ -1,0 +1,1512 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+msgid "Comparing Database to Schema..."
+msgstr "Comparazione tra Database e Schema..."
+
+msgid "Schema is up to date."
+msgstr "Lo Schema è aggiornato."
+
+msgid "The following statements will run."
+msgstr "Verranno esseguite le seguenti istruzioni."
+
+msgid "Updating Database..."
+msgstr "Aggiornamento Database..."
+
+msgid "End update."
+msgstr "Aggiornamento terminato."
+
+msgid "Absolute path or relative to APP."
+msgstr "Percorso assoluto o relativo verso l'APP."
+
+msgid "<error>Error:</error> %s\n%s"
+msgstr "<error>Errore:</error> %s\n%s"
+
+msgid "%s in [%s, line %s]"
+msgstr ""
+
+msgid "<error>%s Error:</error> %s\n"
+msgstr "<error>%s Errore:</error> %s\n"
+
+msgid " <comment>(optional)</comment>"
+msgstr " <comment>(opzionale)</comment>"
+
+msgid " <comment>(choices: %s)</comment>"
+msgstr " <comment>(scelte: %s)</comment>"
+
+msgid "\"%s\" is not a valid value for %s. Please use one of \"%s\""
+msgstr "\"%s\" non è un valore valido per %s. Perfavore inseriscene una tra \"%s\""
+
+msgid "Short option \"%s\" is invalid, short options must be one letter."
+msgstr "L'opzione abbreviata \"%s\" non è valida, l'opzione abbreviata deve contenere una sola lettera."
+
+msgid " <comment>(default: %s)</comment>"
+msgstr " <comment>(predefinito: %s)</comment>"
+
+msgid "\"%s\" is not a valid value for --%s. Please use one of \"%s\""
+msgstr "\"%s\" non è un valore valido per --%s. Perfavore inseriscene una tra \"%s\""
+
+msgid "Display this help."
+msgstr "Mostra questo aiuto"
+
+msgid "Enable verbose output."
+msgstr "Abilita l'output verboso"
+
+msgid "Enable quiet output."
+msgstr "Abilita output non verboso"
+
+msgid "Missing required arguments. %s is required."
+msgstr "Mancano degli argomenti obbligatori. %s è obbligatorio"
+
+msgid "Unknown short option `%s`"
+msgstr "L'opzione abbreviata `%s` è sconosciuta"
+
+msgid "Unknown option `%s`"
+msgstr "Opzione `%s` sconosciuta"
+
+msgid "Too many arguments."
+msgstr "Troppi argomenti."
+
+msgid "<info>Usage:</info>"
+msgstr "<info>Utilizzo:</info>"
+
+msgid "<info>Subcommands:</info>"
+msgstr "<info>Sotto comandi:</info>"
+
+msgid "To see help on a subcommand use <info>`cake %s [subcommand] --help`</info>"
+msgstr "Per visualizzare l'aiuto di un sottocomando usa <info>`cake %s [sottocomando] --help`</info>"
+
+msgid "<info>Options:</info>"
+msgstr "<info>Opzioni:</info>"
+
+msgid "<info>Arguments:</info>"
+msgstr "<info>Argomenti:</info>"
+
+msgid "<info>Welcome to CakePHP %s Console</info>"
+msgstr "<info>Benvenuto nella Console CakePHP %s </info>"
+
+msgid "App : %s"
+msgstr ""
+
+msgid "Path: %s"
+msgstr "Percorso: %s"
+
+msgid "<error>Error:</error> %s"
+msgstr "<error>Errore:</error> %s"
+
+msgid "<warning>File `%s` exists</warning>"
+msgstr "<warning>File `%s` esistente</warning>"
+
+msgid "Do you want to overwrite?"
+msgstr "Vuoi sovrascriverlo?"
+
+msgid "<error>Quitting</error>."
+msgstr "<error>Uscita</error>."
+
+msgid "Skip `%s`"
+msgstr "Salta `%s`"
+
+msgid "Creating file %s"
+msgstr "Creazione file %s"
+
+msgid "<success>Wrote</success> `%s`"
+msgstr "<success>Compilato</success> `%s`"
+
+msgid "<error>Could not write to `%s`</error>."
+msgstr "<error>Non posso scrivere su `%s`</error>."
+
+msgid "PHPUnit is not installed. Do you want to bake unit test files anyway?"
+msgstr "PHPUnit non è installato. Vuoi comunque creare dei file di test unitari?"
+
+msgid "You can download PHPUnit from %s"
+msgstr "Puoi scaricare PHPUnit da %s"
+
+msgid "Error: Your current CakePHP configuration is set to an ACL implementation other than DB."
+msgstr "Errore: La tua configurazione di CakePHP è impostata con delle ACL di un altro DB."
+
+msgid "Please change your core config to reflect your decision to use DbAcl before attempting to use this script"
+msgstr "Perfavore, modifica la tua configurazione di base sull'uso di DbAcl prima di utilizzare questo script "
+
+msgid "Current ACL Classname: %s"
+msgstr "Nome classe ACL corrente: %s"
+
+msgid "Your database configuration was not found. Take a moment to create one."
+msgstr "Non è stata trovata la configurazione del tuo database. Creane uno."
+
+msgid "/ can not be used as an alias!"
+msgstr "/ non può essere utilizzata come alias!"
+
+msgid "\t/ is the root, please supply a sub alias"
+msgstr "\t/ è la root, perfavore fornisci un altro alias"
+
+msgid "<success>New %s</success> '%s' created."
+msgstr "<success>Nuovo %s</success> '%s' creato."
+
+msgid "There was a problem creating a new %s '%s'."
+msgstr "Si è verificato un problema nella creazione di %s '%s'."
+
+msgid "Node Not Deleted. "
+msgstr "Il nodo non può essere eliminato."
+
+msgid "There was an error deleting the %s."
+msgstr "Si è verificato un errore nella cancellazione %s."
+
+msgid "<success>%s deleted.</success>"
+msgstr "<success>%s eliminato.</success>"
+
+msgid "There was an error deleting the %s. Node does not exist."
+msgstr "Si è verificato un errore eliminando %s. Il nodo non esiste."
+
+msgid "Error in setting new parent. Please make sure the parent node exists, and is not <success>%s deleted.</success>"
+msgstr "Errore nel settaggio del parent. Perfavore verifica che il nodo padre esista e non sia <success>%s eliminato.</success>"
+
+msgid "Node parent set to %s"
+msgstr "Settato il nodo padre a %s"
+
+msgid "Supplied Node '%s' not found"
+msgstr "Il nodo fornito '%s' non è stato trovato"
+
+msgid "No tree returned."
+msgstr "Nessun albero restituito."
+
+msgid "Path:"
+msgstr "Percorso"
+
+msgid "%s is <success>allowed</success>."
+msgstr "%s è <success>permessa</success>."
+
+msgid "%s is <error>not allowed</error>."
+msgstr "%s <error>non è permessa</error>."
+
+msgid "Permission <success>granted</success>."
+msgstr "Permesso <success>concesso</success>."
+
+msgid "Permission was <error>not granted</error>."
+msgstr "Permesso <error>non è stato concesso</error>."
+
+msgid "Permission denied."
+msgstr "Permesso negato."
+
+msgid "Permission was not denied."
+msgstr "Permesso concesso."
+
+msgid "Permission inherited."
+msgstr "Permesso ereditato"
+
+msgid "Permission was not inherited."
+msgstr "Permesso non ereditato"
+
+msgid "%s not found"
+msgstr "%s non trovato"
+
+msgid "Type of node to create."
+msgstr "Tipo di nodo da creare."
+
+msgid "A console tool for managing the DbAcl"
+msgstr "Una console di strumenti per gestire DbAcl"
+
+msgid "Create a new ACL node"
+msgstr "Crea un nuovo nodo ACL "
+
+msgid "Creates a new ACL object <node> under the parent"
+msgstr "Crea un nuovo oggetto ACL <node> sotto il padre"
+
+msgid "You can use `root` as the parent when creating nodes to create top level nodes."
+msgstr "Puoi settare root` come parent quando si vuole creare un nodo di primo livello."
+
+msgid "The node selector for the parent."
+msgstr ""
+
+msgid "The alias to use for the newly created node."
+msgstr "L'alias da utilizzare per il nodo appena creato"
+
+msgid "Deletes the ACL object with the given <node> reference"
+msgstr ""
+
+msgid "Delete an ACL node."
+msgstr "Elimina un nodo ACL."
+
+msgid "The node identifier to delete."
+msgstr "L'identificatore del nodo da eliminare"
+
+msgid "Moves the ACL node under a new parent."
+msgstr "Sposta il nodo ACL sotto un nuovo parent"
+
+msgid "Moves the ACL object specified by <node> beneath <parent>"
+msgstr "Sposta l'oggetto ACL identificato da <node> sotto <parent>"
+
+msgid "The node to move"
+msgstr "Il nodo da spostare"
+
+msgid "The new parent for <node>."
+msgstr "Il nuovo parent per il <node>"
+
+msgid "Print out the path to an ACL node."
+msgstr "Stampa il percorso di un nodo ACL"
+
+msgid "Returns the path to the ACL object specified by <node>."
+msgstr "Restituisce il percorso dell'oggetto ACL specificato da <node>."
+
+msgid "This command is useful in determining the inheritance of permissions for a certain object in the tree."
+msgstr "Questo comando è utile per determinare i permessi che eredita un certo oggetto nell'albero"
+
+msgid "The node to get the path of"
+msgstr ""
+
+msgid "Check the permissions between an ACO and ARO."
+msgstr "Verifica i permessi tra un ACO and ARO"
+
+msgid "Use this command to check ACL permissions."
+msgstr "Usa questo comando per verificare i permessi ACL."
+
+msgid "ARO to check."
+msgstr "ARO da controllare."
+
+msgid "ACO to check."
+msgstr "ACO da controllare."
+
+msgid "Action to check"
+msgstr "Azioni da verificare"
+
+msgid "Grant an ARO permissions to an ACO."
+msgstr "Concedere le autorizzazioni ARO a un ACO."
+
+msgid "Use this command to grant ACL permissions. Once executed, the ARO specified (and its children, if any) will have ALLOW access to the specified ACO action (and the ACO's children, if any)."
+msgstr ""
+
+msgid "ARO to grant permission to."
+msgstr ""
+
+msgid "ACO to grant access to."
+msgstr ""
+
+msgid "Action to grant"
+msgstr "Azioni da consentire"
+
+msgid "Deny an ARO permissions to an ACO."
+msgstr "Negare un permesso ARO ad un ACO"
+
+msgid "Use this command to deny ACL permissions. Once executed, the ARO specified (and its children, if any) will have DENY access to the specified ACO action (and the ACO's children, if any)."
+msgstr "Usa questo comando per negare un permesso ACL. Una volta eseguito, l'ARO (e i relativi figli se presenti) non avranno più accesso all'ACO (e nemmeno ai relativi figli, se presenti). "
+
+msgid "ARO to deny."
+msgstr "ARO da negare."
+
+msgid "ACO to deny."
+msgstr "ACO da negare."
+
+msgid "Action to deny"
+msgstr "Azioni da negare"
+
+msgid "Inherit an ARO's parent permissions."
+msgstr "Eredita i permessi ARO dal padre."
+
+msgid "Use this command to force a child ARO object to inherit its permissions settings from its parent."
+msgstr "Utilizzare questo comando per forza un oggetto ARO ad eritare i permessi dal parent."
+
+msgid "ARO to have permissions inherit."
+msgstr ""
+
+msgid "ACO to inherit permissions on."
+msgstr ""
+
+msgid "Action to inherit"
+msgstr "Azioni da ereditare"
+
+msgid "View a tree or a single node's subtree."
+msgstr "Visualizza un albero o un sottoalbero di un signolo nodo"
+
+msgid "The view command will return the ARO or ACO tree."
+msgstr "Il comando visualizza restituirà un albero ARO o un albero ACO"
+
+msgid "The optional node parameter allows you to return"
+msgstr ""
+
+msgid "only a portion of the requested tree."
+msgstr "solo una porzione dell'albero richiesto."
+
+msgid "The optional node to view the subtree of."
+msgstr ""
+
+msgid "Initialize the DbAcl tables. Uses this command : cake schema create DbAcl"
+msgstr ""
+
+msgid "Could not find node using reference \"%s\""
+msgstr "Impossibile trovare un nodo usando come riferimento \"%s\""
+
+msgid "%s::%s() could not be found"
+msgstr "%s::%s() non può essere trovato"
+
+msgid "Select a number to see the more information about a specific method. q to quit. l to list."
+msgstr "Selezione un numero per vedere più informazioni riguardo uno specifico metodo. q per uscire. l per la lista."
+
+msgid "Done"
+msgstr "Terminato"
+
+msgid "Lookup doc block comments for classes in CakePHP."
+msgstr ""
+
+msgid "Either a full path or type of class (model, behavior, controller, component, view, helper)"
+msgstr "Il percorso completo o il tipo di classe (model, behavior, controller, component, view, helper)"
+
+msgid "A CakePHP core class name (e.g: Component, HtmlHelper)."
+msgstr "Un nome della classe del core di CakePHP (ad es. Component, HtmlHelper),"
+
+msgid "The specific method you want help on."
+msgstr "Il metodo specifico su cui hai bisogno di aiuto."
+
+msgid "Command %s not found"
+msgstr "Il comando %s non è stato trovato"
+
+msgid "%s could not be found"
+msgstr "%s non può essere trovato"
+
+msgid "Interactive Bake Shell"
+msgstr "Bake Shell interattiva"
+
+msgid "[D]atabase Configuration"
+msgstr "Configurazione [D]atabase"
+
+msgid "[M]odel"
+msgstr ""
+
+msgid "[V]iew"
+msgstr ""
+
+msgid "[C]ontroller"
+msgstr ""
+
+msgid "[P]roject"
+msgstr ""
+
+msgid "[F]ixture"
+msgstr ""
+
+msgid "[T]est case"
+msgstr ""
+
+msgid "[Q]uit"
+msgstr ""
+
+msgid "What would you like to Bake?"
+msgstr ""
+
+msgid "You have made an invalid selection. Please choose a type of class to Bake by entering D, M, V, F, T, or C."
+msgstr ""
+
+msgid "<success>Bake All complete</success>"
+msgstr ""
+
+msgid "Bake All could not continue without a valid model"
+msgstr ""
+
+msgid "The Bake script generates controllers, views and models for your application. If run with no command line arguments, Bake guides the user through the class creation process. You can customize the generation process by telling Bake where different parts of your application are using command line arguments."
+msgstr ""
+
+msgid "Bake a complete MVC. optional <name> of a Model"
+msgstr ""
+
+msgid "Bake a new app folder in the path supplied or in current directory if no path is specified"
+msgstr ""
+
+msgid "Bake a new plugin folder in the path supplied or in current directory if no path is specified."
+msgstr ""
+
+msgid "Bake a database.php file in config directory."
+msgstr ""
+
+msgid "Bake a model."
+msgstr ""
+
+msgid "Bake views for controllers."
+msgstr ""
+
+msgid "Bake a controller."
+msgstr ""
+
+msgid "Bake a fixture."
+msgstr ""
+
+msgid "Bake a unit test."
+msgstr ""
+
+msgid "Database connection to use in conjunction with `bake all`."
+msgstr ""
+
+msgid "Theme to use when baking code."
+msgstr ""
+
+msgid "<info>Current Paths:</info>"
+msgstr "<info>Percorso corrente:</info>"
+
+msgid "<info>Changing Paths:</info>"
+msgstr "<info>Cambiare percorso:</info>"
+
+msgid "Your working path should be the same as your application path. To change your path use the '-app' param."
+msgstr ""
+
+msgid "Example: %s or %s"
+msgstr "Esempio: %s or %s"
+
+msgid "<info>Available Shells:</info>"
+msgstr "<info>Shell disponibili:</info>"
+
+msgid "To run an app or core command, type <info>cake shell_name [args]</info>"
+msgstr "Per eseguire un app o un comando, scrivi <info>cake shell_name [argomenti]</info>"
+
+msgid "To run a plugin command, type <info>cake Plugin.shell_name [args]</info>"
+msgstr "Per eseguire un comando del plugin, scrivi <info>cake Plugin.shell_name [argomenti]</info>"
+
+msgid "To get help on a specific command, type <info>cake shell_name --help</info>"
+msgstr "Per ricevere aiuto su un comando sepcifico, scrivi <info>cake shell_name --help</info>"
+
+msgid "Get the list of available shells for this CakePHP application."
+msgstr "Ottieni la lista delle shell disponibili per questa applicazione CakePHP"
+
+msgid "Does nothing (deprecated)"
+msgstr "Non fa nulla (deprecato)"
+
+msgid "Get the listing as XML."
+msgstr "Ottieni l'elenco come XML."
+
+msgid "Used by shells like bash to autocomplete command name, options and arguments"
+msgstr "Utilizzato dalla shell come bash per autocompletare il nome dei comandi, le opzioni e gli argomenti"
+
+msgid "Output a list of available commands"
+msgstr "Rende una lista di comandi"
+
+msgid "List all availables"
+msgstr ""
+
+msgid "Output a list of available subcommands"
+msgstr "Rende un elenco di sottocomandi disponibli"
+
+msgid "List subcommands for a command"
+msgstr "Elenca i sottocomandi di un comando"
+
+msgid "The command name"
+msgstr "Il nome del comando"
+
+msgid "Output a list of available options"
+msgstr "Rende un elenco di opzioni disponibili"
+
+msgid "List options"
+msgstr "Elenco di opzioni"
+
+msgid "This command is not intended to be called manually"
+msgstr "Questo comando non è destinato ad essere chiamato manualmente"
+
+msgid "Model classes:"
+msgstr ""
+
+msgid "There was an error loading the routes config. Please check that the file exists and contains no errors."
+msgstr "Si è verificato un errore nel caricamente delle configurazioni delle rotte. Perfavore controlla se questo file esiste e che non contenga errori."
+
+msgid "Invalid command"
+msgstr "Comando non valido"
+
+msgid "Created %s association between %s and %s"
+msgstr "Creata l'associazione %s tra %s e %s"
+
+msgid "Please verify you are using valid models and association types"
+msgstr "Perfavore verifica che stia usando un modello e un tipo di associazione valida"
+
+msgid "Removed %s association between %s and %s"
+msgstr "Rimossa l'associazione %s tra %s e %s"
+
+msgid "Please verify you are using valid models, valid current association, and valid association types"
+msgstr ""
+
+msgid "No result set found"
+msgstr ""
+
+msgid "%s is not a valid model"
+msgstr "%s non è un modello valido"
+
+msgid "Saved record for %s"
+msgstr "Salvato il record per %s"
+
+msgid "Please verify that you selected a valid model"
+msgstr "Perfavore verifica che sia stato selezionato un modello valido"
+
+msgid "There was an error loading the routes config. Please check that the file exists and is free of parse errors."
+msgstr ""
+
+msgid "Routes configuration reloaded, %d routes connected"
+msgstr "La configurazione delle rotte è stata ricaricata, %d rotte connesse"
+
+msgid "<info>I18n Shell</info>"
+msgstr ""
+
+msgid "[E]xtract POT file from sources"
+msgstr ""
+
+msgid "[I]nitialize i18n database table"
+msgstr ""
+
+msgid "[H]elp"
+msgstr ""
+
+msgid "What would you like to do?"
+msgstr "Cosa ti piacerebbe fare?"
+
+msgid "You have made an invalid selection. Please choose a command to execute by entering E, I, H, or Q."
+msgstr ""
+
+msgid "I18n Shell initializes i18n database table for your application and generates .pot files(s) with translations."
+msgstr ""
+
+msgid "Initialize the i18n table."
+msgstr "Inizializza la tabella i18n"
+
+msgid "Extract the po translations from your application"
+msgstr ""
+
+msgid "Schema file (%s) could not be found."
+msgstr "Il file dello schema (%s) non può essere trovato."
+
+msgid "Generating Schema..."
+msgstr "Generazione Schema..."
+
+msgid "Schema file exists.\n [O]verwrite\n [S]napshot\n [Q]uit\nWould you like to do?"
+msgstr ""
+
+msgid "Schema file: %s generated"
+msgstr "File Schema: %s generato"
+
+msgid "Schema could not be loaded"
+msgstr "Lo Schema non può essere caricato"
+
+msgid "SQL dump file created in %s"
+msgstr "File di SQL dump creato in %s"
+
+msgid "SQL dump could not be created"
+msgstr "Il file di SQL dump non può essere creato"
+
+msgid "Performing a dry run."
+msgstr ""
+
+msgid "<error>Error</error>: The chosen schema could not be loaded. Attempted to load:"
+msgstr "<error>Errore</error>: Lo schema scelto non può essere ricaricato. Tentativo di caricare:"
+
+msgid "- file: %s"
+msgstr ""
+
+msgid "- name: %s"
+msgstr "- nome: %s"
+
+msgid "The following table(s) will be dropped."
+msgstr "Le seguenti tabelle verranno eliminate"
+
+msgid "Are you sure you want to drop the table(s)?"
+msgstr "Sei sicuro di voler eliminare le tabelle?"
+
+msgid "Dropping table(s)."
+msgstr "Eliminazione tabelle."
+
+msgid "The following table(s) will be created."
+msgstr "Le seguenti tabelle verranno create."
+
+msgid "Are you sure you want to create the table(s)?"
+msgstr "Sei sicuro di voler creare le tabelle?"
+
+msgid "Creating table(s)."
+msgstr "Creazione tabelle."
+
+msgid "End create."
+msgstr "Creazione terminata."
+
+msgid "Are you sure you want to alter the tables?"
+msgstr "Sei sicuro di voler modificare le tabelle?"
+
+msgid "Sql could not be run"
+msgstr "Sql non può essere eseguito"
+
+msgid "%s is up to date."
+msgstr "%s è aggiornato."
+
+msgid "Dry run for %s :"
+msgstr ""
+
+msgid "%s updated."
+msgstr "%s aggiornato."
+
+msgid "The plugin to use."
+msgstr "Il plugin da usare"
+
+msgid "Set the db config to use."
+msgstr "Imposta la configurazione del db da usare."
+
+msgid "Path to read and write schema.php"
+msgstr "Percorso per leggere e scrivere schema.php"
+
+msgid "File name to read and write."
+msgstr "Nome del file da leggere e scrivere"
+
+msgid "Classname to use. If its Plugin.class, both name and plugin options will be set."
+msgstr ""
+
+msgid "Snapshot number to use/make."
+msgstr ""
+
+msgid "Specify models as comma separated list."
+msgstr "Specifica i modella con una lista separata da virgole."
+
+msgid "Perform a dry run on create and update commands. Queries will be output instead of run."
+msgstr ""
+
+msgid "Force \"generate\" to create a new schema"
+msgstr "Forza \"generate\" per creare un nuovo schema"
+
+msgid "Write the dumped SQL to a file."
+msgstr "Scrive il dump SQL in un file."
+
+msgid "Tables to exclude as comma separated list."
+msgstr "Tabelle da escludere come una lista separata da virgole."
+
+msgid "Do not prompt for confirmation. Be careful!"
+msgstr ""
+
+msgid "The Schema Shell generates a schema object from the database and updates the database from the schema."
+msgstr ""
+
+msgid "Read and output the contents of a schema file"
+msgstr ""
+
+msgid "Reads from --connection and writes to --path. Generate snapshots with -s"
+msgstr ""
+
+msgid "Generate a snapshot."
+msgstr ""
+
+msgid "Dump database SQL based on a schema file to stdout."
+msgstr ""
+
+msgid "Drop and create tables based on the schema file."
+msgstr ""
+
+msgid "Name of schema to use."
+msgstr ""
+
+msgid "Only create the specified table."
+msgstr ""
+
+msgid "Alter the tables based on the schema file."
+msgstr ""
+
+msgid "DocumentRoot: %s"
+msgstr ""
+
+msgid "<warning>This command is available on %s or above</warning>"
+msgstr ""
+
+msgid "built-in server is running in http://%s%s/"
+msgstr ""
+
+msgid "PHP Built-in Server for CakePHP"
+msgstr ""
+
+msgid "<warning>[WARN] Don't use this at the production environment</warning>"
+msgstr ""
+
+msgid "ServerHost"
+msgstr ""
+
+msgid "ListenPort"
+msgstr ""
+
+msgid "DocumentRoot"
+msgstr ""
+
+msgid "<warning>Dry-run mode enabled!</warning>"
+msgstr ""
+
+msgid "<warning>No git repository detected!</warning>"
+msgstr ""
+
+msgid "Running %s"
+msgstr ""
+
+msgid "Upgrading locations for plugin %s"
+msgstr ""
+
+msgid "Upgrading locations for app directory"
+msgstr ""
+
+msgid "Moving %s to %s"
+msgstr ""
+
+msgid "Updating %s..."
+msgstr ""
+
+msgid " * Updating %s"
+msgstr ""
+
+msgid "Done updating %s"
+msgstr ""
+
+msgid "The plugin to update. Only the specified plugin will be updated."
+msgstr ""
+
+msgid "The extension(s) to search. A pipe delimited list, or a preg_match compatible subpattern"
+msgstr ""
+
+msgid "Use git command for moving files around."
+msgstr ""
+
+msgid "Dry run the update, no files will actually be modified."
+msgstr ""
+
+msgid "A tool to help automate upgrading an application or plugin from CakePHP 1.3 to 2.0. Be sure to have a backup of your application before running these commands."
+msgstr ""
+
+msgid "Run all upgrade commands."
+msgstr ""
+
+msgid "Update tests class names to FooTest rather than FooTestCase."
+msgstr ""
+
+msgid "Move files and folders to their new homes."
+msgstr ""
+
+msgid "Update the i18n translation method calls."
+msgstr ""
+
+msgid "Update calls to helpers."
+msgstr ""
+
+msgid "Update removed basics functions to PHP native functions."
+msgstr ""
+
+msgid "Update removed request access, and replace with $this->request."
+msgstr ""
+
+msgid "Update Configure::read() to Configure::read('debug')"
+msgstr ""
+
+msgid "Replace Obsolete constants"
+msgstr ""
+
+msgid "Return early on controller redirect calls."
+msgstr ""
+
+msgid "Update components to extend Component class."
+msgstr ""
+
+msgid "Replace use of cakeError with exceptions."
+msgstr ""
+
+msgid "Baking basic crud methods for "
+msgstr ""
+
+msgid "Adding %s methods"
+msgstr ""
+
+msgid "No Controllers were baked, Models need to exist before Controllers can be baked."
+msgstr ""
+
+msgid "Bake Controller\nPath: %s"
+msgstr ""
+
+msgid "Baking %sController"
+msgstr ""
+
+msgid "Would you like to build your controller interactively?"
+msgstr ""
+
+msgid "Warning: Choosing no will overwrite the %sController."
+msgstr ""
+
+msgid "Would you like to use dynamic scaffolding?"
+msgstr ""
+
+msgid "Would you like to use the FlashComponent to display flash messages?"
+msgstr ""
+
+msgid "Look okay?"
+msgstr ""
+
+msgid "The following controller will be created:"
+msgstr ""
+
+msgid "Controller Name:\n\t%s"
+msgstr ""
+
+msgid "Helpers:"
+msgstr ""
+
+msgid "Components:"
+msgstr ""
+
+msgid "Would you like to create some basic class methods \n(index(), add(), view(), edit())?"
+msgstr ""
+
+msgid "Would you like to create the basic class methods for admin routing?"
+msgstr ""
+
+msgid "You must have a model for this class to build basic methods. Please try again."
+msgstr ""
+
+msgid "Baking controller class for %s..."
+msgstr ""
+
+msgid "Would you like this controller to use other helpers\nbesides HtmlHelper and FormHelper?"
+msgstr ""
+
+msgid "Please provide a comma separated list of the other\nhelper names you'd like to use.\nExample: 'Text, Js, Time'"
+msgstr ""
+
+msgid "Would you like this controller to use other components\nbesides PaginatorComponent?"
+msgstr ""
+
+msgid "Please provide a comma separated list of the component names you'd like to use.\nExample: 'Acl, Security, RequestHandler'"
+msgstr ""
+
+msgid "Possible Controllers based on your current database:"
+msgstr ""
+
+msgid "Enter a number from the list above,\ntype in the name of another controller, or 'q' to exit"
+msgstr ""
+
+msgid "Exit"
+msgstr ""
+
+msgid "The Controller name you supplied was empty,\nor the number you selected was not an option. Please try again."
+msgstr ""
+
+msgid "Bake a controller for a model. Using options you can bake public, admin or both."
+msgstr ""
+
+msgid "Name of the controller to bake. Can use Plugin.name to bake controllers into plugins."
+msgstr ""
+
+msgid "Bake a controller with basic crud actions (index, view, add, edit, delete)."
+msgstr ""
+
+msgid "Bake a controller with crud actions for one of the Routing.prefixes."
+msgstr ""
+
+msgid "Plugin to bake the controller into."
+msgstr ""
+
+msgid "The connection the controller's model is on."
+msgstr ""
+
+msgid "Force overwriting existing files without prompting."
+msgstr ""
+
+msgid "Bake all controllers with CRUD methods."
+msgstr ""
+
+msgid "Omitting all arguments and options will enter into an interactive mode."
+msgstr ""
+
+msgid "Database Configuration:"
+msgstr ""
+
+msgid "Name:"
+msgstr ""
+
+msgid "The name may only contain unaccented latin characters, numbers or underscores"
+msgstr ""
+
+msgid "The name must start with an unaccented latin character or an underscore"
+msgstr ""
+
+msgid "Datasource:"
+msgstr ""
+
+msgid "Persistent Connection?"
+msgstr ""
+
+msgid "Database Host:"
+msgstr ""
+
+msgid "Port?"
+msgstr ""
+
+msgid "User:"
+msgstr ""
+
+msgid "Password:"
+msgstr ""
+
+msgid "The password you supplied was empty. Use an empty password?"
+msgstr ""
+
+msgid "Database Name:"
+msgstr ""
+
+msgid "Table Prefix?"
+msgstr ""
+
+msgid "Table encoding?"
+msgstr ""
+
+msgid "Table schema?"
+msgstr ""
+
+msgid "Do you wish to add another database configuration?"
+msgstr ""
+
+msgid "The following database configuration will be created:"
+msgstr ""
+
+msgid "Name:         %s"
+msgstr ""
+
+msgid "Datasource:   %s"
+msgstr ""
+
+msgid "Persistent:   %s"
+msgstr ""
+
+msgid "Host:         %s"
+msgstr ""
+
+msgid "Port:         %s"
+msgstr ""
+
+msgid "User:         %s"
+msgstr ""
+
+msgid "Pass:         %s"
+msgstr ""
+
+msgid "Database:     %s"
+msgstr ""
+
+msgid "Table prefix: %s"
+msgstr ""
+
+msgid "Schema:       %s"
+msgstr ""
+
+msgid "Encoding:     %s"
+msgstr ""
+
+msgid "Use Database Config"
+msgstr ""
+
+msgid "Bake new database configuration settings."
+msgstr ""
+
+msgid "Current paths: %s\nWhat is the path you would like to extract?\n[Q]uit [D]one"
+msgstr ""
+
+msgid "Extract Aborted"
+msgstr ""
+
+msgid "<warning>No directories selected.</warning> Please choose a directory."
+msgstr ""
+
+msgid "The directory path you supplied was not found. Please try again."
+msgstr ""
+
+msgid "Would you like to extract the messages from the CakePHP core?"
+msgstr ""
+
+msgid "What is the path you would like to output?\n[Q]uit"
+msgstr ""
+
+msgid "Would you like to merge all domain and category strings into the default.pot file?"
+msgstr ""
+
+msgid "The output directory %s was not found or writable."
+msgstr ""
+
+msgid "Extracting..."
+msgstr ""
+
+msgid "Paths:"
+msgstr ""
+
+msgid "Output Directory: "
+msgstr ""
+
+msgid "Done."
+msgstr ""
+
+msgid "CakePHP Language String Extraction:"
+msgstr ""
+
+msgid "Directory where your application is located."
+msgstr ""
+
+msgid "Comma separated list of paths."
+msgstr ""
+
+msgid "Merge all domain and category strings into the default.po file."
+msgstr ""
+
+msgid "Do not write lines with locations"
+msgstr ""
+
+msgid "Full path to output directory."
+msgstr ""
+
+msgid "Comma separated list of files."
+msgstr ""
+
+msgid "Ignores all files in plugins if this command is run inside from the same app directory."
+msgstr ""
+
+msgid "Extracts tokens only from the plugin specified and puts the result in the plugin's Locale directory."
+msgstr ""
+
+msgid "Ignores validation messages in the $validate property. If this flag is not set and the command is run from the same app directory, all messages in model validation rules will be extracted as tokens."
+msgstr ""
+
+msgid "If set to a value, the localization domain to be used for model validation messages."
+msgstr ""
+
+msgid "Comma separated list of directories to exclude. Any path containing a path segment with the provided values will be skipped. E.g. test,vendors"
+msgstr ""
+
+msgid "Always overwrite existing .pot files."
+msgstr ""
+
+msgid "Extract messages from the CakePHP core libs."
+msgstr ""
+
+msgid "Processing %s..."
+msgstr ""
+
+msgid "Error: %s already exists in this location. Overwrite? [Y]es, [N]o, [A]ll"
+msgstr ""
+
+msgid "What would you like to name this file?"
+msgstr ""
+
+msgid "Invalid marker content in %s:%s\n* %s("
+msgstr ""
+
+msgid "Generate fixtures for use with the test suite. You can use `bake fixture all` to bake all fixtures."
+msgstr ""
+
+msgid "Name of the fixture to bake. Can use Plugin.name to bake plugin fixtures."
+msgstr ""
+
+msgid "When using generated data, the number of records to include in the fixture(s)."
+msgstr ""
+
+msgid "Which database configuration to use for baking."
+msgstr ""
+
+msgid "CamelCased name of the plugin to bake fixtures for."
+msgstr ""
+
+msgid "Importing schema for fixtures rather than hardcoding it."
+msgstr ""
+
+msgid "Used with --count and <name>/all commands to pull [n] records from the live tables, where [n] is either --count or the default of 10."
+msgstr ""
+
+msgid "Bake Fixture\nPath: %s"
+msgstr ""
+
+msgid "Would you like to import schema for this fixture?"
+msgstr ""
+
+msgid "Would you like to use record importing for this fixture?"
+msgstr ""
+
+msgid "Would you like to build this fixture with data from %s's table?"
+msgstr ""
+
+msgid "Baking test fixture for %s..."
+msgstr ""
+
+msgid "Please provide a SQL fragment to use as conditions\nExample: WHERE 1=1"
+msgstr ""
+
+msgid "How many records do you want to import?"
+msgstr ""
+
+msgid "Baking %s"
+msgstr ""
+
+msgid "Make a selection from the choices above"
+msgstr ""
+
+msgid "Bake Model\nPath: %s"
+msgstr ""
+
+msgid "The table %s doesn't exist or could not be automatically detected\ncontinue anyway?"
+msgstr ""
+
+msgid "Would you like to supply validation criteria \nfor the fields in your model?"
+msgstr ""
+
+msgid "Would you like to define model associations\n(hasMany, hasOne, belongsTo, etc.)?"
+msgstr ""
+
+msgid "The following Model will be created:"
+msgstr ""
+
+msgid "Name:       %s"
+msgstr ""
+
+msgid "DB Config:  %s"
+msgstr ""
+
+msgid "DB Table:   %s"
+msgstr ""
+
+msgid "Primary Key: %s"
+msgstr ""
+
+msgid "Validation: %s"
+msgstr ""
+
+msgid "Associations:"
+msgstr ""
+
+msgid "What is the primaryKey?"
+msgstr ""
+
+msgid "A displayField could not be automatically detected\nwould you like to choose one?"
+msgstr ""
+
+msgid "Choose a field from the options above:"
+msgstr ""
+
+msgid "or enter in a valid regex validation string.\nAlternatively [s] skip the rest of the fields.\n"
+msgstr ""
+
+msgid "Field: <info>%s</info>"
+msgstr ""
+
+msgid "Type: <info>%s</info>"
+msgstr ""
+
+msgid "Please select one of the following validation options:"
+msgstr ""
+
+msgid "%s - Do not do any validation on this field."
+msgstr ""
+
+msgid "You have already chosen that validation rule,\nplease choose again"
+msgstr ""
+
+msgid "Please make a valid selection."
+msgstr ""
+
+msgid "Would you like to add another validation rule\nor skip the rest of the fields?"
+msgstr ""
+
+msgid "One moment while the associations are detected."
+msgstr ""
+
+msgid "None found."
+msgstr ""
+
+msgid "Please confirm the following associations:"
+msgstr ""
+
+msgid "Would you like to define some additional model associations?"
+msgstr ""
+
+msgid "What is the association type?"
+msgstr ""
+
+msgid "Enter a number"
+msgstr ""
+
+msgid "For the following options be very careful to match your setup exactly.\nAny spelling mistakes will cause errors."
+msgstr ""
+
+msgid "What is the alias for this association?"
+msgstr ""
+
+msgid "What className will %s use?"
+msgstr ""
+
+msgid "What is the table for this model?"
+msgstr ""
+
+msgid "A helpful List of possible keys"
+msgstr ""
+
+msgid "What is the foreignKey?"
+msgstr ""
+
+msgid "What is the foreignKey? Specify your own."
+msgstr ""
+
+msgid "What is the associationForeignKey?"
+msgstr ""
+
+msgid "What is the joinTable?"
+msgstr ""
+
+msgid "Define another association?"
+msgstr ""
+
+msgid "Baking model class for %s..."
+msgstr ""
+
+msgid "Possible Models based on your current database:"
+msgstr ""
+
+msgid "Given your model named '%s',\nCake would expect a database table named '%s'"
+msgstr ""
+
+msgid "Do you want to use this table?"
+msgstr ""
+
+msgid "What is the name of the table (without prefix)?"
+msgstr ""
+
+msgid "Your database does not have any tables."
+msgstr ""
+
+msgid "Enter a number from the list above,\ntype in the name of another model, or 'q' to exit"
+msgstr ""
+
+msgid "The model name you supplied was empty,\nor the number you selected was not an option. Please try again."
+msgstr ""
+
+msgid "Bake models."
+msgstr ""
+
+msgid "Name of the model to bake. Can use Plugin.name to bake plugin models."
+msgstr ""
+
+msgid "Bake all model files with associations and validation."
+msgstr ""
+
+msgid "Plugin to bake the model into."
+msgstr ""
+
+msgid "The connection the model table is on."
+msgstr ""
+
+msgid "Plugin: %s already exists, no action taken"
+msgstr ""
+
+msgid "Enter the name of the plugin in CamelCase format"
+msgstr ""
+
+msgid "An error occurred trying to bake: %s in %s"
+msgstr ""
+
+msgid "<info>Plugin Name:</info> %s"
+msgstr ""
+
+msgid "<info>Plugin Directory:</info> %s"
+msgstr ""
+
+msgid "<success>Created:</success> %s in %s"
+msgstr ""
+
+msgid "Choose a plugin path from the paths above."
+msgstr ""
+
+msgid "Create the directory structure, AppModel and AppController classes for a new plugin. Can create plugins in any of your bootstrapped plugin paths."
+msgstr ""
+
+msgid "CamelCased name of the plugin to create."
+msgstr ""
+
+msgid "What is the path to the project you want to bake?"
+msgstr ""
+
+msgid "<warning>A project already exists in this location:</warning> %s Overwrite?"
+msgstr ""
+
+msgid " * Random hash key created for 'Security.salt'"
+msgstr ""
+
+msgid "Unable to generate random hash for 'Security.salt', you should change it in %s"
+msgstr ""
+
+msgid " * Random seed created for 'Security.cipherSeed'"
+msgstr ""
+
+msgid "Unable to generate random seed for 'Security.cipherSeed', you should change it in %s"
+msgstr ""
+
+msgid " * Cache prefix set"
+msgstr ""
+
+msgid "The cache prefix was <error>NOT</error> set"
+msgstr ""
+
+msgid " * app/Console/cake.php path set."
+msgstr ""
+
+msgid "Unable to set console path for app/Console."
+msgstr ""
+
+msgid "<info>CakePHP is on your `include_path`. CAKE_CORE_INCLUDE_PATH will be set, but commented out.</info>"
+msgstr ""
+
+msgid "<warning>CakePHP is not on your `include_path`, CAKE_CORE_INCLUDE_PATH will be hard coded.</warning>"
+msgstr ""
+
+msgid "You can fix this by adding CakePHP to your `include_path`."
+msgstr ""
+
+msgid " * CAKE_CORE_INCLUDE_PATH set to %s in %s"
+msgstr ""
+
+msgid "Unable to set CAKE_CORE_INCLUDE_PATH, you should change it in %s"
+msgstr ""
+
+msgid "   * <warning>Remember to check these values after moving to production server</warning>"
+msgstr ""
+
+msgid "Could not set permissions on %s"
+msgstr ""
+
+msgid "<success>Project baked successfully!</success>"
+msgstr ""
+
+msgid "Project baked but with <warning>some issues.</warning>."
+msgstr ""
+
+msgid "What is the path to the directory layout you wish to copy?"
+msgstr ""
+
+msgid "The directory path you supplied was empty. Please try again."
+msgstr ""
+
+msgid "Directory path does not exist please choose another:"
+msgstr ""
+
+msgid "<info>Skel Directory</info>: "
+msgstr ""
+
+msgid "<info>Will be copied to</info>: "
+msgstr ""
+
+msgid "<error>Could not create</error> '%s' properly."
+msgstr ""
+
+msgid "<error>Bake Aborted.</error>"
+msgstr ""
+
+msgid "You have more than one routing prefix configured"
+msgstr ""
+
+msgid "Please choose a prefix to bake with."
+msgstr ""
+
+msgid "You need to enable %s in %s to use prefix routing."
+msgstr ""
+
+msgid "What would you like the prefix route to be?"
+msgstr ""
+
+msgid "Example: %s"
+msgstr ""
+
+msgid "Enter a routing prefix:"
+msgstr ""
+
+msgid "<error>Unable to write to</error> %s."
+msgstr ""
+
+msgid "Generate a new CakePHP project skeleton."
+msgstr ""
+
+msgid "Application directory to make, if it starts with \"/\" the path is absolute."
+msgstr ""
+
+msgid "Create empty files in each of the directories. Good if you are using git"
+msgstr ""
+
+msgid "The directory layout to use for the new application skeleton. Defaults to cake/Console/Templates/skel of CakePHP used to create the project."
+msgstr ""
+
+msgid "You have more than one set of templates installed."
+msgstr ""
+
+msgid "Please choose the template set you wish to use:"
+msgstr ""
+
+msgid "Which bake theme would you like to use?"
+msgstr ""
+
+msgid "Could not find template for %s"
+msgstr ""
+
+msgid "Would you like bake to build your views interactively?\nWarning: Choosing no will overwrite %s views if they exist."
+msgstr ""
+
+msgid "Would you like to create some CRUD views\n(index, add, view, edit) for this controller?\nNOTE: Before doing so, you'll need to create your controller\nand model classes (including associated models)."
+msgstr ""
+
+msgid "Would you like to create the views for admin routing?"
+msgstr ""
+
+msgid "View Scaffolding Complete.\n"
+msgstr ""
+
+msgid "Controller not found"
+msgstr ""
+
+msgid "The file '%s' could not be found.\nIn order to bake a view, you'll need to first create the controller."
+msgstr ""
+
+msgid "Action Name? (use lowercase_underscored function name)"
+msgstr ""
+
+msgid "The action name you supplied was empty. Please try again."
+msgstr ""
+
+msgid "The following view will be created:"
+msgstr ""
+
+msgid "Controller Name: %s"
+msgstr ""
+
+msgid "Action Name:     %s"
+msgstr ""
+
+msgid "Path:            %s"
+msgstr ""
+
+msgid "Bake Aborted."
+msgstr ""
+
+msgid "Baking `%s` view file..."
+msgstr ""
+
+msgid "Bake views for a controller, using built-in or custom templates."
+msgstr ""
+
+msgid "Name of the controller views to bake. Can be Plugin.name as a shortcut for plugin baking."
+msgstr ""
+
+msgid "Will bake a single action's file. core templates are (index, add, edit, view)"
+msgstr ""
+
+msgid "Will bake the template in <action> but create the filename after <alias>."
+msgstr ""
+
+msgid "Plugin to bake the view into."
+msgstr ""
+
+msgid "Set to only bake views for a prefix in Routing.prefixes"
+msgstr ""
+
+msgid "The connection the connected model is on."
+msgstr ""
+
+msgid "Bake all CRUD action views for all controllers. Requires models and controllers to exist."
+msgstr ""
+

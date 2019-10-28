@@ -1,0 +1,33 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+msgid "Engine is not loaded"
+msgstr "Il motore non è stato caricato"
+
+msgid "Pdf engine \"%s\" not found"
+msgstr "Il motore pdf \"%s\" non è stato trovato"
+
+msgid "Pdf engines must extend \"AbstractPdfEngine\""
+msgstr "I motori pdf devono estendere  \"AbstractPdfEngine\""
+
+msgid "Crypto is not loaded"
+msgstr "Crypto non è stato caricato"
+
+msgid "Pdf crypto \"%s\" not found"
+msgstr "Crypto Pdf \"%s\" non è stato trovato"
+
+msgid "Crypto engine must extend \"AbstractPdfCrypto\""
+msgstr "Il motore Crypto devono estendere  \"AbstractPdfEngine\""
+
