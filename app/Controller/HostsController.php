@@ -919,6 +919,10 @@ class HostsController extends AppController {
 
         $sharingContainers = array_diff_key($containers, [$host['Host']['container_id'] => $host['Host']['container_id']]);
         if ($this->request->is('post') || $this->request->is('put')) {
+            if($this->request->data['Container']['Container'] === ''){
+                //Resolve: [] operator not supported for strings
+                $this->request->data['Container']['Container'] = [];
+            }
             $this->request->data['Container']['Container'][] = $this->request->data['Host']['container_id'];
             if ($this->Host->saveAll(Hash::merge($this->request->data, $host))) {
                 if ($this->request->ext == 'json') {
