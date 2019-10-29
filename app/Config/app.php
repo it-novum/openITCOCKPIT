@@ -15,6 +15,7 @@ $config = [
     'languages'   => [
         'en_US' => 'english',
         'de_DE' => 'german',
+        'fr_FR' => 'french',
     ],
     'paths'       => [
         'lessc' => [
