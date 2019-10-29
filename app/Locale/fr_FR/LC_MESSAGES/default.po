@@ -10080,7 +10080,7 @@ msgid "Host Macros"
 msgstr "Macros hôtes"
 
 msgid "The UUID of the host (\"1284b927-2bd2-4737-a3da-c39854376ca2\")"
-msgstr "L'UUID de l'hôte (\"1284b927-2bd2-4737-a3da-c39854376ca2")"
+msgstr "L'UUID de l'hôte (\"1284b927-2bd2-4737-a3da-c39854376ca2\")"
 
 msgid "The human name of the host (\"srvstorage01\")"
 msgstr "Le nom humain de l'hôte (\"srvstorage01\")"
@@ -10203,7 +10203,7 @@ msgid "The UUID of the host group (\"fc11e1b9-9c0f-49d7-90b5-f283fe39a21d\")"
 msgstr "L'UUID du groupe hôte (\"fc11e1b9-9c0f-49d7-90b5-f283fe39a21d\")"
 
 msgid "A comma separated list of the host group mebers as UUIDs (\"c7176869-ffb7-4149-b960-bdbf9ae85968,f5e943f3-c46f-4f6d-8fc1-468774a72332\")."
-msgstr "Liste séparée par des virgules du groupe hôte correspondant à l’UUID ("c7176869-ffb7-4149-b960-bdbf9ae85968, f5e943f3-c46f-4f6d-8fc1-468774a72332")."
+msgstr "Liste séparée par des virgules du groupe hôte correspondant à l’UUID (\"c7176869-ffb7-4149-b960-bdbf9ae85968, f5e943f3-c46f-4f6d-8fc1-468774a72332\")."
 
 msgid "Service Macros"
 msgstr "Macros de service"
