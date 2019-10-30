@@ -262,3 +262,21 @@ a:not([href]):not([tabindex]) {
 .margin-10 {
     margin: 10px;
 }
+
+.label-forced {
+    display: inline !important;
+    padding: .2em .6em .3em !important;
+    font-size: 75% !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    color: #fff !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    vertical-align: baseline !important;
+    border-radius: .25em !important;
+}
+
+.btn-lower-padding {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+}

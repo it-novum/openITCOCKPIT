@@ -20,9 +20,10 @@ $config = [
             '/vendor/node_modules/jquery-ui-dist/jquery-ui.css',
             '/vendor/node_modules/node-waves/dist/waves.js',
             '/vendor/node_modules/font-awesome/css/font-awesome.css',
-            '/smartadmin4/dist/css/fa-brands.css',
+            '/vendor/node_modules/@fortawesome/fontawesome-free/css/all.min.css',
+            /*'/smartadmin4/dist/css/fa-brands.css',
             '/smartadmin4/dist/css/fa-regular.css',
-            '/smartadmin4/dist/css/fa-solid.css',
+            '/smartadmin4/dist/css/fa-solid.css', */
             '/smartadmin4/dist/css/vendors.bundle.css',
             '/smartadmin4/dist/css/app.bundle.css',
             '/smartadmin4/dist/css/themes/cust-theme-10.css',

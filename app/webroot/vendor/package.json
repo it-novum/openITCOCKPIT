@@ -33,6 +33,7 @@
         "dropzone": "^5.5.1",
         "rangyinputs": "^1.2.0",
         "jquery-slimscroll": "^1.3.8",
-        "node-waves": "^0.7.6"
+        "node-waves": "^0.7.6",
+        "@fortawesome/fontawesome-free": "^5.11.2"
     }
 }
