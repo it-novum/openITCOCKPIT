@@ -15,292 +15,292 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 msgid "Cannot load configuration files with ../ in them."
-msgstr ""
+msgstr "Kann keine Konfigurationsdaten mit ../ darin laden."
 
 msgid "No variable %s found in %s"
-msgstr ""
+msgstr "Keine Variable %s in %s gefunden"
 
 msgid "Encountered unexpected %s. Cannot generate SQL log."
-msgstr ""
+msgstr "Auf unerwartetes %s gestoßen."
 
 msgid "CakePHP: the rapid development php framework"
-msgstr ""
+msgstr "CakePHP: das PHP framework zur schnellen Entwicklung"
 
 msgid "The request has been black-holed"
-msgstr ""
+msgstr "Anfrage ge-black-holed"
 
 msgid "Debug setting does not allow access to this url."
-msgstr ""
+msgstr "Debug-Einstellung erlaubt keinen Zugriff auf diese url."
 
 msgid "Cache engine %s is not available."
-msgstr ""
+msgstr "Cache engine %s nicht verfügbar."
 
 msgid "Cache engines must use %s as a base class."
-msgstr ""
+msgstr "Cache engines müssen %s als Basisklasse verwenden."
 
 msgid "Cache engine \"%s\" is not properly configured. Ensure required extensions are installed, and credentials/permissions are correct"
-msgstr ""
+msgstr "Cache engine \"%s\" ist nicht korrekt konfiguriert. Stellen Sie sicher, dass die nötigen Erweiterungen installiert sind, und dass die Zugriffsrechte richtig sind"
 
 msgid "%s cache was unable to write '%s' to %s cache"
-msgstr ""
+msgstr "%s cache konnte '%s' nicht ins %s cache schreiben"
 
 msgid "Invalid cache group %s"
-msgstr ""
+msgstr "Ungültige cache-Gruppe %s"
 
 msgid "Files cannot be atomically decremented."
-msgstr ""
+msgstr "Dateien können nicht atomisch vermindert werden."
 
 msgid "Files cannot be atomically incremented."
-msgstr ""
+msgstr "Datein können nicht atomisch erhöht werden."
 
 msgid "Could not apply permission mask \"%s\" on cache file \"%s\""
-msgstr ""
+msgstr "Konnte Zugriffsrechtmaske \"%s\" nicht auf cache-Datei \"%s\" anwenden"
 
 msgid "%s is not writable"
-msgstr ""
+msgstr "%s ist nicht beschreibbar"
 
 msgid "Method %s not implemented for compressed cache in %s"
-msgstr ""
+msgstr "Methode %s ist nicht für komprimiertes Cache in %s implementiert"
 
 msgid "Memcached extension is not build with SASL support"
-msgstr ""
+msgstr "Memcached-Erweiterung fehlt SASL support"
 
 msgid "%s is not a valid serializer engine for Memcached"
-msgstr ""
+msgstr "%s ist keine gültige serializer engine für Memcached"
 
 msgid "Memcached extension is not compiled with %s support"
-msgstr ""
+msgstr "Memcached-Erweiterung nicht mit %s kompiliert"
 
 msgid "Could not load configuration file: %s"
-msgstr ""
+msgstr "Konnte Konfigurationsdatei nicht laden: %s"
 
 msgid "%s modified"
-msgstr ""
+msgstr "%s bearbeitet"
 
 msgid "Could not find %s."
-msgstr ""
+msgstr "Konnte %s nicht finden."
 
 msgid "AclComponent adapters must implement AclInterface"
-msgstr ""
+msgstr "AclComponent-Adapter müssen AclInterface implementieren"
 
 msgid "%s is deprecated, use %s instead"
-msgstr ""
+msgstr "%s ist veraltet; verwenden Sie %s stattdessen"
 
 msgid "Authorization adapter \"%s\" was not found."
-msgstr ""
+msgstr "Autorisationsadapter \"%s\" nicht gefunden."
 
 msgid "Authorization objects must implement an %s method."
-msgstr ""
+msgstr "Autorisationsobjekte müssen eine %s Methode implementieren."
 
 msgid "Authentication adapter \"%s\" was not found."
-msgstr ""
+msgstr "Authentifizierungsadapter \"%s\" nicht gefunden."
 
 msgid "Authentication objects must implement an %s method."
-msgstr ""
+msgstr "Authentifizierungsobjekte müssen eine %s Methode implementieren."
 
 msgid "You must use cipher, rijndael or aes for cookie encryption type"
-msgstr ""
+msgstr "cipher, rijndael, oder aes muss als cookie-chiffre ausgewählt sein"
 
 msgid "You must give a handler callback."
-msgstr ""
+msgstr "Ein hanlder-callback muss angegeben werden."
 
 msgid "\"roles\" section not found in configuration."
-msgstr ""
+msgstr "\"Rollen\" Abschnitt nicht in Konfiguration gefunden."
 
 msgid "Neither \"allow\" nor \"deny\" rules were provided in configuration."
-msgstr ""
+msgstr "Weder \"erlauben\" noch \"akzeptieren\" Regeln in Konfiguration."
 
 msgid "cycle detected when inheriting %s from %s. Path: %s"
-msgstr ""
+msgstr "Kreis festgestellt beim Erben %s von %s. Pfad: %s"
 
 msgid "Password hasher class \"%s\" was not found."
-msgstr ""
+msgstr "Passwort-Hasher Klasse \"%s\" nicht gefunden."
 
 msgid "Password hasher must extend AbstractPasswordHasher class."
-msgstr ""
+msgstr "Passwort-Hasher muss AbstractPasswordHasher Klasse erweitern."
 
 msgid "$controller needs to be an instance of Controller"
-msgstr ""
+msgstr "$controller muss eine Instanz von Controller sein"
 
 msgid "$controller does not implement an %s method."
-msgstr ""
+msgstr "$controller implementiert keine %s Methode."
 
 msgid "CrudAuthorize::authorize() - Attempted access of un-mapped action \"%1$s\" in controller \"%2$s\""
-msgstr ""
+msgstr "CrudAuthorize::authorize() - Versuchter Zugriff auf nicht-gemappte Aktion \"%1$s\" in controller \"%2$s\""
 
 msgid "Can't find application core file. Please create %s, and make sure it is readable by PHP."
-msgstr ""
+msgstr "Kann application core file nicht finden. Bitte erstellen Sie %s, und stellen Sie sicher dass diese von PHP lesbar ist."
 
 msgid "Can't find application bootstrap file. Please create %s, and make sure it is readable by PHP."
-msgstr ""
+msgstr "Kann keine application bootstrap Datei finden. Bitte erstellen Sie %s, und stellen Sie sicher dass diese von PHP lesbar ist."
 
 msgid "There is no \"%s\" adapter."
-msgstr ""
+msgstr "Kein \"%s\" Adapter."
 
 msgid "The \"%s\" adapter, does not have a %s method."
-msgstr ""
+msgstr "\"s\" Adapter hat keine %s Methode."
 
 msgid "The eventKey variable is required"
-msgstr ""
+msgstr "eventKey Variable ist erforderlich"
 
 msgid "You cannot use \"\" as a domain."
-msgstr ""
+msgstr "Sie können \"\" nicht als Domain verwenden."
 
 msgid "Missing plural form translation for \"%s\" in \"%s\" domain, \"%s\" locale.  Check your po file for correct plurals and valid Plural-Forms header."
-msgstr ""
+msgstr "Fehlende Pluralform-Übersetzung für \"%s\" in \"%s\" Domain, \"%s\" locale. Überprüfen Sie Ihre po Datei auf korrekte Plurale und Pluralform-Header."
 
 msgid "Invalid key name"
-msgstr ""
+msgstr "Ungültiger key-Name"
 
 msgid "Missing logger class name"
-msgstr ""
+msgstr "Fehlender logger Klassenname"
 
 msgid "Stream %s not found"
-msgstr ""
+msgstr "Stream %s nicht gefunden"
 
 msgid "logger class %s does not implement a %s method."
-msgstr ""
+msgstr "logger Klasse %s implementiert keine %s Methode."
 
 msgid "Could not load class %s"
-msgstr ""
+msgstr "Konnte Klasse %s nicht laden"
 
 msgid "Could not apply permission mask \"%s\" on log file \"%s\""
-msgstr ""
+msgstr "Konnte Zugriffsmaske \"%s\" nicht auf log-Datei \"%s\" anwenden"
 
 msgid "AclNode::node() - Couldn't find %s node identified by \"%s\""
-msgstr ""
+msgstr "AclNode::node() - Konnte %s Knoten durch \"%s\" identifiziert nicht finden."
 
 msgid "%s - Method %s not found in any attached behavior"
-msgstr ""
+msgstr "%s - Methode %s in keinem angefügten behavior gefunden"
 
 msgid "Schema generation error: invalid column type %s for %s.%s does not exist in DBO"
-msgstr ""
+msgstr "Schemata-Erstellungsfehler: ungültiger Spaltentyp %s für %s. %s existiert nicht in DBO"
 
 msgid "(Model::getColumnTypes) Unable to build model field data. If you are using a model without a database table, try implementing schema()"
-msgstr ""
+msgstr "(Model::getColumnTypes) Kann Modellfelddaten nicht erstellen. Sollten Sie in Modell ohne Datenbanktabelle verwenden, versuchen Sie, schema() zu implementieren"
 
 msgid "Invalid join model settings in %s. The association parameter has the wrong type, expecting a string or array, but was passed type: %s"
-msgstr ""
+msgstr "Ungültige join model Einstellungen in %s. Der Assoziierungsparamter hat den falschen Typ. String oder Array erwartet, bekam stattdessen: %s"
 
 msgid "%s - Failed ARO node lookup in permissions check. Node references:\nAro: %s\nAco: %s"
-msgstr ""
+msgstr "%s - ARO node lookup in Zugriffsrechtscheck fehlgeschlagen. Node referenziert:\nAro: %s\nAco: %s"
 
 msgid "%s - Failed ACO node lookup in permissions check. Node references:\nAro: %s\nAco: %s"
-msgstr ""
+msgstr "%s - ACO node lookup in Zugriffsrechtscheck fehlgeschlagen. Node referenziet:\nAro: %s\nAco: %s"
 
 msgid "ACO permissions key %s does not exist in %s"
-msgstr ""
+msgstr "ACO Zugriffsrechtsschlüssel %s existiert nicht in %s"
 
 msgid "%s - Invalid node"
-msgstr ""
+msgstr "%s - Ungültiger node"
 
 msgid "Invalid permission key \"%s\""
-msgstr ""
+msgstr "Ungültiger Zugriffsrechtsschlüssel \"%s\""
 
 msgid "Callback %s not defined in %s"
-msgstr ""
+msgstr "Callback %s nicht definiert in %s"
 
 msgid "AclBehavior is setup with more then one type, please specify type parameter for node()"
-msgstr ""
+msgstr "AclBehavior hat mehr als einen Typ, bitte geben Sie den Typen-Parameter für node() an"
 
 msgid "Model \"%s\" is not associated with model \"%s\""
-msgstr ""
+msgstr "Modell \"%s\" ist nicht mit Modell \"%s\" assoziiert"
 
 msgid "Datasource %s for TranslateBehavior of model %s is not connected"
-msgstr ""
+msgstr "Datenquelle %s für TranslateBehavior von Modell %s ist nicht verbunden"
 
 msgid "You cannot bind a translation named \"name\"."
-msgstr ""
+msgstr "Eine Übersetzung namens \"name\" kann nicht gebunden werden."
 
 msgid "Association %s is already bound to model %s"
-msgstr ""
+msgstr "Assoziierung %s ist bereits zu Modell %s gebunden"
 
 msgid "Unable to configure the session, setting %s failed."
-msgstr ""
+msgstr "Sitzung konnte nicht konfiguriert werden, Einstellung %s fehlgeschlagen."
 
 msgid "Could not load %s to handle the session."
-msgstr ""
+msgstr "Konnte %s nicht zum handlen der Sitzung laden."
 
 msgid "Chosen SessionHandler does not implement CakeSessionHandlerInterface it cannot be used with an engine key."
-msgstr ""
+msgstr "Der gewählte SessionHandler implementiert CakeSessionHandlerInterface nicht und kann darum nicht mit einem Engine-key verwendet werden."
 
 msgid "Selected driver is not enabled"
-msgstr ""
+msgstr "Ausgewählter Treiber ist nicht aktiv"
 
 msgid "Error in Model %s"
-msgstr ""
+msgstr "Fehler in Modell %s"
 
 msgid "Invalid schema object"
-msgstr ""
+msgstr "Ungültiges Schema-Objekt"
 
 msgid "Column name or type not defined in schema"
-msgstr ""
+msgstr "Spaltenname oder Typ nicht im Schema definiert"
 
 msgid "Column type %s does not exist"
-msgstr ""
+msgstr "Spaltentyp %s existiert nicht"
 
 msgid "Could not describe table for %s"
-msgstr ""
+msgstr "Konnte Tabelle nicht für %s beschreiben"
 
 msgid "Could not find validation handler %s for %s"
-msgstr ""
+msgstr "Konnte keinen validation handler %s für %s finden"
 
 msgid "Method %s does not exist"
-msgstr ""
+msgstr "Methode %s existiert nicht"
 
 msgid "Unknown status code"
-msgstr ""
+msgstr "Unbekannter Statuscode"
 
 msgid "Invalid status code"
-msgstr ""
+msgstr "Ungültiger Statuscode"
 
 msgid "The requested file contains `..` and will not be read."
-msgstr ""
+msgstr "Die angefragte Datei enthält `..` und wird darum nicht gelesen."
 
 msgid "The requested file %s was not found or not readable"
-msgstr ""
+msgstr "Die angefragte Datei %s konnte nicht gefunden werden oder ist nicht lesbar"
 
 msgid "Connection timed out"
-msgstr ""
+msgstr "Verbindung abgelaufen"
 
 msgid "Invalid encryption scheme chosen"
-msgstr ""
+msgstr "Ungültiges Chiffren-Schema ausgewählt"
 
 msgid "Unable to perform enableCrypto operation on CakeSocket"
-msgstr ""
+msgstr "Konnte enableCrypto nicht auf CakeSocket anwenden"
 
 msgid "From requires only 1 email address."
-msgstr ""
+msgstr "Von benötigt nur eine email Addresse."
 
 msgid "Sender requires only 1 email address."
-msgstr ""
+msgstr "Absender benötigt nur eine email Addresse."
 
 msgid "Reply-To requires only 1 email address."
-msgstr ""
+msgstr "Reply-To benötigt nur eine email Adresse."
 
 msgid "Disposition-Notification-To requires only 1 email address."
-msgstr ""
+msgstr "Disposition-Notification-To benötigt nur eine email Addresse."
 
 msgid "Return-Path requires only 1 email address."
-msgstr ""
+msgstr "Return-Path benötigt nur eine email Addresse."
 
 msgid "Invalid email: \"%s\""
-msgstr ""
+msgstr "Ungültige email: \"%s\""
 
 msgid "$headers should be an array."
-msgstr ""
+msgstr "$headers sollte ein Array sein."
 
 msgid "Format not available."
-msgstr ""
+msgstr "Format nicht verfügbar."
 
 msgid "Class \"%s\" not found."
-msgstr ""
+msgstr "Klasse \"%s\" nicht gefunden."
 
 msgid "The \"%s\" does not have a %s method."
-msgstr ""
+msgstr "\"%s\" hat keine %s Methode."
 
 msgid "Invalid format for Message-ID. The text should be something like \"<uuid@server.com>\""
-msgstr ""
+msgstr "Ungültiges Message-ID Format. Der Text sollte etwa \"<uuid@server.com>\" sein"
 
 msgid "No file or data specified."
 msgstr ""

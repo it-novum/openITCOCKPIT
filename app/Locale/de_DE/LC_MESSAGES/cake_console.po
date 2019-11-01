@@ -14,244 +14,244 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 msgid "Comparing Database to Schema..."
-msgstr ""
+msgstr "Vergleiche Datenbasis mit Schema..."
 
 msgid "Schema is up to date."
-msgstr ""
+msgstr "Schema ist aktuell."
 
 msgid "The following statements will run."
-msgstr ""
+msgstr "Die folgenden statements werden ausgeführt."
 
 msgid "Updating Database..."
-msgstr ""
+msgstr "Aktualisiere Datenbasis..."
 
 msgid "End update."
-msgstr ""
+msgstr "Beende Update."
 
 msgid "Absolute path or relative to APP."
-msgstr ""
+msgstr "Absoluter Pfad oder Pfad relativ zu APP."
 
 msgid "<error>Error:</error> %s\n%s"
-msgstr ""
+msgstr "<error>Fehler:</error> %s\n%s"
 
 msgid "%s in [%s, line %s]"
-msgstr ""
+msgstr "%s in [%s, Zeile %s]"
 
 msgid "<error>%s Error:</error> %s\n"
-msgstr ""
+msgstr "<error>%s Fehler:</error> %s\n"
 
 msgid " <comment>(optional)</comment>"
-msgstr ""
+msgstr " <comment>(optional)</comment>"
 
 msgid " <comment>(choices: %s)</comment>"
-msgstr ""
+msgstr " <comment>(optionen: %s)</comment>"
 
 msgid "\"%s\" is not a valid value for %s. Please use one of \"%s\""
-msgstr ""
+msgstr "\"%s\" ist kein gültiger Wert für %s. Bitte verwenden Sie einen von \"%s\""
 
 msgid "Short option \"%s\" is invalid, short options must be one letter."
-msgstr ""
+msgstr "Kurzoption \"%s\" ist ungültig, Kurzoptionen dürfen nur einen Buchstaben haben."
 
 msgid " <comment>(default: %s)</comment>"
-msgstr ""
+msgstr " <comment>(standard: %s)</comment>"
 
 msgid "\"%s\" is not a valid value for --%s. Please use one of \"%s\""
-msgstr ""
+msgstr "\"%s\" ist kein gültiger Wert für --%s. Bitte verwenden Sie einen von \"%s\""
 
 msgid "Display this help."
-msgstr ""
+msgstr "Diese Hilfestellung anzeigen."
 
 msgid "Enable verbose output."
-msgstr ""
+msgstr "Ausführliche Ausgabe aktivieren."
 
 msgid "Enable quiet output."
-msgstr ""
+msgstr "Verminderte Ausgaben aktivieren."
 
 msgid "Missing required arguments. %s is required."
-msgstr ""
+msgstr "Fehlende Argumente. %s ist erforderlich."
 
 msgid "Unknown short option `%s`"
-msgstr ""
+msgstr "Unbekannte Kurzoption `%s`"
 
 msgid "Unknown option `%s`"
-msgstr ""
+msgstr "Unbekannte Option `%s`"
 
 msgid "Too many arguments."
-msgstr ""
+msgstr "Zu viele Argumente."
 
 msgid "<info>Usage:</info>"
-msgstr ""
+msgstr "<info>Verwendung:</info>"
 
 msgid "<info>Subcommands:</info>"
-msgstr ""
+msgstr "<info>Unterbefehle:</info>"
 
 msgid "To see help on a subcommand use <info>`cake %s [subcommand] --help`</info>"
-msgstr ""
+msgstr "Um Hilfe zu einem Unterbefehl zu bekommen: <info>`cake %s [unterbefehl] --help`</info>"
 
 msgid "<info>Options:</info>"
-msgstr ""
+msgstr "<info>Optionen:</info>"
 
 msgid "<info>Arguments:</info>"
-msgstr ""
+msgstr "<info>Argumente:</info>"
 
 msgid "<info>Welcome to CakePHP %s Console</info>"
-msgstr ""
+msgstr "<info>Willkommen zur CakePHP %s Konsole</info>"
 
 msgid "App : %s"
-msgstr ""
+msgstr "App : %s"
 
 msgid "Path: %s"
-msgstr ""
+msgstr "Pfad: %s"
 
 msgid "<error>Error:</error> %s"
-msgstr ""
+msgstr "<error>Fehler:</error> %s"
 
 msgid "<warning>File `%s` exists</warning>"
-msgstr ""
+msgstr "<warning>Datei `%s` existiert bereits</warning>"
 
 msgid "Do you want to overwrite?"
-msgstr ""
+msgstr "Wollen Sie sie überschreiben?"
 
 msgid "<error>Quitting</error>."
-msgstr ""
+msgstr "<error>Beende</error>."
 
 msgid "Skip `%s`"
-msgstr ""
+msgstr "`%s` überspringen"
 
 msgid "Creating file %s"
-msgstr ""
+msgstr "Erstelle Datei %s"
 
 msgid "<success>Wrote</success> `%s`"
-msgstr ""
+msgstr "`%s` <success>geschrieben</success> "
 
 msgid "<error>Could not write to `%s`</error>."
-msgstr ""
+msgstr "<error>Konnte nicht nach `%s` schreiben</error>."
 
 msgid "PHPUnit is not installed. Do you want to bake unit test files anyway?"
-msgstr ""
+msgstr "PHPUnit ist nicht installiert. Einheitstests trotzdem baken?"
 
 msgid "You can download PHPUnit from %s"
-msgstr ""
+msgstr "Sie können PHPUnit von %s herunterladen"
 
 msgid "Error: Your current CakePHP configuration is set to an ACL implementation other than DB."
-msgstr ""
+msgstr "Fehler: Die aktuelle CakePHP-Konfiguration ist nicht auf DB als ACL implementation eingestellt."
 
 msgid "Please change your core config to reflect your decision to use DbAcl before attempting to use this script"
-msgstr ""
+msgstr "Bitte bearbeiten Sie Ihre core-Konfiguration um Ihre Entscheidung, DbAcl zu verwenden zu reflektieren, bevor Sie dieses Script verwenden"
 
 msgid "Current ACL Classname: %s"
-msgstr ""
+msgstr "Aktueller ACL Klassen-Name: %s"
 
 msgid "Your database configuration was not found. Take a moment to create one."
-msgstr ""
+msgstr "Keine Datenbasiskonfiguration gefunden. Bitte erstellen Sie eine."
 
 msgid "/ can not be used as an alias!"
-msgstr ""
+msgstr "/ kann nicht als alias verwendet werden!"
 
 msgid "\t/ is the root, please supply a sub alias"
-msgstr ""
+msgstr "\t/ ist root, bitte geben Sie ein sub-alias an"
 
 msgid "<success>New %s</success> '%s' created."
-msgstr ""
+msgstr "<success>Neue %s</success> '%s' erstellt."
 
 msgid "There was a problem creating a new %s '%s'."
-msgstr ""
+msgstr "Es gab ein Problem bei der Erstellung einer neuen %s '%s'."
 
 msgid "Node Not Deleted. "
-msgstr ""
+msgstr "Node nicht gelöscht."
 
 msgid "There was an error deleting the %s."
-msgstr ""
+msgstr "Es gab einen Fehler beim Löschen von %s."
 
 msgid "<success>%s deleted.</success>"
-msgstr ""
+msgstr "<success>%s gelöscht.</success>"
 
 msgid "There was an error deleting the %s. Node does not exist."
-msgstr ""
+msgstr "Es gab einen Fehler beim Löschen von %s. Node existiert nicht."
 
 msgid "Error in setting new parent. Please make sure the parent node exists, and is not a descendant of the node specified."
-msgstr ""
+msgstr "Fehler beim setzen des Übergeordneten Knotens. Bitte stellen Sie sicher, dass dieser existiert, und kein Nachkomme des angegebenen Knotens ist."
 
 msgid "Node parent set to %s"
-msgstr ""
+msgstr "Übergeordneter Knoten auf %s gesetzt"
 
 msgid "Supplied Node '%s' not found"
-msgstr ""
+msgstr "Angegebener Knoten '%s' nicht gefunden"
 
 msgid "No tree returned."
-msgstr ""
+msgstr "Kein Tree zurückgegeben."
 
 msgid "Path:"
-msgstr ""
+msgstr "Pfad:"
 
 msgid "%s is <success>allowed</success>."
-msgstr ""
+msgstr "%s ist <success>erlaubt</success>."
 
 msgid "%s is <error>not allowed</error>."
-msgstr ""
+msgstr "%s ist <error>nicht erlaubt</error>."
 
 msgid "Permission <success>granted</success>."
-msgstr ""
+msgstr "Erlaubnis <success>erteilt</success>."
 
 msgid "Permission was <error>not granted</error>."
-msgstr ""
+msgstr "Erlaubnis <error>nicht erteilt</error>."
 
 msgid "Permission denied."
-msgstr ""
+msgstr "Zugriff verweigert."
 
 msgid "Permission was not denied."
-msgstr ""
+msgstr "Zugriff nicht verweigert."
 
 msgid "Permission inherited."
-msgstr ""
+msgstr "Zugriff geerbt."
 
 msgid "Permission was not inherited."
-msgstr ""
+msgstr "Zugriff nicht geerbt."
 
 msgid "%s not found"
-msgstr ""
+msgstr "%s nicht gefunden"
 
 msgid "Type of node to create."
-msgstr ""
+msgstr "Art des zu erstellenden Knotens."
 
 msgid "A console tool for managing the DbAcl"
-msgstr ""
+msgstr "Ein Konsolenwerkzeug zum Management von DbAcl"
 
 msgid "Create a new ACL node"
-msgstr ""
+msgstr "Neuen ACL Knoten erstellen"
 
 msgid "Creates a new ACL object <node> under the parent"
-msgstr ""
+msgstr "Erstellt ein neues ACL-Objekt <node> unter dem Übergeordneten Knoten"
 
 msgid "You can use `root` as the parent when creating nodes to create top level nodes."
-msgstr ""
+msgstr "`root` kann als übergeordneter Knoten verwendet werden, um oberste Knoten zu erstellen."
 
 msgid "The node selector for the parent."
-msgstr ""
+msgstr "Die Knoten-Auswahl für den Übergeordneten Knoten."
 
 msgid "The alias to use for the newly created node."
-msgstr ""
+msgstr "Das Alias fÜr den neu erstellten Knoten."
 
 msgid "Deletes the ACL object with the given <node> reference"
-msgstr ""
+msgstr "Löscht das ACL-Objekt mit der angegebenen <node> Referenz"
 
 msgid "Delete an ACL node."
-msgstr ""
+msgstr "ACL Knoten löschen."
 
 msgid "The node identifier to delete."
-msgstr ""
+msgstr "Identifier des zu löschenden Knotens."
 
 msgid "Moves the ACL node under a new parent."
-msgstr ""
+msgstr "Verschiebt den ACL-Knoten unter einen neuen Elternknoten."
 
 msgid "Moves the ACL object specified by <node> beneath <parent>"
-msgstr ""
+msgstr "Verschiebt das durch <node> angegebene ACL-Objekt unter <parent>"
 
 msgid "The node to move"
-msgstr ""
+msgstr "Der zu verschiebende Knoten"
 
 msgid "The new parent for <node>."
-msgstr ""
+msgstr "Der neue Übergeordnete Knoten für <node>."
 
 msgid "Print out the path to an ACL node."
 msgstr ""
