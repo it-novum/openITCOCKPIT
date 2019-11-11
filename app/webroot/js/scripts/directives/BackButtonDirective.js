@@ -7,7 +7,7 @@ angular.module('openITCOCKPIT').directive('backButton', function($http, $state){
 
         link: function($scope, element, attr){
             element.click(function(){
-                if($state.previous.name !== "" && $state.previous.url !== "^"){
+                if($state.previous != null && $state.previous.name !== "" && $state.previous.url !== "^"){
                     $state.go($state.previous.name, $state.previous.params);
                 }else if($scope.fallbackState != null){
                     $state.go($scope.fallbackState);

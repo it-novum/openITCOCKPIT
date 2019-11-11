@@ -64,7 +64,7 @@ class AngularAssetsBootstrap4 implements AngularAssetsInterface {
         'js/scripts/ng.app.js',
         'js/vendor/UUID.js-4.0.3/dist/uuid.core.js',
         'vendor/node_modules/underscore/underscore-min.js',
-       // 'js/vendor/noty/noty.min.js',
+        'vendor/node_modules/noty/lib/noty.min.js',
         'js/vendor/gauge.min.js',
         'js/lib/jquery.svg.min.js',
         'js/lib/jquery.svgfilter.min.js',

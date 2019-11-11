@@ -132,6 +132,27 @@
                             </div>
                         </div>
 
+                        <div class="form-group" ng-class="{'has-error': errors.user_id}">
+                            <label class="control-label">
+                                <?php echo __('User'); ?>
+                            </label>
+                            <select
+                                    id="ContactUser"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="users"
+                                    ng-options="user.key as user.value for user in users"
+                                    ng-model="post.Contact.user_id">
+                            </select>
+                            <div ng-repeat="error in errors.user_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block">
+                                <?php echo __('For browser notifications, a user needs to be assigned to the contact. User Id will be automatically available as $_CONTACTOITCUSERID$ contact macro.') ?>
+                            </div>
+                        </div>
+
+
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="card">

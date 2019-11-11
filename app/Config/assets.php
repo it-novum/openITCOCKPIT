@@ -27,7 +27,7 @@ $config = [
             '/smartadmin4/dist/css/vendors.bundle.css',
             '/smartadmin4/dist/css/app.bundle.css',
             '/smartadmin4/dist/css/themes/cust-theme-10.css',
-            'openitcockpit.css'
+            'openitcockpit.css',
             /*'/vendor/node_modules/@fullcalendar/core/main.css',
             '/vendor/node_modules/@fullcalendar/daygrid/main.css',
             '/vendor/node_modules/@fullcalendar/timegrid/main.css',
@@ -47,8 +47,8 @@ $config = [
             'vendor/gridstack/gridstack.min.css',*/
             //'vendor/vis-4.21.0/dist/vis.css',
             //'my_vis.css',
-           /* 'vendor/noty/noty.css',
-            'flippy.css',
+            '/vendor/node_modules/noty/lib/noty.css',
+            /*'flippy.css',
             'vendor/image-picker.css',*/
           //  '/vendor/node_modules/angular-gridster/dist/angular-gridster.css',
             /*'vendor/radio_buttons.css',
