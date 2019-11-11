@@ -23,29 +23,46 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="<?php echo $this->webroot; ?>">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="ContactsIndex">
+            <i class="fa fa-user"></i> <?php echo __('Contacts'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="ContactsIndex">
+            <i class="fa fa-list"></i> <?php echo __('index'); ?>
+        </a>
+    </li>
+</ol>
 <massdelete></massdelete>
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    Contacts
-                    <span class="fw-300"><i>overview</i></span>
+                    <?php echo __('Contacts'); ?>
+                    <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
                     <button class="btn btn-xs btn-default mr-1 shadow-0 ">
-                        <i class="fas fa-sync"></i> Refresh
+                        <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
                     <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="ContactsAdd">
-                        <i class="fas fa-plus"></i> New
+                        <i class="fas fa-plus"></i> <?php echo __('New'); ?>
                     </button>
                     <?php if ($isLdapAuth): ?>
                         <button class="btn btn-xs btn-warning mr-1 shadow-0" ui-sref="ContactsLdap">
-                            <i class="fas fa-plus"></i> Import from LDAP
+                            <i class="fas fa-plus"></i> <?php echo __('Import from LDAP'); ?>
                         </button>
                     <?php endif; ?>
                     <button class="btn btn-xs btn-primary shadow-0">
-                        <i class="fas fa-filter"></i> Filter
+                        <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
                     </button>
                 </div>
             </div>
@@ -55,187 +72,191 @@
                         <div class="frame-wrap">
                             <table class="table table-striped m-0 table-bordered">
                                 <thead>
-                                <tr>
-                                    <th class="no-sort width-15">
-                                        <i class="fas fa-check-square fa-lg"></i>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Contacts.name')">
-                                        <i class="fa" ng-class="getSortClass('Contacts.name')"></i>
-                                        <?php echo __('Contact name'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Contacts.description')">
-                                        <i class="fa" ng-class="getSortClass('Contacts.description')"></i>
-                                        <?php echo __('Description'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Contacts.email')">
-                                        <i class="fa" ng-class="getSortClass('Contacts.email')"></i>
-                                        <?php echo __('Email'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Contacts.phone')">
-                                        <i class="fa" ng-class="getSortClass('Contacts.phone')"></i>
-                                        <?php echo __('Phone'); ?>
-                                    </th>
-                                    <th class="no-sort" colspan="2">
-                                        <?php echo __('Host notifications'); ?>
-                                    </th>
-                                    <th class="no-sort" colspan="2">
-                                        <?php echo __('Service notifications'); ?>
-                                    </th>
-                                    <th class="no-sort text-center">
-                                        <i class="fas fa-cog fa-lg"></i>
-                                    </th>
-                                </tr>
+                                    <tr>
+                                        <th class="no-sort width-5">
+                                            <i class="fas fa-check-square fa-lg"></i>
+                                        </th>
+                                        <th class="no-sort" ng-click="orderBy('Contacts.name')">
+                                            <i class="fa" ng-class="getSortClass('Contacts.name')"></i>
+                                            <?php echo __('Contact name'); ?>
+                                        </th>
+                                        <th class="no-sort" ng-click="orderBy('Contacts.description')">
+                                            <i class="fa" ng-class="getSortClass('Contacts.description')"></i>
+                                            <?php echo __('Description'); ?>
+                                        </th>
+                                        <th class="no-sort" ng-click="orderBy('Contacts.email')">
+                                            <i class="fa" ng-class="getSortClass('Contacts.email')"></i>
+                                            <?php echo __('Email'); ?>
+                                        </th>
+                                        <th class="no-sort" ng-click="orderBy('Contacts.phone')">
+                                            <i class="fa" ng-class="getSortClass('Contacts.phone')"></i>
+                                            <?php echo __('Phone'); ?>
+                                        </th>
+                                        <th class="no-sort" colspan="2">
+                                            <?php echo __('Host notifications'); ?>
+                                        </th>
+                                        <th class="no-sort" colspan="2">
+                                            <?php echo __('Service notifications'); ?>
+                                        </th>
+                                        <th class="no-sort text-center">
+                                            <i class="fas fa-cog fa-lg"></i>
+                                        </th>
+                                    </tr>
                                 </thead>
 
                                 <tbody>
-                                <tr ng-repeat="contact in contacts">
-                                    <td class="width-15">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input"
-                                                   ng-model="massChange[contact.Contact.id]"
-                                                   ng-show="contact.Contact.allow_edit">
-                                        </div>
-                                    </td>
+                                    <tr ng-repeat="contact in contacts">
+                                        <td class="width-5">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input position-static"
+                                                       ng-model="massChange[contact.Contact.id]"
+                                                       ng-show="contact.Contact.allow_edit">
 
-                                    <td>{{contact.Contact.name}}</td>
-                                    <td>{{contact.Contact.description}}</td>
-                                    <td>{{contact.Contact.email}}</td>
-                                    <td>{{contact.Contact.phone}}</td>
-
-                                    <td>
+                                           <!--     <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" id="cbx" ng-model="massChange[contact.Contact.id]"
+                                                           ng-show="contact.Contact.allow_edit">
+                                                    <label class="custom-control-label text-hide" for="cbx">useless label</label>
+                                                </div> -->
+                                            </div>
+                                        </td>
+                                        <td>{{contact.Contact.name}}</td>
+                                        <td>{{contact.Contact.description}}</td>
+                                        <td>{{contact.Contact.email}}</td>
+                                        <td>{{contact.Contact.phone}}</td>
+                                        <td>
                                             <span class="badge badge-danger"
                                                   ng-hide="contact.Contact.host_notifications_enabled">
                                                 <?php echo __('Disabled'); ?>
                                             </span>
-                                        <span class="badge badge-success"
-                                              ng-show="contact.Contact.host_notifications_enabled">
-                                                <?php echo __('Enabled'); ?>
+                                            <span class="badge badge-success"
+                                                  ng-show="contact.Contact.host_notifications_enabled">
+                                                    <?php echo __('Enabled'); ?>
                                             </span>
-                                    </td>
-                                    <td>
+                                        </td>
+                                        <td>
                                             <span class="badge badge-success margin-right-5"
                                                   title="<?php echo __('Recovery'); ?>"
                                                   ng-show="contact.Contact.notify_host_recovery">
                                                 <?php echo __('R'); ?>
                                             </span>
-                                        <span class="badge badge-danger margin-right-5"
-                                              title="<?php echo __('Down'); ?>"
-                                              ng-show="contact.Contact.notify_host_down">
-                                                <?php echo __('D'); ?>
+                                            <span class="badge badge-danger margin-right-5"
+                                                  title="<?php echo __('Down'); ?>"
+                                                  ng-show="contact.Contact.notify_host_down">
+                                                    <?php echo __('D'); ?>
                                             </span>
-                                        <span class="badge badge-secondary margin-right-5"
-                                              title="<?php echo __('Unreachable'); ?>"
-                                              ng-show="contact.Contact.notify_host_unreachable">
-                                                <?php echo __('U'); ?>
+                                            <span class="badge badge-secondary margin-right-5"
+                                                  title="<?php echo __('Unreachable'); ?>"
+                                                  ng-show="contact.Contact.notify_host_unreachable">
+                                                    <?php echo __('U'); ?>
                                             </span>
-                                        <span class="badge badge-primary margin-right-5"
-                                              title="<?php echo __('Flapping'); ?>"
-                                              ng-show="contact.Contact.notify_host_flapping">
-                                                <i class="fa fa-circle"></i>
-                                                <i class="fa fa-circle-o"></i>
+                                            <span class="badge badge-primary margin-right-5"
+                                                  title="<?php echo __('Flapping'); ?>"
+                                                  ng-show="contact.Contact.notify_host_flapping">
+                                                    <i class="fa fa-circle"></i>
+                                                    <i class="fa fa-circle-o"></i>
                                             </span>
-                                        <span class="badge badge-primary"
-                                              title="<?php echo __('Downtime'); ?>"
-                                              ng-show="contact.Contact.notify_host_downtime">
-                                                <i class="fa fa-power-off"></i>
+                                            <span class="badge badge-primary"
+                                                  title="<?php echo __('Downtime'); ?>"
+                                                  ng-show="contact.Contact.notify_host_downtime">
+                                                    <i class="fa fa-power-off"></i>
                                             </span>
-                                    </td>
+                                        </td>
 
-                                    <td>
+                                        <td>
                                             <span class="badge badge-danger"
                                                   ng-hide="contact.Contact.service_notifications_enabled">
                                                 <?php echo __('Disabled'); ?>
                                             </span>
-                                        <span class="badge badge-success"
-                                              ng-show="contact.Contact.service_notifications_enabled">
-                                                <?php echo __('Enabled'); ?>
+                                            <span class="badge badge-success"
+                                                  ng-show="contact.Contact.service_notifications_enabled">
+                                                    <?php echo __('Enabled'); ?>
                                             </span>
-                                    </td>
-                                    <td>
+                                        </td>
+                                        <td>
                                             <span class="badge badge-success margin-right-5"
                                                   title="<?php echo __('Recovery'); ?>"
                                                   ng-show="contact.Contact.notify_service_recovery">
                                                 <?php echo __('R'); ?>
                                             </span>
-                                        <span class="badge badge-warning margin-right-5"
-                                              title="<?php echo __('Warning'); ?>"
-                                              ng-show="contact.Contact.notify_service_warning">
-                                                <?php echo __('W'); ?>
+                                            <span class="badge badge-warning margin-right-5"
+                                                  title="<?php echo __('Warning'); ?>"
+                                                  ng-show="contact.Contact.notify_service_warning">
+                                                    <?php echo __('W'); ?>
                                             </span>
-                                        <span class="badge badge-danger margin-right-5"
-                                              title="<?php echo __('Critical'); ?>"
-                                              ng-show="contact.Contact.notify_service_critical">
-                                                <?php echo __('C'); ?>
+                                            <span class="badge badge-danger margin-right-5"
+                                                  title="<?php echo __('Critical'); ?>"
+                                                  ng-show="contact.Contact.notify_service_critical">
+                                                    <?php echo __('C'); ?>
                                             </span>
-                                        <span class="badge badge-secondary margin-right-5"
-                                              title="<?php echo __('Unknown'); ?>"
-                                              ng-show="contact.Contact.notify_service_unknown">
-                                                <?php echo __('U'); ?>
+                                            <span class="badge badge-secondary margin-right-5"
+                                                  title="<?php echo __('Unknown'); ?>"
+                                                  ng-show="contact.Contact.notify_service_unknown">
+                                                    <?php echo __('U'); ?>
                                             </span>
-                                        <span class="badge badge-primary margin-right-5"
-                                              title="<?php echo __('Flapping'); ?>"
-                                              ng-show="contact.Contact.notify_service_flapping">
-                                                <i class="fa fa-circle"></i>
-                                                <i class="fa fa-circle-o"></i>
+                                            <span class="badge badge-primary margin-right-5"
+                                                  title="<?php echo __('Flapping'); ?>"
+                                                  ng-show="contact.Contact.notify_service_flapping">
+                                                    <i class="fa fa-circle"></i>
+                                                    <i class="fa fa-circle-o"></i>
                                             </span>
-                                        <span class="badge badge-primary"
-                                              title="<?php echo __('Downtime'); ?>"
-                                              ng-show="contact.Contact.notify_service_downtime">
-                                                <i class="fa fa-power-off"></i>
+                                            <span class="badge badge-primary"
+                                                  title="<?php echo __('Downtime'); ?>"
+                                                  ng-show="contact.Contact.notify_service_downtime">
+                                                    <i class="fa fa-power-off"></i>
                                             </span>
-                                    </td>
+                                        </td>
 
-                                    <td class="width-50">
-                                        <div class="btn-group btn-group-xs" role="group">
-                                            <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
-                                                <a ui-sref="ContactsEdit({id: contact.Contact.id})"
-                                                   ng-if="contact.Contact.allow_edit"
-                                                   class="btn btn-default btn-lower-padding">
-                                                    <i class="fa fa-cog"></i>
-                                                </a>
-                                                <a href="javascript:void(0);"
-                                                   ng-if="!contact.Contact.allow_edit"
-                                                   class="btn btn-default disabled btn-lower-padding">
-                                                    <i class="fa fa-cog"></i>
-                                                </a>
-                                            <?php else: ?>
-                                                <a href="javascript:void(0);"
-                                                   class="btn btn-default disabled btn-lower-padding">
-                                                    <i class="fa fa-cog"></i></a>
-                                            <?php endif; ?>
-                                            <button type="button"
-                                                    class="btn btn-default dropdown-toggle btn-lower-padding"
-                                                    data-toggle="dropdown">
-                                                <i class="caret"></i>
-                                            </button>
-                                            <div class="dropdown-menu">
+                                        <td class="width-50">
+                                            <div class="btn-group btn-group-xs" role="group">
                                                 <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
-                                                    <a ui-sref="ContactsEdit({id:contact.Contact.id})"
+                                                    <a ui-sref="ContactsEdit({id: contact.Contact.id})"
                                                        ng-if="contact.Contact.allow_edit"
-                                                       class="dropdown-item">
+                                                       class="btn btn-default btn-lower-padding">
                                                         <i class="fa fa-cog"></i>
-                                                        <?php echo __('Edit'); ?>
                                                     </a>
-                                                <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('usedBy', 'contacts')): ?>
-                                                    <a ui-sref="ContactsUsedBy({id:contact.Contact.id})"
-                                                       class="dropdown-item">
-                                                        <i class="fa fa-reply-all fa-flip-horizontal"></i>
-                                                        <?php echo __('Used by'); ?>
-                                                    </a>
-                                                <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('delete', 'contacts')): ?>
                                                     <a href="javascript:void(0);"
-                                                       ng-if="contact.Contact.allow_edit"
-                                                       class="txt-color-red dropdown-item"
-                                                       ng-click="confirmDelete(getObjectForDelete(contact))">
-                                                        <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
+                                                       ng-if="!contact.Contact.allow_edit"
+                                                       class="btn btn-default disabled btn-lower-padding">
+                                                        <i class="fa fa-cog"></i>
                                                     </a>
+                                                <?php else: ?>
+                                                    <a href="javascript:void(0);"
+                                                       class="btn btn-default disabled btn-lower-padding">
+                                                        <i class="fa fa-cog"></i></a>
                                                 <?php endif; ?>
+                                                <button type="button"
+                                                        class="btn btn-default dropdown-toggle btn-lower-padding"
+                                                        data-toggle="dropdown">
+                                                    <i class="caret"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
+                                                        <a ui-sref="ContactsEdit({id:contact.Contact.id})"
+                                                           ng-if="contact.Contact.allow_edit"
+                                                           class="dropdown-item">
+                                                            <i class="fa fa-cog"></i>
+                                                            <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->Acl->hasPermission('usedBy', 'contacts')): ?>
+                                                        <a ui-sref="ContactsUsedBy({id:contact.Contact.id})"
+                                                           class="dropdown-item">
+                                                            <i class="fa fa-reply-all fa-flip-horizontal"></i>
+                                                            <?php echo __('Used by'); ?>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->Acl->hasPermission('delete', 'contacts')): ?>
+                                                        <a href="javascript:void(0);"
+                                                           ng-if="contact.Contact.allow_edit"
+                                                           class="txt-color-red dropdown-item"
+                                                           ng-click="confirmDelete(getObjectForDelete(contact))">
+                                                            <i class="fa fa-trash"></i> <?php echo __('Delete'); ?>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                             <div class="row margin-top-10 margin-bottom-10">

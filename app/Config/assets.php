@@ -8,9 +8,9 @@ $config = [
             /*'/vendor/node_modules/bootstrap/dist/js/bootstrap.css',
             '/vendor/node_modules/bootstrap/dist/js/bootstrap-grid.css',*/
             //'vendor/jquery.gridster.css',
-            /*'vendor/chosen/chosen',
+            'vendor/chosen/chosen',
             'vendor/chosen/chosen-bootstrap',
-            'list_filter',
+            /*'list_filter',
             'vendor/fineuploader/fineuploader-3.2',
             'vendor/select2/select2',
             'vendor/select2/select2-bootstrap',
