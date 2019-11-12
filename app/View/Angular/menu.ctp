@@ -57,22 +57,22 @@
         <a ng-if="parentNode.isAngular != 1" ng-href="{{ parentHref(parentNode) == '#' ? '' : parentHref(parentNode) }}"
            ng-class="{'cursor-pointer': parentHref(parentNode) == '#'}" data-filter-tags="foo">
 
-            <i class="fal fa-fw fa-{{ parentNode.icon }}"></i>
+            <i class="fa fa-fw fa-{{ parentNode.icon }}"></i>
             <span class="menu-item-parent nav-link-text">{{ parentNode.title }}</span>
         </a>
         <a ng-if="parentNode.isAngular == 1" href="/ng/#!{{parentNode.url}}" data-filter-tags="{{parentNode.tags}}">
 
-            <i class="fal fa-lg fa-fw fa-{{ parentNode.icon }}"></i>
+            <i class="fa fa-lg fa-fw fa-{{ parentNode.icon }}"></i>
             <span class="menu-item-parent">{{ parentNode.title }}</span>
         </a>
         <ul ng-if="parentNode.children.length > 0" style="{{ isActiveParentStyle(parentNode) }}">
             <li ng-repeat="childNode in parentNode.children">
                 <a ng-if="childNode.isAngular != 1" href="{{ childNode.url }}" data-filter-tags="{{childNode.tags}}">
-                    <i class="fal fa-lg fa-fw fa-{{ childNode.icon }}"></i>
+                    <i class="fa fa-lg fa-fw fa-{{ childNode.icon }}"></i>
                     <span class="menu-item-parent">{{ childNode.title }}</span>
                 </a>
                 <a ng-if="childNode.isAngular == 1" href="/ng/#!{{ childNode.url }}" data-filter-tags="{{childNode.tags}}">
-                    <i class="fal fa-lg fa-fw fa-{{ childNode.icon }}"></i>
+                    <i class="fa fa-lg fa-fw fa-{{ childNode.icon }}"></i>
                     <span class="menu-item-parent">{{ childNode.title }}</span>
                 </a>
             </li>

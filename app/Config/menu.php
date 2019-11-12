@@ -29,7 +29,7 @@ $config = [
             'url'   => ['controller' => 'dashboards', 'action' => 'index', 'plugin' => ''],
             'state' => 'DashboardsIndex',
             'title' => 'Dashboard',
-            'icon'  => 'dashboard',
+            'icon'  => 'tachometer-alt',
             'order' => 1,
             'tags'  => __('dashboard'),
         ],
@@ -380,7 +380,7 @@ $config = [
 
         'reporting' => [
             'title'    => 'Reporting',
-            'icon'     => 'file-text-o',
+            'icon'     => 'file-text',
             'order'    => 5,
             'tags'     => __('Reporting'),
             'children' => [
