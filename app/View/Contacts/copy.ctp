@@ -35,9 +35,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="ContactsCopy">
-            <i class="fa fa-copy"></i> <?php echo __('Copy'); ?>
-        </a>
+        <i class="fa fa-copy"></i> <?php echo __('Copy'); ?>
     </li>
 </ol>
 <div class="row">

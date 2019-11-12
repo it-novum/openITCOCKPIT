@@ -35,9 +35,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="ContactsEdit">
-            <i class="fa fa-plus"></i> <?php echo __('Edit'); ?>
-        </a>
+        <i class="fa fa-plus"></i> <?php echo __('Edit'); ?>
     </li>
 </ol>
 <div class="row">

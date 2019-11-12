@@ -35,9 +35,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="ContactsIndex">
-            <i class="fa fa-list"></i> <?php echo __('index'); ?>
-        </a>
+        <i class="fa fa-list"></i> <?php echo __('index'); ?>
     </li>
 </ol>
 <massdelete></massdelete>
