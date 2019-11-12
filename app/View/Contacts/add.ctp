@@ -259,9 +259,9 @@
                                             ],
                                         ];
                                         ?>
-
+                                        <hr>
                                         <fieldset>
-                                            <legend class="font-sm"
+                                            <legend class="fs-md"
                                                     ng-class="{'has-error-no-form': errors.notify_host_recovery}">
                                                 <div class="required">
                                                     <label>
@@ -403,9 +403,9 @@
                                             ],
                                         ];
                                         ?>
-
+                                        <hr>
                                         <fieldset>
-                                            <legend class="font-sm"
+                                            <legend class="fs-md"
                                                     ng-class="{'has-error-no-form': errors.notify_service_recovery}">
                                                 <div class="required">
                                                     <label>
@@ -448,9 +448,9 @@
                                 </div>
                             </div>
                         <?php endif; ?>
-
+                        <hr>
                         <fieldset class="padding-10 ng-binding">
-                            <legend class="font-sm" ng-class="{'has-error-no-form': errors.customvariables_unique}">
+                            <legend class="fs-md" ng-class="{'has-error-no-form': errors.customvariables_unique}">
                                 <div>
                                     <label>
                                         <?php echo __('Define contact macros'); ?>
@@ -490,8 +490,10 @@
                                         <input type="checkbox" ng-model="data.createAnother">
                                         <?php echo _('Create another'); ?>
                                     </label>
-                                    <button class="btn btn-default" ng-sref="SystemsettingsIndex"><?php echo __('Cancel'); ?></button>
-                                    <button class="btn btn-primary" type="submit"><?php echo __('Create contact'); ?></button>
+                                    <button class="btn btn-primary"
+                                            type="submit"><?php echo __('Create contact'); ?></button>
+                                    <a back-button fallback-state='ContactsIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
                             </div>
                         </div>
