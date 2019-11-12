@@ -23,18 +23,37 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-wrench fa-fw "></i>
-            <?php echo __('System Settings'); ?>
-        </h1>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-        <div class="alert alert-danger fade in">
-            <button data-dismiss="alert" class="close">×</button>
-            <i class="fa fa-exclamation "></i>
-            <strong><?php echo __('Attention!'); ?></strong> <?php echo __("Do not change values, where you don't know what you are doing!"); ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="<?php echo $this->webroot; ?>">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="SystemsettingsIndex">
+            <i class="fa fa-wrench"></i> <?php echo __('System Settings'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-list"></i> <?php echo __('index'); ?>
+    </li>
+</ol>
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true"><i class="fal fa-times"></i></span>
+    </button>
+    <div class="d-flex align-items-center">
+        <div class="alert-icon width-3">
+            <div class='icon-stack icon-stack-sm'>
+                <i class="base base-7 icon-stack-3x opacity-100 color-danger-400"></i>
+                <i class="base base-7 icon-stack-2x opacity-100 color-danger-100"></i>
+                <i class="fa fa-exclamation icon-stack-1x opacity-100 color-white"></i>
+            </div>
+        </div>
+        <div class="flex-1">
+            <span class="h5 m-0 fw-700"><?php echo __('Attention!'); ?></span>
+            <?php echo __("Do not change values, where you don't know what you are doing!"); ?>
         </div>
     </div>
 </div>
@@ -180,8 +199,8 @@
                             <div class="card margin-top-10">
                                 <div class="card-body">
                                     <div class="float-right">
-                                        <button class="btn btn-danger" ng-sref="SystemsettingsIndex">Cancel</button>
                                         <button class="btn btn-primary" type="submit">Save</button>
+                                        <button class="btn btn-default" ng-sref="SystemsettingsIndex">Cancel</button>
                                     </div>
                                 </div>
                             </div>
