@@ -127,6 +127,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 <div class="page-wrapper">
     <div class="page-inner">
         <script>
+            var classHolder = document.getElementsByTagName("BODY")[0]; // may delete this if navigation (plugin) changes
             Dropzone.autoDiscover = false;
         </script>
         <!-- BEGIN Left Aside -->

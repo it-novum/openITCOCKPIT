@@ -48,7 +48,7 @@
                     <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <button class="btn btn-xs btn-default mr-1 shadow-0 ">
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
                     <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="ContactsAdd">
