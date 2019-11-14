@@ -368,3 +368,32 @@ a:not([href]):not([tabindex]) {
 .italic {
     font-style: italic;
 }
+
+/*
+#global_ajax_loader {
+    padding: 11px 34px 11px 0 !important;
+    vertical-align: top;
+    float: right;
+    color: #348ED1;
+    text-shadow: 0 0 5px #348ED1;
+    display: none;
+}*/
+
+.popup-graph-container {
+    position: absolute;
+    /*top: 320px;*/
+    left: 495px;
+    width: 750px;
+    height: auto;
+    background-color: #FFF;
+    box-shadow: 0 0 15px #9E9E9E;
+    border-radius: 3px;
+    z-index: 1;
+    display: none;
+}
+
+#serviceGraphFlot {
+    width: 100%;
+    height: 260px;
+
+}

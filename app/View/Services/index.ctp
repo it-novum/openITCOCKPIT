@@ -35,7 +35,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-list"></i> <?php echo __('index'); ?>
+        <i class="fa fa-stethoscope"></i> <?php echo __('Monitored'); ?>
     </li>
 </ol>
 
@@ -62,7 +62,7 @@
                     <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <ul class="nav nav-tabs border-bottom-0" role="tablist">
+                    <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" data-toggle="tab" ui-sref="ServicesIndex" role="tab">
                                 <i class="fa fa-stethoscope"></i> <?php echo __('Monitored'); ?>
@@ -87,7 +87,7 @@
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
                     <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="ContactsAdd">
+                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="ServicesAdd">
                             <i class="fas fa-plus"></i> <?php echo __('New'); ?>
                         </button>
                     <?php endif; ?>
@@ -579,7 +579,7 @@
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
-                                <a ui-sref="ContactsCopy({ids: linkForCopy()})" class="a-clean">
+                                <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
                                     <i class="fas fa-lg fa-files-o"></i>
                                     <?php echo __('Copy'); ?>
                                 </a>

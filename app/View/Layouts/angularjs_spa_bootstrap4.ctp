@@ -263,6 +263,20 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 
                 <div class="ml-auto d-flex">
                     <?php if ($loggedIn): ?>
+                        <?php if ($loggedIn && $this->Auth->user('showstatsinmenu')): ?>
+                            <menustats></menustats>
+                        <?php endif; ?>
+
+                        <div class="header-icon">
+                            <span id="global_ajax_loader">
+                                <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+
+
+<!--                                <i class="fa fa-refresh fa-spin"></i> <?php echo __('Loading data'); ?> -->
+                            </span>
+                        </div>
                         <div class="header-icon">
                             <version-check></version-check>
                         </div>
@@ -312,15 +326,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
             <main id="js-page-content" role="main" class="page-content" ng-controller="LayoutController">
 
 
-                <?php if ($loggedIn && $this->Auth->user('showstatsinmenu')): ?>
-                    <menustats></menustats>
-                <?php endif; ?>
 
-                <div class="pull-right">
-                        <span id="global_ajax_loader">
-                            <i class="fa fa-refresh fa-spin"></i> <?php echo __('Loading data'); ?>
-                        </span>
-                </div>
 
                 <div id="content" style="opacity: 1;">
                     <?php echo $this->Flash->render(); ?>
