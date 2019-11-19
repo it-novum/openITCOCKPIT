@@ -2025,6 +2025,11 @@ class NagiosExportTask extends AppShell {
         } else {
             $serviceescalations = $this->Serviceescalation->find('all', $query);
         }
+        
+        if (!is_dir($this->conf['path'] . $this->conf['serviceescalations'])) {
+            mkdir($this->conf['path'] . $this->conf['serviceescalations']);
+        }
+        
         foreach ($serviceescalations as $serviceescalation) {
             if (!empty($serviceescalation['ServiceescalationServiceMembership']) || !empty($serviceescalation['ServiceescalationServicegroupMembership'])) {
 
