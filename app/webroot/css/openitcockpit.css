@@ -397,3 +397,13 @@ a:not([href]):not([tabindex]) {
     height: 260px;
 
 }
+
+.input-group-addon-no-focus-label-success {
+    background-color: #5cb85c !important;
+    border-color: #ccc;
+}
+
+.input-group-addon-no-focus-label-danger {
+    background-color: #d9534f !important;
+    border-color: #ccc;
+}

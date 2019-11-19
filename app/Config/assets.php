@@ -8,8 +8,8 @@ $config = [
             /*'/vendor/node_modules/bootstrap/dist/js/bootstrap.css',
             '/vendor/node_modules/bootstrap/dist/js/bootstrap-grid.css',*/
             //'vendor/jquery.gridster.css',
-            'vendor/chosen/chosen',
-            'vendor/chosen/chosen-bootstrap',
+            /*'vendor/chosen/chosen',
+            'vendor/chosen/chosen-bootstrap',*/
             /*'list_filter',
             'vendor/fineuploader/fineuploader-3.2',
             'vendor/select2/select2',
@@ -21,7 +21,9 @@ $config = [
             '/vendor/node_modules/node-waves/dist/waves.js',
             '/vendor/node_modules/font-awesome/css/font-awesome.css',
             '/vendor/node_modules/@fortawesome/fontawesome-free/css/all.min.css',
-            '/vendor/node_modules/bootstrap4-tagsinput/tagsinput.css',
+          //  '/vendor/node_modules/bootstrap4-tagsinput/tagsinput.css',
+            '/vendor/node_modules/bootstrap4c-chosen/dist/css/component-chosen.css',
+            '/vendor/node_modules/jquery-tageditor/jquery.tag-editor.css',
             /*'/smartadmin4/dist/css/fa-brands.css',
             '/smartadmin4/dist/css/fa-regular.css',
             '/smartadmin4/dist/css/fa-solid.css', */

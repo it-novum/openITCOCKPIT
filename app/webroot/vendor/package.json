@@ -34,6 +34,8 @@
         "rangyinputs": "^1.2.0",
         "jquery-slimscroll": "^1.3.8",
         "node-waves": "^0.7.6",
-        "@fortawesome/fontawesome-free": "^5.11.2"
+        "@fortawesome/fontawesome-free": "^5.11.2",
+        "bootstrap4c-chosen": "^1.1.1",
+        "jquery-tageditor": "^1.0.1"
     }
 }

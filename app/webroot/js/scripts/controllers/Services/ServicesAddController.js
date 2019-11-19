@@ -400,7 +400,15 @@ angular.module('openITCOCKPIT')
 
 
         jQuery(function(){
-            $('.tagsinput').tagsinput();
+         //   $('.tagsinput').tagsinput();
+
+            $('.form-control-tag').tagEditor({
+                //initialTags: ['Hello', 'World'],
+                delimiter: ', ',
+                forceLowercase: false,
+                animateDelete: 0,
+                placeholder: 'Enter tag...'
+            });
         });
 
         $scope.$watch('post.Service.host_id', function(){
