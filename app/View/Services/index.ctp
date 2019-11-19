@@ -63,10 +63,34 @@
                         </button>
 
                         <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                            <a ui-sref="ServicesAdd()" class="btn btn-xs btn-success">
-                                <i class="fa fa-plus"></i>
-                                <?php echo __('New'); ?>
-                            </a>
+                            <div class="btn-group">
+                                <a class="btn btn-xs btn-success" ui-sref="ServicesAdd()">
+                                    <i class="fa fa-plus"></i>
+                                    <?php echo __('New'); ?>
+                                </a>
+                                <a class="btn btn-xs btn-success dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a ui-sref="ServicesAdd()">
+                                            <i class="fa fa-plus"></i>
+                                            <?php echo __('New service'); ?>
+                                        </a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <?php
+                                    $ModuleManager = new \itnovum\openITCOCKPIT\Core\ModuleManager('MqttModule');
+                                    if($ModuleManager->moduleExists()):
+                                    ?>
+                                        <li>
+                                            <a ui-sref="ServicesAddMqtt()">
+                                                <i class="fa fa-spinner"></i>
+                                                <?php echo __('New MQTT service'); ?>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
+                                </ul>
+                            </div>
+
                         <?php endif; ?>
                         <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
                             <i class="fa fa-filter"></i>

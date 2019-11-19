@@ -2,13 +2,15 @@
     "autoload": {
         "psr-4": {
             "DistributeModule\\": "./plugins/DistributeModule/src/",
-            "EventcorrelationModule\\": "./plugins/EventcorrelationModule/src/"
+            "EventcorrelationModule\\": "./plugins/EventcorrelationModule/src/",
+            "MqttModule\\": "./plugins/MqttModule/src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
             "DistributeModule\\Test\\": "./plugins/DistributeModule/tests/",
-            "EventcorrelationModule\\Test\\": "./plugins/EventcorrelationModule/tests/"
+            "EventcorrelationModule\\Test\\": "./plugins/EventcorrelationModule/tests/",
+            "MqttModule\\Test\\": "./plugins/MqttModule/tests/"
         }
     }
 }
