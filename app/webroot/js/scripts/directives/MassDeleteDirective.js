@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter, $timeout){
+angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter, $timeout, $state){
     return {
         restrict: 'E',
         replace: true,
@@ -43,10 +43,18 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
                                 var id = result.data.id;
                                 $scope.issueObjects[id] = [];
                                 for(var key in result.data.usedBy){
-                                    $scope.issueObjects[id].push({
+                                    var isAngular = result.data.usedBy[key].hasOwnProperty('state');
+                                    var issue = {
                                         message: result.data.usedBy[key].message,
-                                        url: result.data.usedBy[key].baseUrl + id
-                                    });
+                                        url: result.data.usedBy[key].baseUrl + id,
+                                        isAngular: isAngular,
+                                        id: id
+                                    };
+
+                                    if(isAngular){
+                                        issue.state = result.data.usedBy[key].state;
+                                    }
+                                    $scope.issueObjects[id].push(issue);
                                 }
                             }
 
@@ -59,6 +67,10 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
                         });
                 }
             };
+
+            $scope.goToStateMassDelete = function(issue){
+                $state.go(issue.state, {id: issue.id});
+            }
 
         },
 

@@ -22,150 +22,80 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
+use App\Model\Table\ContactgroupsTable;
+use App\Model\Table\ContactsTable;
+use App\Model\Table\ContainersTable;
+use App\Model\Table\ServiceescalationsTable;
+use App\Model\Table\ServicegroupsTable;
+use App\Model\Table\ServicesTable;
+use App\Model\Table\TimeperiodsTable;
+use Cake\ORM\Query;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\ServiceescalationsFilter;
 
 /**
- * @property Serviceescalation $Serviceescalation
- * @property Timeperiod $Timeperiod
- * @property Service $Service
- * @property Servicegroup $Servicegroup
- * @property Contact $Contact
- * @property Contactgroup $Contactgroup
+ * @property \App\Model\Entity\Serviceescalation $Serviceescalation
+ * @property \App\Model\Entity\Timeperiod $Timeperiod
+ * @property \App\Model\Entity\Service Service
+ * @property \App\Model\Entity\Servicegroup $Servicegroup
+ * @property \App\Model\Entity\Contact $Contact
+ * @property \App\Model\Entity\Contactgroup $Contactgroup
  * @property ServiceescalationServiceMembership $ServiceescalationServiceMembership
  * @property ServiceescalationServicegroupMembership $ServiceescalationServicegroupMembership
- * @property Container $Container
- * @property Host $Host
+ * @property \App\Model\Entity\Container $Container
  */
 class ServiceescalationsController extends AppController {
-    public $uses = [
-        'Serviceescalation',
-        'Timeperiod',
-        'Service',
-        'Servicegroup',
-        'Contact',
-        'Contactgroup',
-        'ServiceescalationServiceMembership',
-        'ServiceescalationServicegroupMembership',
-        'Container',
-        'Host',
-    ];
-    public $layout = 'Admin.default';
-    public $components = [
-        'ListFilter.ListFilter',
-        'RequestHandler',
-        'CustomValidationErrors',
-    ];
-    public $helpers = ['ListFilter.ListFilter', 'CustomValidationErrors'];
+
+    public $layout = 'blank';
+
 
     public function index() {
-
-        $options = [
-            'recursive'  => -1,
-            'conditions' => [
-                'Serviceescalation.container_id' => $this->MY_RIGHTS,
-            ],
-            'contain'    => [
-                'ServiceescalationServiceMembership'      => [
-                    'Service' => [
-                        'fields'          => [
-                            'id',
-                            'name',
-                            'disabled'
-                        ],
-                        'Servicetemplate' => [
-                            'fields' => [
-                                'name',
-                            ],
-                        ],
-                        'Host'            => [
-                            'fields' => [
-                                'id',
-                                'name',
-                                'disabled'
-                            ],
-                        ],
-                    ],
-                ],
-                'Contact'                                 => 'name',
-                'Contactgroup'                            => [
-                    'Container' => [
-                        'fields' => 'name',
-                    ],
-                ],
-                'ServiceescalationServicegroupMembership' => [
-                    'Servicegroup' => [
-                        'Container' => [
-                            'fields' => 'name',
-                        ],
-                    ],
-                ],
-                'Timeperiod'                              => [
-                    'fields' => [
-                        'id',
-                        'name',
-                    ],
-                ],
-            ],
-        ];
-
-        $query = Hash::merge($this->Paginator->settings, $options);
-
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_serviceescalations = $this->Serviceescalation->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $all_serviceescalations = $this->Paginator->paginate();
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
         }
 
-        $this->set('all_serviceescalations', $all_serviceescalations);
-        $this->set('_serialize', ['all_serviceescalations']);
+        /** @var $ServiceescalationsTable ServiceescalationsTable */
+        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+
+        $ServiceescalationsFilter = new ServiceescalationsFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceescalationsFilter->getPage());
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+        $serviceescalations = $ServiceescalationsTable->getServiceescalationsIndex($ServiceescalationsFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($serviceescalations as $index => $serviceescalation) {
+            $serviceescalations[$index]['allowEdit'] = $this->isWritableContainer($serviceescalation['container_id']);
+        }
+
+
+        $this->set('all_serviceescalations', $serviceescalations);
+        $toJson = ['all_serviceescalations', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_serviceescalations', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
+        }
 
+        /** @var $ServiceescalationsTable ServiceescalationsTable */
+        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+
+        if (!$ServiceescalationsTable->exists($id)) {
+            throw new NotFoundException(__('Service escalation not found'));
         }
-        if (!$this->Serviceescalation->exists($id)) {
-            throw new NotFoundException(__('Invalid serviceescalation'));
-        }
-        $serviceescalation = $this->Serviceescalation->find('first', [
-            'conditions' => [
-                'Serviceescalation.id' => $id,
-            ],
-            'contain'    => [
-                'ServiceescalationServiceMembership'      => [
-                    'Service' => [
-                        'Servicetemplate' => [
-                            'fields' => [
-                                'id',
-                                'name',
-                            ],
-                        ],
-                        'Host'            => [
-                            'fields' => [
-                                'id',
-                                'name',
-                            ],
-                        ],
-                    ],
-                ],
-                'Contact',
-                'Contactgroup'                            => [
-                    'Container',
-                ],
-                'ServiceescalationServicegroupMembership' => [
-                    'Servicegroup' => [
-                        'Container',
-                    ],
-                ],
-                'Timeperiod',
-            ],
-        ]);
-        if (!$this->allowedByContainerId($serviceescalation['Serviceescalation']['container_id'])) {
+
+        $serviceescalation = $ServiceescalationsTable->getServiceescalationById($id);
+        if (!$this->allowedByContainerId(Hash::extract($serviceescalation, 'Serviceescalation.container_id'))) {
             $this->render403();
-
             return;
         }
 
@@ -174,247 +104,210 @@ class ServiceescalationsController extends AppController {
     }
 
     public function edit($id = null) {
-        if (!$this->Serviceescalation->exists($id)) {
-            throw new NotFoundException(__('Invalid serviceescalation'));
-        }
-        $serviceescalation = $this->Serviceescalation->findById($id);
-        if (!$serviceescalation) {
-            throw new NotFoundException(__('Invalid serviceescalation'));
-        }
-
-        if (!$this->allowedByContainerId($serviceescalation['Serviceescalation']['container_id'])) {
-            $this->render403();
-
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
-        list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) = $this->getAvailableDataByContainerId($serviceescalation['Serviceescalation']['container_id']);
+        /** @var $ServiceescalationsTable ServiceescalationsTable */
+        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+        if (!$ServiceescalationsTable->existsById($id)) {
+            throw new NotFoundException('Service escalation not found');
+        }
+        $serviceescalation = $ServiceescalationsTable->get($id, [
+            'contain' => [
+                'services'      => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select(['id', 'name']);
+                },
+                'servicegroups' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select(['id']);
+                },
+                'contacts'      => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select(['id']);
+                },
+                'contactgroups' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select(['id']);
+                },
+            ]
+        ]);
 
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $containerIds = $this->request->data('Serviceescalation.container_id');
-            if ($containerIds > 0 && $containerIds != $serviceescalation['Serviceescalation']['container_id']) {
-                // Container ID has been changed
-                list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) =
-                    $this->getAvailableDataByContainerId($containerIds);
-            }
-
-            $this->request->data['Contact']['Contact'] = $this->request->data['Serviceescalation']['Contact'];
-            $this->request->data['Contactgroup']['Contactgroup'] = $this->request->data['Serviceescalation']['Contactgroup'];
-            $_services = (is_array($this->request->data('Serviceescalation.Service'))) ? $this->request->data['Serviceescalation']['Service'] : [];
-            $services_excluded = (is_array($this->request->data('Serviceescalation.Service_excluded'))) ? $this->request->data['Serviceescalation']['Service_excluded'] : [];
-            $this->request->data['ServiceescalationServiceMembership'] = $this->Serviceescalation->parseServiceMembershipData($_services, $services_excluded);
-
-            $_servicegroups = (is_array($this->request->data('Serviceescalation.Servicegroup'))) ? $this->request->data['Serviceescalation']['Servicegroup'] : [];
-            $servicegroups_excluded = (is_array($this->request->data('Serviceescalation.Servicegroup_excluded'))) ? $this->request->data['Serviceescalation']['Servicegroup_excluded'] : [];
-            $this->request->data['ServiceescalationServicegroupMembership'] = [];
-            $this->request->data['ServiceescalationServicegroupMembership'] = $this->Serviceescalation->parseServicegroupMembershipData($_servicegroups, $servicegroups_excluded);
-
-            $this->Serviceescalation->set($this->request->data);
-            $this->Serviceescalation->id = $id;
-
-            if ($this->Serviceescalation->validates()) {
-                $old_membership_services = $this->ServiceescalationServiceMembership->find('all', [
-                    'conditions' => [
-                        'ServiceescalationServiceMembership.serviceescalation_id' => $id,
-                    ],
-                    'recursive'  => -1
-                ]);
-                /* Delete old service associations */
-                foreach ($old_membership_services as $old_membership_service) {
-                    $this->ServiceescalationServiceMembership->delete($old_membership_service['ServiceescalationServiceMembership']['id']);
-
-                }
-                $old_membership_servicegroups = $this->ServiceescalationServicegroupMembership->find('all', [
-                    'conditions' => [
-                        'ServiceescalationServicegroupMembership.serviceescalation_id' => $id
-                    ],
-                ]);
-                /* Delete old servicegroup associations */
-                foreach ($old_membership_servicegroups as $old_membership_servicegroup) {
-                    $this->ServiceescalationServicegroupMembership->delete($old_membership_servicegroup['ServiceescalationServicegroupMembership']['id']);
-                }
-            }
-            if ($this->Serviceescalation->saveAll($this->request->data)) {
-                $this->setFlash(__('Serviceescalation successfully saved'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Serviceescalation could not be saved'), false);
-            }
-        } else {
-            $serviceescalation['Serviceescalation']['Service'] = Hash::combine($serviceescalation['ServiceescalationServiceMembership'], '{n}[excluded=0].service_id', '{n}[excluded=0].service_id');
-            $serviceescalation['Serviceescalation']['Service_excluded'] = Hash::combine($serviceescalation['ServiceescalationServiceMembership'], '{n}[excluded=1].service_id', '{n}[excluded=1].service_id');
-            $serviceescalation['Serviceescalation']['Servicegroup'] = Hash::combine($serviceescalation['ServiceescalationServicegroupMembership'], '{n}[excluded=0].servicegroup_id', '{n}[excluded=0].servicegroup_id');
-            $serviceescalation['Serviceescalation']['Servicegroup_excluded'] = Hash::combine($serviceescalation['ServiceescalationServicegroupMembership'], '{n}[excluded=1].servicegroup_id', '{n}[excluded=1].servicegroup_id');
-            $serviceescalation['Serviceescalation']['Contact'] = Hash::extract($serviceescalation['Contact'], '{n}.id');
-            $serviceescalation['Serviceescalation']['Contactgroup'] = Hash::extract($serviceescalation['Contactgroup'], '{n}.id');
+        if (!$this->allowedByContainerId($serviceescalation->get('container_id'))) {
+            $this->render403();
+            return;
         }
 
-        $this->request->data = Hash::merge($serviceescalation, $this->request->data);
+        if ($this->request->is('post')) {
+            /** @var $ServiceescalationsTable ServiceescalationsTable */
+            $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+            $data['services'] = $ServiceescalationsTable->parseServiceMembershipData(
+                $this->request->data('Serviceescalation.services._ids'),
+                $this->request->data('Serviceescalation.services_excluded._ids')
+            );
+            $data['servicegroups'] = $ServiceescalationsTable->parseServicegroupMembershipData(
+                $this->request->data('Serviceescalation.servicegroups._ids'),
+                $this->request->data('Serviceescalation.servicegroups_excluded._ids')
+            );
 
-        $this->set([
-            'serviceescalation' => $serviceescalation,
-            'services'          => $services,
-            'servicegroups'     => $servicegroups,
-            'timeperiods'       => $timeperiods,
-            'contactgroups'     => $contactgroups,
-            'contacts'          => $contacts,
-            'containers'        => $containers,
-        ]);
+            $data = array_merge($this->request->data('Serviceescalation'), $data);
+            $serviceescalation = $ServiceescalationsTable->patchEntity($serviceescalation, $data);
+            $ServiceescalationsTable->save($serviceescalation);
+
+            if ($serviceescalation->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $serviceescalation->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($serviceescalation); // REST API ID serialization
+                    return;
+                }
+            }
+        }
+        $this->set('serviceescalation', $serviceescalation);
+        $this->set('_serialize', ['serviceescalation']);
     }
 
     public function add() {
-        $services = [];
-        $servicegroups = [];
-        $contacts = [];
-        $contactgroups = [];
-        $timeperiods = [];
-
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
-
-        $customFieldsToRefill = [
-            'Serviceescalation' => [
-                'escalate_on_recovery',
-                'escalate_on_warning',
-                'escalate_on_critical',
-                'escalate_on_unknown',
-            ],
-        ];
-        $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
-        $this->Frontend->set('data_placeholder', __('Please choose service'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $necessaryKeys = [
-                'Contact'      => [],
-                'Contactgroup' => [],
-            ];
-            foreach ($necessaryKeys as $necessaryKey => $value) {
-                if (!isset($this->request->data['Serviceescalation'][$necessaryKey])) {
-                    $this->request->data['Serviceescalation'][$necessaryKey] = $value;
-                }
-            }
-            App::uses('UUID', 'Lib');
-            $this->request->data['Serviceescalation']['uuid'] = UUID::v4();
-            $this->request->data['Contact']['Contact'] = $this->request->data['Serviceescalation']['Contact'];
-            $this->request->data['Contactgroup']['Contactgroup'] = $this->request->data['Serviceescalation']['Contactgroup'];
-            $_services = (is_array($this->request->data('Serviceescalation.Service'))) ? $this->request->data['Serviceescalation']['Service'] : [];
-            $services_excluded = (is_array($this->request->data('Serviceescalation.Service_excluded'))) ? $this->request->data['Serviceescalation']['Service_excluded'] : [];
-            $this->request->data['ServiceescalationServiceMembership'] = [];
-            $this->request->data['ServiceescalationServiceMembership'] = $this->Serviceescalation->parseServiceMembershipData($_services, $services_excluded);
-
-            $_servicegroups = (is_array($this->request->data('Serviceescalation.Servicegroup'))) ? $this->request->data['Serviceescalation']['Servicegroup'] : [];
-            $servicegroups_excluded = (is_array($this->request->data('Serviceescalation.Servicegroup_excluded'))) ? $this->request->data['Serviceescalation']['Servicegroup_excluded'] : [];
-            $this->request->data['ServiceescalationServicegroupMembership'] = [];
-            $this->request->data['ServiceescalationServicegroupMembership'] = $this->Serviceescalation->parseServicegroupMembershipData($_servicegroups, $servicegroups_excluded);
-
-            $this->Serviceescalation->set($this->request->data);
-            $isJsonRequest = $this->request->ext === 'json';
-            if ($this->Serviceescalation->saveAll($this->request->data)) {
-                if ($isJsonRequest) {
-                    $this->serializeId();
-
-                    return;
-                } else {
-                    $this->setFlash(__('Serviceescalation successfully saved'));
-                    $this->redirect(['action' => 'index']);
-                }
-            } else {
-                if ($isJsonRequest) {
-                    $this->serializeErrorMessage();
-
-                    return;
-                } else {
-                    $this->setFlash(__('Serviceescalation could not be saved'), false);
-
-                    $containerId = $this->request->data('Serviceescalation.container_id');
-                    if ($containerId > 0) {
-                        list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) =
-                            $this->getAvailableDataByContainerId($containerId);
-                    }
-                }
-            }
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
         }
-        $this->set([
-            'services'      => $services,
-            'servicegroups' => $servicegroups,
-            'timeperiods'   => $timeperiods,
-            'contactgroups' => $contactgroups,
-            'contacts'      => $contacts,
-            'containers'    => $containers,
-        ]);
+
+        if ($this->request->is('post')) {
+            /** @var $ServiceescalationsTable ServiceescalationsTable */
+            $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+            $this->request->data['Serviceescalation']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+            $data['services'] = $ServiceescalationsTable->parseServiceMembershipData(
+                $this->request->data('Serviceescalation.services._ids'),
+                $this->request->data('Serviceescalation.services_excluded._ids')
+            );
+            $data['servicegroups'] = $ServiceescalationsTable->parseServicegroupMembershipData(
+                $this->request->data('Serviceescalation.servicegroups._ids'),
+                $this->request->data('Serviceescalation.servicegroups_excluded._ids')
+            );
+
+            $data = array_merge($this->request->data('Serviceescalation'), $data);
+            $serviceescalation = $ServiceescalationsTable->newEntity($data);
+            $ServiceescalationsTable->save($serviceescalation);
+
+            if ($serviceescalation->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $serviceescalation->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($serviceescalation); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('serviceescalation', $serviceescalation);
+            $this->set('_serialize', ['serviceescalation']);
+        }
     }
 
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Serviceescalation->exists($id)) {
-            throw new NotFoundException(__('Invalid serviceescalation'));
+
+        /** @var $ServiceescalationsTable ServiceescalationsTable */
+        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+
+        if (!$ServiceescalationsTable->exists($id)) {
+            throw new NotFoundException(__('Service escalation not found'));
         }
-        $serviceescalation = $this->Serviceescalation->findById($id);
 
-        if (!$this->allowedByContainerId($serviceescalation['Serviceescalation']['container_id'])) {
+        $serviceescalation = $ServiceescalationsTable->getServiceescalationById($id);
+        if (!$this->allowedByContainerId(Hash::extract($serviceescalation, 'Serviceescalation.container_id'))) {
             $this->render403();
-
+            return;
+        }
+        $serviceescalationEntity = $ServiceescalationsTable->get($id);
+        if ($ServiceescalationsTable->delete($serviceescalationEntity)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
             return;
         }
 
-        if ($this->Serviceescalation->delete($id)) {
-            $this->setFlash(__('Serviceescalation deleted'));
-            $this->redirect(['action' => 'index']);
-        }
-        $this->setFlash(__('Could not delete serviceescalation'), false);
-        $this->redirect(['action' => 'index']);
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
     public function loadElementsByContainerId($containerId = null) {
-        if (!$this->request->is('ajax')) {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException(__('This is only allowed via API.'));
+            return;
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid container'));
+        }
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        $servicegroups = $ServicegroupsTable->servicegroupsByContainerId($containerIds, 'list', 'id');
+        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
+        $servicegroupsExcluded = $servicegroups;
+
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
+
+        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
+        $contacts = Api::makeItJavaScriptAble($contacts);
+
+        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
+        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
+
+        $this->set('servicegroups', $servicegroups);
+        $this->set('servicegroupsExcluded', $servicegroupsExcluded);
+        $this->set('timeperiods', $timeperiods);
+        $this->set('contacts', $contacts);
+        $this->set('contactgroups', $contactgroups);
+
+        $this->set('_serialize', [
+            'servicegroups',
+            'servicegroupsExcluded',
+            'timeperiods',
+            'contacts',
+            'contactgroups'
+        ]);
+    }
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Container->exists($containerId)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICE, [], $this->hasRootPrivileges, [CT_HOSTGROUP, CT_SERVICEGROUP, CT_CONTACTGROUP]);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICE, [], $this->hasRootPrivileges, [CT_HOSTGROUP, CT_SERVICEGROUP, CT_CONTACTGROUP]);
         }
 
-        list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) =
-            $this->getAvailableDataByContainerId($containerId);
-
-        $servicegroups = $this->Servicegroup->makeItJavaScriptAble($servicegroups);
-        $services = $this->Service->makeItJavaScriptAble($services);
-        $timeperiods = $this->Timeperiod->makeItJavaScriptAble($timeperiods);
-        $contacts = $this->Contact->makeItJavaScriptAble($contacts);
-        $contactgroups = $this->Contactgroup->makeItJavaScriptAble($contactgroups);
-
-        $servicegroupsExcluded = $servicegroups;
-        $servicesExcluded = $services;
-
-        $data = [
-            'services'              => $services,
-            'servicesExcluded'      => $servicesExcluded,
-            'servicegroups'         => $servicegroups,
-            'servicegroupsExcluded' => $servicegroupsExcluded,
-            'timeperiods'           => $timeperiods,
-            'contacts'              => $contacts,
-            'contactgroups'         => $contactgroups,
-        ];
-        $this->set($data);
-        $this->set('_serialize', array_keys($data));
-    }
-
-    /**
-     * @param int[] $containerIds
-     *
-     * @return array
-     */
-    protected function getAvailableDataByContainerId($containerIds) {
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
-
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-        $services = $this->Host->servicesByContainerIds($containerIds, 'list', ['forOptiongroup' => true]);
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-        $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
-        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
-
-        return [$servicegroups, $services, $timeperiods, $contacts, $contactgroups];
+        $this->set('containers', Api::makeItJavaScriptAble($containers));
+        $this->set('_serialize', ['containers']);
     }
 }
+

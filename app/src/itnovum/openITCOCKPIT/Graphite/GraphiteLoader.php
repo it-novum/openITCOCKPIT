@@ -150,7 +150,7 @@ class GraphiteLoader {
      * @param array $queryOptions
      * @return Client
      */
-    private function getHttpClient($proxySettings = [], $queryOptions) {
+    private function getHttpClient($proxySettings, $queryOptions) {
         $options = [
             'verify' => $this->GraphiteConfig->isIgnoreSslCertificate()
         ];
@@ -241,6 +241,23 @@ class GraphiteLoader {
     }
 
     /**
+     * @param GraphiteMetric $GraphiteMetric
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getSeriesAsCounter(GraphiteMetric $GraphiteMetric) {
+        $options = $this->getBaseRequestOptions();
+
+        $options['target'] = sprintf(
+            'scale(nonNegativeDerivative(keepLastValue(%s.%s)), 0.125)',
+            $this->GraphiteConfig->getGraphitePrefix(),
+            $GraphiteMetric->getMetricPath()
+        );
+
+        return $this->normalizeData($this->sendRequest($options));
+    }
+
+    /**
      * @return array
      */
     private function getBaseRequestOptions() {
@@ -295,7 +312,7 @@ class GraphiteLoader {
     private function normalizeData($data) {
         $normalizedData = [];
 
-        if(is_array($data)) {
+        if (is_array($data)) {
             foreach ($data as $metric) {
                 foreach ($metric['datapoints'] as $datapoint) {
                     if ($this->hideNullValues && $datapoint[0] === null) {
@@ -312,5 +329,37 @@ class GraphiteLoader {
         return $normalizedData;
     }
 
+    /**
+     * @param string $hostUuid
+     * @param string $serviceUuid
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function findMetricsByUuid($hostUuid, $serviceUuid) {
+        $client = $this->getHttpClient([], [
+            'query' => sprintf(
+                '%s.%s.%s.*',
+                $this->GraphiteConfig->getGraphitePrefix(),
+                $hostUuid,
+                $serviceUuid
+            )
+        ]);
+
+        $request = new Request('GET', $this->GraphiteConfig->getBaseUrl() . '/metrics/find');
+        try {
+            $response = $client->send($request);
+        } catch (\Exception $e) {
+            return [];
+        }
+
+        $metrics = [];
+        if ($response->getStatusCode() == 200) {
+            foreach (\json_decode($response->getBody()->getContents(), true) as $metric) {
+                $metrics[] = $metric['text'];
+            }
+        }
+
+        return $metrics;
+    }
 
 }

@@ -39,7 +39,7 @@
             <hr>
             <?php echo $this->Form->input('new_password', [
                 'type' => 'password',
-                'help' => __('user_model.password_requirement_notice'),
+                'help' => __('The password must consist of 6 alphanumeric characters and must contain at least one digit.'),
             ]) ?>
             <?php echo $this->Form->input('new_password_repeat', [
                 'type'  => 'password',

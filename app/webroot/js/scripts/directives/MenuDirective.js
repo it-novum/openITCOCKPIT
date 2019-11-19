@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $httpParamSerializer){
+angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $httpParamSerializer, $state){
     return {
         restrict: 'A',
         templateUrl: '/angular/menu.html',
@@ -24,10 +24,24 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                 });
             };
 
-            $scope.isActiveChild = function(childNode){
-                if(childNode.url_array.plugin == $scope.phpplugin){
-                    if(childNode.url_array.controller === $scope.phpcontroller){
-                        if(childNode.url_array.action === $scope.phpaction){
+            $scope.isActiveChild = function(childNode) {
+                let urlController = $scope.phpcontroller;
+                let urlAction = $scope.phpaction;
+                let urlPlugin = $scope.phpplugin;
+                if (window.location.href.includes('/ng/#!/')) {
+                    let oldUrlParams = window.location.href.split('/ng/#!/')[1].split('/');
+                    if(oldUrlParams[0].includes('_module')){
+                        urlPlugin = oldUrlParams[0];
+                        urlController = oldUrlParams[1];
+                        urlAction = oldUrlParams[2] ? oldUrlParams[2] : "index";
+                    } else {
+                        urlController = oldUrlParams[0];
+                        urlAction = oldUrlParams[1] ? oldUrlParams[1] : "index";
+                    }
+                }
+                if(childNode.url_array.plugin == urlPlugin){
+                    if(childNode.url_array.controller === urlController){
+                        if(childNode.url_array.action === urlAction){
                             return true;
                         }
                     }
@@ -35,10 +49,25 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                 return false;
             };
 
-            $scope.isActiveParent = function(parentNode){
-                if(parentNode.url_array && parentNode.url_array.plugin == $scope.phpplugin){
-                    if(parentNode.url_array.controller === $scope.phpcontroller){
-                        if(parentNode.url_array.action === $scope.phpaction){
+            $scope.isActiveParent = function(parentNode) {
+                let urlController = $scope.phpcontroller;
+                let urlAction = $scope.phpaction;
+                let urlPlugin = $scope.phpplugin;
+                if (window.location.href.includes('/ng/#!/')) {
+                    let oldUrlParams = window.location.href.split('/ng/#!/')[1].split('/');
+                    if(oldUrlParams[0].includes('_module')){
+                        urlPlugin = oldUrlParams[0];
+                        urlController = oldUrlParams[1];
+                        urlAction = oldUrlParams[2] ? oldUrlParams[2] : "index";
+                    } else {
+                        urlController = oldUrlParams[0];
+                        urlAction = oldUrlParams[1] ? oldUrlParams[1] : "index";
+                    }
+                }
+
+                if(parentNode.url_array && parentNode.url_array.plugin == urlPlugin){
+                    if(parentNode.url_array.controller === urlController){
+                        if(parentNode.url_array.action === urlAction){
                             return true;
                         }
                     }
@@ -76,12 +105,18 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                 var keyCode = $event.keyCode;
 
                 if(keyCode === RETURN_KEY && $scope.menuFilterPosition > -1){
+                    if($scope.menuMatches[$scope.menuFilterPosition].isAngular === "1"){
+                        window.location.href = "/ng/#!"+$scope.menuMatches[$scope.menuFilterPosition].url;
+                        return;
+                    }
                     window.location.href = $scope.menuMatches[$scope.menuFilterPosition].url;
                     return;
                 }
 
                 if(keyCode === RETURN_KEY && $scope.menuFilterPosition === -1){
-                    window.location.href = '/hosts/index?filter[Host.name]=' + rawurlencode($scope.menuFilter);
+                    $state.go('HostsIndex', {
+                        filterHostname: $scope.menuFilter
+                    });
                 }
 
                 if(keyCode !== ARROW_KEY_UP && keyCode !== ARROW_KEY_DOWN){

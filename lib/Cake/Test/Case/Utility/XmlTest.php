@@ -135,7 +135,7 @@ class XmlTest extends CakeTestCase {
 		$this->assertEquals('tag', $obj->firstChild->nodeName);
 		$this->assertEquals('value', $obj->firstChild->nodeValue);
 
-		$xml = CAKE . 'Test' . DS . 'Fixture' . DS . 'sample.xml';
+		$xml = OLD_CAKE . 'Test' . DS . 'Fixture' . DS . 'sample.xml';
 		$obj = Xml::build($xml);
 		$this->assertEquals('tags', $obj->getName());
 		$this->assertEquals(2, count($obj));
@@ -186,7 +186,7 @@ class XmlTest extends CakeTestCase {
  * @return void
  */
 	public function testBuildFromFileWhenDisabled() {
-		$xml = CAKE . 'Test' . DS . 'Fixture' . DS . 'sample.xml';
+		$xml = OLD_CAKE . 'Test' . DS . 'Fixture' . DS . 'sample.xml';
 		Xml::build($xml, array('readFile' => false));
 	}
 
@@ -660,7 +660,7 @@ XML;
 		$obj = Xml::build($xml);
 		$this->assertEquals(array('tag' => 'name'), Xml::toArray($obj));
 
-		$xml = CAKE . 'Test' . DS . 'Fixture' . DS . 'sample.xml';
+		$xml = OLD_CAKE . 'Test' . DS . 'Fixture' . DS . 'sample.xml';
 		$obj = Xml::build($xml);
 		$expected = array(
 			'tags' => array(
@@ -818,7 +818,7 @@ XML;
  * @return void
  */
 	public function testRss() {
-		$rss = file_get_contents(CAKE . 'Test' . DS . 'Fixture' . DS . 'rss.xml');
+		$rss = file_get_contents(OLD_CAKE . 'Test' . DS . 'Fixture' . DS . 'rss.xml');
 		$rssAsArray = Xml::toArray(Xml::build($rss));
 		$this->assertEquals('2.0', $rssAsArray['rss']['@version']);
 		$this->assertEquals(2, count($rssAsArray['rss']['channel']['item']));
@@ -978,7 +978,7 @@ XML;
  * @return void
  */
 	public function testSoap() {
-		$xmlRequest = Xml::build(CAKE . 'Test' . DS . 'Fixture' . DS . 'soap_request.xml');
+		$xmlRequest = Xml::build(OLD_CAKE . 'Test' . DS . 'Fixture' . DS . 'soap_request.xml');
 		$expected = array(
 			'Envelope' => array(
 				'@soap:encodingStyle' => 'http://www.w3.org/2001/12/soap-encoding',
@@ -991,7 +991,7 @@ XML;
 		);
 		$this->assertEquals($expected, Xml::toArray($xmlRequest));
 
-		$xmlResponse = Xml::build(CAKE . 'Test' . DS . 'Fixture' . DS . 'soap_response.xml');
+		$xmlResponse = Xml::build(OLD_CAKE . 'Test' . DS . 'Fixture' . DS . 'soap_response.xml');
 		$expected = array(
 			'Envelope' => array(
 				'@soap:encodingStyle' => 'http://www.w3.org/2001/12/soap-encoding',
@@ -1249,7 +1249,7 @@ XML;
  * @return void
  */
 	public function testNoEntityLoading() {
-		$file = CAKE . 'VERSION.txt';
+		$file = OLD_CAKE . 'VERSION.txt';
 		$xml = <<<XML
 <!DOCTYPE cakephp [
   <!ENTITY payload SYSTEM "file://$file" >]>

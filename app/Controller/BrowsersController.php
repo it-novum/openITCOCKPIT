@@ -23,8 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-//App::import('Model', 'Host');
-//App::import('Model', 'Container');
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
@@ -38,24 +39,24 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  */
 class BrowsersController extends AppController {
 
-    public $layout = 'angularjs';
+    public $layout = 'blank';
 
     public $uses = [
-        'Systemsetting',
-        'Container',
         'Browser',
         'Tenant'
     ];
 
-    public $components = [
-        'paginator',
-    ];
-
+    /**
+     * @param int|null $containerId
+     * @deprecated Refactor Satellite Model ->Satellite->
+     */
     function index($containerId = null) {
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
         if (!$this->isApiRequest()) {
-            $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $masterInstanceName = $Systemsettings->getMasterInstanceName();
             $SatelliteNames = [];
             $ModuleManager = new ModuleManager('DistributeModule');
             if ($ModuleManager->moduleExists()) {
@@ -64,14 +65,20 @@ class BrowsersController extends AppController {
                 $SatelliteNames[0] = $masterInstanceName;
             }
 
-            $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
             $this->set('satellites', $SatelliteNames);
             //Only ship HTML template
             return;
         }
 
+        if($containerId === null){
+            throw new BadRequestException("containerId is missing");
+        }
+        $containerId = (int)$containerId;
+
         $tenants = $this->getTenants();
+        
         $tenantsFiltered = [];
         foreach ($tenants as $tenantId => $tenantName) {
             if (in_array($tenantId, $this->MY_RIGHTS, true)) {
@@ -81,22 +88,26 @@ class BrowsersController extends AppController {
         $tenants = $tenantsFiltered;
         natcasesort($tenants);
 
-        if ((int)$containerId === ROOT_CONTAINER && !empty($tenants)) {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($containerId === ROOT_CONTAINER && !empty($tenants)) {
             //First request if tenants are not empty or ROOT_CONTAINER
 
-            $this->set('containers', $this->Container->makeItJavaScriptAble($tenants));
-            $this->set('breadcrumbs', $this->Container->makeItJavaScriptAble([ROOT_CONTAINER => __('root')]));
+            $this->set('containers', Api::makeItJavaScriptAble($tenants));
+            $this->set('breadcrumbs', Api::makeItJavaScriptAble([ROOT_CONTAINER => __('root')]));
         } else {
             //Child container (or so)
 
             if ($this->hasRootPrivileges === true) {
-                $browser = Hash::extract($this->Container->children($containerId, true), '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
+                $children = $ContainersTable->getChildren($containerId);
+                $browser = \Cake\Utility\Hash::extract($children, '{n}[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
             } else {
-                $containerNest = Hash::nest($this->Container->children($containerId));
+                $containerNest = $ContainersTable->getChildren($containerId, true);
                 $browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
             }
 
-            $browser = Hash::sort($browser, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
+            $browser = \Cake\Utility\Hash::sort($browser, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
 
             if ($this->hasRootPrivileges === false) {
                 foreach ($browser as $key => $containerRecord) {
@@ -111,23 +122,19 @@ class BrowsersController extends AppController {
                 $containers[$node['id']] = $node['name'];
             }
 
-            $currentContainer = $this->Container->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Container.id' => $containerId
-                ]
-            ]);
+            $currentContainer = $ContainersTable->get($containerId)->toArray();
+
             $breadcrumbs = [];
-            $parents = $this->Container->getPath($currentContainer['Container']['parent_id']);
+            $parents = $ContainersTable->getPathByIdAndCacheResult($currentContainer['parent_id'], 'BrowsersIndex');
 
             foreach ($parents as $parentContainer) {
-                if (in_array((int)$parentContainer['Container']['id'], $this->MY_RIGHTS, true)) {
-                    $breadcrumbs[$parentContainer['Container']['id']] = $parentContainer['Container']['name'];
+                if (in_array((int)$parentContainer['id'], $this->MY_RIGHTS, true)) {
+                    $breadcrumbs[$parentContainer['id']] = $parentContainer['name'];
                 }
             }
-            $breadcrumbs[$currentContainer['Container']['id']] = $currentContainer['Container']['name'];
-            $this->set('containers', $this->Container->makeItJavaScriptAble($containers));
-            $this->set('breadcrumbs', $this->Container->makeItJavaScriptAble($breadcrumbs));
+            $breadcrumbs[$currentContainer['id']] = $currentContainer['name'];
+            $this->set('containers', Api::makeItJavaScriptAble($containers));
+            $this->set('breadcrumbs', Api::makeItJavaScriptAble($breadcrumbs));
 
         }
 
@@ -138,15 +145,35 @@ class BrowsersController extends AppController {
 
 
     /**
+     * should be moved into the table
      * @return mixed
+     * @deprecated
      */
     private function getTenants() {
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+        $user = $Users->getUserById($User->getId());
+
+        $tenants = [];
+        foreach ($user['containers'] as $_container) {
+            $_container = $_container['_joinData'];
+            $path = $ContainersTable->getPathByIdAndCacheResult($_container['container_id'], 'UserGetTenantIds');
+            foreach ($path as $subContainer) {
+                if ($subContainer['containertype_id'] == CT_TENANT) {
+                    $tenants[$subContainer['id']] = $subContainer['name'];
+                }
+            }
+        }
+
         return $this->Tenant->tenantsByContainerId(
             array_merge(
                 $this->MY_RIGHTS, array_keys(
-                    $this->User->getTenantIds(
-                        $this->Auth->user('id')
-                    )
+                    $tenants
                 )
             ),
             'list', 'container_id');

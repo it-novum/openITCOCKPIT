@@ -4,6 +4,7 @@ if [[ $1 == "--help" ]]; then
     echo "--roles          Restore all default user role permissions"
     echo "--roles-admin    Restore all default user role permissions for Administrator role"
     echo "--rights         Reset file permissions"
+    echo "--cc             Clear model cache"
 
     exit 0
 fi
@@ -115,7 +116,6 @@ oitc api --model Commands --action addByUuid --ignore-errors 1 --data 'service-n
 
 #Generate documentation
 oitc docu_generator
-oitc copy_servicename
 oitc systemsettings_import
 
 for i in "$@"; do
@@ -130,6 +130,10 @@ for i in "$@"; do
 
         --rights)
             oitc rights
+        ;;
+
+        --cc)
+        oitc clear_model_cache
         ;;
 
         *)

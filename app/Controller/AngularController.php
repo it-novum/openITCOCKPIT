@@ -22,10 +22,20 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+use App\Model\Table\ContactsTable;
+use App\Model\Table\ContainersTable;
+use App\Model\Table\ServicesTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ServiceMacroReplacer;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
  * Class AngularController
@@ -38,7 +48,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 class AngularController extends AppController {
 
     public $layout = 'blank';
-    public $components = ['GearmanClient'];
+
     public $uses = [
         'Host',
         'Service',
@@ -47,6 +57,13 @@ class AngularController extends AppController {
         MONITORING_SERVICESTATUS,
         'Contact'
     ];
+
+    public function index() {
+        //Shipp the AngularJS Single Page Application layout
+        //URL: /spa#!/<state>
+        $this->layout = 'angularjs_spa';
+        return;
+    }
 
     public function paginator() {
         //Return HTML Template for PaginatorDirective
@@ -136,7 +153,7 @@ class AngularController extends AppController {
             return;
         }
 
-        $path = APP . 'Lib' . DS . 'AvailableVersion.php';
+        $path = OLD_APP . 'Lib' . DS . 'AvailableVersion.php';
         $availableVersion = '???';
         if (file_exists($path)) {
             require_once $path;
@@ -212,10 +229,14 @@ class AngularController extends AppController {
             $containerIds = [$containerIds];
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($recursive) {
             //get recursive container ids
             $containerIdToResolve = $containerIds;
-            $containerIdsResolved = Hash::extract($this->Container->children($containerIdToResolve[0], false, ['Container.id']), '{n}.Container.id');
+            $children = $ContainersTable->getChildren($containerIdToResolve[0]);
+            $containerIdsResolved = Hash::extract($children, '{n}.id');
             $recursiveContainerIds = [];
             foreach ($containerIdsResolved as $containerId) {
                 if (in_array($containerId, $this->MY_RIGHTS)) {
@@ -330,7 +351,10 @@ class AngularController extends AppController {
         }
 
         if (!Cache::read('systemsettings', 'permissions')) {
-            Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettingsArray = $Systemsettings->findAsArray();
+            Cache::write('systemsettings', $systemsettingsArray, 'permissions');
         }
         session_write_close();
 
@@ -351,7 +375,10 @@ class AngularController extends AppController {
         }
 
         if (!Cache::read('systemsettings', 'permissions')) {
-            Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettingsArray = $Systemsettings->findAsArray();
+            Cache::write('systemsettings', $systemsettingsArray, 'permissions');
         }
         session_write_close();
 
@@ -362,25 +389,12 @@ class AngularController extends AppController {
 
         $User = new User($this->Auth);
 
-        $contact = $this->Contact->find('first', [
-            'fields'     => [
-                'Contact.id'
-            ],
-            'recursive'  => -1,
-            'conditions' => [
-                'AND' => [
-                    'Contact.user_id' => $User->getId(),
-                    'OR'              => [
-                        'host_push_notifications_enabled'    => 1,
-                        'service_push_notifications_enabled' => 1
-                    ]
-                ]
-            ]
-        ]);
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
         $this->set('user', [
             'id'             => $User->getId(),
-            'hasPushContact' => !empty($contact)
+            'hasPushContact' => $ContactsTable->hasUserAPushContact($User->getId())
         ]);
 
         $this->set('websocket', $websocketConfig);
@@ -388,13 +402,13 @@ class AngularController extends AppController {
     }
 
     public function not_found() {
-        $this->layout = 'Admin.default';
+        $this->layout = 'blank';
         //Only ship HTML template
         return;
     }
 
     public function forbidden() {
-        $this->layout = 'Admin.default';
+        $this->layout = 'blank';
         //Only ship HTML template
         return;
     }
@@ -419,11 +433,6 @@ class AngularController extends AppController {
         return;
     }
 
-    public function nested_list() {
-        //Only ship HTML template
-        return;
-    }
-
     public function reschedule_host() {
         //Only ship HTML template
         return;
@@ -443,8 +452,15 @@ class AngularController extends AppController {
         //Only ship HTML template
 
         if ($this->isAngularJsRequest()) {
-            $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
-            $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
+            if (!Cache::read('FRONTEND.PRESELECTED_DOWNTIME_OPTION', 'permissions')) {
+                /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+                $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+                $record = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.PRESELECTED_DOWNTIME_OPTION');
+                Cache::write('FRONTEND.PRESELECTED_DOWNTIME_OPTION', $record->get('value'), 'permissions');
+            }
+            $downtimetypeId = Cache::read('FRONTEND.PRESELECTED_DOWNTIME_OPTION', 'permissions');
+
+            $this->set('preselectedDowntimetype', $downtimetypeId);
             $this->set('_serialize', ['preselectedDowntimetype']);
         }
 
@@ -457,22 +473,26 @@ class AngularController extends AppController {
     }
 
     public function getDowntimeData() {
-        $this->layout = 'angularjs';
-        if (!$this->isAngularJsRequest()) {
-            return;
+        if (!Cache::read('FRONTEND.PRESELECTED_DOWNTIME_OPTION', 'permissions')) {
+            /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $record = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.PRESELECTED_DOWNTIME_OPTION');
+            Cache::write('FRONTEND.PRESELECTED_DOWNTIME_OPTION', $record->get('value'), 'permissions');
         }
+        $downtimetypeId = Cache::read('FRONTEND.PRESELECTED_DOWNTIME_OPTION', 'permissions');
 
-        $refill = [
-            'from_date' => date('d.m.Y'),
-            'from_time' => date('H:i'),
-            'to_date'   => date('d.m.Y'),
-            'to_time'   => date('H:i', time() + 60 * 15),
-            'duration'  => "15",
-            'comment'   => __('In maintenance')
+        $defaultValues = [
+            'from_date'       => date('d.m.Y'),
+            'from_time'       => date('H:i'),
+            'to_date'         => date('d.m.Y'),
+            'to_time'         => date('H:i', time() + 60 * 15),
+            'duration'        => 15,
+            'comment'         => __('In maintenance'),
+            'downtimetype_id' => $downtimetypeId
         ];
 
-        $this->set('refill', $refill);
-        $this->set('_serialize', ['refill']);
+        $this->set('defaultValues', $defaultValues);
+        $this->set('_serialize', ['defaultValues']);
     }
 
     public function system_health() {
@@ -498,8 +518,9 @@ class AngularController extends AppController {
         $cache['gearman_reachable'] = false;
         $cache['gearman_worker_running'] = false;
 
-        $this->GearmanClient->client->setTimeout(5000);
-        $cache['gearman_reachable'] = @$this->GearmanClient->client->ping(true);
+        $GearmanClient = new Gearman();
+        $GearmanClient->setTimeout(5000);
+        $cache['gearman_reachable'] = $GearmanClient->ping();
 
 
         exec('ps -eaf |grep gearman_worker |grep -v \'grep\'', $output);
@@ -691,5 +712,256 @@ class AngularController extends AppController {
         header('Content-Type: image/png');
         imagepng($image, null, 0);
         imagedestroy($image);
+    }
+
+    public function macros() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function ldap_configuration() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        if (!Cache::read('systemsettings', 'permissions')) {
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettingsArray = $Systemsettings->findAsArray();
+            Cache::write('systemsettings', $systemsettingsArray, 'permissions');
+        }
+        session_write_close();
+
+        $systemsettings = Cache::read('systemsettings', 'permissions');
+        $ldapConfig = [
+            'host'    => $systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS'],
+            'query'   => $systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY'],
+            'base_dn' => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN']
+        ];
+
+        $this->set('ldapConfig', $ldapConfig);
+        $this->set('_serialize', ['ldapConfig']);
+    }
+
+    public function priority() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function intervalInput() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function intervalInputWithDiffer() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function humanTime() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function template_diff() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function template_diff_button() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function queryhandler() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $QueryHandler = new QueryHandler($Systemsettings->getQueryHandlerPath());
+
+        $this->set('QueryHandler', [
+            'exists' => $QueryHandler->exists(),
+            'path'   => $QueryHandler->getPath()
+        ]);
+        $this->set('_serialize', ['QueryHandler']);
+
+    }
+
+    public function hostBrowserMenu() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $hostId = $this->request->query('hostId');
+        $includeHoststatus = $this->request->query('includeHoststatus') === 'true';
+
+        /** @var $HostsTable App\Model\Table\HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException('Invalid host');
+        }
+        $host = $HostsTable->getHostByIdWithHosttemplate($hostId);
+
+        //Can user see this object?
+        if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
+            $this->render403();
+            return;
+        }
+
+        //Can user edit this object?
+        $allowEdit = $this->hasRootPrivileges;
+        if ($allowEdit === false) {
+            //Strict checking for non root users
+            $allowEdit = $this->allowedByContainerId($host->getContainerIds());
+        }
+
+        /** @var $DocumentationsTable App\Model\Table\DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
+
+        $hostUrl = $host->get('host_url');
+        if ($hostUrl === null || $hostUrl === '') {
+            $hostUrl = $host->get('hosttemplate')->get('host_url');
+        }
+
+        if ($hostUrl) {
+            $HostMacroReplacer = new HostMacroReplacer($host->toArray());
+            $hostUrl = $HostMacroReplacer->replaceBasicMacros($hostUrl);
+        }
+
+        if ($includeHoststatus) {
+            //Get meta data and push to front end
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->currentState()->isFlapping();
+            $HosttatusTable = $this->DbBackend->getHoststatusTable();
+            $hoststatus = $HosttatusTable->byUuid($host->get('uuid'), $HoststatusFields);
+            if (!isset($hoststatus['Hoststatus'])) {
+                $hoststatus['Hoststatus'] = [];
+            }
+            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
+        } else {
+            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([
+                'Hoststatus' => []
+            ]);
+
+        }
+
+        $config = [
+            'hostId'            => $host->get('id'),
+            'hostUuid'          => $host->get('uuid'),
+            'hostName'          => $host->get('name'),
+            'hostAddress'       => $host->get('address'),
+            'docuExists'        => $DocumentationsTable->existsByUuid($host->get('uuid')),
+            'hostUrl'           => $hostUrl,
+            'allowEdit'         => $allowEdit,
+            'includeHoststatus' => $includeHoststatus,
+            'Hoststatus'        => $Hoststatus->toArray()
+        ];
+
+        $this->set('config', $config);
+        $this->set('_serialize', ['config']);
+    }
+
+    public function serviceBrowserMenu() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $serviceId = $this->request->query('serviceId');
+        $includeServicestatus = $this->request->query('includeServicestatus') === 'true';
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        if (!$ServicesTable->existsById($serviceId)) {
+            throw new NotFoundException('Invalid service');
+        }
+        $service = $ServicesTable->getServiceByIdWithHostAndServicetemplate($serviceId);
+
+        //Can user see this object?
+        if (!$this->allowedByContainerId($service->getContainerIds(), false)) {
+            $this->render403();
+            return;
+        }
+
+        //Can user edit this object?
+        $allowEdit = $this->hasRootPrivileges;
+        if ($allowEdit === false) {
+            //Strict checking for non root users
+            $allowEdit = $this->allowedByContainerId($service->getContainerIds());
+        }
+
+        /** @var $DocumentationsTable App\Model\Table\DocumentationsTable */
+        $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
+
+        $serviceName = $service->get('name');
+        if ($serviceName === null || $serviceName === '') {
+            $serviceName = $service->get('servicetemplate')->get('name');
+        }
+
+
+        $serviceUrl = $service->get('service_url');
+        if ($serviceUrl === null || $serviceUrl === '') {
+            $serviceUrl = $service->get('servicetemplate')->get('service_url');
+        }
+
+        if ($serviceUrl) {
+            $HostMacroReplacer = new HostMacroReplacer($service->get('host')->toArray());
+            $ServiceMacroReplacer = new ServiceMacroReplacer($service->toArray());
+            $serviceUrl = $HostMacroReplacer->replaceBasicMacros($serviceUrl);
+            $serviceUrl = $ServiceMacroReplacer->replaceBasicMacros($serviceUrl);
+        }
+
+        if ($includeServicestatus) {
+            //Get meta data and push to front end
+            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+            $ServicestatusFields->currentState()->isFlapping();
+            $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+            $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+            if (!isset($servicestatus['Servicestatus'])) {
+                $servicestatus['Servicestatus'] = [];
+            }
+            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
+        } else {
+            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus([
+                'Servicestatus' => []
+            ]);
+        }
+
+        $config = [
+            'hostId'               => $service->get('host')->get('id'),
+            'serviceUuid'          => $service->get('uuid'),
+            'hostName'             => $service->get('host')->get('name'),
+            'serviceName'          => $serviceName,
+            'hostAddress'          => $service->get('host')->get('address'),
+            'docuExists'           => $DocumentationsTable->existsByUuid($service->get('uuid')),
+            'serviceUrl'           => $serviceUrl,
+            'allowEdit'            => $allowEdit,
+            'includeServicestatus' => $includeServicestatus,
+            'Servicestatus'        => $Servicestatus->toArray()
+        ];
+        $this->set('config', $config);
+        $this->set('_serialize', ['config']);
+    }
+
+    public function durationInput() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function calendar() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function reload_required() {
+        //Only ship HTML template
+        return;
     }
 }

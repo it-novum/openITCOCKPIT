@@ -1,8 +1,8 @@
 angular.module('openITCOCKPIT')
-    .controller('MapeditorsEditController', function($scope, $http, QueryStringService){
+    .controller('MapeditorsEditController', function($scope, $http, $stateParams){
 
         $scope.init = true;
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
         $scope.backgrounds = [];
 
         $scope.addNewObject = false;
@@ -1226,7 +1226,7 @@ angular.module('openITCOCKPIT')
             $http.get("/hosts/loadHostsByString.json", {
                 params: {
                     'angular': true,
-                    'filter[Host.name]': searchString,
+                    'filter[Hosts.name]': searchString,
                     'selected[]': selected,
                     'includeDisabled': 'true'
                 }
@@ -1279,7 +1279,7 @@ angular.module('openITCOCKPIT')
             $http.get("/hostgroups/loadHostgroupsByString.json", {
                 params: {
                     'angular': true,
-                    'filter[Container.name]': searchString,
+                    'filter[Containers.name]': searchString,
                     'selected[]': selected
                 }
             }).then(function(result){
@@ -1295,7 +1295,7 @@ angular.module('openITCOCKPIT')
             $http.get("/servicegroups/loadServicegroupsByString.json", {
                 params: {
                     'angular': true,
-                    'filter[Container.name]': searchString,
+                    'filter[Containers.name]': searchString,
                     'selected[]': selected
                 }
             }).then(function(result){

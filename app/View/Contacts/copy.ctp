@@ -26,49 +26,120 @@
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-pencil-square-o fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <i class="fa fa-user fa-fw "></i>
+            <?php echo __('Contacts'); ?>
             <span>>
-                <?php echo $this->Utils->pluralize($contacts, __('Contacts'), __('Contacts')); ?>
-			</span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+                <?php echo __('Copy'); ?>
+            </span>
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
-        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Copy'); ?><?php echo $this->Utils->pluralize($contacts, __('contacts'), __('contacts')); ?></h2>
+        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-copy"></i> </span>
+        <h2 class="hidden-mobile hidden-tablet">
+            <?php echo __('Copy contact/s'); ?>
+        </h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-            <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
+            <?php if ($this->Acl->hasPermission('index', 'contacts')): ?>
+                <a back-button fallback-state='ContactsIndex' class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
+            <?php endif; ?>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Contact', [
-                'class' => 'form-horizontal clear',
-            ]); ?>
-            <?php foreach ($contacts as $key => $contact): ?>
-                <div class="row">
-                    <div class="col-xs-12 col-md-9 col-lg-7">
-                        <fieldset>
-                            <legend><?php echo $contact['Contact']['name'] ?></legend>
-                            <?php
-                            echo $this->Form->input('Contact.' . $key . '.name', ['value' => $contact['Contact']['name'], 'label' => __('Contact name'), 'required' => true]);
-                            echo $this->Form->input('Contact.' . $key . '.description', ['value' => $contact['Contact']['description'], 'label' => __('Description'), 'required' => false]);
-                            echo $this->Form->input('Contact.' . $key . '.email', ['value' => $contact['Contact']['email'], 'label' => __('E-Mail'), 'required' => true]);
-                            echo $this->Form->input('Contact.' . $key . '.phone', ['value' => $contact['Contact']['phone'], 'label' => __('Phone'), 'required' => true]);
-                            echo $this->Form->input('Contact.' . $key . '.source', ['value' => $contact['Contact']['id'], 'type' => 'hidden']);
-                            ?>
-                        </fieldset>
-                    </div> <!-- close col -->
-                </div> <!-- close row-->
-            <?php endforeach; ?>
-            <br/>
-            <?php echo $this->Form->formActions(); ?>
-        </div> <!-- close widget body -->
+            <div class="row form-horizontal" ng-repeat="sourceContact in sourceContacts">
+                <div class="col-xs-12 col-md-9 col-lg-7">
+                    <fieldset>
+                        <legend>
+                            <span class="text-info"><?php echo __('Source contact:'); ?></span>
+                            {{sourceContact.Source.name}}
+                        </legend>
+
+                        <div class="form-group required" ng-class="{'has-error': sourceContact.Error.name}">
+                            <label for="Contact{{$index}}Name" class="col col-md-2 control-label">
+                                <?php echo('Contact name'); ?>
+                            </label>
+                            <div class="col col-xs-10 required">
+                                <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceContact.Contact.name"
+                                        id="Contact{{$index}}Name">
+                                <span class="help-block">
+                                    <?php echo __('Name of the new contact'); ?>
+                                </span>
+                                <div ng-repeat="error in sourceContact.Error.name">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': sourceContact.Error.description}">
+                            <label for="Contact{{$index}}Description" class="col col-md-2 control-label">
+                                <?php echo('Description'); ?>
+                            </label>
+                            <div class="col col-xs-10">
+                                <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceContact.Contact.description"
+                                        id="Contact{{$index}}Description">
+                                <div ng-repeat="error in sourceContact.Error.description">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required" ng-class="{'has-error': sourceContact.Error.email}">
+                            <label for="Contact{{$index}}Email" class="col col-md-2 control-label">
+                                <?php echo('Email'); ?>
+                            </label>
+                            <div class="col col-xs-10">
+                                <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceContact.Contact.email"
+                                        id="Contact{{$index}}Email">
+                                <div ng-repeat="error in sourceContact.Error.email">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required" ng-class="{'has-error': sourceContact.Error.phone}">
+                            <label for="Contact{{$index}}Phone" class="col col-md-2 control-label">
+                                <?php echo('Phone'); ?>
+                            </label>
+                            <div class="col col-xs-10">
+                                <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceContact.Contact.phone"
+                                        id="Contact{{$index}}Phone">
+                                <div ng-repeat="error in sourceContact.Error.phone">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="well formactions ">
+                <div class="pull-right">
+                    <button class="btn btn-primary" ng-click="copy()">
+                        <?php echo __('Copy'); ?>
+                    </button>
+                    <?php if ($this->Acl->hasPermission('index', 'Contacts')): ?>
+                        <a back-button fallback-state='ContactsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+        </div>
     </div>
-</div> <!-- end jarviswidget -->
+</div>

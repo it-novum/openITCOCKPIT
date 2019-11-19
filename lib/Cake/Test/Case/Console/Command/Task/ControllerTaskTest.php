@@ -281,15 +281,15 @@ class ControllerTaskTest extends CakeTestCase {
 		$this->Task->expects($this->any())->method('createFile')->will($this->returnValue(true));
 
 		$result = $this->Task->bake('Articles', null, $helpers, $components);
-		$expected = file_get_contents(CAKE . 'Test' . DS . 'bake_compare' . DS . 'Controller' . DS . 'NoActions.ctp');
+		$expected = file_get_contents(OLD_CAKE . 'Test' . DS . 'bake_compare' . DS . 'Controller' . DS . 'NoActions.ctp');
 		$this->assertTextEquals($expected, $result);
 
 		$result = $this->Task->bake('Articles', null, array(), array());
-		$expected = file_get_contents(CAKE . 'Test' . DS . 'bake_compare' . DS . 'Controller' . DS . 'NoHelpersOrComponents.ctp');
+		$expected = file_get_contents(OLD_CAKE . 'Test' . DS . 'bake_compare' . DS . 'Controller' . DS . 'NoHelpersOrComponents.ctp');
 		$this->assertTextEquals($expected, $result);
 
 		$result = $this->Task->bake('Articles', 'scaffold', $helpers, $components);
-		$expected = file_get_contents(CAKE . 'Test' . DS . 'bake_compare' . DS . 'Controller' . DS . 'Scaffold.ctp');
+		$expected = file_get_contents(OLD_CAKE . 'Test' . DS . 'bake_compare' . DS . 'Controller' . DS . 'Scaffold.ctp');
 		$this->assertTextEquals($expected, $result);
 	}
 
@@ -302,8 +302,8 @@ class ControllerTaskTest extends CakeTestCase {
 		$this->Task->plugin = 'ControllerTest';
 
 		//fake plugin path
-		CakePlugin::load('ControllerTest', array('path' => APP . 'Plugin' . DS . 'ControllerTest' . DS));
-		$path = APP . 'Plugin' . DS . 'ControllerTest' . DS . 'Controller' . DS . 'ArticlesController.php';
+		CakePlugin::load('ControllerTest', array('path' => OLD_APP . 'Plugin' . DS . 'ControllerTest' . DS));
+		$path = OLD_APP . 'Plugin' . DS . 'ControllerTest' . DS . 'Controller' . DS . 'ArticlesController.php';
 
 		$this->Task->expects($this->at(1))->method('createFile')->with(
 			$path,
@@ -317,7 +317,7 @@ class ControllerTaskTest extends CakeTestCase {
 		$this->Task->bake('Articles', '--actions--', array(), array(), array());
 
 		$this->Task->plugin = 'ControllerTest';
-		$path = APP . 'Plugin' . DS . 'ControllerTest' . DS . 'Controller' . DS . 'ArticlesController.php';
+		$path = OLD_APP . 'Plugin' . DS . 'ControllerTest' . DS . 'Controller' . DS . 'ArticlesController.php';
 		$result = $this->Task->bake('Articles', '--actions--', array(), array(), array());
 
 		$this->assertContains("App::uses('ControllerTestAppController', 'ControllerTest.Controller');", $result);
@@ -334,7 +334,7 @@ class ControllerTaskTest extends CakeTestCase {
  */
 	public function testBakeActionsUsingSessions() {
 		$result = $this->Task->bakeActions('BakeArticles', null, true);
-		$expected = file_get_contents(CAKE . 'Test' . DS . 'bake_compare' . DS . 'Controller' . DS . 'ActionsUsingSessions.ctp');
+		$expected = file_get_contents(OLD_CAKE . 'Test' . DS . 'bake_compare' . DS . 'Controller' . DS . 'ActionsUsingSessions.ctp');
 		$this->assertTextEquals($expected, $result);
 
 		$result = $this->Task->bakeActions('BakeArticles', 'admin_', true);
@@ -352,7 +352,7 @@ class ControllerTaskTest extends CakeTestCase {
  */
 	public function testBakeActionsWithNoSessions() {
 		$result = $this->Task->bakeActions('BakeArticles', null, false);
-		$expected = file_get_contents(CAKE . 'Test' . DS . 'bake_compare' . DS . 'Controller' . DS . 'ActionsWithNoSessions.ctp');
+		$expected = file_get_contents(OLD_CAKE . 'Test' . DS . 'bake_compare' . DS . 'Controller' . DS . 'ActionsWithNoSessions.ctp');
 		$this->assertTextEquals($expected, $result);
 	}
 

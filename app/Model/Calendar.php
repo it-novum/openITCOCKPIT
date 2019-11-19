@@ -23,6 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContainersTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\ORM\TableRegistry;
+
+/**
+ * Class Calendar
+ * @deprecated
+ */
 class Calendar extends AppModel {
 
     public $hasMany = [
@@ -58,6 +66,11 @@ class Calendar extends AppModel {
         ],
     ];
 
+    /**
+     * @deprecated
+     * @param $request_data
+     * @return array
+     */
     public function prepareForSave($request_data) {
         $holidays = [];
         foreach ($request_data as $date => $holidayValues) {
@@ -71,6 +84,12 @@ class Calendar extends AppModel {
         return $holidays;
     }
 
+    /**
+     * @deprecated
+     * @param array $container_ids
+     * @param string $type
+     * @return array|null
+     */
     public function calendarsByContainerId($container_ids = [], $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -78,18 +97,26 @@ class Calendar extends AppModel {
 
         $container_ids = array_unique($container_ids);
 
-        //Lookup for the tenant container of $container_id
-        $this->Container = ClassRegistry::init('Container');
-
         $tenantContainerIds = [];
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         foreach ($container_ids as $container_id) {
             if ($container_id != ROOT_CONTAINER) {
 
                 // Get contaier id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-                $path = $this->Container->getPath($container_id);
-                $tenantContainerIds[] = $path[1]['Container']['id'];
+                try {
+                    $path = $ContainersTable->find('path', ['for' => $container_id])
+                        ->disableHydration()
+                        ->all()
+                        ->toArray();
+                }catch(RecordNotFoundException $e){
+                    continue;
+                }
+
+                $tenantContainerIds[] = $path[1]['id']; //Array key 1 is always the tenant.
             } else {
                 $tenantContainerIds[] = ROOT_CONTAINER;
             }

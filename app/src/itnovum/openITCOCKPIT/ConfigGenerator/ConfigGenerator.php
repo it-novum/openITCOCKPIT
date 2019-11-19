@@ -30,7 +30,7 @@ use Twig\Loader\FilesystemLoader;
 
 class ConfigGenerator {
 
-    protected $basePath = APP . 'config_templates' . DS;
+    protected $basePath = OLD_APP . 'config_templates' . DS;
 
     /**
      * Folder where Twig should search for the template.
@@ -354,6 +354,15 @@ class ConfigGenerator {
         $ConfigSymlink->link();
 
         return $result;
+    }
+
+    public function toArray() {
+        return [
+            'linkedOutfile'    => $this->getLinkedOutfile(),
+            'realOutfile'      => $this->getRealOutfile(),
+            'dbKey'            => $this->getDbKey(),
+            'angularDirective' => $this->getAngularDirective()
+        ];
     }
 
 

@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
 
+/**
+ * Class NotificationService
+ * @deprecated
+ */
 class NotificationService extends Statusengine3ModuleAppModel {
     public $useTable = 'service_notifications';
     public $tablePrefix = 'statusengine_';
@@ -34,6 +38,7 @@ class NotificationService extends Statusengine3ModuleAppModel {
      * @param ServiceNotificationConditions $ServiceNotificationConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(ServiceNotificationConditions $ServiceNotificationConditions, $paginatorConditions = []) {
 

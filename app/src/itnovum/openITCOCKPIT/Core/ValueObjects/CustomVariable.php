@@ -97,6 +97,13 @@ class CustomVariable {
         }
     }
 
+    /**
+     * @param int $objecttype_id
+     */
+    public function setObjecttypeId($objecttype_id){
+        $this->objecttype_id = $objecttype_id;
+    }
+
 
     /**
      * @return array

@@ -26,6 +26,10 @@
 use itnovum\openITCOCKPIT\Crate\CrateServicetemplateForService;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
+/**
+ * Class Servicetemplate
+ * @deprecated
+ */
 class Servicetemplate extends AppModel {
     public $hasAndBelongsToMany = [
         'Contactgroup'         => [
@@ -343,9 +347,15 @@ class Servicetemplate extends AppModel {
         ],
     ];
 
+    /**
+     * Servicetemplate constructor.
+     * @param bool $id
+     * @param null $table
+     * @param null $ds
+     * @deprecated
+     */
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
-        App::uses('UUID', 'Lib');
         $this->notification_options = [
             'service' => [
                 'notify_on_recovery',
@@ -367,6 +377,12 @@ class Servicetemplate extends AppModel {
         ];
     }
 
+    /**
+     * @param $data
+     * @param $notification_type
+     * @return bool
+     * @deprecated
+     */
     function checkNotificationOptions($data, $notification_type) {
         foreach ($this->data as $request) {
             foreach ($request as $request_key => $request_value) {
@@ -379,6 +395,12 @@ class Servicetemplate extends AppModel {
         return false;
     }
 
+    /**
+     * @param $data
+     * @param $flapdetection_type
+     * @return bool
+     * @deprecated
+     */
     function checkFlapDetectionOptions($data, $flapdetection_type) {
         if (isset($this->data['Servicetemplate']['flap_detection_enabled']) && (boolean)$this->data['Servicetemplate']['flap_detection_enabled'] === true) {
             foreach ($this->data as $request) {
@@ -395,6 +417,14 @@ class Servicetemplate extends AppModel {
         return true;
     }
 
+    /**
+     * @param array $container_ids
+     * @param string $type
+     * @param $servicetemplate_type
+     * @param bool $ignoreType
+     * @return array|null
+     * @deprecated
+     */
     public function servicetemplatesByContainerId($container_ids = [], $type = 'all', $servicetemplate_type = GENERIC_SERVICE, $ignoreType = false) {
         $conditions = [
             'Servicetemplate.container_id' => $container_ids,
@@ -416,10 +446,19 @@ class Servicetemplate extends AppModel {
         ]);
     }
 
+    /**
+     * @return string
+     * @deprecated
+     */
     public function createUUID() {
-        return UUID::v4();
+        return \itnovum\openITCOCKPIT\Core\UUID::v4();
     }
 
+    /**
+     * @param $servicetemplateId
+     * @return bool
+     * @deprecated
+     */
     public function __allowDelete($servicetemplateId) {
         $Service = ClassRegistry::init('Service');
         $services = $Service->find('all', [
@@ -461,6 +500,7 @@ class Servicetemplate extends AppModel {
      * @param ServicetemplateFilter $ServicetemplateFilter
      * @param array $selected
      * @return array|null
+     * @deprecated
      */
     public function getServicetemplatesForAngular($containerIds = [], ServicetemplateFilter $ServicetemplateFilter, $selected = []) {
         if (!is_array($containerIds)) {
@@ -503,6 +543,7 @@ class Servicetemplate extends AppModel {
     /**
      * @param int $servicetemplateId
      * @return array
+     * @deprecated
      */
     public function getQueryForBrowser($servicetemplateId) {
         return [
@@ -575,6 +616,7 @@ class Servicetemplate extends AppModel {
      * @param bool $created
      * @param array $options
      * @return bool|void
+     * @deprecated
      */
     public function afterSave($created, $options = []) {
         if ($this->DbBackend->isCrateDb() && isset($this->data['Servicetemplate']['id'])) {

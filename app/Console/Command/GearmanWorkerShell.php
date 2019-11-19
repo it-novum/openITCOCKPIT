@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
 
 /**
@@ -90,7 +91,9 @@ class GearmanWorkerShell extends AppShell {
         }
 
         try {
-            $this->_systemsettings = $this->Systemsetting->findAsArray();
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $this->_systemsettings = $Systemsettings->findAsArray();
         } catch (Exception $e) {
             debug($e->getMessage());
             exit(3);
@@ -222,9 +225,6 @@ class GearmanWorkerShell extends AppShell {
         $this->jobIdelCounter = 0;
 
         $payload = $job->workload();
-        if ($this->Config['encryption'] === true) {
-            $payload = Security::cipher($payload, $this->Config['password']);
-        }
 
         $payload = @unserialize($payload);
 
@@ -270,7 +270,7 @@ class GearmanWorkerShell extends AppShell {
                     ], false);
                 }
 
-                if ($payload['satellite_id'] !== '0' && is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+                if ($payload['satellite_id'] !== '0' && is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
                     $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
                     $satellite = $this->Satellite->find('first', [
                         'recursive'  => -1,
@@ -322,7 +322,7 @@ class GearmanWorkerShell extends AppShell {
                 break;
 
             case 'CheckMKListChecks':
-                if ($payload['satellite_id'] !== '0' && is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+                if ($payload['satellite_id'] !== '0' && is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
                     $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
                     $satellite = $this->Satellite->find('first', [
                         'recursive'  => -1,
@@ -380,7 +380,7 @@ class GearmanWorkerShell extends AppShell {
                     'host_address'  => $payload['hostaddress'],
                 ], false);
 
-                if ($payload['satellite_id'] !== '0' && is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+                if ($payload['satellite_id'] !== '0' && is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
                     $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
                     $satellite = $this->Satellite->find('first', [
                         'recursive'  => -1,
@@ -434,7 +434,7 @@ class GearmanWorkerShell extends AppShell {
                 break;
 
             case 'CheckMKProcesses':
-                if ($payload['satellite_id'] !== '0' && is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+                if ($payload['satellite_id'] !== '0' && is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
                     $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
                     $satellite = $this->Satellite->find('first', [
                         'recursive'  => -1,
@@ -583,7 +583,7 @@ class GearmanWorkerShell extends AppShell {
                 break;
             case 'export_hosts':
                 $this->NagiosExport->init();
-                $this->NagiosExport->exportHosts(null);
+                $this->NagiosExport->exportHosts();
                 $return = ['task' => $payload['task']];
                 break;
             case 'export_commands':
@@ -711,7 +711,9 @@ class GearmanWorkerShell extends AppShell {
                 break;
 
             case 'check_background_processes':
-                $systemsetting = $this->Systemsetting->findAsArray();
+                /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+                $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+                $systemsetting = $Systemsettings->findAsArray();
                 $errorRedirect = ' 2> /dev/null';
 
                 $state = [
@@ -873,7 +875,7 @@ class GearmanWorkerShell extends AppShell {
             ],
         ];
         $response = $this->Export->save($data);
-        $gearmanClient->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'export_delete_old_configuration']), $this->Config['password']));
+        $gearmanClient->doNormal("oitc_gearman", serialize(['task' => 'export_delete_old_configuration']));
         $this->Export->saveField('finished', 1);
         $this->Export->saveField('successfully', 1);
 
@@ -945,10 +947,10 @@ class GearmanWorkerShell extends AppShell {
         foreach ($tasks as $taskName => $task) {
             if (isset($task['options'])) {
                 //Task with secial options
-                $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName, 'options' => $task['options']]), $this->Config['password']));
+                $gearmanClient->addTask("oitc_gearman", serialize(['task' => $taskName, 'options' => $task['options']]));
             } else {
                 //Normal task
-                $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName]), $this->Config['password']));
+                $gearmanClient->addTask("oitc_gearman", serialize(['task' => $taskName]));
             }
             $this->Export->create();
             $data = [
@@ -1062,7 +1064,7 @@ class GearmanWorkerShell extends AppShell {
         $this->Export->save($exportStarted);
 
         if ($successfully) {
-            if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+            if (is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
                 $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
                 //Unmark all SAT-Systems
                 $SatelliteModel->disableAllInstanceConfigSyncs();
@@ -1096,7 +1098,9 @@ class GearmanWorkerShell extends AppShell {
             //DistributeModule is loaded and installed...
             $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
 
-            $monitoringSystemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $monitoringSystemsettings = $Systemsettings->findAsArraySection('MONITORING');
             if ($monitoringSystemsettings['MONITORING']['MONITORING.SINGLE_INSTANCE_SYNC'] == 1) {
                 $satellites = $this->Satellite->find('all', [
                     'recursive'  => -1,
@@ -1125,7 +1129,7 @@ class GearmanWorkerShell extends AppShell {
                             'text' => __('Copy new monitoring configuration for Satellite [' . $satellite['Satellite']['id'] . '] ' . $satellite['Satellite']['name']),
                         ],
                     ]);
-                    $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => 'export_sync_sat_config', 'Satellite' => $satellite]), $this->Config['password']));
+                    $gearmanClient->addTask("oitc_gearman", serialize(['task' => 'export_sync_sat_config', 'Satellite' => $satellite]));
                 }
                 $gearmanClient->runTasks();
             }

@@ -27,47 +27,162 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-pencil-square-o fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Service templates'); ?>
             <span>>
-                <?php echo $this->Utils->pluralize($servicetemplates, __('Servicetemplates'), __('Servicetemplates')); ?>
-			</span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+                <?php echo __('Copy'); ?>
+            </span>
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
-        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Copy'); ?><?php echo $this->Utils->pluralize($servicetemplates, __('servicetemplate'), __('servicetemplates')); ?></h2>
+        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-copy"></i> </span>
+        <h2 class="hidden-mobile hidden-tablet">
+            <?php echo __('Copy service template/s'); ?>
+        </h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-            <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
+            <?php if ($this->Acl->hasPermission('index', 'servicetemplates')): ?>
+                <a back-button fallback-state='ServicetemplatesIndex' class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
+            <?php endif; ?>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Servicetemplate', [
-                'class' => 'form-horizontal clear',
-            ]); ?>
-            <?php foreach ($servicetemplates as $key => $servicetemplate): ?>
-                <div class="row">
-                    <div class="col-xs-12 col-md-9 col-lg-7">
-                        <fieldset>
-                            <legend><?php echo $servicetemplate['Servicetemplate']['name'] ?></legend>
-                            <?php
-                            echo $this->Form->input('Servicetemplate.' . $key . '.template_name', ['value' => $servicetemplate['Servicetemplate']['template_name'], 'label' => __('Template name'), 'required' => true, 'help' => __('Servicetemplate name')]);
-                            echo $this->Form->input('Servicetemplate.' . $key . '.name', ['value' => $servicetemplate['Servicetemplate']['name'], 'label' => __('Service name'), 'required' => true, 'help' => __('This is the default name for the service if you create it out of the template')]);
-                            echo $this->Form->input('Servicetemplate.' . $key . '.description', ['value' => $servicetemplate['Servicetemplate']['description'], 'label' => __('Description'), 'required' => false]);
-                            echo $this->Form->input('Servicetemplate.' . $key . '.source', ['value' => $servicetemplate['Servicetemplate']['id'], 'type' => 'hidden']);
-                            ?>
-                        </fieldset>
-                    </div> <!-- close col -->
-                </div> <!-- close row-->
-            <?php endforeach; ?>
-            <br/>
-            <?php echo $this->Form->formActions(); ?>
-        </div> <!-- close widget body -->
+            <div class="row form-horizontal" ng-repeat="sourceServicetemplate in sourceServicetemplates">
+                <div class="col-xs-12 col-md-9 col-lg-7">
+                    <fieldset>
+                        <legend>
+                            <span class="text-info"><?php echo __('Source service template:'); ?></span>
+                            {{sourceServicetemplate.Source.template_name}}
+                        </legend>
+
+                        <div class="form-group required" ng-class="{'has-error': sourceServicetemplate.Error.template_name}">
+                            <label for="Servicetemplate{{$index}}Name" class="col col-md-2 control-label">
+                                <?php echo('Template name'); ?>
+                            </label>
+                            <div class="col col-xs-10 required">
+                                <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceServicetemplate.Servicetemplate.template_name"
+                                        id="Servicetemplate{{$index}}TemplateName">
+                                <span class="help-block">
+                                    <?php echo __('Name of the new service template'); ?>
+                                </span>
+                                <div ng-repeat="error in sourceServicetemplate.Error.template_name">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required" ng-class="{'has-error': sourceServicetemplate.Error.name}">
+                            <label for="Servicetemplate{{$index}}Name" class="col col-md-2 control-label">
+                                <?php echo('Service name'); ?>
+                            </label>
+                            <div class="col col-xs-10 required">
+                                <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceServicetemplate.Servicetemplate.name"
+                                        id="Servicetemplate{{$index}}Name">
+                                <span class="help-block">
+                                    <?php echo __('Service name'); ?>
+                                </span>
+                                <div ng-repeat="error in sourceServicetemplate.Error.name">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': sourceServicetemplate.Error.description}">
+                            <label for="Servicetemplate{{$index}}Description" class="col col-md-2 control-label">
+                                <?php echo('Description'); ?>
+                            </label>
+                            <div class="col col-xs-10">
+                                <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceServicetemplate.Servicetemplate.description"
+                                        id="Servicetemplate{{$index}}Description">
+                                <div ng-repeat="error in sourceServicetemplate.Error.description">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required"
+                             ng-class="{'has-error': sourceServicetemplate.Error.command_id}">
+                            <label for="Servicetemplate{{$index}}CommandId" class="col col-md-2 control-label">
+                                <?php echo __('Check command'); ?>
+                            </label>
+                            <div class="col-xs-12 col-lg-10">
+                                <select
+                                        id="Servicetemplate{{$index}}CommandId"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="commands"
+                                        ng-options="command.key as command.value for command in commands"
+                                        ng-change="loadCommandArguments(sourceServicetemplate.Source.id, sourceServicetemplate.Servicetemplate.command_id, $index)"
+                                        ng-model="sourceServicetemplate.Servicetemplate.command_id">
+                                </select>
+                                <div class="help-block" ng-hide="sourceServicetemplate.Servicetemplate.active_checks_enabled">
+                                    <?php echo __('Due to active checking is disabled, this command will only be used as freshness check command.'); ?>
+                                </div>
+                                <div ng-repeat="error in sourceServicetemplate.Error.command_id">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group"
+                             ng-class="{'has-error': sourceServicetemplate.Error.servicetemplatecommandargumentvalues}"
+                             ng-repeat="servicetemplatecommandargumentvalue in sourceServicetemplate.Servicetemplate.servicetemplatecommandargumentvalues">
+                            <label class="col-xs-12 col-lg-offset-2 col-lg-2 control-label text-primary">
+                                {{servicetemplatecommandargumentvalue.commandargument.human_name}}
+                            </label>
+                            <div class="col-xs-12 col-lg-8">
+                                <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="servicetemplatecommandargumentvalue.value">
+                                <div ng-repeat="error in sourceServicetemplate.Error.servicetemplatecommandargumentvalues">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                                <div class="help-block">
+                                    {{servicetemplatecommandargumentvalue.commandargument.name}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group"
+                             ng-show="sourceServicetemplate.Servicetemplate.servicetemplatecommandargumentvalues.length == 0">
+                            <div class="col-xs-12 col-lg-offset-2 text-info">
+                                <i class="fa fa-info-circle"></i>
+                                <?php echo __('This command does not have any parameters.'); ?>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="well formactions ">
+                <div class="pull-right">
+                    <button class="btn btn-primary" ng-click="copy()">
+                        <?php echo __('Copy service templates'); ?>
+                    </button>
+                    <?php if ($this->Acl->hasPermission('index', 'servicetemplates')): ?>
+                        <a back-button fallback-state='ServicetemplatesIndex'
+                           class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+        </div>
     </div>
-</div> <!-- end jarviswidget -->
+</div>
+

@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
@@ -51,8 +53,16 @@ class StatusmapsController extends AppController {
     public $components = ['StatusMap'];
 
     public function index() {
+        $this->layout = 'blank';
+
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+
         if (!$this->isApiRequest()) {
-            $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $masterInstanceName = $Systemsettings->getMasterInstanceName();
             $ModuleManager = new ModuleManager('DistributeModule');
             if ($ModuleManager->moduleExists()) {
                 $SatelliteModel = $ModuleManager->loadModel('Satellite');
@@ -72,9 +82,6 @@ class StatusmapsController extends AppController {
             $this->set('satellites', $satellites);
         }
 
-        if (!$this->isAngularJsRequest()) {
-            return;
-        }
         session_write_close();
 
         $allHostIds = [];
@@ -118,8 +125,12 @@ class StatusmapsController extends AppController {
             }
         }
         $containerIds = [];
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === false) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(
                 $this->MY_RIGHTS,
                 false, [
                 CT_GLOBAL,

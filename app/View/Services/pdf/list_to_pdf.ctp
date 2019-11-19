@@ -94,15 +94,23 @@ $Logo = new Logo();
             if (!empty($all_services)):
                 $tmp_host_uuid = null;
                 foreach ($all_services as $service):
-                    $Service = new Service($service);
-                    $Host = new Host($service);
-                    $Servicestatus = new Servicestatus($service['Servicestatus']);
+                    /** @var Service $Service */
+                    $Service = $service['Service'];
+
+                    /** @var Host $Host */
+                    $Host = $service['Host'];
+
+                    /** @var Servicestatus $Servicestatus */
+                    $Servicestatus = $service['Servicestatus'];
+
+                    /** @var Hoststatus $Hoststatus */
+                    $Hoststatus = $service['Hoststatus'];
+
                     $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
 
 
                     if ($tmp_host_uuid != $Host->getUuid()):
                         $tmp_host_uuid = $Host->getUuid();
-                        $Hoststatus = new Hoststatus($service['Hoststatus']);
                         $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                         ?>
                         <!-- Host -->
@@ -168,7 +176,7 @@ $Logo = new Logo();
                 <?php else: ?>
                     <tr>
                         <td class="text-center font-xs"
-                            colspan="8"><?php echo __('This host has no Services'); ?></td>
+                            colspan="8"><?php echo __('No services associated with this host'); ?></td>
                     </tr>
                 <?php endif; ?>
                 <?php endforeach; ?>

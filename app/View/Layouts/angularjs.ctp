@@ -32,27 +32,27 @@ if ($sideMenuClosed) {
 $AngularAssets = new \itnovum\openITCOCKPIT\Core\AngularJS\AngularAssets();
 $scripts = $AngularAssets->getJsFiles();
 
-if ($this->request->params['controller'] === 'statusmaps') {
-    $scripts[] = 'smartadmin/js/notification/SmartNotification.js';
-}
-
 App::uses('Folder', 'Utility');
 $appScripts = [];
 if (ENVIRONMENT === Environments::PRODUCTION) {
     $compressedAngularControllers = WWW_ROOT . 'js' . DS . 'compressed_angular_controllers.js';
-    $compressedAngularDrectives = WWW_ROOT . 'js' . DS . 'compressed_angular_directives.js';
+    $compressedAngularDirectives = WWW_ROOT . 'js' . DS . 'compressed_angular_directives.js';
     $compressedAngularServices = WWW_ROOT . 'js' . DS . 'compressed_angular_services.js';
-    if (file_exists($compressedAngularControllers) && file_exists($compressedAngularDrectives) && file_exists($compressedAngularServices)) {
+    $compressedAngularStates = WWW_ROOT . 'js' . DS . 'compressed_angular_states.js';
+    if (file_exists($compressedAngularControllers) && file_exists($compressedAngularDirectives) && file_exists($compressedAngularServices)) {
         $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularServices);
-        $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularDrectives);
+        $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularDirectives);
         $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularControllers);
+        if (file_exists($compressedAngularStates)) {
+            $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularStates);
+        }
     }
 } else {
     $core = new Folder(WWW_ROOT . 'js' . DS . 'scripts');
     $uncompressedAngular = str_replace(WWW_ROOT, '', $core->findRecursive('.*\.js'));
     foreach (CakePlugin::loaded() as $pluginName) {
-        $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts');
-        $filenames = str_replace(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS, '', $plugin->findRecursive('.*\.js'));
+        $plugin = new Folder(OLD_APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts');
+        $filenames = str_replace(OLD_APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS, '', $plugin->findRecursive('.*\.js'));
         if (!empty($filenames)) {
             $fullPath = [];
             foreach ($filenames as $filename) {
@@ -157,11 +157,6 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 </div>
 
 <?php printf('<script src="/%s"></script>', 'smartadmin/js/app.js'); ?>
-<script>
-    $(document).ready(function(){
-        //pageSetUp();
 
-    });
-</script>
 </body>
 </html>

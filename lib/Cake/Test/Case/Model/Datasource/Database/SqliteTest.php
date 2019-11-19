@@ -166,16 +166,16 @@ class SqliteTest extends CakeTestCase {
 		Configure::write('Cache.disable', false);
 
 		$dbName = 'db' . rand() . '$(*%&).db';
-		$this->assertFalse(file_exists(TMP . $dbName));
+		$this->assertFalse(file_exists(OLD_TMP . $dbName));
 
 		try {
-			$db = new Sqlite(array_merge($this->Dbo->config, array('database' => TMP . $dbName)));
+			$db = new Sqlite(array_merge($this->Dbo->config, array('database' => OLD_TMP . $dbName)));
 		} catch (MissingConnectionException $e) {
 			// This might be caused by NTFS file systems, where '*' is a forbidden character. Repeat without this character.
 			$dbName = str_replace('*', '', $dbName);
-			$db = new Sqlite(array_merge($this->Dbo->config, array('database' => TMP . $dbName)));
+			$db = new Sqlite(array_merge($this->Dbo->config, array('database' => OLD_TMP . $dbName)));
 		}
-		$this->assertTrue(file_exists(TMP . $dbName));
+		$this->assertTrue(file_exists(OLD_TMP . $dbName));
 
 		$db->execute("CREATE TABLE test_list (id VARCHAR(255));");
 
@@ -183,7 +183,7 @@ class SqliteTest extends CakeTestCase {
 		$this->assertEquals(array('test_list'), $db->listSources());
 		$db->cacheSources = false;
 
-		$fileName = '_' . preg_replace('/[^A-Za-z0-9_\-+]/', '_', TMP . $dbName) . '_list';
+		$fileName = '_' . preg_replace('/[^A-Za-z0-9_\-+]/', '_', OLD_TMP . $dbName) . '_list';
 
 		$result = Cache::read($fileName, '_cake_model_');
 		$this->assertEquals(array('test_list'), $result);

@@ -23,12 +23,17 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class ConfigurationQueue
+ * @deprecated
+ */
 class ConfigurationQueue extends AppModel {
 
     public $useTable = 'configuration_queue';
 
     /**
      * @return array|null
+     * @deprecated
      */
     public function getConfigFilesToGenerate(){
         return $this->find('all', [

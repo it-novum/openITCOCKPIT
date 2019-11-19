@@ -23,111 +23,81 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContainersTable;
+use App\Model\Table\ServicedependenciesTable;
+use App\Model\Table\ServicegroupsTable;
+use App\Model\Table\TimeperiodsTable;
+use Cake\ORM\Query;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\ServicedependenciesFilter;
 
 /**
- * @property Servicedependency $Servicedependency
- * @property Timeperiod $Timeperiod
- * @property Service $Service
- * @property Servicegroup $Servicegroup
+ * @property \App\Model\Entity\Servicedependency $Servicedependency
+ * @property \App\Model\Entity\Timeperiod $Timeperiod
+ * @property \App\Model\Entity\Service $Service
+ * @property \App\Model\Entity\Servicegroup $Servicegroup
+ * @property Contact $Contact
+ * @property Contactgroup $Contactgroup
  * @property ServicedependencyServiceMembership $ServicedependencyServiceMembership
  * @property ServicedependencyServicegroupMembership $ServicedependencyServicegroupMembership
- * @property Host $Host
  * @property Container $Container
- * @property PaginatorComponent $Paginator
- * @property ListFilterComponent $ListFilter
- * @property RequestHandlerComponent $RequestHandler
- * @property CustomValidationErrorsComponent $CustomValidationErrors
  */
 class ServicedependenciesController extends AppController {
 
-    public $uses = [
-        'Servicedependency',
-        'Timeperiod',
-        'Service',
-        'Servicegroup',
-        'ServicedependencyServiceMembership',
-        'ServicedependencyServicegroupMembership',
-        'Host',
-        'Container',
-    ];
+    public $layout = 'blank';
 
-    public $layout = 'Admin.default';
-    public $components = [
-        'ListFilter.ListFilter',
-        'RequestHandler',
-        'CustomValidationErrors',
-    ];
-    public $helpers = [
-        'ListFilter.ListFilter',
-        'CustomValidationErrors',
-    ];
 
     public function index() {
-        $options = [
-            'recursive'  => -1,
-            'conditions' => [
-                'Servicedependency.container_id' => $this->MY_RIGHTS,
-            ],
-            'contain'    => [
-                'ServicedependencyServiceMembership'      => [
-                    'Service' => [
-                        'fields'          => [
-                            'name',
-                            'disabled'
-                        ],
-                        'Servicetemplate' => [
-                            'fields' => ['name'],
-                        ],
-                        'Host'            => [
-                            'fields' => [
-                                'id',
-                                'name',
-                                'disabled'
-                            ],
-                        ],
-                    ],
-                ],
-                'ServicedependencyServicegroupMembership' => [
-                    'Servicegroup' => [
-                        'Container' => [
-                            'fields' => 'name',
-                        ],
-                    ],
-                ],
-                'Timeperiod'                              => [
-                    'fields' => 'name',
-                ],
-            ],
-        ];
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
 
-        $query = Hash::merge($this->Paginator->settings, $options);
+        /** @var $ServicedependenciesTable ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
 
-        if ($this->isApiRequest) {
-            unset($query['limit']);
-            $all_servicedependencies = $this->Servicedependency->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $all_servicedependencies = $this->Paginator->paginate();
+        $ServicedependenciesFilter = new ServicedependenciesFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicedependenciesFilter->getPage());
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        $servicedependencies = $ServicedependenciesTable->getServicedependenciesIndex($ServicedependenciesFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($servicedependencies as $index => $servicedependency) {
+            $servicedependencies[$index]['allowEdit'] = $this->isWritableContainer($servicedependency['container_id']);
         }
 
 
-        $this->set('all_servicedependencies', $all_servicedependencies);
-        $this->set('_serialize', ['all_servicedependencies']);
+        $this->set('all_servicedependencies', $servicedependencies);
+        $toJson = ['all_servicedependencies', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_servicedependencies', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
+    /**
+     * @param null $id
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
+        }
 
+        /** @var $ServicedependenciesTable ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+
+        if (!$ServicedependenciesTable->exists($id)) {
+            throw new NotFoundException(__('Service dependency not found'));
         }
-        if (!$this->Servicedependency->exists($id)) {
-            throw new NotFoundException(__('Invalid servicedependency'));
-        }
-        $servicedependency = $this->Servicedependency->findById($id);
-        $serviceDependencyContainerId = $servicedependency['Servicedependency']['container_id'];
-        if (!$this->allowedByContainerId($serviceDependencyContainerId)) {
+
+        $servicedependency = $ServicedependenciesTable->getServicedependencyById($id);
+        if (!$this->allowedByContainerId(Hash::extract($servicedependency, 'Servicedependency.container_id'))) {
             $this->render403();
-
             return;
         }
 
@@ -135,232 +105,188 @@ class ServicedependenciesController extends AppController {
         $this->set('_serialize', ['servicedependency']);
     }
 
-    public function edit($id = null) {
-        if (!$this->Servicedependency->exists($id)) {
-            throw new NotFoundException(__('Invalid servicedependency'));
-        }
-        $servicedependency = $this->Servicedependency->findById($id);
-        if (!$servicedependency) {
-            throw new NotFoundException(__('Invalid servicedependency'));
-        }
-
-        $serviceDependencyContainerId = $servicedependency['Servicedependency']['container_id'];
-        if (!$this->allowedByContainerId($serviceDependencyContainerId)) {
-            $this->render403();
-
+    public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
-        $serviceDependencyContainerIds = $this->Tree->resolveChildrenOfContainerIds($serviceDependencyContainerId);
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($serviceDependencyContainerIds, 'list', 'id');
+        if ($this->request->is('post')) {
+            /** @var $ServicedependenciesTable ServicedependenciesTable */
+            $data = [];
+            $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+            $data['services'] = $ServicedependenciesTable->parseServiceMembershipData(
+                $this->request->data('Servicedependency.services._ids'),
+                $this->request->data('Servicedependency.services_dependent._ids')
+            );
+            $data['servicegroups'] = $ServicedependenciesTable->parseServicegroupMembershipData(
+                $this->request->data('Servicedependency.servicegroups._ids'),
+                $this->request->data('Servicedependency.servicegroups_dependent._ids')
+            );
 
-        $services = $this->Host->servicesByContainerIds($serviceDependencyContainerIds, 'list', [
-            'prefixHostname' => true,
-            'delimiter'      => '/',
-            'forOptiongroup' => true,
-        ]);
+            $data = array_merge($this->request->data('Servicedependency'), $data);
+            $servicedependency = $ServicedependenciesTable->newEntity($data);
+            $servicedependency->set('uuid', \itnovum\openITCOCKPIT\Core\UUID::v4());
+            $ServicedependenciesTable->save($servicedependency);
 
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($serviceDependencyContainerIds, 'list');
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $containerId = $this->request->data('Servicedependency.container_id');
-            if ($containerId > 0 && $containerId != $serviceDependencyContainerId) {
-                // If the container ID has been changed, fill the variables
-
-                $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
-                $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
-                    'prefixHostname' => true,
-                    'delimiter'      => '/',
-                    'forOptiongroup' => true,
-                ]);
-
-                $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-                $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-            }
-
-            $_services = (is_array($this->request->data('Servicedependency.Service'))) ? $this->request->data['Servicedependency']['Service'] : [];
-            $dependent_services = (is_array($this->request->data('Servicedependency.ServiceDependent'))) ? $this->request->data['Servicedependency']['ServiceDependent'] : [];
-            $this->request->data['ServicedependencyServiceMembership'] = $this->Servicedependency->parseServiceMembershipData($_services, $dependent_services);
-
-            $_servicegroups = (is_array($this->request->data('Servicedependency.Servicegroup'))) ? $this->request->data['Servicedependency']['Servicegroup'] : [];
-            $dependent_servicegroups = (is_array($this->request->data('Servicedependency.ServicegroupDependent'))) ? $this->request->data['Servicedependency']['ServicegroupDependent'] : [];
-            $this->request->data['ServicedependencyServicegroupMembership'] = $this->Servicedependency->parseServicegroupMembershipData($_servicegroups, $dependent_servicegroups);
-
-
-            $this->Servicedependency->set($this->request->data);
-            $this->Servicedependency->id = $id;
-
-            if ($this->Servicedependency->validates()) {
-                $old_membership_services = $this->ServicedependencyServiceMembership->find('all', [
-                    'conditions' => [
-                        'ServicedependencyServiceMembership.servicedependency_id' => $id
-                    ],
-                ]);
-                /* Delete old service associations */
-                foreach ($old_membership_services as $old_membership_service) {
-                    $this->ServicedependencyServiceMembership->delete($old_membership_service['ServicedependencyServiceMembership']['id']);
-                }
-                $old_membership_servicegroups = $this->ServicedependencyServicegroupMembership->find('all', [
-                    'conditions' => [
-                        'ServicedependencyServicegroupMembership.servicedependency_id' => $id
-                    ],
-                ]);
-                /* Delete old servicegroup associations */
-                foreach ($old_membership_servicegroups as $old_membership_servicegroup) {
-                    $this->ServicedependencyServicegroupMembership->delete($old_membership_servicegroup['ServicedependencyServicegroupMembership']['id']);
-                }
-            }
-
-            if ($this->Servicedependency->saveAll($this->request->data)) {
-                $this->setFlash(__('Servicedependency successfully saved'));
-                $this->redirect(['action' => 'index']);
+            if ($servicedependency->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $servicedependency->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
             } else {
-                $this->setFlash(__('Servicedependency could not be saved'), false);
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($servicedependency); // REST API ID serialization
+                    return;
+                }
             }
-        } else {
-            $servicedependency['Servicedependency']['Service'] = Hash::combine($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0].service_id', '{n}[dependent=0].service_id');
-            $servicedependency['Servicedependency']['ServiceDependent'] = Hash::combine($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=1].service_id', '{n}[dependent=1].service_id');
-            $servicedependency['Servicedependency']['Servicegroup'] = Hash::combine($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=0].servicegroup_id', '{n}[dependent=0].servicegroup_id');
-            $servicedependency['Servicedependency']['ServicegroupDependent'] = Hash::combine($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=1].servicegroup_id', '{n}[dependent=1].servicegroup_id');
+            $this->set('servicedependency', $servicedependency);
+            $this->set('_serialize', ['servicedependency']);
         }
-
-        $this->request->data = Hash::merge($servicedependency, $this->request->data);
-        $this->set(compact(['servicedependency', 'services', 'servicegroups', 'timeperiods', 'containers']));
     }
 
-    public function add() {
-        $customFieldsToRefill = [
-            'Servicedependency' => [
-                'execution_fail_on_ok',
-                'execution_fail_on_warning',
-                'execution_fail_on_critical',
-                'execution_fail_on_unknown',
-                'execution_fail_on_pending',
-                'execution_none',
-                'notification_fail_on_ok',
-                'notification_fail_on_warning',
-                'notification_fail_on_critical',
-                'notification_fail_on_unknown',
-                'notification_fail_on_pending',
-                'notification_none',
-                'inherits_parent',
-            ],
-        ];
-        $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
-        $services = [];
-        $servicegroups = [];
-        $timeperiods = [];
-        $this->Frontend->set('data_placeholder', __('Please, start typing...'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
+    public function edit($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
 
-        if ($this->request->is('post') || $this->request->is('put')) {
-            App::uses('UUID', 'Lib');
-            $this->request->data['Servicedependency']['uuid'] = UUID::v4();
-            $_services = (is_array($this->request->data('Servicedependency.Service'))) ? $this->request->data['Servicedependency']['Service'] : [];
-            $dependent_services = (is_array($this->request->data('Servicedependency.ServiceDependent'))) ? $this->request->data['Servicedependency']['ServiceDependent'] : [];
-            $this->request->data['ServicedependencyServiceMembership'] = $this->Servicedependency->parseServiceMembershipData($_services, $dependent_services);
+        /** @var $ServicedependenciesTable ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+        if (!$ServicedependenciesTable->existsById($id)) {
+            throw new NotFoundException('Service dependency not found');
+        }
+        $servicedependency = $ServicedependenciesTable->get($id, [
+            'contain' => [
+                'services'      => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select(['id', 'name']);
+                },
+                'servicegroups' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select(['id']);
+                },
+            ]
+        ]);
 
-            $_servicegroups = (is_array($this->request->data('Servicedependency.Servicegroup'))) ? $this->request->data['Servicedependency']['Servicegroup'] : [];
-            $dependent_servicegroups = (is_array($this->request->data('Servicedependency.ServicegroupDependent'))) ? $this->request->data['Servicedependency']['ServicegroupDependent'] : [];
-            $this->request->data['ServicedependencyServicegroupMembership'] = $this->Servicedependency->parseServicegroupMembershipData($_servicegroups, $dependent_servicegroups);
+        if (!$this->allowedByContainerId($servicedependency->get('container_id'))) {
+            $this->render403();
+            return;
+        }
+        if ($this->request->is('post')) {
+            $data['services'] = $ServicedependenciesTable->parseServiceMembershipData(
+                $this->request->data('Servicedependency.services._ids'),
+                $this->request->data('Servicedependency.services_dependent._ids')
+            );
+            $data['servicegroups'] = $ServicedependenciesTable->parseServicegroupMembershipData(
+                $this->request->data('Servicedependency.servicegroups._ids'),
+                $this->request->data('Servicedependency.servicegroups_dependent._ids')
+            );
 
-            $isJsonRequest = $this->request->ext === 'json';
-            if ($this->Servicedependency->saveAll($this->request->data)) {
-                if ($isJsonRequest) {
-                    $this->serializeId();
-                    return;
-                } else {
-                    $this->setFlash(__('Servicedependency successfully saved'));
-                    $this->redirect(['action' => 'index']);
-                }
+            $data = array_merge($this->request->data('Servicedependency'), $data);
+            $servicedependency = $ServicedependenciesTable->patchEntity($servicedependency, $data);
+            $ServicedependenciesTable->save($servicedependency);
+
+            if ($servicedependency->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $servicedependency->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
             } else {
-                if ($isJsonRequest) {
-                    $this->serializeErrorMessage();
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($servicedependency); // REST API ID serialization
                     return;
-                } else {
-                    $this->setFlash(__('Servicedependency could not be saved'), false);
-
-                    $containerId = $this->request->data('Servicedependency.container_id');
-                    if ($containerId > 0) {
-                        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
-                        $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
-                            'forOptiongroup' => true,
-                        ]);
-                        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-                        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-                    }
                 }
             }
         }
-
-        $this->set([
-            'services'      => $services,
-            'servicegroups' => $servicegroups,
-            'timeperiods'   => $timeperiods,
-            'containers'    => $containers,
-        ]);
+        $this->set('servicedependency', $servicedependency);
+        $this->set('_serialize', ['servicedependency']);
     }
 
+    /**
+     * @param null $id
+     */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Servicedependency->exists($id)) {
-            throw new NotFoundException(__('Invalid servicedependency'));
+
+        /** @var $ServicedependenciesTable ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+
+        if (!$ServicedependenciesTable->exists($id)) {
+            throw new NotFoundException(__('Service dependency not found'));
         }
-        $servicedependency = $this->Servicedependency->findById($id);
 
-        if (!$this->allowedByContainerId($servicedependency['Servicedependency']['container_id'])) {
+        $servicedependency = $ServicedependenciesTable->getServicedependencyById($id);
+        if (!$this->allowedByContainerId(Hash::extract($servicedependency, 'Servicedependency.container_id'))) {
             $this->render403();
-
+            return;
+        }
+        $servicedependencyEntity = $ServicedependenciesTable->get($id);
+        if ($ServicedependenciesTable->delete($servicedependencyEntity)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
             return;
         }
 
-        if ($this->Servicedependency->delete($id)) {
-            $this->setFlash(__('Servicedependency deleted'));
-            $this->redirect(['action' => 'index']);
-        }
-        $this->setFlash(__('Could not delete servicedependency'), false);
-        $this->redirect(['action' => 'index']);
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
     public function loadElementsByContainerId($containerId = null) {
-        $this->allowOnlyAjaxRequests();
-
-        if (!$this->Container->exists($containerId)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException(__('This is only allowed via API.'));
+            return;
         }
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId,
-            false,
-            $this->Constants->containerProperties(OBJECT_HOST, CT_HOSTGROUP)
-        );
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-        $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
-            'forOptiongroup' => true
-        ]);
-        $timeperiodContainerIds = $this->Tree->resolveChildrenOfContainerIds($containerId,
-            false,
-            $this->Constants->containerProperties(OBJECT_TIMEPERIOD)
-        );
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($timeperiodContainerIds, 'list');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
-        $servicegroups = $this->Servicegroup->makeItJavaScriptAble($servicegroups);
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid container'));
+        }
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        $servicegroups = $ServicegroupsTable->getServicegroupsByContainerId($containerIds, 'list', 'id');
+        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
         $servicegroupsDependent = $servicegroups;
-        $services = $this->Service->makeItJavaScriptAble($services);
-        $servicesDependent = $services;
-        $timeperiods = $this->Timeperiod->makeItJavaScriptAble($timeperiods);
 
-        $data = [
-            'services'               => $services,
-            'servicesDependent'      => $servicesDependent,
-            'servicegroups'          => $servicegroups,
-            'servicegroupsDependent' => $servicegroupsDependent,
-            'timeperiods'            => $timeperiods,
-        ];
-        $this->set($data);
-        $this->set('_serialize', array_keys($data));
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
+
+        $this->set('servicegroups', $servicegroups);
+        $this->set('servicegroupsDependent', $servicegroupsDependent);
+        $this->set('timeperiods', $timeperiods);
+        $this->set('_serialize', [
+            'servicegroups',
+            'servicegroupsDependent',
+            'timeperiods'
+        ]);
+    }
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICE, [], $this->hasRootPrivileges, [CT_HOSTGROUP, CT_SERVICEGROUP, CT_CONTACTGROUP]);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICE, [], $this->hasRootPrivileges, [CT_HOSTGROUP, CT_SERVICEGROUP, CT_CONTACTGROUP]);
+        }
+
+        $this->set('containers', Api::makeItJavaScriptAble($containers));
+        $this->set('_serialize', ['containers']);
     }
 }

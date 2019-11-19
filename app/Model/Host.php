@@ -25,6 +25,9 @@
 
 App::uses('ValidationCollection', 'Lib');
 
+use App\Model\Table\DeletedHostsTable;
+use App\Model\Table\DeletedServicesTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
@@ -32,6 +35,7 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 /**
  * @property ParentHost $ParentHost
  * @property DbBackend $DbBackend
+ * @deprecated
  */
 class Host extends AppModel {
 
@@ -212,6 +216,7 @@ class Host extends AppModel {
      * @param HostConditions $HostConditions
      * @param array $selected
      * @return array|null
+     * @deprecated Use HostsTable::getHostsForAngular
      */
     public function getHostsForAngular(HostConditions $HostConditions, $selected = []) {
         $query = [
@@ -307,6 +312,7 @@ class Host extends AppModel {
      * @param integer $limit or hosts. null if no limit needed.
      *
      * @return array
+     * @deprecated
      */
     public function hostsByContainerId($containerIds = [], $type = 'all', $conditions = [], $index = 'id', $limit = null) {
         if (!is_array($containerIds)) {
@@ -368,6 +374,7 @@ class Host extends AppModel {
      * @param    int $id of a host you want to remove from result
      *
      * @return array
+     * @deprecated
      */
     public function hostsByContainerIdExcludeHostId($container_ids = [], $type = 'all', $id) {
         return $this->find($type, [
@@ -393,6 +400,12 @@ class Host extends AppModel {
         ]);
     }
 
+    /**
+     * @param array $host_values
+     * @param array $hosttemplate_values
+     * @return array
+     * @deprecated
+     */
     public function getDiffAsArray($host_values = [], $hosttemplate_values = []) {
         $host_values = ($host_values === null) ? [] : $host_values;
         $hosttemplate_values = ($hosttemplate_values === null) ? [] : $hosttemplate_values;
@@ -400,6 +413,12 @@ class Host extends AppModel {
         return Hash::diff($host_values, $hosttemplate_values);
     }
 
+    /**
+     * @param array $prepare_array
+     * @param bool $prepare
+     * @return array
+     * @deprecated
+     */
     public function prepareForCompare($prepare_array = [], $prepare = false) {
         $keysForArraySort = ['Contact', 'Contactgroup', 'Hostgroup']; //sort array for array diff
         //if prepare_for_compare => false, nothing to do $prepare_array[0] => 'Template.{n}, $prepare_array[1] => true/false'
@@ -427,6 +446,13 @@ class Host extends AppModel {
         return $new_array;
     }
 
+    /**
+     * @param array $diff_array
+     * @param array $requestData
+     * @param string $save_mode
+     * @return array
+     * @deprecated
+     */
     public function prepareForSave($diff_array = [], $requestData = [], $save_mode = 'add') {
         //Check differences for notification settings
         if (!empty(Set::classicExtract($diff_array, 'Host.{(notify_on_).*}'))) {
@@ -594,7 +620,7 @@ class Host extends AppModel {
         if ($save_mode === 'add') {
             $diff_array = Hash::merge($diff_array, [
                 'Host' => [
-                    'uuid' => UUID::v4(),
+                    'uuid' => \itnovum\openITCOCKPIT\Core\UUID::v4(),
                 ],
             ]);
         } else if ($save_mode === 'edit') {
@@ -624,17 +650,28 @@ class Host extends AppModel {
         return $diff_array;
     }
 
-    /*
-    Custom validation rule for contact and/or contactgroup fields
-    */
+    /**
+     * Custom validation rule for contact and/or contactgroup fields
+     * @deprecated
+     */
     public function atLeastOne($data) {
         return !empty($this->data[$this->name]['Contact']) || !empty($this->data[$this->name]['Contactgroup']);
     }
 
+    /**
+     * @param $data
+     * @return bool
+     * @deprecated
+     */
     public function positiveInt($data) {
         return intval($data['max_check_attempts']) == $data['max_check_attempts'] && $data['max_check_attempts'] > 0;
     }
 
+    /**
+     * @param null $id
+     * @return array|null
+     * @deprecated
+     */
     public function prepareForView($id = null) {
         if (!$this->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
@@ -769,6 +806,12 @@ class Host extends AppModel {
         return $host;
     }
 
+    /**
+     * @param $host
+     * @param $hosttemplate
+     * @return array
+     * @deprecated
+     */
     public function dataForChangelogCopy($host, $hosttemplate) {
         $hostcommandargumentvalue = [];
         if (!empty($host['Hostcommandargumentvalue'])) {
@@ -801,6 +844,7 @@ class Host extends AppModel {
      * @param array $var Array to filter.
      *
      * @return boolean
+     * @deprecated
      */
     public static function filterNullValues($var) {
         if ($var != null || $var === '0' || $var === '' || $var === []) {
@@ -810,6 +854,12 @@ class Host extends AppModel {
         return false;
     }
 
+    /**
+     * @param $host_id
+     * @param null $servicetemplateId
+     * @return bool
+     * @deprecated
+     */
     public function hostHasServiceByServicetemplateId($host_id, $servicetemplateId = null) {
         if ($this->exists($host_id)) {
             $host = $this->find('first', [
@@ -840,6 +890,11 @@ class Host extends AppModel {
     public $additionalValidationRules = [];
     public $additionalData = [];
 
+    /**
+     * @param array $options
+     * @return bool
+     * @deprecated
+     */
     public function beforeValidate($options = []) {
         $params = Router::getParams();
         if (empty($params['action'])) {
@@ -869,6 +924,7 @@ class Host extends AppModel {
      * @param array $options
      *
      * @return int[]
+     * @deprecated
      */
     public function servicesByContainerIds($containerIds, $type = 'all', $options = []) {
         $_options = [
@@ -991,6 +1047,7 @@ class Host extends AppModel {
      * @param  $userId int the Id of the User
      *
      * @return boolean
+     * @deprecated
      */
     public function __delete($host, $userId) {
         if (empty($host)) {
@@ -1011,20 +1068,9 @@ class Host extends AppModel {
             ],
         ]));
 
-        $GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
-        $graphgenTmplConfs = $GraphgenTmplConf->find('all', [
-            'conditions' => [
-                'GraphgenTmplConf.service_id' => $serviceIds,
-            ],
-        ]);
-
 
         if ($this->delete()) {
             //Delete was successfully - delete Graphgenerator configurations
-            foreach ($graphgenTmplConfs as $graphgenTmplConf) {
-                $GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
-            }
-
             $changelog_data = $Changelog->parseDataForChangelog(
                 'delete',
                 'hosts',
@@ -1039,27 +1085,27 @@ class Host extends AppModel {
                 CakeLog::write('log', serialize($changelog_data));
             }
 
+            /** @var $DeletedHostsTable DeletedHostsTable */
+            $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
+            /** @var $DeletedServicesTable DeletedServicesTable */
+            $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
 
-            //Add host to deleted objects table
-            $DeletedHost = ClassRegistry::init('DeletedHost');
-            $DeletedService = ClassRegistry::init('DeletedService');
-            $DeletedHost->create();
-            $data = [
-                'DeletedHost' => [
-                    'host_id'          => $host['Host']['id'],
-                    'uuid'             => $host['Host']['uuid'],
-                    'hosttemplate_id'  => $host['Host']['hosttemplate_id'],
-                    'name'             => $host['Host']['name'],
-                    'description'      => $host['Host']['description'],
-                    'deleted_perfdata' => 0,
-                ],
-            ];
-            if ($DeletedHost->save($data)) {
-                // The host is history now, so we can delete all deleted services of this host, we dont need this data anymore
-                $DeletedService->deleteAll([
-                    'DeletedService.host_id' => $id,
-                ]);
-            }
+            $deletedHost = $DeletedHostsTable->newEntity([
+                'host_id'          => $host['Host']['id'],
+                'uuid'             => $host['Host']['uuid'],
+                'hosttemplate_id'  => $host['Host']['hosttemplate_id'],
+                'name'             => $host['Host']['name'],
+                'description'      => $host['Host']['description'],
+                'deleted_perfdata' => 0
+            ]);
+
+
+            $DeletedHostsTable->save($deletedHost);
+
+            // The host is history now, so we can delete all deleted services of this host, we dont need this data anymore
+            $DeletedServicesTable->deleteAll([
+                'DeletedServices.host_id ' => $id
+            ]);
 
 
             /*
@@ -1097,6 +1143,7 @@ class Host extends AppModel {
      * @param $host
      * @param $moduleConstants
      * @return array
+     * @deprecated
      */
     public function isUsedByModules($host, $moduleConstants) {
         $usedBy = [
@@ -1116,11 +1163,28 @@ class Host extends AppModel {
         return $usedBy;
     }
 
+    /**
+     * @param $name
+     * @return string|string[]|null
+     * @deprecated
+     */
     public function humanizeModuleConstantName($name) {
         return preg_replace('/_MODULE/', '', $name);
     }
 
+    /**
+     * @param $satelliteId
+     * @param $userId
+     * @return array
+     * @deprecated
+     */
     public function __deleteBySatellite($satelliteId, $userId) { // performance optimization
+
+        /** @var $DeletedHostsTable DeletedHostsTable */
+        $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
+        /** @var $DeletedServicesTable DeletedServicesTable */
+        $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
+
         $hostsInSatellite = $this->find('all', [
             'recursive'  => -1,
             'contain'    => [],
@@ -1175,11 +1239,9 @@ class Host extends AppModel {
         $datasource = $this->getDataSource();
         $DeletedHost = ClassRegistry::init('DeletedHost');
         $DeletedService = ClassRegistry::init('DeletedService');
-        $GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
         $Documentation = ClassRegistry::init('Documentation');
         try {
             $datasource->begin();
-            $GraphgenTmplConf->deleteAll(['GraphgenTmplConf.service_id' => $serviceIds, true]);
 
             foreach ($hostsInSatellite as $hostArr) {
                 $changelog_data = $Changelog->parseDataForChangelog(
@@ -1196,27 +1258,32 @@ class Host extends AppModel {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                $DeletedHost->create();
-                $data = [
-                    'DeletedHost' => [
-                        'host_id'          => $hostArr['Host']['id'],
-                        'uuid'             => $hostArr['Host']['uuid'],
-                        'hosttemplate_id'  => $hostArr['Host']['hosttemplate_id'],
-                        'name'             => $hostArr['Host']['name'],
-                        'description'      => $hostArr['Host']['description'],
-                        'deleted_perfdata' => 0,
-                    ],
-                ];
-                if (!$DeletedHost->save($data)) {
-                    throw new Exception(__('Cannot modify Host deletion data.'));
-                }
+                $deletedHost = $DeletedHostsTable->newEntity([
+                    'host_id'          => $hostArr['Host']['id'],
+                    'uuid'             => $hostArr['Host']['uuid'],
+                    'hosttemplate_id'  => $hostArr['Host']['hosttemplate_id'],
+                    'name'             => $hostArr['Host']['name'],
+                    'description'      => $hostArr['Host']['description'],
+                    'deleted_perfdata' => 0
+                ]);
+
+
+                $DeletedHostsTable->save($deletedHost);
+
                 $this->_cleanupHostEscalationDependency($hostArr);
                 $documentation = $Documentation->findByUuid($hostArr['Host']['uuid']);
                 if (isset($documentation['Documentation']['id'])) {
                     $Documentation->delete($documentation['Documentation']['id']);
                 }
             }
-            $DeletedService->deleteAll(['DeletedService.host_id' => $serviceIds, true]);
+
+            if (!is_array($serviceIds)) {
+                $serviceIds = [$serviceIds];
+            }
+            $DeletedServicesTable->deleteAll([
+                'DeletedServices.host_id IN ' => $serviceIds
+            ]);
+
             $this->deleteAll(['Host.id' => $hostIds], true);
             $datasource->commit();
 
@@ -1233,6 +1300,7 @@ class Host extends AppModel {
      * This prevents nagios from getting problems because of empty hostescalations.
      *
      * @param array $host
+     * @deprecated
      */
     public function _cleanupHostEscalationDependency($host) {
         if (!empty($host['HostescalationHostMembership'])) {
@@ -1270,6 +1338,7 @@ class Host extends AppModel {
      * @param $hostId
      * @param $moduleValue
      * @return bool
+     * @deprecated
      */
     public function checkUsageFlag($hostId, $moduleValue) {
         $result = $this->find('first', [
@@ -1297,6 +1366,7 @@ class Host extends AppModel {
      * @param HostConditions $HostConditions
      * @param array $conditions
      * @return array
+     * @deprecated
      */
     public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []) {
         $query = [
@@ -1382,6 +1452,7 @@ class Host extends AppModel {
      * @param HostConditions $HostConditions
      * @param array $conditions
      * @return array
+     * @deprecated
      */
     public function getHostIndexQueryStatusengine3(HostConditions $HostConditions, $conditions = []) {
         $query = [
@@ -1459,6 +1530,9 @@ class Host extends AppModel {
         return $query;
     }
 
+    /**
+     * @deprecated
+     */
     public function virtualFieldsForIndex() {
         $this->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
         $this->virtualFields['not_keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
@@ -1468,6 +1542,7 @@ class Host extends AppModel {
      * @param HostConditions $HostConditions
      * @param array $conditions
      * @return array
+     * @deprecated
      */
     public function getHostNotMonitoredQuery(HostConditions $HostConditions, $conditions = []) {
         $query = [
@@ -1529,6 +1604,7 @@ class Host extends AppModel {
      * @param HostConditions $HostConditions
      * @param array $conditions
      * @return array
+     * @deprecated
      */
     public function getHostNotMonitoredQueryStatusengine3(HostConditions $HostConditions, $conditions = []) {
         $query = [
@@ -1590,6 +1666,7 @@ class Host extends AppModel {
      * @param HostConditions $HostConditions
      * @param array $conditions
      * @return array
+     * @deprecated
      */
     public function getHostDisabledQuery(HostConditions $HostConditions, $conditions = []) {
         $query = [
@@ -1640,6 +1717,7 @@ class Host extends AppModel {
      * @param array $MY_RIGHTS
      * @param bool $includeOkState
      * @return array
+     * @deprecated
      */
     public function getHoststatusCount($MY_RIGHTS, $includeOkState = false) {
         $hoststatusCount = [
@@ -1705,6 +1783,7 @@ class Host extends AppModel {
      * @param array $MY_RIGHTS
      * @param bool $includeOkState
      * @return array
+     * @deprecated
      */
     public function getHoststatusCountStatusengine3($MY_RIGHTS, $includeOkState = false) {
         $hoststatusCount = [
@@ -1779,6 +1858,7 @@ class Host extends AppModel {
      * @param array $MY_RIGHTS
      * @param bool $includeOkState
      * @return array
+     * @deprecated
      */
     public function getServicestatusCount($MY_RIGHTS, $includeOkState = false) {
         $servicestatusCount = [
@@ -1844,6 +1924,7 @@ class Host extends AppModel {
      * @param array $MY_RIGHTS
      * @param bool $includeOkState
      * @return array
+     * @deprecated
      */
     public function getServicestatusCountStatusengine3($MY_RIGHTS, $includeOkState = false) {
         $servicestatusCount = [
@@ -1925,6 +2006,7 @@ class Host extends AppModel {
     /**
      * @param int $hostId
      * @return array
+     * @deprecated
      */
     public function getQueryForBrowser($hostId) {
         return [
@@ -1986,6 +2068,7 @@ class Host extends AppModel {
     /**
      * @param int $hostId
      * @return array
+     * @deprecated
      */
     public function getQueryForServiceBrowser($hostId) {
         return [
@@ -2047,6 +2130,7 @@ class Host extends AppModel {
      * @param bool $created
      * @param array $options
      * @return bool|void
+     * @deprecated
      */
     public function afterSave($created, $options = []) {
         if ($this->DbBackend->isCrateDb() && isset($this->data['Host']['id'])) {
@@ -2062,11 +2146,19 @@ class Host extends AppModel {
         parent::afterSave($created, $options);
     }
 
+    /**
+     * @param bool $cascade
+     * @return bool
+     * @deprecated
+     */
     public function beforeDelete($cascade = true) {
         $this->LastDeletedId = new LastDeletedId($this->id);
         return parent::beforeDelete($cascade);
     }
 
+    /**
+     * @deprecated
+     */
     public function afterDelete() {
         if ($this->LastDeletedId !== null) {
             if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
@@ -2083,6 +2175,7 @@ class Host extends AppModel {
      * @param $hoststatus
      * @param bool $extended show details ('acknowledged', 'in downtime', ...)
      * @return array
+     * @deprecated
      */
     public function getHostStateSummary($hoststatus, $extended = true) {
         $hostStateSummary = [
@@ -2159,6 +2252,7 @@ class Host extends AppModel {
      * @param $MY_RIGHTS
      * @param $conditions
      * @return array
+     * @deprecated
      */
     public function getHoststatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
         $query = [
@@ -2216,6 +2310,7 @@ class Host extends AppModel {
      * @param $MY_RIGHTS
      * @param $conditions
      * @return array
+     * @deprecated
      */
     public function getHoststatusBySelectedStatusStatusengine3($MY_RIGHTS, $conditions) {
         $query = [

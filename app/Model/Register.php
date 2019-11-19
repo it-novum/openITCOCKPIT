@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Register
+ * @deprecated use cake 4 model
+ */
 class Register extends AppModel {
     public $validate = [
         'license' => [

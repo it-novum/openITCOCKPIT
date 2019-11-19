@@ -33,8 +33,8 @@ class ServicegroupFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'like' => [
-                'Container.name',
-                'Servicegroup.description'
+                'Containers.name',
+                'Servicegroups.description'
             ]
         ];
 

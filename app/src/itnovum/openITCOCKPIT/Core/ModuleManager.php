@@ -44,7 +44,7 @@ class ModuleManager {
      * @return bool
      */
     public function moduleExists() {
-        return is_dir(APP . 'Plugin' . DS . $this->moduleName);
+        return is_dir(OLD_APP . 'Plugin' . DS . $this->moduleName);
     }
 
     /**

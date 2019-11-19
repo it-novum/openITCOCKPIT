@@ -23,9 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-require APP . '/Vendor/Ratchet/vendor/autoload.php';
+require OLD_APP . '/Vendor/Ratchet/vendor/autoload.php';
 
-require_once APP . '/Lib/ChatMessageInterface.php';
+require_once OLD_APP . '/Lib/ChatMessageInterface.php';
 
 class WebsocketServerShell extends AppShell {
 

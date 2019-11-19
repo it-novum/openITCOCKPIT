@@ -52,7 +52,7 @@
                         </button>
 
                         <?php if ($this->Acl->hasPermission('add')): ?>
-                            <a href="/map_module/maps/add" class="btn btn-xs btn-success">
+                            <a ui-sref="MapsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
@@ -131,7 +131,7 @@
                                            ng-show="map.Map.allowEdit">
                                 </td>
                                 <td>
-                                    <a href="/map_module/mapeditors/view/{{ map.Map.id }}">{{ map.Map.name }}</a>
+                                    <a ui-sref="MapeditorsView({id: map.Map.id})">{{ map.Map.name }}</a>
                                 </td>
                                 <td>
                                     {{ map.Map.title }}
@@ -139,7 +139,7 @@
                                 <td>
                                     <div class="btn-group">
                                         <?php if ($this->Acl->hasPermission('edit')): ?>
-                                            <a href="/map_module/mapeditors/edit/{{map.Map.id}}"
+                                            <a ui-sref="MapeditorsEdit({id: map.Map.id})"
                                                ng-if="map.Map.allowEdit"
                                                class="btn btn-default">&nbsp;<i class="fa fa-cog "></i>&nbsp;</a>
                                         <?php else: ?>
@@ -154,12 +154,12 @@
                                         <ul class="dropdown-menu pull-right" id="menuHack-{{map.Map.id}}">
                                             <?php if ($this->Acl->hasPermission('edit')): ?>
                                                 <li ng-if="map.Map.allowEdit">
-                                                    <a href="/map_module/mapeditors/edit/{{map.Map.id}}">
+                                                    <a ui-sref="MapeditorsEdit({id: map.Map.id})">
                                                         <i class="fa fa-cog"></i> <?php echo __('Edit in Map editor'); ?>
                                                     </a>
                                                 </li>
                                                 <li ng-if="map.Map.allowEdit">
-                                                    <a href="/map_module/maps/edit/{{map.Map.id}}">
+                                                    <a ui-sref="MapsEdit({id: map.Map.id})">
                                                         <i class="fa fa-edit"></i> <?php echo __('Edit'); ?>
                                                     </a>
                                                 </li>
@@ -167,18 +167,18 @@
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'maps')): ?>
                                                 <li ng-if="map.Map.allowCopy">
-                                                    <a href="/map_module/maps/copy/{{map.Map.id}}">
+                                                    <a ui-sref="MapsCopy({id: map.Map.id})">
                                                         <i class="fa fa-edit"></i> <?php echo __('Copy'); ?>
                                                     </a>
                                                 </li>
                                                 <li class="divider" ng-if="map.Map.allowCopy"></li>
                                             <?php endif; ?>
                                             <li>
-                                                <a href="/map_module/mapeditors/view/{{map.Map.id}}">
+                                                <a ui-sref="MapeditorsView({id: map.Map.id})">
                                                     <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
                                             </li>
                                             <li>
-                                                <a ng-href="/map_module/mapeditors/view/{{map.Map.id}}?fullscreen=true">
+                                                <a ui-sref="MapeditorsView({id: map.Map.id, fullscreen: 'true'})">
                                                     <i class="fa fa-expand"></i> <?php echo __('View in fullscreen'); ?>
                                                 </a>
                                             </li>

@@ -25,6 +25,10 @@
 
 App::uses('Helper', 'View');
 
+/**
+ * Class AppHelper
+ * @deprecated
+ */
 class AppHelper extends Helper {
 
     /**
@@ -33,6 +37,7 @@ class AppHelper extends Helper {
      * @param string $path
      *
      * @return string
+     * @deprecated
      */
     public function assetTimestamp($path) {
         Configure::load('version');
@@ -52,6 +57,11 @@ class AppHelper extends Helper {
         }
     }
 
+    /**
+     * @param $change
+     * @return mixed|string|null
+     * @deprecated
+     */
     public function change($change) {
         if ($change === false) {
             return __('false');

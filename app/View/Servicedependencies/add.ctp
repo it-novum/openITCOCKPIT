@@ -29,167 +29,458 @@
             <i class="fa fa-sitemap fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Servicedependency'); ?>
-			</span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+                <?php echo __('Service dependencies'); ?>
+            </span>
+            <div class="third_level"> <?php echo __('Add'); ?></div>
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-sitemap"></i> </span>
-        <h2><?php echo __('Add Servicedependency'); ?></h2>
+        <h2><?php echo __('Add service dependency'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(); ?>
+            <a ui-sref="ServicedependenciesIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Servicedependency', [
-                'class' => 'form-horizontal clear',
-            ]);
+            <form class="form-horizontal" ng-init="successMessage=
+            {objectName : '<?php echo __('Service dependency'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="form-group required" ng-class="{'has-error': errors.container_id}">
+                            <label class="col col-md-2 control-label">
+                                <?php echo __('Container'); ?>
+                            </label>
+                            <div class="col col-xs-12 col-lg-10">
+                                <select
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="containers"
+                                        ng-options="container.key as container.value for container in containers"
+                                        ng-model="post.Servicedependency.container_id">
+                                </select>
+                                <div class="info-block-helptext">
+                                    <?php echo __('Service dependencies are an advanced feature that allow you to 
+                                    suppress notifications for services based on the status of one or more other services.'); ?>
+                                </div>
+                                <div ng-repeat="error in errors.container_id">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
 
-            echo $this->Form->input('Servicedependency.container_id', [
-                'options'       => $this->Html->chosenPlaceholder($containers),
-                'class'         => 'chosen',
-                'style'         => 'width: 100%;',
-                'label'         => __('Container'),
-                'SelectionMode' => 'single',
-            ]);
+                        <div class="form-group" ng-class="{'has-error': errors.services}">
+                            <label class="col col-md-2 control-label">
+                                <div class="label-group label-breadcrumb label-breadcrumb-default required">
+                                    <label class="label label-default label-xs">
+                                        <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
+                                    </label>
+                                    <label class="label label-light label-xs no-border"
+                                           ng-class="{'has-error': errors.services}">
+                                        <?php echo __('Services'); ?>
+                                    </label>
+                                </div>
+                            </label>
+                            <div class="col col-xs-12 col-lg-10 default">
+                                <select id="ServicedependencyService"
+                                        multiple
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="services"
+                                        callback="loadServices"
+                                        ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
+                                        ng-model="post.Servicedependency.services._ids">
+                                </select>
+                                <div ng-repeat="error in errors.services">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
 
-            echo $this->Form->input('Servicedependency.Service', [
-                'options'          => $services,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => '<i class="fa fa-square class-default"></i> ' . __('Services'),
-                'data-placeholder' => __('Please choose a service'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10',
-                ],
-                'target'           => '#ServicedependencyServiceDependent'
-            ]);
+                        <div class="form-group" ng-class="{'has-error': errors.services_dependent}">
+                            <label class="col col-md-2 control-label">
+                                <div class="label-group label-breadcrumb label-breadcrumb-primary required">
+                                    <label class="label label-primary label-xs">
+                                        <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
+                                    </label>
+                                    <label class="label label-light label-xs no-border"
+                                           ng-class="{'has-error': errors.services_dependent}">
+                                        <?php echo __('Dependent services'); ?>
+                                    </label>
+                                </div>
+                            </label>
+                            <div class="col col-xs-12 col-lg-10 info">
+                                <select id="ServicedependencyServiceDependent"
+                                        multiple
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="services_dependent"
+                                        callback="loadDependentServices"
+                                        ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services_dependent"
+                                        ng-model="post.Servicedependency.services_dependent._ids">
+                                </select>
+                                <div ng-repeat="error in errors.services_dependent">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
 
-            echo $this->Form->input('Servicedependency.ServiceDependent', [
-                'options'          => $services,
-                'class'            => 'chosen test',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => '<i class="fa fa-square class-info"></i> ' . __('Dependent services'),
-                'data-placeholder' => __('Please choose a service'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10 info',
-                ],
-                'target'           => '#ServicedependencyService'
-            ]);
+                        <div class="form-group">
+                            <label class="col col-md-2 control-label">
+                                <div class="label-group label-breadcrumb label-breadcrumb-default">
+                                    <label class="label label-default label-xs">
+                                        <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
+                                    </label>
+                                    <span class="label label-light label-xs no-border">
+                                        <?php echo __('Service groups'); ?>
+                                    </span>
+                                </div>
+                            </label>
+                            <div class="col col-xs-12 col-lg-10 default">
+                                <select id="ServicedependencyServicegroup"
+                                        multiple
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="servicegroups"
+                                        ng-options="servicegroup.key as servicegroup.value disable when servicegroup.disabled for servicegroup in servicegroups"
+                                        ng-model="post.Servicedependency.servicegroups._ids">
+                                </select>
+                            </div>
+                        </div>
 
-            echo $this->Form->input('Servicedependency.Servicegroup', [
-                'options'          => $servicegroups,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => '<i class="fa fa-square class-default"></i> ' . __('Servicegroups'),
-                'data-placeholder' => __('Please choose a servicegroup'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10',
-                ],
-                'target'           => '#ServicedependencyServicegroupDependent',
-            ]);
+                        <div class="form-group">
+                            <label class="col col-md-2 control-label">
+                                <div class="label-group label-breadcrumb label-breadcrumb-primary">
+                                    <label class="label label-primary label-xs">
+                                        <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
+                                    </label>
+                                    <span class="label label-light label-xs no-border">
+                                        <?php echo __('Dependent service groups'); ?>
+                                    </span>
+                                </div>
+                            </label>
+                            <div class="col col-xs-12 col-lg-10 info">
+                                <select id="ServicedependencyServicegroupDependent"
+                                        multiple
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="servicegroups_dependent"
+                                        ng-options="servicegroup.key as servicegroup.value disable when servicegroup.disabled for servicegroup in servicegroups_dependent"
+                                        ng-model="post.Servicedependency.servicegroups_dependent._ids">
+                                </select>
+                            </div>
+                        </div>
 
-            echo $this->Form->input('Servicedependency.ServicegroupDependent', [
-                'options'          => $servicegroups,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => '<i class="fa fa-square class-info"></i> ' . __('Dependent Servicegroups'),
-                'data-placeholder' => __('Please choose a servicegroup'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10 info',
-                ],
-                'target'           => '#ServicedependencyServicegroup',
-            ]);
+                        <div class="form-group">
+                            <label class="col col-md-2 control-label">
+                                <?php echo __('Time period'); ?>
+                            </label>
+                            <div class="col col-xs-12 col-lg-10">
+                                <select
+                                        data-placeholder="<?php echo __('Please choose a timeperiod'); ?>"
+                                        class="form-control"
+                                        chosen="timeperiods"
+                                        ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                        ng-model="post.Servicedependency.timeperiod_id">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-lg-2 control-label" for="inheritsParent">
+                                <?php echo __('Inherits parent'); ?>
+                            </label>
 
-            echo $this->Form->input('Servicedependency.timeperiod_id', [
-                'options'          => $this->Html->chosenPlaceholder($timeperiods),
-                'class'            => 'chosen',
-                'multiple'         => false,
-                'style'            => 'width:100%;',
-                'label'            => __('Timeperiod'),
-                'data-placeholder' => __('Please choose a timeperiod'),
-            ]);
-            ?>
-            <br/>
-            <?php
-            echo $this->Form->fancyCheckbox('inherits_parent', [
-                'div'              => 'form-group',
-                'caption'          => __('Inherits parent'),
-                'wrapGridClass'    => 'col col-xs-10',
-                'captionGridClass' => 'col col-md-2 no-padding',
-                'captionClass'     => 'col col-md-2 control-label',
-                'icon'             => '<i class="fa fa-link"></i> ',
-                'checked'          => $this->CustomValidationErrors->refill('inherits_parent', false),
-            ]);
-            ?>
-            <br class="clearfix"/>
-            <fieldset>
-                <legend class="font-sm">
-                    <label><?php echo __('Execution failure criteria'); ?></label>
-                </legend>
-                <?php
-                $dependency_options = [
-                    'execution_fail_on_ok'       => 'fa-square txt-color-greenLight',
-                    'execution_fail_on_warning'  => 'fa-square txt-color-orange',
-                    'execution_fail_on_critical' => 'fa-square txt-color-redLight',
-                    'execution_fail_on_unknown'  => 'fa-square txt-color-blueDark',
-                    'execution_fail_on_pending'  => 'fa-square-o',
-                    'execution_none'             => 'fa-minus-square-o',
-                ];
-                foreach ($dependency_options as $dependency_option => $icon):?>
-                    <div style="border-bottom:1px solid lightGray;">
-                        <?php echo $this->Form->fancyCheckbox($dependency_option, [
-                            'caption' => ucfirst(preg_replace('/execution_fail_on_/', '', $dependency_option)),
-                            'icon'    => '<i class="fa ' . $icon . '"></i> ',
-                            'checked' => $this->CustomValidationErrors->refill($dependency_option, false),
-                        ]); ?>
-                        <div class="clearfix"></div>
+                            <div class="col-xs-12 col-lg-1 smart-form">
+                                <label class="checkbox no-required no-padding no-margin label-default-off">
+                                    <input type="checkbox" name="checkbox"
+                                           id="inheritsParent"
+                                           ng-true-value="1"
+                                           ng-false-value="0"
+                                           ng-model="post.Servicedependency.inherits_parent">
+                                    <i class="checkbox-primary"></i>
+                                </label>
+                            </div>
+                        </div>
+
+                        <fieldset>
+                            <legend class="font-sm">
+                                <div>
+                                    <label>
+                                        <?php echo __('Execution failure criteria'); ?>
+                                    </label>
+                                </div>
+                            </legend>
+                            <ul class="config-flex-inner">
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="execution_fail_on_ok"
+                                               class="col col-md-7 control-label padding-top-0">
+                                        <span class="label label-success notify-label-small">
+                                            <?php echo __('Ok'); ?>
+                                        </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="execution_fail_on_up"
+                                                       ng-model="post.Servicedependency.execution_fail_on_ok">
+                                                <i class="checkbox-success"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="execution_fail_on_up"
+                                               class="col col-md-7 control-label padding-top-0">
+                                        <span class="label label-warning notify-label-small">
+                                            <?php echo __('Warning'); ?>
+                                        </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="execution_fail_on_warning"
+                                                       ng-model="post.Servicedependency.execution_fail_on_warning">
+                                                <i class="checkbox-warning"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="execution_fail_on_critical"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-danger notify-label-small">
+                                            <?php echo __('Critical'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="execution_fail_on_down"
+                                                       ng-model="post.Servicedependency.execution_fail_on_critical">
+                                                <i class="checkbox-danger"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="execution_fail_on_unknown"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-default notify-label-small">
+                                                <?php echo __('Unknown'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="execution_fail_on_unknown"
+                                                       ng-model="post.Servicedependency.execution_fail_on_unknown">
+                                                <i class="checkbox-default"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="execution_fail_on_pending"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-primary notify-label-small">
+                                                <?php echo __('Pending'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="execution_fail_on_pending"
+                                                       ng-model="post.Servicedependency.execution_fail_on_pending">
+                                                <i class="checkbox-primary"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="execution_none"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-primary notify-label-small">
+                                                <?php echo __('Execution none'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="execution_none"
+                                                       ng-model="post.Servicedependency.execution_none">
+                                                <i class="checkbox-primary"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </fieldset>
+                        <fieldset>
+                            <legend class="font-sm">
+                                <div>
+                                    <label>
+                                        <?php echo __('Notification failure criteria'); ?>
+                                    </label>
+                                </div>
+                            </legend>
+                            <ul class="config-flex-inner">
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="notification_fail_on_ok"
+                                               class="col col-md-7 control-label padding-top-0">
+                                        <span class="label label-success notify-label-small">
+                                            <?php echo __('Ok'); ?>
+                                        </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="notification_fail_on_ok"
+                                                       ng-model="post.Servicedependency.notification_fail_on_ok">
+                                                <i class="checkbox-success"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="notification_fail_on_warning"
+                                               class="col col-md-7 control-label padding-top-0">
+                                        <span class="label label-warning notify-label-small">
+                                            <?php echo __('Warning'); ?>
+                                        </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="notification_fail_on_warning"
+                                                       ng-model="post.Servicedependency.notification_fail_on_warning">
+                                                <i class="checkbox-warning"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="notification_fail_on_critical"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-danger notify-label-small">
+                                            <?php echo __('Critical'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="notification_fail_on_critical"
+                                                       ng-model="post.Servicedependency.notification_fail_on_critical">
+                                                <i class="checkbox-danger"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="notification_fail_on_unknown"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-default notify-label-small">
+                                                <?php echo __('Unknown'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="notification_fail_on_unknown"
+                                                       ng-model="post.Servicedependency.notification_fail_on_unknown">
+                                                <i class="checkbox-default"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="notification_fail_on_pending"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-primary notify-label-small">
+                                                <?php echo __('Pending'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="notification_fail_on_pending"
+                                                       ng-model="post.Servicedependency.notification_fail_on_pending">
+                                                <i class="checkbox-primary"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="notification_none"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-primary notify-label-small">
+                                                <?php echo __('Notification none'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="notification_none"
+                                                       ng-model="post.Servicedependency.notification_none">
+                                                <i class="checkbox-primary"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </fieldset>
                     </div>
-                <?php endforeach; ?>
-            </fieldset>
-            <br class="clearfix"/>
-            <fieldset>
-                <legend class="font-sm">
-                    <label><?php echo __('Notification failure criteria'); ?></label>
-                </legend>
-                <?php
-                $dependency_options = [
-                    'notification_fail_on_ok'       => 'fa-square txt-color-greenLight',
-                    'notification_fail_on_warning'  => 'fa-square txt-color-orange',
-                    'notification_fail_on_critical' => 'fa-square txt-color-redLight',
-                    'notification_fail_on_unknown'  => 'fa-square txt-color-blueDark',
-                    'notification_fail_on_pending'  => 'fa-square-o',
-                    'notification_none'             => 'fa-minus-square-o',
-                ];
-                foreach ($dependency_options as $dependency_option => $icon):?>
-                    <div style="border-bottom:1px solid lightGray;">
-                        <?php echo $this->Form->fancyCheckbox($dependency_option, [
-                            'caption' => ucfirst(preg_replace('/notification_fail_on_/', '', $dependency_option)),
-                            'icon'    => '<i class="fa ' . $icon . '"></i> ',
-                            'checked' => $this->CustomValidationErrors->refill($dependency_option, false),
-                        ]); ?>
-                        <div class="clearfix"></div>
-                    </div>
-                <?php endforeach; ?>
-            </fieldset>
-            <br/>
-            <br/>
-            <?php echo $this->Form->formActions(); ?>
+                </div>
+            </form>
+            <div class="well formactions ">
+                <div class="pull-right">
+                    <a ng-click="submit()" class="btn btn-primary">
+                        <?php echo __('Save service depependency'); ?>
+                    </a>&nbsp;
+                    <a ui-sref="ServicedependenciesIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

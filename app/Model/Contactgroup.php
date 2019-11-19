@@ -29,6 +29,13 @@
  * a contact belongsTo a container (many to one)
  */
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+
+/**
+ * Class Contactgroup
+ * @deprecated
+ */
 class Contactgroup extends AppModel {
     //public $primaryKey = 'container_id';
 //	public $primaryKeyArray = array('id','container_id');
@@ -68,41 +75,25 @@ class Contactgroup extends AppModel {
     public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->Contact = ClassRegistry::init('Contact');
-        App::uses('UUID', 'Lib');
         //$this->primaryKey = 'id';
     }
 
-
-    public function saveContactgroup($data = []) {
-        debug($data);
-        if ($this->saveAll($data)) {
-            $contactgroup = $this->findById($this->id);
-            if (isset($data['Contact']) && !empty($data['Contact'])) {
-                foreach ($data['Contact'] as $contact_id) {
-                    $contact = $this->Contact->findById($contact_id);
-                    $contact['Container']['ContactsToContainer']['contact_id'] = $contact_id;
-                    debug($contactgroup['Contactgroup']['container_id']);
-                    $contact['Container']['ContactsToContainer']['container_id'] = $contactgroup['Contactgroup']['container_id'];
-                    if ($this->Contact->saveAll($contact, ['validate' => false])) {
-                        // $this->setFlash(__('contact group successfully saved'));
-                        //$this->redirect(['action' => 'index']);
-                        echo "jup";
-                    } else {
-                        //$this->setFlash(__('could not save data'), false);
-                        echo "not";
-                    }
-                }
-            }
-        }
-    }
-
+    /**
+     * @param array $container_ids
+     * @param string $type
+     * @param string $index
+     * @return array|null
+     * @deprecated
+     */
     public function contactgroupsByContainerId($container_ids = [], $type = 'all', $index = 'id') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
         }
 
         //Lookup for the tenant container of $container_id
-        $this->Container = ClassRegistry::init('Container');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
 
         $tenantContainerIds = [];
 
@@ -111,10 +102,8 @@ class Contactgroup extends AppModel {
 
                 // Get container id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-                $path = Cache::remember('ContactGroupContactsByContainerId:' . $container_id, function () use ($container_id) {
-                    return $this->Container->getPath($container_id);
-                }, 'migration');
-                $tenantContainerIds[] = $path[1]['Container']['id'];
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'ContactGroupContactsByContainerId');
+                $tenantContainerIds[] = $path[1]['id'];
             } else {
                 $tenantContainerIds[] = ROOT_CONTAINER;
             }
@@ -156,6 +145,10 @@ class Contactgroup extends AppModel {
         }
     }
 
+    /**
+     * @return array
+     * @deprecated
+     */
     public function findList() {
         $return = [];
         $results = $this->find('all', [

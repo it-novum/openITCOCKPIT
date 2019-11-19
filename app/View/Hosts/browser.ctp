@@ -23,9 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
-
-if (!$QueryHandler->exists()): ?>
+if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
     <div class="alert alert-danger alert-block">
         <a href="#" data-dismiss="alert" class="close">×</a>
         <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
@@ -40,30 +38,10 @@ if (!$QueryHandler->exists()): ?>
     <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter }} <?php echo __('seconds...'); ?>
 </div>
 
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="status_headline" ng-class="hostStatusTextClass">
-
-            <span class="flapping_airport stateClass" ng-show="hoststatus.isFlapping">
-                <i class="fa" ng-class="flappingState === 1 ? 'fa-circle' : 'fa-circle-o'"></i>
-                <i class="fa" ng-class="flappingState === 0 ? 'fa-circle' : 'fa-circle-o'"></i>
-            </span>
-
-            <i class="fa fa-desktop fa-fw"></i>
-            {{ mergedHost.Host.name }}
-            <span>
-                ({{ mergedHost.Host.address }})
-            </span>
-        </h1>
-    </div>
-    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
-        <h5>
-            <div class="pull-right">
-                <?php echo $this->element('host_browser_menu'); ?>
-            </div>
-        </h5>
-    </div>
-</div>
+<host-browser-menu
+        ng-if="hostBrowserMenuConfig"
+        config="hostBrowserMenuConfig"
+        last-load-date="lastLoadDate"></host-browser-menu>
 
 <article class="row">
     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -72,39 +50,37 @@ if (!$QueryHandler->exists()): ?>
                 <h2 class="hidden-mobile hidden-tablet"><strong><?php echo __('Host'); ?>:</strong> {{
                     mergedHost.Host.name }}</h2>
                 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                    <li class="active">
-                        <a href="#tab1" data-toggle="tab" ng-click="hideTimeline()">
+                    <li class="active cursor-pointer">
+                        <a ng-click="selectedTab = 'tab1'; hideTimeline()" data-toggle="tab">
                             <i class="fa fa-lg fa-info"></i>
                             <span class="hidden-mobile hidden-tablet"> <?php echo __('Status information'); ?></span>
                         </a>
                     </li>
 
-                    <li class="">
-                        <a href="#tab2" data-toggle="tab" ng-click="hideTimeline()">
+                    <li class="cursor-pointer">
+                        <a ng-click="selectedTab = 'tab2'; hideTimeline()" data-toggle="tab">
                             <i class="fa fa-lg fa-hdd-o"></i>
                             <span class="hidden-mobile hidden-tablet"> <?php echo __('Device information'); ?> </span>
                         </a>
                     </li>
 
                     <?php if ($this->Acl->hasPermission('timeline', 'hosts')): ?>
-                        <li class="">
-                            <a href="#tab3" data-toggle="tab" ng-click="showTimeline()">
+                        <li class="cursor-pointer">
+                            <a ng-click="selectedTab = 'tab3'; showTimeline()" data-toggle="tab">
                                 <i class="fa fa-lg fa-clock-o"></i>
                                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Timeline'); ?> </span>
                             </a>
                         </li>
                     <?php endif; ?>
 
-                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()'); ?>
+                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()', true); ?>
 
-                    <?php if ($GrafanaDashboardExists): ?>
-                        <li class="">
-                            <a href="#tab5" data-toggle="tab" ng-click="hideTimeline()">
-                                <i class="fa fa-lg fa-area-chart"></i>
-                                <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
-                            </a>
-                        </li>
-                    <?php endif; ?>
+                    <li class="cursor-pointer" ng-show="GrafanaDashboardExists">
+                        <a ng-click="selectedTab = 'tab5'; hideTimeline()" data-toggle="tab">
+                            <i class="fa fa-lg fa-area-chart"></i>
+                            <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="widget-toolbar" role="menu">
@@ -119,7 +95,7 @@ if (!$QueryHandler->exists()): ?>
 
                 <div class="widget-body no-padding">
                     <div class="tab-content no-padding">
-                        <div id="tab1" class="tab-pane fade active in">
+                        <div ng-show="selectedTab == 'tab1'" class="tab-pane fade active in">
                             <div class="hidden-sm hidden-md hidden-lg"
                                  ng-class="{'browser-state-green': stateIsUp(), 'browser-state-red': stateIsDown(), 'browser-state-gray': stateIsUnreachable(), 'browser-state-blue': stateIsNotInMonitoring()}"
                                  ng-if="hoststatus">
@@ -365,7 +341,7 @@ if (!$QueryHandler->exists()): ?>
                                                 <div>
                                                     <ul>
                                                         <li ng-repeat="parentHostProblem in parentHostProblems">
-                                                            <a href="/hosts/browser/{{parentHostProblem.id}}">
+                                                            <a ui-sref="HostsBrowser({id:parentHostProblem.id})">
                                                                 {{parentHostProblem.name}}
                                                             </a>
                                                         </li>
@@ -468,7 +444,7 @@ if (!$QueryHandler->exists()): ?>
                                                                 state="parentHoststatus[parenthost.uuid].currentState"></hoststatusicon>
                                                     </td>
                                                     <td>
-                                                        <a href="/hosts/browser/{{parenthost.id}}">
+                                                        <a ui-sref="HostsBrowser({id:parenthost.id})">
                                                             {{ parenthost.name }}
                                                         </a>
                                                     </td>
@@ -721,7 +697,7 @@ if (!$QueryHandler->exists()): ?>
 
                         </div>
 
-                        <div id="tab2" class="tab-pane fade in">
+                        <div ng-show="selectedTab == 'tab2'" class="tab-pane active fade in">
                             <div class="row">
                                 <div class="col-xs-12 padding-10">
                                     <div class="row">
@@ -851,7 +827,7 @@ if (!$QueryHandler->exists()): ?>
                                                 <tr ng-show="mergedHost.Host.is_satellite_host === false">
                                                     <td><?php echo __('Instance'); ?></td>
                                                     <td>
-                                                        <?php echo h($masterInstanceName); ?>
+                                                        <?php if (isset($masterInstanceName)) echo h($masterInstanceName); ?>
                                                     </td>
                                                 </tr>
 
@@ -874,7 +850,7 @@ if (!$QueryHandler->exists()): ?>
                             </div>
                         </div>
 
-                        <div id="tab3" class="fade in" ng-show="showTimelineTab">
+                        <div class="fade in active" ng-show="showTimelineTab && selectedTab == 'tab3'">
                             <div class="row">
                                 <div class="col-xs-12 padding-10">
                                     <div class="row">
@@ -963,19 +939,15 @@ if (!$QueryHandler->exists()): ?>
 
 
                         <!-- render additional Tabs if necessary -->
-                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tab'); ?>
+                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tab', null, true); ?>
 
-                        <?php if ($GrafanaDashboardExists): ?>
-                            <div id="tab5" class="tab-pane fade">
-                                <div class="widget-toolbar">
-                                    <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
-                                </div>
-                                <iframe-directive url="GrafanaIframeUrl" ng-if="GrafanaDashboardExists"></iframe-directive>
-                                <?php /*
-                                <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%"
-                                        onload="this.height=(screen.height+15);" frameBorder="0"></iframe> */ ?>
+                        <div class="fade in active" ng-show="GrafanaDashboardExists && selectedTab == 'tab5'">
+                            <div class="widget-toolbar">
+                                <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
                             </div>
-                        <?php endif; ?>
+                            <iframe-directive url="GrafanaIframeUrl"
+                                              ng-if="GrafanaDashboardExists && selectedTab == 'tab5'"></iframe-directive>
+                        </div>
                     </div>
 
                     <div class="widget-footer text-right"></div>
@@ -999,7 +971,7 @@ if (!$QueryHandler->exists()): ?>
                     </button>
 
                     <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                        <a href="/services/add/{{ mergedHost.Host.id }}/_controller:hosts/_action:browser/_id:{{ mergedHost.Host.id }}/"
+                        <a ui-sref="ServicesAdd({hostId: mergedHost.Host.id})"
                            class="btn btn-xs btn-success">
                             <i class="fa fa-plus"></i>
                             <?php echo __('Add'); ?>
@@ -1010,24 +982,24 @@ if (!$QueryHandler->exists()): ?>
                 <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
                 <h2 class="hidden-mobile"><?php echo __('Service overview'); ?></h2>
                 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                    <li class="active">
-                        <a href="#serviceTab1" data-toggle="tab" ng-click="changeTab('active')">
+                    <li class="active cursor-pointer">
+                        <a data-toggle="tab" ng-click="changeTab('active')">
                             <i class="fa fa-stethoscope"></i>
                             <span class="hidden-mobile hidden-tablet">
                                 <?php echo __('Active'); ?>
                             </span>
                         </a>
                     </li>
-                    <li>
-                        <a href="#serviceTab2" data-toggle="tab" ng-click="changeTab('notMonitored')">
+                    <li class="cursor-pointer">
+                        <a data-toggle="tab" ng-click="changeTab('notMonitored')">
                             <i class="fa fa-user-md"></i>
                             <span class="hidden-mobile hidden-tablet">
                                 <?php echo __('Not monitored'); ?>
                             </span>
                         </a>
                     </li>
-                    <li class="">
-                        <a href="#serviceTab3" data-toggle="tab" ng-click="changeTab('disabled')">
+                    <li class="cursor-pointer">
+                        <a data-toggle="tab" ng-click="changeTab('disabled')">
                             <i class="fa fa-plug"></i>
                             <span class="hidden-mobile hidden-tablet">
                                 <?php echo __('Disabled'); ?>
@@ -1041,11 +1013,10 @@ if (!$QueryHandler->exists()): ?>
                 <div class="widget-body no-padding">
                     <div class="tab-content">
 
-                        <div id="serviceTab1" class="tab-pane fade active in">
+                        <div id="serviceTab1" class="tab-pane fade active in" ng-if="activeTab === 'active'">
                             <div class="mobile_table">
                                 <table id="host_list"
-                                       class="table table-striped table-hover table-bordered smart-form"
-                                       ng-if="activeTab === 'active'">
+                                       class="table table-striped table-hover table-bordered smart-form">
                                     <thead>
                                     <tr>
 
@@ -1076,8 +1047,8 @@ if (!$QueryHandler->exists()): ?>
                                             </strong>
                                         </th>
 
-                                        <th class="no-sort" ng-click="orderBy('Service.servicename')">
-                                            <i class="fa" ng-class="getSortClass('Service.servicename')"></i>
+                                        <th class="no-sort" ng-click="orderBy('servicename')">
+                                            <i class="fa" ng-class="getSortClass('servicename')"></i>
                                             <?php echo __('Service name'); ?>
                                         </th>
 
@@ -1191,7 +1162,7 @@ if (!$QueryHandler->exists()): ?>
 
                                         <td class="text-center">
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                <a href="/services/browser/{{ service.Service.id }}"
+                                                <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                                    class="txt-color-blueDark">
                                                     <i class="fa fa-lg fa-area-chart"
                                                        ng-mouseenter="mouseenter($event, mergedHost.Host.uuid, service)"
@@ -1217,7 +1188,7 @@ if (!$QueryHandler->exists()): ?>
 
                                         <td>
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                <a href="/services/browser/{{ service.Service.id }}">
+                                                <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                     {{ service.Service.servicename }}
                                                 </a>
                                             <?php else: ?>
@@ -1236,7 +1207,7 @@ if (!$QueryHandler->exists()): ?>
                                         <td class="width-50">
                                             <div class="btn-group">
                                                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                    <a href="/services/edit/{{service.Service.id}}/_controller:hosts/_action:browser/_id:{{mergedHost.Host.id}}/"
+                                                    <a ui-sref="ServicesEdit({id: service.Service.id})"
                                                        ng-if="service.Service.allow_edit"
                                                        class="btn btn-default">
                                                         &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -1250,9 +1221,9 @@ if (!$QueryHandler->exists()): ?>
                                                             class="caret"></span></a>
                                                 <ul class="dropdown-menu pull-right"
                                                     id="menuHack-{{service.Service.uuid}}">
-                                                    <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                         <li ng-if="service.Service.allow_edit">
-                                                            <a href="/services/edit/{{service.Service.id}}/_controller:hosts/_action:browser/_id:{{mergedHost.Host.id}}/">
+                                                            <a ui-sref="ServicesEdit({id: service.Service.id})">
                                                                 <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>
@@ -1301,10 +1272,9 @@ if (!$QueryHandler->exists()): ?>
 
                         </div> <!-- close tab1 -->
 
-                        <div id="serviceTab2" class="tab-pane fade">
+                        <div id="serviceTab2" class="tab-pane fade active in" ng-if="activeTab === 'notMonitored'">
 
-                            <table class="table table-striped table-hover table-bordered smart-form"
-                                   ng-if="activeTab === 'notMonitored'">
+                            <table class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
                                     <th class="no-sort width-90">
@@ -1329,7 +1299,7 @@ if (!$QueryHandler->exists()): ?>
 
                                     <td>
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                            <a href="/services/browser/{{ service.Service.id }}">
+                                            <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                 {{ service.Service.servicename }}
                                             </a>
                                         <?php else: ?>
@@ -1340,7 +1310,7 @@ if (!$QueryHandler->exists()): ?>
                                     <td class="width-50">
                                         <div class="btn-group">
                                             <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                <a href="/services/edit/{{service.Service.id}}"
+                                                <a ui-sref="ServicesEdit({id: service.Service.id})"
                                                    ng-if="service.Service.allow_edit"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -1354,9 +1324,9 @@ if (!$QueryHandler->exists()): ?>
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right"
                                                 id="menuHack-{{service.Service.uuid}}">
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <li ng-if="service.Service.allow_edit">
-                                                        <a href="/services/edit/{{service.Service.id}}">
+                                                        <a ui-sref="ServicesEdit({id: service.Service.id})">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
@@ -1396,11 +1366,10 @@ if (!$QueryHandler->exists()): ?>
 
                         </div> <!-- cloase tab2 -->
 
-                        <div id="serviceTab3" class="tab-pane fade">
+                        <div id="serviceTab3" class="tab-pane fade active in" ng-if="activeTab === 'disabled'">
 
                             <div class="mobile_table">
-                                <table class="table table-striped table-hover table-bordered smart-form"
-                                       ng-if="activeTab === 'disabled'">
+                                <table class="table table-striped table-hover table-bordered smart-form">
                                     <thead>
                                     <tr>
                                         <th class="no-sort width-90">
@@ -1425,7 +1394,7 @@ if (!$QueryHandler->exists()): ?>
 
                                         <td>
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                <a href="/services/browser/{{ service.Service.id }}">
+                                                <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                     {{ service.Service.servicename }}
                                                 </a>
                                             <?php else: ?>
@@ -1436,7 +1405,7 @@ if (!$QueryHandler->exists()): ?>
                                         <td class="width-50">
                                             <div class="btn-group">
                                                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                    <a href="/services/edit/{{service.Service.id}}"
+                                                    <a ui-sref="ServicesEdit({id: service.Service.id})"
                                                        ng-if="service.Service.allow_edit"
                                                        class="btn btn-default">
                                                         &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -1450,14 +1419,14 @@ if (!$QueryHandler->exists()): ?>
                                                             class="caret"></span></a>
                                                 <ul class="dropdown-menu pull-right"
                                                     id="menuHack-{{service.Service.uuid}}">
-                                                    <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                         <li ng-if="service.Service.allow_edit">
-                                                            <a href="/services/edit/{{service.Service.id}}">
+                                                            <a ui-sref="ServicesEdit({id: service.Service.id})">
                                                                 <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('enable')): ?>
+                                                    <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
                                                         <li ng-if="service.Service.allow_edit">
                                                             <a href="javascript:void(0);"
                                                                ng-click="confirmActivate(getObjectForDelete(mergedHost.Host.name, service))">
@@ -1498,50 +1467,6 @@ if (!$QueryHandler->exists()): ?>
         </div>
     </article>
 </article>
-
-
-<div id="pingmodal" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"><h4>
-                        <i class="fa fa-wifi"></i>
-                        <?php echo __('Ping remote host'); ?>
-                    </h4>
-            </div>
-            <div class="modal-body">
-
-                <div class="row">
-                    <div class="col-xs-12">
-                        <button type="button" class="btn btn-primary btn-block" ng-click="ping()">
-                            <i class="fa fa-refresh fa-spin" ng-show="isPinging"></i>
-                            <?php echo __('Ping remote host'); ?>
-                            <b>{{mergedHost.Host.address}}</b>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="row padding-top-15" ng-show="pingResult.length">
-                    <div class="col-xs-12">
-                        <div class="well">
-                            <div><code>/bin/ping {{mergedHost.Host.address}} -c 4 -W 5</code></div>
-                            <div ng-repeat="line in pingResult"><code>{{line}}</code></div>
-                        </div>
-                    </div>
-                </div>
-
-
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Close'); ?>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 <reschedule-host callback="showFlashMsg"></reschedule-host>

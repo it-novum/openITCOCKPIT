@@ -145,8 +145,8 @@ class ShellTest extends CakeTestCase {
 		$in = $this->getMock('ConsoleInput', array(), array(), '', false);
 		$this->Shell = new ShellTestShell($output, $error, $in);
 
-		if (is_dir(TMP . 'shell_test')) {
-			$Folder = new Folder(TMP . 'shell_test');
+		if (is_dir(OLD_TMP . 'shell_test')) {
+			$Folder = new Folder(OLD_TMP . 'shell_test');
 			$Folder->delete();
 		}
 	}
@@ -189,8 +189,8 @@ class ShellTest extends CakeTestCase {
  */
 	public function testInitialize() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
-			'Model' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'Model' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS)
 		), App::RESET);
 
 		CakePlugin::load('TestPlugin');
@@ -220,8 +220,8 @@ class ShellTest extends CakeTestCase {
  */
 	public function testLoadModel() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
-			'Model' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'Model' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS)
 		), App::RESET);
 
 		$Shell = new TestMergeShell();
@@ -583,12 +583,12 @@ class ShellTest extends CakeTestCase {
 		$expected = 'tmp' . DS . 'ab';
 		$this->assertEquals($expected, $this->Shell->shortPath($path));
 
-		$path = APP;
-		$expected = DS . basename(APP) . DS;
+		$path = OLD_APP;
+		$expected = DS . basename(OLD_APP) . DS;
 		$this->assertEquals($expected, $this->Shell->shortPath($path));
 
-		$path = APP . 'index.php';
-		$expected = DS . basename(APP) . DS . 'index.php';
+		$path = OLD_APP . 'index.php';
+		$expected = DS . basename(OLD_APP) . DS . 'index.php';
 		$this->assertEquals($expected, $this->Shell->shortPath($path));
 	}
 
@@ -600,7 +600,7 @@ class ShellTest extends CakeTestCase {
 	public function testCreateFileNonInteractive() {
 		$eol = PHP_EOL;
 
-		$path = TMP . 'shell_test';
+		$path = OLD_TMP . 'shell_test';
 		$file = $path . DS . 'file1.php';
 
 		new Folder($path, true);
@@ -628,7 +628,7 @@ class ShellTest extends CakeTestCase {
 	public function testCreateFileInteractive() {
 		$eol = PHP_EOL;
 
-		$path = TMP . 'shell_test';
+		$path = OLD_TMP . 'shell_test';
 		$file = $path . DS . 'file1.php';
 		new Folder($path, true);
 
@@ -671,7 +671,7 @@ class ShellTest extends CakeTestCase {
 	public function testCreateFileNoPermissions() {
 		$this->skipIf(DIRECTORY_SEPARATOR === '\\', 'Cant perform operations using permissions on Windows.');
 
-		$path = TMP . 'shell_test';
+		$path = OLD_TMP . 'shell_test';
 		$file = $path . DS . 'no_perms';
 
 		if (!is_dir($path)) {
@@ -944,10 +944,10 @@ TEXT;
 		CakeLog::disable('stderr');
 		// file logging
 		$this->Shell->log_something();
-		$this->assertTrue(file_exists(LOGS . 'error.log'));
+		$this->assertTrue(file_exists(OLD_LOGS . 'error.log'));
 
-		unlink(LOGS . 'error.log');
-		$this->assertFalse(file_exists(LOGS . 'error.log'));
+		unlink(OLD_LOGS . 'error.log');
+		$this->assertFalse(file_exists(OLD_LOGS . 'error.log'));
 
 		// both file and console logging
 		require_once CORE_TEST_CASES . DS . 'Log' . DS . 'Engine' . DS . 'ConsoleLogTest.php';
@@ -963,8 +963,8 @@ TEXT;
 			->method('write')
 			->with('error', $this->Shell->testMessage);
 		$this->Shell->log_something();
-		$this->assertTrue(file_exists(LOGS . 'error.log'));
-		$contents = file_get_contents(LOGS . 'error.log');
+		$this->assertTrue(file_exists(OLD_LOGS . 'error.log'));
+		$contents = file_get_contents(OLD_LOGS . 'error.log');
 		$this->assertContains($this->Shell->testMessage, $contents);
 
 		CakeLog::enable('stdout');

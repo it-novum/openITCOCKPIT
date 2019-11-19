@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
+
 class CustomVariableDiffer extends CustomVariableHelper {
 
     /**
@@ -55,7 +57,10 @@ class CustomVariableDiffer extends CustomVariableHelper {
         $variablesToSaveAsRepository = new CustomVariablesRepository();
 
         foreach ($this->hostCustomVariablesRepository->getAllCustomVariables() as $hostCustomVariable) {
+            /** @var CustomVariable $hostCustomVariable */
+
             //Check if a custom variable with this name exists in host template
+            /** @var CustomVariable $hostTemplateCustomVariable */
             $hostTemplateCustomVariable = $this->hosttemplateCustomVariablesRepository->getByVariableName($hostCustomVariable->getName());
             if ($hostTemplateCustomVariable !== false) {
                 //We found a custom variable in the host template with the same name
@@ -63,6 +68,16 @@ class CustomVariableDiffer extends CustomVariableHelper {
                 //Check if the values are the same or not
                 if ($hostCustomVariable->getValue() != $hostTemplateCustomVariable->getValue()) {
                     $hostCustomVariable->resetId();
+
+                    //Overwrite objecttype_id from hosttemplate to host
+                    if($hostCustomVariable->getObjecttypeId() == OBJECT_HOSTTEMPLATE){
+                        $hostCustomVariable->setObjecttypeId(OBJECT_HOST);
+                    }
+
+                    if($hostCustomVariable->getObjecttypeId() == OBJECT_SERVICETEMPLATE){
+                        $hostCustomVariable->setObjecttypeId(OBJECT_SERVICE);
+                    }
+
                     $variablesToSaveAsRepository->addCustomVariable($hostCustomVariable);
                 }
             }

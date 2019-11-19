@@ -34,8 +34,8 @@ class CpuLoadTask extends AppShell implements CronjobInterface {
             $this->out('Fetch current CPU load...', false);
             $load = file('/proc/loadavg');
             $records = [];
-            if (file_exists(TMP . 'loadavg')) {
-                $records = file(TMP . 'loadavg');
+            if (file_exists(OLD_TMP . 'loadavg')) {
+                $records = file(OLD_TMP . 'loadavg');
             }
 
             $newLoad = [];
@@ -53,7 +53,7 @@ class CpuLoadTask extends AppShell implements CronjobInterface {
             $newLoad[] = time() . ' ' . $load[0];
 
             unset($records);
-            $file = fopen(TMP . 'loadavg', 'w+');
+            $file = fopen(OLD_TMP . 'loadavg', 'w+');
             foreach ($newLoad as $line) {
                 fwrite($file, $line);
             }

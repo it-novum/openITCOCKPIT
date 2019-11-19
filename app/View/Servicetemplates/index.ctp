@@ -23,165 +23,285 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
-    <div class="row">
-        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-            <h1 class="page-title txt-color-blueDark">
-                <i class="fa fa-pencil-square-o fa-fw "></i>
-                <?php echo __('Monitoring'); ?>
-                <span>>
-                    <?php echo __('Service Templates'); ?>
-			</span>
-            </h1>
-        </div>
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-pencil-square-o fa-fw"></i>
+            <?php echo __('Service templates'); ?>
+            <span>>
+            <?php echo __('Overview'); ?>
+        </span>
+        </h1>
     </div>
+</div>
 
-    <section id="widget-grid" class="">
-        <div class="row">
-            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                    <header>
-                        <div class="widget-toolbar" role="menu">
-                            <?php
-                            if ($this->Acl->hasPermission('add')):
-                                echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                                echo " "; //Fix HTML
-                            endif;
-                            echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
-                            if ($isFilter):
-                                echo " "; //Fix HTML
-                                echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                            endif;
-                            ?>
+<massdelete></massdelete>
+<?php if ($this->Acl->hasPermission('add', 'servicetemplates')): ?>
+    <add-servicetemplates-to-servicetemplategroup></add-servicetemplates-to-servicetemplategroup>
+<?php endif; ?>
+
+<section id="widget-grid" class="">
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-blueDark">
+                <header>
+                    <div class="widget-toolbar" role="menu">
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
+                        <?php if ($this->Acl->hasPermission('add', 'servicetemplates')): ?>
+                            <a class="btn btn-xs btn-success" ui-sref="ServicetemplatesAdd">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New'); ?>
+                            </a>
+                        <?php endif; ?>
+
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
+                    </div>
+
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-pencil-square-o"></i> </span>
+                    <h2 class="hidden-mobile"><?php echo __('Service templates overview'); ?></h2>
+
+                </header>
+                <div>
+                    <div class="widget-body no-padding">
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by service template name'); ?>"
+                                                   ng-model="filter.Servicetemplates.template_name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by service template description'); ?>"
+                                                   ng-model="filter.Servicetemplates.description"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-cog"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by service name'); ?>"
+                                                   ng-model="filter.Servicetemplates.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <span class="widget-icon hidden-mobile"> <i class="fa fa-pencil-square-o"></i> </span>
-                        <h2 class="hidden-mobile"><?php echo __('Services Templates'); ?> </h2>
-                        <?= $this->Form->hidden('same-contaner-text', ['value' => __('Service templates must belong to the same container')]) ?>
-                    </header>
-                    <div>
-                        <div class="jarviswidget-editbox">
-                        </div>
-                        <div class="widget-body no-padding">
-                            <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
-                            <div class="mobile_table">
-                                <table id="service_list"
-                                       class="table table-striped table-hover table-bordered smart-form" style="">
-                                    <thead>
-                                    <tr>
-                                        <?php $order = $this->Paginator->param('order'); ?>
-                                        <th class="no-sort text-center"><i class="fa fa-check-square-o fa-lg"></i></th>
-                                        <th class="no-sort col-xs-2 col-sm-2 col-md-2 col-lg-2"><?php echo $this->Utils->getDirection($order, 'template_name');
-                                            echo $this->Paginator->sort('template_name', __('Service template name')); ?></th>
-                                        <th class="no-sort col-xs-2 col-sm-2 col-md-2 col-lg-3"><?php echo $this->Utils->getDirection($order, 'name');
-                                            echo $this->Paginator->sort('name', __('Service name')); ?></th>
-                                        <th class="no-sort col-xs-4 col-sm-4 col-md-4 col-lg-4"><?php echo $this->Utils->getDirection($order, 'description');
-                                            echo $this->Paginator->sort('description', __('Description')); ?></th>
-                                        <th class="no-sort col-xs-1 col-sm-1 col-md-1 col-lg-2"><?php echo __('Container'); ?></th>
-                                        <th class="no-sort text-center editItemWidth"><i class="fa fa-gear fa-lg"></i>
-                                        </th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php foreach ($all_servicetemplates as $servicetemplate): ?>
-                                        <?php $allowEdit = $this->Acl->isWritableContainer($servicetemplate['Servicetemplate']['container_id']); ?>
-                                        <tr>
-                                            <td class="text-center width-5">
-                                                <?php if ($allowEdit): ?>
-                                                    <input data-container="<?= $servicetemplate['Container']['id'] ?>"
-                                                           type="checkbox" class="massChange"
-                                                           hostname="<?= h($servicetemplate['Servicetemplate']['name']); ?>"
-                                                           value="<?= $servicetemplate['Servicetemplate']['id']; ?>"
-                                                           uuid="<?= $servicetemplate['Servicetemplate']['uuid']; ?>">
-                                                <?php endif; ?>
-                                            </td>
-                                            <td><?php echo $servicetemplate['Servicetemplate']['template_name']; ?></td>
-                                            <td><?php echo $servicetemplate['Servicetemplate']['name']; ?></td>
-                                            <td><?php echo $servicetemplate['Servicetemplate']['description']; ?></td>
-                                            <td><?php echo isset($resolvedContainerNames[$servicetemplate['Container']['id']]) ? $resolvedContainerNames[$servicetemplate['Container']['id']] : $servicetemplate['Container']['name']; ?></td>
-                                            <td class="width-160 text-center">
-                                                <div class="btn-group">
-                                                    <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                        <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $servicetemplate['Servicetemplate']['id']; ?>"
-                                                           class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+
+                        <div class="mobile_table">
+                            <table class="table table-striped table-hover table-bordered smart-form">
+                                <thead>
+                                <tr>
+                                    <th class="no-sort sorting_disabled width-15">
+                                        <i class="fa fa-check-square-o fa-lg"></i>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Servicetemplates.template_name')">
+                                        <i class="fa" ng-class="getSortClass('Servicetemplates.template_name')"></i>
+                                        <?php echo __('Service template name'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Servicetemplates.name')">
+                                        <i class="fa" ng-class="getSortClass('Servicetemplates.name')"></i>
+                                        <?php echo __('Service name'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Servicetemplates.description')">
+                                        <i class="fa" ng-class="getSortClass('Servicetemplates.description')"></i>
+                                        <?php echo __('Description'); ?>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-cog fa-lg"></i>
+                                    </th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr ng-repeat="servicetemplate in servicetemplates">
+                                    <td class="text-center" class="width-15">
+                                        <?php if ($this->Acl->hasPermission('delete', 'servicetemplates')): ?>
+                                            <input type="checkbox"
+                                                   ng-model="massChange[servicetemplate.Servicetemplate.id]"
+                                                   ng-show="servicetemplate.Servicetemplate.allow_edit">
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>{{servicetemplate.Servicetemplate.template_name}}</td>
+                                    <td>{{servicetemplate.Servicetemplate.name}}</td>
+                                    <td>{{servicetemplate.Servicetemplate.description}}</td>
+                                    <td class="width-50">
+                                        <div class="btn-group">
+                                            <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                                <a ui-sref="ServicetemplatesEdit({id: servicetemplate.Servicetemplate.id})"
+                                                   ng-if="servicetemplate.Servicetemplate.allow_edit"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                                <a href="javascript:void(0);"
+                                                   ng-if="!servicetemplate.Servicetemplate.allow_edit"
+                                                   class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{servicetemplate.Servicetemplate.id}}">
+                                                <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                                    <li ng-if="servicetemplate.Servicetemplate.allow_edit">
+                                                        <a ui-sref="ServicetemplatesEdit({id:servicetemplate.Servicetemplate.id})">
+                                                            <i class="fa fa-cog"></i>
+                                                            <?php echo __('Edit'); ?>
                                                         </a>
-                                                    <?php else: ?>
-                                                        <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
-                                                                    class="fa fa-cog"></i>&nbsp;</a>
-                                                    <?php endif; ?>
-                                                    <a href="javascript:void(0);" data-toggle="dropdown"
-                                                       class="btn btn-default dropdown-toggle"><span
-                                                                class="caret"></span></a>
-                                                    <ul class="dropdown-menu pull-right">
-                                                        <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                            <li>
-                                                                <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $servicetemplate['Servicetemplate']['id']; ?>"><i
-                                                                            class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                                                                </a>
-                                                            </li>
-                                                        <?php endif; ?>
-                                                        <?php if ($this->Acl->hasPermission('usedBy')): ?>
-                                                            <li>
-                                                                <a href="/<?php echo $this->params['controller']; ?>/usedBy/<?php echo $servicetemplate['Servicetemplate']['id']; ?>"><i
-                                                                            class="fa fa-reply-all fa-flip-horizontal"></i> <?php echo __('Used by'); ?>
-                                                                </a>
-                                                            </li>
-                                                        <?php endif; ?>
-                                                        <?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
-                                                            <li>
-                                                                <a href="<?php echo Router::url(['controller' => 'documentations', 'action' => 'view', $servicetemplate['Servicetemplate']['uuid'], 'servicetemplate']); ?>"><i
-                                                                            class="fa fa-book"></i> <?php echo __('Documentation'); ?>
-                                                                </a>
-                                                            </li>
-                                                        <?php endif; ?>
+                                                    </li>
+                                                <?php endif; ?>
 
-                                                        <?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $servicetemplate['Servicetemplate']['id']); ?>
-                                                        <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
-                                                            <li class="divider"></li>
-                                                            <li>
-                                                                <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'servicetemplates', 'action' => 'delete', $servicetemplate['Servicetemplate']['id']], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete? All attached services will be deleted too.')); ?>
-                                                            </li>
-                                                        <?php endif; ?>
-                                                    </ul>
-                                                </div>
-                                            </td>
 
-                                            <?php /*
-											<td class="text-center"><a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $servicetemplate['Servicetemplate']['id']; ?>" data-original-title="<?php echo __('edit'); ?>" data-placement="left" rel="tooltip" data-container="body"><i id="list_edit" class="fa fa-gear fa-lg txt-color-teal"></i></a></td>
-											*/ ?>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <?php if (empty($all_servicetemplates)): ?>
-                                <div class="noMatch">
-                                    <center>
-                                        <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                    </center>
-                                </div>
-                            <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('usedBy', 'servicetemplates')): ?>
+                                                    <li>
+                                                        <a ui-sref="ServicetemplatesUsedBy({id:servicetemplate.Servicetemplate.id})">
+                                                            <i class="fa fa-reply-all fa-flip-horizontal"></i>
+                                                            <?php echo __('Used by'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
+                                                    <li>
+                                                        <a ui-sref="DocumentationsView({uuid:servicetemplate.Servicetemplate.uuid, type:'servicetemplate'})">
+                                                            <i class="fa fa-book"></i>
+                                                            <?php echo __('Documentation'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
 
-                            <?= $this->element('servicetemplate_mass_changes'); ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                                    <li ng-if="servicetemplate.Servicetemplate.allow_edit">
+                                                        <?php echo $this->AdditionalLinks->renderAsListItems(
+                                                            $additionalLinksList,
+                                                            '{{servicetemplate.Servicetemplate.id}}',
+                                                            [],
+                                                            true
+                                                        ); ?>
+                                                    </li>
+                                                <?php endif; ?>
 
-                            <div style="padding: 10px 10px;">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
-                                    </div>
-                                    <div class="col-sm-6 text-right">
-                                        <div class="dataTables_paginate paging_bootstrap">
-                                            <?php echo $this->Paginator->pagination([
-                                                'ul' => 'pagination',
-                                            ]); ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'servicetemplates')): ?>
+                                                    <li class="divider"
+                                                        ng-if="servicetemplate.Servicetemplate.allow_edit"></li>
+                                                    <li ng-if="servicetemplate.Servicetemplate.allow_edit">
+                                                        <a href="javascript:void(0);"
+                                                           class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(servicetemplate))">
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
                                         </div>
-                                    </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="servicetemplates.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                            <span ng-click="selectAll()" class="pointer">
+                                <i class="fa fa-lg fa-check-square-o"></i>
+                                <?php echo __('Select all'); ?>
+                            </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                            <span ng-click="undoSelection()" class="pointer">
+                                <i class="fa fa-lg fa-square-o"></i>
+                                <?php echo __('Undo selection'); ?>
+                            </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <a ui-sref="ServicetemplatesCopy({ids: linkForCopy()})" class="a-clean">
+                                    <i class="fa fa-lg fa-files-o"></i>
+                                    <?php echo __('Copy'); ?>
+                                </a>
+                            </div>
+                            <div class="col-xs-12 col-md-2 txt-color-red">
+                            <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                <i class="fa fa-lg fa-trash-o"></i>
+                                <?php echo __('Delete all'); ?>
+                            </span>
+                            </div>
+                            <div class="xol-xs-12 col-md-2">
+                                <div class="btn-group">
+                                    <a href="javascript:void(0);" class="btn btn-default"><?php echo __('More'); ?></a>
+                                    <a href="javascript:void(0);" data-toggle="dropdown"
+                                       class="btn btn-default dropdown-toggle">
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <?php if ($this->Acl->hasPermission('add', 'servicetemplates')): ?>
+                                            <li>
+                                                <a ng-click="confirmAddServicetemplatessToServicetemplategroup(getObjectsForDelete())"
+                                                   class="a-clean pointer">
+                                                    <i class="fa fa-plus-circle"></i> <?php echo __('Add to service template group'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
-            </article>
-        </div>
-    </section>
-<?php echo $this->AdditionalLinks->renderElements($additionalElementsBottom); ?>
+            </div>
+        </article>
+    </div>
+</section>
+
+
+

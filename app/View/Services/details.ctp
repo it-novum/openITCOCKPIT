@@ -35,24 +35,13 @@
                 </button>
 
                 <h4 class="modal-title">
-                    <h4>
-                        <i class="fa fa-cogs"></i>
-                        <?php echo __('Service status details'); ?>
-                    </h4>
+                    <i class="fa fa-cogs"></i>
+                    <?php echo __('Service status details'); ?>
+                </h4>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="alert alert-success alert-block" ng-show="showFlashSuccess">
-                            <a href="#" data-dismiss="alert" class="close">×</a>
-                            <h4 class="alert-heading"><i
-                                        class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?>
-                            </h4>
-                            <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter
-                            }} <?php echo __('seconds...'); ?>
-                        </div>
-                    </div>
-                </div>
+
+                <div ng-init="flashMshStr='<?php echo __('Command sent successfully. Refresh in 5 seconds'); ?>'"></div>
 
                 <div class=""
                      ng-class="{'browser-state-green': stateIsOk(), 'browser-state-yellow': stateIsWarning(), 'browser-state-red': stateIsCritical(), 'browser-state-gray': stateIsUnknown(), 'browser-state-blue': stateIsNotInMonitoring()}"
@@ -74,7 +63,7 @@
                             <strong><?php echo __('Service'); ?></strong>
                         </div>
                         <div class="col-xs-12 col-md-10">
-                            <strong>{{mergedService.Service.name}}</strong>
+                            <strong>{{mergedService.name}}</strong>
                         </div>
                     </div>
 
@@ -150,7 +139,7 @@
                         </div>
 
                         <div class="row text-center padding-top-10 padding-bottom-10"
-                             ng-show="canSubmitExternalCommands && mergedService.Service.allowEdit">
+                             ng-show="canSubmitExternalCommands && mergedService.allowEdit">
                             <div class="btn-group" role="group" aria-label="Basic example">
                                 <button type="button"
                                         class="btn btn-default"
@@ -290,7 +279,7 @@
                     </div>
                 </div>
 
-                <div class="row" ng-show="mergedService.Service.has_graph">
+                <div class="row" ng-show="mergedService.has_graph">
                     <div class="col-xs-12">
                         <h5>
                             <i class="fa fa-area-chart"></i>
@@ -299,7 +288,7 @@
                     </div>
                 </div>
 
-                <div class="row" ng-show="mergedService.Service.has_graph">
+                <div class="row" ng-show="mergedService.has_graph">
                     <div class="col-xs-12">
                         <div id="graph_legend" class="graph_legend"></div>
                         <div id="graph_data_tooltip"></div>
@@ -312,7 +301,7 @@
 
             <div class="modal-footer">
                 <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                    <a class="btn btn-primary" href="/services/browser/{{currentServiceDetailsId}}">
+                    <a class="btn btn-primary" ui-sref="ServicesBrowser({id:currentServiceDetailsId})">
                         <i class="fa fa-external-link"></i>
                         <?php echo __('Open details'); ?>
                     </a>
@@ -331,7 +320,7 @@
 <mass-delete-service-downtimes delete-url="/downtimes/delete/"
                                callback="showServiceDetailsFlashMsg"></mass-delete-service-downtimes>
 <acknowledge-service author="<?php echo h($username); ?>" callback="showServiceDetailsFlashMsg"></acknowledge-service>
-<submit-service-result max-check-attempts="{{mergedService.Service.max_check_attempts}}"
+<submit-service-result max-check-attempts="{{mergedService.max_check_attempts}}"
                        callback="showServiceDetailsFlashMsg"></submit-service-result>
 <enable-service-flap-detection callback="showServiceDetailsFlashMsg"></enable-service-flap-detection>
 <disable-service-flap-detection callback="showServiceDetailsFlashMsg"></disable-service-flap-detection>

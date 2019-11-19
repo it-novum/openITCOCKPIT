@@ -23,158 +23,337 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-terminal fa-fw "></i>
-            <?php echo __('Administration'); ?>
+            <i class="fa fa-user fa-fw "></i>
+            <?php echo __('Users'); ?>
             <span>>
-                <?php echo __('Manage users'); ?>
-			</span>
+                <?php echo __('Overview'); ?>
+            </span>
         </h1>
     </div>
 </div>
 
-<section id="widget-grid" class="">
+<massdelete></massdelete>
 
+<section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <div class="jarviswidget jarviswidget-color-blueDark">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php
-                        if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('Create local user'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                            echo " "; //Fix HTML
-                            if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap'):
-                                echo $this->Html->link(__('Import from LDAP'), '/' . $this->params['controller'] . '/addFromLdap', ['class' => 'btn btn-xs btn-warning', 'icon' => 'fa fa-plus']);
-                                echo " "; //Fix HTML
-                            endif;
-                        endif;
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+                        <?php if ($this->Acl->hasPermission('add', 'users')): ?>
+                            <a ui-sref="UsersAdd" class="btn btn-xs btn-success">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New local user'); ?>
+                            </a>
 
-                        echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
-                        if ($isFilter):
-                            echo " "; //Fix HTML
-                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                        endif;
-                        ?>
+                            <?php if ($isLdapAuth): ?>
+                                <a ui-sref="UsersLdap" class="btn btn-xs btn-warning">
+                                    <i class="fa fa-plus"></i>
+                                    <?php echo __('Import from LDAP'); ?>
+                                </a>
+                            <?php endif; ?>
+                        <?php endif; ?>
+
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
+
                     </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-terminal"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Manage users'); ?></h2>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-user"></i> </span>
+                    <h2 class="hidden-mobile">
+                        <?php echo __('Users overview'); ?>
+                    </h2>
                 </header>
 
-                <!-- widget div-->
                 <div>
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
-                        <div class="tab-content">
-                            <!-- <form action="/nagios_module/commands/edit/" id="multiEditForm" method="post"> -->
-                            <div class="mobile_table">
-                                <table id="datatable_fixed_column"
-                                       class="table table-striped table-hover table-bordered smart-form">
-                                    <thead>
-                                    <tr>
-                                        <?php $order = $this->Paginator->param('order'); ?>
-                                        <th><?php echo $this->Utils->getDirection($order, 'full_name');
-                                            echo $this->Paginator->sort('full_name', __('Full name')); ?></th>
-                                        <th><?php echo $this->Utils->getDirection($order, 'email');
-                                            echo $this->Paginator->sort('email', __('Email')); ?></th>
-                                        <th><?php echo $this->Utils->getDirection($order, 'phone');
-                                            echo $this->Paginator->sort('phone', __('Phone')); ?></th>
-                                        <th><?php echo $this->Utils->getDirection($order, 'company');
-                                            echo $this->Paginator->sort('company', __('Company')); ?></th>
-                                        <th><?php echo $this->Utils->getDirection($order, 'Usergroup.name');
-                                            echo $this->Paginator->sort('Usergroup.name', __('User role')); ?></th>
-                                        <th><?php echo $this->Utils->getDirection($order, 'status');
-                                            echo $this->Paginator->sort('status', __('Status')); ?></th>
-                                        <th class="no-sort text-center" style="width:52px;"><i
-                                                    class="fa fa-gear fa-lg"></i></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php foreach ($users as $user): ?>
-                                        <?php $allowEdit = $this->Acl->isWritableContainer($userContainerIds[$user['User']['id']]['Container']) ?>
-                                        <tr>
-                                            <td><?php echo h($user['User']['full_name']); ?></td>
-                                            <td><?php echo $this->Html->link(h($user['User']['email']), 'mailto:' . $user['User']['email']); ?></td>
-                                            <td><?php echo h($user['User']['phone']); ?></td>
-                                            <td><?php echo h($user['User']['company']); ?></td>
-                                            <td><?php echo h($user['Usergroup']['name']); ?></td>
-                                            <td><?php echo h(Status::getDescription($user['User']['status'])); ?></td>
-                                            <?php /*<td class="text-center"><a href="/<?php echo $this->params['plugin']; ?>/<?php echo $this->params['controller']; ?>/edit/<?php echo $user['User']['id']; ?>" data-original-title="<?php echo __('Edit'); ?>" data-placement="left" rel="tooltip" data-container="body"><i id="list_edit" class="fa fa-gear fa-lg txt-color-teal"></i></a></td>*/ ?>
-                                            <td class="text-center">
-                                                <div class="btn-group">
-                                                    <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                        <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $user['User']['id']; ?>"
-                                                           class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
-                                                                    class="fa fa-cog"></i>&nbsp;</a>
-                                                    <?php endif; ?>
-                                                    <a href="javascript:void(0);" data-toggle="dropdown"
-                                                       class="btn btn-default dropdown-toggle"><span
-                                                                class="caret"></span></a>
-                                                    <ul class="dropdown-menu pull-right">
-                                                        <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                            <li>
-                                                                <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $user['User']['id']; ?>"><i
-                                                                            class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                                                                </a>
-                                                            </li>
-                                                        <?php endif; ?>
-                                                        <?php if ($user['User']['samaccountname'] == '' || $user['User']['samaccountname'] == null): ?>
-                                                            <!-- This option is only for local users available -->
-                                                            <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                                <li>
-                                                                    <a href="/<?php echo $this->params['controller']; ?>/resetPassword/<?php echo $user['User']['id']; ?>"><i
-                                                                                class="fa fa-unlock"></i> <?php echo __('Reset password'); ?>
-                                                                    </a>
-                                                                </li>
-                                                            <?php endif; ?>
-                                                        <?php endif; ?>
-                                                        <?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $user['User']['id']); ?>
-                                                        <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
-                                                            <li class="divider"></li>
-                                                            <li>
-                                                                <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['plugin' => '', 'controller' => 'users', 'action' => 'delete', $user['User']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
-                                                            </li>
-                                                        <?php endif; ?>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <?php if (empty($users)): ?>
-                                <div class="noMatch">
-                                    <center>
-                                        <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                    </center>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-
-                        <div style="padding: 5px 10px;">
+                        <!-- Start Filter -->
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by users ful name'); ?>"
+                                                   ng-model="filter.full_name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
                                 </div>
-                                <div class="col-sm-6 text-right">
-                                    <div class="dataTables_paginate paging_bootstrap">
-                                        <?php echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]); ?>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-envelope-o"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by email'); ?>"
+                                                   ng-model="filter.Users.email"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-phone"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by phone'); ?>"
+                                                   ng-model="filter.Users.phone"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-building"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by company'); ?>"
+                                                   ng-model="filter.Users.company"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <fieldset>
+                                        <legend><?php echo __('User Role'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <select
+                                                    id="UserRoles"
+                                                    data-placeholder="<?php echo __('Filter by user role'); ?>"
+                                                    class="input-sm"
+                                                    chosen="usergroups"
+                                                    multiple
+                                                    ng-model="filter.Users.usergroup_id"
+                                                    ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
+                                                    ng-model-options="{debounce: 500}">
+                                            </select>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <!-- End Filter -->
+
+                        <div class="mobile_table">
+                            <table id="users_list" class="table table-striped table-hover table-bordered smart-form">
+                                <thead>
+                                <tr>
+                                    <th class="no-sort width-15">
+                                        <i class="fa fa-check-square-o fa-lg"></i>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('full_name')">
+                                        <i class="fa" ng-class="getSortClass('full_name')"></i>
+                                        <?php echo __('Full name'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Users.email')">
+                                        <i class="fa" ng-class="getSortClass('Users.email')"></i>
+                                        <?php echo __('Email'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Users.phone')">
+                                        <i class="fa" ng-class="getSortClass('Users.phone')"></i>
+                                        <?php echo __('Phone'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Users.company')">
+                                        <i class="fa" ng-class="getSortClass('Users.company')"></i>
+                                        <?php echo __('Company'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Users.is_active')">
+                                        <i class="fa" ng-class="getSortClass('Users.is_active')"></i>
+                                        <?php echo __('Is active'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Users.usergroup_id')">
+                                        <i class="fa" ng-class="getSortClass('Users.usergroup_id')"></i>
+                                        <?php echo __('User role'); ?>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-cog fa-lg"></i>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="user in users">
+                                    <td class="text-center" class="width-15">
+                                        <input type="checkbox"
+                                               ng-model="massChange[user.id]"
+                                               ng-show="user.allow_edit && (user.id != myUserId)">
+                                    </td>
+
+                                    <td>{{user.full_name}}</td>
+                                    <td>{{user.email}}</td>
+                                    <td>{{user.phone}}</td>
+                                    <td>{{user.company}}</td>
+                                    <td>
+                                         <span class="label-forced label-danger"
+                                               ng-hide="user.is_active">
+                                            <?php echo __('Disabled'); ?>
+                                        </span>
+                                        <span class="label-forced label-success"
+                                              ng-show="user.is_active">
+                                            <?php echo __('Active'); ?>
+                                        </span>
+                                    </td>
+                                    <td>{{user.usergroup.name}}</td>
+
+                                    <td class="width-50">
+                                        <div class="btn-group smart-form">
+                                            <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
+                                                <a ui-sref="UsersEdit({id: user.id})"
+                                                   ng-if="user.allow_edit"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                                <a href="javascript:void(0);"
+                                                   ng-if="!user.allow_edit"
+                                                   class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{user.id}}">
+                                                <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
+                                                    <li ng-if="user.allow_edit">
+                                                        <a ui-sref="UsersEdit({id:user.id})">
+                                                            <i class="fa fa-cog"></i>
+                                                            <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'users')): ?>
+                                                    <li ng-if="!user.samaccountname && user.allow_edit">
+                                                        <a ng-click="resetPasswordModal(user)">
+                                                            <i class="fa fa-key"></i>
+                                                            <?php echo __('Reset Password'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'users')): ?>
+                                                    <li class="divider"
+                                                        ng-if="user.allow_edit && (user.id != myUserId)"></li>
+                                                    <li ng-if="user.allow_edit && (user.id != myUserId)">
+                                                        <a href="javascript:void(0);"
+                                                           class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(user))">
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="users.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-4 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                        </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>
+        </article>
     </div>
 </section>
+
+<div id="angularResetUserPasswordModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary txt-color-white">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <?php echo __('Reset user password'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Do you really want to reset the password for the selected user?'); ?>
+                    </div>
+
+                    <div class="col-xs-12 margin-top-10">
+                        <ul>
+                            <li>
+                                {{resetPasswordUser.full_name}} ({{resetPasswordUser.email}})
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-xs-12 padding-top-10 text-info">
+                        <i class="fa fa-info-circle"></i>
+                        <?php echo __('The system will send the user an email with a new random generated password.'); ?>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="resetPassword()">
+                    <i class="fa fa-refresh fa-spin" ng-show="isResetting"></i>
+                    <?php echo __('Yes - reset password'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Cancel'); ?>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -18,7 +18,7 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-define('TIME_START', microtime(true));
+//define('TIME_START', microtime(true));
 
 if (!defined('E_DEPRECATED')) {
 	define('E_DEPRECATED', 8192);
@@ -29,12 +29,12 @@ if (!defined('E_USER_DEPRECATED')) {
 }
 error_reporting(E_ALL & ~E_DEPRECATED);
 
-if (!defined('CAKE_CORE_INCLUDE_PATH')) {
-	define('CAKE_CORE_INCLUDE_PATH', dirname(dirname(__FILE__)));
+if (!defined('OLD_CAKE_CORE_INCLUDE_PATH')) {
+	define('OLD_CAKE_CORE_INCLUDE_PATH', dirname(dirname(__FILE__)));
 }
 
-if (!defined('CORE_PATH')) {
-	define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
+if (!defined('OLD_CORE_PATH')) {
+	define('OLD_CORE_PATH', OLD_CAKE_CORE_INCLUDE_PATH . DS);
 }
 
 if (!defined('WEBROOT_DIR')) {
@@ -44,26 +44,26 @@ if (!defined('WEBROOT_DIR')) {
 /**
  * Path to the cake directory.
  */
-	define('CAKE', CORE_PATH . 'Cake' . DS);
-
+	define('OLD_CAKE', OLD_CORE_PATH . 'Cake' . DS);
 /**
  * Path to the application's directory.
  */
-if (!defined('APP')) {
-	define('APP', ROOT . DS . APP_DIR . DS);
+if (!defined('OLD_APP')) {
+	define('OLD_APP', OLD_ROOT . DS . OLD_APP_DIR . DS);
 }
 
 /**
  * Config Directory
  */
-if (!defined('CONFIG')) {
-	define('CONFIG', ROOT . DS . APP_DIR . DS . 'Config' . DS);
+if (!defined('OLD_CONFIG')) {
+	define('OLD_CONFIG', OLD_ROOT . DS . OLD_APP_DIR . DS . 'Config' . DS);
 }
+
 
 /**
  * Path to the application's libs directory.
  */
-	define('APPLIBS', APP . 'Lib' . DS);
+	define('APPLIBS', OLD_APP . 'Lib' . DS);
 
 /**
  * Path to the public CSS directory.
@@ -89,36 +89,37 @@ if (!defined('IMAGES')) {
 /**
  * Path to the tests directory.
  */
-if (!defined('TESTS')) {
-	define('TESTS', APP . 'Test' . DS);
+if (!defined('OLD_TESTS')) {
+	define('OLD_TESTS', OLD_APP . 'Test' . DS);
 }
 
 /**
  * Path to the temporary files directory.
  */
-if (!defined('TMP')) {
-	define('TMP', APP . 'tmp' . DS);
+if (!defined('OLD_TMP')) {
+	define('OLD_TMP', OLD_APP . 'tmp' . DS);
 }
 
 /**
  * Path to the logs directory.
  */
-if (!defined('LOGS')) {
-	define('LOGS', TMP . 'logs' . DS);
+if (!defined('OLD_LOGS')) {
+	define('OLD_LOGS', OLD_TMP . 'logs' . DS);
 }
 
 /**
  * Path to the cache files directory. It can be shared between hosts in a multi-server setup.
  */
-if (!defined('CACHE')) {
-	define('CACHE', TMP . 'cache' . DS);
+if (!defined('OLD_CACHE')) {
+	define('OLD_CACHE', OLD_TMP . 'cache' . DS);
 }
+
 
 /**
  * Path to the vendors directory.
  */
 if (!defined('VENDORS')) {
-	define('VENDORS', ROOT . DS . 'vendors' . DS);
+	define('VENDORS', OLD_ROOT . DS . 'vendors' . DS);
 }
 
 /**
@@ -142,9 +143,9 @@ if (!defined('JS_URL')) {
 	define('JS_URL', 'js/');
 }
 
-require CAKE . 'basics.php';
-require CAKE . 'Core' . DS . 'App.php';
-require CAKE . 'Error' . DS . 'exceptions.php';
+require OLD_CAKE . 'basics.php';
+require OLD_CAKE . 'Core' . DS . 'App.php';
+require OLD_CAKE . 'Error' . DS . 'exceptions.php';
 
 spl_autoload_register(array('App', 'load'));
 

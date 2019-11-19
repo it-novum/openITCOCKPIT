@@ -23,650 +23,350 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-//App::uses('AdminAppController', 'Admin.Controller');
-//require_once APP . 'Model/User.php';
-
-use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
-use itnovum\openITCOCKPIT\Core\Security\CSRF;
+use App\Model\Table\ContainersTable;
+use App\Model\Table\SystemsettingsTable;
+use App\Model\Table\UsercontainerrolesTable;
+use App\Model\Table\UsersTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\UsersFilter;
+use itnovum\openITCOCKPIT\Ldap\LdapClient;
 
+/**
+ * Class UsersController
+ * @property AppPaginatorComponent $Paginator
+ * @property DbBackend $DbBackend
+ * @property AppAuthComponent $Auth
+ */
 class UsersController extends AppController {
-    public $layout = 'Admin.default';
-    public $uses = [
-        'User',
-        'Systemsetting',
-        'Tenant',
-        'Usergroup',
-        'ContainerUserMembership',
-    ];
-    public $components = [
-        'ListFilter.ListFilter',
-        'Ldap',
-    ];
 
-    public $helpers = [
-        'ListFilter.ListFilter',
-    ];
-
-
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'User.full_name' => ['label' => 'Name', 'searchType' => 'wildcard'],
-                'User.email'     => ['label' => 'Email', 'searchType' => 'wildcard'],
-                'User.company'   => ['label' => 'Company', 'searchType' => 'wildcard'],
-                'User.phone'     => ['label' => 'Phone', 'searchType' => 'wildcard'],
-            ]
-        ]
-    ];
-
+    public $layout = 'blank';
 
     public function index() {
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $SystemsettingsTable SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
-        $this->loadModel('Container');
-        $options = [
-            'recursive'  => -1,
-            'order'      => [
-                'User.full_name' => 'asc',
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'users_to_containers',
-                    'type'       => 'LEFT',
-                    'alias'      => 'UsersToContainer',
-                    'conditions' => 'UsersToContainer.user_id = User.id',
-                ],
-                [
-                    'table'      => 'usergroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'Usergroup',
-                    'conditions' => 'Usergroup.id = User.usergroup_id',
-                ],
-            ],
-            'conditions' => [
-                'UsersToContainer.container_id' => $this->MY_RIGHTS,
-            ],
-            'fields'     => [
-                'User.id',
-                'User.email',
-                'User.company',
-                'User.phone',
-                'User.status',
-                'User.full_name',
-                'User.samaccountname',
-                'Usergroup.id',
-                'Usergroup.name',
-                'UsersToContainer.container_id',
-            ],
-            'group'      => [
-                'User.id',
-            ],
-        ];
-        $query = Hash::merge($options, $this->Paginator->settings);
-
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_users = $this->User->find('all', $query);
-        } else {
-            $this->Paginator->settings = $query;
-            $all_users = $this->Paginator->paginate();
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            $this->set('isLdapAuth', $SystemsettingsTable->isLdapAuth());
+            return;
         }
 
-        //Get users container ids
-        $userContainerIds = [];
-        foreach ($all_users as $user) {
-            $_user = $this->User->findById($user['User']['id']);
-            $userContainerIds[$user['User']['id']]['Container'] = Hash::extract($_user['ContainerUserMembership'], '{n}.container_id');
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        $UsersFilter = new UsersFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $UsersFilter->getPage());
+        $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, $PaginateOMat, $this->MY_RIGHTS);
+
+
+        $all_users = [];
+        foreach ($all_tmp_users as $index => $_user) {
+            $user = $_user->toArray();
+            $user['allow_edit'] = $this->hasRootPrivileges;
+
+            if ($this->hasRootPrivileges === false) {
+                //Check permissions for non ROOT Users
+                $containerWithWritePermissionByUserContainerRoles = \Cake\Utility\Hash::extract(
+                    $user['usercontainerroles'],
+                    '{n}.containers.{n}._joinData.container_id'
+                );
+
+                $container = \Cake\Utility\Hash::extract(
+                    $user['containers'],
+                    '{n}.id'
+                );
+
+                $container = array_unique(array_merge($container, $containerWithWritePermissionByUserContainerRoles));
+                foreach ($container as $containerId) {
+                    if ($this->isWritableContainer($containerId)) {
+                        $user['allow_edit'] = true;
+                        break;
+                    }
+                }
+            }
+            $all_users[] = $user;
         }
 
-        $this->set('users', $all_users);
-        if ($this->isApiRequest()) {
-            $this->set('all_users', $all_users);
-            $this->set('_serialize', ['all_users']);
+        $this->set('all_users', $all_users);
+        $this->set('myUserId', $User->getId());
+        $toJson = ['all_users', 'paging', 'myUserId'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_users', 'scroll', 'myUserId'];
         }
-        $this->set('userContainerIds', $userContainerIds);
-        $this->set('systemsettings', $systemsettings);
+        $this->set('_serialize', $toJson);
     }
 
+    /**
+     * @param int|null $id
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
-        if (!$this->User->exists($id)) {
-            throw new NotFoundException(__('Invalid user'));
-        }
-        $user = $this->User->findById($id);
-        $permissionsUser = $this->User->find('first', [
-            'joins'      => [
-                [
-                    'table'      => 'users_to_containers',
-                    'type'       => 'LEFT',
-                    'alias'      => 'UsersToContainer',
-                    'conditions' => 'UsersToContainer.user_id = User.id',
-                ],
-            ],
-            'conditions' => [
-                'User.id'                       => $id,
-                'UsersToContainer.container_id' => $this->MY_RIGHTS,
-            ],
-            'fields'     => [
-                'User.id',
-                'User.email',
-                'User.company',
-                'User.status',
-                'User.full_name',
-                'User.samaccountname',
-            ],
-            'group'      => [
-                'User.id',
-            ],
-        ]);
 
-        if (empty($permissionsUser)) {
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        if (!$UsersTable->existsById($id)) {
+            throw new NotFoundException(__('User not found'));
+        }
+
+        $user = $UsersTable->getUserForEdit($id);
+        $containersToCheck = array_unique(array_merge(
+            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['User']['containers']['_ids']) //Containers defined by the user itself
+        );
+
+        if (!$this->allowedByContainerId($containersToCheck, false)) {
             $this->render403();
-
             return;
         }
-        $this->set('user', $user);
+
+        $this->set('user', $user['User']);
         $this->set('_serialize', ['user']);
     }
 
-//	public function view($id = null){
-//		if (!$this->User->exists($id)){
-//			throw new NotFoundException(__('Invalide user'));
-//		}
-//		$options = array('conditions' => array('User.' . $this->User->primaryKey => $id));
-//		$this->set('user', $this->User->get($id));
-//	}
-
-    /**
-     * delete method
-     * @throws MethodNotAllowedException
-     * @throws NotFoundException
-     *
-     * @param int $id
-     *
-     * @return void
-     */
-    /**
-     * delete overwrite for soft delete
-     *
-     * @param  int $id
-     * @param  boolean $cascade
-     *
-     * @return bool
-     */
-
-    public function delete($id = null) {
-        if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
-        }
-        if (!$this->User->exists($id)) {
-            throw new NotFoundException(__('user'));
-        }
-        $user = $this->User->findById($id);
-        if (!$this->allowedByContainerId(Hash::extract($user['ContainerUserMembership'], '{n}.container_id'))) {
-            $this->render403();
-
+    public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        if ($this->User->__delete($id, $this->Auth->user('id'))) {
-            $this->setFlash(__('User deleted'));
-            $this->redirect(['action' => 'index']);
-        } else {
-            $this->setFlash(__('Could not delete user'), false);
-            $this->redirect(['action' => 'index']);
-        }
-    }
-
-    public function add($type = 'local') {
-        $CSRF = new CSRF($this->Session);
-        $_csrfToken = $CSRF->generateToken();
-        $usergroups = $this->Usergroup->find('list');
-        // Activate "Show Stats in Menu" by default for New Users
-        $this->request->data['User']['showstatsinmenu'] = 0;
-        if (isset($this->request->params['named']['ldap']) && $this->request->params['named']['ldap'] == true) {
-            $type = 'ldap';
-            $samaccountname = '';
-            if (isset($this->request->params['named']['samaccountname'])) {
-                $samaccountname = $this->request->params['named']['samaccountname'];
-            }
-        }
-        if ($this->request->data('ContainerUserMembership')) {
-            $this->Frontend->setJson('rights', $this->request->data('ContainerUserMembership'));
-            $this->request->data['ContainerUserMembership'] = array_map(
-                function ($container_id, $permission_level) {
-                    return [
-                        'container_id'     => $container_id,
-                        'permission_level' => $permission_level,
-                    ];
-                },
-                array_keys($this->request->data['ContainerUserMembership']),
-                $this->request->data['ContainerUserMembership']
-            );
-        }
-        if ($type == 'ldap') {
-
-            $PHPVersionChecker = new PHPVersionChecker();
-            if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
-                $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-                require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
-
-                $ldap = new \FreeDSx\Ldap\LdapClient([
-                    'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
-                    'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
-                    'ssl_allow_self_signed' => true,
-                    'ssl_validate_cert'     => false,
-                    'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
-                    'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
-                ]);
-                if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
-                    $ldap->startTls();
-                }
-                $ldap->bind(
-                    sprintf(
-                        '%s%s',
-                        $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
-                        $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
-                    ),
-                    $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
-                );
-
-                $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
-                    \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
-                    \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $samaccountname)
-                );
-                if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                    $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
-                    $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-                } else {
-                    $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
-                    $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-                }
-
-                /** @var \FreeDSx\Ldap\Entry\Entries $entries */
-                $entries = $ldap->search($search);
-                foreach ($entries as $entry) {
-                    $userDn = (string)$entry->getDn();
-                    $entry = $entry->toArray();
-                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
-
-                    if (isset($entry['uid'])) {
-                        $entry['samaccountname'] = $entry['uid'];
-                    }
-
-                    $ldapUser = [
-                        'mail'           => $entry['mail'][0],
-                        'givenname'      => $entry['givenname'][0],
-                        'sn'             => $entry['sn'][0],
-                        'samaccountname' => $entry['samaccountname'][0],
-                        'dn'             => $userDn
-                    ];
-                }
-
-            } else {
-                $ldapUser = $this->Ldap->userInfo($samaccountname);
-            }
-            if (!is_null($ldapUser)) {
-                // Overwrite request with LDAP data, that the user can not manipulate it with firebug ;)
-                $this->request->data['User']['email'] = $ldapUser['mail'];
-                $this->request->data['User']['firstname'] = $ldapUser['givenname'];
-                $this->request->data['User']['lastname'] = $ldapUser['sn'];
-                $this->request->data['User']['samaccountname'] = strtolower($ldapUser['samaccountname']);
-                $this->request->data['User']['ldap_dn'] = $ldapUser['dn'];
-            }
-        }
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $CSRF->validateCsrfToken($this);
-            $CSRF->generateToken();
 
-            $this->User->create();
-            $isJsonRequest = $this->request->ext == 'json';
-            if ($this->User->saveAll($this->request->data)) {
-                if ($isJsonRequest) {
-                    $this->serializeId();
-                } else {
-                    $this->setFlash('User saved successfully');
-                    $this->redirect(['action' => 'index']);
-                }
-            } else {
-                if ($isJsonRequest) {
-                    $this->serializeErrorMessage();
-                } else {
-                    $this->setFlash(__('Could not save user'), false);
-                }
+            $data = $this->request->data('User');
+            if (!isset($data['ContainersUsersMemberships'])) {
+                $data['ContainersUsersMemberships'] = [];
             }
+            $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
+
+            $user = $UsersTable->newEmptyEntity();
+            $user = $UsersTable->patchEntity($user, $data);
+            $UsersTable->save($user);
+            if ($user->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $user->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            }
+
+            $this->set('user', $user);
+            $this->set('_serialize', ['user']);
         }
-
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
-        $this->set(compact(['containers', 'usergroups', '_csrfToken']));
-
-        $this->set('type', $type);
     }
 
 
     public function edit($id = null) {
-        $CSRF = new CSRF($this->Session);
-        $_csrfToken = $CSRF->generateToken();
-
-        if (!$this->User->exists($id)) {
-            throw new NotFoundException(__('Invalide user'));
-        }
-        $permissionsUser = $this->User->find('first', [
-            'joins'      => [
-                [
-                    'table'      => 'users_to_containers',
-                    'type'       => 'LEFT',
-                    'alias'      => 'UsersToContainer',
-                    'conditions' => 'UsersToContainer.user_id = User.id',
-                ],
-            ],
-            'conditions' => [
-                'User.id'                       => $id,
-                'UsersToContainer.container_id' => $this->MY_RIGHTS,
-            ],
-            'fields'     => [
-                'User.id',
-                'User.email',
-                'User.company',
-                'User.status',
-                'User.full_name',
-                'User.samaccountname',
-            ],
-            'group'      => [
-                'User.id',
-            ],
-        ]);
-
-        if (isset($permissionsUser['ContainerUserMembership'])) {
-            $this->Frontend->setJson('rights',
-                Hash::combine(
-                    $permissionsUser['ContainerUserMembership'],
-                    '{n}.container_id',
-                    '{n}.permission_level'
-                )
-            );
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
         }
 
-        if (empty($permissionsUser)) {
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        if (!$UsersTable->existsById($id)) {
+            throw new NotFoundException(__('User not found'));
+        }
+
+        $user = $UsersTable->getUserForEdit($id);
+        $containersToCheck = array_unique(array_merge(
+            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['User']['containers']['_ids']) //Containers defined by the user itself
+        );
+
+        if (!$this->allowedByContainerId($containersToCheck)) {
             $this->render403();
+            return;
+        }
 
+        $isLdapUser = !empty($user['User']['samaccountname']);
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return user information
+            $this->set('user', $user['User']);
+            $this->set('isLdapUser', $isLdapUser);
+            $this->set('_serialize', ['user', 'isLdapUser']);
             return;
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $CSRF->validateCsrfToken($this);
-            $CSRF->generateToken();
 
-            if ($this->request->data('ContainerUserMembership')) {
-                $this->Frontend->setJson('rights', $this->request->data('ContainerUserMembership'));
-                $this->request->data['ContainerUserMembership'] = array_map(
-                    function ($container_id, $permission_level) {
-                        return [
-                            'container_id'     => $container_id,
-                            'permission_level' => $permission_level,
-                        ];
-                    },
-                    array_keys($this->request->data['ContainerUserMembership']),
-                    $this->request->data['ContainerUserMembership']
-                );
+            $data = $this->request->data('User');
+            if (!isset($data['ContainersUsersMemberships'])) {
+                $data['ContainersUsersMemberships'] = [];
             }
-            $this->User->set($this->request->data);
-            if ($this->User->validates()) {
-                $this->ContainerUserMembership->deleteAll(
-                    [
-                        'user_id' => $id,
-                    ]
-                );
-                if ($this->User->saveAll($this->request->data)) {
-                    $this->setFlash(__('User saved successfully'));
-                    Cache::clear(false, 'permissions');
-                    $this->redirect(['action' => 'index']);
+            $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
+            $user = $UsersTable->get($id);
+            $user->setAccess('id', false);
 
-                    return;
-                }
-            } else {
-                $this->setFlash(__('Could not save user'), false);
+            if ($isLdapUser) {
+                $data['is_ldap'] = true;
+                $user->setAccess('email', false);
+                $user->setAccess('firstname', false);
+                $user->setAccess('lastname', false);
+                $user->setAccess('password', false);
+                $user->setAccess('samaccountname', false);
+                $user->setAccess('ldap_dn', false);
             }
-        }
-        $usergroups = $this->Usergroup->find('list');
-        $options = ['conditions' => ['User.' . $this->User->primaryKey => $id]];
-        $this->request->data = $this->User->find('first', $options);
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
-        $selectedContainers = ($this->request->data('Container')) ? Hash::extract($this->request->data['Container'], '{n}.id') : Hash::extract($permissionsUser['ContainerUserMembership'], '{n}.container_id');
-        $this->set(compact(['containers', 'selectedContainers', 'permissionsUser']));
-        $this->request->data['User']['password'] = '';
 
-        $type = 'local';
-        if (strlen($this->request->data['User']['samaccountname']) > 0) {
-            $type = 'ldap';
+            //prevent multiple hash of password
+            if ($data['password'] === '' && $data['confirm_password'] === '') {
+                unset($data['password']);
+                unset($data['confirm_password']);
+            }
+
+            $user = $UsersTable->patchEntity($user, $data);
+            $UsersTable->save($user);
+            if ($user->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $user->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            }
+
+            $this->set('user', $user);
+            $this->set('_serialize', ['user']);
         }
-        $this->set(compact(['type', 'usergroups', '_csrfToken']));
+    }
+
+    /**
+     * @param int|null $id
+     */
+    public function delete($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        if ($id == $User->getId()) {
+            throw new RuntimeException('You cannot delete yourself!');
+        }
+
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        if (!$UsersTable->existsById($id)) {
+            throw new NotFoundException(__('User not found'));
+        }
+
+        $user = $UsersTable->getUserForEdit($id);
+        $containersToCheck = array_unique(array_merge(
+            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['User']['containers']['_ids']) //Containers defined by the user itself
+        );
+
+        if (!$this->allowedByContainerId($containersToCheck)) {
+            $this->render403();
+            return;
+        }
+
+        $user = $UsersTable->get($id);
+        if ($UsersTable->delete($user)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(400);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
     public function addFromLdap() {
-        $this->layout = 'angularjs';
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->redirect([
-                'controller'     => 'users',
-                'action'         => 'add',
-                'ldap'           => 1,
-                'samaccountname' => $this->request->data('Ldap.samaccountname'),
-                //Fixing usernames like jon.doe
-                'fix'            => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
-            ]);
-        }
-
-        $PHPVersionChecker = new PHPVersionChecker();
-        if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
-            $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-            require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
-
-            $ldap = new \FreeDSx\Ldap\LdapClient([
-                'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
-                'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
-                'ssl_allow_self_signed' => true,
-                'ssl_validate_cert'     => false,
-                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
-                'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
-            ]);
-            if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
-                $ldap->startTls();
-            }
-            $ldap->bind(
-                sprintf(
-                    '%s%s',
-                    $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
-                    $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
-                ),
-                $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
-            );
-
-            $filter = \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']);
-            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
-                $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-            } else {
-                $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
-                $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-            }
-
-            $getAll = false;
-            if ($this->request->query('getAll') === 'true') {
-                $getAll = true;
-            }
-
-            $usersForSelect = [];
-            $paging = $ldap->paging($search, 100);
-            while ($paging->hasEntries()) {
-                foreach ($paging->getEntries() as $entry) {
-                    $userDn = (string)$entry->getDn();
-                    if (empty($userDn)) {
-                        continue;
-                    }
-
-                    $entry = $entry->toArray();
-                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
-                    foreach ($requiredFields as $requiredField) {
-                        if (!isset($entry[$requiredField])) {
-                            continue 2;
-                        }
-                    }
-
-                    if (isset($entry['uid'])) {
-                        $entry['samaccountname'] = $entry['uid'];
-                    }
-
-                    $displayName = sprintf(
-                        '%s, %s (%s)',
-                        $entry['givenname'][0],
-                        $entry['sn'][0],
-                        $entry['samaccountname'][0]
-                    );
-                    $usersForSelect[$entry['samaccountname'][0]] = $displayName;
-                }
-                if ($getAll === false) {
-                    //Only get the first few records
-                    $paging->end();
-                }
-            }
-        } else {
-            $usersForSelect = $this->Ldap->findAllUser();
-            $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-        }
-
-        $usersForSelect = $this->User->makeItJavaScriptAble($usersForSelect);
-
-        $isPhp7Dot1 = $PHPVersionChecker->isVersionGreaterOrEquals7Dot1();
-        $this->set(compact(['usersForSelect', 'systemsettings', 'isPhp7Dot1', '_csrfToken']));
-        $this->set('_serialize', ['usersForSelect', 'isPhp7Dot1']);
-    }
-
-    public function loadLdapUserByString() {
-        $this->layout = 'blank';
-
-        $usersForSelect = [];
-        $samaccountname = $this->request->query('samaccountname');
-        if (!empty($samaccountname) && strlen($samaccountname) > 2) {
-            $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-            require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
-
-            $ldap = new \FreeDSx\Ldap\LdapClient([
-                'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
-                'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
-                'ssl_allow_self_signed' => true,
-                'ssl_validate_cert'     => false,
-                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
-                'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
-            ]);
-            if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
-                $ldap->startTls();
-            }
-            $ldap->bind(
-                sprintf(
-                    '%s%s',
-                    $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
-                    $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
-                ),
-                $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
-            );
-
-            $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
-                \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
-                \FreeDSx\Ldap\Search\Filters::contains('sAMAccountName', $samaccountname)
-            );
-            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
-                    \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
-                    \FreeDSx\Ldap\Search\Filters::contains('uid', $samaccountname)
-                );
-            }
-            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
-                $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-            } else {
-                $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
-                $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-            }
-
-            $paging = $ldap->paging($search, 100);
-            while ($paging->hasEntries()) {
-                foreach ($paging->getEntries() as $entry) {
-                    $userDn = (string)$entry->getDn();
-                    if (empty($userDn)) {
-                        continue;
-                    }
-
-                    $entry = $entry->toArray();
-                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
-                    foreach ($requiredFields as $requiredField) {
-                        if (!isset($entry[$requiredField])) {
-                            continue 2;
-                        }
-                    }
-
-                    if (isset($entry['uid'])) {
-                        $entry['samaccountname'] = $entry['uid'];
-                    }
-
-                    $displayName = sprintf(
-                        '%s, %s (%s)',
-                        $entry['givenname'][0],
-                        $entry['sn'][0],
-                        $entry['samaccountname'][0]
-                    );
-                    $usersForSelect[$entry['samaccountname'][0]] = $displayName;
-                }
-                $paging->end();
-            }
-        }
-
-        $usersForSelect = $this->User->makeItJavaScriptAble($usersForSelect);
-
-        $this->set('usersForSelect', $usersForSelect);
-        $this->set('_serialize', ['usersForSelect']);
-    }
-
-    public function resetPassword($id = null) {
-        $this->autoRender = false;
-        if (!$this->User->exists($id)) {
-            $this->setFlash(__('Invalid user'), false);
-            $this->redirect(['action' => 'index']);
-
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        $user = $this->User->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'User.id' => $id
-            ]
-        ]);
-        $generatePassword = function () {
-            $char = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-            $size = (sizeof($char) - 1);
-            $token = '';
-            for ($i = 0; $i < 7; $i++) {
-                $token .= $char[rand(0, $size)];
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        if ($this->request->is('post') || $this->request->is('put')) {
+
+            $data = $this->request->data('User');
+            $data['is_ldap'] = true;
+            if (!isset($data['ContainersUsersMemberships'])) {
+                $data['ContainersUsersMemberships'] = [];
             }
-            $token = $token . rand(0, 9);
+            $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
 
-            return $token;
-        };
+            //remove password validation when user is imported from ldap
+            $UsersTable->getValidator()->remove('password');
+            $UsersTable->getValidator()->remove('confirm_password');
 
-        $newPassword = $generatePassword();
-        $this->_systemsettings = $this->Systemsetting->findAsArray();
+            $user = $UsersTable->newEmptyEntity();
+            $user = $UsersTable->patchEntity($user, $data);
+            $UsersTable->save($user);
+            if ($user->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $user->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            }
+
+            $this->set('user', $user);
+            $this->set('_serialize', ['user']);
+        }
+    }
+
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+    /**
+     * @param null $id
+     */
+    public function resetPassword($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        if (!$UsersTable->existsById($id)) {
+            throw new NotFoundException(__('User not found'));
+        }
+
+        $user = $UsersTable->getUserForEdit($id);
+        $containersToCheck = array_unique(array_merge(
+            $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
+            $user['User']['containers']['_ids']) //Containers defined by the user itself
+        );
+
+        if (!$this->allowedByContainerId($containersToCheck)) {
+            $this->render403();
+            return;
+        }
+
+        $user = $UsersTable->get($id);
+        $newPassword = $UsersTable->generatePassword();
+
+        $user->set('password', $newPassword);
+
+        /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $SystemsettingsTable->findAsArray();
 
         App::uses('CakeEmail', 'Network/Email');
         $Email = new CakeEmail();
         $Email->config('default');
-        $Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
-        $Email->to($user['User']['email']);
+        $Email->from([$systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
+        $Email->to($user->email);
         $Email->subject(__('Password reset'));
 
         $Email->emailFormat('both');
@@ -680,50 +380,151 @@ class UsersController extends AppController {
                 'contentId' => '100',
             ],
         ]);
-        $this->User->id = $id;
-        if ($this->User->saveField('password', AuthComponent::password($newPassword))) {
-            $Email->send();
-            $this->setFlash(__('Password reset successfully. A mail with the new password was sent to <b>' . h($user['User']['email']) . '</b>'));
-            $this->redirect(['action' => 'index']);
 
+        $user->password = $newPassword;
+
+        $UsersTable->save($user);
+        if ($user->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $user->getErrors());
+            $this->set('_serialize', ['error']);
             return;
         }
-        $this->setFlash(__('Could not reset password'), false);
-        $this->redirect(['action' => 'index']);
+        $Email->send();
+        $this->set('message', __('Password reset successfully. The new password was send to %s', $user->email));
+        $this->set('_serialize', ['message']);
+    }
 
-        return;
+    public function loadDateformats() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        $dateformats = $UsersTable->getDateformats();
+        $options = [];
+        foreach ($dateformats as $dateformat) {
+            $UserTime = new UserTime($this->Auth->user('timezone'), $dateformat);
+            $options[$dateformat] = $UserTime->format(time());
+        }
+        $dateformats = Api::makeItJavaScriptAble($options);
+        $defaultDateFormat = '%H:%M:%S - %d.%m.%Y'; // key 10
+
+        $this->set('dateformats', $dateformats);
+        $this->set('defaultDateFormat', $defaultDateFormat);
+        $this->set('_serialize', ['dateformats', 'defaultDateFormat']);
+    }
+
+    /**
+     * @throws \FreeDSx\Ldap\Exception\BindException
+     */
+    public function loadLdapUserByString() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
+
+        $samaccountname = (string)$this->request->query('samaccountname');
+        $ldapUsers = $Ldap->getUsers($samaccountname);
+        $this->set('ldapUsers', $ldapUsers);
+        $this->set('_serialize', ['ldapUsers']);
     }
 
     public function loadUsersByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $containerId = (int)$this->request->query('containerId');
-        $containers = [ROOT_CONTAINER];
-        if (in_array($containerId, $this->MY_RIGHTS, true)) {
-            $containers[] = $containerId;
+        // Due to the only filter condition is the container_id (no LIMIT or LIKE in SQL )
+        // I think the selected parameter is not required
+        //$selected = $this->request->query('selected');
+
+        if($containerId === 0){
+            //Missing parameter in URL
+            $containerId = ROOT_CONTAINER;
         }
-        $users = $this->User->find('list', [
-            'recursive'  => -1,
-            'joins'      => [
-                [
-                    'table'      => 'users_to_containers',
-                    'type'       => 'INNER',
-                    'alias'      => 'UsersToContainer',
-                    'conditions' => 'UsersToContainer.user_id = User.id',
-                ],
-            ],
-            'conditions' => [
-                'UsersToContainer.container_id' => $containers
-            ],
-            'group'      => 'User.id'
-        ]);
-        $users = $this->User->makeItJavaScriptAble(
-            $users
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        $users = Api::makeItJavaScriptAble(
+            $UsersTable->getUsersByContainerIds($containerIds, 'list')
         );
 
-        $this->set(compact(['users']));
+        $this->set('users', $users);
         $this->set('_serialize', ['users']);
+    }
+
+    public function loadUsergroups() {
+        /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+        $usergroups = $UsergroupsTable->getUsergroupsList();
+
+        $usergroups = Api::makeItJavaScriptAble($usergroups);
+
+        $this->set('usergroups', $usergroups);
+        $this->set('_serialize', ['usergroups']);
+    }
+
+    public function loadContainerRoles() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $UsercontainerrolesTable UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+        $ucr = Api::makeItJavaScriptAble(
+            $UsercontainerrolesTable->getUsercontainerrolesAsList($this->MY_RIGHTS)
+        );
+        $this->set('usercontainerroles', $ucr);
+        $this->set('_serialize', ['usercontainerroles']);
+    }
+
+    public function loadContainerPermissions() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $usercontainerRoleIds = $this->request->query('usercontainerRoleIds');
+        if ($usercontainerRoleIds === null) {
+            $usercontainerRoleIds = [];
+        }
+        if (!is_array($usercontainerRoleIds)) {
+            $usercontainerRoleIds = [$usercontainerRoleIds];
+        }
+
+        /** @var $UsercontainerrolesTable UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+        $containerPermissions = $UsercontainerrolesTable->getContainerPermissionsByUserContainerRoleIds($usercontainerRoleIds);
+
+        //Merge the permissions of all user container roles together.
+        //WRITE_RIGHT will overwrite a READ_RIGHT
+
+        $permissions = [];
+        foreach ($containerPermissions as $userContainerRole) {
+            foreach ($userContainerRole['containers'] as $container) {
+                if (isset($permissions[$container['id']])) {
+                    //Container permission is already set.
+                    //Only overwrite it, if it is a WRITE_RIGHT
+                    if ($container['_joinData']['permission_level'] === WRITE_RIGHT) {
+                        $permissions[$container['id']] = $container;
+                    }
+                } else {
+                    //Container is not yet in permissions - add it
+                    $permissions[$container['id']] = $container;
+                }
+            }
+        }
+
+        $this->set('userContainerRoleContainerPermissions', $permissions);
+        $this->set('_serialize', ['userContainerRoleContainerPermissions']);
     }
 }

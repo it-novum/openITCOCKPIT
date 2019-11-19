@@ -37,9 +37,9 @@ class HtmlToolbarHelperTestCase extends CakeTestCase
     {
         App::build([
             'View' => [
-                CAKE_CORE_INCLUDE_PATH.DS.'Cake'.DS.'Test'.DS.'test_app'.DS.'View'.DS,
-                APP.'Plugin'.DS.'DebugKit'.DS.'View'.DS,
-                CAKE_CORE_INCLUDE_PATH.DS.'Cake'.DS.'View'.DS,
+                OLD_CAKE_CORE_INCLUDE_PATH.DS.'Cake'.DS.'Test'.DS.'test_app'.DS.'View'.DS,
+                OLD_APP.'Plugin'.DS.'DebugKit'.DS.'View'.DS,
+                OLD_CAKE_CORE_INCLUDE_PATH.DS.'Cake'.DS.'View'.DS,
             ],
         ], true);
     }

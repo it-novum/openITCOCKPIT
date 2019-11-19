@@ -7,9 +7,9 @@ class AppSchema extends CakeSchema {
     public function __construct($options = []) {
         parent::__construct($options);
 
-        require_once APP . 'Model' . DS . 'Host.php';
-        require_once APP . 'Model' . DS . 'Service.php';
-        require_once APP . 'Model' . DS . 'Container.php';
+        require_once OLD_APP . 'Model' . DS . 'Host.php';
+        require_once OLD_APP . 'Model' . DS . 'Service.php';
+        require_once OLD_APP . 'Model' . DS . 'Container.php';
     }
 
     public function before($event = []) {
@@ -427,7 +427,7 @@ class AppSchema extends CakeSchema {
         'id'                      => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'uuid'                    => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'container_id'            => ['type' => 'integer', 'null' => false, 'default' => null],
-        'timeperiod_id'           => ['type' => 'integer', 'null' => false, 'default' => null],
+        'timeperiod_id'           => ['type' => 'integer', 'default' => null],
         'first_notification'      => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6],
         'last_notification'       => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6],
         'notification_interval'   => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6],
@@ -523,8 +523,8 @@ class AppSchema extends CakeSchema {
         'uuid'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'container_id'    => ['type' => 'integer', 'null' => false, 'default' => null],
         'description'     => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'latitude'        => ['type' => 'float', 'null' => true, 'default' => '0'],
-        'longitude'       => ['type' => 'float', 'null' => true, 'default' => '0'],
+        'latitude'        => ['type' => 'float', 'null' => true],
+        'longitude'       => ['type' => 'float', 'null' => true],
         'timezone'        => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
@@ -591,7 +591,7 @@ class AppSchema extends CakeSchema {
         'id'                    => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'uuid'                  => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'container_id'          => ['type' => 'integer', 'null' => true, 'default' => null],
-        'timeperiod_id'         => ['type' => 'integer', 'null' => false, 'default' => null],
+        'timeperiod_id'         => ['type' => 'integer', 'default' => null],
         'first_notification'    => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6],
         'last_notification'     => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6],
         'notification_interval' => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6],
@@ -984,7 +984,7 @@ class AppSchema extends CakeSchema {
         'flap_detection_on_ok'         => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
         'flap_detection_on_warning'    => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
         'flap_detection_on_unknown'    => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'flap_detection_on_critical'   => ['type' => 'boolean', 'null' => false, 'default' => '0'],
+        'flap_detection_on_critical'   => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
         'low_flap_threshold'           => ['type' => 'float', 'null' => false, 'default' => '0'],
         'high_flap_threshold'          => ['type' => 'float', 'null' => false, 'default' => '0'],
         'process_performance_data'     => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6],
@@ -999,9 +999,8 @@ class AppSchema extends CakeSchema {
         'notes'                        => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'priority'                     => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 2],
         'tags'                         => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 1500, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'service_url'                  => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'is_volatile'                  => ['type' => 'boolean', 'null' => false, 'default' => '0'],
-        'check_freshness'              => ['type' => 'boolean', 'null' => false, 'default' => '0'],
+        'is_volatile'                  => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'check_freshness'              => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
         'service_url'                  => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'created'                      => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'                     => ['type' => 'datetime', 'null' => false, 'default' => null],
@@ -1035,7 +1034,7 @@ class AppSchema extends CakeSchema {
         'notify_on_recovery'         => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 1],
         'notify_on_flapping'         => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 1],
         'notify_on_downtime'         => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 1],
-        'is_volatile'                  => ['type' => 'boolean', 'null' => true, 'default' => null],
+        'is_volatile'                => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 1],
         'flap_detection_enabled'     => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 1],
         'flap_detection_on_ok'       => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 1],
         'flap_detection_on_warning'  => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 1],
@@ -1074,7 +1073,6 @@ class AppSchema extends CakeSchema {
     public $users = [
         'id'                     => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 10, 'key' => 'primary'],
         'usergroup_id'           => ['type' => 'integer', 'null' => false, 'default' => null],
-        'status'                 => ['type' => 'integer', 'null' => false, 'default' => '1', 'length' => 3],
         'email'                  => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'password'               => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 45, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'firstname'              => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
@@ -1082,7 +1080,6 @@ class AppSchema extends CakeSchema {
         'position'               => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'company'                => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'phone'                  => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
-        'linkedin_id'            => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 45, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'timezone'               => ['type' => 'string', 'null' => true, 'default' => 'Europe/Berlin', 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'dateformat'             => ['type' => 'string', 'null' => true, 'default' => '%H:%M:%S - %d.%m.%Y', 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'image'                  => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
@@ -1090,15 +1087,51 @@ class AppSchema extends CakeSchema {
         'samaccountname'         => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 128, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'ldap_dn'                => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 512, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'showstatsinmenu'        => ['type' => 'boolean', 'null' => false, 'default' => '0'],
+        'is_active'              => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'dashboard_tab_rotation' => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 10],
         'paginatorlength'        => ['type' => 'integer', 'null' => false, 'default' => '25', 'length' => 4],
-        'recursive_browser'      => ['type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1],
+        'recursive_browser'      => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'created'                => ['type' => 'datetime', 'null' => true, 'default' => null],
         'modified'               => ['type' => 'datetime', 'null' => true, 'default' => null],
         'indexes'                => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
         ],
         'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $users_to_usercontainerroles = [
+        'id'                   => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'user_id'              => ['type' => 'integer', 'null' => false, 'default' => null],
+        'usercontainerrole_id' => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'              => [
+            'PRIMARY'              => ['column' => 'id', 'unique' => 1],
+            'user_id'              => ['column' => 'user_id', 'unique' => 0],
+            'usercontainerrole_id' => ['column' => 'usercontainerrole_id', 'unique' => 0],
+        ],
+        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+
+    public $usercontainerroles = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 10, 'key' => 'primary'],
+        'name'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'indexes'         => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $usercontainerroles_to_containers = [
+        'id'                   => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'usercontainerrole_id' => ['type' => 'integer', 'null' => false, 'default' => null],
+        'container_id'         => ['type' => 'integer', 'null' => false, 'default' => null],
+        'permission_level'     => ['type' => 'integer', 'null' => false, 'default' => 1, 'length' => 1],
+        'indexes'              => [
+            'PRIMARY'              => ['column' => 'id', 'unique' => 1],
+            'usercontainerrole_id' => ['column' => 'usercontainerrole_id', 'unique' => 0],
+            'container_id'         => ['column' => 'container_id', 'unique' => 0],
+        ],
+        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
     public $systemsettings = [
@@ -1229,6 +1262,7 @@ class AppSchema extends CakeSchema {
         'from_time'       => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'to_time'         => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'duration'        => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'is_recursive'    => ['type' => 'integer', 'null' => false, 'default' => 0],
         'comment'         => ['type' => 'string', 'default' => null],
         'author'          => ['type' => 'string', 'default' => null],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
@@ -1281,7 +1315,7 @@ class AppSchema extends CakeSchema {
         'uuid'               => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'host_uuid'          => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'servicetemplate_id' => ['type' => 'integer', 'null' => false, 'default' => null], 'host_id' => ['type' => 'integer', 'null' => false, 'default' => null],
-        'name'               => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'name'               => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'description'        => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'deleted_perfdata'   => ['type' => 'integer', 'null' => true, 'default' => 0, 'length' => 1],
         'created'            => ['type' => 'datetime', 'null' => false, 'default' => null],
@@ -1297,7 +1331,7 @@ class AppSchema extends CakeSchema {
         'id'               => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'uuid'             => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'hosttemplate_id'  => ['type' => 'integer', 'null' => false, 'default' => null], 'host_id' => ['type' => 'integer', 'null' => false, 'default' => null],
-        'name'             => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'name'             => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'description'      => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'deleted_perfdata' => ['type' => 'integer', 'null' => true, 'default' => 0, 'length' => 1],
         'created'          => ['type' => 'datetime', 'null' => false, 'default' => null],
@@ -1348,48 +1382,6 @@ class AppSchema extends CakeSchema {
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
-    public $graphgen_tmpls = [
-        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'name'            => ['type' => 'string', 'null' => false, 'length' => 128],
-        'relative_time'   => ['type' => 'integer', 'null' => false],
-        'indexes'         => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-        ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
-    ];
-
-    public $graphgen_tmpl_confs = [
-        'id'               => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'graphgen_tmpl_id' => ['type' => 'integer', 'null' => false],
-        'service_id'       => ['type' => 'integer', 'null' => false],
-        'data_sources'     => ['type' => 'string', 'length' => 256, 'null' => false],
-        'indexes'          => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-        ],
-        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
-    ];
-
-    public $graph_collections = [
-        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'name'            => ['type' => 'string', 'null' => false],
-        'description'     => ['type' => 'string', 'null' => false],
-        'indexes'         => [
-            'PRIMARY'     => ['column' => 'id', 'unique' => 1],
-            'UNIQUE_NAME' => ['column' => ['id', 'name'], 'unique' => 1],
-        ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
-    ];
-
-    public $graph_tmpl_to_graph_collection = [
-        'id'                  => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'graphgen_tmpl_id'    => ['type' => 'integer', 'null' => false],
-        'graph_collection_id' => ['type' => 'integer', 'null' => false],
-        'indexes'             => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-        ],
-        'tableParameters'     => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
-    ];
-
     public $automaps = [
         'id'                => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'name'              => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
@@ -1405,6 +1397,7 @@ class AppSchema extends CakeSchema {
         'show_downtime'     => ['type' => 'boolean', 'null' => false, 'default' => '1'],
         'show_label'        => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'group_by_host'     => ['type' => 'boolean', 'null' => false, 'default' => '0'],
+        'use_paginator'     => ['type' => 'boolean', 'null' => false, 'default' => '1'],
         'font_size'         => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'recursive'         => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'created'           => ['type' => 'datetime', 'null' => false, 'default' => null],
@@ -1622,6 +1615,36 @@ class AppSchema extends CakeSchema {
         'task'            => ['type' => 'string', 'null' => false],
         'data'            => ['type' => 'string', 'null' => false],
         'json_data'       => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 2000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $agentchecks = [
+        'id'                 => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'name'               => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'plugin_name'        => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'servicetemplate_id' => ['type' => 'integer', 'default' => null],
+        'created'            => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'           => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'            => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters'    => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $agentconfigs = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'host_id'         => ['type' => 'integer', 'default' => null],
+        'port'            => ['type' => 'integer', 'default' => null],
+        'use_https'       => ['type' => 'boolean', 'null' => false, 'default' => '1'],
+        'insecure'        => ['type' => 'boolean', 'null' => false, 'default' => '1'],
+        'basic_auth'      => ['type' => 'boolean', 'null' => false, 'default' => '1'],
+        'username'        => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'password'        => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [

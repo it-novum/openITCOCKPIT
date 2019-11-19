@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('Grafana_configurationIndexController', function($scope, $http, QueryStringService){
+    .controller('Grafana_configurationIndexController', function($scope, $http, NotyService, $state){
 
         $scope.post = {
             GrafanaConfiguration: {
@@ -46,8 +46,12 @@ angular.module('openITCOCKPIT')
                 $scope.post.GrafanaConfiguration.Hostgroup = selectedHostgroups;
                 $scope.post.GrafanaConfiguration.Hostgroup_excluded = selectedHostgroupsExcluded;
             }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
                 if(result.status === 404){
-                    window.location.href = '/angular/not_found';
+                    $state.go('404');
                 }
             });
         };
@@ -93,9 +97,10 @@ angular.module('openITCOCKPIT')
             $http.post("/grafana_module/grafana_configuration/index.json?angular=true",
                 $scope.post
             ).then(function(result){
-                console.log('Data saved successfully');
-                window.location.href = '/grafana_module/grafana_configuration/index';
+                NotyService.genericSuccess();
+                $scope.errors = null;
             }, function errorCallback(result){
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

@@ -23,9 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
+use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
 $Logo = new Logo();
+
+/** @var \itnovum\openITCOCKPIT\Core\ValueObjects\User $User */
+$UserTime = $User->getUserTime();
 
 ?>
 <head>
@@ -67,17 +72,17 @@ $Logo = new Logo();
     </div>
     <div class="row padding-left-10 margin-top-10 font-sm">
         <div class="text-left padding-left-10">
-            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Servicegroups: ' . $servicegroupCount); ?>
+            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Servicegroups: ' . $numberOfServicegroups); ?>
         </div>
     </div>
     <div class="row padding-left-10 margin-top-10 font-sm">
         <div class="text-left padding-left-10">
-            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: ' . $hostCount); ?>
+            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: ' . $numberOfHosts); ?>
         </div>
     </div>
     <div class="row padding-left-10 margin-top-10 font-sm">
         <div class="text-left padding-left-10">
-            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Services: ' . $serviceCount); ?>
+            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Services: ' . $numberOfServices); ?>
         </div>
     </div>
     <div class="padding-top-10">
@@ -98,47 +103,50 @@ $Logo = new Logo();
             <?php
             if (!empty($servicegroups)): ?>
                 <?php
-                foreach ($servicegroups as $k => $servicegroup): ?>
+                foreach ($servicegroups as $servicegroup): ?>
                     <!-- Servicegroup -->
                     <tr>
                         <td class="bg-color-lightGray" colspan="8">
-                            <i class="fa fa-cogs txt-color-blueDark padding-left-10"></i>
-                            <span style="font-weight:bold;"><?php echo $servicegroup['Container']['name']; ?></span>
+                            <i class="fa fa-cogs txt-color-blueDark"></i>
+                            <?php echo __('Service group: '); ?>
+                            <?php echo h($servicegroup['Servicegroup']['container']['name']); ?>
                         </td>
                     </tr>
                     <?php
                     $tmpHostName = null;
-                    if (!empty($servicegroup['Service'])):
-                        foreach ($servicegroup['Service'] as $service):
-                            $serviceName = ($service['name']) ? $service['name'] : $service['Servicetemplate']['name'];
-                            if ($tmpHostName !== $service['Host']['name']):
-                                $tmpHostName = $service['Host']['name']; ?>
+                    if (!empty($servicegroup['Services'])):
+                        foreach ($servicegroup['Services'] as $service):
+                            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
+                            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
+
+                            if ($tmpHostName !== $Service->getHostname()):
+                                $tmpHostName = $Service->getHostname(); ?>
                                 <!-- Host -->
                                 <tr>
                                     <td class="bg-color-lightGray" colspan="8">
-                                        <i class="fa fa-desktop txt-color-blueDark padding-left-20"></i>
-                                        <span><?php echo h($tmpHostName); ?></span>
+                                        <?php
+                                        $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($service['Hoststatus']);
+                                        if ($Hoststatus->isFlapping()):
+                                            echo $Hoststatus->getFlappingIconColored();
+                                        else:
+                                            $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
+                                            echo '<i class="fa fa-square ' . $HoststatusIcon->getTextColor() . '"></i>';
+                                        endif;
+                                        ?>
+                                        <span><?php echo h($Service->getHostname()); ?></span>
                                     </td>
                                 </tr>
-                            <?php
-                            endif;
-                            if (isset($servicegroupstatus[$service['uuid']])):
-                                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
-                                    $servicegroupstatus[$service['uuid']]['Servicestatus']
-                                );
-                            else:
-                                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus([]);
-                            endif;
-                            ?>
+                            <?php endif; ?>
                             <!-- Status -->
                             <tr>
                                 <!-- status -->
                                 <td class="text-center font-lg">
                                     <?php
                                     if ($Servicestatus->isFlapping()):
-                                        echo $this->Monitoring->serviceFlappingIconColored(1, '', $Servicestatus->currentState());
+                                        echo $Servicestatus->getFlappingIconColored();
                                     else:
-                                        echo '<i class="fa fa-square ' . $this->Status->ServiceStatusTextColor($Servicestatus->currentState()) . '"></i>';
+                                        $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
+                                        echo '<i class="fa fa-square ' . $ServicestatusIcon->getTextColor() . '"></i>';
                                     endif;
                                     ?>
                                 </td>
@@ -156,38 +164,20 @@ $Logo = new Logo();
                                 </td>
                                 <!-- name -->
                                 <td class="font-xs">
-                                    <?php echo __(h($serviceName)); ?>
+                                    <?php echo h($Service->getServicename()); ?>
                                 </td>
                                 <!-- Status Since -->
                                 <td class="font-xs"
-                                    data-original-title="<?php
-                                    echo h($this->Time->format(
-                                        $Servicestatus->getLastStateChange(),
-                                        $this->Auth->user('dateformat'),
-                                        false, $this->Auth->user('timezone')
-                                    )); ?>"
                                     data-placement="bottom" rel="tooltip" data-container="body">
-                                    <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($Servicestatus->getLastStateChange()))); ?>
+                                    <?php echo h($UserTime->format($Servicestatus->getLastStateChange())); ?>
                                 </td>
                                 <!-- last check -->
                                 <td class="font-xs">
-                                    <?php
-                                    echo $this->Time->format(
-                                        $Servicestatus->getLastCheck(),
-                                        $this->Auth->user('dateformat'),
-                                        false,
-                                        $this->Auth->user('timezone')
-                                    ); ?>
+                                    <?php echo h($UserTime->format($Servicestatus->getLastCheck())); ?>
                                 </td>
                                 <!-- next check -->
                                 <td class="font-xs">
-                                    <?php
-                                    echo $this->Time->format(
-                                        $Servicestatus->getNextCheck(),
-                                        $this->Auth->user('dateformat'),
-                                        false,
-                                        $this->Auth->user('timezone')
-                                    ); ?>
+                                    <?php echo h($UserTime->format($Servicestatus->getNextCheck())); ?>
                                 </td>
                                 <!-- Service output -->
                                 <td class="font-xs"><?php echo h($Servicestatus->getOutput()); ?></td>

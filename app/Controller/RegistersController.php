@@ -23,80 +23,88 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Http;
-use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
-use itnovum\openITCOCKPIT\Core\ValueObjects\License;
+use App\Model\Table\RegistersTable;
+use Cake\ORM\Locator\LocatorAwareTrait;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
 
 class RegistersController extends AppController {
-    public $layout = 'Admin.register';
-    public $components = ['GearmanClient'];
-    public $uses = ['Register', 'Proxy'];
+    use LocatorAwareTrait;
 
     public function index() {
-        if ($this->request->is('post')) {
-            $this->request->data['Register']['id'] = 1;
-            if ($this->Register->save($this->request->data)) {
-                //$this->setFlash('License added successfully');
-                $this->redirect(['action' => 'check']);
-            } else {
-                $this->setFlash('Could not add license', false);
+        $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //get also the state env for License input autocompletion
+            $disableAutocomplete = ENVIRONMENT === Environments::PRODUCTION;
+            $this->set('disableAutocomplete', $disableAutocomplete);
+
+            //Ship HTML template
+            return;
+        }
+
+        $TableLocator = $this->getTableLocator();
+
+        /** @var RegistersTable $RegistersTable */
+        $RegistersTable = $TableLocator->get('Registers');
+
+        if ($this->request->is('get')) {
+            $license = $RegistersTable->getLicense();
+            $hasLicense = false;
+            if ($license !== null) {
+                $hasLicense = true;
             }
+
+            $licenseResponse = null;
+            if ($hasLicense) {
+                $licenseResponse = $RegistersTable->checkLicenseKey($license['license']);
+            }
+
+            $this->set('hasLicense', $hasLicense);
+            $this->set('license', $license);
+            $this->set('licenseResponse', $licenseResponse);
+            $this->set('_serialize', ['hasLicense', 'license', 'licenseResponse']);
+            return;
         }
 
-        $license = $this->Register->find('first');
+        if ($this->request->is('post')) {
+            $license = $this->request->data('Registers.license');
 
-        if (!empty($license)) {
-            //$this->redirect(array('action' => 'check'));
-        }
-        $this->set('licence', $license);
-    }
 
-    public function check() {
-        $license = $this->Register->find('first');
-        if (empty($license)) {
-            $this->setFlash('Please enter a license key', false);
-            $this->redirect(['action' => 'index']);
-        }
+            $licenseResponse = $RegistersTable->checkLicenseKey($license);
+            if ($licenseResponse['success'] === true) {
+                if (is_object($licenseResponse['license']) && property_exists($licenseResponse['license'], 'licence')) {
+                    //license is valid
 
-        $License = new License($this->Register->find('first'));
-        $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
-        $http = new Http(
-            $packagemanagerRequestBuilder->getUrlForLicenseCheck(),
-            $packagemanagerRequestBuilder->getOptions(),
-            $this->Proxy->getSettings()
-        );
-
-        $http->sendRequest();
-        $error = $http->getLastError();
-        $response = json_decode($http->data);
-
-        $isValide = false;
-        $licence = null;
-
-        if (is_object($response)) {
-            if (property_exists($response, 'licence')) {
-                if (property_exists($response, 'licence')) {
-                    if (!empty($response->licence) && property_exists($response->licence, 'Licence')) {
-                        if (strtotime($response->licence->Licence->expire) > time()) {
-                            $isValide = true;
-                            $licence = $response->licence->Licence;
-                            if ($license['Register']['apt'] == 0) {
-                                $this->GearmanClient->sendBackground('create_apt_config', ['key' => $license['Register']['license']]);
-                                $license['Register']['apt'] = 1;
-                                $this->Register->save($license);
-                            }
-                        }
+                    $licenseEntity = $RegistersTable->getLicenseEntity();
+                    if (is_null($licenseEntity)) {
+                        //no license yet
+                        $licenseEntity = $RegistersTable->newEmptyEntity();
                     }
+
+                    $licenseEntity = $RegistersTable->patchEntity($licenseEntity, ['license' => $license]);
+
+                    $GearmanClient = new Gearman();
+                    $GearmanClient->sendBackground('create_apt_config', ['key' => $license]);
+
+                    $licenseEntity->set('apt', 1);
+                    $licenseEntity->set('accepted', 1);
+                    $RegistersTable->save($licenseEntity);
+
+                    if ($licenseEntity->hasErrors()) {
+                        $this->response->statusCode(400);
+                        $this->set('error', $licenseEntity->getErrors());
+                        $this->set('_serialize', ['error']);
+                        return;
+                    }
+
+                    $this->set('licenseResponse', $licenseResponse);
+                    $this->set('_serialize', ['licenseResponse']);
+                    return;
                 }
             }
-        }
-        if ($isValide == false) {
-            //The lincense is invalide, so we delete it again out of the database
-            if (isset($license['Register']['id'])) {
-                $this->Register->delete($license['Register']['id']);
-            }
-        }
 
-        $this->set(compact('isValide', 'licence', 'error'));
+            $this->set('licenseResponse', $licenseResponse);
+            $this->set('_serialize', ['licenseResponse']);
+        }
     }
+
 }

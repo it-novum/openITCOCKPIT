@@ -36,14 +36,16 @@
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-map-marker"></i> </span>
         <h2><?php echo __('Add map'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(); ?>
+            <a ui-sref="MapsIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
@@ -114,7 +116,7 @@
                         <div class="well formactions ">
                             <div class="pull-right">
                                 <input class="btn btn-primary" type="submit" value="Save">&nbsp;
-                                <a href="/map_module/maps/index" class="btn btn-default">Cancel</a>
+                                <a ui-sref="MapsIndex" class="btn btn-default">Cancel</a>
                             </div>
                         </div>
                     </div>

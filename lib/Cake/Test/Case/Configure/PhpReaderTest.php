@@ -52,7 +52,7 @@ class PhpReaderTest extends CakeTestCase {
  */
 	public function setUp() {
 		parent::setUp();
-		$this->path = CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS;
+		$this->path = OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS;
 	}
 
 /**
@@ -121,7 +121,7 @@ class PhpReaderTest extends CakeTestCase {
  */
 	public function testReadPluginValue() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 		CakePlugin::load('TestPlugin');
 		$reader = new PhpReader($this->path);
@@ -139,7 +139,7 @@ class PhpReaderTest extends CakeTestCase {
  * @return void
  */
 	public function testDump() {
-		$reader = new PhpReader(TMP);
+		$reader = new PhpReader(OLD_TMP);
 		$result = $reader->dump('test.php', $this->testData);
 		$this->assertTrue($result > 0);
 		$expected = <<<PHP
@@ -162,7 +162,7 @@ class PhpReaderTest extends CakeTestCase {
   ),
 );
 PHP;
-		$file = TMP . 'test.php';
+		$file = OLD_TMP . 'test.php';
 		$contents = file_get_contents($file);
 
 		unlink($file);
@@ -182,10 +182,10 @@ PHP;
  * @return void
  */
 	public function testDumpRead() {
-		$reader = new PhpReader(TMP);
+		$reader = new PhpReader(OLD_TMP);
 		$reader->dump('test.php', $this->testData);
 		$result = $reader->read('test.php');
-		unlink(TMP . 'test.php');
+		unlink(OLD_TMP . 'test.php');
 
 		$this->assertEquals($this->testData, $result);
 	}

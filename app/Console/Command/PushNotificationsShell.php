@@ -31,11 +31,6 @@ use React\Socket\Server as Reactor;
 
 class PushNotificationsShell extends AppShell {
 
-    public $uses = [
-        'Systemsetting'
-    ];
-
-
     public function main() {
         $this->out('Starting push notifications service');
         $this->stdout->styles('blue', ['text' => 'blue']);

@@ -34,7 +34,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
             <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
                 <div class="col-xs-12 col-md-3 no-padding">
-                    <a ng-href="/services/index<?php echo RFCRouter::queryString([
+                    <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
                         'filter'    => [
                             'Servicestatus.current_state' => ['0' => 1]
                         ],
@@ -54,7 +54,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
             <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
                 <div class="col-xs-12 col-md-3 no-padding">
-                    <a ng-href="/services/index<?php echo RFCRouter::queryString([
+                    <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
                         'filter'    => [
                             'Servicestatus.current_state' => ['1' => 1]
                         ],
@@ -74,7 +74,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
             <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
                 <div class="col-xs-12 col-md-3 no-padding">
-                    <a ng-href="/services/index<?php echo RFCRouter::queryString([
+                    <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
                         'filter'    => [
                             'Servicestatus.current_state' => ['2' => 1]
                         ],
@@ -94,7 +94,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
             <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
                 <div class="col-xs-12 col-md-3 no-padding">
-                    <a ng-href="/services/index<?php echo RFCRouter::queryString([
+                    <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
                         'filter'    => [
                             'Servicestatus.current_state' => ['3' => 1]
                         ],

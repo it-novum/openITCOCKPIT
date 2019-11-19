@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('Grafana_userdashboardsAddController', function($scope, $http){
+    .controller('Grafana_userdashboardsAddController', function($scope, $http, $state, NotyService){
 
         $scope.post = {
             GrafanaUserdashboard: {
@@ -7,6 +7,7 @@ angular.module('openITCOCKPIT')
                 name: ''
             }
         };
+        $scope.hasGrafanaConfig = true;
 
 
         $scope.loadContainers = function(){
@@ -16,9 +17,14 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.containers = result.data.containers;
+                $scope.hasGrafanaConfig = result.data.hasGrafanaConfig;
             }, function errorCallback(result){
+                if(result.status === 403){
+                    $state.go('403');
+                }
+
                 if(result.status === 404){
-                    window.location.href = '/angular/not_found';
+                    $state.go('404');
                 }
             });
         };
@@ -28,9 +34,10 @@ angular.module('openITCOCKPIT')
             $http.post("/grafana_module/grafana_userdashboards/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                console.log('Data saved successfully');
-                window.location.href = '/grafana_module/grafana_userdashboards/editor/' + result.data.id;
+                NotyService.genericSuccess();
+                $state.go('GrafanaUserdashboardsEditor', {id: result.data.id});
             }, function errorCallback(result){
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

@@ -33,11 +33,6 @@ class CustomMacroReplacer {
     private $customvariables;
 
     /**
-     * @var array
-     */
-    private $servicestatus;
-
-    /**
      * @var int
      */
     private $objecttype_id;

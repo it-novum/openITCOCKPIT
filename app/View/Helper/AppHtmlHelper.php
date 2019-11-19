@@ -25,10 +25,19 @@
 
 App::uses('BoostCakeHtmlHelper', 'BoostCake.View/Helper');
 
+/**
+ * Class AppHtmlHelper
+ * @deprecated
+ */
 class AppHtmlHelper extends BoostCakeHtmlHelper {
 
     public $disableFieldset = false;
 
+    /**
+     * @param string $tag
+     * @return mixed|string
+     * @deprecated
+     */
     public function useTag($tag) {
         $args = func_get_args();
         if ($this->disableFieldset && $tag == 'legend') {
@@ -77,6 +86,7 @@ class AppHtmlHelper extends BoostCakeHtmlHelper {
      * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/html.html#HtmlHelper::link
      * Changelog:
      * Erweitert um die Option "icon" - Daniel Ziegler <daniel.ziegler@it-novum.com> 07.03.2014
+     * @deprecated
      */
     public function link($title, $url = null, $options = [], $confirmMessage = false) {
         $escapeTitle = true;
@@ -143,6 +153,7 @@ class AppHtmlHelper extends BoostCakeHtmlHelper {
      * @return string An `<div />` element.
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function progressbar($value = 50, $options = []) {
         $_options = [
@@ -216,6 +227,7 @@ class AppHtmlHelper extends BoostCakeHtmlHelper {
      * @return string A `<div />` element.
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function createCommandArgHtml($arg, $values) {
         $value = '';
@@ -256,6 +268,7 @@ class AppHtmlHelper extends BoostCakeHtmlHelper {
      * @return string A `<div />` element.
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function displayCommandArg($arg, $values) {
         $value = '';
@@ -295,6 +308,7 @@ class AppHtmlHelper extends BoostCakeHtmlHelper {
      * @return array $select and key 0 is empty for data-placeholder
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function chosenPlaceholder($select = []) {
         if (!array_key_exists(0, $select)) {
@@ -318,6 +332,7 @@ class AppHtmlHelper extends BoostCakeHtmlHelper {
      * @return string a ´<span />´ object
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function underline($letter, $target, $caseSensitive = false) {
         $_letter = $letter;
@@ -345,6 +360,14 @@ class AppHtmlHelper extends BoostCakeHtmlHelper {
         return implode('', $return);
     }
 
+    /**
+     * @param $options
+     * @param $data
+     * @param string $selected
+     * @param string $class
+     * @return string
+     * @deprecated
+     */
     public function createSelect($options, $data, $selected = '', $class = 'form-control systemsetting-input') {
         $html = '<select class="' . $class . '" name="' . $data . '">';
         foreach ($options as $_value => $_html):
@@ -359,6 +382,12 @@ class AppHtmlHelper extends BoostCakeHtmlHelper {
         return $html;
     }
 
+    /**
+     * @param $parameter
+     * @param null $default
+     * @return CakeRequest|mixed|null
+     * @deprecated
+     */
     public function getParameter($parameter, $default = null) {
         $request = $this->request->data($parameter);
         if ($request !== null) {

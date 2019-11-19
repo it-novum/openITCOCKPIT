@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\CommandsTable;
+use App\Model\Table\ContactsTable;
+use Cake\ORM\TableRegistry;
+
 class SyncTablesShell extends AppShell {
     /*
      * This shell synchronize hosts, contacts, commands and services from MySQL to CrateDB
@@ -34,7 +38,6 @@ class SyncTablesShell extends AppShell {
         'Service',
         'Servicetemplate',
         'Contact',
-        'Command',
         'CrateModule.CrateHost',
         'CrateModule.CrateContact',
         'CrateModule.CrateCommand',
@@ -103,10 +106,9 @@ class SyncTablesShell extends AppShell {
     public function syncContacts() {
         $this->info('Start synchronization for contact objects');
 
-
-        $contacts = $this->Contact->find('all', [
-            'recursive' => -1,
-        ]);
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        $contacts = $ContactsTable->getContactsForCrateDBSync();
         $sizeof = sizeof($contacts);
 
         $crateContact = [];
@@ -132,18 +134,9 @@ class SyncTablesShell extends AppShell {
         $this->info('Start synchronization for command objects');
 
 
-        $commands = $this->Command->find('all', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Command.id',
-                'Command.name',
-                'Command.uuid',
-                'Command.command_type'
-            ],
-            'conditions' => [
-                'Command.command_type' => NOTIFICATION_COMMAND
-            ]
-        ]);
+        /** @var $Commands CommandsTable */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        $commands = $Commands->getCommandsByTypeId(NOTIFICATION_COMMAND);
         $sizeof = sizeof($commands);
 
         $crateCommand = [];

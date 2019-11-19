@@ -28,6 +28,7 @@ use itnovum\openITCOCKPIT\Core\ContainerNestedSet;
 /**
  * Class TreeComponent
  * @property Container Container
+ * @deprecated Use ContainersTable
  */
 class TreeComponent extends Component {
 
@@ -36,6 +37,7 @@ class TreeComponent extends Component {
      * Loading:
      * Container Model => $this->Container
      * Constants Component => $this->Constants
+     * @deprecated Use ContainersTable
      */
     function __construct() {
         //Loading the Container model
@@ -46,16 +48,19 @@ class TreeComponent extends Component {
     }
 
     /**
-     * Creates an HTML progressbar
-     * This function can be called with a parrent id of an container and will fatch all childrens of the container
+     *
+     * NO EXTERNAL CALLS (30.01.2019)
+     * INTERNAL CALLS: 1
+     *
+     * This function can be called with a parrent id of an container and will fetch all childrens of the container
      * and return you a path to the childrens
      * This is mostly used to get the children of a tenant or all childs of the ROOT container
      * Example:
      * $id = 1
      * Return: [
-     * 1 => /root
-     * 2 => /root/tenant/
-     * 3 => /root/tenant/location
+     *     1 => /root
+     *     2 => /root/tenant/
+     *     3 => /root/tenant/location
      * ]
      * ### Options
      * - `delimiter`   The delimiter for the path (default /)
@@ -67,6 +72,7 @@ class TreeComponent extends Component {
      * @param array $options with container type constants that should be considered
      *
      * @return array with all path [$id] => $path
+     * @deprecated Use ContainersTable
      */
     function path($id = null, $options = [], $valide_types = [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]) {
         $_options = [
@@ -112,15 +118,20 @@ class TreeComponent extends Component {
     }
 
     /**
+     *
+     * CALLS: 3 (30.01.2019)
+     * CALLS: 0 (01.02.2019)
+     * INTERNAL CALLS: 1
+     *
      * Returns tha path to a single node in the tree
      * ### Options
      * - `delimiter`   The delimiter for the path (default /)
-     * - `order` of the retun array asc|desc (default asc)
      *
      * @param integer $id of the container
      * @param array $options Array of options
      *
      * @return string with the path to the container
+     * @deprecated Use ContainersTable
      */
     public function treePath($id = null, $options = []) {
         $tree = $this->Container->getPath($id);
@@ -135,6 +146,12 @@ class TreeComponent extends Component {
     }
 
     /**
+     *
+     * MANY EXTERNAL CALLS
+     * EXTERNAL CALLS: 0 (01.02.2019)
+     *
+     * INTERNAL CALLS: 0
+     *
      * Is a wrapper function for $this->path for an easy access and call
      * This is mostly used to create selectboxes
      * ### Options
@@ -148,6 +165,7 @@ class TreeComponent extends Component {
      * @param         int               /array a list or id of Container Types you want to explude from result
      *
      * @return array with all path [$id] => $path
+     * @deprecated Use ContainersTable
      */
     public function easyPath($id = null, $ObjectsByConstancName = [], $options = [], $hasRootPrivileges = false, $exclude = []) {
         if ($this->containerCache === null) {
@@ -178,10 +196,16 @@ class TreeComponent extends Component {
     }
 
     /**
+     *
+     * MANY EXTERNAL CALLS
+     * EXTERNAL CALLS: 0 (01.02.2019)
+     * INTERNAL CALLS: 0
+     *
      * @param int|int[] $containerIds
      * @param bool $resolveRoot
      *
      * @return int[]
+     * @deprecated Use ContainersTable
      */
     public function resolveChildrenOfContainerIds($containerIds, $resolveRoot = false, $includeContainerTypes = []) {
         if (!is_array($containerIds)) {
@@ -211,11 +235,17 @@ class TreeComponent extends Component {
     }
 
     /**
+     *
+     * CALLS: 3 (30.01.2019)
+     * EXTERNAL CALLS: 0 (01.02.2019)
+     * INTERNAL CALLS: 0
+     *
      * Remove the ROOT_CONTAINER from a given array with container ids as value
      *
      * @param array $containerIds
      *
      * @return array
+     * @deprecated Use ContainersTable
      */
     public function removeRootContainer($containerIds) {
         $result = [];

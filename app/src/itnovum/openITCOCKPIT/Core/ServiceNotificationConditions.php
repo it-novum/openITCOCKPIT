@@ -33,7 +33,7 @@ class ServiceNotificationConditions extends ListSettingsConditions {
      * @var array
      */
     protected $order = [
-        'NotificationService.start_time' => 'DESC'
+        'NotificationServices.start_time' => 'DESC'
     ];
 
     /**

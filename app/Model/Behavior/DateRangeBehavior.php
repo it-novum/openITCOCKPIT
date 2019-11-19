@@ -6,6 +6,13 @@ App::uses('ModelBehavior', 'Model');
  */
 class DateRangeBehavior extends ModelBehavior {
 
+    /**
+     * @param $Model
+     * @param $date_start string d.m.Y H:i:s
+     * @param $date_end string d.m.Y H:i:s
+     * @param array $time_ranges
+     * @return array
+     */
     public function createDateRanges(&$Model, $date_start, $date_end, $time_ranges = []) {
         $date_start_timestamp = strtotime($date_start);
         $date_end_timestamp = strtotime($date_end);
@@ -55,6 +62,12 @@ class DateRangeBehavior extends ModelBehavior {
         return $this->removeUselessTimeslices(date('Ymd', $date_start_timestamp), date('Ymd', $date_end_timestamp), $time_slices);
     }
 
+    /**
+     * @param $date_start string Ymd
+     * @param $date_end string Ymd
+     * @param $time_slices array
+     * @return array
+     */
     private function removeUselessTimeslices($date_start, $date_end, $time_slices) {
         $time_slices_new = [];
         foreach ($time_slices as $time_slice) {
@@ -71,6 +84,11 @@ class DateRangeBehavior extends ModelBehavior {
         return $time_slices_new;
     }
 
+    /**
+     * @param $Model
+     * @param $timeslice_array
+     * @return mixed
+     */
     public function mergeTimeOverlapping(&$Model, $timeslice_array) {
         $next_key = 0;
         for ($i = 0; $i <= sizeof($timeslice_array); $i++) {
@@ -97,10 +115,22 @@ class DateRangeBehavior extends ModelBehavior {
         return $timeslice_array;
     }
 
+    /**
+     * @param $start_date
+     * @param $end_date
+     * @param $current_date
+     * @return bool
+     */
     private function dateIsBetween($start_date, $end_date, $current_date) {
         return (($current_date >= $start_date) && ($current_date <= $end_date));
     }
 
+    /**
+     * @param $Model
+     * @param $time_slices
+     * @param $downtimes
+     * @return array
+     */
     public function setDowntimesInTimeslices(&$Model, $time_slices, $downtimes) {
         $time_slices_new = [];
         $show_outages_in_dowtime = true;

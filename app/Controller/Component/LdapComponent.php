@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use Model\Adldap;
 
@@ -39,7 +40,7 @@ class LdapComponent extends Component {
         parent::__construct($collection, $settings);
 
         //Load external lib
-        require_once APP . 'Model' . DS . 'Adldap.php';
+        require_once OLD_APP . 'Model' . DS . 'Adldap.php';
 
         $PHPVersionChecker = new PHPVersionChecker();
         if($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()){
@@ -48,8 +49,9 @@ class LdapComponent extends Component {
         }
 
         //Load Systemsettings
-        $this->Systemsetting = ClassRegistry::init('Systemsetting');
-        $this->_systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
 
         if ($this->_systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap') {
             //Only connect, if LDAP auth is enabled

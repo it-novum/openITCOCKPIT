@@ -24,6 +24,10 @@
 
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 
+/**
+ * Class DowntimeHost
+ * @deprecated
+ */
 class DowntimeHost extends Statusengine3ModuleAppModel {
 
     public $useTable = 'host_downtimehistory';
@@ -33,6 +37,7 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
      * @param DowntimeHostConditions $Conditions
      * @param array $filterConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(DowntimeHostConditions $Conditions, $filterConditions = []) {
         $fields = [
@@ -130,6 +135,7 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
     /**
      * @param DowntimeHostConditions $Conditions
      * @return array
+     * @deprecated
      */
     public function getQueryForReporting(DowntimeHostConditions $Conditions) {
         $query = [
@@ -181,6 +187,7 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
     /**
      * @param int $internalDowntimeId
      * @return array
+     * @deprecated
      */
     public function getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId) {
         $query = [
@@ -211,6 +218,7 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
      * @param null $uuid
      * @param bool $isRunning
      * @return array|null
+     * @deprecated
      */
     public function byHostUuid($uuid = null, $isRunning = false) {
         if ($uuid !== null) {

@@ -23,10 +23,16 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\HostgroupsTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 
+/**
+ * Class Externalcommand
+ * @deprecated
+ */
 class Externalcommand extends NagiosModuleAppModel {
     public $useTable = false;
 
@@ -41,6 +47,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     private function _initialize() {
         $this->nagiosCmd = null;
@@ -57,12 +64,13 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `type`            The type of the external command ('hostOnly' or 'hostAndServices')
      * - `satellite_id`    The id of the satellite system
      *
-     * @param    array $options with the options
-     * @param    integer $timestamp timestamp, when nagios should reschedule the host
+     * @param array $options with the options
+     * @param integer $timestamp timestamp, when nagios should reschedule the host
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function rescheduleHost($options = [], $timestamp = null) {
         if ($timestamp === null) {
@@ -85,12 +93,13 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `uuid`            The UUID of the host you want to reschedule
      * - `type`            The type of the external command ('hostOnly' or 'hostAndServices')
      *
-     * @param    array $options with the options
-     * @param    integer $timestamp timestamp, when nagios should reschedule the host
+     * @param array $options with the options
+     * @param integer $timestamp timestamp, when nagios should reschedule the host
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function rescheduleHostWithQuery($options = []) {
         $this->Host = ClassRegistry::init('Host');
@@ -115,40 +124,24 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `hostgroupUuid`    The UUID of the host you want to reschedule
      * - `type`                The type of the external command ('hostOnly' or 'hostAndServices')
      *
-     * @param    array $options with the options
-     * @param    integer $timestamp timestamp, when nagios should reschedule the host
+     * @param array $options with the options
+     * @param integer $timestamp timestamp, when nagios should reschedule the host
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function rescheduleHostgroup($options, $timestamp = null) {
-        $this->Hostgroup = ClassRegistry::init('Hostgroup');
-        $hostgroup = $this->Hostgroup->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Hostgroup.uuid' => $options['hostgroupUuid'],
-            ],
-            'contain'    => [
-                'Host' => [
-                    'fields' => [
-                        'Host.uuid',
-                        'Host.satellite_id',
-                        'Host.active_checks_enabled',
-                    ],
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
-                    'Hosttemplate' => [
-                        'fields' => [
-                            'Hosttemplate.active_checks_enabled',
-                        ],
-                    ],
-                ],
-            ],
-        ]);
-        if (isset($hostgroup['Host']) && !empty($hostgroup['Host'])) {
-            foreach ($hostgroup['Host'] as $host) {
+        $hostgroup = $HostgroupsTable->getHostsByHostgroupUuidForExternalcommands($options['hostgroupUuid']);
+
+        if (isset($hostgroup['hosts']) && !empty($hostgroup['hosts'])) {
+            foreach ($hostgroup['hosts'] as $host) {
                 if ($host['active_checks_enabled'] === null || $host['active_checks_enabled'] === '') {
-                    if ($host['Hosttemplate']['active_checks_enabled'] == 0) {
+                    if ($host['Hosttemplates']['active_checks_enabled'] == 0) {
                         //Do not reschedule pasive hosts
                         continue;
                     }
@@ -175,11 +168,12 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `repetitions`        the number of repetitions as interger value (normaly the number of max_check_attempts to
      * force hard state)
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function passiveTransferHostCheckresult($options) {
         $_options = ['comment' => 'No comment given', 'state' => 2, 'forceHardstate' => 0, 'repetitions' => 1];
@@ -207,11 +201,12 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `repetitions`        the number of repetitions as interger value (normaly the number of max_check_attempts to
      * force hard state)
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function passiveTransferServiceCheckresult($options) {
         $_options = ['comment' => 'No comment given', 'state' => 3, 'forceHardstate' => 0, 'repetitions' => 1];
@@ -233,11 +228,12 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `uuid`            The UUID of the host you want to enable/disable flap detection
      * - `condition`    1 = enable or 0 disable flap detection
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function enableOrDisableHostFlapdetection($options) {
         $_options = ['condition' => 1];
@@ -259,11 +255,12 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `serviceUuid`    The UUID of the service you want to enable/disable flap detection
      * - `condition`    1 = enable or 0 disable flap detection
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function enableOrDisableServiceFlapdetection($options) {
         $_options = ['condition' => 1];
@@ -285,12 +282,13 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `serviceUuid`    The UUID of the service you want to reschedule
      * - `satellite_id`    The satellite_id
      *
-     * @param    array $options with the options
-     * @param    integer $timestamp timestamp, when nagios should reschedule the host
+     * @param array $options with the options
+     * @param integer $timestamp timestamp, when nagios should reschedule the host
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function rescheduleService($options, $timestamp = null) {
         if ($timestamp === null) {
@@ -305,12 +303,13 @@ class Externalcommand extends NagiosModuleAppModel {
      * ### Options
      * - `uuid`        The UUID of the service you want to reschedule
      *
-     * @param    array $options with the options
-     * @param    integer $timestamp timestamp, when nagios should reschedule the host
+     * @param array $options with the options
+     * @param integer $timestamp timestamp, when nagios should reschedule the host
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function rescheduleServiceWithQuery($options = [], $timestamp = null) {
         $this->Service = ClassRegistry::init('Service');
@@ -347,11 +346,12 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `author`    The author of the message
      * - `comment`    The comment of the message
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function sendCustomHostNotification($options) {
         switch ($options['type']) {
@@ -383,11 +383,12 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `author`        The author of the message
      * - `comment`        The comment of the message
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function sendCustomServiceNotification($options) {
         switch ($options['type']) {
@@ -418,12 +419,13 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `sticky`        Integer if sticky or not (0 or 2)
      * - `type`            The type of the external command ('hostOnly' or 'hostAndServices')
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author     Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since      3.0
      * @version    3.0.1
+     * @deprecated
      */
     public function setHostAck($options) {
         $_options = [
@@ -488,12 +490,13 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `sticky`        Integer if sticky or not (0 or 2)
      * - `type`            The type of the external command ('hostOnly' or 'hostAndServices')
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author     Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since      3.0
      * @version    3.0.1
+     * @deprecated
      */
     public function setHostAckWithQuery($options) {
         $_options = [
@@ -572,49 +575,37 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `sticky`            Integer if sticky or not (0 or 2)
      * - `type`                The type of the external command ('hostOnly' or 'hostAndServices')
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function setHostgroupAck($options) {
-        $this->Hostgroup = ClassRegistry::init('Hostgroup');
-        $this->Hoststatus = ClassRegistry::init(MONITORING_HOSTSTATUS);
-        $hostgroup = $this->Hostgroup->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Hostgroup.uuid' => $options['hostgroupUuid'],
-            ],
-            'contain'    => [
-                'Host' => [
-                    'fields' => [
-                        'Host.uuid',
-                        'Host.satellite_id',
-                    ],
-                ],
-            ],
-        ]);
-        if (isset($hostgroup['Host']) && !empty($hostgroup['Host'])) {
-            $hostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $hostgroup = $HostgroupsTable->getHostsByHostgroupUuidForExternalcommands($options['hostgroupUuid']);
 
+        if (isset($hostgroup['hosts']) && !empty($hostgroup['hosts'])) {
+            $hostUuids = \Cake\Utility\Hash::extract($hostgroup, 'hosts.{n}.uuid');
             if ($this->DbBackend === null) {
                 $this->DbBackend = new DbBackend();
             }
 
-            $this->Hoststatus = ClassRegistry::init(MONITORING_HOSTSTATUS);
+            $HoststatusTable = $this->DbBackend->getHoststatusTable();
             $HoststatusFields = new HoststatusFields($this->DbBackend);
             $HoststatusFields->currentState();
+            $hoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
 
-            $hoststatus = $this->Hoststatus->byUuid($hostUuids, $HoststatusFields);
-
-            foreach ($hostgroup['Host'] as $host) {
+            foreach ($hostgroup['hosts'] as $host) {
                 if (isset($hoststatus[$host['uuid']]['Hoststatus']['current_state'])) {
                     if ($hoststatus[$host['uuid']]['Hoststatus']['current_state'] > 0) {
                         $this->setHostAck(['hostUuid' => $host['uuid'], 'author' => $options['author'], 'comment' => $options['comment'], 'sticky' => $options['sticky'], 'type' => $options['type']]);
                     }
                 }
             }
+
         }
     }
 
@@ -627,11 +618,12 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `comment`        The comment of the ack
      * - `sticky`        Integer if sticky or not (0 or 2)
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function setServiceAck($options) {
         $this->_write('ACKNOWLEDGE_SVC_PROBLEM;' . $options['hostUuid'] . ';' . $options['serviceUuid'] . ';' . $options['sticky'] . ';1;1;' . $options['author'] . ';' . $options['comment']);
@@ -647,11 +639,12 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `comment`        The comment of the ack
      * - `sticky`        Integer if sticky or not (0 or 2)
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function setServiceAckWithQuery($options) {
         $this->Servicestatus = ClassRegistry::init(MONITORING_SERVICESTATUS);
@@ -684,11 +677,12 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `downtimetype` The type of the downtime as int (0 => default, 1 => 'Host inc. services, 2 => triggered, 3 =>
      * non-triggered)
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function setHostDowntime($options) {
         $_options = [
@@ -733,11 +727,12 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `comment`            The comment of the downtime
      * - `downtimetype`    The type of the downtime as int (0 => hosts only, 1 => 'Host inc. services)
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function setHostgroupDowntime($options) {
         $_options = [
@@ -746,60 +741,11 @@ class Externalcommand extends NagiosModuleAppModel {
         ];
 
         $options = Hash::merge($_options, $options);
-        //Nagios workaround -.-
-        $this->Hostgroup = ClassRegistry::init('Hostgroup');
-        $this->Host = ClassRegistry::init('Host');
-        $hostgroup = $this->Hostgroup->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Host'         => [
-                    'fields'     => [
-                        'Host.id',
-                        'Host.uuid',
-                    ],
-                    'conditions' => [
-                        'Host.disabled' => 0
-                    ]
-                ],
-                'Hosttemplate' => [
-                    'fields' => [
-                        'Hosttemplate.id'
-                    ]
-                ],
-            ],
-            'conditions' => [
-                'Hostgroup.uuid' => $options['hostgroupUuid']
-            ]
-        ]);
-        $hostIds = [];
-        if (!empty($hostgroup['Host'])) {
-            $hostIds = Hash::extract($hostgroup['Host'], '{n}.id');
-        }
-        $hostTemlateIds = Hash::extract($hostgroup, 'Hosttemplate.{n}.id');
-        $hostsByHosttemplateIds = $this->Host->find('all', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Hostgroup',
-                'Hosttemplate' => [
-                    'Hostgroup' => [
-                        'conditions' => [
-                            'Hostgroup.id' => $hostgroup['Hostgroup']['id']
-                        ]
-                    ]
-                ]
-            ],
-            'conditions' => [
-                'Host.hosttemplate_id' => $hostTemlateIds,
-                'NOT'                  => [
-                    'Host.id' => $hostIds
-                ],
-                'Host.disabled'        => 0
-            ],
-            'fields'     => [
-                'Host.uuid'
-            ]
-        ]);
 
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        $hostgroup = $HostgroupsTable->getHostsByHostgroupUuidForExternalcommandsIncludeingHosttemplateHosts($options['hostgroupUuid']);
         switch ($options['downtimetype']) {
             case 0:
                 /*
@@ -808,19 +754,9 @@ class Externalcommand extends NagiosModuleAppModel {
                 //Host only and may be this will work some day
                 //$this->_write('SCHEDULE_HOSTGROUP_HOST_DOWNTIME;'.$options['hostgroupUuid'].';'.$options['start'].';'.$options['end'].';1;0;'.$options['duration'].';'.$options['author'].';'.$options['comment']);
                 //Nagios workaround
-                foreach ($hostgroup['Host'] as $host) {
+                foreach ($hostgroup['hosts'] as $host) {
                     $this->setHostDowntime([
                         'hostUuid'     => $host['uuid'],
-                        'start'        => $options['start'],
-                        'end'          => $options['end'],
-                        'comment'      => $options['comment'],
-                        'author'       => $options['author'],
-                        'downtimetype' => 0,
-                    ]);
-                }
-                foreach ($hostsByHosttemplateIds as $hostUuidFromHosttemplate) {
-                    $this->setHostDowntime([
-                        'hostUuid'     => $hostUuidFromHosttemplate['Host']['uuid'],
                         'start'        => $options['start'],
                         'end'          => $options['end'],
                         'comment'      => $options['comment'],
@@ -835,19 +771,9 @@ class Externalcommand extends NagiosModuleAppModel {
                 //$this->_write('SCHEDULE_HOSTGROUP_HOST_DOWNTIME;'.$options['hostgroupUuid'].';'.$options['start'].';'.$options['end'].';1;0;'.$options['duration'].';'.$options['author'].';'.$options['comment']);
                 //$this->_write(' SCHEDULE_HOSTGROUP_SVC_DOWNTIME;'.$options['hostgroupUuid'].';'.$options['start'].';'.$options['end'].';1;0;'.$options['duration'].';'.$options['author'].';'.$options['comment']);
                 //Nagios workaround
-                foreach ($hostgroup['Host'] as $host) {
+                foreach ($hostgroup['hosts'] as $host) {
                     $this->setHostDowntime([
                         'hostUuid'     => $host['uuid'],
-                        'start'        => $options['start'],
-                        'end'          => $options['end'],
-                        'comment'      => $options['comment'],
-                        'author'       => $options['author'],
-                        'downtimetype' => 1,
-                    ]);
-                }
-                foreach ($hostsByHosttemplateIds as $hostUuidFromHosttemplate) {
-                    $this->setHostDowntime([
-                        'hostUuid'     => $hostUuidFromHosttemplate['Host']['uuid'],
                         'start'        => $options['start'],
                         'end'          => $options['end'],
                         'comment'      => $options['comment'],
@@ -858,19 +784,9 @@ class Externalcommand extends NagiosModuleAppModel {
                 break;
 
             default:
-                foreach ($hostgroup['Host'] as $host) {
+                foreach ($hostgroup['hosts'] as $host) {
                     $this->setHostDowntime([
                         'hostUuid'     => $host['uuid'],
-                        'start'        => $options['start'],
-                        'end'          => $options['end'],
-                        'comment'      => $options['comment'],
-                        'author'       => $options['author'],
-                        'downtimetype' => $options['downtimetype'],
-                    ]);
-                }
-                foreach ($hostsByHosttemplateIds as $hostUuidFromHosttemplate) {
-                    $this->setHostDowntime([
-                        'hostUuid'     => $hostUuidFromHosttemplate['Host']['uuid'],
                         'start'        => $options['start'],
                         'end'          => $options['end'],
                         'comment'      => $options['comment'],
@@ -893,11 +809,12 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `author`        The author of the downtime
      * - `comment`        The comment of the downtime
      *
-     * @param    array $options with the options
+     * @param array $options with the options
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function setServiceDowntime($options) {
         $_options['duration'] = $options['end'] - $options['start'];
@@ -969,12 +886,13 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `uuid`        The UUID of the host you want to reschedule
      * - `type`        The type of the external command ('hostOnly' or 'hostAndServices')
      *
-     * @param    array $options with the options
-     * @param    integer $timestamp timestamp, when nagios should reschedule the host
+     * @param array $options with the options
+     * @param integer $timestamp timestamp, when nagios should reschedule the host
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function disableHostNotifications($options = []) {
         $this->_write('DISABLE_HOST_NOTIFICATIONS;' . $options['uuid'], 0);
@@ -989,12 +907,13 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `uuid`        The UUID of the host
      * - `type`        The type of the external command ('hostOnly' or 'hostAndServices')
      *
-     * @param    array $options with the options
-     * @param    integer $timestamp timestamp, when nagios should reschedule the host
+     * @param array $options with the options
+     * @param integer $timestamp timestamp, when nagios should reschedule the host
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function enableHostNotifications($options = []) {
         $this->_write('ENABLE_HOST_NOTIFICATIONS;' . $options['uuid'], 0);
@@ -1009,31 +928,20 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `hostgroupUuid`    The UUID of the host
      * - `type`                The type of the external command ('hostOnly' or 'hostAndServices')
      *
-     * @param    array $options with the options
-     * @param    integer $timestamp timestamp, when nagios should reschedule the host
+     * @param array $options with the options
+     * @param integer $timestamp timestamp, when nagios should reschedule the host
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function disableHostgroupNotifications($options = []) {
-        $this->Hostgroup = ClassRegistry::init('Hostgroup');
-        $hostgroup = $this->Hostgroup->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Hostgroup.uuid' => $options['hostgroupUuid'],
-            ],
-            'contain'    => [
-                'Host' => [
-                    'fields' => [
-                        'Host.uuid',
-                    ],
-                ],
-            ],
-        ]);
-
-        if (isset($hostgroup['Host']) && !empty($hostgroup['Host'])) {
-            foreach ($hostgroup['Host'] as $host) {
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $hostgroup = $HostgroupsTable->getHostsByHostgroupUuidForExternalcommands($options['hostgroupUuid']);
+        if (isset($hostgroup['hosts']) && !empty($hostgroup['hosts'])) {
+            foreach ($hostgroup['hosts'] as $host) {
                 $this->disableHostNotifications(['uuid' => $host['uuid'], 'type' => $options['type']]);
             }
         }
@@ -1045,31 +953,20 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `hostgroupUuid`    The UUID of the host
      * - `type`                The type of the external command ('hostOnly' or 'hostAndServices')
      *
-     * @param    array $options with the options
-     * @param    integer $timestamp timestamp, when nagios should reschedule the host
+     * @param array $options with the options
+     * @param integer $timestamp timestamp, when nagios should reschedule the host
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function enableHostgroupNotifications($options = []) {
-        $this->Hostgroup = ClassRegistry::init('Hostgroup');
-        $hostgroup = $this->Hostgroup->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Hostgroup.uuid' => $options['hostgroupUuid'],
-            ],
-            'contain'    => [
-                'Host' => [
-                    'fields' => [
-                        'Host.uuid',
-                    ],
-                ],
-            ],
-        ]);
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
-        if (isset($hostgroup['Host']) && !empty($hostgroup['Host'])) {
-            foreach ($hostgroup['Host'] as $host) {
+        if (isset($hostgroup['hosts']) && !empty($hostgroup['hosts'])) {
+            foreach ($hostgroup['hosts'] as $host) {
                 $this->enableHostNotifications(['uuid' => $host['uuid'], 'type' => $options['type']]);
             }
         }
@@ -1081,12 +978,13 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `hostUuid`        The UUID of the host
      * - `serviceUuid`    The UUID of the service
      *
-     * @param    array $options with the options
-     * @param    integer $timestamp timestamp, when nagios should reschedule the host
+     * @param array $options with the options
+     * @param integer $timestamp timestamp, when nagios should reschedule the host
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function disableServiceNotifications($options = []) {
         $this->_write('DISABLE_SVC_NOTIFICATIONS;' . $options['hostUuid'] . ';' . $options['serviceUuid'], 0);
@@ -1098,12 +996,13 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `hostUuid`        The UUID of the host
      * - `serviceUuid`    The UUID of the service
      *
-     * @param    array $options with the options
-     * @param    integer $timestamp timestamp, when nagios should reschedule the host
+     * @param array $options with the options
+     * @param integer $timestamp timestamp, when nagios should reschedule the host
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function enableServiceNotifications($options = []) {
         $this->_write('ENABLE_SVC_NOTIFICATIONS;' . $options['hostUuid'] . ';' . $options['serviceUuid'], 0);
@@ -1114,10 +1013,11 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    string with external command prefix
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     private function _prefix() {
-        return '[' . time() . '] ';
-    }
+    return '[' . time() . '] ';
+}
 
     /**
      * Send a custom command to the nagios.cmd
@@ -1127,11 +1027,12 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `parameters`    Parameters for this command as array (for implode(';', $parameters))
      * Info: Check Plugins/NagiosModule/CmdController.php function __externalCommands
      *
-     * @param    array $$payload with the options
+     * @param array $$payload with the options
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function runCmdCommand($payload) {
         $payload['parameters'] = (array)$payload['parameters'];
@@ -1146,13 +1047,14 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `downtimehistory_id`        The downtimehistory_id of table nagios_downtimehistory //May be not needed or
      * coming soon ;)
      *
-     * @param    int $internal_downtime_id with the options
-     * @param    int $downtimehistory_id of nagios_downtimehistory for force delete //May be not needed or coming
+     * @param int $internal_downtime_id with the options
+     * @param int $downtimehistory_id of nagios_downtimehistory for force delete //May be not needed or coming
      *                                     soon ;)
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function deleteHostDowntime($internal_downtime_id = 0, $downtimehistory_id = 0) {
         if ($internal_downtime_id > 0) {
@@ -1167,12 +1069,13 @@ class Externalcommand extends NagiosModuleAppModel {
      * - `downtimehistory_id`        The downtimehistory_id of table nagios_downtimehistory //May be not needed or
      * coming soon ;)
      *
-     * @param    int $internal_downtime_id with the options
-     * @param    int $downtimehistory_id of nagios_downtimehistory for force  //May be not needed or coming soon ;)
+     * @param int $internal_downtime_id with the options
+     * @param int $downtimehistory_id of nagios_downtimehistory for force  //May be not needed or coming soon ;)
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
+     * @deprecated
      */
     public function deleteServiceDowntime($internal_downtime_id = 0, $downtimehistory_id = 0) {
         if ($internal_downtime_id > 0) {
@@ -1186,6 +1089,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function test() {
         try {
@@ -1202,6 +1106,7 @@ class Externalcommand extends NagiosModuleAppModel {
      *
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     private function _write($content = '', $satellite_id = 0) {
         if ($satellite_id > 0) {
@@ -1253,6 +1158,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     public function close() {
         if ($this->_is_resource()) {
@@ -1269,6 +1175,7 @@ class Externalcommand extends NagiosModuleAppModel {
      * @return    bool
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0
+     * @deprecated
      */
     private function _is_resource($recursive = false) {
         if (is_resource($this->nagiosCmd)) {

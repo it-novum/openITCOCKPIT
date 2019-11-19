@@ -22,6 +22,10 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+use App\Model\Table\ApikeysTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\ORM\TableRegistry;
+
 App::uses('BaseAuthenticate', 'Controller/Component/Auth');
 
 class ApiAuthenticate extends BaseAuthenticate {
@@ -80,23 +84,60 @@ class ApiAuthenticate extends BaseAuthenticate {
      * @return bool|array Either false on failure, or an array of user data.
      */
     public function _findUser($username, $password = null) {
-        $result = ClassRegistry::init('Apikey')->find('first', [
-            'conditions' => [
-                'Apikey.apikey' => $username,
-                'User.status'   => 1, //Active users only
-            ],
-            'contain'    => [
-                'User' => [
-                    'Usergroup'
-                ]
-            ]
-        ]);
+        /** @var $ApikeysTable ApikeysTable */
+        $ApikeysTable = TableRegistry::getTableLocator()->get('Apikeys');
 
-        if (empty($result) || empty($result['Apikey'])) {
+        try {
+            $apikey = $ApikeysTable->find()
+                ->where([
+                    'Apikeys.apikey' => $username,
+                ])
+                ->contain([
+                    'Users' => [
+                        'Usergroups'
+                    ]
+                ])
+                ->disableHydration()
+                ->firstOrFail();
+        } catch (RecordNotFoundException $e) {
             return false;
         }
 
-        return $result['User'];
+        $user = $apikey['user'];
+
+        $cake2User = [
+            'id'                     => $user['id'],
+            'usergroup_id'           => $user['usergroup_id'],
+            'email'                  => $user['email'],
+            'password'               => $user['password'],
+            'firstname'              => $user['firstname'],
+            'lastname'               => $user['lastname'],
+            'position'               => $user['position'],
+            'company'                => $user['company'],
+            'phone'                  => $user['phone'],
+            'timezone'               => $user['timezone'],
+            'dateformat'             => $user['dateformat'],
+            'image'                  => $user['image'],
+            'onetimetoken'           => $user['onetimetoken'],
+            'samaccountname'         => $user['samaccountname'],
+            'ldap_dn'                => $user['ldap_dn'],
+            'showstatsinmenu'        => $user['showstatsinmenu'],
+            'dashboard_tab_rotation' => $user['dashboard_tab_rotation'],
+            'paginatorlength'        => $user['paginatorlength'],
+            'recursive_browser'      => $user['recursive_browser'],
+            'created'                => date('Y-m-d H:i:s', $user['created']->getTimestamp()),
+            'modified'               => date('Y-m-d H:i:s', $user['modified']->getTimestamp()),
+            'full_name'              => sprintf('%s %s', $user['firstname'], $user['lastname']),
+            'Usergroup'              => [
+                'id'          => $user['usergroup']['id'],
+                'name'        => $user['usergroup']['name'],
+                'description' => $user['usergroup']['description'],
+                'created'     => date('Y-m-d H:i:s', $user['usergroup']['created']->getTimestamp()),
+                'modified'    => date('Y-m-d H:i:s', $user['usergroup']['modified']->getTimestamp()),
+            ]
+        ];
+
+        return $cake2User;
     }
 
 }

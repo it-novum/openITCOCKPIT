@@ -31,6 +31,7 @@ app/webroot/js/compressed_controllers.js
 app/webroot/js/compressed_angular_controllers.js
 app/webroot/js/compressed_angular_directives.js
 app/webroot/js/compressed_angular_services.js
+app/webroot/js/compressed_angular_states.js
 app/Plugin/ArchiveMigration
 app/Plugin/AutoreportModule
 app/Plugin/AutoreportModule/webroot/tmp/*
@@ -74,7 +75,7 @@ app/webroot/img/logo_small_custom.png
 !app/Vendor/
 app/Vendor/*
 !app/Vendor/adldap
-!app/Vendor/Date
+!app/Vendor/Date/*/*/*
 !app/Vendor/Oauth2
 !app/Vendor/imageSmoothArc.php
 !app/Vendor/qqFileUploader.php
@@ -90,3 +91,7 @@ app/Config/dbbackend.php
 app/Config/perfdatabackend.php
 app/Config/graphite.php
 app/Plugin/NagiosModule/Config/config.php
+!app/cake4/tests
+app/cake4/vendor/
+app/cake4/plugins/DistributeModule
+app/cake4/plugins/EventcorrelationModule

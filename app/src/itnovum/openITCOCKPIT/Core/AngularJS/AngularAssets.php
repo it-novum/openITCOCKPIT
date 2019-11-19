@@ -36,7 +36,7 @@ class AngularAssets implements AngularAssetsInterface {
         'vendor/jqueryui/jquery-ui.min.js',
         'vendor/bootstrap/dist/js/bootstrap.min.js',
         'vendor/angular/angular.min.js',
-        //'vendor/angular-ui-router/release/angular-ui-router.min.js',
+        'vendor/angular-ui-router/release/angular-ui-router.min.js',
         'js/lib/jquery-cookie.js',
         'js/vendor/chosen.jquery.min.js',
         'js/plugin/bootstrap-tags/bootstrap-tagsinput.min.js',
@@ -68,11 +68,25 @@ class AngularAssets implements AngularAssetsInterface {
         'js/lib/jquery.svg.min.js',
         'js/lib/jquery.svgfilter.min.js',
         'smartadmin/js/plugin/dropzone/dropzone.min.js',
+        'smartadmin/js/notification/SmartNotification.js',
         'vendor/noty/noty.min.js',
         'js/lib/rangyinputs-jquery-1.1.2.min.js',
         'vendor/javascript-detect-element-resize/jquery.resize.js',
         'vendor/angular-gridster/dist/angular-gridster.min.js',
-        'js/lib/GraphDefaults.js'
+        'js/lib/GraphDefaults.js',
+        'js/lib/jqconsole.min.js',
+        'js/vendor/jquery.blockUI.js',
+        'js/lib/jquery-jvectormap-1.2.2.min.js',
+        'js/lib/maps/jquery-jvectormap-world-mill-en.js',
+        'smartadmin/js/plugin/fullcalendar-4.2.0/packages/core/main.js',               //  <-- NEW FC 4.2.0
+        'smartadmin/js/plugin/fullcalendar-4.2.0/packages/interaction/main.js',        //  <-- NEW FC 4.2.0
+        'smartadmin/js/plugin/fullcalendar-4.2.0/packages/daygrid/main.js',            //  <-- NEW FC 4.2.0
+        'smartadmin/js/plugin/fullcalendar-4.2.0/packages/timegrid/main.js',           //  <-- NEW FC 4.2.0
+        'smartadmin/js/plugin/fullcalendar-4.2.0/packages/list/main.js',               //  <-- NEW FC 4.2.0
+        'js/vendor/Chart.min.js',
+        'js/vendor/chartjs-plugin-piechart-center-element.min.js',
+    //    'js/vendor/chartjs-plugin-piechart-outlabels.min.js'
+        'js/lib/highlight-within-textarea/jquery.highlight-within-textarea.js'
     ];
 
     /**
@@ -86,7 +100,7 @@ class AngularAssets implements AngularAssetsInterface {
         });
 
         foreach ($loadedModules as $loadedModule) {
-            $file = APP . 'Plugin' . DS . $loadedModule . DS . 'Lib' . DS . 'AngularAssets.php';
+            $file = OLD_APP . 'Plugin' . DS . $loadedModule . DS . 'Lib' . DS . 'AngularAssets.php';
             if (file_exists($file)) {
                 require_once $file;
                 $dynamicAngularAssets = sprintf('itnovum\openITCOCKPIT\%s\AngularAssets\AngularAssets', $loadedModule);

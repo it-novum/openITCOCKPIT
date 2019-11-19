@@ -6,11 +6,14 @@ angular.module('openITCOCKPIT')
         var _url = '';
         var _key = '';
 
+        var _hasError = false;
+
         var _onSuccess = function(event){
             console.info(event)
         };
 
         var _onError = function(event){
+            _hasError = true;
             console.error(event);
         };
 
@@ -113,6 +116,9 @@ angular.module('openITCOCKPIT')
             },
             send: function(json){
                 _send(json);
+            },
+            hasError: function(){
+                return _hasError;
             }
         }
     });

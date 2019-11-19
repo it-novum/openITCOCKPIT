@@ -24,45 +24,50 @@
 //	confirmation.
 
 
+use App\Model\Table\ProxiesTable;
+use Cake\ORM\Locator\LocatorAwareTrait;
+
+/**
+ * Class ProxyController
+ */
 class ProxyController extends AppController {
-    public $layout = 'Admin.default';
-    public $components = ['RequestHandler'];
+    public $layout = 'blank';
+
+    use LocatorAwareTrait;
 
     function index() {
-        $proxy = $this->Proxy->find('all');
-        $this->set('proxy', $proxy);
-        //_serialize wird fir das json und XML randering benötigt
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+
+        $TableLocator = $this->getTableLocator();
+
+        /** @var $ProxiesTable ProxiesTable */
+        $ProxiesTable = $TableLocator->get('Proxies');
+
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $entity = $ProxiesTable->find()->first();
+            if (is_null($entity)) {
+                //No proxy configuration found
+                $entity = $ProxiesTable->newEmptyEntity();
+            }
+
+            $entity = $ProxiesTable->patchEntity($entity, $this->request->data('Proxy'));
+
+            if ($entity->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $entity->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            }
+
+            $ProxiesTable->save($entity);
+        }
+
+        $settings = $ProxiesTable->getSettings();
+        $this->set('proxy', $settings);
         $this->set('_serialize', ['proxy']);
     }
 
-    function edit() {
-        $proxy = $this->Proxy->find('all');
-        $this->set('proxy', $proxy);
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if (!isset($this->request->data['Proxy']['enabled'])) {
-                $this->request->data['Proxy']['enabled'] = false;
-            }
-            //$this->Proxy->save($this->request->data)
-            if ($this->Proxy->save($this->request->data)) {
-                $this->setFlash('Data saved successfully');
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Proxy data invalid'), false);
-            }
-        }
-    }
-
-    function getSettings() {
-        $proxy = $this->Proxy->find('first');
-        $settings = ['ipaddress' => '', 'port' => 0, 'enabled' => false];
-        if (!empty($proxy)) {
-            $settings = [
-                'ipaddress' => $proxy['Proxy']['ipaddress'],
-                'port'      => $proxy['Proxy']['port'],
-                'enabled'   => $proxy['Proxy']['enabled'],
-            ];
-        }
-
-        return $settings;
-    }
 }

@@ -22,180 +22,185 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-use itnovum\openITCOCKPIT\Core\Security\CSRF;
+use App\Model\Table\ApikeysTable;
+use App\Model\Table\UsersTable;
+use Cake\Http\Session;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 
 /**
  * Class ProfileController
- * @property User User
- * @property SessionComponent Session
- * @property AppAuthComponent Auth
- * @property Systemsetting Systemsetting
- * @property Apikey Apikey
- *
- * @property UploadComponent $Upload
- * @property SessionComponent $Session
+ * @property AppAuthComponent $Auth
+ * @property Session $Session
  */
 class ProfileController extends AppController {
-    public $layout = 'angularjs';
-    public $uses = [
-        'User',
-        'Systemsetting',
-        'Apikey'
-    ];
+
+    public $layout = 'blank';
 
     public $components = ['Upload', 'Session'];
 
-    /*public function change_password() {
-        if($this->request->is('post')) {
-            if($this->User->changePassword($this->Auth->user('id'), $this->request->data)) {
-                return $this->flashBack('Your password was successfully updated.', '/admin/dashboard', true);
-            }else{
-                $this->setFlash(__('Please check your input'), false);
-            }
-        }
-    }*/
-
     public function edit() {
-        $CSRF = new CSRF($this->Session);
-        $_csrfToken = $CSRF->generateToken();
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
 
-        $user = $this->User->find('first', [
-            'conditions' => [
-                'User.id' => $this->Auth->user('id'),
-            ],
-            'contain'    => [
-                'Apikey'
-            ],
-        ]);
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
-        //Format: https://secure.php.net/manual/en/function.strftime.php
-        $dateformats = [
-            1 => '%B %e, %Y %H:%M:%S',
-            2 => '%m-%d-%Y  %H:%M:%S',
-            3 => '%m-%d-%Y  %H:%M',
-            4 => '%m-%d-%Y  %l:%M:%S %p',
-            5 => '%H:%M:%S  %m-%d-%Y',
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
-            6  => '%e %B %Y, %H:%M:%S',
-            7  => '%d.%m.%Y - %H:%M:%S',
-            9  => '%d.%m.%Y - %l:%M:%S %p',
-            10 => '%H:%M:%S - %d.%m.%Y', //Default date format
-            11 => '%H:%M - %d.%m.%Y',
+        if (!$UsersTable->existsById($User->getId())) {
+            throw new NotFoundException(__('User not found'));
+        }
 
-            12 => '%Y-%m-%d %H:%M',
-            13 => '%Y-%m-%d %H:%M:%S'
-        ];
+        $user = $UsersTable->getUserForEdit($User->getId());
+        $isLdapUser = !empty($user['User']['samaccountname']);
 
-        $selectedUserTime = 10;
+        unset($user['User']['usercontainerroles']);
+        unset($user['User']['containers']);
+        unset($user['User']['usercontainerroles_containerids']);
+        unset($user['User']['ContainersUsersMemberships']);
 
-        foreach ($dateformats as $key => $dateformat) {
-            if ($dateformat == $user['User']['dateformat']) {
-                $selectedUserTime = $key;
-            }
+        $FileUploadSize = new FileUploadSize();
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return profile information
+            $this->set('user', $user['User']);
+            $this->set('isLdapUser', $isLdapUser);
+            $this->set('maxUploadLimit', $FileUploadSize->toArray());
+            $this->set('_serialize', ['user', 'isLdapUser', 'maxUploadLimit']);
+            return;
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            /***** Change user data *****/
-            if (isset($this->request->data['User'])) {
-                $CSRF->validateCsrfToken($this);
-                $CSRF->generateToken();
+            $data = $this->request->data('User');
 
-                //Convert dateformat ID into real dateformat for MySQL database
-                $this->request->data['User']['dateformat'] = $dateformats[$this->request->data['User']['dateformat']];
+            $user = $UsersTable->get($User->getId());
+            $user->setAccess('id', false);
 
-                //Fix container for validation
-                $user = $this->User->findById($this->Auth->user('id'));
-                $this->request->data['ContainerUserMembership'] = $user['ContainerUserMembership'];
-                $this->request->data['User']['id'] = $user['User']['id'];
-                $this->request->data['User']['Container'] = Hash::extract($user['ContainerUserMembership'], '{n}.id');
-                $this->request->data['User']['usergroup_id'] = $user['User']['usergroup_id'];
-
-                if ($this->request->data['User']['paginatorlength'] < '0') {
-                    $this->request->data['User']['paginatorlength'] = '1';
-                }
-                if ($this->request->data['User']['paginatorlength'] > '1000') {
-                    $this->request->data['User']['paginatorlength'] = '1000';
-                }
-                if ($this->User->save($this->request->data)) {
-                    $this->setFlash(__('Profile edit successfully'));
-                    $sessionUser = $this->Session->read('Auth');
-
-                    $merged = Hash::merge($sessionUser, $this->request->data);
-                    $this->Session->write('Auth', $merged);
-
-                    return $this->redirect(['action' => 'edit']);
-                }
-                $this->setFlash(__('Could not save data'), false);
-
-                return $this->redirect(['action' => 'edit']);
+            if ($isLdapUser) {
+                $data['is_ldap'] = true;
+                $user->setAccess('email', false);
+                $user->setAccess('firstname', false);
+                $user->setAccess('lastname', false);
+                $user->setAccess('password', false);
+                $user->setAccess('samaccountname', false);
+                $user->setAccess('ldap_dn', false);
             }
 
-            /***** Change users profile image *****/
-            if (isset($this->request->data['Picture']) && !empty($this->request->data['Picture'])) {
-                if (!file_exists(WWW_ROOT . 'userimages')) {
-                    mkdir(WWW_ROOT . 'userimages');
-                }
-                $this->Upload->setPath(WWW_ROOT . 'userimages' . DS);
-                if (isset($this->request->data['Picture']['Image']) && isset($this->request->data['Picture']['Image']['tmp_name']) && isset($this->request->data['Picture']['Image']['name'])) {
-                    $filename = $this->Upload->uploadUserimage($this->request->data['Picture']['Image']);
-                    if ($filename) {
-                        $user = $this->User->findById($this->Auth->user('id'));
-                        $this->User->id = $this->Auth->user('id');
-                        if ($this->User->saveField('image', $filename)) {
-                            $this->Session->write('Auth.User.image', $filename);
-
-                            //Delete old image
-                            if (file_exists(WWW_ROOT . 'userimages' . DS . $user['User']['image']) && !is_dir(WWW_ROOT . 'userimages' . DS . $user['User']['image'])) {
-                                unlink(WWW_ROOT . 'userimages' . DS . $user['User']['image']);
-                            }
-                            $this->setFlash(__('Image uploaded successfully'));
-
-                            return $this->redirect(['action' => 'edit']);
-                        }
-                    }
-                    $this->setFlash(__('Could not save image data, may be wrong data type. Allowd types are .png, .jpg and .gif'), false);
-
-                    return $this->redirect(['action' => 'edit']);
-                }
+            //prevent multiple hash of password
+            if ($data['password'] === '' && $data['confirm_password'] === '') {
+                unset($data['password']);
+                unset($data['confirm_password']);
             }
 
-            /***** Change users password *****/
-            if (isset($this->request->data['Password'])) {
-                $CSRF->validateCsrfToken($this);
-                $CSRF->generateToken();
-
-                if (Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']) {
-                    $this->setFlash(__('The entered password is not your current password'), false);
-
-                    return $this->redirect(['action' => 'edit']);
-                }
-
-                if (isset($this->request->data['Password']['new_password']) && isset($this->request->data['Password']['new_password_repeat'])) {
-                    if ($this->request->data['Password']['new_password'] == $this->request->data['Password']['new_password_repeat']) {
-                        $user = $this->User->findById($this->Auth->user('id'));
-                        $this->User->id = $this->Auth->user('id');
-                        if ($this->User->saveField('password', AuthComponent::password($this->request->data['Password']['new_password']))) {
-                            $this->setFlash(__('Password changed successfully'));
-                            $this->redirect(['action' => 'edit']);
-                        }
-                        $this->setFlash(__('Error while saving data'), false);
-                        $this->redirect(['action' => 'edit']);
-                    } else {
-                        $this->setFlash(__('The entered passwords are not the same'), false);
-
-                        return $this->redirect(['action' => 'edit']);
-                    }
-                } else {
-                    $this->setFlash(__('Plase enter and confirm your new password'), false);
-
-                    return $this->redirect(['action' => 'edit']);
-                }
+            $user = $UsersTable->patchEntity($user, $data);
+            $UsersTable->save($user);
+            if ($user->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $user->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
             }
+
+            //Update user information in $_SESSION
+            $this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
+            $this->set('user', $user);
+            $this->set('_serialize', ['user']);
         }
-        $paginatorLength = $this->Paginator->settings['limit'];
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-        $user = $this->User->findById($this->Auth->user('id'));
-        $this->set(compact('user', 'systemsettings', 'dateformats', 'selectedUserTime', 'paginatorLength', '_csrfToken'));
+    }
+
+    public function changePassword() {
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        $user = $UsersTable->get($User->getId());
+
+        $data = $this->request->data('Password');
+        if ($UsersTable->getPasswordHash($data['current_password']) !== $user->get('password')) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'current_password' => [
+                    __('Current password is incorrect')
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $user = $UsersTable->patchEntity($user, $data);
+        $UsersTable->save($user);
+        if ($user->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $user->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
+        $this->set('message', __('Password changed successfully.'));
+        $this->set('_serialize', ['message']);
+    }
+
+    public function upload_profile_icon() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        $user = $UsersTable->get($this->Auth->user('id'), ['contain' => 'containers', 'users_to_containers']);
+
+        /***** Change users profile image *****/
+        if (!file_exists(WWW_ROOT . 'userimages')) {
+            mkdir(WWW_ROOT . 'userimages');
+        }
+        $this->Upload->setPath(WWW_ROOT . 'userimages' . DS);
+        if (isset($_FILES['Picture']['tmp_name']) && isset($_FILES['Picture']['name'])) {
+            $filename = $this->Upload->uploadUserimage($_FILES['Picture']);
+
+            if ($filename) {
+                $oldFilename = $user->image;
+                $user->image = $filename;
+                //prevent multiple hash of password
+                unset($user->password);
+                $UsersTable->save($user);
+                if ($user->hasErrors()) {
+                    $this->response->statusCode(400);
+                    $this->set('error', $user->getErrors());
+                    $this->set('_serialize', ['error']);
+                    return;
+                }
+                $this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
+
+                //Delete old image
+                $path = WWW_ROOT . 'userimages' . DS;
+                if (!is_null($oldFilename) && file_exists($path . $oldFilename) && !is_dir($path . $oldFilename)) {
+                    unlink($path . $oldFilename);
+                }
+
+
+                $this->response->statusCode(200);
+                $this->set('success', true);
+                $this->set('message', __('File Upload success!'));
+                $this->set('_serialize', ['success', 'message']);
+                return;
+            }
+            $this->response->statusCode(400);
+            $this->set('error', __('Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif'));
+            $this->set('message', __('Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif'));
+            $this->set('_serialize', ['error', 'message']);
+            return;
+        }
+        $this->set('user', []);
+        $this->set('_serialize', ['user']);
+
     }
 
     public function apikey() {
@@ -205,20 +210,20 @@ class ProfileController extends AppController {
 
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
+        /** @var $ApikeysTable ApikeysTable */
+        $ApikeysTable = TableRegistry::getTableLocator()->get('Apikeys');
+
         if ($this->request->is('get')) {
             $id = $this->request->query('id');
             if (is_numeric($id)) {
                 //Get an api key by id and user_id
-                if (!$this->Apikey->exists($id)) {
+                if (!$ApikeysTable->existsById($id)) {
                     throw new NotFoundException(__('Invalid API key'));
                 }
-                $apikey = $this->Apikey->find('first', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'Apikey.user_id' => $User->getId(),
-                        'Apikey.id'      => $id
-                    ]
-                ]);
+                $apikey = $ApikeysTable->getApikeyByIdAndUserId(
+                    $id,
+                    $User->getId()
+                );
                 $Apikey = new \itnovum\openITCOCKPIT\Core\Views\Apikey($apikey);
                 $this->set('apikey', $Apikey->toArray());
                 $this->set('_serialize', ['apikey']);
@@ -226,12 +231,7 @@ class ProfileController extends AppController {
             }
 
             //Return all api keys of the user
-            $apikeysResult = $this->Apikey->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Apikey.user_id' => $User->getId()
-                ]
-            ]);
+            $apikeysResult = $ApikeysTable->getAllapiKeysByUserId($User->getId());
 
             $apikeys = [];
             foreach ($apikeysResult as $apikey) {
@@ -248,47 +248,46 @@ class ProfileController extends AppController {
             //Update an api key by id
             if (isset($this->request->data['Apikey']['id'])) {
                 $id = $this->request->data['Apikey']['id'];
-                $apiKey = $this->Apikey->find('first', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'Apikey.id'      => $id,
-                        'Apikey.user_id' => $User->getId()
-                    ]
-                ]);
 
-                if (empty($apiKey)) {
-                    throw new NotFoundException('Invalide API key');
+                if (!$ApikeysTable->existsById($id)) {
+                    throw new NotFoundException(__('Invalid API key'));
                 }
+                $apikey = $ApikeysTable->get($id);
+                $apikey = $ApikeysTable->patchEntity($apikey, $this->request->data['Apikey']);
 
-                if (!$this->Apikey->save($this->request->data)) {
-                    $this->serializeErrorMessageFromModel('Apikey');
+                $ApikeysTable->save($apikey);
+                if ($apikey->hasErrors()) {
+                    $this->response->statusCode(400);
+                    $this->set('error', $apikey->getErrors());
+                    $this->set('_serialize', ['error']);
+                    return;
+                } else {
+                    $this->set('message', __('API key updated successfully'));
+                    $this->set('_serialize', ['message']);
                     return;
                 }
-                $this->set('message', __('API key updated successfully'));
-                $this->set('_serialize', ['message']);
-                return;
             }
 
         }
     }
 
     public function create_apikey() {
-        $this->layout = 'blank';
-        if (!$this->isAngularJsRequest()) {
-            //Only ship template
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
+        /** @var $ApikeysTable ApikeysTable */
+        $ApikeysTable = TableRegistry::getTableLocator()->get('Apikeys');
+
         if ($this->request->is('get')) {
             //Generate new API key
-            $bytes = openssl_random_pseudo_bytes(80, $cstrong);
-            $apikey = bin2hex($bytes);
+            $apikey = $ApikeysTable->generateApiKey();
 
             $newApiKey = [
                 'key'  => $apikey,
                 'time' => time()
             ];
-
             $this->Session->write('latest_api_key', $newApiKey);
 
             $this->set('apikey', $apikey);
@@ -302,50 +301,56 @@ class ProfileController extends AppController {
             //Resolve ITC-2170
             $newApiKey = $this->Session->read('latest_api_key');
             $this->Session->delete('latest_api_key');
-
-            if (!isset($newApiKey['key']) || !isset($newApiKey['time'])) {
+            $this->Session->delete('latest_api_key');
+            if (!isset($newApiKey['key']) || !$newApiKey['time']) {
                 throw new BadRequestException();
             }
-
             //Is API-Key older than 5 minutes?
             if ($newApiKey['time'] < (time() - 5 * 60)) {
                 throw new BadRequestException('API key expired');
             }
 
             $apikey = [
-                'Apikey' => [
-                    'apikey'      => $newApiKey['key'],
-                    'description' => $this->request->data('Apikey.description'),
-                    'user_id'     => $User->getId()
-                ]
+                'apikey'      => $newApiKey['key'],
+                'description' => $this->request->data('Apikey.description'),
+                'user_id'     => $User->getId()
             ];
 
-            $this->Apikey->create();
-            if (!$this->Apikey->save($apikey)) {
-                $this->serializeErrorMessageFromModel('Apikey');
-                return;
+            $apikeyEntity = $ApikeysTable->newEmptyEntity();
+            $apikeyEntity = $ApikeysTable->patchEntity($apikeyEntity, $apikey);
+
+            $ApikeysTable->save($apikeyEntity);
+            if ($apikeyEntity->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $apikeyEntity->getErrors());
+                $this->set('_serialize', ['error']);
+            } else {
+                $this->set('message', __('API key created successfully'));
+                $this->set('_serialize', ['message']);
             }
-            $this->set('message', __('API key created successfully'));
-            $this->set('_serialize', ['message']);
             return;
         }
     }
 
     public function delete_apikey($id = null) {
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-        $apiKey = $this->Apikey->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Apikey.id'      => $id,
-                'Apikey.user_id' => $User->getId()
-            ]
-        ]);
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
 
-        if (empty($apiKey)) {
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        /** @var $ApikeysTable ApikeysTable */
+        $ApikeysTable = TableRegistry::getTableLocator()->get('Apikeys');
+
+        $apikey = $ApikeysTable->getApikeyByIdAndUserId($id, $User->getId());
+
+        if (empty($apikey)) {
             throw new NotFoundException('Invalide API key');
         }
 
-        if ($this->Apikey->delete($id)) {
+        if ($ApikeysTable->delete($apikey)) {
             $this->set('message', __('Api key deleted successfully'));
             $this->set('_serialize', ['message']);
             return;
@@ -358,18 +363,42 @@ class ProfileController extends AppController {
     }
 
     public function deleteImage() {
-        $user = $this->User->findById($this->Auth->user('id'));
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
 
-        if ($user['User']['image'] != null && $user['User']['image'] != '') {
-            if (file_exists(WWW_ROOT . 'userimages' . DS . $user['User']['image'])) {
-                unlink(WWW_ROOT . 'userimages' . DS . $user['User']['image']);
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        $user = $UsersTable->get($this->Auth->user('id'), ['contain' => 'containers', 'users_to_containers']);
+        //prevent multiple hash of password
+        unset($user->password);
+
+        if ($user->image != null && $user->image != '') {
+            if (file_exists(WWW_ROOT . 'userimages' . DS . $user->image)) {
+                unlink(WWW_ROOT . 'userimages' . DS . $user->image);
             }
         }
-        $this->redirect(['action' => 'edit']);
+
+        $user->image = null;
+
+        $UsersTable->save($user);
+        if ($user->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $user->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
+        }
+        $this->Session->delete('Auth.User.image');
+
+        $this->response->statusCode(200);
+        $this->set('success', true);
+        $this->set('message', __('File deleted sucessfully'));
+        $this->set('_serialize', ['success', 'message']);
+        return;
     }
 
     public function edit_apikey() {
-        $this->layout = 'blank';
         //Only ship HTML template
         return;
     }

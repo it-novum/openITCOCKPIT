@@ -31,13 +31,13 @@
             <?php echo __('Downtimes'); ?>
             <span>>
                 <?php echo __('Hosts'); ?>
-                > <?php echo __('Overview'); ?>
             </span>
+            <div class="third_level">> <?php echo __('Overview'); ?></div>
         </h1>
     </div>
 </div>
 
-<div id="error_msg"></div>
+
 <div class="row">
     <div class="col-xs-12">
         <div class="alert alert-success alert-block" ng-show="showFlashSuccess">
@@ -79,7 +79,26 @@
 
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-power-off"></i> </span>
                     <h2 class="hidden-mobile"><?php echo __('Host downtimes overview'); ?> </h2>
-                    <?php echo $this->element('Downtimes/tabs'); ?>
+
+                    <ul class="nav nav-tabs pull-right" id="widget-tab-1">
+                        <?php if ($this->Acl->hasPermission('host', 'downtimes')): ?>
+                            <li class="active">
+                                <a ui-sref="DowntimesHost">
+                                    <i class="fa fa-desktop"></i>
+                                    <span class="hidden-mobile hidden-tablet"> <?php echo __('Host downtimes'); ?></span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if ($this->Acl->hasPermission('service', 'downtimes')): ?>
+                            <li class="">
+                                <a ui-sref="DowntimesService">
+                                    <i class="fa fa-cog"></i>
+                                    <span class="hidden-mobile hidden-tablet"> <?php echo __('Service downtimes'); ?></span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
+
                 </header>
                 <div>
 
@@ -93,7 +112,7 @@
                                         <label class="input"> <i class="icon-prepend"
                                                                  style="padding-right:14px;"><?php echo __('From'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
-                                                   placeholder="<?php echo __('From Date'); ?>"
+                                                   placeholder="<?php echo __('From date'); ?>"
                                                    ng-model="filter.from"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
@@ -104,7 +123,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-user"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by user'); ?>"
-                                                   ng-model="filter.DowntimeHost.author_name"
+                                                   ng-model="filter.DowntimeHosts.author_name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -115,7 +134,7 @@
                                         <label class="input"> <i class="icon-prepend"
                                                                  style="padding-right:14px;"><?php echo __('To'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
-                                                   placeholder="<?php echo __('To Date'); ?>"
+                                                   placeholder="<?php echo __('To date'); ?>"
                                                    ng-model="filter.to"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
@@ -127,7 +146,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by comment'); ?>"
-                                                   ng-model="filter.DowntimeHost.comment_data"
+                                                   ng-model="filter.DowntimeHosts.comment_data"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -138,7 +157,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
-                                                   ng-model="filter.Host.name"
+                                                   ng-model="filter.Hosts.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -161,7 +180,7 @@
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.DowntimeHost.was_not_cancelled"
+                                                       ng-model="filter.DowntimeHosts.was_not_cancelled"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Was not cancelled'); ?>
@@ -169,7 +188,7 @@
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.DowntimeHost.was_cancelled"
+                                                       ng-model="filter.DowntimeHosts.was_cancelled"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Was cancelled'); ?>
@@ -207,39 +226,39 @@
                                 <tr>
                                     <th class="no-sort text-center"><i class="fa fa-check-square-o fa-lg"></i></th>
                                     <th class="no-sort"><?php echo __('Running'); ?></th>
-                                    <th class="no-sort" ng-click="orderBy('Host.name')">
-                                        <i class="fa" ng-class="getSortClass('Host.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Hosts.name')">
+                                        <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                         <?php echo __('Host'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeHost.author_name')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeHost.author_name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeHosts.author_name')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeHosts.author_name')"></i>
                                         <?php echo __('User'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeHost.comment_data')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeHost.comment_data')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeHosts.comment_data')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeHosts.comment_data')"></i>
                                         <?php echo __('Comment'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeHost.entry_time')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeHost.entry_time')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeHosts.entry_time')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeHosts.entry_time')"></i>
                                         <?php echo __('Created'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeHost.scheduled_start_time')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeHost.scheduled_start_time')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeHosts.scheduled_start_time')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeHosts.scheduled_start_time')"></i>
                                         <?php echo __('Start'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeHost.scheduled_end_time')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeHost.scheduled_end_time')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeHosts.scheduled_end_time')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeHosts.scheduled_end_time')"></i>
                                         <?php echo __('End'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeHost.duration')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeHost.duration')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeHosts.duration')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeHosts.duration')"></i>
                                         <?php echo __('Duration'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DowntimeHost.was_cancelled')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeHost.was_cancelled')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeHosts.was_cancelled')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeHosts.was_cancelled')"></i>
                                         <?php echo __('Was cancelled'); ?>
                                     </th>
-                                    <th class="no-sort"><?php echo __('Delete'); ?></th>
+                                    <th class="no-sort"><?php echo __('Cancel'); ?></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -256,7 +275,7 @@
 
                                     <td>
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                            <a href="/hosts/browser/{{ downtime.Host.id }}">
+                                            <a ui-sref="HostsBrowser({id: downtime.Host.id})">
                                                 {{ downtime.Host.hostname }}
                                             </a>
                                         <?php else: ?>
@@ -299,7 +318,7 @@
                                                     class="btn btn-xs btn-danger"
                                                     ng-if="downtime.DowntimeHost.allowEdit && downtime.DowntimeHost.isCancellable"
                                                     ng-click="confirmHostDowntimeDelete(getObjectForDelete(downtime))">
-                                                <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                <i class="fa fa-trash-o"></i> <?php echo __('Cancel'); ?>
                                             </button>
                                         <?php endif; ?>
                                     </td>
@@ -336,7 +355,7 @@
                                 <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmHostDowntimeDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fa fa-lg fa-trash-o"></i>
-                                    <?php echo __('Delete'); ?>
+                                    <?php echo __('Cancel'); ?>
                                 </span>
                                 </div>
                             </div>

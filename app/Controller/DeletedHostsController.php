@@ -23,50 +23,46 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\DeletedHostsTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 
+/**
+ * Class DeletedHostsController
+ * @property AppPaginatorComponent $Paginator
+ */
 class DeletedHostsController extends AppController {
-    public $layout = 'angularjs';
-
-    public $uses = ['DeletedHost'];
-
+    public $layout = 'blank';
 
     public function index() {
-        $this->Paginator->settings['order'] = [
-            'created' => 'DESC',
-        ];
-
-        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-            $deletedHosts = $this->DeletedHost->find('all');
-            if (isset($this->Paginator->settings['limit'])) {
-                unset($this->Paginator->settings['limit']);
-            }
-            $deletedHosts = $this->DeletedHost->find('all');
-            $this->set(compact(['deletedHosts']));
-            $this->set('_serialize', ['deletedHosts', 'paging']);
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
             return;
-        } else {
-            $HostFilter = new HostFilter($this->request);
-            $this->Paginator->settings['conditions'] = $HostFilter->deletedFilter();
-            $this->Paginator->settings['order'] = $HostFilter->getOrderForPaginator('DeletedHost.created', 'desc');
-            $this->Paginator->settings['page'] = $HostFilter->getPage();
-            $hosts = $this->Paginator->paginate();
         }
 
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        /** @var $DeletedHostsTable DeletedHostsTable */
+        $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
+        $HostFilter = new HostFilter($this->request);
 
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostFilter->getPage());
+        $result = $DeletedHostsTable->getDeletedHostsIndex($HostFilter, $PaginateOMat);
+
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
         $deletedHosts = [];
-        foreach ($hosts as $host) {
+        foreach ($result as $host) {
             $DeletedHost = new \itnovum\openITCOCKPIT\Core\Views\DeletedHost($host, $UserTime);
             $deletedHosts[] = [
                 'DeletedHost' => $DeletedHost->toArray()
             ];
         }
 
-
-        $this->set(compact(['deletedHosts']));
-        $this->set('_serialize', ['deletedHosts', 'paging']);
-
+        $this->set('deletedHosts', $deletedHosts);
+        $toJson = ['deletedHosts', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['deletedHosts', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 }

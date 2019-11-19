@@ -32,12 +32,16 @@ App::uses('Folder', 'Utility');
 $appScripts = [];
 if (ENVIRONMENT === Environments::PRODUCTION) {
     $compressedAngularControllers = WWW_ROOT . 'js' . DS . 'compressed_angular_controllers.js';
-    $compressedAngularDrectives = WWW_ROOT . 'js' . DS . 'compressed_angular_directives.js';
+    $compressedAngularDirectives = WWW_ROOT . 'js' . DS . 'compressed_angular_directives.js';
     $compressedAngularServices = WWW_ROOT . 'js' . DS . 'compressed_angular_services.js';
-    if (file_exists($compressedAngularControllers) && file_exists($compressedAngularDrectives) && file_exists($compressedAngularServices)) {
+    $compressedAngularStates = WWW_ROOT . 'js' . DS . 'compressed_angular_states.js';
+    if (file_exists($compressedAngularControllers) && file_exists($compressedAngularDirectives) && file_exists($compressedAngularServices)) {
         $appScripts[] = $compressedAngularServices;
-        $appScripts[] = $compressedAngularDrectives;
+        $appScripts[] = $compressedAngularDirectives;
         $appScripts[] = $compressedAngularControllers;
+        if (file_exists($compressedAngularStates)) {
+            $appScripts[] = $compressedAngularStates;
+        }
     }
 } else {
     App::uses('Folder', 'Utility');
@@ -62,6 +66,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     echo $this->element('assets');
 
     printf('<script src="%s"></script>', '/vendor/angular/angular.min.js');
+    printf('<script src="%s"></script>', '/vendor/angular-ui-router/release/angular-ui-router.min.js');
     printf('<script src="%s"></script>', '/js/vendor/vis-4.21.0/dist/vis.js');
     printf('<script src="%s"></script>', '/js/scripts/ng.app.js');
     printf('<script src="%s"></script>', '/vendor/javascript-detect-element-resize/jquery.resize.js');

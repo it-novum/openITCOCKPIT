@@ -50,7 +50,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
 
-<?php if (!$QueryHandler->exists()): ?>
+<?php if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
     <div class="alert alert-danger alert-block">
         <a href="#" data-dismiss="alert" class="close">×</a>
         <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
@@ -72,7 +72,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                     <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                         <input class="input-sm"
                                placeholder="<?php echo __('Type to filter...'); ?>"
-                               ng-model="containerFilter"
+                               ng-model="data.containerFilter"
                                ng-model-options="{debounce: 250}"
                                type="text">
                     </label>
@@ -109,7 +109,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
                         <div class="col-xs-12 text-center padding-bottom-10 font-xs">
                             <div class="col-xs-12 col-md-4 no-padding">
-                                <a ng-href="/hosts/index<?php echo RFCRouter::queryString([
+                                <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Hoststatus.current_state' => ['0' => 1]
                                     ],
@@ -122,7 +122,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                             </div>
 
                             <div class="col-xs-12 col-md-4 no-padding">
-                                <a ng-href="/hosts/index<?php echo RFCRouter::queryString([
+                                <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Hoststatus.current_state' => ['1' => 1]
                                     ],
@@ -135,7 +135,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                             </div>
 
                             <div class="col-xs-12 col-md-4 no-padding">
-                                <a ng-href="/hosts/index<?php echo RFCRouter::queryString([
+                                <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Hoststatus.current_state' => ['2' => 1]
                                     ],
@@ -170,7 +170,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
                         <div class="col-xs-12 text-center padding-bottom-10 font-xs">
                             <div class="col-xs-12 col-md-3 no-padding">
-                                <a ng-href="/services/index<?php echo RFCRouter::queryString([
+                                <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Servicestatus.current_state' => ['0' => 1]
                                     ],
@@ -183,7 +183,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                             </div>
 
                             <div class="col-xs-12 col-md-3 no-padding">
-                                <a ng-href="/services/index<?php echo RFCRouter::queryString([
+                                <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Servicestatus.current_state' => ['1' => 1]
                                     ],
@@ -196,7 +196,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                             </div>
 
                             <div class="col-xs-12 col-md-3 no-padding">
-                                <a ng-href="/services/index<?php echo RFCRouter::queryString([
+                                <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Servicestatus.current_state' => ['2' => 1]
                                     ],
@@ -209,7 +209,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                             </div>
 
                             <div class="col-xs-12 col-md-3 no-padding">
-                                <a ng-href="/services/index<?php echo RFCRouter::queryString([
+                                <a ng-href="/ng/#!/services/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Servicestatus.current_state' => ['3' => 1]
                                     ],
@@ -228,6 +228,9 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
     </article>
 </div>
 
+<?php if ($this->Acl->hasPermission('add', 'hostgroups')): ?>
+    <add-hosts-to-hostgroup></add-hosts-to-hostgroup>
+<?php endif; ?>
 
 <div class="row">
     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -240,7 +243,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                     </button>
 
                     <?php if ($this->Acl->hasPermission('add', 'hosts')): ?>
-                        <a href="/hosts/add" class="btn btn-xs btn-success">
+                        <a ui-sref="HostsAdd" class="btn btn-xs btn-success">
                             <i class="fa fa-plus"></i>
                             <?php echo __('New'); ?>
                         </a>
@@ -538,7 +541,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
                                     <a class="txt-color-blueDark" title="<?php echo __('Shared'); ?>"
                                        ng-if="host.Host.allow_sharing === true && host.Host.containerIds.length > 1"
-                                       href="/hosts/sharing/{{ host.Host.id }}">
+                                       ui-sref="HostsSharing({id:host.Host.id})">
                                         <i class="fa fa-sitemap fa-lg "></i></a>
 
                                     <i class="fa fa-low-vision fa-lg txt-color-blueLight"
@@ -555,7 +558,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
                                 <td>
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                        <a href="/hosts/browser/{{ host.Host.id }}">
+                                        <a ui-sref="HostsBrowser({id:host.Host.id})">
                                             {{ host.Host.hostname }}
                                         </a>
                                     <?php else: ?>
@@ -586,7 +589,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                                 <td class="width-50">
                                     <div class="btn-group">
                                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                            <a href="/hosts/edit/{{host.Host.id}}"
+                                            <a ui-sref="HostsEdit({id:host.Host.id})"
                                                ng-if="host.Host.allow_edit"
                                                class="btn btn-default">
                                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -601,14 +604,14 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                                         <ul class="dropdown-menu pull-right" id="menuHack-{{host.Host.uuid}}">
                                             <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                 <li ng-if="host.Host.allow_edit">
-                                                    <a href="/hosts/edit/{{host.Host.id}}">
+                                                    <a ui-sref="HostsEdit({id:host.Host.id})">
                                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                     </a>
                                                 </li>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('sharing', 'hosts')): ?>
                                                 <li ng-if="host.Host.allow_sharing">
-                                                    <a href="/hosts/sharing/{{host.Host.id}}">
+                                                    <a ui-sref="HostsSharing({id:host.Host.id})">
                                                         <i class="fa fa-sitemap fa-rotate-270"></i>
                                                         <?php echo __('Sharing'); ?>
                                                     </a>
@@ -631,9 +634,18 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
                                                 <li>
-                                                    <a href="/hosts/allocateServiceTemplateGroup/{{host.Host.id}}">
+                                                    <a ui-sref="ServicetemplategroupsAllocateToHost({id: 0, hostId: host.Host.id})">
                                                         <i class="fa fa-external-link"></i>
-                                                        <?php echo __('Allocate Service Template Group'); ?>
+                                                        <?php echo __('Allocate service template group'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+
+                                            <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
+                                                <li>
+                                                    <a ng-click="confirmAddHostsToHostgroup(getObjectForDelete(host))"
+                                                       class="a-clean pointer">
+                                                        <i class="fa fa-sitemap"></i> <?php echo __('Append to host group'); ?>
                                                     </a>
                                                 </li>
                                             <?php endif; ?>
@@ -727,8 +739,9 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                                     <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
                                         <li>
-                                            <a ng-href="{{ linkForAddToHostgroup() }}" class="a-clean">
-                                                <i class="fa fa-sitemap"></i> <?php echo __('Add to hostgroup'); ?>
+                                            <a ng-click="confirmAddHostsToHostgroup(getObjectsForDelete())"
+                                               class="a-clean pointer">
+                                                <i class="fa fa-sitemap"></i> <?php echo __('Append to host group'); ?>
                                             </a>
                                         </li>
                                     <?php endif; ?>

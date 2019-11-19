@@ -152,7 +152,7 @@ class EmailComponentTest extends CakeTestCase {
 		static::$sentDate = date(DATE_RFC2822);
 
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 	}
 
@@ -433,7 +433,7 @@ HTMLBLOC;
  */
 	public function testMessageRetrievalWithoutTemplate() {
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 
 		$this->Controller->EmailTest->to = 'postmaster@example.com';
@@ -470,7 +470,7 @@ HTMLBLOC;
  */
 	public function testMessageRetrievalWithTemplate() {
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 
 		$this->Controller->set('value', 22091985);
@@ -530,7 +530,7 @@ HTMLBLOC;
  */
 	public function testMessageRetrievalWithHelper() {
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 
 		$timestamp = time();
@@ -823,8 +823,8 @@ HTMLBLOC;
 
 	public function testPluginCustomViewClass() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 
 		$this->Controller->view = 'TestPlugin.Email';

@@ -18,7 +18,7 @@
     <h4>Include Paths</h4>
 <?php
 foreach ($content['paths'] as $i => $path) {
-    if (strstr($path, CAKE)) {
+    if (strstr($path, OLD_CAKE)) {
         $content['paths'][$i] = '-> '.$path;
         break;
     }

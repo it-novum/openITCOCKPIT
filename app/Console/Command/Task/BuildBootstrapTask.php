@@ -7,9 +7,9 @@ class BuildBootstrapTask extends AppShell {
      */
     public function execute() {
         $this->out('Building Bootstrap from LESS files');
-        $bootstrapLessPath = APP . 'Vendor/bootstrap/custom_bootstrap.less';
-        $targetPath = APP . 'webroot/css/vendor/bootstrap/css/bootstrap.css';
-        $minTargetPath = APP . 'webroot/css/vendor/bootstrap/css/bootstrap.min.css';
+        $bootstrapLessPath = OLD_APP . 'Vendor/bootstrap/custom_bootstrap.less';
+        $targetPath = OLD_APP . 'webroot/css/vendor/bootstrap/css/bootstrap.css';
+        $minTargetPath = OLD_APP . 'webroot/css/vendor/bootstrap/css/bootstrap.min.css';
 
         $lesscPath = Configure::read('paths.lessc.' . ENVIRONMENT);
 

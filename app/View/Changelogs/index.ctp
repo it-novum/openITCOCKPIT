@@ -91,7 +91,7 @@
                                                     7 => __('Sunday'),
                                                 ],
                                             ],
-                                            'Timerange'  => [
+                                            'Timeperiod.timeperiod_timeranges'  => [
                                                 'day' => [
                                                     1 => __('Monday'),
                                                     2 => __('Tuesday'),
@@ -228,7 +228,7 @@
                                                                                                 <i class="fa fa-caret-right"></i>
                                                                                                 <span class="txt-color-green">
                                                                                     <?php
-                                                                                    echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_name, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_name][$value['after'][$field_name]] : $value['after'][$field_name]); ?>
+                                                                                    echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_name, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_name][$value['after'][$field_name]] : (!empty($value['after'][$field_name]))?$value['after'][$field_name]:''); ?>
                                                                                 </span>
                                                                                                 <?php
                                                                                                 break;
@@ -371,7 +371,7 @@
     </section>
 <?php
 function recordExists($model_name, $id) {
-    $excluded_models = ['Timerange', 'Hosttemplatecommandargumentvalue', 'Servicetemplatecommandargumentvalue'];
+    $excluded_models = ['Timeperiod.timeperiod_timeranges', 'Hosttemplatecommandargumentvalue', 'Servicetemplatecommandargumentvalue'];
     if (in_array($model_name, $excluded_models)) {
         return false;
     }

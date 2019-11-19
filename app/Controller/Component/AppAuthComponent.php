@@ -24,6 +24,7 @@
 //	confirmation.
 
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 
 App::uses('AuthComponent', 'Controller/Component');
@@ -79,21 +80,25 @@ class AppAuthComponent extends AuthComponent {
                 ],
                 'scope'     => [
                     //'User.login_retries <=' => 3,
-                    'User.status' => Status::ACTIVE,
+                    'User.is_active' => 1,
                 ],
             ],
-            'Form',
+            'Cake4',
             'Api',
         ];
 
-        $this->authError = __('action_not_allowed');
+        $this->authError = __('This action is not allowed.');
         $this->authorize = ['Controller'];
 
+        /*
         $this->loginRedirect = [
             'controller' => 'dashboards',
             'action'     => 'index',
             'plugin'     => null,
         ];
+        */
+        $this->loginRedirect = '/ng/#!/dashboards/index';
+
         $this->logoutRedirect = [
             'controller' => 'login',
             'action'     => 'login',
@@ -109,8 +114,9 @@ class AppAuthComponent extends AuthComponent {
 
     public function login($user = null, $method = null, $options = []) {
         $_options = [];
-        $this->Systemsetting = ClassRegistry::init('Systemsetting');
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
 
         if ($method == null) {
             $method = $systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'];
@@ -123,7 +129,7 @@ class AppAuthComponent extends AuthComponent {
                     return false;
                 }
 
-                if (isset($user['User']['status']) && $user['User']['status'] != Status::ACTIVE) {
+                if (isset($user['User']['is_active']) && $user['User']['is_active'] != 1) {
                     return false;
                 }
 
@@ -135,8 +141,6 @@ class AppAuthComponent extends AuthComponent {
                     if (empty($samaccountname) || empty($password)) {
                         return false;
                     }
-
-                    require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
                     $ldap = new \FreeDSx\Ldap\LdapClient([
                         'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
@@ -173,12 +177,12 @@ class AppAuthComponent extends AuthComponent {
                     }
 
 
-                    $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                    $filter = \FreeDSx\Ldap\Search\Filters::and(
                         \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
                         \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $samaccountname)
                     );
                     if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                        $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                        $filter = \FreeDSx\Ldap\Search\Filters::and(
                             \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
                             \FreeDSx\Ldap\Search\Filters::equal('dn', $samaccountname)
                         );
@@ -253,7 +257,7 @@ class AppAuthComponent extends AuthComponent {
                  * If the login request comes from login.ctp, we use the credentials out of $_REQUEST
                  * If the request is from $this->autoLogin(), we use the credentials out of CT_USER cookie
                  */
-                if (isset($user['User']['status']) && $user['User']['status'] != Status::ACTIVE) {
+                if (isset($user['User']['is_active']) && $user['User']['is_active'] != 1) {
                     return false;
                 }
                 $_options = [];
@@ -322,7 +326,7 @@ class AppAuthComponent extends AuthComponent {
                 $user = ClassRegistry::init('User')->find('first', [
                     'conditions' => [
                         'email'  => $autoLoginData['email'],
-                        'status' => Status::ACTIVE,
+                        'is_active' => 1,
                     ],
                     'contain'    => false,
                 ]);
@@ -362,7 +366,7 @@ class AppAuthComponent extends AuthComponent {
                 //$this->Session->write('hasRootPrivileges', $hasRootPrivileges);
 
                 $this->Flash->set(
-                    __('login.automatically_logged_in'), [
+                    __('You have been automatically logged in.'), [
                     'element' => 'default',
                     'params'  => [
                         'class' => 'alert alert-success'

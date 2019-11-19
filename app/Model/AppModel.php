@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 
 App::uses('Model', 'Model');
@@ -240,16 +241,14 @@ class AppModel extends Model {
         return $this->lastInsertedData;
     }
 
+    /**
+     * @param array $findListResult
+     * @return array
+     * @deprecated Use itnovum\openITCOCKPIT\Core\AngularJS\Api::makeItJavaScriptAble()
+     * @todo Remove me
+     */
     public function makeItJavaScriptAble($findListResult = []) {
-        $return = [];
-        foreach ($findListResult as $key => $value) {
-            $return[] = [
-                'key'   => $key,
-                'value' => $value,
-            ];
-        }
-
-        return $return;
+        return Api::makeItJavaScriptAble($findListResult);
     }
 
     /**

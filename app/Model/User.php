@@ -1,4 +1,5 @@
 <?php
+
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -23,6 +24,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+
+/**
+ * @deprecated use cake4 model
+ */
 class User extends AppModel {
 
     //public $actsAs = [
@@ -55,11 +60,13 @@ class User extends AppModel {
 
     /**
      * Password validation regex.
+     * @deprecated
      */
     const PASSWORD_REGEX = '/^(?=.*\d).{6,}$/i';
 
     /**
      * @var string
+     * @deprecated
      */
     public $displayField = 'full_name';
 
@@ -67,6 +74,7 @@ class User extends AppModel {
      * @param mixed $id
      * @param string $table
      * @param DataSource $ds
+     * @deprecated
      */
     public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
@@ -115,15 +123,15 @@ class User extends AppModel {
         ],
         'current_password'     => [
             'rule'    => 'checkCurrentPassword',
-            'message' => 'user_model.incorrect_password',
+            'message' => 'Incorrect password.',
         ],
         'new_password'         => [
             'rule'    => ['custom', self::PASSWORD_REGEX],
-            'message' => 'user_model.password_requirement_notice',
+            'message' => 'The password must consist of 6 alphanumeric characters and must contain at least one digit.',
         ],
         'confirm_new_password' => [
             'rule'    => ['custom', self::PASSWORD_REGEX],
-            'message' => 'user_model.password_requirement_notice',
+            'message' => 'The password must consist of 6 alphanumeric characters and must contain at least one digit.',
         ],
         'usergroup_id'         => [
             'notZero' => [
@@ -135,6 +143,11 @@ class User extends AppModel {
     ];
 
 
+    /**
+     * @param $user
+     * @return array
+     * @deprecated
+     */
     public function bindNode($user) {
         return [
             'model'       => 'Usergroup',
@@ -165,9 +178,9 @@ class User extends AppModel {
     /**
      * checks if given password matches hash in database
      *
-     * @param  array $data
-     *
+     * @param array $data
      * @return bool
+     * @deprecated
      */
     public function checkCurrentPassword($data) {
         $this->id = AuthComponent::user('id');
@@ -184,8 +197,9 @@ class User extends AppModel {
      *
      * @param int $userId
      * @param array $data
-     *
      * @return bool
+     * @deprecated
+     *
      */
     public function changePassword($userId, array $data) {
         if (!$this->checkCurrentPassword($data['User'])) {
@@ -210,6 +224,7 @@ class User extends AppModel {
     /**
      * Returns a map of the available admin user statuses
      * @return void
+     * @deprecated
      */
     public static function getStates() {
         return Status::getMap(Status::ACTIVE, Status::SUSPENDED, Status::DELETED);
@@ -218,6 +233,7 @@ class User extends AppModel {
     /**
      * Returns a map of the available admin user statuses
      * @return void
+     * @deprecated
      */
     public static function getRoles() {
         return Types::getMap(
@@ -229,6 +245,7 @@ class User extends AppModel {
     /**
      * called before validating
      * @return bool
+     * @deprecated
      */
     public function beforeValidate($options = []) {
         if (!empty($this->id) && empty($this->data['User']['new_password'])) {
@@ -241,6 +258,7 @@ class User extends AppModel {
     /**
      * called before saving
      * @return true
+     * @deprecated
      */
     public function beforeSave($options = []) {
         if (!empty($this->data['User']['new_password'])) {
@@ -253,9 +271,9 @@ class User extends AppModel {
     /**
      * checks if user with given id is soft deleted
      *
-     * @param  int $id
-     *
+     * @param int $id
      * @return bool
+     * @deprecated
      */
     public function softDeleted($id = null) {
         if (empty($id)) {
@@ -274,6 +292,13 @@ class User extends AppModel {
         }
     }
 
+    /**
+     *
+     * @param $container_ids
+     * @param string $type
+     * @return array|null
+     * @deprecated use cake 4 model usersByContainerId()
+     */
     public function usersByContainerId($container_ids, $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -353,39 +378,5 @@ class User extends AppModel {
                 return $return;
                 break;
         }
-    }
-
-    //A user can have >= 1 tenants, due to multiple containers
-    public function getTenantIds($id = null, $index = 'id') {
-        if ($id === null) {
-            $id = $this->id;
-        }
-        $Container = ClassRegistry::init('Container');
-        $user = $this->findById($id);
-        $tenants = [];
-        foreach ($user['ContainerUserMembership'] as $_container) {
-            foreach ($Container->getPath($_container['container_id']) as $subContainer) {
-                if ($subContainer['Container']['containertype_id'] == CT_TENANT) {
-                    $tenants[$subContainer['Container'][$index]] = $subContainer['Container']['name'];
-                }
-            }
-        }
-
-        return $tenants;
-    }
-
-    public function __delete($user, $userId) {
-        if (is_numeric($user)) {
-            $userId = $user;
-            $user = $this->findById($userId);
-        } else {
-            $userId = $user['User']['id'];
-        }
-
-        if ($this->delete($user['User']['id'])) {
-            return true;
-        }
-
-        return false;
     }
 }

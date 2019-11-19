@@ -45,15 +45,20 @@ class DowntimeSerializer {
      */
     private $groupId;
 
+    /**
+     * @var bool
+     */
+    private $escapeHtml = true;
 
     /**
      * DowntimeSerializer constructor.
      * @param array $downtimeRecords
      * @param UserTime $UserTime
      */
-    public function __construct($downtimeRecords = [], UserTime $UserTime) {
+    public function __construct($downtimeRecords, UserTime $UserTime, $escapeHtml = true) {
         $this->records = $downtimeRecords;
         $this->UserTime = $UserTime;
+        $this->escapeHtml = $escapeHtml;
 
         $TimelineGroups = new Groups();
         $this->groupId = $TimelineGroups->getDowntimesId();
@@ -69,6 +74,11 @@ class DowntimeSerializer {
 
         for ($i = 0; $i < $size; $i++) {
             $title = sprintf('%s: %s', $this->records[$i]->getAuthorName(), $this->records[$i]->getCommentData());
+
+            if($this->escapeHtml){
+                $title = h($title);
+            }
+
             if ($this->records[$i]->wasCancelled()) {
                 $title = sprintf(
                     '%s (%s at %s)',
@@ -76,6 +86,10 @@ class DowntimeSerializer {
                     __(' Cancelled'),
                     $this->UserTime->format($this->records[$i]->getActualEndTime())
                 );
+
+                if($this->escapeHtml){
+                    $title = h($title);
+                }
                 $records[] = [
                     'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledStartTime()),
                     'end'       => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getActualEndTime()),

@@ -33,8 +33,10 @@ App::uses('Controller', 'Controller');
 App::uses('CakeTime', 'Utility');
 App::uses('AuthActions', 'Lib');
 App::uses('User', 'Model');
-App::uses('UUID', 'Lib');
 
+use App\Model\Table\ContainersTable;
+use Cake\Datasource\EntityInterface;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -86,7 +88,6 @@ class AppController extends Controller {
         'Servicedependency',
         'Container',
         'Tenant',
-        'GraphCollection',
         'User',
         'Location',
         'Servicetemplate',
@@ -188,7 +189,9 @@ class AppController extends Controller {
         }
 
         if (ENVIRONMENT === 'development_test') {
-            $autoLoginUserAdmin = $this->User->find('first');
+            /** @var $UsersTable App\Model\Table\UsersTable */
+            $UsersTable = TableRegistry::getTableLocator()->get('Users');
+            $autoLoginUserAdmin = $UsersTable->getFirstUser();
             if (!empty($autoLoginUserAdmin)) {
                 $this->Auth->login($autoLoginUserAdmin);
                 $this->MY_RIGHTS = [1];
@@ -198,18 +201,57 @@ class AppController extends Controller {
     }
 
     protected function __getUserRights() {
-        //The user is logedIn, so we need to select container permissions out of DB
-        $_user = $this->User->findById($this->Auth->user('id'));
-        $User = new User($this->Auth);
+        /** @var $UsersTable App\Model\Table\UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        //The user is loggedIn, so we need to select container permissions out of DB
+        $_user = $UsersTable->getUserById($this->Auth->user('id'));
 
+        $User = new User($this->Auth);
         $cacheKey = 'userPermissions_' . $User->getId();
 
         if (!Cache::read($cacheKey, 'permissions')) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            //unify the usercontainerrole permissions
+            $usercontainerrolePermissions = [];
+            foreach ($_user['usercontainerroles'] as $usercontainerrole) {
+                foreach ($usercontainerrole['containers'] as $usercontainerroleContainer) {
+                    $currentId = $usercontainerroleContainer['id'];
+                    if (isset($usercontainerrolePermissions[$currentId])) {
+                        //highest usercontainerrole permission wins
+                        if ($usercontainerrolePermissions[$currentId]['_joinData']['permission_level'] < $usercontainerroleContainer['_joinData']['permission_level']) {
+                            $usercontainerrolePermissions[$currentId] = $usercontainerroleContainer;
+                            continue;
+                        }
+                    } else {
+                        $usercontainerrolePermissions[$currentId] = $usercontainerroleContainer;
+                    }
+                }
+            }
+
+            //merge permissions from usercontainerrole with the user container permissions
+            //User container permissions override permissions from the role
+            $containerPermissions = [];
+            $containerPermissionsUser = [];
+            foreach ($usercontainerrolePermissions as $usercontainerrolePermission) {
+                $containerPermissions[$usercontainerrolePermission['id']] = $usercontainerrolePermission;
+            }
+            foreach ($_user['containers'] as $container) {
+                $containerPermissionsUser[$container['id']] = $container;
+            }
+
+            $containerPermissions = $containerPermissionsUser + $containerPermissions;
+
+            //user container permissions AND usercontainerrole permissions
+            $_user['containers'] = $containerPermissions;
+
             $rights = [ROOT_CONTAINER];
             $rights_levels = [ROOT_CONTAINER => READ_RIGHT];
             $this->hasRootPrivileges = false;
             $this->MY_RIGHTS = [];
-            foreach ($_user['ContainerUserMembership'] as $container) {
+            foreach ($_user['containers'] as $container) {
+                $container = $container['_joinData'];
                 $rights[] = (int)$container['container_id'];
                 $rights_levels[(int)$container['container_id']] = $container['permission_level'];
 
@@ -218,9 +260,9 @@ class AppController extends Controller {
                     $this->hasRootPrivileges = true;
                 }
 
-                foreach ($this->Container->children($container['container_id'], false) as $childContainer) {
-                    $rights[] = (int)$childContainer['Container']['id'];
-                    $rights_levels[(int)$childContainer['Container']['id']] = $container['permission_level'];
+                foreach ($ContainersTable->getChildren($container['container_id']) as $childContainer) {
+                    $rights[] = (int)$childContainer['id'];
+                    $rights_levels[(int)$childContainer['id']] = $container['permission_level'];
                 }
             }
 
@@ -320,8 +362,11 @@ class AppController extends Controller {
      */
 
     protected function _beforeAction() {
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettingsArray = $Systemsettings->findAsArray();
         if (!Cache::read('systemsettings', 'permissions')) {
-            Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
+            Cache::write('systemsettings', $systemsettingsArray, 'permissions');
         }
         $systemsettings = Cache::read('systemsettings', 'permissions');
 
@@ -374,8 +419,11 @@ class AppController extends Controller {
         if ($this->Auth->loggedIn()) {
             $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
 
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettingsArray = $Systemsettings->findAsArray();
             if (!Cache::read('systemsettings', 'permissions')) {
-                Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
+                Cache::write('systemsettings', $systemsettingsArray, 'permissions');
             }
             $systemsettings = Cache::read('systemsettings', 'permissions');
 
@@ -431,7 +479,7 @@ class AppController extends Controller {
                     $sqlLogs[$source] = $db->getLog();
                 endforeach;
             endif;
-            $queryLog = LOGS . 'query.log';
+            $queryLog = OLD_LOGS . 'query.log';
             $logfile = fopen($queryLog, 'a+');
 
             foreach ($sqlLogs as $datasource => $log) {
@@ -544,7 +592,7 @@ class AppController extends Controller {
     /**
      * Responds in the widget response format.
      *
-     * @param    string $html The action HTML
+     * @param string $html The action HTML
      *
      * @return    string    The rendered HTML
      */
@@ -590,7 +638,7 @@ class AppController extends Controller {
     /**
      * Unbind all accociations for the next find() call for every model
      *
-     * @param  String $ModelName The Name of the Model, you want to unbind all accociations
+     * @param String $ModelName The Name of the Model, you want to unbind all accociations
      *
      * @return void
      * @since 3.0
@@ -637,7 +685,7 @@ class AppController extends Controller {
             if (!empty($linkData) && $viewPosition == 'tab') {
                 foreach ($linkData as $key => $data) {
                     //add an id so we can identify tabs
-                    $linkData[$key]['uuid'] = UUID::v4();
+                    $linkData[$key]['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
                 }
             }
             //defines the vars link $additionalLinkList or $additionalLinkTab
@@ -682,6 +730,7 @@ class AppController extends Controller {
 
     /**
      * REST API functionality
+     * @todo Refactor me for CakePHP 4
      */
     protected function serializeId() {
         if ($this->request->ext != 'json') {
@@ -708,6 +757,17 @@ class AppController extends Controller {
     }
 
     /**
+     * @param EntityInterface $entity
+     */
+    protected function serializeCake4Id(EntityInterface $entity) {
+        if ($this->request->ext != 'json') {
+            return;
+        }
+        $this->set('id', $entity->id);
+        $this->set('_serialize', ['id']);
+    }
+
+    /**
      * REST API functionality
      */
     protected function serializeErrorMessage() {
@@ -730,6 +790,17 @@ class AppController extends Controller {
         $name = Inflector::singularize($modelName);
         $error = $this->{$name}->validationErrors;
         $this->set(compact('error'));
+        $this->set('_serialize', ['error']);
+    }
+
+    /**
+     * REST API functionality
+     */
+    protected function serializeCake4ErrorMessage(EntityInterface $entity) {
+        if ($this->isAngularJsRequest()) {
+            $this->response->statusCode(400);
+        }
+        $this->set('error', $entity->getErrors());
         $this->set('_serialize', ['error']);
     }
 
@@ -777,6 +848,8 @@ class AppController extends Controller {
             return false;
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $rights = $this->MY_RIGHTS;
 
         if (is_array($containerIds)) {
@@ -909,10 +982,15 @@ class AppController extends Controller {
         return $this->request->ext === 'xml';
     }
 
+    protected function isHtmlRequest() {
+        return $this->request->ext === 'html';
+    }
+
     /**
      * @param array $usedBy
      * @param string $type
      * @return array
+     * @deprecated
      */
     protected function getUsedByForFrontend($usedBy = [], $type = 'host') {
         $result = [];
@@ -955,7 +1033,7 @@ class AppController extends Controller {
 
 
     public function checkForUpdates() {
-        $path = APP . 'Lib' . DS . 'AvailableVersion.php';
+        $path = OLD_APP . 'Lib' . DS . 'AvailableVersion.php';
         $availableVersion = '???';
         if (file_exists($path)) {
             require_once $path;

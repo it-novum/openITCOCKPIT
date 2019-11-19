@@ -23,58 +23,64 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+
 class UsergroupsController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['Acl'];
 
     public $uses = ['Usergroup', 'Aro', 'Tenant'];
 
-    //public function beforeFilter(){
-    //	$this->Auth->allow();
-    //	parent::beforeFilter();
-    //}
-
     public function index() {
-        $options = [
-            'recursive' => -1,
-            'order'     => [
-                'Usergroup.name' => 'asc',
-            ],
-        ];
-
-        $query = Hash::merge($this->Paginator->settings, $options);
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_usergroups = $this->Usergroup->find('all', $query);
-            $this->set('all_usergroups', $all_usergroups);
-            $this->set('_serialize', ['all_usergroups']);
-        } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
-            $usergroups = $this->Paginator->paginate();
+        $this->layout = 'blank';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
         }
-        $this->set(compact(['usergroups']));
+
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest());
+        /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+        $allUsergroups = $UsergroupsTable->getUsergroups($PaginateOMat);
+
+        $this->set('allUsergroups', $allUsergroups);
+        $this->set('_serialize', ['allUsergroups']);
     }
 
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
-        if (!$this->Usergroup->exists($id)) {
+
+        /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+
+        if (!$UsergroupsTable->exists($id)) {
             throw new NotFoundException(__('Invalid usergroup'));
         }
-        $usergroup = $this->Usergroup->findById($id);
+        $usergroup = $UsergroupsTable->getUsergroupById($id);
 
         $this->set('usergroup', $usergroup);
         $this->set('_serialize', ['usergroup']);
     }
 
     public function edit($id = null) {
-        $userId = $this->Auth->user('id');
-        if (!$this->Usergroup->exists($id)) {
+        $this->layout = 'blank';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+
+        if (!$UsergroupsTable->exists($id)) {
             throw new NotFoundException(__('Invalid user role'));
         }
 
+        /*@TODO fix ACL stuff with cake 4*/
         $permissions = $this->Acl->Aro->Permission->find('all', [
             'conditions' => [
                 'Aro.foreign_key' => $id,
@@ -84,17 +90,23 @@ class UsergroupsController extends AppController {
         $aros = Hash::extract($permissions, '{n}.Permission.aco_id');
         unset($permissions);
 
-        $acos = $this->Acl->Aco->find('threaded', [
+        /*$acos = $this->Acl->Aco->find('threaded', [
             'recursive' => -1,
         ]);
+*/
+        $usergroup = $UsergroupsTable->getUsergroupById($id);
 
-        $usergroup = $this->Usergroup->findById($id);
+/*
+        $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
+        $acoDependencies = $UsergroupsTable->getAcoDependencies($acos);
+        $dependentAcoIds = $UsergroupsTable->getAcoDependencyIds($acoDependencies);
+*/
+        $allAcos = $this->Acl->Aco->find('threaded', [
+            'recursive' => -1,
+        ]);
+        $UsergroupsTable->getUsergroupAcosForAddEdit($allAcos);
 
-
-        $alwaysAllowedAcos = $this->Usergroup->getAlwaysAllowedAcos($acos);
-        $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
-        $dependenAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
-
+        die();
         if ($this->request->is('post') || $this->request->is('put')) {
             $aro = $this->Acl->Aro->find('first', [
                 'recursive'  => -1,
@@ -155,6 +167,9 @@ class UsergroupsController extends AppController {
             }
 
             unset($this->request->data['Aco']);
+
+            debug($this->request->data);
+            die();
             if ($this->Usergroup->save($this->request->data)) {
                 //Delete old permissions
                 $this->Acl->Aro->Permission->deleteAll([
@@ -169,23 +184,25 @@ class UsergroupsController extends AppController {
                 $this->setFlash(__('User role could not be saved'), false);
             }
         }
+        $this->set('acos', $acos);
+        $this->set('aros', $aros);
+        $this->set('usergroup', $usergroup);
+        $this->set('alwaysAllowedAcos', $alwaysAllowedAcos);
+        $this->set('acoDependencies', $acoDependencies);
+        $this->set('dependentAcoIds', $dependentAcoIds);
+        $this->set('_serialize', ['acos', 'aros', 'usergroup', 'alwaysAllowedAcos', 'acoDependencies', 'dependentAcoIds']);
 
-        $this->set(compact([
-            'acos',
-            'aros',
-            'usergroup',
-            'alwaysAllowedAcos',
-            'acoDependencies',
-            'dependenAcoIds',
-        ]));
     }
 
     public function add() {
         $acos = $this->Acl->Aco->find('threaded');
 
-        $alwaysAllowedAcos = $this->Usergroup->getAlwaysAllowedAcos($acos);
-        $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
-        $dependenAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
+        /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+
+        $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
+        $acoDependencies =$UsergroupsTable->getAcoDependencies($acos);
+        $dependenAcoIds = $UsergroupsTable->getAcoDependencyIds($acoDependencies);
 
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Usergroup->saveAll($this->request->data)) {
@@ -286,6 +303,18 @@ class UsergroupsController extends AppController {
         }
         $this->setFlash(__('Could not delete user role'), false);
         $this->redirect(['action' => 'index']);
+    }
+
+    public function loadUsergroups() {
+        $this->layout = 'blank';
+        /** @var $Usergroups App\Model\Table\UsergroupsTable */
+        $Usergroups = TableRegistry::getTableLocator()->get('Usergroups');
+        $usergroups = $Usergroups->getUsergroupsList();
+
+        $usergroups = Api::makeItJavaScriptAble($usergroups);
+
+        $this->set('usergroups', $usergroups);
+        $this->set('_serialize', ['usergroups']);
     }
 
 }

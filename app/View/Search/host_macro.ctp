@@ -75,7 +75,7 @@
                                         <td class="width-160">
                                             <div class="btn-group">
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                    <a href="/hosts/edit/<?php echo $host['Host']['id']; ?>"
+                                                    <a ui-sref="HostsEdit({id:<?php echo $host['Host']['id']; ?>})"
                                                        class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                     </a>
                                                 <?php else: ?>
@@ -88,7 +88,7 @@
                                                 <ul class="dropdown-menu">
                                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                         <li>
-                                                            <a href="/hosts/edit/<?php echo $host['Host']['id']; ?>">
+                                                            <a ui-sref="HostsEdit({id:<?php echo $host['Host']['id']; ?>})"
                                                                 <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>

@@ -33,7 +33,7 @@
                 <?php echo __('Refresh'); ?>
             </button>
             <?php if ($this->Acl->hasPermission('add', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                <a href="/grafana_module/grafana_userdashboards/add" class="btn btn-xs btn-success">
+                <a ui-sref="GrafanaUserdashboardsAdd" class="btn btn-xs btn-success">
                     <i class="fa fa-plus"></i>
                     <?php echo __('New'); ?>
                 </a>
@@ -96,7 +96,7 @@
                     </td>
                     <td>
                         <?php if ($this->Acl->hasPermission('view', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                            <a href="/grafana_module/grafana_userdashboards/view/{{ userdashboard.GrafanaUserdashboard.id }}"
+                            <a ui-sref="GrafanaUserdashboardsView({id: userdashboard.GrafanaUserdashboard.id})"
                                ng-show="userdashboard.GrafanaUserdashboard.grafana_url !== ''">
                                 {{ userdashboard.GrafanaUserdashboard.name }}
                             </a>
@@ -113,7 +113,7 @@
                     <td>
                         <div class="btn-group smart-form">
                             <?php if ($this->Acl->hasPermission('editor', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                                <a href="/grafana_module/grafana_userdashboards/editor/{{userdashboard.GrafanaUserdashboard.id}}"
+                                <a ui-sref="GrafanaUserdashboardsEditor({id: userdashboard.GrafanaUserdashboard.id})"
                                    ng-if="userdashboard.GrafanaUserdashboard.allowEdit"
                                    class="btn btn-default btn-xs">
                                     <i class="fa fa-cog"></i>
@@ -133,14 +133,14 @@
                                 id="menuHack-{{userdashboard.GrafanaUserdashboard.id}}">
                                 <?php if ($this->Acl->hasPermission('editor', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                     <li ng-if="userdashboard.GrafanaUserdashboard.allowEdit">
-                                        <a href="/grafana_module/grafana_userdashboards/editor/{{userdashboard.GrafanaUserdashboard.id}}">
+                                        <a ui-sref="GrafanaUserdashboardsEditor({id: userdashboard.GrafanaUserdashboard.id})">
                                             <i class="fa fa-cog"></i> <?php echo __('Open in Editor'); ?>
                                         </a>
                                     </li>
                                 <?php endif; ?>
                                 <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                     <li ng-if="userdashboard.GrafanaUserdashboard.allowEdit">
-                                        <a href="/grafana_module/grafana_userdashboards/edit/{{userdashboard.GrafanaUserdashboard.id}}">
+                                        <a ui-sref="GrafanaUserdashboardsEdit({id: userdashboard.GrafanaUserdashboard.id})">
                                             <i class="fa fa-edit"></i> <?php echo __('Edit settings'); ?>
                                         </a>
                                     </li>
@@ -149,7 +149,7 @@
 
                                 <?php if ($this->Acl->hasPermission('view', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                     <li>
-                                        <a href="/grafana_module/grafana_userdashboards/view/{{userdashboard.GrafanaUserdashboard.id}}">
+                                        <a ui-sref="GrafanaUserdashboardsView({id: userdashboard.GrafanaUserdashboard.id})">
                                             <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
                                     </li>
                                 <?php endif; ?>

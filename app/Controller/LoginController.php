@@ -23,11 +23,16 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 App::uses('Validation', 'Utility');
 
-
+/**
+ * Class LoginController
+ * @property User $User
+ */
 class LoginController extends AppController {
 
     public $uses = ['User', 'SystemContent', 'Systemsetting', 'Container', 'Oauth2client'];
@@ -44,7 +49,12 @@ class LoginController extends AppController {
     }
 
     public function login($redirectBack = 0) {
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
+
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
 
         $disableLoginAnimation = false;
         if (isset($systemsettings['FRONTEND']['FRONTEND.DISABLE_LOGIN_ANIMATION'])) {
@@ -59,7 +69,7 @@ class LoginController extends AppController {
                 $this->redirect($result['redirect']);
             }
             if (($result['success'])) {
-                $user = $this->User->find('first', ['conditions' => ['email' => $result['email'], 'status' => 1]]);
+                $user = $Users->getActiveUsersByEmail($result['email']);
                 if (empty($user)) {
                     echo $systemsettings['FRONTEND']['FRONTEND.SSO.NO_EMAIL_MESSAGE'] . $errorPostMess;
                     exit;
@@ -70,7 +80,7 @@ class LoginController extends AppController {
                 }
 
                 $this->Session->delete('Message.auth');
-                $this->setFlash(__('login.automatically_logged_in'));
+                $this->setFlash(__('You have been automatically logged in.'));
                 $this->redirect($this->Auth->loginRedirect);
             } else {
                 echo $result['message'] . $errorPostMess;
@@ -96,11 +106,13 @@ class LoginController extends AppController {
         if ($redirectBack) {
             $this->Auth->loginRedirect = $this->request->referer();
         }
-        if ($this->Auth->loggedIn()) {
-            $this->redirect($this->Auth->loginRedirect);
 
-            return;
-        }
+//        ?????
+//        if ($this->Auth->loggedIn()) {
+//            $this->redirect($this->Auth->loginRedirect);
+//
+//            return;
+//        }
         if (!empty($this->params['url']['redirectUrl'])) {
             $this->Session->write('Login.redirectUrl', $this->params['url']['redirectUrl']);
         } else if (($redirectUrl = $this->Auth->redirectUrl()) != '/') {
@@ -145,12 +157,12 @@ class LoginController extends AppController {
                 if (empty($user)) {
                     $viewerEmail = isset($systemsettings['FRONTEND']['FRONTEND.CERT.DEFAULT_USER_EMAIL']) ? $systemsettings['FRONTEND']['FRONTEND.CERT.DEFAULT_USER_EMAIL'] : '';
                     if (!empty($viewerEmail)) {
-                        $user = $this->User->find('first', ['conditions' => ['User.email' => $viewerEmail, 'status' => 1]]);
+                        $user = $Users->getActiveUsersByEmail($viewerEmail);
                     }
                 }
                 if (!empty($user) && $this->Auth->login($user)) {
                     $this->Session->delete('Message.auth');
-                    $this->setFlash(__('login.automatically_logged_in'));
+                    $this->setFlash(__('You have been automatically logged in.'));
                     $this->redirect($this->Auth->loginRedirect);
                 }
             }
@@ -168,47 +180,28 @@ class LoginController extends AppController {
                 unset($this->request->data['email']);
             }
 
-
             $this->Auth->logout();
             $this->request->data = ['User' => $this->data['LoginUser']];
 
+
             // Allow login in with nickname or email address
-            if (!empty($this->data['User']['email']) && !Validation::email($this->data['User']['email'])) {
-                $user = $this->User->findByEmail($this->data['User']['email']);
+            if (!empty($this->data['User']['email'])) {
+                $user = $Users->getUserByEmail($this->data['User']['email']);
                 if (!empty($user)) {
-                    $this->request->data['User']['email'] = $user['User']['email'];
+                    $this->request->data['User']['email'] = $user['email'];
                 }
             }
 
             $__user = null;
             if (isset($this->data['User']['auth_method']) && $this->data['User']['auth_method'] == 'ldap') {
-                $__user = $this->User->findBySamaccountname(strtolower($this->data['User']['samaccountname']));
+                $__user = $Users->findBySamaccountname(strtolower($this->data['User']['samaccountname']));
+                //$__user = $this->User->findBySamaccountname(strtolower($this->data['User']['samaccountname']));
             }
 
             if (!isset($this->request->data['User']['auth_method'])) {
                 $this->request->data['User']['auth_method'] = $systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'];
             }
-
             if ($this->Auth->login($__user, $this->request->data['User']['auth_method'])) {
-                //MOVED TO AppController!!!
-                //$_user = $this->User->findById($this->Auth->user('id'));
-                //$rights = [ROOT_CONTAINER];
-                //$hasRootPrivileges = false;
-                //foreach($_user['Container'] as $container){
-                //	$rights[] = (int)$container['id'];
-
-                //
-                //	if((int)$container['id'] === ROOT_CONTAINER){
-                //		$hasRootPrivileges = true;
-                //	}
-                //
-                //	foreach($this->Container->children($container['id'], true) as $childContainer){
-                //		$rights[] = (int)$childContainer['Container']['id'];
-                //	}
-                //}
-                //$this->Session->write('MY_RIGHTS', array_unique($rights));
-                //$this->Session->write('hasRootPrivileges', $hasRootPrivileges);
-
                 if (isset($this->data['User']['remember_me']) && $this->data['User']['remember_me'] &&
                     $systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] != 'twofactor'
                 ) {
@@ -227,7 +220,7 @@ class LoginController extends AppController {
                 } else {
                     if ($this->request->ext != 'json') {
                         //Only redirect for normal browser POST request, not for rest API
-                        $this->setFlash(__('login.login_successful'));
+                        $this->setFlash(__('The Login was successful.'));
                         $this->redirect($this->Auth->loginRedirect);
 
                         return;
@@ -240,7 +233,7 @@ class LoginController extends AppController {
                 }
             } else {
                 if ($redirectBack) {
-                    $this->setFlash(__('login.username_and_password_dont_match'), false);
+                    $this->setFlash(__('Email and password do not match any user in our database.'), false);
                     $this->redirect($this->request->referer());
 
                     return;
@@ -253,7 +246,7 @@ class LoginController extends AppController {
                             $this->setFlash(__('Bad username or password'), false);
                         }
                     } else {
-                        $this->setFlash(__('login.username_and_password_dont_match'), false);
+                        $this->setFlash(__('Email and password do not match any user in our database.'), false);
                     }
                 }
             }
@@ -284,7 +277,7 @@ class LoginController extends AppController {
                         ]);
                     }
 
-                    $this->setFlash(__('login.logout_successfull'));
+                    $this->setFlash(__('The Logout was successful.'));
                     $this->redirect('/login/login');
                 }
                 $this->setFlash(__('Wrong One-time password'), false);
@@ -292,7 +285,10 @@ class LoginController extends AppController {
         }
         //$this->layout = 'lock';
         $_user = $this->User->findById($id);
-        $this->_systemsettings = $this->Systemsetting->findAsArray();
+
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArray();
 
         $generateToken = function () {
             $char = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -349,12 +345,14 @@ class LoginController extends AppController {
      * @return void
      */
     public function logout() {
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
         $this->Auth->logout();
         if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' && !empty($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK'])) {
             $this->redirect($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK']);
         } else {
-            $this->setFlash(__('login.logout_successfull'));
+            $this->setFlash(__('The Logout was successful.'));
         }
         $this->redirect([
             'controller' => 'login',
@@ -387,7 +385,9 @@ class LoginController extends AppController {
         ];
 
         $this->set('user', $user);
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
         $this->set('authMethod', $systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD']);
 
         //Multilaguage für das Frontend

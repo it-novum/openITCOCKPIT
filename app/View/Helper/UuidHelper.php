@@ -64,8 +64,7 @@ class UuidHelper extends AppHelper {
     }
 
     public function replaceUuids($string) {
-        App::uses('UUID', 'Lib');
-        $string = preg_replace_callback(UUID::regex(), function ($matches) {
+        $string = preg_replace_callback(\itnovum\openITCOCKPIT\Core\UUID::regex(), function ($matches) {
             foreach ($matches as $match) {
                 if (isset($this->uuidCache[$match])) {
                     //Checking if name exists or if we need to use the container:

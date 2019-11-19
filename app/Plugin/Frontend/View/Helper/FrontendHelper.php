@@ -120,7 +120,7 @@ class FrontendHelper extends AppHelper
 
             // Add All Plugin Controllers
             foreach (CakePlugin::loaded() as $pluginName) {
-                $pluginJsControllersFolder = APP.'Plugin/'.$pluginName.'/webroot/js/app/controllers/';
+                $pluginJsControllersFolder = OLD_APP.'Plugin/'.$pluginName.'/webroot/js/app/controllers/';
                 if (is_dir($pluginJsControllersFolder)) {
                     $folder = new Folder($pluginJsControllersFolder);
                     $files = $folder->findRecursive('.*\.js');
@@ -315,7 +315,7 @@ class FrontendHelper extends AppHelper
 
             // Add Plugin Components
             foreach (CakePlugin::loaded() as $pluginName) {
-                $pluginJsComponentsFolder = APP.'Plugin/'.$pluginName.'/webroot/js/app/components/';
+                $pluginJsComponentsFolder = OLD_APP.'Plugin/'.$pluginName.'/webroot/js/app/components/';
                 if (is_dir($pluginJsComponentsFolder)) {
                     $folder = new Folder($pluginJsComponentsFolder);
                     $files = $folder->find('.*\.js');

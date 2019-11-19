@@ -29,204 +29,423 @@
             <i class="fa fa-sitemap fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Hostdependency'); ?>
-			</span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+                <?php echo __('Host dependencies'); ?>
+            </span>
+            <div class="third_level"> <?php echo __('Edit'); ?></div>
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-sitemap"></i> </span>
-        <h2><?php echo __('Edit Hostdependency'); ?></h2>
+        <h2><?php echo __('Edit host dependency'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php if ($this->Acl->hasPermission('delete')): ?>
-                <?php echo $this->Utils->deleteButton(null, $hostdependency['Hostdependency']['id']); ?>
-            <?php endif; ?>
-            <?php echo $this->Utils->backButton(); ?>
-        </div>
-        <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
-            <?php echo __('UUID: %s', h($hostdependency['Hostdependency']['uuid'])); ?>
+            <a ui-sref="HostdependenciesIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Hostdependency', [
-                'class' => 'form-horizontal clear',
-            ]);
-            echo $this->Form->input('Hostdependency.id', ['type' => 'hidden', 'value' => $hostdependency['Hostdependency']['id']]);
+            <form class="form-horizontal" ng-init="successMessage=
+            {objectName : '<?php echo __('Host dependency'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="form-group required" ng-class="{'has-error': errors.container_id}">
+                            <label class="col col-md-2 control-label">
+                                <?php echo __('Container'); ?>
+                            </label>
+                            <div class="col col-xs-12 col-lg-10">
+                                <select
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="containers"
+                                        ng-options="container.key as container.value for container in containers"
+                                        ng-model="post.Hostdependency.container_id">
+                                </select>
+                                <div class="info-block-helptext">
+                                    <?php echo __('Host dependencies are an advanced feature that allow you to 
+                                    suppress notifications for hosts based on the status of one or more other hosts.'); ?>
+                                </div>
+                                <div ng-repeat="error in errors.container_id">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
 
-            if ($hasRootPrivileges):
-                echo $this->Form->input('Hostdependency.container_id', [
-                    'options'       => $this->Html->chosenPlaceholder($containers),
-                    'class'         => 'chosen',
-                    'style'         => 'width: 100%;',
-                    'label'         => __('Container'),
-                    'SelectionMode' => 'single',
-                    'selected'      => $this->request->data['Hostdependency']['container_id'],
-                ]);
-            elseif (!$hasRootPrivileges && $hostdependency['Hostdependency']['container_id'] != ROOT_CONTAINER):
-                echo $this->Form->input('Hostdependency.container_id', [
-                    'options'       => $this->Html->chosenPlaceholder($containers),
-                    'class'         => 'chosen',
-                    'style'         => 'width: 100%;',
-                    'label'         => __('Container'),
-                    'SelectionMode' => 'single',
-                    'selected'      => $this->request->data['Hostdependency']['container_id'],
-                ]);
-            else:
-                ?>
-                <div class="form-group required">
-                    <label class="col col-md-2 control-label"><?php echo __('Container'); ?></label>
-                    <div class="col col-xs-10 required"><input type="text" value="/root" class="form-control" readonly>
+                        <div class="form-group" ng-class="{'has-error': errors.hosts}">
+                            <label class="col col-md-2 control-label">
+                                <div class="label-group label-breadcrumb label-breadcrumb-default required">
+                                    <label class="label label-default label-xs">
+                                        <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
+                                    </label>
+                                    <label class="label label-light label-xs no-border"
+                                          ng-class="{'has-error': errors.hosts}">
+                                        <?php echo __('Hosts'); ?>
+                                    </label>
+                                </div>
+                            </label>
+                            <div class="col col-xs-12 col-lg-10 default">
+                                <select id="HostdependencyHost"
+                                        multiple
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hosts"
+                                        callback="loadHosts"
+                                        ng-options="host.key as host.value disable when host.disabled for host in hosts"
+                                        ng-model="post.Hostdependency.hosts._ids">
+                                </select>
+                                <div ng-repeat="error in errors.hosts">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.hosts_dependent}">
+                            <label class="col col-md-2 control-label">
+                                <div class="label-group label-breadcrumb label-breadcrumb-primary required">
+                                    <label class="label label-primary label-xs">
+                                        <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
+                                    </label>
+                                    <label class="label label-light label-xs no-border">
+                                        <?php echo __('Dependent hosts'); ?>
+                                    </label>
+                                </div>
+                            </label>
+                            <div class="col col-xs-12 col-lg-10 info">
+                                <select id="HostdependencyHostDependent"
+                                        multiple
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hosts_dependent"
+                                        callback="loadDependentHosts"
+                                        ng-options="host.key as host.value disable when host.disabled for host in hosts_dependent"
+                                        ng-model="post.Hostdependency.hosts_dependent._ids">
+                                </select>
+                                <div ng-repeat="error in errors.hosts_dependent">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col col-md-2 control-label">
+                                <div class="label-group label-breadcrumb label-breadcrumb-default">
+                                    <label class="label label-default label-xs">
+                                        <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
+                                    </label>
+                                    <span class="label label-light label-xs no-border">
+                                        <?php echo __('Host groups'); ?>
+                                    </span>
+                                </div>
+                            </label>
+                            <div class="col col-xs-12 col-lg-10 default">
+                                <select id="HostdependencyHostgroup"
+                                        multiple
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hostgroups"
+                                        ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups"
+                                        ng-model="post.Hostdependency.hostgroups._ids">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col col-md-2 control-label">
+                                <div class="label-group label-breadcrumb label-breadcrumb-primary">
+                                    <label class="label label-primary label-xs">
+                                        <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
+                                    </label>
+                                    <span class="label label-light label-xs no-border">
+                                        <?php echo __('Dependent host groups'); ?>
+                                    </span>
+                                </div>
+                            </label>
+                            <div class="col col-xs-12 col-lg-10 info">
+                                <select id="HostdependencyHostgroupDependent"
+                                        multiple
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hostgroups_dependent"
+                                        ng-options="hostgroup.key as hostgroup.value disable when hostgroup.disabled for hostgroup in hostgroups_dependent"
+                                        ng-model="post.Hostdependency.hostgroups_dependent._ids">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col col-md-2 control-label">
+                                <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                    <a ui-sref="TimeperiodsEdit({id:post.Hostdependency.timeperiod_id})">
+                                        <?php echo __('Time period'); ?>
+                                    </a>
+                                <?php else: ?>
+                                    <?php echo __('Time period'); ?>
+                                <?php endif; ?>
+                            </label>
+                            <div class="col col-xs-12 col-lg-10">
+                                <select
+                                        data-placeholder="<?php echo __('Please choose a timeperiod'); ?>"
+                                        class="form-control"
+                                        chosen="timeperiods"
+                                        ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                        ng-model="post.Hostdependency.timeperiod_id">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-lg-2 control-label" for="inheritsParent">
+                                <?php echo __('Inherits parent'); ?>
+                            </label>
+
+                            <div class="col-xs-12 col-lg-1 smart-form">
+                                <label class="checkbox no-required no-padding no-margin label-default-off">
+                                    <input type="checkbox" name="checkbox"
+                                           id="inheritsParent"
+                                           ng-true-value="1"
+                                           ng-false-value="0"
+                                           ng-model="post.Hostdependency.inherits_parent">
+                                    <i class="checkbox-primary"></i>
+                                </label>
+                            </div>
+                        </div>
+
+                        <fieldset>
+                            <legend class="font-sm">
+                                <div>
+                                    <label>
+                                        <?php echo __('Execution failure criteria'); ?>
+                                    </label>
+                                </div>
+                            </legend>
+                            <ul class="config-flex-inner">
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="execution_fail_on_up"
+                                               class="col col-md-7 control-label padding-top-0">
+                                        <span class="label label-success notify-label-small">
+                                            <?php echo __('Recovery'); ?>
+                                        </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="execution_fail_on_up"
+                                                       ng-model="post.Hostdependency.execution_fail_on_up">
+                                                <i class="checkbox-success"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="execution_fail_on_down"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-danger notify-label-small">
+                                            <?php echo __('Down'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="execution_fail_on_down"
+                                                       ng-model="post.Hostdependency.execution_fail_on_down">
+                                                <i class="checkbox-danger"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="execution_fail_on_unreachable"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-default notify-label-small">
+                                                <?php echo __('Unreachable'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="execution_fail_on_unreachable"
+                                                       ng-model="post.Hostdependency.execution_fail_on_unreachable">
+                                                <i class="checkbox-default"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="execution_fail_on_pending"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-primary notify-label-small">
+                                                <?php echo __('Pending'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="execution_fail_on_pending"
+                                                       ng-model="post.Hostdependency.execution_fail_on_pending">
+                                                <i class="checkbox-primary"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="execution_none"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-primary notify-label-small">
+                                                <?php echo __('Execution none'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="execution_none"
+                                                       ng-model="post.Hostdependency.execution_none">
+                                                <i class="checkbox-primary"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </fieldset>
+                        <fieldset>
+                            <legend class="font-sm">
+                                <div>
+                                    <label>
+                                        <?php echo __('Notification failure criteria'); ?>
+                                    </label>
+                                </div>
+                            </legend>
+                            <ul class="config-flex-inner">
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="notification_fail_on_up"
+                                               class="col col-md-7 control-label padding-top-0">
+                                        <span class="label label-success notify-label-small">
+                                            <?php echo __('Recovery'); ?>
+                                        </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="notification_fail_on_up"
+                                                       ng-model="post.Hostdependency.notification_fail_on_up">
+                                                <i class="checkbox-success"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="notification_fail_on_down"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-danger notify-label-small">
+                                            <?php echo __('Down'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="notification_fail_on_down"
+                                                       ng-model="post.Hostdependency.notification_fail_on_down">
+                                                <i class="checkbox-danger"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="notification_fail_on_unreachable"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-default notify-label-small">
+                                                <?php echo __('Unreachable'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="notification_fail_on_unreachable"
+                                                       ng-model="post.Hostdependency.notification_fail_on_unreachable">
+                                                <i class="checkbox-default"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="notification_fail_on_pending"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-primary notify-label-small">
+                                                <?php echo __('Pending'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="notification_fail_on_pending"
+                                                       ng-model="post.Hostdependency.notification_fail_on_pending">
+                                                <i class="checkbox-primary"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="margin-bottom-0">
+                                        <label for="notification_none"
+                                               class="col col-md-7 control-label padding-top-0">
+                                            <span class="label label-primary notify-label-small">
+                                                <?php echo __('Notification none'); ?>
+                                            </span>
+                                        </label>
+                                        <div class="col-md-2 smart-form padding-left-5">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="notification_none"
+                                                       ng-model="post.Hostdependency.notification_none">
+                                                <i class="checkbox-primary"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </fieldset>
                     </div>
                 </div>
-                <?php
-                echo $this->Form->input('Hostdependency.container_id', [
-                        'value' => $hostdependency['Hostdependency']['container_id'],
-                        'type'  => 'hidden',
-                    ]
-                );
-            endif;
-
-            echo $this->Form->input('Hostdependency.Host', [
-                'options'          => $hosts,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => '<i class="fa fa-square class-default"></i> ' . __('Hosts'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10',
-                ],
-                'target'           => '#HostdependencyHostDependent',
-                'data-placeholder' => __('Please choose a host'),
-            ]);
-
-            echo $this->Form->input('Hostdependency.HostDependent', [
-                'options'          => $hosts,
-                'class'            => 'chosen test',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => '<i class="fa fa-square class-info"></i> ' . __('Dependent hosts'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10 info',
-                ],
-                'target'           => '#HostdependencyHost',
-                'data-placeholder' => __('Please choose a host'),
-            ]);
-
-            echo $this->Form->input('Hostdependency.Hostgroup', [
-                'options'          => $hostgroups,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-default"></i> Hostgroups'),
-                'data-placeholder' => __('Please choose a hostgroup'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10',
-                ],
-                'target'           => '#HostdependencyHostgroupDependent',
-            ]);
-
-            echo $this->Form->input('Hostdependency.HostgroupDependent', [
-                'options'          => $hostgroups,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-info"></i> Dependent Hostgroups'),
-                'data-placeholder' => __('Please choose a hostgroup'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10 info',
-                ],
-                'target'           => '#HostdependencyHostgroup',
-            ]);
-
-            echo $this->Form->input('Hostdependency.timeperiod_id', [
-                'options'          => $this->Html->chosenPlaceholder($timeperiods),
-                'class'            => 'chosen',
-                'multiple'         => false,
-                'style'            => 'width:100%;',
-                'label'            => __('Timeperiod'),
-                'data-placeholder' => __('Please choose a timeperiod'),
-                'selected'         => $this->request->data['Hostdependency']['timeperiod_id'],
-            ]);
-            ?>
-            <br/>
-            <?php
-            echo $this->Form->fancyCheckbox('inherits_parent', [
-                'div'              => 'form-group',
-                'caption'          => __('Inherits parent'),
-                'wrapGridClass'    => 'col col-xs-10',
-                'captionGridClass' => 'col col-md-2 no-padding',
-                'captionClass'     => 'col col-md-2 control-label',
-                'icon'             => '<i class="fa fa-link"></i> ',
-                'checked'          => (boolean)$this->request->data['Hostdependency']['inherits_parent'],
-            ]);
-            ?>
-            <br class="clearfix"/>
-            <fieldset>
-                <legend class="font-sm">
-                    <label><?php echo __('Execution failure criteria'); ?></label>
-                    <?php if (isset($validation_host_notification)): ?>
-                        <span class="text-danger"><?php echo $validation_host_notification; ?></span>
-                    <?php endif; ?>
-                </legend>
-                <?php
-                $dependency_options = [
-                    'execution_fail_on_up'          => 'fa-square txt-color-greenLight',
-                    'execution_fail_on_down'        => 'fa-square txt-color-redLight',
-                    'execution_fail_on_unreachable' => 'fa-square txt-color-blueDark',
-                    'execution_fail_on_pending'     => 'fa-square-o',
-                    'execution_none'                => 'fa-minus-square-o',
-                ];
-                foreach ($dependency_options as $dependency_option => $icon):?>
-                    <div style="border-bottom:1px solid lightGray;">
-                        <?php echo $this->Form->fancyCheckbox($dependency_option, [
-                            'caption' => ucfirst(preg_replace('/(execution_|fail_on_)/', '', $dependency_option)),
-                            'icon'    => '<i class="fa ' . $icon . '"></i> ',
-                            'checked' => (boolean)$this->request->data['Hostdependency'][$dependency_option],
-                        ]); ?>
-                        <div class="clearfix"></div>
-                    </div>
-                <?php endforeach; ?>
-            </fieldset>
-            <br class="clearfix"/>
-            <fieldset>
-                <legend class="font-sm">
-                    <label><?php echo __('Notification failure criteria'); ?></label>
-                    <?php if (isset($validation_host_notification)): ?>
-                        <span class="text-danger"><?php echo $validation_host_notification; ?></span>
-                    <?php endif; ?>
-                </legend>
-                <?php
-                $dependency_options = [
-                    'notification_fail_on_up'          => 'fa-square txt-color-greenLight',
-                    'notification_fail_on_down'        => 'fa-square txt-color-redLight',
-                    'notification_fail_on_unreachable' => 'fa-square txt-color-blueDark',
-                    'notification_fail_on_pending'     => 'fa-square-o',
-                    'notification_none'                => 'fa-minus-square-o ',
-                ];
-                foreach ($dependency_options as $dependency_option => $icon):?>
-                    <div style="border-bottom:1px solid lightGray;">
-                        <?php echo $this->Form->fancyCheckbox($dependency_option, [
-                            'caption' => ucfirst(preg_replace('/(notification_|fail_on_)/', '', $dependency_option)),
-                            'icon'    => '<i class="fa ' . $icon . '"></i> ',
-                            'checked' => (boolean)$this->request->data['Hostdependency'][$dependency_option],
-                        ]); ?>
-                        <div class="clearfix"></div>
-                    </div>
-                <?php endforeach; ?>
-            </fieldset>
-            <br/>
-            <br/>
-            <?php echo $this->Form->formActions(); ?>
+            </form>
+            <div class="well formactions ">
+                <div class="pull-right">
+                    <a ng-click="submit()" class="btn btn-primary">
+                        <?php echo __('Save host depependency'); ?>
+                    </a>&nbsp;
+                    <a ui-sref="HostdependenciesIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

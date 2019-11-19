@@ -50,7 +50,7 @@
             <tr ng-repeat="outage in parentOutages">
                 <td class="padding-5">
                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                        <a href="/hosts/browser/{{ outage.Host.id }}">
+                        <a href="/ng/#!/hosts/browser/{{ outage.Host.id }}">
                             {{ outage.Host.name }}
                         </a>
                     <?php else: ?>

@@ -50,7 +50,7 @@
                         </button>
 
                         <?php if ($this->Acl->hasPermission('add', 'hosts')): ?>
-                            <a href="/hosts/add" class="btn btn-xs btn-success">
+                            <a ui-sref="HostsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
@@ -70,7 +70,7 @@
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'index'], $this->params['named'])); ?>"><i
+                                <a ui-sref="HostsIndex"><i
                                             class="fa fa-stethoscope"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span>
                                 </a>
@@ -78,20 +78,20 @@
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('notMonitored', 'hosts')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'notMonitored'], $this->params['named'])); ?>"><i
+                                <a ui-sref="HostsNotMonitored"><i
                                             class="fa fa-user-md"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('disabled', 'hosts')): ?>
                             <li>
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'disabled'], $this->params['named'])); ?>"><i
+                                <a ui-sref="HostsDisabled"><i
                                             class="fa fa-power-off"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <li class="active">
-                            <a href="<?php echo Router::url(array_merge(['controller' => 'deleted_hosts', 'action' => 'index'], $this->params['named'])); ?>"><i
+                            <a ui-sref="DeletedHostsIndex"><i
                                         class="fa fa-trash-o"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
                         </li>
@@ -136,20 +136,20 @@
                                    style="">
                                 <thead>
                                 <tr>
-                                    <th class="no-sort" ng-click="orderBy('DeletedHost.name')">
-                                        <i class="fa" ng-class="getSortClass('DeletedHost.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DeletedHosts.name')">
+                                        <i class="fa" ng-class="getSortClass('DeletedHosts.name')"></i>
                                         <?php echo __('Host name'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DeletedHost.uuid')">
-                                        <i class="fa" ng-class="getSortClass('DeletedHost.uuid')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DeletedHosts.uuid')">
+                                        <i class="fa" ng-class="getSortClass('DeletedHosts.uuid')"></i>
                                         <?php echo __('UUID'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DeletedHost.created')">
-                                        <i class="fa" ng-class="getSortClass('DeletedHost.created')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DeletedHosts.created')">
+                                        <i class="fa" ng-class="getSortClass('DeletedHosts.created')"></i>
                                         <?php echo __('Date'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('DeletedHost.deleted_perfdata')">
-                                        <i class="fa" ng-class="getSortClass('DeletedHost.deleted_perfdata')"></i>
+                                    <th class="no-sort" ng-click="orderBy('DeletedHosts.deleted_perfdata')">
+                                        <i class="fa" ng-class="getSortClass('DeletedHosts.deleted_perfdata')"></i>
                                         <?php echo __('Performance data deleted'); ?>
                                     </th>
                                 </tr>
@@ -187,7 +187,9 @@
                         </div>
 
 
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>

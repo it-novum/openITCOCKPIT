@@ -69,7 +69,7 @@ class FileEngine extends CacheEngine {
 	public function init($settings = array()) {
 		$settings += array(
 			'engine' => 'File',
-			'path' => CACHE,
+			'path' => OLD_CACHE,
 			'prefix' => 'cake_',
 			'lock' => true,
 			'serialize' => true,

@@ -195,7 +195,7 @@
             </td>
             <td>
                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                    <a href="/hosts/browser/{{ host.Host.id }}">
+                    <a href="/ng/#!/hosts/browser/{{ host.Host.id }}">
                         {{ host.Host.hostname }}
                     </a>
                 <?php else: ?>

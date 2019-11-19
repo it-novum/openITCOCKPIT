@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+
 class Tenant extends AppModel {
 
     public $belongsTo = [
@@ -53,45 +56,13 @@ class Tenant extends AppModel {
         ],
     ];
 
-    public function hostCounter($container_id, $operator = null) {
-        // the foreach is only needed becasue the getTenantByContainer function returns a array with one record like this
-        // array($container_id => $container_name)
-        foreach ($this->Container->getTenantByContainer($container_id) as $tenant_container_id => $tenant_name) {
-            return $this->_counter($operator, 'number_hosts', $tenant_container_id);
-        }
-    }
-
-    public function serviceCounter($container_id, $operator = null) {
-        foreach ($this->Container->getTenantByContainer($container_id) as $tenant_container_id => $tenant_name) {
-            return $this->_counter($operator, 'number_services', $tenant_container_id);
-        }
-    }
-
-    public function userCounter($container_id, $operator = null) {
-        foreach ($this->Container->getTenantByContainer($container_id) as $tenant_container_id => $tenant_name) {
-            return $this->_counter($operator, 'number_users', $tenant_container_id);
-        }
-    }
-
-    protected function _counter($operator, $field, $container_id) {
-        $count = $this->find('first', [
-            'conditions' => ['container_id' => $container_id],
-            'fields'     => ['id', 'container_id', $field],
-        ]);
-
-        if (in_array($operator, ['+', '++'])) {
-            $count['Tenant'][$field]++;
-        }
-
-        if (in_array($operator, ['-', '--'])) {
-            $count['Tenant'][$field]--;
-        }
-
-        $this->save($count);
-
-        return $count['Tenant'][$field];
-    }
-
+    /**
+     * @param null $container_ids
+     * @param string $type
+     * @param string $index
+     * @return array|null
+     * @deprecated
+     */
     public function tenantsByContainerId($container_ids = null, $type = 'all', $index = 'id') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -138,17 +109,26 @@ class Tenant extends AppModel {
         }
     }
 
+    /**
+     * @param $containerId
+     * @return bool
+     * @deprecated
+     */
     public function __allowDelete($containerId) {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+
         $Container = ClassRegistry::init('Container');
         $Host = ClassRegistry::init('Host');
         $Service = ClassRegistry::init('Service');
-        $children = $Container->children($containerId);
+        $children = $ContainersTable->getChildren($containerId);
 
         $newContainerIds = [];
         //get rid of the locations
-        foreach ($children as $key => $child) {
-            if ($child['Container']['containertype_id'] != CT_LOCATION) {
-                $newContainerIds[] = $child['Container']['id'];
+        foreach ($children as $child) {
+            if ($child['containertype_id'] != CT_LOCATION) {
+                $newContainerIds[] = $child['id'];
             }
         }
         //append the containerID itself

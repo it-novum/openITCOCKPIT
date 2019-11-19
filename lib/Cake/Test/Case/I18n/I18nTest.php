@@ -36,8 +36,8 @@ class I18nTest extends CakeTestCase {
 
 		Cache::delete('object_map', '_cake_core_');
 		App::build(array(
-			'Locale' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Locale' . DS),
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Locale' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Locale' . DS),
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 		CakePlugin::load(array('TestPlugin'));
 	}
@@ -1723,7 +1723,7 @@ class I18nTest extends CakeTestCase {
  */
 	public function testPluginTranslation() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		));
 
 		Configure::write('Config.language', 'po');
@@ -1772,7 +1772,7 @@ class I18nTest extends CakeTestCase {
 		Configure::write('I18n.preferApp', true);
 
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		));
 
 		Configure::write('Config.language', 'po');

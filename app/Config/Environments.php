@@ -49,6 +49,10 @@ class Environments {
     protected static function _detectHttp() {
         $host = env('HTTP_HOST');
 
+        if (isset($_SERVER['OITC_DEVELOPMENT'])) {
+            return self::DEVELOPMENT;
+        }
+
         if (substr($host, 0, 4) == 'dev.') {
             $environment = self::DEVELOPMENT;
         } else if (substr($host, 0, 4) == 'dev-') {

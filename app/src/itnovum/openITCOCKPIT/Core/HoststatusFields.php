@@ -38,6 +38,11 @@ class HoststatusFields {
      */
     private $DbBackend;
 
+    /**
+     * @var bool
+     */
+    private $selectedWildcard = false;
+
     public function __construct(DbBackend $DbBackend) {
         $this->DbBackend = $DbBackend;
     }
@@ -47,11 +52,14 @@ class HoststatusFields {
     }
 
     public function getFields() {
+        if ($this->selectedWildcard) {
+            return [];
+        }
         return $this->fields;
     }
 
     public function wildcard() {
-        $this->addField('Hoststatus.*');
+        $this->selectedWildcard = true;
         return $this;
     }
 

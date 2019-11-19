@@ -23,8 +23,17 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class GrapherHelper
+ * @deprecated
+ */
 class GrapherHelper extends AppHelper {
 
+    /**
+     * @param $error
+     * @return array
+     * @deprecated
+     */
     public function createGrapherErrorPng($error) {
 
         $targetPath = WWW_ROOT . 'img' . DS . 'graphs';

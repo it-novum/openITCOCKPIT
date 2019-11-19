@@ -35,7 +35,7 @@
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 
 <confirm-delete></confirm-delete>
 
@@ -50,7 +50,9 @@
                     <?php echo __('Delete'); ?>
                 </button>
             <?php endif; ?>
-            <?php echo $this->Utils->backButton(); ?>
+            <a ui-sref="RotationsIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
@@ -129,7 +131,7 @@
                         <div class="well formactions ">
                             <div class="pull-right">
                                 <input class="btn btn-primary" type="submit" value="Save">&nbsp;
-                                <a href="/map_module/rotations/index" class="btn btn-default">Cancel</a>
+                                <a ui-sref="RotationsIndex" class="btn btn-default">Cancel</a>
                             </div>
                         </div>
                     </div>

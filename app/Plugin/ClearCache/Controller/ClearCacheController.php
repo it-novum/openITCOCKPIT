@@ -85,7 +85,7 @@ class ClearCacheController extends ClearCacheAppController {
     public function files() {
         $output = call_user_func_array([$this->_Cleaner, 'files'], $this->params['pass']);
         $files = [];
-        $start = strlen(CACHE);
+        $start = strlen(OLD_CACHE);
         foreach ($output as $result => $fullPaths) {
             foreach ($fullPaths as $fullPath) {
                 $files[] = [substr($fullPath, $start), $result];

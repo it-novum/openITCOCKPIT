@@ -27,54 +27,175 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-check-square-o fa-fw "></i>
-            <?php echo __('System'); ?>
+            <?php echo __('openITCOCKPIT'); ?>
             <span>>
                 <?php echo __('Registration'); ?>
             </span>
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
 
-<div class="jarviswidget" id="wid-id-0">
+
+<div class="jarviswidget">
     <header>
         <span class="widget-icon"> <i class="fa fa-check-square-o"></i> </span>
-        <h2><?php echo __('Register your installation of openITCOCKPIT'); ?></h2>
-        <div class="widget-toolbar" role="menu">
-            <a class="btn btn-default btn-xs" href="javascript:void(0);" name="creditos"><i
-                        class="fa fa-users"></i> <?php echo __('Credits'); ?></a>
-        </div>
-    </header>
-    <div>
-        <div class="widget-body">
-            <?php
-            echo $this->Form->create('Register', [
-                'class' => 'form-horizontal clear',
-            ]);
-            ?>
+        <h2>
+            <?php echo __('Register this openITCOCKPIT instance'); ?>
+        </h2>
 
-            <?php
-            $options = [
-                'label' => __('License key'),
-                'value' => (isset($licence['Register']['license'])) ? $licence['Register']['license'] : '',
-            ];
-            if (ENVIRONMENT === Environments::PRODUCTION) {
-                $options['autocomplete'] = 'off';
-            }
-            ?>
-            <?php echo $this->Form->input('license', $options); ?>
-            <div class="form-group text-muted">
-                <span class="col col-md-2 hidden-tablet hidden-mobile"><!-- spacer for nice layout --></span>
-                <div class="col col-xs-10"><?php echo __('No license key?'); ?>
-                    <a class="txt-color-blueDark"
-                       href="http://openitcockpit.com"
-                       target="_blank">
-                        <?php echo __('Please visit our homepage to get in contact.'); ?>
-                    </a>
+        <div class="widget-toolbar" role="menu">
+            <button type="button" class="btn btn-default btn-xs" ng-click="toggleFullscreenMode();">
+                <i class="fa fa-heart"></i>
+                <?php echo __('Credits'); ?>
+            </button>
+        </div>
+
+    </header>
+    <div class="widget-body">
+        <form ng-submit="submit();" class="form-horizontal">
+            <div class="row">
+                <div class="col-xs-12 col-md-12 col-lg-8">
+                    <div class="form-group required" ng-class="{'has-error': errors.license}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('License key'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                <?php if ($disableAutocomplete): ?>
+                                    autocomplete="off"
+                                <?php endif; ?>
+                                    ng-model="post.Registers.license">
+                            <div ng-repeat="error in errors.license">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block">
+                                <a href="https://openitcockpit.io/#Subscription" target="_blank">
+                                    <i class="fa fa-external-link-square"></i>
+                                    <?php echo __('Get your openITCOCKPIT Enterprise Subscription today'); ?>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <?php echo $this->Form->formActions(__('Register')); ?>
-        </div>
+            <div class="row" ng-show="valid">
+                <div class="col-xs-12 col-md-12 col-lg-12">
+
+                    <div class="well" style="margin-bottom: 20px; padding: 10px;">
+                        <h1>
+                            <i class="fa fa-check-circle ok"></i>
+                            <span class="semi-bold"><?php echo __('Valid openITCOCKPIT Enterprise license'); ?></span>
+                        </h1>
+
+                        <dl class="dl-horizontal">
+                            <dt><?php echo __('First name'); ?>:</dt>
+                            <dd class="code-font text-info">{{license.firstname}}</dd>
+
+                            <dt><?php echo __('Last name'); ?>:</dt>
+                            <dd class="code-font text-info">{{license.lastname}}</dd>
+
+                            <dt><?php echo __('Email'); ?>:</dt>
+                            <dd class="code-font text-info">{{license.email}}</dd>
+
+                            <dt><?php echo __('Company'); ?>:</dt>
+                            <dd class="code-font text-info">{{license.company}}</dd>
+
+                            <dt><?php echo __('Expires'); ?>:</dt>
+                            <dd class="code-font text-info">{{license.expire}}</dd>
+
+                            <dt><?php echo __('License key'); ?>:</dt>
+                            <dd class="code-font text-info">{{license.licence}}</dd>
+                        </dl>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-xs-12 margin-top-10">
+                    <div class="well formactions ">
+                        <div class="pull-right">
+                            <input class="btn btn-primary" type="submit" value="<?php echo __('Register'); ?>">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="credits-container" id="credits-container" style="display:none;">
+    <div id="credits">
+        <h1 class="credits-h1">openITCOCKPIT</h1>
+        <br/>
+
+        <h2 class="credits-h2">Developers</h2>
+        <dl>
+            <dd>Irina Bering</dd>
+            <dd>Daniel Ziegler</dd>
+            <dd>Maximilian Pappert</dd>
+            <dd>Timo Triebensky</dd>
+        </dl>
+
+
+        <h2 class="credits-h2">Special Thanks</h2>
+        <p>Stephan Kraus, Oliver Müller, Laziz Karimov, Robert Braun,<br/>
+            René Kleffel, Michael Ziegler, Jonas Rottmann,<br/>
+            Johannes Drummer, Jens Michelsons, Jeremy Eder and more...</p>
+
+        <h2 class="credits-h2">Special Thanks</h2>
+        <p>Thanks to all the developers for the beautiful libraries.</p>
+
+        <h2 class="credits-h2">Powered by</h2>
+        <p>
+            <img src="/img/logos/php.png">
+        </p>
+
+        <p>
+            <img src="/img/logos/We-bake-with-CakePHP.png" style="width: 300px;">
+        </p>
+
+        <p>
+            <img src="/img/logos/jquery.png">
+        </p>
+
+        <p>
+            <img src="/img/logos/jquery_ui.png" >
+        </p>
+
+        <p>
+            <img src="/img/logos/AngularJS-medium.png">
+        </p>
+
+        <p class="padding-top-80">
+            <img src="/img/logos/Statusengine_dark.png">
+        </p>
+
+        <div class="credits-fineprint">All trademarks are the property of the trademark owners.</div>
+
+        <br/>
+        <br/>
+        <h2 class="credits-h2">Sponsored by it-novum</h2>
+        <p>
+            <img src="/img/logos/it-novum.png">
+        </p>
+
+        <br/>
+        <br/>
+        <br/>
+        <p id="credits-oitc-logo">
+            <img src="/img/logos/openITCOCKPIT_dark.png" style="width: 600px;">
+        </p>
+
+        <br />
+        <br />
+        <div class="credits-fineprint">Press ESC to exit</div>
+
     </div>
 </div>

@@ -23,6 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContactgroupsTable;
+use App\Model\Table\ContainersTable;
+use App\Model\Table\UsersTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 
 
@@ -31,50 +37,28 @@ use itnovum\openITCOCKPIT\Core\ModuleManager;
  * @property Container $Container
  */
 class ContainersController extends AppController {
-    public $layout = 'Admin.default';
-    public $helpers = ['Nest'];
+
+    public $layout = 'blank';
 
     public function index() {
-        $this->layout = 'angularjs';
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Container']['containertype_id'] = CT_NODE;
-            $this->Container->create();
-            if ($this->Container->save(Hash::remove($this->request->data, 'Container.id'))) {
-                Cache::clear(false, 'permissions');
-                $this->setFlash(__('new node created successfully'));
-            } else {
-                $this->setFlash(__('error while saving data'), false);
-            }
-        }
-        $all_containers = $this->Container->find('all', [
-            'recursive' => -1,
-        ]);
-        $tenants = Hash::combine(Hash::extract($all_containers, '{n}.Container[containertype_id=' . CT_TENANT . ']'), '{n}.id', '{n}.name');
-
-        $this->set('validationError', (!empty($this->Container->validationErrors) ? true : false));
-
-        $this->set(compact(['all_containers', 'tenants']));
-        $this->set('_serialize', ['all_containers']);
+        return;
     }
 
-    public function nest() {
-        if (!$this->isApiRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        $all_container = $this->Container->find('all', [
-            'recursive' => -1,
-        ]);
-        $all_container = Hash::nest($all_container);
-        $this->set('all_container', $all_container);
-        $this->set('_serialize', ['all_container']);
-    }
 
+    /**
+     * @param null $id
+     * @todo Remove me
+     * @deprecated
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
-        if (!$this->Container->exists($id)) {
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($id)) {
             throw new NotFoundException(__('Invalid container'));
         }
         $container = $this->Container->findById($id);
@@ -86,96 +70,99 @@ class ContainersController extends AppController {
         $this->set('_serialize', ['container']);
     }
 
-    protected function tree($id = 0) {
-        debug($this->Container->generateTreeList());
-    }
 
     public function add() {
-        $this->layout = 'blank';
-        if (!$this->request->is('post') && !$this->request->is('put') && $this->request->ext == 'json') {
+        if ($this->request->is('GET')) {
+            //Only ship HTML Template
             return;
         }
-        if ($this->request->ext == 'json') {
-            if ($this->Container->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
-                $this->serializeId();
 
-                return;
-            }
-            $this->serializeErrorMessage();
+        if (!$this->request->is('post') && !$this->request->is('put')) {
+            throw new MethodNotAllowedException();
         }
+
+        if (!$this->isJsonRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $container = $ContainersTable->newEntity($this->request->data('Container'));
+
+        $ContainersTable->save($container);
+        if ($container->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->serializeCake4ErrorMessage($container);
+            return;
+        }
+
+        Cache::clear(false, 'permissions');
+        $this->serializeCake4Id($container);
     }
 
     public function edit() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             return;
         }
         if ($this->request->is('post')) {
-            $containerId = $this->request->data['Container']['id'];
-            $containerTypeId = $this->request->data['Container']['containertype_id'];
-            if (!$this->Container->exists($containerId) || $containerTypeId != 5) {
+
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            $containerId = (int)$this->request->data['Container']['id'];
+
+            if (!$ContainersTable->existsById($containerId)) {
                 throw new NotFoundException(__('Invalid container'));
             }
+            $container = $ContainersTable->get($containerId);
+            $container = $ContainersTable->patchEntity($container, $this->request->data('Container'));
 
-            if (!$this->Container->save($this->request->data)) {
-                Cache::clear(false, 'permissions');
-                $this->serializeErrorMessage();
-            } else {
-                $this->serializeId();
+            $ContainersTable->save($container);
+            if ($container->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->serializeCake4ErrorMessage($container);
+                return;
             }
+
+            Cache::clear(false, 'permissions');
+            $this->serializeCake4Id($container);
         }
     }
 
     /**
-     * recovers the container tree if left and/or right is missing or broken
-     * Wrapper public function of CakePHP´s TreeBehavior::recover
+     * Is called by AJAX to render the nest list in Nodes
      *
-     * @param string $mode
-     * @param        array $$missingParentAction
-     *
-     * @link  http://book.cakephp.org/2.0/en/core-libraries/behaviors/tree.html#TreeBehavior::recover
-     * @since 3.0
-     */
-    protected function recover($mode = 'parent', $missingParentAction = null) {
-        $this->Container->recover($mode, $missingParentAction);
-    }
-
-    /**
-     * Is called by AJAX to rander the nest list in Nodes
-     *
-     * @param int $id the id of the tenant
-     *
+     * @param int $id the id of the container
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function byTenant($id = null) {
+    public function loadContainersByContainerId($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Container->hasAny()) {
-            throw new NotFoundException(__('tenant.notfound'));
-        }
-        $parent = $this->Container->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'id' => $id,
-            ],
-        ]);
 
-        $parent[0]['Container']['allow_edit'] = false;
-        if (isset($this->MY_RIGHTS_LEVEL[$parent[0]['Container']['id']])) {
-            if ((int)$this->MY_RIGHTS_LEVEL[$parent[0]['Container']['id']] === WRITE_RIGHT) {
-                $parent[0]['Container']['allow_edit'] = true;
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($id)) {
+            throw new NotFoundException(__('Container not found'));
+        }
+
+        $parent = [$ContainersTable->get($id)->toArray()];
+
+        $parent[0]['allow_edit'] = false;
+
+        if (isset($this->MY_RIGHTS_LEVEL[$parent[0]['id']])) {
+            if ((int)$this->MY_RIGHTS_LEVEL[$parent[0]['id']] === WRITE_RIGHT) {
+                $parent[0]['allow_edit'] = true;
             }
         }
-        $containers = $this->Container->children($id, false, null, 'name');
+        $containers = $ContainersTable->getChildren($id);
         foreach ($containers as $key => $container) {
-            $containers[$key]['Container']['allow_edit'] = false;
-            $containerId = $container['Container']['id'];
+            $containers[$key]['allow_edit'] = false;
+            $containerId = $container['id'];
             if (isset($this->MY_RIGHTS_LEVEL[$containerId])) {
                 if ((int)$this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT) {
-                    $containers[$key]['Container']['allow_edit'] = true;
+                    $containers[$key]['allow_edit'] = true;
                 }
             }
         }
@@ -184,16 +171,70 @@ class ContainersController extends AppController {
             $containers = $parent[0];
             $hasChilds = false;
         }
-        $nest = Hash::nest($containers);
-        $parent[0]['children'] = ($hasChilds) ? $nest : [];
-        $this->set('nest', $parent);
+
+        //Add Container alias like in Cake2 for Hash::nest
+        $cake2Containers = [];
+        foreach ($containers as $container) {
+            $cake2Containers[] = [
+                'Container' => $container
+            ];
+        }
+
+        $nest = \Cake\Utility\Hash::nest($cake2Containers);
+
+        $parent['children'] = ($hasChilds) ? $nest : [];
+
+        //Gormat result like CakePHP2 for Frontend
+        $result = [
+            0 => [
+                'Container' => $parent[0],
+                'children'  => $parent['children']
+            ]
+        ];
+
+
+        $this->set('nest', $result);
         $this->set('_serialize', ['nest']);
+    }
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->find()
+                ->where(['Containers.containertype_id IN' => [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]])
+                ->disableHydration()
+                ->toArray();
+        } else {
+            $containers = $ContainersTable->find()
+                ->andWhere([
+                    'Containers.containertype_id IN' => [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE],
+                    'Containers.id IN '              => $this->MY_RIGHTS
+                ])
+                ->disableHydration()
+                ->toArray();
+        }
+
+        $paths = [];
+        foreach ($containers as $container) {
+            $paths[$container['id']] = '/' . $ContainersTable->treePath($container['id'], '/');
+        }
+        natcasesort($paths);
+        $containers = Api::makeItJavaScriptAble($paths);
+
+        $this->set('containers', $containers);
+        $this->set('_serialize', ['containers']);
     }
 
     /**
      * Randers the selectbox with all the nodes and path of the tenant
      * ### Options
-     * Please check at Tree->easyPath()
+     * Please check at ContainersTable->easyPath()
      *
      * @param int $id of the tenant
      * @param array $options Array of options and HTML attributes.
@@ -205,13 +246,27 @@ class ContainersController extends AppController {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-        $this->set('paths', $this->Tree->easyPath($this->Tree->resolveChildrenOfContainerIds($id), OBJECT_NODE));
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $this->set('paths', $ContainersTable->easyPath($ContainersTable->resolveChildrenOfContainerIds($id), OBJECT_NODE));
         $this->set('_serialize', ['paths']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function delete($id = null) {
         $userId = $this->Auth->user('id');
-        if (!$this->Container->exists($id)) {
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $UsersTable UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        if (!$ContainersTable->existsById($id)) {
             throw new NotFoundException(__('Invalid container'));
         }
         if (!$this->request->is('post')) {
@@ -261,38 +316,13 @@ class ContainersController extends AppController {
                         $hostIds = Hash::extract($hostsToDelete, '{n}.Host.id');
                         $allowDelete = $this->Container->__allowDelete($hostIds);
                         $allowDeleteRoot = $allowDelete;
-                        $usersToDelete = [];
 
                         //Check users to delete
-                        $User = ClassRegistry::init('User');
-                        $usersByContainerId = $this->User->usersByContainerId($containerIds, 'list');
-                        if (!empty($usersByContainerId)) {
-                            $usersToDelete = $this->User->find('all', [
-                                'recursive'  => -1,
-                                'conditions' => [
-                                    'User.id' => array_keys($usersByContainerId)
-                                ],
-                                'contain'    => [
-                                    'ContainerUserMembership' => [
-                                        'conditions' => [
-                                            'NOT' => [
-                                                'ContainerUserMembership.container_id' => $containerIds
-                                            ]
-                                        ]
-                                    ]
-                                ],
-                                'fields'     => [
-                                    'User.id'
-                                ]
-                            ]);
-                        }
-
-                        $usersToDelete = Hash::combine($usersToDelete, '{n}.User.id', '{n}.ContainerUserMembership');
+                        $usersToDelete = $UsersTable->getUsersToDeleteByContainerIds($containerIds);
                         if ($allowDelete) {
-                            foreach ($usersByContainerId as $user => $username) {
-                                if (empty($usersToDelete[$user])) {
-                                    $User->__delete($user, $userId);
-                                }
+                            foreach ($usersToDelete as $user) {
+                                /** @var \App\Model\Entity\User $user */
+                                $UsersTable->delete($user);
                             }
                         }
 
@@ -408,25 +438,12 @@ class ContainersController extends AppController {
                         break;
                     case CT_CONTACTGROUP:
                         //Check contact groups to delete
-                        $Contactgroup = ClassRegistry::init('Contactgroup');
-                        $contactgroupsToDelete = $Contactgroup->find('all', [
-                            'recursive'  => -1,
-                            'contain'    => [
-                                'Container' => [
-                                    'fields' => [
-                                        'Container.id',
-                                    ],
-                                ],
-                            ],
-                            'conditions' => [
-                                'Contactgroup.container_id' => $containerIds,
-                            ],
-                            'fields'     => [
-                                'Contactgroup.id',
-                            ],
-                        ]);
-                        foreach ($contactgroupsToDelete as $containerId) {
-                            $this->Container->__delete($containerId);
+
+                        /** @var $ContactgroupsTable ContactgroupsTable */
+                        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+                        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerIdsForContainerDelete($containerIds);
+                        foreach ($contactgroups as $contactgroup) {
+                            $this->Container->__delete($contactgroup['container']['id']);
                         }
                         break;
                 }
@@ -436,16 +453,19 @@ class ContainersController extends AppController {
         if ($allowDeleteRoot) {
             if ($this->Container->__delete($id)) {
                 Cache::clear(false, 'permissions');
-                $this->setFlash(__('Container deleted'));
-                $this->redirect(['action' => 'index']);
+                $this->set('success', true);
+                $this->set('_serialize', ['success']);
+                return;
             } else {
-                $this->setFlash(__('Could not delete container'), false);
-                $this->redirect(['action' => 'index']);
+                $this->response->statusCode(500);
+                $this->set('success', false);
+                $this->set('_serialize', ['success']);
+                return;
             }
         }
-        $this->setFlash(__('Could not delete container'), false);
-        $this->redirect(['action' => 'index']);
-
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
     }
 
     public function loadContainersForAngular() {
@@ -453,27 +473,37 @@ class ContainersController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        $onlyWithWritePermissions = $this->request->query('onlyWritePermissions') === 'true';
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Container->makeItJavaScriptAble(
-                $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
-            );
+            $containers =
+                $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         } else {
-            $containers = $this->Container->makeItJavaScriptAble(
-                $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
-            );
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
-        $this->set(compact(['containers']));
+        if ($onlyWithWritePermissions === true) {
+            foreach ($containers as $containerId => $containerName) {
+                if (!isset($this->MY_RIGHTS_LEVEL[$containerId]) || $this->MY_RIGHTS_LEVEL[$containerId] !== WRITE_RIGHT) {
+                    unset($containers[$containerId]);
+                }
+            }
+        }
+
+        $containers = Api::makeItJavaScriptAble($containers);
+        $this->set('containers', $containers);
         $this->set('_serialize', ['containers']);
     }
 
+    /**
+     * @param null $id
+     * @deprecated
+     */
     public function showDetails($id = null) {
-        $this->layout = 'angularjs';
-
-        if (!$this->isAngularJsRequest()) {
-            $this->set('back_url', $this->referer());
-        }
-        if (!$this->isApiRequest()) {
+        if (!$this->isApiRequest() && $id === null) {
             //Only ship HTML template for angular
             return;
         }
@@ -481,7 +511,11 @@ class ContainersController extends AppController {
             $this->render403();
             return;
         }
-        if (!$this->Container->exists($id)) {
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($id)) {
             throw new NotFoundException(__('Invalid container'));
         }
 

@@ -284,7 +284,7 @@ if (php_sapi_name() != 'cli') {
     Cache::config('_cake_core_', [
         'engine'    => $engine,
         'prefix'    => $prefix . 'cake_core_',
-        'path'      => CACHE . 'persistent' . DS,
+        'path'      => OLD_CACHE . 'persistent' . DS,
         'serialize' => ($engine === 'File'),
         'duration'  => $duration,
     ]);
@@ -297,7 +297,7 @@ if (php_sapi_name() != 'cli') {
     Cache::config('_cake_model_', [
         'engine'    => $engine,
         'prefix'    => $prefix . 'cake_model_',
-        'path'      => CACHE . 'models' . DS,
+        'path'      => OLD_CACHE . 'models' . DS,
         'serialize' => ($engine === 'File'),
         'duration'  => $duration,
     ]);

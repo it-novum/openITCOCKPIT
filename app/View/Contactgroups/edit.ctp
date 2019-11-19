@@ -27,101 +27,121 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-users fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Contact groups'); ?>
             <span>>
-                <?php echo __('Contact Groups'); ?>
-			</span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+                <?php echo __('Edit'); ?>
+            </span>
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-users"></i> </span>
-        <h2><?php echo __('Edit contact group'); ?></h2>
+        <h2>
+            <?php echo __('Edit contact group'); ?>:
+            {{post.Contactgroup.container.name}}
+        </h2>
         <div class="widget-toolbar" role="menu">
-            <?php if ($this->Acl->hasPermission('delete')): ?>
-                <?php echo $this->Utils->deleteButton(null, $contactgroup['Contactgroup']['id']); ?>
+            <?php if ($this->Acl->hasPermission('index', 'contactgroups')): ?>
+                <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
             <?php endif; ?>
-            <?php echo $this->Utils->backButton(); ?>
         </div>
         <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
-            <?php echo __('UUID: %s', h($contactgroup['Contactgroup']['uuid'])); ?>
+            UUID: {{post.Contactgroup.uuid}}
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Contactgroup', [
-                'class' => 'form-horizontal clear',
-            ]);
+            <form ng-submit="submit();" class="form-horizontal"
+                  ng-init="successMessage=
+            {objectName : '<?php echo __('Contact group'); ?>' , message: '<?php echo __('saved successfully'); ?>'}">
 
-            if ($hasRootPrivileges):
-                echo $this->Form->input('Container.parent_id', [
-                    'options'  => $containers,
-                    'selected' => $this->request->data['Container']['parent_id'],
-                    'class'    => 'chosen',
-                    'style'    => 'width: 100%;',
-                    'label'    => __('Container'),
-                ]);
-            elseif (!$hasRootPrivileges && $contactgroup['Container']['parent_id'] != ROOT_CONTAINER):
-                echo $this->Form->input('Container.parent_id', [
-                    'options'  => $containers,
-                    'selected' => $this->request->data['Container']['parent_id'],
-                    'class'    => 'chosen',
-                    'style'    => 'width: 100%;',
-                    'label'    => __('Container'),
-                ]);
-            else:
-                ?>
-                <div class="form-group required">
-                    <label class="col col-md-2 control-label"><?php echo __('Container'); ?></label>
-                    <div class="col col-xs-10 required"><input type="text" value="/root" class="form-control" readonly>
+                <div class="row">
+                    <div class="form-group required" ng-class="{'has-error': errors.container.parent_id}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Container'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="ContainersSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Contactgroup.container.parent_id">
+                            </select>
+                            <div ng-repeat="error in errors.container.parent_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.container.name}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Contactgroup.container.name">
+                            <div ng-repeat="error in errors.container.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.description}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Description'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Contactgroup.description">
+                            <div ng-repeat="error in errors.description">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.contacts}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Contacts'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="ContactsSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="contacts"
+                                    multiple
+                                    ng-options="contact.key as contact.value for contact in contacts"
+                                    ng-model="post.Contactgroup.contacts._ids">
+                            </select>
+                            <div ng-repeat="error in errors.contacts">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <?php
-                echo $this->Form->input('Container.parent_id', [
-                        'value' => $contactgroup['Container']['parent_id'],
-                        'type'  => 'hidden',
-                    ]
-                );
-            endif;
 
-            echo $this->Form->input('id', [
-                'type'  => 'hidden',
-                'value' => $contactgroup['Contactgroup']['id'],
-            ]);
 
-            echo $this->Form->input('container_id', [
-                'type'  => 'hidden',
-                'value' => $contactgroup['Contactgroup']['container_id'],
-            ]);
+                <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                    <div class="well formactions ">
+                        <div class="pull-right">
+                            <input class="btn btn-primary" type="submit" value="<?php echo __('Update contact group'); ?>">
+                            <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        </div>
+                    </div>
+                </div>
 
-            echo $this->Form->input('Container.name', [
-                'label' => __('Contact group name'),
-                'value' => $this->request->data['Container']['name'],
-            ]);
-
-            echo $this->Form->input('Contactgroup.description', [
-                'label' => __('Description'),
-                'value' => $this->request->data['Contactgroup']['description'],
-            ]);
-
-            echo $this->Form->input('Contactgroup.Contact', [
-                'options'          => $contacts,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => __('Contacts'),
-                'data-placeholder' => __('Please choose a contact'),
-                'selected'         => $this->request->data['Contactgroup']['Contact'],
-            ]);
-            ?>
-            <br/>
-            <br/>
-            <?php echo $this->Form->formActions(); ?>
+            </form>
         </div>
     </div>
 </div>

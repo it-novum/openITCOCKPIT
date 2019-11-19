@@ -23,183 +23,210 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
-    <div class="row">
-        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-            <h1 class="page-title txt-color-blueDark">
-                <i class="fa fa-location-arrow fa-fw "></i>
-                <?php echo __('Monitoring'); ?>
-                <span>>
-                    <?php echo __('Locations'); ?>
-			</span>
-            </h1>
-        </div>
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-location-arrow fa-fw "></i>
+            <?php echo __('Locations'); ?>
+            <span>>
+                <?php echo __('Overview'); ?>
+            </span>
+        </h1>
     </div>
+</div>
 
 
-    <section id="widget-grid" class="">
-        <div class="row">
-            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                    <header>
-                        <div class="widget-toolbar" role="menu">
-                            <?php
-                            if ($this->Acl->hasPermission('add')):
-                                echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                                echo " "; //Fix HTML
-                            endif;
-                            echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
-                            if ($isFilter):
-                                echo " "; //Fix HTML
-                                echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                            endif;
-                            ?>
+<massdelete></massdelete>
+
+<section id="widget-grid" class="">
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+                <header>
+                    <div class="widget-toolbar" role="menu">
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
+                        <?php if ($this->Acl->hasPermission('add', 'locations')): ?>
+                            <a ui-sref="LocationsAdd" class="btn btn-xs btn-success">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New'); ?>
+                            </a>
+                        <?php endif; ?>
+
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
+                    </div>
+
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-location-arrow"></i> </span>
+                    <h2 class="hidden-mobile"><?php echo __('Locations overview'); ?></h2>
+                </header>
+                <div>
+                    <div class="widget-body no-padding">
+
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-cogs"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by name'); ?>"
+                                                   ng-model="filter.containers.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by description'); ?>"
+                                                   ng-model="filter.locations.description"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="jarviswidget-ctrls" role="menu">
-                        </div>
-                        <span class="widget-icon hidden-mobile"> <i class="fa fa-location-arrow"></i> </span>
-                        <h2 class="hidden-mobile"><?php echo __('Locations'); ?> </h2>
 
-                    </header>
+                        <div class="mobile_table">
+                            <table id="location_list" class="table table-striped table-hover table-bordered smart-form"
+                                   style="">
+                                <thead>
+                                <tr>
+                                    <th class="no-sort sorting_disabled width-15">
+                                        <i class="fa fa-check-square-o fa-lg"></i>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Containers.name')">
+                                        <i class="fa" ng-class="getSortClass('Containers.name')"></i>
+                                        <?php echo __('Location name'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Locations.description')">
+                                        <i class="fa" ng-class="getSortClass('Locations.description')"></i>
+                                        <?php echo __('Description'); ?>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-cog fa-lg"></i>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="location in locations">
+                                    <td class="text-center" class="width-15">
+                                        <input type="checkbox"
+                                               ng-model="massChange[location.Location.id]"
+                                               ng-show="location.Location.allowEdit">
+                                    </td>
+                                    <td>
+                                        {{ location.Location.container.name }}
+                                    </td>
+                                    <td>
+                                        {{ location.Location.description }}
+                                    </td>
 
-                    <div>
-
-                        <div class="widget-body no-padding">
-                            <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
-                            <div class="mobile_table">
-                                <table id="location_list"
-                                       class="table table-striped table-hover table-bordered smart-form"
-                                       style="">
-                                    <thead>
-                                    <tr>
-                                        <?php $order = $this->Paginator->param('order'); ?>
-                                        <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Container.name');
-                                            echo $this->Paginator->sort('name', __('Name')); ?></th>
-                                        <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Location.description');
-                                            echo $this->Paginator->sort('description', __('Description')); ?></th>
-                                        <th class="no-sort"><?php echo __('Container'); ?></th>
-                                        <th class="no-sort text-center" style="width:52px;"><i
-                                                    class="fa fa-gear fa-lg"></i></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php foreach ($all_locations as $location): ?>
-                                        <?php $allowEdit = $this->Acl->isWritableContainer($location['Location']['container_id']); ?>
-                                        <tr>
-                                            <td><?php echo $location['Container']['name']; ?></td>
-                                            <td><?php echo $location['Location']['description']; ?></td>
-                                            <td><?php if ($location['Container']['parent_id'] == 1): echo __('/root/');
-                                                else: ?><?php echo $container[$location['Container']['parent_id']]; ?><?php endif; ?>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group">
-                                                    <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                        <a href="<?php echo Router::url(['action' => 'edit', $location['Location']['id']]); ?>"
-                                                           class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                    <td class="width-50">
+                                        <div class="btn-group">
+                                            <?php if ($this->Acl->hasPermission('edit', 'locations')): ?>
+                                                <a ui-sref="LocationsEdit({id: location.Location.id})"
+                                                   class="btn btn-default" ng-if="location.Location.allowEdit">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                                <a href="javascript:void(0);"
+                                                   ng-if="!location.Location.allowEdit"
+                                                   class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default disabled"
+                                                   ng-hide="location.Location.allowEdit">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{location.Location.id}}">
+                                                <?php if ($this->Acl->hasPermission('edit', 'locations')): ?>
+                                                    <li>
+                                                        <a ui-sref="LocationsEdit({id: location.Location.id})"
+                                                           ng-if="location.Location.allowEdit">
+                                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
-                                                    <?php else: ?>
-                                                        <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
-                                                                    class="fa fa-cog"></i>&nbsp;</a>
-                                                    <?php endif; ?>
-                                                    <a href="javascript:void(0);" data-toggle="dropdown"
-                                                       class="btn btn-default dropdown-toggle"><span
-                                                                class="caret"></span></a>
-                                                    <ul class="dropdown-menu pull-right">
-                                                        <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                            <li>
-                                                                <a href="<?php echo Router::url(['action' => 'edit', $location['Location']['id']]); ?>"><i
-                                                                            class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                                                                </a>
-                                                            </li>
-                                                        <?php endif; ?>
-                                                        <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
-                                                            <li>
-                                                                <a href="<?php echo Router::url([
-                                                                    'action'     => 'showDetails',
-                                                                    'controller' => 'containers',
-                                                                    $location['Location']['container_id']
-                                                                ]); ?>">
-                                                                    <i class="fa fa-info-circle"></i> <?php echo __('Show details'); ?>
-                                                                </a>
-                                                            </li>
-                                                        <?php endif; ?>
-                                                        <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
-                                                            <li class="divider"></li>
-                                                            <li>
-                                                                <a href="#" data-toggle="modal"
-                                                                   data-target="#delete_location_<?php echo $location['Location']['id']; ?>"
-                                                                   class="txt-color-red"><i
-                                                                            class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                                                                </a>
-                                                            </li>
-                                                        <?php endif; ?>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <?php if (empty($all_locations)): ?>
-                                <div class="noMatch">
-                                    <center>
-                                        <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                    </center>
-                                </div>
-                            <?php endif; ?>
-
-                            <div style="padding: 5px 10px;">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
-                                    </div>
-                                    <div class="col-sm-6 text-right">
-                                        <div class="dataTables_paginate paging_bootstrap">
-                                            <?php echo $this->Paginator->pagination([
-                                                'ul' => 'pagination',
-                                            ]); ?>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
+                                                    <li>
+                                                        <a ui-sref="ContainersShowDetails({id: location.Location.container_id, location: 'LocationsIndex'})">
+                                                            <i class="fa fa-info-circle"></i> <?php echo __('Show details'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'locations')): ?>
+                                                    <li class="divider" ng-if="location.Location.allowEdit"></li>
+                                                    <li ng-if="location.Location.allowEdit">
+                                                        <a href="javascript:void(0);" class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(location))">
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
                                         </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="row margin-top-10 margin-bottom-10">
+                                <div class="row margin-top-10 margin-bottom-10" ng-show="locations.length == 0">
+                                    <div class="col-xs-12 text-center txt-color-red italic">
+                                        <?php echo __('No entries match the selection'); ?>
                                     </div>
                                 </div>
                             </div>
+                            <div class="row margin-top-10 margin-bottom-10">
+                                <div class="col-xs-12 col-md-2 text-muted text-center">
+                                    <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                                </div>
+                                <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                                </div>
+                                <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                                </div>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                                </div>
+                            </div>
+                            <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                            <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                            <?php echo $this->element('paginator_or_scroll'); ?>
                         </div>
                     </div>
-                </div>
-        </div>
-    </section>
-
-<?php foreach ($all_locations as $location): ?>
-    <div class="modal fade" id="delete_location_<?php echo $location['Location']['id']; ?>" tabindex="-1" role="dialog"
-         aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                        &times;
-                    </button>
-                    <h4 class="modal-title"
-                        id="myModalLabel"><?php echo __('Do you really want to delete this location and all related objects'); ?></h4>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        Make sure that you really do not use this location</br>
-                        and any related objects like: </br>
-                        <ul>
-                            <li>Hosts</li>
-                            <li>Services</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <?php echo $this->Form->postLink(__('Delete'), ['controller' => 'locations', 'action' => 'delete', $location['Location']['id']], ['class' => 'btn btn-danger', 'data-dismiss' => "modal"]); ?>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        <?php echo __('Cancel'); ?>
-                    </button>
                 </div>
             </div>
-        </div>
+        </article>
     </div>
-<?php endforeach; ?>
+</section>

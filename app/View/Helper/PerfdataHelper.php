@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class PerfdataHelper
+ * @deprecated
+ */
 class PerfdataHelper extends AppHelper {
     /**
      * Parst Perfdata-String und gibt Ergebnis als Array zurueck
@@ -30,6 +34,7 @@ class PerfdataHelper extends AppHelper {
      * @param string $perfdata_string Performance string z.B. batCapacity=100%;75:;50:;0;100 batVoltage=54;;
      *
      * @return array $perfdata_array formatierstes Array als Performance-Infos
+     * @deprecated
      */
     public function parsePerfData($perfdata_string) {
         $perfdata = [];

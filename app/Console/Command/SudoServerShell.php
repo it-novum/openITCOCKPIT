@@ -24,12 +24,13 @@
 //	confirmation.
 
 //require APP.'/Vendor/Ratchet/vendor/autoload.php';
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Ratchet\Overwrites\HttpServerSize;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
 use React\Socket\Server as Reactor;
 
-require_once APP . '/Lib/SudoMessageInterface.php';
+require_once OLD_APP . '/Lib/SudoMessageInterface.php';
 
 App::import('Model', 'Export');
 
@@ -178,7 +179,9 @@ class SudoServerShell extends AppShell {
 
 
         try {
-            $this->_systemsettings = $this->Systemsetting->findAsArray();
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $this->_systemsettings = $Systemsettings->findAsArray();
         } catch (Exception $e) {
             //Mysql server issue
             //Set set default values to _systemsettings to to stop the sudo_server
@@ -243,7 +246,9 @@ class SudoServerShell extends AppShell {
 
     private function _bootstrap() {
         $this->Systemsetting->getDataSource()->reconnect();
-        $this->_systemsettings = $this->Systemsetting->findAsArray();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArray();
         //Child handling
         //$this->stdout->styles('blue', ['text' => 'blue']);
         //$this->stdout->styles('green', ['text' => 'green']);

@@ -34,14 +34,14 @@ class ServicechecksControllerRequest extends AngularRequest {
     protected $filters = [
         'index' => [
             'like' => [
-                'Servicecheck.output'
+                'Servicechecks.output'
             ]
         ]
     ];
 
-    protected $ServiceStateField = 'Servicecheck.state';
+    protected $ServiceStateField = 'Servicechecks.state';
 
-    protected $ServiceStateTypeField = 'Servicecheck.state_type';
+    protected $ServiceStateTypeField = 'Servicechecks.state_type';
 
     public function getIndexFilters() {
         $Filter = new BaseFilter($this->getRequest());

@@ -38,8 +38,8 @@ class License {
         $this->license = '';
 
         if (!empty($license)) {
-            if (isset($license['Register']['license'])) {
-                $this->license = $license['Register']['license'];
+            if (isset($license['license'])) {
+                $this->license = $license['license'];
             }
         }
     }

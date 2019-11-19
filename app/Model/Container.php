@@ -23,10 +23,10 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-use itnovum\openITCOCKPIT\Core\ContainerConditions;
 
 /**
  * Class Container
+ * @deprecated
  * @mixin TreeBehavior
  */
 class Container extends AppModel {
@@ -148,47 +148,9 @@ class Container extends AppModel {
     var $name = 'Container';
 
     /**
-     * Returns the name and id of the tenant that is the owner of the given container_id
-     * Example:
-     * $id = 5
-     * Return:
-     * [$tenant_contaier_id => tenant name]
-     *
-     * @param int $containerId of the container
-     *
-     * @return array with all path [$tenant_contaier_id] => $tenant_name
+     * @return bool
+     * @deprecated
      */
-    public function getTenantByContainer($containerId) {
-        $exists = Cache::remember('ContainerExists:' . $containerId, function () use ($containerId) {
-            return $this->exists($containerId);
-        }, 'migration');
-        if (!$exists) {
-            return null;
-        }
-        $container = Cache::remember('ContainerGetTenantByContainer:' . $containerId, function () use ($containerId) {
-            return $this->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'id' => $containerId,
-                ],
-            ], 'migration');
-        });
-
-        $possibleContainerTypes = [CT_GLOBAL, CT_TENANT];
-        while (!in_array($container['Container']['containertype_id'], $possibleContainerTypes)) {
-            $container = Cache::remember('ContainerGetTenantByContainerParentNode:' . md5(json_encode($container)), function () use ($container) {
-                return $this->getParentNode($container['Container']['id']);
-            }, 'migration');
-        }
-
-        return [$container['Container']['id'] => $container['Container']['name']];
-    }
-
-    public function findTenantByContainer($container_id) {
-        return $this->getTenantByContainer($container_id);
-    }
-
-
     public function isUniqueByObject() {
         if (isset($this->data['Container']['containertype_id']) && in_array($this->data['Container']['containertype_id'], [CT_TENANT])) {
             //return $this->isUnique('name');
@@ -230,27 +192,21 @@ class Container extends AppModel {
 
     }
 
-    /**
-     * Returns an array of $type with all Contactgroups
-     *
-     * @param string $type for find (all, first, list,...)
-     *
-     * @return array with all contactgroups
-     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-     * @since  3.0
-     */
-    public function findContactgroup($type = 'all') {
-        return $this->find($type, [
-            'conditions' => [
-                'containertype_id' => CT_CONTACTGROUP,
-            ],
-        ]);
-    }
 
+    /**
+     * @param $id
+     * @return bool
+     * @deprecated
+     */
     public function __delete($id) {
         return $this->delete($id, true);
     }
 
+    /**
+     * @param $hostIds
+     * @return bool
+     * @deprecated
+     */
     public function __allowDelete($hostIds) {
         if (empty($hostIds)) {
             return true;
@@ -288,38 +244,5 @@ class Container extends AppModel {
         return true;
     }
 
-    public function getContainersForAngular(ContainerConditions $ContainerConditions, $selected = []) {
-        $query = [
-            'recursive'  => -1,
-            'fields'     => 'Container.name',
-            'conditions' => $ContainerConditions->getConditionsForFind(),
-            'order'      => [
-                'Container.name' => 'ASC',
-            ],
-            'group'      => [
-                'Container.id'
-            ]
-        ];
-        $containersWithLimit = $this->find('list', $query);
-
-        $selectedContainers = [];
-        if (!empty($selected)) {
-            $query = [
-                'recursive'  => -1,
-                'fields'     => 'Container.name',
-                'conditions' => [
-                    'Container.id' => $selected
-                ],
-                'order'      => [
-                    'Container.name' => 'ASC',
-                ],
-            ];
-            $selectedContainers = $this->find('list', $query);
-        }
-
-        $containers = $containersWithLimit + $selectedContainers;
-        asort($containers, SORT_FLAG_CASE | SORT_NATURAL);
-        return $containers;
-    }
 }
 

@@ -23,139 +23,209 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-clock-o fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Time Periods'); ?>
+                <?php echo __('Time periods'); ?>
             </span>
         </h1>
     </div>
 </div>
 
+<massdelete></massdelete>
+
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <div class="jarviswidget jarviswidget-color-blueDark">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php
-                        if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                            echo " "; //Fix HTML
-                        endif;
-                        echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
-                        if ($isFilter):
-                            echo " "; //Fix HTML
-                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                        endif;
-                        ?>
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
+                        <?php if ($this->Acl->hasPermission('add', 'timeperiods')): ?>
+                            <a class="btn btn-xs btn-success" ui-sref="TimeperiodsAdd">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New'); ?>
+                            </a>
+                        <?php endif; ?>
+
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
                     </div>
 
-                    <div class="jarviswidget-ctrls" role="menu">
-                    </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-clock-o"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Time Periods'); ?></h2>
+                    <h2 class="hidden-mobile"><?php echo __('Time periods overview'); ?></h2>
 
                 </header>
                 <div>
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
-                        <div class="mobile_table">
-                            <table id="timeperiod_list"
-                                   class="table table-striped table-hover table-bordered smart-form" style="">
-                                <thead>
-                                <tr>
-                                    <?php $order = $this->Paginator->param('order'); ?>
-                                    <th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i>
-                                    </th>
-                                    <th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Timeperiod.name');
-                                        echo $this->Paginator->sort('Timeperiod.name', 'Timeperiod name'); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Timeperiod.description');
-                                        echo $this->Paginator->sort('Timeperiod.description', 'Description'); ?></th>
-                                    <th class="no-sort text-center" style="width:52px;"><i class="fa fa-gear fa-lg"></i>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php foreach ($all_timeperiods as $timeperiod): ?>
-                                    <?php $allowEdit = $this->Acl->isWritableContainer($timeperiod['Timeperiod']['container_id']); ?>
-                                    <tr>
-                                        <td class="text-center" style="width: 15px;">
-                                            <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                <input class="massChange" type="checkbox"
-                                                       name="timeperiod[<?php echo $timeperiod['Timeperiod']['id']; ?>]"
-                                                       timeperiodname="<?php echo h($timeperiod['Timeperiod']['name']); ?>"
-                                                       value="<?php echo $timeperiod['Timeperiod']['id']; ?>"/>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td><?php echo $timeperiod['Timeperiod']['name']; ?></td>
-                                        <td><?php echo $timeperiod['Timeperiod']['description']; ?></td>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group">
-                                                <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                    <a href="<?php echo Router::url(['action' => 'edit', $timeperiod['Timeperiod']['id']]); ?>"
-                                                       class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-                                                <?php else: ?>
-                                                    <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
-                                                                class="fa fa-cog"></i>&nbsp;</a>
-                                                <?php endif; ?>
-                                                <a href="javascript:void(0);" data-toggle="dropdown"
-                                                   class="btn btn-default dropdown-toggle"><span
-                                                            class="caret"></span></a>
-                                                <ul class="dropdown-menu pull-right">
-                                                    <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                        <li>
-                                                            <a href="<?php echo Router::url(['action' => 'edit', $timeperiod['Timeperiod']['id']]); ?>"><i
-                                                                        class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                                                            </a>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
-                                                        <li class="divider"></li>
-                                                        <li>
-                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'timeperiods', 'action' => 'delete', $timeperiod['Timeperiod']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                        <?php if (empty($all_timeperiods)): ?>
-                            <div class="noMatch">
-                                <center>
-                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                </center>
-                            </div>
-                        <?php endif; ?>
-
-                        <?php echo $this->element('timeperiod_mass_changes'); ?>
-
-                        <div style="padding: 5px 10px;">
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by time period name'); ?>"
+                                                   ng-model="filter.Timeperiods.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
                                 </div>
-                                <div class="col-sm-6 text-right">
-                                    <div class="dataTables_paginate paging_bootstrap">
-                                        <?php echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]); ?>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by time period description'); ?>"
+                                                   ng-model="filter.Timeperiods.description"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="mobile_table">
+                            <table class="table table-striped table-hover table-bordered smart-form">
+                                <thead>
+                                <tr>
+                                    <th class="no-sort sorting_disabled width-15">
+                                        <i class="fa fa-check-square-o fa-lg"></i>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Timeperiods.name')">
+                                        <i class="fa" ng-class="getSortClass('Timeperiods.name')"></i>
+                                        <?php echo __('Time period name'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Timeperiods.description')">
+                                        <i class="fa" ng-class="getSortClass('Timeperiods.description')"></i>
+                                        <?php echo __('Description'); ?>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-cog fa-lg"></i>
+                                    </th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr ng-repeat="timeperiod in timeperiods">
+                                    <td class="text-center" class="width-15">
+                                        <?php if ($this->Acl->hasPermission('delete', 'timeperiods')): ?>
+                                            <input type="checkbox"
+                                                   ng-model="massChange[timeperiod.Timeperiod.id]"
+                                                   ng-show="timeperiod.Timeperiod.allow_edit">
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>{{timeperiod.Timeperiod.name}}</td>
+                                    <td>{{timeperiod.Timeperiod.description}}</td>
+                                    <td class="width-50">
+                                        <div class="btn-group">
+                                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsEdit({id: timeperiod.Timeperiod.id})"
+                                                   ng-if="timeperiod.Timeperiod.allow_edit"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                                <a href="javascript:void(0);"
+                                                   ng-if="!timeperiod.Timeperiod.allow_edit"
+                                                   class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{timeperiod.Timeperiod.id}}">
+                                                <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                                    <li ng-if="timeperiod.Timeperiod.allow_edit">
+                                                        <a ui-sref="TimeperiodsEdit({id:timeperiod.Timeperiod.id})">
+                                                            <i class="fa fa-cog"></i>
+                                                            <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'timeperiods')): ?>
+                                                    <li class="divider" ng-if="timeperiod.Timeperiod.allow_edit"></li>
+                                                    <li ng-if="timeperiod.Timeperiod.allow_edit">
+                                                        <a href="javascript:void(0);"
+                                                           class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(timeperiod))">
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="timeperiods.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <a ui-sref="TimeperiodsCopy({ids: linkForCopy()})" class="a-clean">
+                                    <i class="fa fa-lg fa-files-o"></i>
+                                    <?php echo __('Copy'); ?>
+                                </a>
+                            </div>
+                            <div class="col-xs-12 col-md-4 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                        </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>
+        </article>
     </div>
 </section>

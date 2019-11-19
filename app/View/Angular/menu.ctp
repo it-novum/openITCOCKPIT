@@ -42,7 +42,11 @@
 
     <li ng-repeat="menuMatche in menuMatches" ng-show="menuMatches.length > 0"
         ng-class="{'menu-search-border':$last, 'search_list_item_active':$index == menuFilterPosition}">
-        <a href="{{ menuMatche.url }}">
+        <a ng-if="menuMatche.isAngular != 1" href="{{ menuMatche.url }}">
+            <i class="fa fa-lg fa-fw fa-{{menuMatche.icon}}"></i>
+            <span class="menu-item-parent" ng-bind-html="menuMatche.title | highlight:menuFilter"></span>
+        </a>
+        <a ng-if="menuMatche.isAngular == 1" href="/ng/#!{{ menuMatche.url }}">
             <i class="fa fa-lg fa-fw fa-{{menuMatche.icon}}"></i>
             <span class="menu-item-parent" ng-bind-html="menuMatche.title | highlight:menuFilter"></span>
         </a>
@@ -50,7 +54,17 @@
 
 
     <li ng-repeat="parentNode in menu" ng-class="{'open': isActiveParent(parentNode)}">
-        <a href="{{ parentHref(parentNode) }}">
+        <a ng-if="parentNode.isAngular != 1" ng-href="{{ parentHref(parentNode) == '#' ? '' : parentHref(parentNode) }}"
+           ng-class="{'cursor-pointer': parentHref(parentNode) == '#'}">
+
+            <i class="fa fa-lg fa-fw fa-{{ parentNode.icon }}"></i>
+            <span class="menu-item-parent">{{ parentNode.title }}</span>
+            <b class="collapse-sign" ng-if="parentNode.children.length > 0">
+                <em class="fa fa-plus-square-o" ng-if="!isActiveParent(parentNode)"></em>
+                <em class="fa fa-minus-square-o" ng-if="isActiveParent(parentNode)"></em>
+            </b>
+        </a>
+        <a ng-if="parentNode.isAngular == 1" href="/ng/#!{{parentNode.url}}">
 
             <i class="fa fa-lg fa-fw fa-{{ parentNode.icon }}"></i>
             <span class="menu-item-parent">{{ parentNode.title }}</span>
@@ -61,7 +75,11 @@
         </a>
         <ul ng-if="parentNode.children.length > 0" style="{{ isActiveParentStyle(parentNode) }}">
             <li ng-repeat="childNode in parentNode.children" ng-class="{'active': isActiveChild(childNode)}">
-                <a href="{{ childNode.url }}">
+                <a ng-if="childNode.isAngular != 1" href="{{ childNode.url }}">
+                    <i class="fa fa-lg fa-fw fa-{{ childNode.icon }}"></i>
+                    <span class="menu-item-parent">{{ childNode.title }}</span>
+                </a>
+                <a ng-if="childNode.isAngular == 1" href="/ng/#!{{ childNode.url }}">
                     <i class="fa fa-lg fa-fw fa-{{ childNode.icon }}"></i>
                     <span class="menu-item-parent">{{ childNode.title }}</span>
                 </a>

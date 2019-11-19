@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core\Views;
 
 
+use Cake\I18n\FrozenTime;
+
 class Downtime {
 
     /**
@@ -170,8 +172,12 @@ class Downtime {
      * @return int
      */
     public function getEntryTime() {
-        if (!is_numeric($this->entryTime)) {
-            return strtotime($this->entryTime);
+        if(!is_numeric($this->entryTime)){
+            if($this->entryTime instanceof FrozenTime){
+                $this->entryTime = $this->entryTime->timestamp;
+            }else{
+                $this->entryTime = strtotime($this->entryTime);
+            }
         }
         return $this->entryTime;
     }
@@ -180,8 +186,12 @@ class Downtime {
      * @return int
      */
     public function getScheduledStartTime() {
-        if (!is_numeric($this->scheduledStartTime)) {
-            return strtotime($this->scheduledStartTime);
+        if(!is_numeric($this->scheduledStartTime)){
+            if($this->scheduledStartTime instanceof FrozenTime){
+                $this->scheduledStartTime = $this->scheduledStartTime->timestamp;
+            }else{
+                $this->scheduledStartTime = strtotime($this->scheduledStartTime);
+            }
         }
         return $this->scheduledStartTime;
     }
@@ -190,8 +200,12 @@ class Downtime {
      * @return int
      */
     public function getScheduledEndTime() {
-        if (!is_numeric($this->scheduledEndTime)) {
-            return strtotime($this->scheduledEndTime);
+        if(!is_numeric($this->scheduledEndTime)){
+            if($this->scheduledEndTime instanceof FrozenTime){
+                $this->scheduledEndTime = $this->scheduledEndTime->timestamp;
+            }else{
+                $this->scheduledEndTime = strtotime($this->scheduledEndTime);
+            }
         }
         return $this->scheduledEndTime;
     }
@@ -200,8 +214,12 @@ class Downtime {
      * @return int
      */
     public function getActualEndTime() {
-        if (!is_numeric($this->actualEndTime)) {
-            return strtotime($this->actualEndTime);
+        if(!is_numeric($this->scheduledEndTime)){
+            if($this->actualdEndTime instanceof FrozenTime){
+                $this->actualdEndTime = $this->actualdEndTime->timestamp;
+            }else{
+                $this->actualdEndTime = strtotime($this->actualdEndTime);
+            }
         }
         return $this->actualdEndTime;
     }

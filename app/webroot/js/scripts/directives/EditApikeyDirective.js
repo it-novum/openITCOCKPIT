@@ -32,7 +32,7 @@ angular.module('openITCOCKPIT').directive('editApikeyDirective', function($http)
 
                     editApiKeyId = null;
                     $scope.currentApiKey = {};
-                    $scope.load();
+                    $scope.loadApiKey();
                     $('#angularEditApiKeyModal').modal('hide');
 
                 }, function errorCallback(result){
@@ -47,7 +47,7 @@ angular.module('openITCOCKPIT').directive('editApikeyDirective', function($http)
                     .then(function(result){
                         editApiKeyId = null;
                         $scope.currentApiKey = {};
-                        $scope.load();
+                        $scope.loadApiKey();
                         $('#angularEditApiKeyModal').modal('hide');
                     });
             };

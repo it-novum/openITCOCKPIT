@@ -22,9 +22,6 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
-use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
-
 ?>
 
 <div class="row">
@@ -75,29 +72,42 @@ use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php
-                                $GeneratorRegistry = new GeneratorRegistry();
-                                foreach ($GeneratorRegistry->getAllConfigFilesWithCategory() as $category => $ConfigFileObjects): ?>
-                                    <tr>
-                                        <td class="service_table_host_header" colspan="2">
-                                            <?php echo h($category); ?>
-                                        </td>
-                                    </tr>
 
-                                    <?php foreach ($ConfigFileObjects as $ConfigFileObject):
-                                        /** @var ConfigInterface $ConfigFileObject */ ?>
-                                        <tr>
-                                            <td><?php echo h($ConfigFileObject->getLinkedOutfile()); ?></td>
-                                            <td class="text-center">
+                                <tr ng-repeat-start="configFileCategory in configFileCategories">
+                                    <td class="service_table_host_header" colspan="2">
+                                        {{configFileCategory.name}}
+                                    </td>
+                                </tr>
+
+                                <tr ng-repeat="configFile in configFileCategory.configFiles" ng-repeat-end="">
+                                    <td>{{configFile.linkedOutfile}}</td>
+
+                                    <td class="width-50">
+                                        <div class="btn-group">
+                                            <?php if ($this->Acl->hasPermission('edit', 'configurationfiles')): ?>
+                                                <a ui-sref="ConfigurationFilesEdit({configfile: '{{configFile.dbKey}}'})"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right" id="menuHack-{{configFile.dbKey}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'configurationfiles')): ?>
-                                                    <a href="/ConfigurationFiles/edit/<?php echo h($ConfigFileObject->getDbKey()); ?>">
-                                                        <i class="fa fa-cog fa-lg txt-color-teal"></i>
-                                                    </a>
+                                                    <li>
+                                                        <a ui-sref="ConfigurationFilesEdit({configfile: '{{configFile.dbKey}}'})">
+                                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
                                                 <?php endif; ?>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endforeach; ?>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>

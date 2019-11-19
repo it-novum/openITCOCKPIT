@@ -71,6 +71,13 @@ class CompressShell extends AppShell {
         $this->compressFiles($angularServices, 'compressed_angular_services.js');
         $this->minifyJsFile('compressed_angular_services.js');
         $this->out('<green>done</green>');
+
+        //angular services
+        $this->out('Compress Angular states...    ', false);
+        $angularStates = $this->fetchAllPluginNGStateFiles();
+        $this->compressFiles($angularStates, 'compressed_angular_states.js');
+        $this->minifyJsFile('compressed_angular_states.js');
+        $this->out('<green>done</green>');
     }
 
     public function fetchAllJavaScriptComponents() {
@@ -78,7 +85,7 @@ class CompressShell extends AppShell {
         $components = $core->findRecursive('.*\.js');
 
         foreach (CakePlugin::loaded() as $pluginName) {
-            $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'app' . DS . 'components');
+            $plugin = new Folder(OLD_APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'app' . DS . 'components');
             $components = array_merge($components, $plugin->findRecursive('.*\.js'));
         }
 
@@ -90,7 +97,7 @@ class CompressShell extends AppShell {
         $controllers = $core->findRecursive('.*\.js');
 
         foreach (CakePlugin::loaded() as $pluginName) {
-            $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'app' . DS . 'controllers');
+            $plugin = new Folder(OLD_APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'app' . DS . 'controllers');
             $controllers = array_merge($controllers, $plugin->findRecursive('.*\.js'));
         }
 
@@ -103,7 +110,7 @@ class CompressShell extends AppShell {
         $angularControllers = $core->findRecursive('.*\.js');
 
         foreach (CakePlugin::loaded() as $pluginName) {
-            $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts' . DS . 'controllers');
+            $plugin = new Folder(OLD_APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts' . DS . 'controllers');
             $angularControllers = array_merge($angularControllers, $plugin->findRecursive('.*\.js'));
         }
 
@@ -115,7 +122,7 @@ class CompressShell extends AppShell {
         $angularDirectives = $core->findRecursive('.*\.js');
 
         foreach (CakePlugin::loaded() as $pluginName) {
-            $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts' . DS . 'directives');
+            $plugin = new Folder(OLD_APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts' . DS . 'directives');
             $angularDirectives = array_merge($angularDirectives, $plugin->findRecursive('.*\.js'));
         }
 
@@ -128,11 +135,23 @@ class CompressShell extends AppShell {
         $angularServices = $core->findRecursive('.*\.js');
 
         foreach (CakePlugin::loaded() as $pluginName) {
-            $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts' . DS . 'services');
+            $plugin = new Folder(OLD_APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts' . DS . 'services');
             $angularServices = array_merge($angularServices, $plugin->findRecursive('.*\.js'));
         }
 
         return $this->removeDotFiles($angularServices);
+    }
+
+    public function fetchAllPluginNGStateFiles() {
+        $core = new Folder(WWW_ROOT . 'js' . DS . 'scripts' . DS . 'states');
+        $angularPluginStates = [];
+
+        foreach (CakePlugin::loaded() as $pluginName) {
+            $plugin = new Folder(OLD_APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts');
+            $angularPluginStates = array_merge($angularPluginStates, $plugin->findRecursive('ng.states.js'));
+        }
+
+        return $this->removeDotFiles($angularPluginStates);
     }
 
     public function compressFiles($files, $outFileName) {

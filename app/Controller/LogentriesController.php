@@ -37,7 +37,7 @@ class LogentriesController extends AppController {
 
     public $components = ['ListFilter.ListFilter', 'RequestHandler', 'Uuid'];
     public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
-    public $layout = 'angularjs';
+    public $layout = 'blank';
 
 
     public function index() {
@@ -86,14 +86,13 @@ class LogentriesController extends AppController {
 
 
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        App::uses('UUID', 'Lib');
 
 
         $all_logentries = [];
         $foundUuids = [];
         foreach ($logentries as $logentry) {
             $matches = [];
-            preg_match_all(UUID::regex(), $logentry['Logentry']['logentry_data'], $matches);
+            preg_match_all(\itnovum\openITCOCKPIT\Core\UUID::regex(), $logentry['Logentry']['logentry_data'], $matches);
             foreach ($matches[0] as $uuid) {
                 $foundUuids[$uuid] = $uuid;
             }
@@ -103,7 +102,7 @@ class LogentriesController extends AppController {
         $uuidToName = $this->Uuid->getNameForUuids($foundUuids, false);
 
         foreach ($logentries as $logentry) {
-            $logentry['Logentry']['logentry_data'] = preg_replace_callback(UUID::regex(), function ($matches) use ($uuidToName) {
+            $logentry['Logentry']['logentry_data'] = preg_replace_callback(\itnovum\openITCOCKPIT\Core\UUID::regex(), function ($matches) use ($uuidToName) {
                 foreach ($matches as $match) {
                     if (isset($uuidToName[$match])) {
                         return $uuidToName[$match];

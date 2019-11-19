@@ -24,6 +24,8 @@
 
 namespace itnovum\openITCOCKPIT\Core\Views;
 
+use Cake\I18n\FrozenTime;
+
 abstract class Notification {
 
     /**
@@ -48,24 +50,25 @@ abstract class Notification {
 
     /**
      * Notification constructor.
-     * @param array $data
+     * @param $data
+     * @param UserTime|null $UserTime
      */
-    public function __construct($data, $key, $UserTime = null) {
+    public function __construct($data, $UserTime = null) {
 
-        if (isset($data[$key]['state'])) {
-            $this->state = (int)$data[$key]['state'];
+        if (isset($data['state'])) {
+            $this->state = (int)$data['state'];
         }
 
-        if (isset($data[$key]['output'])) {
-            $this->output = $data[$key]['output'];
+        if (isset($data['output'])) {
+            $this->output = $data['output'];
         }
 
-        if (isset($data['Contactnotification']['start_time'])) {
-            $this->start_time = $data['Contactnotification']['start_time'];
+        if (isset($data['Contactnotifications']['start_time'])) {
+            $this->start_time = $data['Contactnotifications']['start_time'];
         }
 
-        if (isset($data[$key]['start_time'])) {
-            $this->start_time = $data[$key]['start_time'];
+        if (isset($data['start_time'])) {
+            $this->start_time = $data['start_time'];
         }
 
         $this->UserTime = $UserTime;
@@ -89,6 +92,14 @@ abstract class Notification {
      * @return int|string
      */
     public function getStartTime() {
+        if (!is_numeric($this->start_time)) {
+            if ($this->start_time instanceof FrozenTime) {
+                $this->start_time = $this->start_time->timestamp;
+            } else {
+                $this->start_time = strtotime($this->start_time);
+            }
+        }
+
         return $this->start_time;
     }
 

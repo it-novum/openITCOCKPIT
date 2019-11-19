@@ -24,91 +24,122 @@
 //	confirmation.
 ?>
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-newspaper-o"></i>
-            <?php echo __('Reporting'); ?>
+            <i class="fa fa-file-image-o fa-fw "></i>
+            <?php echo __('Adhoc Reports'); ?>
             <span>>
-                <?php echo __('Instant Report'); ?>
+                <?php echo __('Instant report'); ?>
             </span>
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
-<div>
-    <article class="col-sm-12 col-md-12 col-lg-12">
-        <!-- Widget ID (each widget will need unique ID)-->
-        <div class="jarviswidget" id="wid-id-2" data-widget-editbutton="false" data-widget-deletebutton="false">
-            <header>
-                <span class="widget-icon"> <i class="fa fa-file-image-o"></i> </span>
-                <h2><?php echo __('Create Instant Report'); ?></h2>
-                <div class="widget-toolbar" role="menu">
-                    <?php echo $this->Utils->backButton(); ?>
-                </div>
-            </header>
-            <!-- widget div-->
-            <div>
-                <!-- widget content -->
-                <div class="widget-body fuelux">
-                    <?php
-                    echo $this->Form->create('Instantreport', [
-                        'class' => 'form-horizontal',
-                        'id'    => 'fuelux-wizard',
-                    ]);
-                    ?>
-                    <!-- wizard form starts here -->
-                    <fieldset class="col col-xs-12">
-                        <?php
-                        echo $this->Form->input('id', [
-                                'options'          => Hash::combine($allInstantReports, '{n}.Instantreport.id', '{n}.Instantreport.name'),
-                                'data-placeholder' => __('Please select...'),
-                                'class'            => 'chosen',
-                                'label'            => __('Report'),
-                                'style'            => 'width:100%;',
-                                'selected'         => isset($this->request->data['Instantreport']['id']) ? $this->request->data['Instantreport']['id'] : $id,
-                            ]
-                        );
-                        echo $this->Form->input('report_format', [
-                                'options'          => $reportFormats,
-                                'data-placeholder' => __('Please select...'),
-                                'class'            => 'chosen',
-                                'label'            => __('Report format'),
-                                'style'            => 'width:100%;',
-                                'selected'         => isset($this->request->data['Instantreport']['report_format']) ? $this->request->data['Instantreport']['report_format'] : 1
-                            ]
-                        );
-                        echo $this->Form->input('start_date', [
-                            'label' => __('From'),
-                            'type'  => 'text',
-                            'class' => 'form-control required',
-                            'value' => $this->CustomValidationErrors->refill('start_date', date('d.m.Y', strtotime('-15 days'))),
-                        ]);
-                        echo $this->Form->input('end_date', [
-                            'label'    => __('To'),
-                            'type'     => 'text',
-                            'class'    => 'form-control required',
-                            'reguired' => true,
-                            'value'    => $this->CustomValidationErrors->refill('end_date', date('d.m.Y', time())),
-                        ]);
 
-                        echo $this->Form->formActions(__('Create'));
-                        ?>
-                        <br/>
-                    </fieldset>
-                    <?php echo $this->Form->end(); ?>
-                    <?php
-                    if (isset($autoreport) && isset($autoreport_data)):
-                        echo $this->element('load_report_data', [
-                                'autoreport'      => $autoreport,
-                                'autoreport_data' => $autoreport_data,
-                            ]
-                        );
-                    endif;
-                    ?>
+<div class="jarviswidget">
+    <header>
+        <span class="widget-icon"> <i class="fa fa-pencil-square-o"></i> </span>
+        <h2><?php echo __('Create instant report'); ?></h2>
+        <ul class="nav nav-tabs pull-right">
+            <li ng-class="{'active': tabName=='reportConfig'}" ng-click="tabName='reportConfig'">
+                <a href="javascript:void()" data-toggle="tab">
+                    <i class="fa fa-pencil-square-o"></i>
+                </a>
+            </li>
+            <li ng-class="{'active': tabName=='calendarOverview'}" ng-click="tabName='calendarOverview'"
+                ng-show="reportData.downtimes">
+                <a href="javascript:void()" data-toggle="tab">
+                    <i class="fa fa-calendar"></i>
+                </a>
+            </li>
+            <li ng-class="{'active': tabName=='hostsServicesOverview'}" ng-click="tabName='hostsServicesOverview'"
+                ng-show="reportData.downtimes">
+                <a href="javascript:void()" data-toggle="tab">
+                    <i class="fa fa-pie-chart"></i>
+                </a>
+            </li>
+        </ul>
+        <div class="widget-toolbar" role="menu">
+            <a ui-sref="InstantreportsIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
+        </div>
+    </header>
+    <div>
+        <div class="widget-body">
+            <div class="alert auto-hide alert-info" ng-if="errors.no_reportdata">
+                <div ng-repeat="error in errors.no_reportdata">
+                    <div class="help-block text-danger">{{ error }}</div>
                 </div>
-                <!-- end widget div -->
             </div>
-            <!-- end widget -->
-    </article>
-    <!-- WIDGET END -->
+            <section ng-show="tabName == 'reportConfig'" id="reportConfig">
+                <form class="form-horizontal clear" ng-init="reportMessage=
+            {successMessage : '<?php echo __('Report created successfully'); ?>' , errorMessage: '<?php echo __('Report could not be created'); ?>'}">
+                    <div class="form-group required" ng-class="{'has-error': errors.instantreport_id}">
+                        <label class="col col-md-1 control-label">
+                            <?php echo __('Instant report'); ?>
+                        </label>
+                        <div class="col col-xs-10 col-lg-10">
+                            <select
+                                    data-placeholder="<?php echo __('Please choose a instant report'); ?>"
+                                    class="form-control"
+                                    chosen="instantreports"
+                                    ng-options="instantreport.Instantreport.id as instantreport.Instantreport.name for instantreport in instantreports"
+                                    ng-model="post.instantreport_id">
+                            </select>
+                            <div ng-repeat="error in errors.instantreport_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                            <?php echo __('Report format'); ?>
+                        </label>
+                        <div class="col col-xs-10 col-md-10 col-lg-10">
+                            <select
+                                    class="form-control"
+                                    ng-model="post.report_format">
+                                <option ng-value="1"><?php echo __('PDF'); ?></option>
+                                <option ng-value="2"><?php echo __('HTML'); ?></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group required" ng-class="{'has-error': errors.from_date}">
+                        <label class="col col-md-1 control-label"
+                               for="FromTime"><?php echo __('From'); ?></label>
+                        <div class="col col-xs-10 col-md-10 col-lg-10">
+                            <input type="text" class="form-control" ng-model="post.from_date"
+                                   placeholder="<?php echo __('DD.MM.YYYY'); ?>">
+                            <div ng-repeat="error in errors.from_date">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group required" ng-class="{'has-error': errors.to_date}">
+                        <label class="col col-md-1 control-label"
+                               for="ToTime"><?php echo __('To'); ?></label>
+                        <div class="col col-xs-10 col-md-10 col-lg-10">
+                            <input type="text" class="form-control" ng-model="post.to_date"
+                                   placeholder="<?php echo __('DD.MM.YYYY'); ?>">
+                            <div ng-repeat="error in errors.to_date">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+                                <button type="button" ng-click="createInstantReport()" class="btn btn-primary">
+                                    <?php echo __('Create report'); ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+            <section ng-if="tabName == 'instantReport'" id="instantReport">
+               ReportData here !!!!
+            </section>
+        </div>
+    </div>
 </div>

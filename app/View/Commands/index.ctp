@@ -23,18 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-terminal fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Commands'); ?>
             <span>>
-                <?php echo __('Commands'); ?>
-			</span>
+                <?php echo __('Overview'); ?>
+            </span>
         </h1>
     </div>
 </div>
+
+<massdelete></massdelete>
 
 <section id="widget-grid" class="">
 
@@ -43,147 +44,224 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php
-                        if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                            echo " "; //Hix HTML
-                        endif;
-                        echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
-                        if ($isFilter):
-                            echo " "; //Fix HTML
-                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                        endif;
-                        ?>
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
+                        <?php if ($this->Acl->hasPermission('add', 'commands')): ?>
+                            <a class="btn btn-xs btn-success" ui-sref="CommandsAdd">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New'); ?>
+                            </a>
+                        <?php endif; ?>
+
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-terminal"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Commands'); ?></h2>
-                    <ul class="nav nav-tabs pull-left padding-left-20" id="widget-tab-1">
-                        <li class="active">
-                            <a href="<?php echo Router::url(['action' => 'index']); ?>"> <i
-                                        class="fa fa-lg fa-code"></i> <span
-                                        class="hidden-mobile hidden-tablet"> <?php echo __('Commands'); ?></span> </a>
-                        </li>
-                        <?php if ($this->Acl->hasPermission('hostchecks')): ?>
-                            <li class="">
-                                <a href="<?php echo Router::url(['action' => 'hostchecks']); ?>"> <i
-                                            class="fa fa-lg fa-code"></i> <span
-                                            class="hidden-mobile hidden-tablet"> <?php echo __('Hostchecks'); ?></span>
-                                </a>
-                            </li>
-                        <?php endif; ?>
-                        <?php if ($this->Acl->hasPermission('notifications')): ?>
-                            <li class="">
-                                <a href="<?php echo Router::url(['action' => 'notifications']); ?>"> <i
-                                            class="fa fa-lg fa-envelope-o"></i> <span
-                                            class="hidden-mobile hidden-tablet"> <?php echo __('Notifications'); ?> </span></a>
-                            </li>
-                        <?php endif; ?>
-                        <?php if ($this->Acl->hasPermission('handler')): ?>
-                            <li class="">
-                                <a href="<?php echo Router::url(['action' => 'handler']); ?>"> <i
-                                            class="fa fa-lg fa-code-fork"></i> <span
-                                            class="hidden-mobile hidden-tablet"> <?php echo __('Event handler'); ?> </span></a>
-                            </li>
-                        <?php endif; ?>
-                    </ul>
+                    <h2 class="hidden-mobile"><?php echo __('Monitoring commands'); ?></h2>
                 </header>
 
                 <div>
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-file-text-o"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by command name'); ?>"
+                                                   ng-model="filter.Commands.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <fieldset>
+                                        <legend style="padding-top: 0;"><?php echo __('Command types'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <div class="row">
+                                                <div class="col-xs-6">
+                                                    <label class="checkbox small-checkbox-label">
+                                                        <input type="checkbox" name="checkbox" checked="checked"
+                                                               ng-model="filter.Commands.service_checks"
+                                                               ng-model-options="{debounce: 500}">
+                                                        <i class="checkbox-primary"></i>
+                                                        <?php echo __('Service check command'); ?>
+                                                    </label>
+
+                                                    <label class="checkbox small-checkbox-label">
+                                                        <input type="checkbox" name="checkbox" checked="checked"
+                                                               ng-model="filter.Commands.host_checks"
+                                                               ng-model-options="{debounce: 500}">
+                                                        <i class="checkbox-primary"></i>
+                                                        <?php echo __('Host check command'); ?>
+                                                    </label>
+                                                </div>
+
+                                                <div class="col-xs-6">
+                                                    <label class="checkbox small-checkbox-label">
+                                                        <input type="checkbox" name="checkbox" checked="checked"
+                                                               ng-model="filter.Commands.notifications"
+                                                               ng-model-options="{debounce: 500}">
+                                                        <i class="checkbox-primary"></i>
+                                                        <?php echo __('Notification command'); ?>
+                                                    </label>
+
+                                                    <label class="checkbox small-checkbox-label">
+                                                        <input type="checkbox" name="checkbox" checked="checked"
+                                                               ng-model="filter.Commands.eventhandler"
+                                                               ng-model-options="{debounce: 500}">
+                                                        <i class="checkbox-primary"></i>
+                                                        <?php echo __('Eventhandler command'); ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                         <div class="mobile_table">
-                            <table id="datatable_fixed_column"
-                                   class="table table-striped table-hover table-bordered smart-form">
+                            <table id="satellite_list"
+                                   class="table table-striped table-hover table-bordered smart-form"
+                                   style="">
                                 <thead>
                                 <tr>
-                                    <?php $order = $this->Paginator->param('order'); ?>
-                                    <th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i>
+                                    <th class="no-sort sorting_disabled width-15">
+                                        <i class="fa fa-check-square-o fa-lg"></i>
                                     </th>
-                                    <th><?php echo $this->Utils->getDirection($order, 'Command.name');
-                                        echo $this->Paginator->sort('Command.name', 'Command name'); ?></th>
-                                    <th class="no-sort text-center" style="width:52px;"><i class="fa fa-gear fa-lg"></i>
+                                    <th class="no-sort" ng-click="orderBy('Commands.name')">
+                                        <i class="fa" ng-class="getSortClass('Commands.name')"></i>
+                                        <?php echo __('Command name'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Commands.command_type')">
+                                        <i class="fa" ng-class="getSortClass('Commands.command_type')"></i>
+                                        <?php echo __('Command type'); ?>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-cog fa-lg"></i>
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($all_commands as $command):
-                                    ?>
-                                    <tr>
-                                        <td class="text-center" style="width:15px;">
-                                            <input type="checkbox" class="massChange"
-                                                   commandname="<?php echo h($command['Command']['name']); ?>"
-                                                   value="<?php echo $command['Command']['id']; ?>">
-                                        </td>
-                                        <td><?php echo h($command['Command']['name']); ?></td>
-                                        <td>
-                                            <div class="btn-group">
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
-                                                    <a href="<?php echo Router::url(['action' => 'edit', $command['Command']['id']]); ?>"
-                                                       class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-                                                <?php else: ?>
-                                                    <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
-                                                                class="fa fa-cog"></i>&nbsp;</a>
+                                <tr ng-repeat="command in commands">
+                                    <td class="text-center" class="width-15">
+                                        <?php if ($this->Acl->hasPermission('delete', 'commands')): ?>
+                                            <input type="checkbox"
+                                                   ng-model="massChange[command.Command.id]">
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>{{command.Command.name}}</td>
+                                    <td>{{command.Command.type}}</td>
+                                    <td class="width-50">
+                                        <div class="btn-group">
+                                            <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                                <a ui-sref="CommandsEdit({id: command.Command.id})"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{command.Command.id}}">
+                                                <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                                    <li>
+                                                        <a ui-sref="CommandsEdit({id:command.Command.id})">
+                                                            <i class="fa fa-cog"></i>
+                                                            <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
                                                 <?php endif; ?>
-                                                <a href="javascript:void(0);" data-toggle="dropdown"
-                                                   class="btn btn-default dropdown-toggle"><span
-                                                            class="caret"></span></a>
-                                                <ul class="dropdown-menu pull-right">
-                                                    <?php if ($this->Acl->hasPermission('edit')): ?>
-                                                        <li>
-                                                            <a href="<?php echo Router::url(['action' => 'edit', $command['Command']['id']]); ?>"><i
-                                                                        class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                                                            </a>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('usedBy')): ?>
-                                                        <li>
-                                                            <a href="/<?php echo $this->params['controller']; ?>/usedBy/<?php echo $command['Command']['id']; ?>"><i
-                                                                        class="fa fa-reply-all fa-flip-horizontal"></i> <?php echo __('Used by'); ?>
-                                                            </a>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('delete')): ?>
-                                                        <li class="divider"></li>
-                                                        <li>
-                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'commands', 'action' => 'delete', $command['Command']['id']], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete this command?')); ?>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
+                                                <?php if ($this->Acl->hasPermission('usedBy', 'commands')): ?>
+                                                    <li>
+                                                        <a ui-sref="CommandsUsedBy({id: command.Command.id})">
+                                                            <i class="fa fa-reply-all fa-flip-horizontal"></i>
+                                                            <?php echo __('Used by'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'commands')): ?>
+                                                    <li class="divider"></li>
+                                                    <li>
+                                                        <a href="javascript:void(0);" class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(command))">
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <?php if (empty($all_commands)): ?>
-                            <div class="noMatch">
-                                <center>
-                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                </center>
-                            </div>
-                        <?php endif; ?>
-                        <div class="padding-top-10"></div>
-                        <?php echo $this->element('command_mass_changes'); ?>
-                    </div>
 
-                    <div style="padding: 5px 10px;">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="dataTables_info" style="line-height: 32px;"
-                                     id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                <div class="dataTables_paginate paging_bootstrap">
-                                    <?php echo $this->Paginator->pagination([
-                                        'ul' => 'pagination',
-                                    ]); ?>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="commands.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
                                 </div>
                             </div>
                         </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <a ui-sref="CommandsCopy({ids: linkForCopy()})" class="a-clean">
+                                    <i class="fa fa-lg fa-files-o"></i>
+                                    <?php echo __('Copy'); ?>
+                                </a>
+                            </div>
+                            <div class="col-xs-12 col-md-4 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                        </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>
-    </div>
+        </article>
     </div>
 </section>

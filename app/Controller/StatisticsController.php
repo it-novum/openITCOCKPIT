@@ -23,38 +23,39 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\HostsTable;
+use App\Model\Table\ServicesTable;
+use App\Model\Table\SystemsettingsTable;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\System\Health\StatisticsCollector;
 
 /**
  * Class StatisticsController
- * @property Host $Host
- * @property Service $Service
- * @property Systemsetting $Systemsetting
  */
 class StatisticsController extends AppController {
-
-    public $uses = [
-        'Host',
-        'Service',
-        'Systemsetting'
-    ];
 
     public $layout = 'angularjs';
 
     public function index() {
+        $this->layout = 'blank';
+
         if (!$this->isAngularJsRequest()) {
-            $StatisticsCollector = new StatisticsCollector($this->Host, $this->Service);
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            /** @var $ServicesTable ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+            $StatisticsCollector = new StatisticsCollector($HostsTable, $ServicesTable);
             $statisticsAsJson = json_encode($StatisticsCollector->getData(), JSON_PRETTY_PRINT);
             $this->set('statisticsAsJson', $statisticsAsJson);
             return;
         }
 
-        $record = $this->Systemsetting->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Systemsetting.key' => 'SYSTEM.ANONYMOUS_STATISTICS'
-            ]
-        ]);
+        /** @var $SystemsettingsTable SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+        $record = $SystemsettingsTable->getSystemsettingByKeyAsCake2('SYSTEM.ANONYMOUS_STATISTICS');
 
         $this->set('settings', $record);
         $this->set('_serialize', ['settings']);
@@ -71,15 +72,15 @@ class StatisticsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $record = $this->Systemsetting->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Systemsetting.key' => 'SYSTEM.ANONYMOUS_STATISTICS'
-            ]
-        ]);
+        /** @var $SystemsettingsTable SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
-        if (empty($record)) {
-            throw new RuntimeException('Systemsetting is missing - did you executed openitcockpit-update?');
+        try {
+            $record = $SystemsettingsTable->getSystemsettingByKey('SYSTEM.ANONYMOUS_STATISTICS');
+        } catch (RecordNotFoundException $e) {
+            if (empty($record)) {
+                throw new RuntimeException('Systemsetting is missing - did you executed openitcockpit-update?');
+            }
         }
 
 
@@ -88,20 +89,21 @@ class StatisticsController extends AppController {
         }
 
 
-        $record['Systemsetting']['value'] = (int)$this->request->data['statistics']['decision'];
+        $record->set('value', (int)$this->request->data['statistics']['decision']);
 
-        if (isset($this->request->data['statistics']['cookie']) && $record['Systemsetting']['value'] === 2) {
+        if (isset($this->request->data['statistics']['cookie']) && $record->get('value') === 2) {
             $this->Cookie->write('askAgainForHelp', 'Remind me later', false, (3600 * 16));
         }
 
-        if ($this->Systemsetting->save($record)) {
-            $this->set('success', true);
-            $this->set('message', __('Record successfully saved'));
+        $SystemsettingsTable->save($record);
+        if ($record->hasErrors()) {
+            $this->set('success', false);
+            $this->set('message', __('Error while saving data'));
             $this->set('_serialize', ['success', 'message']);
             return;
         }
-        $this->set('success', false);
-        $this->set('message', __('Error while saving data'));
+        $this->set('success', true);
+        $this->set('message', __('Record successfully saved'));
         $this->set('_serialize', ['success', 'message']);
     }
 

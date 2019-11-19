@@ -28,7 +28,7 @@ class WhitespaceShell extends Shell
      */
     public function main()
     {
-        $path = APP;
+        $path = OLD_APP;
         if (!empty($this->params['path']) && strpos($this->params['path'], '/') === 0) {
             $path = $this->params['path'];
         } elseif (!empty($this->params['path'])) {
@@ -56,7 +56,7 @@ class WhitespaceShell extends Shell
      */
     public function trim()
     {
-        $path = APP;
+        $path = OLD_APP;
         if (!empty($this->params['path']) && strpos($this->params['path'], '/') === 0) {
             $path = $this->params['path'];
         } elseif (!empty($this->params['path'])) {

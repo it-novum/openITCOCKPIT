@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
@@ -45,7 +46,9 @@ class DatabaseCleanupTask extends AppShell implements CronjobInterface {
         $this->stdout->styles('blue', ['text' => 'blue']);
         $this->stdout->styles('red', ['text' => 'red']);
 
-        $this->_systemsettings = $this->Systemsetting->findAsArray();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArray();
 
         $this->DbBackend = new DbBackend();
 

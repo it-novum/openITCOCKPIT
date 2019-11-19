@@ -273,14 +273,6 @@ class Systemsetting extends Importer {
             ],
             [
                 'Systemsetting' => [
-                    'key'     => 'MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT',
-                    'value'   => '1',
-                    'info'    => 'If enabled, new service templates will have active_checks enabled by default',
-                    'section' => 'MONITORING',
-                ],
-            ],
-            [
-                'Systemsetting' => [
                     'key'     => 'SYSTEM.ADDRESS',
                     'value'   => '127.0.0.1',
                     'info'    => 'The IP address or FQDN of the system',

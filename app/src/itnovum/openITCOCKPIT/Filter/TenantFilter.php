@@ -33,8 +33,8 @@ class TenantFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'like' => [
-                'Container.name',
-                'Tenant.description'
+                'Containers.name',
+                'Tenants.description'
             ]
         ];
 

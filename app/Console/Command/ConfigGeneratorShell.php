@@ -24,21 +24,16 @@
 //	confirmation.
 
 
+use App\Model\Table\ConfigurationFilesTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
 use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
 
 /**
  * Class ConfigGeneratorShell
- * @property ConfigurationFile $ConfigurationFile
  * @property ConfigGeneratorTask $ConfigGenerator
- * @property Systemsetting $Systemsetting
  */
 class ConfigGeneratorShell extends AppShell {
-
-    public $uses = [
-        'ConfigurationFile',
-        'Systemsetting'
-    ];
 
     public $tasks = [
         'ConfigGenerator'
@@ -80,13 +75,15 @@ class ConfigGeneratorShell extends AppShell {
 
     public function generate() {
         $this->out('Generate all configuration files...    ');
+        /** @var $ConfigurationFilesTable ConfigurationFilesTable */
+        $ConfigurationFilesTable = TableRegistry::getTableLocator()->get('ConfigurationFiles');
 
         $GeneratorRegistry = new GeneratorRegistry();
 
         foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
             /** @var ConfigInterface $ConfigFileObject */
             $this->out(sprintf('Generate %s   ', $ConfigFileObject->getLinkedOutfile()), false);
-            $ConfigFileObject->writeToFile($this->ConfigurationFile->getConfigValuesByConfigFile($ConfigFileObject->getDbKey()));
+            $ConfigFileObject->writeToFile($ConfigurationFilesTable->getConfigValuesByConfigFile($ConfigFileObject->getDbKey()));
             $this->out('<green>Ok</green>');
         }
     }
@@ -94,14 +91,19 @@ class ConfigGeneratorShell extends AppShell {
     public function generateAndReload() {
         $this->out('Generate all configuration files...    ');
 
-        $systemsettings = $this->Systemsetting->findAsArray();
+        /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $SystemsettingsTable->findAsArray();
+
+        /** @var $ConfigurationFilesTable ConfigurationFilesTable */
+        $ConfigurationFilesTable = TableRegistry::getTableLocator()->get('ConfigurationFiles');
 
         $GeneratorRegistry = new GeneratorRegistry();
 
         foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
             /** @var ConfigInterface $ConfigFileObject */
             $this->out(sprintf('Generate %s', $ConfigFileObject->getLinkedOutfile()));
-            $ConfigFileObject->writeToFile($this->ConfigurationFile->getConfigValuesByConfigFile($ConfigFileObject->getDbKey()));
+            $ConfigFileObject->writeToFile($ConfigurationFilesTable->getConfigValuesByConfigFile($ConfigFileObject->getDbKey()));
             $this->ConfigGenerator->restartByConfigFile($ConfigFileObject->getDbKey(), $systemsettings);
         }
     }
@@ -109,17 +111,19 @@ class ConfigGeneratorShell extends AppShell {
 
     public function migrate() {
         $this->out('Migrate existing configuration files to database...    ');
+        /** @var $ConfigurationFilesTable ConfigurationFilesTable */
+        $ConfigurationFilesTable = TableRegistry::getTableLocator()->get('ConfigurationFiles');
 
         $GeneratorRegistry = new GeneratorRegistry();
         foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
             /** @var ConfigInterface $ConfigFileObject */
             $this->out(sprintf('Processing %s   ', $ConfigFileObject->getLinkedOutfile()), false);
 
-            $dbConfig = $this->ConfigurationFile->getConfigValuesByConfigFile($ConfigFileObject->getDbKey());
+            $dbConfig = $ConfigurationFilesTable->getConfigValuesByConfigFile($ConfigFileObject->getDbKey());
             $config = $ConfigFileObject->migrate($dbConfig);
             if (is_array($config)) {
                 $configFileForDatabase = $ConfigFileObject->convertRequestForSaveAll($config);
-                $this->ConfigurationFile->saveConfigurationValuesForConfigFile($ConfigFileObject->getDbKey(), $configFileForDatabase);
+                $ConfigurationFilesTable->saveConfigurationValuesForConfigFile($ConfigFileObject->getDbKey(), $configFileForDatabase);
                 $this->out('<green>Ok</green>');
             } else {
                 $this->out('<blue>Skipping</blue>');

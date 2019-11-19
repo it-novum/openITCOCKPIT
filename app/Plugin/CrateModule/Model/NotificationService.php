@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
 
+/**
+ * Class NotificationService
+ * @deprecated
+ */
 class NotificationService extends CrateModuleAppModel {
     public $useDbConfig = 'Crate';
     public $useTable = 'service_notifications';
@@ -35,6 +39,7 @@ class NotificationService extends CrateModuleAppModel {
      * @param ServiceNotificationConditions $ServiceNotificationConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(ServiceNotificationConditions $ServiceNotificationConditions, $paginatorConditions = []) {
 

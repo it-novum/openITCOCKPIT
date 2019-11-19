@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\HostgroupsTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\MapConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
@@ -74,16 +77,9 @@ class MapeditorsController extends MapModuleAppController {
      * @param int $id
      */
     ///map_module/mapeditors/view/20
-    public function view($id) {
-        if (!$this->isApiRequest()) {
-            $this->layout = 'angularjs';
-            $isFullscreen = false;
-            if ($this->request->query('fullscreen') === 'true') {
-                $this->layout = 'angularjs_fullscreen';
-                $isFullscreen = true;
-            }
-            $this->set('isFullscreen', $isFullscreen);
-            //Only ship template
+    public function view($id = null) {
+        if (!$this->isApiRequest() && $id === null) {
+            //Only ship html template
             return;
         }
 
@@ -190,7 +186,7 @@ class MapeditorsController extends MapModuleAppController {
 
                     $mapitems[$item['uuid']] = $data;
 
-                }catch (\Exception $e){
+                } catch (\Exception $e) {
                     throw $e;
                 }
             }
@@ -299,36 +295,14 @@ class MapeditorsController extends MapModuleAppController {
                 break;
 
             case 'hostgroup':
-                $hostgroup = $this->Hostgroup->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container' => [
-                            'fields' => [
-                                'Container.name'
-                            ]
-                        ],
-                        'Host'      => [
-                            'Container',
-                            'fields'     => [
-                                'Host.id',
-                                'Host.uuid'
-                            ],
-                            'conditions' => [
-                                'Host.disabled' => 0
-                            ]
-                        ]
-                    ],
-                    'fields'     => [
-                        'Hostgroup.id',
-                        'Hostgroup.description'
-                    ],
-                    'conditions' => [
-                        'Hostgroup.id' => $objectId
-                    ]
-                ]);
-                if (!empty($hostgroup)) {
+                try {
+                    /** @var $HostgroupsTable HostgroupsTable */
+                    $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+                    $hostgroup = $HostgroupsTable->getHostsByHostgroupForMaps($objectId, []);
+
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'), false)) {
+                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'hosts.{n}.hosts_to_containers_sharing.{n}.id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -336,15 +310,13 @@ class MapeditorsController extends MapModuleAppController {
                     $allowView = true;
                     $properties = $this->Map->getHostgroupInformation(
                         $this->Service,
-                        $this->Hoststatus,
-                        $this->Servicestatus,
                         $hostgroup
                     );
                     break;
+                } catch (\Exception $e) {
+                    $allowView = false;
                 }
-                $allowView = false;
                 break;
-
             case 'servicegroup':
                 $servicegroup = $this->Servicegroup->find('first', [
                     'recursive'  => -1,
@@ -1302,62 +1274,33 @@ class MapeditorsController extends MapModuleAppController {
 
                 break;
             case 'hostgroup':
-                $query = [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container' => [
-                            'fields' => [
-                                'Container.name'
-                            ]
-                        ],
-                        'Host'      => [
-                            'Container',
-                            'fields'     => [
-                                'Host.id',
-                                'Host.uuid',
-                                'Host.name',
-                                'Host.description'
-                            ],
-                            'conditions' => [
-                                'Host.disabled' => 0
-                            ]
-                        ]
-                    ],
-                    'fields'     => [
-                        'Hostgroup.id',
-                        'Hostgroup.description'
-                    ],
-                    'conditions' => [
-                        'Hostgroup.id' => $objectId
-                    ]
-                ];
-                if (!$this->hasRootPrivileges) {
-                    $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
-                }
-                $hostgroup = $this->Hostgroup->find('first', $query);
-
-                if (!empty($hostgroup)) {
+                try {
+                    $MY_RIGHTS = [];
+                    if (!$this->hasRootPrivileges) {
+                        $MY_RIGHTS = $this->MY_RIGHTS;
+                    }
+                    /** @var $HostgroupsTable HostgroupsTable */
+                    $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+                    $hostgroup = $HostgroupsTable->getHostsByHostgroupForMaps($objectId, $MY_RIGHTS);
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(array_unique(Hash::extract($hostgroup['Host'], '{n}.Container.{n}.HostsToContainer.container_id')), false)) { $this->render403();
+                        if (!$this->allowedByContainerId(
+                            array_unique(\Cake\Utility\Hash::extract($hostgroup, 'hosts.{n}.hosts_to_containers_sharing.id'), false))) {
+                            $this->render403();
                             return;
                         }
                     }
-
                     $summary = $this->Map->getHostgroupSummary(
                         $this->Host,
                         $this->Service,
-                        $this->Hoststatus,
-                        $this->Servicestatus,
                         $hostgroup
                     );
                     $this->set('type', 'hostgroup');
                     $this->set('summary', $summary);
                     $this->set('_serialize', ['hostgroup', 'summary']);
                     return;
+                } catch (\Exception $e) {
+                    throw new NotFoundException('Host group not found!');
                 }
-
-                throw new NotFoundException('Host group not found!');
-                return;
                 break;
             case 'servicegroup':
                 $query = [
@@ -1733,9 +1676,9 @@ class MapeditorsController extends MapModuleAppController {
 
     }
 
-    public function edit($id) {
-        if (!$this->isApiRequest()) {
-            $this->layout = 'angularjs';
+    public
+    function edit($id = null) {
+        if (!$this->isApiRequest() && $id === null) {
             //Only ship template
 
             $gadgetPreviews = [
@@ -1785,21 +1728,22 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['map', 'maxUploadLimit', 'max_z_index', 'layers']);
     }
 
-    public function backgroundImages() {
+    public
+    function backgroundImages() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        if (!is_dir(APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds')) {
-            mkdir(APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds');
+        if (!is_dir(OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds')) {
+            mkdir(OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds');
         }
 
-        if (!is_dir(APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds' . DS . 'thumb')) {
-            mkdir(APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds' . DS . 'thumb');
+        if (!is_dir(OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds' . DS . 'thumb')) {
+            mkdir(OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds' . DS . 'thumb');
         }
 
         $finder = new Finder();
-        $finder->files()->in(APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds')->exclude('thumb');
+        $finder->files()->in(OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds')->exclude('thumb');
 
         $backgrounds = [];
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
@@ -1815,7 +1759,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['backgrounds']);
     }
 
-    public function getIconsets() {
+    public
+    function getIconsets() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -1826,7 +1771,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['iconsets']);
     }
 
-    public function loadMapsByString() {
+    public
+    function loadMapsByString() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -1839,7 +1785,7 @@ class MapeditorsController extends MapModuleAppController {
         $MapConditions = new MapConditions($MapFilter->indexFilter());
         $MapConditions->setContainerIds($this->MY_RIGHTS);
 
-        $maps = $this->Map->makeItJavaScriptAble(
+        $maps = Api::makeItJavaScriptAble(
             $this->Map->getMapsForAngular($MapConditions, $selected, $excluded)
         );
 
@@ -1847,7 +1793,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['maps']);
     }
 
-    public function saveItem() {
+    public
+    function saveItem() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -1904,7 +1851,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->serializeErrorMessageFromModel('Mapitem');
     }
 
-    public function deleteItem() {
+    public
+    function deleteItem() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -1930,7 +1878,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
-    public function saveLine() {
+    public
+    function saveLine() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -1981,7 +1930,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->serializeErrorMessageFromModel('Mapline');
     }
 
-    public function deleteLine() {
+    public
+    function deleteLine() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2007,7 +1957,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
-    public function saveGadget() {
+    public
+    function saveGadget() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2092,7 +2043,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->serializeErrorMessageFromModel('Mapgadget');
     }
 
-    public function deleteGadget() {
+    public
+    function deleteGadget() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2118,7 +2070,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
-    public function getPerformanceDataMetrics($serviceId) {
+    public
+    function getPerformanceDataMetrics($serviceId) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2153,7 +2106,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['perfdata']);
     }
 
-    public function saveText() {
+    public
+    function saveText() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2207,7 +2161,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->serializeErrorMessageFromModel('Maptext');
     }
 
-    public function deleteText() {
+    public
+    function deleteText() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2233,7 +2188,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
-    public function saveIcon() {
+    public
+    function saveIcon() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2285,7 +2241,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->serializeErrorMessageFromModel('Mapicon');
     }
 
-    public function deleteIcon() {
+    public
+    function deleteIcon() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2311,7 +2268,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
-    public function saveBackground() {
+    public
+    function saveBackground() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2343,7 +2301,8 @@ class MapeditorsController extends MapModuleAppController {
         return;
     }
 
-    public function getIcons() {
+    public
+    function getIcons() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2354,7 +2313,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['icons']);
     }
 
-    public function saveSummaryitem() {
+    public
+    function saveSummaryitem() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2434,7 +2394,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->serializeErrorMessageFromModel('Mapsummaryitem');
     }
 
-    public function deleteSummaryitem() {
+    public
+    function deleteSummaryitem() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -2460,7 +2421,8 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
-    public function mapDetails($id) {
+    public
+    function mapDetails($id) {
         $id = (int)$id;
         if (!$this->Map->exists($id)) {
             throw new NotFoundException();
@@ -2489,14 +2451,16 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['map']);
     }
 
-    public function viewDirective() {
+    public
+    function viewDirective() {
         $this->layout = 'blank';
         //Ship template of Mapeditors view directive.
         //It is a directive be able to also use the maps as an widget
         return;
     }
 
-    public function mapWidget() {
+    public
+    function mapWidget() {
         $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template

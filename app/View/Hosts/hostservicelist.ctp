@@ -24,7 +24,7 @@
 ?>
 
 <table class="table table-striped table-hover table-bordered smart-form">
-    <tr ng-if="services.length > 0">
+    <tr>
         <td colspan="6">
             <div class="form-group smart-form">
                 <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
@@ -53,8 +53,7 @@
             </div>
         </td>
     </tr>
-    <tr ng-if="services.length > 0">
-        <th></th>
+    <tr>
         <th>
             <?php echo __('Status'); ?>
         </th>
@@ -98,14 +97,18 @@
             <i class="fa fa-gear fa-lg"></i>
         </th>
     </tr>
+    <tr ng-show="services.length == 0">
+        <td colspan="11" class="text-center txt-color-red italic">
+            <?php echo __('No entries match the selection'); ?>
+        </td>
+    </tr>
     <tr ng-repeat="service in services" ng-show="servicesStateFilter[service.Servicestatus.currentState]">
-        <td></td>
         <td class="text-center">
             <servicestatusicon service="service"></servicestatusicon>
         </td>
         <td class="text-center">
             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                <a href="/services/browser/{{ service.Service.id }}" class="txt-color-blueDark">
+                <a ui-sref="ServicesBrowser({id:service.Service.id})" class="txt-color-blueDark">
                     <i class="fa fa-lg fa-area-chart"
                        ng-mouseenter="mouseenter($event, service.Host, service)"
                        ng-mouseleave="mouseleave()"
@@ -145,7 +148,7 @@
 
         <td>
             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                <a href="/services/browser/{{ service.Service.id }}">
+                <a ui-sref="ServicesBrowser({id:service.Service.id})">
                     {{ service.Service.servicename }}
                 </a>
             <?php else: ?>
@@ -178,7 +181,7 @@
         <td class="width-50">
             <div class="btn-group">
                 <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                    <a href="/services/edit/{{service.Service.id}}"
+                    <a ui-sref="ServicesEdit({id: service.Service.id})"
                        ng-if="service.Service.allow_edit"
                        class="btn btn-default">
                         &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -193,7 +196,7 @@
                 <ul class="dropdown-menu pull-right" id="menuHack-{{service.Service.uuid}}">
                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                         <li ng-if="service.Service.allow_edit">
-                            <a href="/services/edit/{{service.Service.id}}">
+                            <a ui-sref="ServicesEdit({id: service.Service.id})">
                                 <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                             </a>
                         </li>
@@ -213,4 +216,3 @@
         </td>
     </tr>
 </table>
-

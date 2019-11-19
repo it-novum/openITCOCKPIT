@@ -24,61 +24,74 @@
 //	confirmation.
 
 
+use App\Model\Table\ContainersTable;
+use App\Model\Table\LocationsTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\LocationFilter;
+
+/**
+ * Class LocationsController
+ * @property AppPaginatorComponent $Paginator
+ * @property DbBackend $DbBackend
+ * @property Changelog $Changelog
+ */
 class LocationsController extends AppController {
-    public $uses = ['Location', 'Container'];
-    public $layout = 'Admin.default';
-    public $components = ['ListFilter.ListFilter', 'RequestHandler'];
-    public $helpers = ['ListFilter.ListFilter'];
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Container.name'       => ['label' => 'Name', 'searchType' => 'wildcard'],
-                'Location.description' => ['label' => 'description', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
+
+    public $layout = 'blank';
 
     public function index() {
-
-        if ($this->hasRootPrivileges === true) {
-            $container = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_LOCATION, [], $this->hasRootPrivileges);
-        } else {
-            $container = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_LOCATION, [], $this->hasRootPrivileges);
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
         }
-        $options = [
-            'order'      => [
-                'Container.name' => 'asc',
-            ],
-            'conditions' => [
-                'Container.parent_id' => $this->MY_RIGHTS,
-            ],
-        ];
 
-        $query = Hash::merge($this->Paginator->settings, $options);
+        /** @var $LocationsTable LocationsTable */
+        $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
+        $LocationFilter = new LocationFilter($this->request);
 
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_locations = $this->Location->find('all', $query);
-        } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_locations = $this->Paginator->paginate();
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $LocationFilter->getPage());
+        $all_locations = $LocationsTable->getLocationsIndex($LocationFilter, $PaginateOMat);
+
+        foreach ($all_locations as $key => $location) {
+            $all_locations[$key]['Location']['allowEdit'] = false;
+            $locationContainerId = $location['Location']['container_id'];
+            if (isset($this->MY_RIGHTS_LEVEL[$locationContainerId])) {
+                if ((int)$this->MY_RIGHTS_LEVEL[$locationContainerId] === WRITE_RIGHT) {
+                    $all_locations[$key]['Location']['allowEdit'] = true;
+                }
+            }
         }
-        $this->set(compact(['all_locations', 'container']));
-        $this->set('_serialize', ['all_locations']);
+
+        $this->set('all_locations', $all_locations);
+        $toJson = ['all_locations', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_locations', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
-    public function view($id = null) {
+    /**
+     * @param $id
+     */
+    public function view($id) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
-        if (!$this->Location->exists($id)) {
+
+        /** @var $LocationsTable LocationsTable */
+        $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
+
+        if (!$LocationsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid location'));
         }
-        $location = $this->Location->findById($id);
-        if (!$this->allowedByContainerId(Hash::extract($location, 'Container.parent_id'))) {
-            $this->render403();
 
+        $location = $LocationsTable->getLocationById($id);
+
+        if (!$this->allowedByContainerId($location['container_id'])) {
+            $this->render403();
             return;
         }
 
@@ -87,100 +100,224 @@ class LocationsController extends AppController {
     }
 
     public function add() {
-        if ($this->hasRootPrivileges === true) {
-            $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
-        } else {
-            $container = $this->Tree->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
-        }
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->Location->create();
-            App::uses('UUID', 'Lib');
-            $this->request->data['Location']['uuid'] = UUID::v4();
-            $this->request->data['Container']['containertype_id'] = CT_LOCATION;
-            if ($this->Location->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
-                if ($this->request->ext == 'json') {
-                    $this->serializeId();
-
-                    return;
-                } else {
-                    $this->setFlash(__('Location successfully saved.'));
-                    $this->redirect(['action' => 'index']);
-                }
-            } else {
-                if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-
-                    return;
-                } else {
-                    $this->setFlash(__('Could not save data'), false);
-                }
-            }
-        }
-
-        $this->set(compact(['container']));
-    }
-
-    public function edit($id = null) {
-        if (!$this->Location->exists($id)) {
-            throw new NotFoundException(__('Invalid location'));
-        }
-
-        $location = $this->Location->findById($id);
-
-        if (!$this->allowedByContainerId(Hash::extract($location, 'Container.parent_id'))) {
-            $this->render403();
-
+        $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        if ($this->hasRootPrivileges === true) {
-            $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
-        } else {
-            $container = $this->Tree->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
-        }
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Location']['id'] = $id;
-            $this->request->data['Container']['id'] = $location['Container']['id'];
-            $this->request->data['Container']['containertype_id'] = CT_LOCATION;
-            if ($this->Location->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
-                $this->setFlash(__('Location successfully saved'));
-                $this->redirect(['action' => 'index']);
+        /** @var $LocationsTable LocationsTable */
+        $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
+
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $this->request->data['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+            $location = $LocationsTable->newEmptyEntity();
+            $location = $LocationsTable->patchEntity($location, $this->request->data);
+            $location->container->containertype_id = CT_LOCATION;
+
+            $LocationsTable->save($location);
+            if ($location->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $location->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
             } else {
-                $this->setFlash(__('Could not save data'), false);
+                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'add',
+                    'locations',
+                    $location->get('id'),
+                    OBJECT_LOCATION,
+                    [$location->get('container')->get('parent_id')],
+                    $User->getId(),
+                    $location->container->name,
+                    [
+                        'location' => $location->toArray()
+                    ]
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
+                //@todo refactor with cake4
+                Cache::clear(false, 'permissions');
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($location); // REST API ID serialization
+                    return;
+                }
             }
+            $this->set('location', $location);
+            $this->set('_serialize', ['location']);
         }
-        $this->Frontend->set('latitude', $location['Location']['latitude']);
-        $this->Frontend->set('longitude', $location['Location']['longitude']);
-        $this->set(compact(['location', 'container']));
     }
 
-    public function delete($id = null) {
-        if (!$this->Location->exists($id)) {
+    /**
+     * @param null $id
+     */
+    public function edit($id = null) {
+        $this->layout = 'blank';
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var $LocationsTable LocationsTable */
+        $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
+
+        if (!$LocationsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid location'));
         }
 
+        if ($this->request->is('get')) {
+            $location = $LocationsTable->getLocationById($id);
+
+            if (!$this->allowedByContainerId($location['container_id'])) {
+                $this->render403();
+                return;
+            }
+
+            $this->set('location', $location);
+            $this->set('_serialize', ['location']);
+            return;
+        }
+
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $oldLocation = $LocationsTable->get($id, [
+                'contain' => ['Containers']
+            ]);
+            $oldLocationForChangelog = $oldLocation->toArray();
+            if (!$this->allowedByContainerId($oldLocation->get('container_id'))) {
+                $this->render403();
+                return;
+            }
+
+            $location = $LocationsTable->patchEntity($oldLocation, $this->request->data);
+
+            $location->container_id = $oldLocation->get('container_id');
+            $location->container->id = $oldLocation->get('container_id');
+            $location->container->containertype_id = CT_LOCATION;
+
+            $LocationsTable->save($location);
+            if ($location->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $location->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'edit',
+                    'locations',
+                    $location->get('id'),
+                    OBJECT_LOCATION,
+                    [$location->get('container')->get('parent_id')],
+                    $User->getId(),
+                    $location->container->name,
+                    [
+                        'location' => $location->toArray()
+                    ],
+                    [
+                        'location' => $oldLocationForChangelog
+                    ]
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
+                //@todo refactor with cake4
+                Cache::clear(false, 'permissions');
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($location); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('location', $location);
+            $this->set('_serialize', ['location']);
+        }
+    }
+
+    /**
+     * @param null $id
+     * @todo allowDelete -> for eventcorrelation module
+     */
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        $location = $this->Location->findById($id);
+        /** @var $LocationsTable LocationsTable */
+        $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        if (!$this->allowedByContainerId(Hash::extract($location, 'Container.parent_id'))) {
+        if (!$LocationsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid location'));
+        }
+
+        $location = $LocationsTable->getLocationById($id);
+        $container = $ContainersTable->get($location->get('container')->get('id'));
+
+        if (!$this->allowedByContainerId($location->get('container')->get('parent_id'))) {
             $this->render403();
-
             return;
         }
 
-        if ($this->Location->__delete($location, $this->Auth->user('id'))) {
-            Cache::clear(false, 'permissions');
-            $this->setFlash(__('Location successfully deleted'));
-            $this->redirect(['action' => 'index']);
-        } else {
-            $this->setFlash(__('Could not delete data'), false);
-            $this->redirect(['action' => 'index']);
+        if ($ContainersTable->delete($container)) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                'delete',
+                'locations',
+                $id,
+                OBJECT_LOCATION,
+                $container->get('parent_id'),
+                $User->getId(),
+                $container->get('name'),
+                [
+                    'location' => $location->toArray()
+                ]
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
         }
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+    }
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+    /**
+     * @throws Exception
+     */
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_LOCATION, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_LOCATION, [], $this->hasRootPrivileges);
+        }
+        $containers = Api::makeItJavaScriptAble($containers);
+
+
+        $this->set('containers', $containers);
+        $this->set('_serialize', ['containers']);
     }
 
 }

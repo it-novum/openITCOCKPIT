@@ -111,13 +111,13 @@ class TimeHelperTest extends CakeTestCase {
  */
 	public function testEngineOverride() {
 		App::build(array(
-			'Utility' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Utility' . DS)
+			'Utility' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Utility' . DS)
 		), App::REGISTER);
 		$Time = new TimeHelperTestObject($this->View, array('engine' => 'TestAppEngine'));
 		$this->assertInstanceOf('TestAppEngine', $Time->engine());
 
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		));
 		CakePlugin::load('TestPlugin');
 		$Time = new TimeHelperTestObject($this->View, array('engine' => 'TestPlugin.TestPluginEngine'));

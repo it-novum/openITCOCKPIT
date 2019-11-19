@@ -35,7 +35,6 @@ class BBCodeParser {
     private $bbparser;
 
     public function __construct() {
-        require_once APP . "Lib/jbbcode-1.2.0/Parser.php";
         $bbparser = new JBBCode\Parser();
         $bbparser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
         $builder = new JBBCode\CodeDefinitionBuilder('left', '<p align="left">{param}</p>');

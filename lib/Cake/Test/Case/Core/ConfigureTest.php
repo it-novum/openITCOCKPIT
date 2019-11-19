@@ -46,23 +46,23 @@ class ConfigureTest extends CakeTestCase {
  */
 	public function tearDown() {
 		parent::tearDown();
-		if (file_exists(TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_core_paths')) {
-			unlink(TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_core_paths');
+		if (file_exists(OLD_TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_core_paths')) {
+			unlink(OLD_TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_core_paths');
 		}
-		if (file_exists(TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_dir_map')) {
-			unlink(TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_dir_map');
+		if (file_exists(OLD_TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_dir_map')) {
+			unlink(OLD_TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_dir_map');
 		}
-		if (file_exists(TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_file_map')) {
-			unlink(TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_file_map');
+		if (file_exists(OLD_TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_file_map')) {
+			unlink(OLD_TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_file_map');
 		}
-		if (file_exists(TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_object_map')) {
-			unlink(TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_object_map');
+		if (file_exists(OLD_TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_object_map')) {
+			unlink(OLD_TMP . 'cache' . DS . 'persistent' . DS . 'cake_core_object_map');
 		}
-		if (file_exists(TMP . 'cache' . DS . 'persistent' . DS . 'test.config.php')) {
-			unlink(TMP . 'cache' . DS . 'persistent' . DS . 'test.config.php');
+		if (file_exists(OLD_TMP . 'cache' . DS . 'persistent' . DS . 'test.config.php')) {
+			unlink(OLD_TMP . 'cache' . DS . 'persistent' . DS . 'test.config.php');
 		}
-		if (file_exists(TMP . 'cache' . DS . 'persistent' . DS . 'test.php')) {
-			unlink(TMP . 'cache' . DS . 'persistent' . DS . 'test.php');
+		if (file_exists(OLD_TMP . 'cache' . DS . 'persistent' . DS . 'test.php')) {
+			unlink(OLD_TMP . 'cache' . DS . 'persistent' . DS . 'test.php');
 		}
 		Configure::drop('test');
 	}
@@ -314,7 +314,7 @@ class ConfigureTest extends CakeTestCase {
  * @return void
  */
 	public function testLoadWithMerge() {
-		Configure::config('test', new PhpReader(CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS));
+		Configure::config('test', new PhpReader(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS));
 
 		$result = Configure::load('var_test', 'test');
 		$this->assertTrue($result);
@@ -337,7 +337,7 @@ class ConfigureTest extends CakeTestCase {
  * @return void
  */
 	public function testLoadNoMerge() {
-		Configure::config('test', new PhpReader(CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS));
+		Configure::config('test', new PhpReader(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS));
 
 		$result = Configure::load('var_test', 'test');
 		$this->assertTrue($result);
@@ -359,7 +359,7 @@ class ConfigureTest extends CakeTestCase {
  */
 	public function testLoadPlugin() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 		Configure::config('test', new PhpReader());
 		CakePlugin::load('TestPlugin');
@@ -482,7 +482,7 @@ class ConfigureTest extends CakeTestCase {
  * @return void
  */
 	public function testDumpNoAdapter() {
-		Configure::dump(TMP . 'test.php', 'does_not_exist');
+		Configure::dump(OLD_TMP . 'test.php', 'does_not_exist');
 	}
 
 /**
@@ -491,15 +491,15 @@ class ConfigureTest extends CakeTestCase {
  * @return void
  */
 	public function testDump() {
-		Configure::config('test_reader', new PhpReader(TMP));
+		Configure::config('test_reader', new PhpReader(OLD_TMP));
 
 		$result = Configure::dump('config_test.php', 'test_reader');
 		$this->assertTrue($result > 0);
-		$result = file_get_contents(TMP . 'config_test.php');
+		$result = file_get_contents(OLD_TMP . 'config_test.php');
 		$this->assertContains('<?php', $result);
 		$this->assertContains('$config = ', $result);
-		if (file_exists(TMP . 'config_test.php')) {
-			unlink(TMP . 'config_test.php');
+		if (file_exists(OLD_TMP . 'config_test.php')) {
+			unlink(OLD_TMP . 'config_test.php');
 		}
 	}
 
@@ -509,18 +509,18 @@ class ConfigureTest extends CakeTestCase {
  * @return void
  */
 	public function testDumpPartial() {
-		Configure::config('test_reader', new PhpReader(TMP));
+		Configure::config('test_reader', new PhpReader(OLD_TMP));
 
 		$result = Configure::dump('config_test.php', 'test_reader', array('Error'));
 		$this->assertTrue($result > 0);
-		$result = file_get_contents(TMP . 'config_test.php');
+		$result = file_get_contents(OLD_TMP . 'config_test.php');
 		$this->assertContains('<?php', $result);
 		$this->assertContains('$config = ', $result);
 		$this->assertContains('Error', $result);
 		$this->assertNotContains('debug', $result);
 
-		if (file_exists(TMP . 'config_test.php')) {
-			unlink(TMP . 'config_test.php');
+		if (file_exists(OLD_TMP . 'config_test.php')) {
+			unlink(OLD_TMP . 'config_test.php');
 		}
 	}
 

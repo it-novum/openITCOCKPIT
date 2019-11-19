@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
+
 class ExportsController extends AppController {
     public $layout = 'Admin.default';
 
@@ -37,7 +39,6 @@ class ExportsController extends AppController {
     ];
 
     public function index() {
-        App::uses('UUID', 'Lib');
         Configure::load('gearman');
         $this->Config = Configure::read('gearman');
 
@@ -56,14 +57,16 @@ class ExportsController extends AppController {
 
         $this->loadModel('Systemsetting');
 
-        $monitoringSystemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $monitoringSystemsettings = $Systemsettings->findAsArraySection('MONITORING');
 
         $this->set('gearmanReachable', $gearmanReachable);
         $this->set('monitoringSystemsettings', $monitoringSystemsettings);
         $this->set('exportRunning', $exportRunning);
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->Frontend->setJson('exportRunning', $exportRunning);
-        $this->Frontend->setJson('uuidRegEx', UUID::JSregex());
+        $this->Frontend->setJson('uuidRegEx', \itnovum\openITCOCKPIT\Core\UUID::JSregex());
     }
 
     public function broadcast() {
@@ -105,7 +108,7 @@ class ExportsController extends AppController {
 
         if (isset($this->request->query['instances'])) {
             $instancesToExport = $this->request->query['instances'];
-            if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+            if (is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
                 $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
                 $SatelliteModel->disableAllInstanceConfigSyncs();
                 $SatelliteModel->saveInstancesForConfigSync($instancesToExport);
@@ -132,7 +135,7 @@ class ExportsController extends AppController {
 
             Configure::load('gearman');
             $this->Config = Configure::read('gearman');
-            $this->GearmanClient->client->doBackground("oitc_gearman", Security::cipher(serialize(['task' => 'export_start_export', 'backup' => (int)$createBackup]), $this->Config['password']));
+            $this->GearmanClient->client->doBackground("oitc_gearman", serialize(['task' => 'export_start_export', 'backup' => (int)$createBackup]));
             $exportStarted = true;
         }
 
@@ -149,7 +152,7 @@ class ExportsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+        if (is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
             $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
             $SatelliteModel->disableAllInstanceConfigSyncs();
             if (isset($this->request->query['instances'])) {
@@ -165,7 +168,7 @@ class ExportsController extends AppController {
         //$this->allowOnlyAjaxRequests();
         Configure::load('gearman');
         $this->Config = Configure::read('gearman');
-        $result = $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'export_verify_config']), $this->Config['password']));
+        $result = $this->GearmanClient->client->doNormal("oitc_gearman", serialize(['task' => 'export_verify_config']));
         $result = unserialize($result);
         $this->set('result', $result);
         $this->set('_serialize', ['result']);

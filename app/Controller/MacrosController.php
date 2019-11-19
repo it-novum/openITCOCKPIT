@@ -23,137 +23,137 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class MacrosController extends AppController {
-    public $layout = 'Admin.default';
-    public $components = ['RequestHandler'];
+use App\Model\Table\MacrosTable;
+use Cake\ORM\Locator\LocatorAwareTrait;
+use Cake\Utility\Hash;
 
+class MacrosController extends AppController {
+
+    use LocatorAwareTrait;
+
+    public $layout = 'angularjs';
 
     public function index() {
+        $this->layout = 'blank';
 
-        $this->Paginator->settings['limit'] = 500;
-        $this->Paginator->settings['order'] = ['Macro.name' => 'asc'];
-        $all_macros = $this->Paginator->paginate();
+        $TableLocator = $this->getTableLocator();
+        /** @var $Macros MacrosTable */
+        $Macros = $TableLocator->get('Macros');
 
-        //Sorting the SQL result in a human frindly way. Will sort $USER10$ below $USER2$
-        $all_macros = Hash::sort($all_macros, '{n}.Macro.name', 'asc', 'natural');
-
-        //Restore submited macros after a validation error
-        if (!empty($this->request->data) && $this->request->is('post')) {
-            $all_macros = Hash::merge($all_macros, $this->request->data);
+        if ($this->isJsonRequest() && !$this->isAngularJsRequest()) {
+            //Legacy API
+            $this->set('all_macros', $Macros->getAllMacrosInCake2Format());
+            $this->set('_serialize', ['all_macros']);
+            return;
         }
 
-        $this->set(compact(['all_macros']));
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        $all_macros = $Macros->find('all')->disableHydration()->toArray();
+        $all_macros = Hash::sort($all_macros, '{n}.name', 'asc', 'natural');
+        $this->set('all_macros', $all_macros);
         $this->set('_serialize', ['all_macros']);
-
-        //Checking if the user delete a macro
-        $macrosToDelete = [];
-        if (!empty($all_macros) && !empty($this->request->data)) {
-            $macrosToDelete = $this->Macro->find('all', [
-                'conditions' => [
-                    'Macro.id' => array_diff(Hash::extract($all_macros, '{n}.Macro.id'), Hash::extract($this->request->data, '{n}.Macro.id')),
-                ],
-            ]);
-        }
-
-
-        //Delete all macros that was removed by the user:
-        foreach ($macrosToDelete as $macroToDelete) {
-            $this->Macro->delete($macroToDelete['Macro']['id']);
-        }
-
-
-        //Saving the data
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->Macro->saveAll($this->_rewritePostData($this->request->data))) {
-                $this->setFlash(__('Macros saves successfully'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Error while saving data'), false);
-            }
-        }
     }
 
-    public function addMacro() {
-
-        if (!empty($this->request->data)) {
-            $all_macros = $this->request->data;
-        } else {
-            $all_macros = $this->Macro->find('list');
+    public function add() {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
 
-        //Merging existing macros with the new one that was added by javascript
-        //$all_macros = Hash::merge($this->Macro->find('list'), $this->request->data);
+        $TableLocator = $this->getTableLocator();
+        /** @var $Macros MacrosTable */
+        $Macros = $TableLocator->get('Macros');
 
-        $macroCount = 1;
+        $macro = $Macros->newEmptyEntity();
+        $macro = $Macros->patchEntity($macro, $this->request->data('Macro'));
+        $Macros->save($macro);
 
-        while (in_array('$USER' . $macroCount . '$', $all_macros)) {
-            $macroCount++;
+        if ($macro->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $macro->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
         }
 
-        $newMacro = '$USER' . $macroCount . '$';
-        $this->set('newMacro', $newMacro);
-        $this->set('macroCount', $macroCount);
-
+        $this->set('macro', $macro);
+        $this->set('_serialize', ['macro']);
     }
 
-    private function _rewritePostData($request = []) {
-        /*
-        If the user press on save we get an array like this:
-        (int) 0 => array( <-- Data out of DB
-            'Macro' => array(
-                'id' => '1',
-                'name' => '$USER1$',
-                'value' => '/opt/openitc/nagios/libexec'
-            )
-        ),
-        (int) 1 => array( <-- Data out of DB
-            'Macro' => array(
-                'id' => '2',
-                'name' => '$USER2$',
-                'value' => '/usr/local/share/nagios/libexec'
-            )
-        ),
-        'a45c1e194e3a0b3919fa08afcbcb0549692208e9' => array( <-- Data was created by AJAX and JS
-            'Macro' => array(
-                'name' => '$USER3$',
-                'value' => 'random data'
-            )
-        )
-        
-        But saveAll requires an array like this:
-        (int) 0 => array(
-            'Macro' => array(
-                'id' => '1',
-                'name' => '$USER1$',
-                'value' => '/opt/openitc/nagios/libexec'
-            )
-        ),
-        (int) 1 => array(
-            'Macro' => array(
-                'id' => '2',
-                'name' => '$USER2$',
-                'value' => '/usr/local/share/nagios/libexec'
-            )
-        ),
-        (int) 2 => array(
-            'Macro' => array(
-                'name' => '$USER3$',
-                'value' => 'random data'
-            )
-        )
-        
-        */
-
-        $return = [];
-        foreach ($request as $data) {
-            //Remove empty values, because nagios will trhow a config error
-            if (!isset($data['Macro']['value']) || !isset($data['Macro']['name']) || strlen($data['Macro']['value']) == 0) {
-                continue;
-            }
-            $return[] = $data;
+    public function edit($id = null) {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
 
-        return $return;
+        $TableLocator = $this->getTableLocator();
+        /** @var $Macros MacrosTable */
+        $Macros = $TableLocator->get('Macros');
 
+        if (!$Macros->exists($id)) {
+            throw new NotFoundException('Macro not found');
+        }
+
+        $macro = $Macros->get($id);
+        $macro = $Macros->patchEntity($macro, $this->request->data('Macro'));
+
+        $Macros->save($macro);
+
+        if ($macro->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $macro->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $this->set('macro', $macro);
+        $this->set('_serialize', ['macro']);
+    }
+
+    public function delete($id = null) {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $TableLocator = $this->getTableLocator();
+        /** @var $Macros MacrosTable */
+        $Macros = $TableLocator->get('Macros');
+
+        if (!$Macros->exists($id)) {
+            throw new NotFoundException('Macro not found');
+        }
+
+        $macro = $Macros->get($id);
+        if ($Macros->delete($macro)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+    }
+
+    public function getAvailableMacroNames() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $include = $this->request->query('include');
+
+        $TableLocator = $this->getTableLocator();
+        /** @var $Macros MacrosTable */
+        $Macros = $TableLocator->get('Macros');
+
+        $availableMacroNames = array_values($Macros->getAvailableMacroNames());
+        if ($include !== '') {
+            $availableMacroNames[] = $include;
+        }
+
+
+        $this->set('availableMacroNames', $availableMacroNames);
+        $this->set('_serialize', ['availableMacroNames']);
     }
 }

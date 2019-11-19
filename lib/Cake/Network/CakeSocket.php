@@ -282,7 +282,7 @@ class CakeSocket {
 			}
 		}
 		if (empty($this->config['context']['ssl']['cafile'])) {
-			$this->config['context']['ssl']['cafile'] = CAKE . 'Config' . DS . 'cacert.pem';
+			$this->config['context']['ssl']['cafile'] = OLD_CAKE . 'Config' . DS . 'cacert.pem';
 		}
 		if (!empty($this->config['context']['ssl']['verify_host'])) {
 			$this->config['context']['ssl']['CN_match'] = $host;

@@ -25,7 +25,7 @@ class AllTestsTest extends CakeTestSuite {
  */
 	public static function suite() {
 		$suite = new CakeTestSuite('All application tests');
-		$suite->addTestDirectoryRecursive(TESTS . 'Case');
+		$suite->addTestDirectoryRecursive(OLD_TESTS . 'Case');
 		return $suite;
 	}
 }

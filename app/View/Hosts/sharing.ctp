@@ -26,70 +26,116 @@
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-sitemap fa-rotate-270"></i>
-            <?php echo __('Monitoring'); ?>
+            <i class="fa fa-sitemap fa-rotate-270 fa-fw "></i>
+            <?php echo __('Host'); ?>
             <span>>
-                <?php echo __('Host'); ?>
-			</span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+                <?php echo __('Shared containers'); ?>
+            </span>
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
-        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-sitemap fa-rotate-270"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Sharing') . ': ' . $host['Host']['name']; ?></h2>
-        <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-            <?php echo $this->Utils->backButton(__('Back')); ?>
+        <span class="widget-icon"> <i class="fa fa-sitemap fa-rotate-270"></i> </span>
+        <h2>
+            <?php echo __('Sharing for'); ?>:
+            {{host.name}}
+        </h2>
+        <div class="widget-toolbar" role="menu">
+            <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
+                <a back-button fallback-state='HostsIndex' class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
+            <?php endif; ?>
         </div>
+
+        <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
+            UUID: {{host.uuid}}
+        </div>
+
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Host', [
-                'class' => 'form-horizontal clear',
-            ]); ?>
-            <div class="row">
-                <?php
-                echo $this->Form->input('Host.id', [
-                        'type'      => 'hidden',
-                        'value'     => $host['Host']['id'],
-                        'wrapInput' => 'col col-xs-8',
-                    ]
-                );
-                echo $this->Form->input('container_id', [
-                        'type'  => 'hidden',
-                        'value' => $host['Host']['container_id'],
-                    ]
-                );
-                echo $this->Form->input('host_container_id', [
-                        'options'   => $containers,
-                        'multiple'  => false,
-                        'selected'  => $host['Host']['container_id'],
-                        'class'     => 'chosen',
-                        'style'     => 'width: 100%',
-                        'label'     => __('Primary container'),
-                        'wrapInput' => 'col col-xs-8',
-                        'disabled'  => true,
-                    ]
-                );
-                echo $this->Form->input('Container', [
-                        'options'   => $sharingContainers,
-                        'multiple'  => true,
-                        'selected'  => $this->Html->getParameter('Container.Container', Hash::extract($host['Container'], '{n}.id')),
-                        'class'     => 'chosen',
-                        'style'     => 'width: 100%',
-                        'label'     => __('Shared containers'),
-                        'wrapInput' => 'col col-xs-8',
-                    ]
-                );
-                ?>
-            </div> <!-- close col -->
-        </div> <!-- close row-->
-        <br/>
-        <?php echo $this->Form->formActions(); ?>
-    </div> <!-- close widget body -->
+            <form ng-submit="submit();" class="form-horizontal" ng-init="successMessage=
+            {objectName : '<?php echo __('Host sharing'); ?>' , message: '<?php echo __('edit successfully'); ?>'}">
+                <div class="row">
+
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                        <div class="row">
+
+                            <fieldset>
+                                <legend>
+                                    <span class="text-info"><?php echo __('Host:'); ?></span>
+                                    {{host.name}}
+                                </legend>
+                                <div class="form-group required" ng-class="{'has-error': errors.container_id}">
+                                    <label class="col-xs-12 col-lg-2 control-label">
+                                        <?php echo __('Primary container'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-10">
+                                        <select
+                                                id="HostContainers"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="containers"
+                                                disabled="disabled"
+                                                ng-options="container.key as container.value for container in primaryContainerPathSelect"
+                                                ng-model="host.container_id">
+                                        </select>
+
+                                        <div class="text-info">
+                                            <i class="fa fa-info-circle"></i>
+                                            <?php echo __('Due to dependencies it is not possible to change the primary container in this view.'); ?>
+                                        </div>
+
+                                        <div ng-repeat="error in errors.container_id">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" ng-class="{'has-error': errors.container_id}">
+                                    <label class="col-xs-12 col-lg-2 control-label">
+                                        <?php echo __('Shared containers'); ?>
+                                    </label>
+                                    <div class="col-xs-12 col-lg-10">
+                                        <select
+                                                id="HostSharedContainers"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="sharingContainers"
+                                                multiple
+                                                ng-options="container.key as container.value for container in sharingContainers"
+                                                ng-model="post.Host.hosts_to_containers_sharing._ids">
+                                        </select>
+                                        <div ng-repeat="error in errors.container_id">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                        </div> <!-- /row -->
+                    </div> <!-- /col -->
+
+
+                    <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+
+                                <button type="submit" class="btn btn-primary">
+                                    <?php echo __('Update sharing'); ?>
+                                </button>
+
+                                <a back-button fallback-state='HostsIndex'
+                                   class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-</div> <!-- end jarviswidget -->

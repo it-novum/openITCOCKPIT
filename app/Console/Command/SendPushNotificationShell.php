@@ -21,6 +21,7 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Service;
@@ -82,8 +83,10 @@ class SendPushNotificationShell extends AppShell {
         if ($this->userId === 0) {
             exit (0);
         }
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
 
-        if (!$this->User->exists($this->userId)) {
+        if (!$Users->existsById($this->userId)) {
             throw new RuntimeException(sprintf('User with id "%s" could not be found!', $this->userId));
         }
 

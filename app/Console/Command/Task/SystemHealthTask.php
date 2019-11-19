@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\System\Health\CpuLoad;
@@ -81,7 +82,9 @@ class SystemHealthTask extends AppShell implements CronjobInterface {
         $MemoryUsage = new MemoryUsage();
         $data['memory_usage'] = $MemoryUsage->getMemoryUsage();
 
-        $systemsetting = $this->Systemsetting->findAsArray();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsetting = $Systemsettings->findAsArray();
         $errorRedirect = ' 2> /dev/null';
 
 

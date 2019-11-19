@@ -23,14 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-code-fork fa-fw "></i>
             <?php echo __('Contact groups'); ?>
             <span>>
-                <?php echo __('used by...'); ?>
+                <?php echo __('Used by...'); ?>
             </span>
         </h1>
     </div>
@@ -40,19 +39,28 @@
 
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <div class="jarviswidget">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Utils->backButton(__('Back'), '/contactgroups/index'); ?>
+                        <?php if ($this->Acl->hasPermission('index', 'contactgroups')): ?>
+                            <a back-button fallback-state='ContactgroupsIndex' class="btn btn-default btn-xs">
+                                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                            </a>
+                        <?php endif; ?>
                     </div>
 
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon"> <i class="fa fa-code-fork"></i> </span>
-                    <h2><?php echo __('Contactgroup'); ?>
-                        <strong>{{ contactgroupWithRelations.Container.name
-                            }}</strong> <?php echo __('is used by the following objects'); ?>
-                        ({{total}}):</h2>
+
+                    <h2><?php echo __('Contact group'); ?>
+                        <strong>
+                            »{{ contactgroupWithRelations.Container.name }}«
+                        </strong>
+                        <?php echo __('is used by'); ?>
+                        {{ total }}
+                        <?php echo __('objects.'); ?>
+                    </h2>
 
                 </header>
                 <div>
@@ -87,7 +95,7 @@
                             <tr ng-repeat="host in contactgroupWithRelations.Host">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                        <a href="/hosts/edit/{{ host.id }}" target="_blank">
+                                        <a ui-sref="HostsEdit({id:host.id})" target="_blank">
                                             {{ host.name }} ({{ host.address }})
                                         </a>
                                     <?php else: ?>
@@ -122,7 +130,7 @@
                             <tr ng-repeat="service in contactgroupWithRelations.Service">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                        <a href="/services/edit/{{ service.id }}" target="_blank">
+                                        <a ui-sref="ServicesEdit({id: service.id})" target="_blank">
                                             {{ service.name }}
                                         </a>
                                     <?php else: ?>

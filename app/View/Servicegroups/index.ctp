@@ -23,14 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
-<div class="row" xmlns="http://www.w3.org/1999/html">
+<div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-cogs fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Service groups'); ?>
             <span>>
-                <?php echo __('Service Groups'); ?>
+                <?php echo __('Overview'); ?>
             </span>
         </h1>
     </div>
@@ -49,8 +48,8 @@
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add')): ?>
-                            <a href="/servicegroups/add" class="btn btn-xs btn-success">
+                        <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
+                            <a ui-sref="ServicegroupsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
@@ -64,11 +63,11 @@
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Service Groups'); ?></h2>
-                    <?php if ($this->Acl->hasPermission('extended')): ?>
+                    <h2 class="hidden-mobile"><?php echo __('Service groups overview'); ?></h2>
+                    <?php if ($this->Acl->hasPermission('extended', 'servicegroups')): ?>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>
-                                <a href="/servicegroups/extended"><i class="fa fa-plus-square"></i>
+                                <a ui-sref="ServicegroupsExtended"><i class="fa fa-plus-square"></i>
                                     <span class="hidden-mobile hidden-tablet"><?php echo __('Extended overview'); ?></span></a>
                             </li>
                         </ul>
@@ -85,7 +84,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-cogs"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by service group name'); ?>"
-                                                   ng-model="filter.container.name"
+                                                   ng-model="filter.containers.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -95,7 +94,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by description'); ?>"
-                                                   ng-model="filter.servicegroup.description"
+                                                   ng-model="filter.servicegroups.description"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -120,12 +119,12 @@
                                     <th class="no-sort sorting_disabled width-15">
                                         <i class="fa fa-check-square-o fa-lg"></i>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Container.name')">
-                                        <i class="fa" ng-class="getSortClass('Container.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Containers.name')">
+                                        <i class="fa" ng-class="getSortClass('Containers.name')"></i>
                                         <?php echo __('Service group name'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Servicegroup.description')">
-                                        <i class="fa" ng-class="getSortClass('Servicegroup.description')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Servicegroups.description')">
+                                        <i class="fa" ng-class="getSortClass('Servicegroups.description')"></i>
                                         <?php echo __('Description'); ?>
                                     </th>
                                     <th class="no-sort text-center">
@@ -137,20 +136,68 @@
                                 <tr ng-repeat="servicegroup in servicegroups">
                                     <td class="text-center" class="width-15">
                                         <input type="checkbox"
-                                               ng-model="massChange[servicegroup.Servicegroup.id]"
-                                               ng-show="servicegroup.Servicegroup.allowEdit">
+                                               ng-model="massChange[servicegroup.id]"
+                                               ng-show="servicegroup.allow_edit">
                                     </td>
                                     <td>
-                                        {{ servicegroup.Container.name }}
+                                        {{ servicegroup.container.name }}
                                     </td>
                                     <td>
-                                        {{ servicegroup.Servicegroup.description }}
+                                        {{ servicegroup.description }}
                                     </td>
-                                    <td class="text-center">
-                                        <a href="/servicegroups/edit/{{servicegroup.Servicegroup.id}}"
-                                           ng-if="servicegroup.Servicegroup.allowEdit">
-                                            <i class="fa fa-cog fa-lg txt-color-teal"></i>
-                                        </a>
+
+                                    <td class="width-50">
+                                        <div class="btn-group smart-form">
+                                            <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
+                                                <a ui-sref="ServicegroupsEdit({id: servicegroup.id})"
+                                                   ng-if="servicegroup.allow_edit"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                                <a href="javascript:void(0);"
+                                                   ng-if="!servicegroup.allow_edit"
+                                                   class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{servicegroup.id}}">
+                                                <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
+                                                    <li ng-if="servicegroup.allow_edit">
+                                                        <a ui-sref="ServicegroupsEdit({id:servicegroup.id})">
+                                                            <i class="fa fa-cog"></i>
+                                                            <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+
+                                                <?php if ($this->Acl->hasPermission('extended', 'servicegroups')): ?>
+                                                    <li>
+                                                        <a ui-sref="ServicegroupsExtended({id: servicegroup.id})">
+                                                            <i class="fa fa-plus-square"></i>
+                                                            <?php echo __('Extended view'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+
+                                                <?php if ($this->Acl->hasPermission('delete', 'servicegroups')): ?>
+                                                    <li class="divider" ng-if="servicegroup.allow_edit"></li>
+                                                    <li ng-if="servicegroup.allow_edit">
+                                                        <a href="javascript:void(0);"
+                                                           class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(servicegroup))">
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -194,7 +241,9 @@
                                 </a>
                             </div>
                         </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>

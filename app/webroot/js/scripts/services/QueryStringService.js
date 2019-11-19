@@ -10,10 +10,31 @@ angular.module('openITCOCKPIT')
                 return id;
             },
 
-            getValue: function(varName, defaultReturn){
+            getCakeIds: function(){
+                var url = window.location.href;
+                var ids = [];
 
+                url = url.split('/');
+                if(url.length > 5){
+                    //Ignore protocol, controller and action
+                    //[ "https:", "", "example.com", "commands", "copy", "39", "31" ]
+
+                    for(var i = 5; i < url.length; i++){
+                        if(isNaN(url[i]) === false && url[i] !== null && url[i] !== ''){
+                            ids.push(parseInt(url[i], 10));
+                        }
+                    }
+                }
+                return ids;
+            },
+
+            getValue: function(varName, defaultReturn){
                 defaultReturn = (typeof defaultReturn === 'undefined') ? null : defaultReturn;
-                var query = parseUri(decodeURIComponent(window.location.href)).queryKey;
+                var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
+                if(sourceUrl.includes('/ng/#!/')){
+                    sourceUrl = sourceUrl.replace('/ng/#!', '');
+                }
+                var query = parseUri(sourceUrl).queryKey;
                 if(query.hasOwnProperty(varName)){
                     return query[varName];
                 }
@@ -25,7 +46,11 @@ angular.module('openITCOCKPIT')
                 defaultReturn = (typeof defaultReturn === 'undefined') ? null : defaultReturn;
                 try{
                     //&filter[Service.id][]=861&filter[Service.id][]=53&filter[Service.id][]=860
-                    var url = new URL(window.location.href);
+                    var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
+                    if(sourceUrl.includes('/ng/#!/')){
+                        sourceUrl = sourceUrl.replace('/ng/#!', '');
+                    }
+                    var url = new URL(sourceUrl);
                     var serviceIds = url.searchParams.getAll(varName);
                     //getAll('filter[Service.id][]'); returns [861, 53, 860]
                     if(serviceIds.length > 0){
@@ -36,7 +61,11 @@ angular.module('openITCOCKPIT')
                     //IE or Edge??
 
                     ////&filter[Service.id][]=861&filter[Service.id][]=53&filter[Service.id][]=860&bert=123
-                    var urlString = window.location.href;
+                    var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
+                    if(sourceUrl.includes('/ng/#!/')){
+                        sourceUrl = sourceUrl.replace('/ng/#!', '');
+                    }
+                    var urlString = sourceUrl;
                     var peaces = urlString.split(varName);
                     //split returns [ "https://foo.bar/services/index?angular=true&", "=861&", "=53&", "=860&", "=865&", "=799&", "=802&bert=123" ]
                     var ids = [];
@@ -67,12 +96,20 @@ angular.module('openITCOCKPIT')
             },
 
             hasValue: function(varName){
-                var query = parseUri(decodeURIComponent(window.location.href)).queryKey;
+                var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
+                if(sourceUrl.includes('/ng/#!/')){
+                    sourceUrl = sourceUrl.replace('/ng/#!', '');
+                }
+                var query = parseUri(sourceUrl).queryKey;
                 return query.hasOwnProperty(varName);
             },
 
             hoststate: function(){
-                var query = parseUri(decodeURIComponent(window.location.href)).queryKey;
+                var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
+                if(sourceUrl.includes('/ng/#!/')){
+                    sourceUrl = sourceUrl.replace('/ng/#!', '');
+                }
+                var query = parseUri(sourceUrl).queryKey;
 
                 var states = {
                     up: false,
@@ -95,8 +132,13 @@ angular.module('openITCOCKPIT')
 
             },
 
+
             servicestate: function(){
-                var query = parseUri(decodeURIComponent(window.location.href)).queryKey;
+                var sourceUrl = parseUri(decodeURIComponent(window.location.href)).source;
+                if(sourceUrl.includes('/ng/#!/')){
+                    sourceUrl = sourceUrl.replace('/ng/#!', '');
+                }
+                var query = parseUri(sourceUrl).queryKey;
 
                 var states = {
                     ok: false,

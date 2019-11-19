@@ -170,38 +170,43 @@ class Servicestatus {
     }
 
     /**
+     * @param $result
+     * @return array with Servicestatus objects
+     */
+    public static function fromServicestatusByUuid($result) {
+        if (empty($result)) {
+            return [];
+        }
+
+        if (isset($result['Servicestatus'])) {
+            //find()->first() result
+            return [
+                new self($result['Servicestatus'])
+            ];
+        }
+
+        //Result is from find()->all();
+        $ServicestatusObjects = [];
+        foreach ($result as $record) {
+            $ServicestatusObjects[] = new self($record['Servicestatus']);
+        }
+
+        return $ServicestatusObjects;
+    }
+
+    /**
      * @return bool
      */
     public function isHardState() {
         return (bool)$this->state_type;
     }
 
-    public function getHumanServicestatus($href = 'javascript:void(0)', $content = '', $style = '') {
-        if ($this->currentState === null) {
-            return ['state' => 3, 'human_state' => __('Not found in monitoring'), 'html_icon' => '<a href="' . $href . '" class="btn btn-primary status-circle" style="padding:0;' . $style . '"></a>', 'icon' => 'fa fa-question-circle'];
-        }
-        switch ($this->currentState) {
-            case 0:
-                return ['state' => 0, 'human_state' => __('Ok'), 'html_icon' => '<a href="' . $href . '" class="btn btn-success btn-xs status-circle" style="' . $style . '">' . $content . '</a>', 'icon' => 'glyphicon glyphicon-ok'];
-                break;
-
-            case 1:
-                return ['state' => 1, 'human_state' => __('Warning'), 'html_icon' => '<a href="' . $href . '" class="btn btn-warning btn-xs status-circle" style="' . $style . '">' . $content . '</a>', 'icon' => 'fa fa-exclamation'];
-                break;
-            case 2:
-                return ['state' => 2, 'human_state' => __('Critical'), 'html_icon' => '<a href="' . $href . '" class="btn btn-danger btn-xs status-circle" style="' . $style . '">' . $content . '</a>', 'icon' => 'fa fa-exclamation'];
-                break;
-            default:
-                return ['state' => 3, 'human_state' => __('Unknown'), 'html_icon' => '<a href="' . $href . '" class="btn btn-default btn-xs status-circle" style="' . $style . '">' . $content . '</a>', 'icon' => 'fa fa-warning'];
-        }
-    }
-
     public function getServiceFlappingIconColored($class = '') {
         $stateColors = [
-            0 => 'txt-color-green',
+            0 => 'ok',
             1 => 'warning',
-            2 => 'txt-color-red',
-            3 => 'txt-color-blueDark',
+            2 => 'critical',
+            3 => 'unknown',
         ];
 
         if ($this->isFlapping() === true) {
@@ -233,16 +238,16 @@ class Servicestatus {
 
         switch ($this->currentState) {
             case 0:
-                return 'txt-color-green';
+                return 'ok';
 
             case 1:
                 return 'warning';
 
             case 2:
-                return 'txt-color-red';
+                return 'critical';
 
             default:
-                return 'txt-color-blueDark';
+                return 'unknown';
         }
     }
 
@@ -251,23 +256,26 @@ class Servicestatus {
      *
      * @param int $state the current status of a Service
      *
-     * @return array which contains the human state and the css class
+     * @return string
      */
     function ServiceStatusBackgroundColor() {
-        $state = ($this->currentState === null) ? 3 : $this->currentState;
+        if($this->currentState === null){
+            return 'bg-primary';
+        }
+
         $background_color = [
-            0 => 'bg-color-green',
-            1 => 'bg-color-orange',
-            2 => 'bg-color-red',
-            3 => 'bg-color-blueLight',
+            0 => 'bg-ok',
+            1 => 'bg-warning',
+            2 => 'bg-critical',
+            3 => 'bg-unknown',
         ];
 
-        return $background_color[$state];
+        return $background_color[$this->currentState()];
     }
 
     /**
      * Return the host state as string
-     * @return state as string (up, down, unreachable)
+     * @return string (up, down, unreachable)
      */
     function ServiceStatusAsString() {
         if ($this->currentState === null) {
@@ -283,35 +291,11 @@ class Servicestatus {
         return $human_state[$this->currentState];
     }
 
-    /**
-     * Check if there is a difference between monitoring hoststatus flap_detection_ebabled and the itcockpit database
-     * configuration If yes it will return the current setting from $hostatus This can happen, if a user disable the
-     * flap detection with an external command, but not in the host configuration
-     *
-     * @param array $host ['Host']['flap_detection_enabled']
-     *
-     * @return array with the flap detection settings. Array keys: 'string', 'html' and 'value'
-     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-     * @since  3.0
-     */
-    public function compareHostFlapDetectionWithMonitoring($flapDetectionEnabledFromConfig) {
-        if ($flapDetectionEnabledFromConfig != $this->flap_detection_enabled) {
-            //Flapdetection was temporary en- or disabled by an external command
-            if ($this->flap_detection_enabled) {
-                return ['string' => __('Temporary on'), 'html' => '<a data-original-title="' . __('Difference to configuration detected') . '" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-greenLight">' . __('Temporary on') . '</span>', 'value' => $this->flap_detection_enabled];
-            }
-
-            return ['string' => __('Temporary off'), 'html' => '<a data-original-title="' . __('Difference to configuration detected') . '" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-redLight">' . __('Temporary off') . '</span>', 'value' => $this->flap_detection_enabled];
-        }
-
-        if ($flapDetectionEnabledFromConfig == 1) {
-            return ['string' => __('On'), 'html' => '<span class="label bg-color-green">' . __('On') . '</span>', 'value' => $flapDetectionEnabledFromConfig];
-        }
-
-        return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">' . __('Off') . '</span>', 'value' => $flapDetectionEnabledFromConfig];
-    }
-
     public function currentState() {
+        //Check for random exit codes like 255...
+        if ($this->currentState > 3) {
+            return 3;
+        }
         return $this->currentState;
     }
 
@@ -457,11 +441,13 @@ class Servicestatus {
         $arr['problemHasBeenAcknowledged'] = $this->isAcknowledged();
         $arr['isInMonitoring'] = $this->isInMonitoring();
         $arr['humanState'] = $this->ServiceStatusAsString();
+        $arr['cssClass'] = $this->ServiceStatusBackgroundColor();
         return $arr;
     }
 
     /**
      * @return array
+     * @throws \Exception
      */
     public function toArrayForBrowser() {
         $arr = $this->toArray();
@@ -470,6 +456,36 @@ class Servicestatus {
         $arr['lastCheck'] = CakeTime::timeAgoInWords($this->getLastCheck());
         $arr['nextCheck'] = CakeTime::timeAgoInWords($this->getNextCheck());
         return $arr;
+    }
+
+    /**
+     * @param string $class
+     * @return string
+     */
+    public function getFlappingIconColored($class = '') {
+        $stateColors = [
+            0 => 'ok',
+            1 => 'warning',
+            2 => 'critical',
+            3 => 'unknown',
+        ];
+
+        if ($this->isFlapping()) {
+            if ($this->currentState !== null && $this->currentState >= 0) {
+                return '<span class="' . $stateColors[$this->currentState] . '"><span class="flapping_airport ' . $class . ' ' . $stateColors[$this->currentState] . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span></span>';
+            }
+
+            return '<span class="' . $stateColors[$this->currentState] . '"><span class="flapping_airport text-primary ' . $class . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span></span>';
+        }
+
+        return '';
+    }
+
+    /**
+     * @param int $state
+     */
+    public function setCurrentState($state){
+        $this->currentState = (int)$state;
     }
 
 }

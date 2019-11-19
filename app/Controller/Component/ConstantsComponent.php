@@ -26,6 +26,10 @@
 
 use itnovum\openITCOCKPIT\Core\DbBackend;
 
+/**
+ * Class ConstantsComponent
+ * @deprecated use App\Lib\Constants
+ */
 class ConstantsComponent extends Component {
     /**
      * Creates an array with the basic constants and define them automatically
@@ -104,8 +108,7 @@ class ConstantsComponent extends Component {
             'OBJECT_HOSTESCALATION'       => 1 << 17,
             'OBJECT_SERVICEESCALATION'    => 1 << 18,
             'OBJECT_HOSTDEPENDENCY'       => 1 << 19,
-            'OBJECT_SERVICEDEPENDENCY'    => 1 << 20,
-            'OBJECT_INSTANTREPORT'        => 1 << 21,
+            'OBJECT_SERVICEDEPENDENCY'    => 1 << 20
         ];
         $this->define($this->defines['objects']);
 
@@ -126,27 +129,19 @@ class ConstantsComponent extends Component {
         //Container definitions and properties
         $this->defines['containers'] = [
             "GLOBAL_CONTAINER"               => [
-                'properties'     => OBJECT_TENANT ^ OBJECT_USER ^ OBJECT_NODE ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY ^ OBJECT_INSTANTREPORT,
+                'properties'     => OBJECT_TENANT ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY,
                 'container_type' => CT_GLOBAL,
             ],
             "TENANT_CONTAINER"               => [
-                'properties'     => OBJECT_USER ^ OBJECT_NODE ^ OBJECT_LOCATION ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY ^ OBJECT_INSTANTREPORT,
+                'properties'     => OBJECT_LOCATION ^ OBJECT_NODE ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY,
                 'container_type' => CT_TENANT,
             ],
             "LOCATION_CONTAINER"             => [
-                'properties'     => OBJECT_NODE ^ OBJECT_SATELLITE,
+                'properties'     => OBJECT_LOCATION ^ OBJECT_NODE ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_HOSTTEMPLATE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICETEMPLATEGROUP,
                 'container_type' => CT_LOCATION,
             ],
-            /*"DEVICEGROUP_CONTAINER" => [
-                'properties' => OBJECT_HOST,
-                'container_type' => CT_DEVICEGROUP
-            ],*/
-            /*"NODE_CONTAINER" 	=> [
-                'properties' => OBJECT_USER^OBJECT_NODE^OBJECT_LOCATION^OBJECT_CONTACT^OBJECT_CONTACTGROUP^OBJECT_TIMEPERIOD^OBJECT_HOST^OBJECT_HOSTTEMPLATE^OBJECT_HOSTGROUP^OBJECT_SERVICE^OBJECT_SERVICETEMPLATE^OBJECT_SERVICEGROUP,
-                'container_type' => CT_NODE
-            ],*/
             "NODE_CONTAINER"                 => [
-                'properties'     => OBJECT_USER ^ OBJECT_NODE ^ OBJECT_LOCATION ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_HOSTTEMPLATE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_INSTANTREPORT,
+                'properties'     => OBJECT_LOCATION ^ OBJECT_NODE ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_HOSTTEMPLATE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICETEMPLATEGROUP,
                 'container_type' => CT_NODE,
             ],
             "CONTACTGROUP_CONTAINER"         => [
@@ -164,11 +159,7 @@ class ConstantsComponent extends Component {
             "SERVICETEMPLATEGROUP_CONTAINER" => [
                 'properties'     => OBJECT_SERVICETEMPLATE,
                 'container_type' => CT_SERVICETEMPLATEGROUP,
-            ],
-            //"DEBUG_CONTAINER" => [
-            //	'properties' => OBJECT_SERVICEGROUP,
-            //	'container_type' => CT_TENANT
-            //]
+            ]
         ];
 
         //Command type definitions
@@ -182,10 +173,11 @@ class ConstantsComponent extends Component {
 
         //Service type definitions
         $this->defines['service_types'] = [
-            "GENERIC_SERVICE" => 1, // 2^0
-            "EVK_SERVICE"     => 2, // 2^1
-            "SLA_SERVICE"     => 4,
-            'MK_SERVICE'      => 8,
+            "GENERIC_SERVICE"    => 1, // 2^0
+            "EVK_SERVICE"        => 2, // 2^1
+            "SLA_SERVICE"        => 4,
+            'MK_SERVICE'         => 8,
+            'OITC_AGENT_SERVICE' => 16
         ];
         $this->define($this->defines['service_types']);
 
@@ -231,6 +223,7 @@ class ConstantsComponent extends Component {
      * @param array $constants Array of constants that should be defined
      *
      * @return void
+     * @deprecated use App\Lib\Constants
      */
     private function define($constants = []) {
         foreach ($constants as $constantName => $constantValue) {
@@ -251,6 +244,7 @@ class ConstantsComponent extends Component {
      * @param array $exclude to exlude some containers like Hosstgroup in Host::add()
      *
      * @return array with all matching container type ids
+     * @deprecated use App\Lib\Constants
      */
     public function containerProperties($object = null, $exclude = []) {
         if (!empty($exclude)) {
@@ -279,66 +273,5 @@ class ConstantsComponent extends Component {
         return [];
     }
 
-    /**
-     * Returns the value of an Object by the ModelName
-     *
-     * @param string $modelName of the Model to check
-     *
-     * @return string with the OBJECT numeric value of the constant
-     */
-    public function objectByModelName($modelName = '') {
-        $objects = [
-            'Tenant'               => OBJECT_TENANT,
-            'User'                 => OBJECT_USER,
-            'Container'            => OBJECT_NODE,
-            'Location'             => OBJECT_LOCATION,
-            //'Devicegroup' => OBJECT_DEVICEGROUP,
-            'Contact'              => OBJECT_CONTACT,
-            'Contactgroup'         => OBJECT_CONTACTGROUP,
-            'Timeperiod'           => OBJECT_TIMEPERIOD,
-            'Host'                 => OBJECT_HOST,
-            'Hosttemplate'         => OBJECT_HOSTTEMPLATE,
-            'Hostgroup'            => OBJECT_HOSTGROUP,
-            'Service'              => OBJECT_SERVICE,
-            'Servicetemplate'      => OBJECT_SERVICETEMPLATE,
-            'Servicetemplategroup' => OBJECT_SERVICETEMPLATEGROUP,
-            'Servicegroup'         => OBJECT_SERVICEGROUP,
-            'Hostescalation'       => OBJECT_HOSTESCALATION,
-            'Serviceescalation'    => OBJECT_SERVICEESCALATION,
-            'Hostdependency'       => OBJECT_HOSTDEPENDENCY,
-            'Servicedependency'    => OBJECT_SERVICEDEPENDENCY,
-        ];
 
-        if (isset($objects[$modelName])) {
-            return $objects[$modelName];
-        }
-
-        throw new NotFoundException(__('Object not found'));
-    }
-
-    /**
-     * Returns the containerttype_id of by $ModelName
-     *
-     * @param string $modelName of the Model to check
-     *
-     * @return string with the containertype_id
-     */
-    public function containertypeByModelName($modelName = '') {
-        $objects = [
-            'Servicetemplate' => CT_SERVICETEMPLATEGROUP,
-            'Servicegroup'    => CT_SERVICEGROUP,
-            'Hostgroup'       => CT_HOSTGROUP,
-            'Contactgroup'    => CT_CONTACTGROUP,
-            //'Devicegroup' => CT_DEVICEGROUP,
-            'Location'        => CT_LOCATION,
-            'Tenant'          => CT_TENANT,
-            'Container'       => CT_GLOBAL,
-        ];
-
-        if (isset($objects[$modelName])) {
-            return $objects[$modelName];
-        }
-
-        throw new NotFoundException(__('Object not found'));
-    }
 }

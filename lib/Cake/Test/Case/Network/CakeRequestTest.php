@@ -1484,7 +1484,7 @@ class CakeRequestTest extends CakeTestCase {
 		$_SERVER['REQUEST_URI'] = '/cake/index.php/posts/index';
 
 		Configure::write('App', array(
-			'dir' => APP_DIR,
+			'dir' => OLD_APP_DIR,
 			'webroot' => WEBROOT_DIR,
 			'base' => false,
 			'baseUrl' => '/cake/index.php'

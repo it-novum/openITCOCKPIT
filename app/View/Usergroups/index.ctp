@@ -64,80 +64,68 @@
                                    class="table table-striped table-hover table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
-                                    <?php $order = $this->Paginator->param('order'); ?>
-                                    <th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Usergroup.name');
-                                        echo $this->Paginator->sort('Usergroup.name', 'Name'); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Usergroup.description');
-                                        echo $this->Paginator->sort('Usergroup.description', 'Description'); ?></th>
-                                    <th class="no-sort" style="width:52px;"><i class="fa fa-gear fa-lg"></i></th>
+                                    <th class="no-sort" ng-click="orderBy('Usergroups.name')">
+                                        <i class="fa" ng-class="getSortClass('Usergroups.name')"></i>
+                                        <?php echo __('Name'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Usergroups.description')">
+                                        <i class="fa" ng-class="getSortClass('Usergroups.description')"></i>
+                                        <?php echo __('Description'); ?>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-cog fa-lg"></i>
+                                    </th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($usergroups as $usergroup): ?>
-                                    <tr>
-                                        <td><?php echo $usergroup['Usergroup']['name']; ?></td>
-                                        <td><?php echo $usergroup['Usergroup']['description']; ?></td>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group">
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
-                                                    <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $usergroup['Usergroup']['id']; ?>"
-                                                       class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-                                                <?php else: ?>
-                                                    <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
-                                                                class="fa fa-cog"></i>&nbsp;</a>
+                                <tr ng-repeat="usergroup in Usergroups">
+                                    <td>{{usergroup.name}}</td>
+                                    <td>{{usergroup.description}}</td>
+
+                                    <td class="width-50">
+                                        <div class="btn-group smart-form">
+                                            <?php if ($this->Acl->hasPermission('edit', 'usergroups')): ?>
+                                                <a ui-sref="UsergroupsEdit({id: usergroup.id})"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{usergroup.id}}">
+                                                <?php if ($this->Acl->hasPermission('edit', 'usergroups')): ?>
+                                                    <li>
+                                                        <a ui-sref="UsergroupsEdit({id: usergroup.id})">
+                                                            <i class="fa fa-cog"></i>
+                                                            <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
                                                 <?php endif; ?>
-                                                <a href="javascript:void(0);" data-toggle="dropdown"
-                                                   class="btn btn-default dropdown-toggle"><span
-                                                            class="caret"></span></a>
-                                                <ul class="dropdown-menu pull-right">
-                                                    <?php if ($this->Acl->hasPermission('edit')): ?>
-                                                        <li>
-                                                            <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $usergroup['Usergroup']['id']; ?>"><i
-                                                                        class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                                                            </a>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('delete')): ?>
-                                                        <li class="divider"></li>
-                                                        <li>
-                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => $this->params['controller'], 'action' => 'delete', $usergroup['Usergroup']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'usergroups')): ?>
+                                                    <li class="divider"></li>
+                                                    <li>
+                                                        <a href="javascript:void(0);"
+                                                           class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(usergroup))">
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
-                        </div>
-                        <?php if (empty($usergroups)): ?>
-                            <div class="noMatch">
-                                <center>
-                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                </center>
-                            </div>
-                        <?php endif; ?>
-                        <div style="padding: 5px 10px;">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
-                                </div>
-                                <div class="col-sm-6 text-right">
-                                    <div class="dataTables_paginate paging_bootstrap">
-                                        <?php echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]); ?>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </article>
     </div>
 </section>
-
-

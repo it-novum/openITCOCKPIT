@@ -28,11 +28,11 @@
         <div class="col-sm-6">
             <div class="dataTables_info" style="line-height: 32px;">
                 <?php echo __('Page'); ?>
-                {{ paging.page }}
+                {{ paging.page | number }}
                 <?php echo __('of'); ?>
-                {{ paging.pageCount }},
+                {{ paging.pageCount | number }},
                 <?php echo __('Total'); ?>
-                {{ paging.count }}
+                {{ paging.count | number }}
                 <?php echo __('entries'); ?>
             </div>
         </div>

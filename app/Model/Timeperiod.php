@@ -24,7 +24,15 @@
 //	confirmation.
 
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+
 App::uses('Timerange', 'Model');
+
+/**
+ * Class Timeperiod
+ * @deprecated
+ */
 
 class Timeperiod extends AppModel {
 
@@ -68,11 +76,21 @@ class Timeperiod extends AppModel {
         ],
     ];
 
+    /**
+     * Timeperiod constructor.
+     * @param bool $id
+     * @param null $table
+     * @param null $ds
+     * @deprecated
+     */
     public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
-        App::uses('UUID', 'Lib');
     }
 
+    /**
+     * @return bool
+     * @deprecated
+     */
     public function checkTimerangeOvelapping() {
         $error_arr = [];
         if (isset($this->data['Timerange']) && sizeof($this->data['Timerange']) > 0) {
@@ -103,6 +121,7 @@ class Timeperiod extends AppModel {
                                     $input_key--;
                                 }
                                 $error_arr[$day][] = $intern_counter;
+
                                 //	$this->invalidate('Timeperiod.'.$day.'.'.$intern_counter, 'state-error');
                                 $this->invalidate('Timerange.' . $day . '.' . $intern_counter . '.start', 'state-error');
 
@@ -124,6 +143,12 @@ class Timeperiod extends AppModel {
         return true;
     }
 
+    /**
+     * @param array $container_ids
+     * @param string $type
+     * @return array|null
+     * @deprecated
+     */
     public function timeperiodsByContainerId($container_ids = [], $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -131,19 +156,18 @@ class Timeperiod extends AppModel {
 
         $container_ids = array_unique($container_ids);
 
-        //Lookup for the tenant container of $container_id
-        $this->Container = ClassRegistry::init('Container');
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $tenantContainerIds = [];
-
         foreach ($container_ids as $container_id) {
             if ($container_id != ROOT_CONTAINER) {
-
                 // Get contaier id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-                $path = $this->Container->getPath($container_id);
-                if (isset($path[1]['Container']['id'])) {
-                    $tenantContainerIds[] = $path[1]['Container']['id'];
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'TimeperiodTimeperiodsByContainerId');
+                if (isset($path[1]['id'])) {
+                    $tenantContainerIds[] = $path[1]['id'];
                 }
             } else {
                 $tenantContainerIds[] = ROOT_CONTAINER;

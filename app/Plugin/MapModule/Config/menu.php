@@ -32,11 +32,13 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'maps', 'action' => 'index', 'plugin' => 'map_module'],
+                    'state'             => 'MapsIndex',
                     'title'             => 'Maps',
                     'icon'              => 'map-marker',
                 ],
                 [
                     'url'               => ['controller' => 'rotations', 'action' => 'index', 'plugin' => 'map_module'],
+                    'state'             => 'RotationsIndex',
                     'title'             => 'Rotations',
                     'icon'              => 'retweet',
                 ],

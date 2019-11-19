@@ -37,22 +37,22 @@ class HostFilter extends Filter {
                 'Hoststatus.active_checks_enabled'
             ],
             'like'     => [
-                'Host.name',
-                'Host.description',
+                'Hosts.name',
+                'Hosts.description',
                 'Hoststatus.output',
-                'Host.address'
+                'Hosts.address'
             ],
             'rlike'    => [
-                'Host.keywords'
+                'Hosts.keywords'
             ],
-            'notrlike'    => [
-                'Host.not_keywords'
+            'notrlike' => [
+                'Hosts.not_keywords'
             ],
             'equals'   => [
-                'Host.id',
-                'Host.uuid',
-                'Host.disabled',
-                'Host.satellite_id'
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.disabled',
+                'Hosts.satellite_id'
             ],
             'downtime' => [
                 'Hoststatus.scheduled_downtime_depth',
@@ -71,13 +71,13 @@ class HostFilter extends Filter {
     public function notMonitoredFilter() {
         $filters = [
             'like'   => [
-                'Host.name',
-                'Host.description',
-                'Host.address'
+                'Hosts.name',
+                'Hosts.description',
+                'Hosts.address'
             ],
             'equals' => [
-                'Host.id',
-                'Host.satellite_id'
+                'Hosts.id',
+                'Hosts.satellite_id'
             ]
         ];
 
@@ -90,7 +90,7 @@ class HostFilter extends Filter {
     public function deletedFilter() {
         $filters = [
             'like' => [
-                'DeletedHost.name'
+                'DeletedHosts.name'
             ]
         ];
 
@@ -101,7 +101,19 @@ class HostFilter extends Filter {
      * @return array
      */
     public function disabledFilter() {
-        return $this->notMonitoredFilter();
+        $filters = [
+            'like'   => [
+                'Hosts.name',
+                'Hosts.address',
+                'Hosts.description',
+            ],
+            'equals' => [
+                'Hosts.id',
+                'Hosts.satellite_id'
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
     }
 
 
@@ -111,11 +123,11 @@ class HostFilter extends Filter {
     public function ajaxFilter() {
         $filters = [
             'like'   => [
-                'Host.name',
+                'Hosts.name',
             ],
             'equals' => [
-                'Host.uuid',
-                'Host.disabled'
+                'Hosts.uuid',
+                'Hosts.disabled'
             ]
         ];
 

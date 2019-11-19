@@ -6,20 +6,22 @@ $config = [
     ],
     'attachments' => [
         'allowedExtensions' => ['doc', 'docx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg', 'pdf', 'ppt', 'pptx'],
-        'path'              => APP . 'webroot/files/attachments/',
+        'path'              => OLD_APP . 'webroot/files/attachments/',
     ],
     'ckeditor'    => [
         'allowedExtensions' => ['png', 'jpg', 'jpeg'],
-        'path'              => APP . 'webroot/files/images/',
+        'path'              => OLD_APP . 'webroot/files/images/',
     ],
     'languages'   => [
-        'en-us' => 'english',
+        'en_US' => 'english',
+        'de_DE' => 'german',
+        'fr_FR' => 'french',
     ],
     'paths'       => [
         'lessc' => [
             Environments::DEVELOPMENT => 'lessc',
             Environments::STAGING     => '/root/node_modules/less/bin/lessc',
             Environments::PRODUCTION  => '/root/node_modules/less/bin/lessc',
-        ],
-    ],
+        ]
+    ]
 ];

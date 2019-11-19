@@ -23,148 +23,235 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
-<?php //debug($all_contactgroups); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-users fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Contact groups'); ?>
             <span>>
-                <?php echo __('Contact Groups'); ?>
+                <?php echo __('Overview'); ?>
             </span>
         </h1>
     </div>
 </div>
 
+<massdelete></massdelete>
+
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <div class="jarviswidget jarviswidget-color-blueDark">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php
-                        if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                            echo " "; //Fix HTML
-                        endif;
-                        echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
-                        if ($isFilter):
-                            echo " "; //Fix HTML;
-                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                        endif;
-                        ?>
-                    </div>
-                    <div class="jarviswidget-ctrls" role="menu">
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+                        <?php if ($this->Acl->hasPermission('add', 'contactgroups')): ?>
+                            <a ui-sref="ContactgroupsAdd" class="btn btn-xs btn-success">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New'); ?>
+                            </a>
+                        <?php endif; ?>
+
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
+
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-users"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Contact Groups'); ?> </h2>
+                    <h2 class="hidden-mobile">
+                        <?php echo __('Contact groups overview'); ?>
+                    </h2>
                 </header>
+
                 <div>
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
-                        <div class="mobile_table">
-                            <table id="contactgroup_list"
-                                   class="table table-striped table-hover table-bordered smart-form"
-                                   style="">
-                                <thead>
-                                <tr>
-                                    <?php $order = $this->Paginator->param('order'); ?>
-                                    <th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i>
-                                    </th>
-                                    <th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Container.name');
-                                        echo $this->Paginator->sort('Container.name', __('Contact group name')); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Contacts.description');
-                                        echo $this->Paginator->sort('Contactgroup.description', __('Description')); ?></th>
-                                    <th class="no-sort"><?php echo __('Contacts'); ?></th>
-                                    <th class="no-sort text-center" style="width:52px"><i class="fa fa-gear fa-lg"></i>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php foreach ($all_contactgroups as $contactgroup): ?>
-                                    <?php $allowEdit = $this->Acl->isWritableContainer($contactgroup['Container']['parent_id']); ?>
-                                    <tr>
-                                        <td class="text-center" style="width: 15px;">
-                                            <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                <input class="massChange" type="checkbox"
-                                                       name="contactgroup[<?php echo $contactgroup['Contactgroup']['id']; ?>]"
-                                                       contactgroupname="<?php echo h($contactgroup['Container']['name']); ?>"
-                                                       value="<?php echo $contactgroup['Contactgroup']['id']; ?>"/>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td><?php echo $contactgroup['Container']['name']; ?></td>
-                                        <td><?php echo $contactgroup['Contactgroup']['description']; ?></td>
-                                        <td>
-                                            <ul class="list-unstyled">
-                                                <?php
-                                                foreach (Set::combine(Set::sort($contactgroup['Contact'], '{n}.name', 'asc'), '{n}.id', '{n}.name') as $contactId => $contactName):
-                                                    echo '<li>';
-                                                    if ($this->Acl->hasPermission('edit', 'contacts')): ?>
-                                                        <a href="/contacts/edit/<?= $contactId ?>"><?php echo h($contactName); ?></a>
-                                                    <?php
-                                                    else:
-                                                        echo h($contactName);
-                                                    endif;
-                                                    echo '</li>';
-                                                endforeach;
-                                                ?>
-                                            </ul>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group">
-                                                <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                    <a href="<?php echo Router::url(['action' => 'edit', $contactgroup['Contactgroup']['id']]); ?>"
-                                                       class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-                                                <?php else: ?>
-                                                    <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
-                                                                class="fa fa-cog"></i>&nbsp;</a>
-                                                <?php endif; ?>
-                                                <a href="javascript:void(0);" data-toggle="dropdown"
-                                                   class="btn btn-default dropdown-toggle"><span
-                                                            class="caret"></span></a>
-                                                <ul class="dropdown-menu pull-right">
-                                                    <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                        <li>
-                                                            <a href="<?php echo Router::url(['action' => 'edit', $contactgroup['Contactgroup']['id']]); ?>"><i
-                                                                        class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                                                            </a>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
-                                                        <li class="divider"></li>
-                                                        <li>
-                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'contactgroups', 'action' => 'delete', $contactgroup['Contactgroup']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <?php echo $this->element('contactgroup_mass_changes') ?>
-
-                        <div style="padding: 5px 10px;">
+                        <!-- Start Filter -->
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by contact group name'); ?>"
+                                                   ng-model="filter.Containers.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
                                 </div>
-                                <div class="col-sm-6 text-right">
-                                    <div class="dataTables_paginate paging_bootstrap">
-                                        <?php echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]); ?>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by contact group description'); ?>"
+                                                   ng-model="filter.Contactgroups.description"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <!-- End Filter -->
+
+                        <div class="mobile_table">
+                            <table id="contact_list" class="table table-striped table-hover table-bordered smart-form">
+                                <thead>
+                                <tr>
+                                    <th class="no-sort width-15">
+                                        <i class="fa fa-check-square-o fa-lg"></i>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Containers.name')">
+                                        <i class="fa" ng-class="getSortClass('Containers.name')"></i>
+                                        <?php echo __('Contact group name'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Contactgroups.description')">
+                                        <i class="fa" ng-class="getSortClass('Contactgroups.description')"></i>
+                                        <?php echo __('Description'); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo __('Number of contacts'); ?>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-cog fa-lg"></i>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="contactgroup in contactgroups">
+                                    <td class="text-center" class="width-15">
+                                        <input type="checkbox"
+                                               ng-model="massChange[contactgroup.Contactgroup.id]"
+                                               ng-show="contactgroup.Contactgroup.allow_edit">
+                                    </td>
+
+                                    <td>{{contactgroup.Contactgroup.container.name}}</td>
+                                    <td>{{contactgroup.Contactgroup.description}}</td>
+                                    <td>
+                                        <span ng-show="contactgroup.Contactgroup.contact_count">
+                                            {{contactgroup.Contactgroup.contact_count}}
+                                        </span>
+
+                                        <span class="label-forced label-danger margin-right-5"
+                                              title="<?php echo __('Down'); ?>"
+                                              ng-show="contactgroup.Contactgroup.contact_count === 0">
+                                            <?php echo __('Empty'); ?>
+                                        </span>
+
+                                    </td>
+
+
+                                    <td class="width-50">
+                                        <div class="btn-group smart-form">
+                                            <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
+                                                <a ui-sref="ContactgroupsEdit({id: contactgroup.Contactgroup.id})"
+                                                   ng-if="contactgroup.Contactgroup.allow_edit"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                                <a href="javascript:void(0);"
+                                                   ng-if="!contactgroup.Contactgroup.allow_edit"
+                                                   class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{contactgroup.Contactgroup.id}}">
+                                                <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
+                                                    <li ng-if="contactgroup.Contactgroup.allow_edit">
+                                                        <a ui-sref="ContactgroupsEdit({id:contactgroup.Contactgroup.id})">
+                                                            <i class="fa fa-cog"></i>
+                                                            <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('usedBy', 'contactgroups')): ?>
+                                                    <li>
+                                                        <a ui-sref="ContactgroupsUsedBy({id:contactgroup.Contactgroup.id})">
+                                                            <i class="fa fa-reply-all fa-flip-horizontal"></i>
+                                                            <?php echo __('Used by'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'contactgroups')): ?>
+                                                    <li class="divider" ng-if="contactgroup.Contactgroup.allow_edit"></li>
+                                                    <li ng-if="contactgroup.Contactgroup.allow_edit">
+                                                        <a href="javascript:void(0);"
+                                                           class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(contactgroup))">
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="contactgroups.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <a ui-sref="ContactgroupsCopy({ids: linkForCopy()})" class="a-clean">
+                                    <i class="fa fa-lg fa-files-o"></i>
+                                    <?php echo __('Copy'); ?>
+                                </a>
+                            </div>
+                            <div class="col-xs-12 col-md-4 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                        </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>
+        </article>
     </div>
 </section>

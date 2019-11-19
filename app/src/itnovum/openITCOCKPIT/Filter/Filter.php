@@ -146,6 +146,7 @@ abstract class Filter {
                                 $conditions[sprintf('%s =', $field)] = 0;
                             }
                             break;
+
                         default:
                             throw new NotImplementedException('This filter type is not implemented yet');
                     }
@@ -248,7 +249,7 @@ abstract class Filter {
 
     /**
      * @param array $sortAsArray
-     * return array
+     * @return array
      */
     public function validateArrayDirection($sortAsArray = []) {
         $validatedSort = [];

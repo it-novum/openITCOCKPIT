@@ -39,6 +39,8 @@
     </div>
 </div>
 
+<reload-required></reload-required>
+
 <section id="widget-grid" class="">
 
     <div class="row">
@@ -51,182 +53,144 @@
 
                 </header>
                 <div>
+                    <form ng-submit="submit();" class="form-horizontal">
+                        <div class="widget-body no-padding">
 
-                    <div class="widget-body no-padding">
-                        <?php
-                        echo $this->Form->create('Systemsetting', [
-                            'class' => 'form-horizontal clear',
-                        ]);
-                        ?>
-                        <div class="mobile_table">
-                            <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
-                                   style="">
-                                <thead>
-                                <tr>
-                                    <th><?php echo __('Key'); ?></th>
-                                    <th><?php echo __('Value'); ?></th>
-                                    <th class="text-center"><?php echo __('Info'); ?></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php $i = 0; ?>
-                                <?php foreach ($all_systemsettings as $key => $values): ?>
+                            <div class="mobile_table">
+                                <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
+                                       style="">
+                                    <thead>
+                                    <tr>
+                                        <th><?php echo __('Key'); ?></th>
+                                        <th><?php echo __('Value'); ?></th>
+                                        <th class="text-center"><?php echo __('Info'); ?></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody ng-repeat="(key, value) in systemsettings">
                                     <tr>
                                         <td class="service_table_host_header text-primary" colspan="3">
-                                            <strong><?php echo $key; ?></strong></td>
-                                    <tr>
-                                    <?php foreach ($values as $value): ?>
-                                        <tr>
-                                            <td><?php echo explode('.', $value['key'], 2)[1]; //This parse the PREFIX MONITORIN. or WEBSERVER. or WHATEVER. away ?></td>
-                                            <td>
-                                                <div class="form-group">
-                                                    <div class="col col-xs-12">
-                                                        <input type="hidden" id="SystemsettingId"
-                                                               value="<?php echo h($value['id']); ?>"
-                                                               class="form-control"
-                                                               name="data[<?php echo $i; ?>][Systemsetting][id]">
-                                                        <?php
-                                                        switch ($value['key']):
-                                                            case 'MONITORING.HOST.INITSTATE':
-                                                                $options = [
-                                                                    'o' => 'Up',
-                                                                    'd' => 'Down',
-                                                                    'u' => 'Unreachable',
-                                                                ];
-                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
-                                                                break;
-
-                                                            case 'MONITORING.SERVICE.INITSTATE':
-                                                                $options = [
-                                                                    'o' => 'Ok',
-                                                                    'w' => 'Warning',
-                                                                    'c' => 'Critical',
-                                                                    'u' => 'Unknown',
-                                                                ];
-                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
-                                                                break;
-
-                                                            case 'FRONTEND.SHOW_EXPORT_RUNNING':
-                                                                $options = [
-                                                                    'yes' => 'True',
-                                                                    'no'  => 'False'
-                                                                ];
-                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
-                                                                break;
-
-                                                            case 'FRONTEND.AUTH_METHOD':
-                                                                $options = [
-                                                                    'session'   => 'PHP session',
-                                                                    'twofactor' => 'Two factor authentication (PHP session based)',
-                                                                    'ldap'      => 'PHP LDAP',
-                                                                    'sso'       => 'SSO'
-                                                                ];
-                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
-                                                                break;
-
-                                                            case 'FRONTEND.LDAP.TYPE':
-                                                                $options = [
-                                                                    'adldap'   => 'Active Directory LDAP',
-                                                                    'openldap' => 'OpenLDAP'
-                                                                ];
-                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
-                                                                break;
-
-                                                            case 'FRONTEND.LDAP.PASSWORD':
-                                                            case 'MONITORING.ACK_RECEIVER_PASSWORD':
-                                                            case 'FRONTEND.SSO.CLIENT_SECRET':
-                                                                ?><input type="password" id="SystemsettingValue"
-                                                                         value="<?php echo h($value['value']); ?>"
-                                                                         class="form-control systemsetting-input"
-                                                                         name="data[<?php echo $i; ?>][Systemsetting][value]"><?php
-                                                                break;
-
-                                                            case 'FRONTEND.LDAP.USE_TLS':
-                                                            case 'MONITORING.SINGLE_INSTANCE_SYNC':
-                                                            case 'MONITORING.HOST_CHECK_ACTIVE_DEFAULT':
-                                                            case 'MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT':
-                                                            case 'FRONTEND.HIDDEN_USER_IN_CHANGELOG':
-                                                            case 'FRONTEND.DISABLE_LOGIN_ANIMATION':
-                                                                $options = [
-                                                                    0 => 'False',
-                                                                    1 => 'True',
-                                                                ];
-                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
-                                                                break;
-
-                                                            case 'FRONTEND.PRESELECTED_DOWNTIME_OPTION':
-                                                                $options = [
-                                                                    '0' => 'Individual host',
-                                                                    '1' => 'Host including services',
-                                                                ];
-                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
-                                                                break;
-
-                                                            case 'ARCHIVE.AGE.SERVICECHECKS':
-                                                            case 'ARCHIVE.AGE.HOSTCHECKS':
-                                                            case 'ARCHIVE.AGE.STATEHISTORIES':
-                                                            case 'ARCHIVE.AGE.LOGENTRIES':
-                                                            case 'ARCHIVE.AGE.NOTIFICATIONS':
-                                                            case 'ARCHIVE.AGE.CONTACTNOTIFICATIONS':
-                                                            case 'ARCHIVE.AGE.CONTACTNOTIFICATIONMETHODS':
-                                                                $options = [];
-                                                                for ($k = 1; $k < 107; $k++) {
-                                                                    $options[$k] = $k;
-                                                                }
-                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
-                                                                break;
-
-                                                            case 'SYSTEM.ANONYMOUS_STATISTICS':
-                                                                if ($value['value'] == '0'):
-                                                                    $state = __('Anonymous statistics are disabled');
-                                                                endif;
-                                                                if ($value['value'] == '1'):
-                                                                    $state = __('Anonymous statistics are enabled');
-                                                                endif;
-                                                                if ($value['value'] == '2'):
-                                                                    $state = __('Anonymous statistics are disabled - Waiting for your approval');
-                                                                endif;
-                                                                ?><input type="text"
-                                                                         value="<?php echo h($state); ?>"
-                                                                         class="form-control systemsetting-input"
-                                                                         disabled="disabled" readonly="readonly">
-                                                                <?php if ($this->Acl->hasPermission('index', 'statistics')): ?>
+                                            <strong>{{ key }}</strong>
+                                        </td>
+                                    </tr>
+                                    <tr ng-repeat="systemsetting in value">
+                                        <td>
+                                            {{systemsetting.exploded}}
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <div class="col col-xs-12">
+                                                    <div ng-switch="systemsetting.key">
+                                                        <div ng-switch-when="MONITORING.HOST.INITSTATE">
+                                                            <select class="form-control systemsetting-input"
+                                                                    ng-model="systemsetting.value">
+                                                                <option value="o"><?php echo __('Up'); ?></option>
+                                                                <option value="d"><?php echo __('Down'); ?></option>
+                                                                <option value="u"><?php echo __('Unreachable'); ?></option>
+                                                            </select>
+                                                        </div>
+                                                        <div ng-switch-when="MONITORING.SERVICE.INITSTATE">
+                                                            <select class="form-control systemsetting-input"
+                                                                    ng-model="systemsetting.value">
+                                                                <option value="o"><?php echo __('Ok'); ?></option>
+                                                                <option value="w"><?php echo __('Warning'); ?></option>
+                                                                <option value="c"><?php echo __('Critical'); ?></option>
+                                                                <option value="u"><?php echo __('Unknown'); ?></option>
+                                                            </select>
+                                                        </div>
+                                                        <div ng-switch-when="FRONTEND.SHOW_EXPORT_RUNNING">
+                                                            <select class="form-control systemsetting-input"
+                                                                    ng-model="systemsetting.value">
+                                                                <option value="yes"><?php echo __('True'); ?></option>
+                                                                <option value="no"><?php echo __('False'); ?></option>
+                                                            </select>
+                                                        </div>
+                                                        <div ng-switch-when="FRONTEND.AUTH_METHOD">
+                                                            <select class="form-control systemsetting-input"
+                                                                    ng-model="systemsetting.value">
+                                                                <option value="session"><?php echo __('PHP session'); ?></option>
+                                                                <option value="twofactor"><?php echo __('Two factor authentication (PHP session based)'); ?></option>
+                                                                <option value="ldap"><?php echo __('PHP LDAP'); ?></option>
+                                                                <option value="sso"><?php echo __('SSO'); ?></option>
+                                                            </select>
+                                                        </div>
+                                                        <div ng-switch-when="FRONTEND.LDAP.TYPE">
+                                                            <select class="form-control systemsetting-input"
+                                                                    ng-model="systemsetting.value">
+                                                                <option value="adldap"><?php echo __('Active Directory LDAP'); ?></option>
+                                                                <option value="openldap"><?php echo __('OpenLDAP'); ?></option>
+                                                            </select>
+                                                        </div>
+                                                        <div ng-switch-when="FRONTEND.LDAP.PASSWORD|MONITORING.ACK_RECEIVER_PASSWORD|FRONTEND.SSO.CLIENT_SECRET"
+                                                             ng-switch-when-separator="|">
+                                                            <input type="password"
+                                                                   ng-model="systemsetting.value"
+                                                                   class="form-control systemsetting-input">
+                                                        </div>
+                                                        <div ng-switch-when="FRONTEND.LDAP.USE_TLS|MONITORING.SINGLE_INSTANCE_SYNC|MONITORING.HOST_CHECK_ACTIVE_DEFAULT|MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT|FRONTEND.HIDDEN_USER_IN_CHANGELOG|FRONTEND.DISABLE_LOGIN_ANIMATION"
+                                                             ng-switch-when-separator="|">
+                                                            <select class="form-control systemsetting-input"
+                                                                    ng-model="systemsetting.value">
+                                                                <option value="0"><?php echo __('False'); ?></option>
+                                                                <option value="1"><?php echo __('True'); ?></option>
+                                                            </select>
+                                                        </div>
+                                                        <div ng-switch-when="FRONTEND.PRESELECTED_DOWNTIME_OPTION">
+                                                            <select class="form-control systemsetting-input"
+                                                                    ng-model="systemsetting.value">
+                                                                <option value="0"><?php echo __('Individual host'); ?></option>
+                                                                <option value="1"><?php echo __('Host including services'); ?></option>
+                                                            </select>
+                                                        </div>
+                                                        <div ng-switch-when="ARCHIVE.AGE.SERVICECHECKS|ARCHIVE.AGE.HOSTCHECKS|ARCHIVE.AGE.STATEHISTORIES|ARCHIVE.AGE.NOTIFICATIONS|ARCHIVE.AGE.LOGENTRIES|ARCHIVE.AGE.CONTACTNOTIFICATIONS|ARCHIVE.AGE.CONTACTNOTIFICATIONMETHODS"
+                                                             ng-switch-when-separator="|">
+                                                            <select class="form-control systemsetting-input"
+                                                                    ng-options="i as i for i in dropdownOptionSequence"
+                                                                    ng-model="systemsetting.value" convert-to-number>
+                                                            </select>
+                                                        </div>
+                                                        <div ng-switch-when="SYSTEM.ANONYMOUS_STATISTICS">
+                                                            <input type="text"
+                                                                   ng-value="getAnonymousStatisticsValue(systemsetting.value)"
+                                                                   class="form-control systemsetting-input"
+                                                                   disabled="disabled" readonly="readonly">
+                                                            <?php if ($this->Acl->hasPermission('index', 'statistics')): ?>
                                                                 <br/>
-                                                                <a href="/statistics/index">
+                                                                <a ui-sref="StatisticsIndex">
                                                                     <?php echo __('Click for more information.'); ?>
                                                                 </a>
                                                             <?php endif; ?>
-                                                                <?php
-                                                                break;
-
-
-                                                            default:
-                                                                ?><input type="text" id="SystemsettingValue"
-                                                                         value="<?php echo h($value['value']); ?>"
-                                                                         class="form-control systemsetting-input"
-                                                                         name="data[<?php echo $i; ?>][Systemsetting][value]"><?php
-                                                                break;
-                                                        endswitch;
-                                                        ?>
+                                                        </div>
+                                                        <div ng-switch-default>
+                                                            <input type="text"
+                                                                   ng-model="systemsetting.value"
+                                                                   class="form-control systemsetting-input">
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </td>
-                                            <td class="text-center"><a href="javascript:void(0);"
-                                                                       data-original-title="<?php echo h($value['info']); ?>"
-                                                                       data-placement="left" rel="tooltip"
-                                                                       data-container="body"><i
-                                                            class="padding-top-5 fa fa-info-circle fa-2x"></i></a></td>
-                                        </tr>
-                                        <?php $i++; ?>
-                                    <?php endforeach; ?>
-                                <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="javascript:void(0);"
+                                               data-original-title="{{systemsetting.info}}"
+                                               data-placement="left" rel="tooltip"
+                                               data-container="body">
+                                                <i class="padding-top-5 fa fa-info-circle fa-2x"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="well formactions ">
+                                <div class="pull-right">
+                                    <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                                    <a ng-sref="SystemsettingsIndex" class="btn btn-default">Cancel</a>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <br/>
-                    <?php echo $this->Form->formActions(); ?>
+                    </form>
                 </div>
             </div>
+        </article>
     </div>
 </section>

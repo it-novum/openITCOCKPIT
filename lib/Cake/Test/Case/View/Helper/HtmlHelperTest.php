@@ -151,7 +151,7 @@ class HtmlHelperTest extends CakeTestCase {
 		$this->Html->request->webroot = '';
 
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		));
 
 		Configure::write('Asset.timestamp', false);
@@ -522,7 +522,7 @@ class HtmlHelperTest extends CakeTestCase {
 		new File($testfile, true);
 
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 		Configure::write('Asset.timestamp', true);
 		Configure::write('debug', 1);
@@ -594,10 +594,10 @@ class HtmlHelperTest extends CakeTestCase {
  */
 	public function testThemeAssetsInMainWebrootPath() {
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 		$webRoot = Configure::read('App.www_root');
-		Configure::write('App.www_root', CAKE . 'Test' . DS . 'test_app' . DS . 'webroot' . DS);
+		Configure::write('App.www_root', OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'webroot' . DS);
 
 		$this->Html->theme = 'test_theme';
 		$result = $this->Html->css('webroot_test');
@@ -1254,7 +1254,7 @@ class HtmlHelperTest extends CakeTestCase {
 		new File($testfile, true);
 
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 
 		$this->Html->webroot = '/';
@@ -2293,7 +2293,7 @@ class HtmlHelperTest extends CakeTestCase {
  */
 
 	public function testLoadConfig() {
-		$path = CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS;
+		$path = OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS;
 
 		$result = $this->Html->loadConfig('htmlhelper_tags', $path);
 		$expected = array(
@@ -2334,7 +2334,7 @@ class HtmlHelperTest extends CakeTestCase {
  * @expectedException ConfigureException
  */
 	public function testLoadConfigWrongReader() {
-		$path = CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS;
+		$path = OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS;
 		$this->Html->loadConfig(array('htmlhelper_tags', 'wrong_reader'), $path);
 	}
 

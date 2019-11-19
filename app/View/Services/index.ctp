@@ -22,8 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
 ?>
+
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -36,9 +36,7 @@
     </div>
 </div>
 
-<?php echo $this->Flash->render('positive'); ?>
-
-<div id="error_msg"></div>
+<query-handler-directive></query-handler-directive>
 
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
     <a href="#" data-dismiss="alert" class="close">×</a>
@@ -46,17 +44,12 @@
     <?php echo __('Page refresh in'); ?> <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
 </div>
 
-<?php if (!$QueryHandler->exists()): ?>
-    <div class="alert alert-danger alert-block">
-        <a href="#" data-dismiss="alert" class="close">×</a>
-        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
-        </h4>
-        <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
-    </div>
-<?php endif; ?>
-
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
+
+<?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
+    <add-services-to-servicegroup></add-services-to-servicegroup>
+<?php endif; ?>
 
 <section id="widget-grid" class="">
     <div class="row">
@@ -69,8 +62,8 @@
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add')): ?>
-                            <a href="/services/add" class="btn btn-xs btn-success">
+                        <?php if ($this->Acl->hasPermission('add', 'services')): ?>
+                            <a ui-sref="ServicesAdd()" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
@@ -91,21 +84,21 @@
                     <h2 class="hidden-mobile"><?php echo __('Services'); ?> </h2>
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <li class="active">
-                            <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'index'], $this->params['named'])); ?>">
+                            <a ui-sref="ServicesIndex">
                                 <i class="fa fa-stethoscope"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?></span> </a>
                         </li>
-                        <?php if ($this->Acl->hasPermission('notMonitored')): ?>
+                        <?php if ($this->Acl->hasPermission('notMonitored', 'services')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'notMonitored'], $this->params['named'])); ?>">
+                                <a ui-sref="ServicesNotMonitored">
                                     <i class="fa fa-user-md"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?></span>
                                 </a>
                             </li>
                         <?php endif; ?>
-                        <?php if ($this->Acl->hasPermission('disabled')): ?>
+                        <?php if ($this->Acl->hasPermission('disabled', 'services')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'disabled'], $this->params['named'])); ?>">
+                                <a ui-sref="ServicesDisabled">
                                     <i class="fa fa-plug"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?></span>
                                 </a>
@@ -124,7 +117,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by host name'); ?>"
-                                                   ng-model="filter.Host.name"
+                                                   ng-model="filter.Hosts.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -134,7 +127,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-cog"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by service name'); ?>"
-                                                   ng-model="filter.Service.name"
+                                                   ng-model="filter.Services.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -155,8 +148,9 @@
                                         <i class="icon-prepend fa fa-filter"></i>
                                         <input type="text" class="input-sm"
                                                data-role="tagsinput"
+                                               id="ServicesKeywordsInput"
                                                placeholder="<?php echo __('Filter by tags'); ?>"
-                                               ng-model="filter.Service.keywords"
+                                               ng-model="filter.Services.keywords"
                                                ng-model-options="{debounce: 500}">
                                     </div>
                                 </div>
@@ -166,8 +160,9 @@
                                         <i class="icon-prepend fa fa-filter"></i>
                                         <input type="text" class="input-sm"
                                                data-role="tagsinput"
+                                               id="ServicesNotKeywordsInput"
                                                placeholder="<?php echo __('Filter by excluded tags'); ?>"
-                                               ng-model="filter.Service.not_keywords"
+                                               ng-model="filter.Services.not_keywords"
                                                ng-model-options="{debounce: 500}">
                                     </div>
                                 </div>
@@ -328,8 +323,8 @@
                                         <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Service.servicename')">
-                                        <i class="fa" ng-class="getSortClass('Service.servicename')"></i>
+                                    <th class="no-sort" ng-click="orderBy('servicename')">
+                                        <i class="fa" ng-class="getSortClass('servicename')"></i>
                                         <?php echo __('Service name'); ?>
                                     </th>
 
@@ -369,7 +364,7 @@
 
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                             <a class="padding-left-5 txt-color-blueDark"
-                                               href="/hosts/browser/{{host.Host.id}}">
+                                               ui-sref="HostsBrowser({id: host.Host.id})">
                                                 {{host.Host.hostname}} ({{host.Host.address}})
                                             </a>
                                         <?php else: ?>
@@ -378,7 +373,7 @@
 
                                         <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                             <a class="pull-right txt-color-blueDark"
-                                               href="/services/serviceList/{{host.Host.id}}">
+                                               ui-sref="ServicesServiceList({id: host.Host.id})">
                                                 <i class="fa fa-list"
                                                    title=" <?php echo __('Go to Service list'); ?>"></i>
                                             </a>
@@ -416,7 +411,7 @@
 
                                     <td class="text-center">
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                            <a href="/services/browser/{{ service.Service.id }}"
+                                            <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                                class="txt-color-blueDark">
                                                 <i class="fa fa-lg fa-area-chart"
                                                    ng-mouseenter="mouseenter($event, host, service)"
@@ -441,8 +436,8 @@
                                     </td>
 
                                     <td>
-                                        <?php if ($this->Acl->hasPermission('browser')): ?>
-                                            <a href="/services/browser/{{ service.Service.id }}">
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                            <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                 {{ service.Service.servicename }}
                                             </a>
                                         <?php else: ?>
@@ -456,7 +451,7 @@
 
                                     <td>
                                         <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
-                                        <span ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                        <span ng-if="service.Service.active_checks_enabled === false">
                                             <?php echo __('n/a'); ?>
                                         </span>
                                     </td>
@@ -474,8 +469,8 @@
 
                                     <td class="width-50">
                                         <div class="btn-group">
-                                            <?php if ($this->Acl->hasPermission('edit')): ?>
-                                                <a href="/services/edit/{{service.Service.id}}"
+                                            <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                                <a ui-sref="ServicesEdit({id: service.Service.id})"
                                                    ng-if="service.Service.allow_edit"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -488,14 +483,14 @@
                                                class="btn btn-default dropdown-toggle"><span
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right" id="menuHack-{{service.Service.uuid}}">
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <li ng-if="service.Service.allow_edit">
-                                                        <a href="/services/edit/{{service.Service.id}}">
+                                                        <a ui-sref="ServicesEdit({id: service.Service.id})">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('deactivate')): ?>
+                                                <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <a href="javascript:void(0);"
                                                            ng-click="confirmDeactivate(getObjectForDelete(host, service))">
@@ -503,7 +498,7 @@
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <?php echo $this->AdditionalLinks->renderAsListItems(
                                                             $additionalLinksList,
@@ -513,7 +508,7 @@
                                                         ); ?>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('delete')): ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                     <li class="divider"></li>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <a href="javascript:void(0);" class="txt-color-red"
@@ -555,11 +550,12 @@
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
-                                <a ng-href="{{ linkForCopy() }}" class="a-clean">
+                                <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
                                     <i class="fa fa-lg fa-files-o"></i>
                                     <?php echo __('Copy'); ?>
                                 </a>
                             </div>
+
                             <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fa fa-lg fa-trash-o"></i>
@@ -578,6 +574,17 @@
                                                 <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
                                             </a>
                                         </li>
+
+                                        <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
+                                            <li>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="confirmAddServicesToServicegroup(getObjectsForDelete())">
+                                                    <i class="fa fa-cogs"></i>
+                                                    <?php echo __('Add to service group'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+
                                         <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
                                             <li>
                                                 <a href="javascript:void(0);"

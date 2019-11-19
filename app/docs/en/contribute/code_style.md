@@ -8,11 +8,13 @@ To ensure that every developer is able to read and understand the code we create
 
 At the end of the day, it's up to you which editor you like to use for coding. These are just our personal recommendations:
 
-[TextMate](https://macromates.com/) [Mac OS X]
+[PhpStorm](https://www.jetbrains.com/phpstorm/) [Windows, Linux, macos]
 
-[Sublime Text](http://www.sublimetext.com/) [Windows, Linux, Mac OS X]
+[TextMate](https://macromates.com/) [macOS]
 
-[Atom](https://atom.io/) [Windows, Linux, Mac OS X]
+[Sublime Text](http://www.sublimetext.com/) [Windows, Linux, macOS]
+
+[Atom](https://atom.io/) [Windows, Linux, macos]
 
 ## Editor settings
 
@@ -206,27 +208,27 @@ if(isTrue()){
 
 ##### Use lowerCamelCase for variables, properties
 Right:
-`````php
-$allHosts = $this->Host->find('all);
+````
+$allHosts = $HostsTable->find()->all();
 ```` 
 Wrong:
-````php
-$all_hosts = $this->Host->find('all');
+````
+$all_hosts = $HostsTable->find()->all();
 ````
 
 ##### Use lower_underscored for paginate() results
 Right:
-`````php
+````
 $all_hosts = $this->Paginator->paginate();
-```` 
+````
 Wrong:
-````php
+````
 $allHosts = $this->Paginator->paginate();
 ````
 
 ##### Use UpperCamelCase for class names
 Right:
-`````php
+````
 class HostsController{}
 ```` 
 Wrong:
@@ -234,41 +236,41 @@ Wrong:
 class hosts_controller{}
 ````
 
-##### Use UpperCamelCase if you load a Model inside of a Model
+##### Use UpperCamelCase for instantiated classes
 Right:
-`````php
-$Devicegroup = ClassRegistry::init('Devicegroup');
-$result = $Devicegroup->find('all');
+````
+$HostFilter = new HostFilter();
 ```` 
 Wrong:
-````php
-$devicegroupModel = ClassRegistry::init('Devicegroup');
-$result = devicegroupModel->find('all');
+````
+$hostFilter = new HostFilter();
+//or
+$host_filter = new HostFilter();
 ````
 
 ##### Use UPPERCASE for constants
 Right:
-`````php
+````
 define('FOO', 'bar');
-```` 
+````
 Wrong:
-````php
+````
 define('foo', 'bar');
 ````
 
 ##### Load external files (Always use require_once without braces)
 Right:
-`````php
+````
 require_once APP . DS . 'lib' . DS . foobar.php';
 ```` 
 Wrong:
-````php
+````
 require_once(APP . DS . 'lib' . DS . foobar.php');
 ````
 
 ##### Use CakePHP's h() to escape HTML to avoid JavaScript injection
 Right:
-`````php
+````
 echo h($host['Host']['name']);
 //Imagen - the hostname could be something evil like <script src="hack.js"></script>
 ```` 
@@ -279,7 +281,7 @@ echo $host['Host']['name'];
 
 ##### Executable PHP scripts (Command line)
 Right
-`````php
+````
 #!/usr/bin/env php
 <?php
 echo 'Hello world'.PHP_EOL;
@@ -311,7 +313,7 @@ $dir `ls -la`;
 ## JavaScript style
 ##### Default parameter, as you would do it in PHP
 Right:
-`````javascript
+````javascript
 function foobar(foo){
     var foo = foo || {};
     this.foo = foo.foo || 'foo';
@@ -328,7 +330,7 @@ function foobar(foo, int){
 
 ##### Chained method calls
 Right:
-`````javascript
+````javascript
 $('.selector')
     .addClass('foo')
     .children()

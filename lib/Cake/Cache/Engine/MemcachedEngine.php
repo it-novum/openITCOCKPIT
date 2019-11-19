@@ -82,7 +82,7 @@ class MemcachedEngine extends CacheEngine {
 			return false;
 		}
 		if (!isset($settings['prefix'])) {
-			$settings['prefix'] = Inflector::slug(APP_DIR) . '_';
+			$settings['prefix'] = Inflector::slug(OLD_APP_DIR) . '_';
 		}
 
 		if (defined('Memcached::HAVE_MSGPACK') && Memcached::HAVE_MSGPACK) {

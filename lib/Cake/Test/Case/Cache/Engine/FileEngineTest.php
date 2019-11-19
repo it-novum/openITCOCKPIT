@@ -40,7 +40,7 @@ class FileEngineTest extends CakeTestCase {
 	public function setUp() {
 		parent::setUp();
 		Configure::write('Cache.disable', false);
-		Cache::config('file_test', array('engine' => 'File', 'path' => CACHE));
+		Cache::config('file_test', array('engine' => 'File', 'path' => OLD_CACHE));
 	}
 
 /**
@@ -63,10 +63,10 @@ class FileEngineTest extends CakeTestCase {
  * @return void
  */
 	public function testCacheDirChange() {
-		$result = Cache::config('sessions', array('engine' => 'File', 'path' => TMP . 'sessions'));
+		$result = Cache::config('sessions', array('engine' => 'File', 'path' => OLD_TMP . 'sessions'));
 		$this->assertEquals(Cache::settings('sessions'), $result['settings']);
 
-		$result = Cache::config('sessions', array('engine' => 'File', 'path' => TMP . 'tests'));
+		$result = Cache::config('sessions', array('engine' => 'File', 'path' => OLD_TMP . 'tests'));
 		$this->assertEquals(Cache::settings('sessions'), $result['settings']);
 		$this->assertNotEquals(Cache::settings('default'), $result['settings']);
 	}
@@ -90,7 +90,7 @@ class FileEngineTest extends CakeTestCase {
 
 		$data = 'this is a test of the emergency broadcasting system';
 		$result = Cache::write('test', $data, 'file_test');
-		$this->assertTrue(file_exists(CACHE . 'cake_test'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'cake_test'));
 
 		$result = Cache::read('test', 'file_test');
 		$expecting = $data;
@@ -158,7 +158,7 @@ class FileEngineTest extends CakeTestCase {
 
 		$result = Cache::delete('delete_test', 'file_test');
 		$this->assertTrue($result);
-		$this->assertFalse(file_exists(TMP . 'tests' . DS . 'delete_test'));
+		$this->assertFalse(file_exists(OLD_TMP . 'tests' . DS . 'delete_test'));
 
 		$result = Cache::delete('delete_test', 'file_test');
 		$this->assertFalse($result);
@@ -199,29 +199,29 @@ class FileEngineTest extends CakeTestCase {
 		Cache::write('serialize_test1', $data, 'file_test');
 		Cache::write('serialize_test2', $data, 'file_test');
 		Cache::write('serialize_test3', $data, 'file_test');
-		$this->assertTrue(file_exists(CACHE . 'cake_serialize_test1'));
-		$this->assertTrue(file_exists(CACHE . 'cake_serialize_test2'));
-		$this->assertTrue(file_exists(CACHE . 'cake_serialize_test3'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'cake_serialize_test1'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'cake_serialize_test2'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'cake_serialize_test3'));
 		sleep(2);
 		$result = Cache::clear(true, 'file_test');
 		$this->assertTrue($result);
-		$this->assertFalse(file_exists(CACHE . 'cake_serialize_test1'));
-		$this->assertFalse(file_exists(CACHE . 'cake_serialize_test2'));
-		$this->assertFalse(file_exists(CACHE . 'cake_serialize_test3'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'cake_serialize_test1'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'cake_serialize_test2'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'cake_serialize_test3'));
 
 		$data = 'this is a test of the emergency broadcasting system';
 		Cache::write('serialize_test1', $data, 'file_test');
 		Cache::write('serialize_test2', $data, 'file_test');
 		Cache::write('serialize_test3', $data, 'file_test');
-		$this->assertTrue(file_exists(CACHE . 'cake_serialize_test1'));
-		$this->assertTrue(file_exists(CACHE . 'cake_serialize_test2'));
-		$this->assertTrue(file_exists(CACHE . 'cake_serialize_test3'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'cake_serialize_test1'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'cake_serialize_test2'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'cake_serialize_test3'));
 
 		$result = Cache::clear(false, 'file_test');
 		$this->assertTrue($result);
-		$this->assertFalse(file_exists(CACHE . 'cake_serialize_test1'));
-		$this->assertFalse(file_exists(CACHE . 'cake_serialize_test2'));
-		$this->assertFalse(file_exists(CACHE . 'cake_serialize_test3'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'cake_serialize_test1'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'cake_serialize_test2'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'cake_serialize_test3'));
 	}
 
 /**
@@ -296,7 +296,7 @@ class FileEngineTest extends CakeTestCase {
 	public function testKeyPath() {
 		$result = Cache::write('views.countries.something', 'here', 'file_test');
 		$this->assertTrue($result);
-		$this->assertTrue(file_exists(CACHE . 'cake_views_countries_something'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'cake_views_countries_something'));
 
 		$result = Cache::read('views.countries.something', 'file_test');
 		$this->assertEquals('here', $result);
@@ -306,11 +306,11 @@ class FileEngineTest extends CakeTestCase {
 
 		$result = Cache::write('domain.test.com:8080', 'here', 'file_test');
 		$this->assertTrue($result);
-		$this->assertTrue(file_exists(CACHE . 'cake_domain_test_com_8080'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'cake_domain_test_com_8080'));
 
 		$result = Cache::write('command>dir|more', 'here', 'file_test');
 		$this->assertTrue($result);
-		$this->assertTrue(file_exists(CACHE . 'cake_command_dir_more'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'cake_command_dir_more'));
 	}
 
 /**
@@ -319,7 +319,7 @@ class FileEngineTest extends CakeTestCase {
  * @return void
  */
 	public function testRemoveWindowsSlashesFromCache() {
-		Cache::config('windows_test', array('engine' => 'File', 'isWindows' => true, 'prefix' => null, 'path' => TMP));
+		Cache::config('windows_test', array('engine' => 'File', 'isWindows' => true, 'prefix' => null, 'path' => OLD_TMP));
 
 		$expected = array(
 			'C:\dev\prj2\sites\cake\libs' => array(
@@ -364,13 +364,13 @@ class FileEngineTest extends CakeTestCase {
  * @return void
  */
 	public function testWriteQuotedString() {
-		Cache::config('file_test', array('engine' => 'File', 'path' => TMP . 'tests'));
+		Cache::config('file_test', array('engine' => 'File', 'path' => OLD_TMP . 'tests'));
 		Cache::write('App.doubleQuoteTest', '"this is a quoted string"', 'file_test');
 		$this->assertSame(Cache::read('App.doubleQuoteTest', 'file_test'), '"this is a quoted string"');
 		Cache::write('App.singleQuoteTest', "'this is a quoted string'", 'file_test');
 		$this->assertSame(Cache::read('App.singleQuoteTest', 'file_test'), "'this is a quoted string'");
 
-		Cache::config('file_test', array('isWindows' => true, 'path' => TMP . 'tests'));
+		Cache::config('file_test', array('isWindows' => true, 'path' => OLD_TMP . 'tests'));
 		$this->assertSame(Cache::read('App.doubleQuoteTest', 'file_test'), '"this is a quoted string"');
 		Cache::write('App.singleQuoteTest', "'this is a quoted string'", 'file_test');
 		$this->assertSame(Cache::read('App.singleQuoteTest', 'file_test'), "'this is a quoted string'");
@@ -384,11 +384,11 @@ class FileEngineTest extends CakeTestCase {
  * @return void
  */
 	public function testPathDoesNotExist() {
-		$this->skipIf(is_dir(TMP . 'tests' . DS . 'autocreate'), 'Cannot run if test directory exists.');
+		$this->skipIf(is_dir(OLD_TMP . 'tests' . DS . 'autocreate'), 'Cannot run if test directory exists.');
 
 		Cache::config('autocreate', array(
 			'engine' => 'File',
-			'path' => TMP . 'tests' . DS . 'autocreate'
+			'path' => OLD_TMP . 'tests' . DS . 'autocreate'
 		));
 
 		Cache::drop('autocreate');
@@ -403,34 +403,34 @@ class FileEngineTest extends CakeTestCase {
 		if (DS === '\\') {
 			$this->markTestSkipped('File permission testing does not work on Windows.');
 		}
-		Cache::config('mask_test', array('engine' => 'File', 'path' => TMP . 'tests'));
+		Cache::config('mask_test', array('engine' => 'File', 'path' => OLD_TMP . 'tests'));
 		$data = 'This is some test content';
 		$write = Cache::write('masking_test', $data, 'mask_test');
-		$result = substr(sprintf('%o', fileperms(TMP . 'tests' . DS . 'cake_masking_test')), -4);
+		$result = substr(sprintf('%o', fileperms(OLD_TMP . 'tests' . DS . 'cake_masking_test')), -4);
 		$expected = '0664';
 		$this->assertEquals($expected, $result);
 		Cache::delete('masking_test', 'mask_test');
 		Cache::drop('mask_test');
 
-		Cache::config('mask_test', array('engine' => 'File', 'mask' => 0666, 'path' => TMP . 'tests'));
+		Cache::config('mask_test', array('engine' => 'File', 'mask' => 0666, 'path' => OLD_TMP . 'tests'));
 		Cache::write('masking_test', $data, 'mask_test');
-		$result = substr(sprintf('%o', fileperms(TMP . 'tests' . DS . 'cake_masking_test')), -4);
+		$result = substr(sprintf('%o', fileperms(OLD_TMP . 'tests' . DS . 'cake_masking_test')), -4);
 		$expected = '0666';
 		$this->assertEquals($expected, $result);
 		Cache::delete('masking_test', 'mask_test');
 		Cache::drop('mask_test');
 
-		Cache::config('mask_test', array('engine' => 'File', 'mask' => 0644, 'path' => TMP . 'tests'));
+		Cache::config('mask_test', array('engine' => 'File', 'mask' => 0644, 'path' => OLD_TMP . 'tests'));
 		Cache::write('masking_test', $data, 'mask_test');
-		$result = substr(sprintf('%o', fileperms(TMP . 'tests' . DS . 'cake_masking_test')), -4);
+		$result = substr(sprintf('%o', fileperms(OLD_TMP . 'tests' . DS . 'cake_masking_test')), -4);
 		$expected = '0644';
 		$this->assertEquals($expected, $result);
 		Cache::delete('masking_test', 'mask_test');
 		Cache::drop('mask_test');
 
-		Cache::config('mask_test', array('engine' => 'File', 'mask' => 0640, 'path' => TMP . 'tests'));
+		Cache::config('mask_test', array('engine' => 'File', 'mask' => 0640, 'path' => OLD_TMP . 'tests'));
 		Cache::write('masking_test', $data, 'mask_test');
-		$result = substr(sprintf('%o', fileperms(TMP . 'tests' . DS . 'cake_masking_test')), -4);
+		$result = substr(sprintf('%o', fileperms(OLD_TMP . 'tests' . DS . 'cake_masking_test')), -4);
 		$expected = '0640';
 		$this->assertEquals($expected, $result);
 		Cache::delete('masking_test', 'mask_test');

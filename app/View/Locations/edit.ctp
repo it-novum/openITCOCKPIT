@@ -22,85 +22,179 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+$timezones = CakeTime::listTimezones();
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-location-arrow fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <i class="fa fa-location-arrow "></i>
+            <?php echo __('Locations'); ?>
             <span>>
-                <?php echo __('Locations'); ?>
-			</span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+                <?php echo __('Edit'); ?>
+            </span>
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-location-arrow"></i> </span>
-        <h2><?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?><?php echo __('Locations'); ?></h2>
+        <h2><?php echo __('Update location'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php if ($this->Acl->hasPermission('delete')): ?>
-                <?php echo $this->Utils->deleteButton(null, $location['Location']['id']); ?>
+            <?php if ($this->Acl->hasPermission('index', 'locations')): ?>
+                <a back-button fallback-state='LocationsIndex' class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
             <?php endif; ?>
-            <?php echo $this->Utils->backButton() ?>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Location', [
-                'class' => 'form-horizontal clear',
-            ]);
-            //debug(DateTimeZone::listAbbreviations());
+            <form ng-submit="submit();" class="form-horizontal"
+                  ng-init="successMessage=
+            {objectName : '<?php echo __('Location'); ?>' , message: '<?php echo __('updated successfully'); ?>'}">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 
-            if ($hasRootPrivileges):
-                echo $this->Form->input('Container.parent_id', ['options' => $container, 'selected' => $location['Container']['parent_id'], 'class' => 'chosen', 'style' => 'width: 100%', 'label' => __('Container')]);
-            elseif (!$hasRootPrivileges && $location['Container']['parent_id'] != ROOT_CONTAINER):
-                echo $this->Form->input('Container.parent_id', ['options' => $container, 'selected' => $location['Container']['parent_id'], 'class' => 'chosen', 'style' => 'width: 100%', 'label' => __('Container')]);
-            else:
-                ?>
-                <div class="form-group required">
-                    <label class="col col-md-2 control-label"><?php echo __('Container'); ?></label>
-                    <div class="col col-xs-10 required"><input type="text" value="/root" class="form-control" readonly>
+                        <div class="row">
+                            <div class="form-group required" ng-class="{'has-error': errors.container.parent_id}">
+                                <label class="col col-md-2 control-label">
+                                    <?php echo __('Container'); ?>
+                                </label>
+                                <div class="col col-xs-10">
+                                    <select
+                                            id="LocationParentContainer"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="containers"
+                                            ng-options="container.key as container.value for container in containers"
+                                            ng-model="post.container.parent_id">
+                                    </select>
+
+                                    <div ng-repeat="error in errors.container.parent_id">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group required" ng-class="{'has-error': errors.container.name}">
+                                <label class="col-xs-12 col-lg-2 control-label">
+                                    <?php echo __('Name'); ?>
+                                </label>
+                                <div class="col-xs-12 col-lg-10">
+                                    <div class="input-group" style="width: 100%;">
+                                        <input
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="post.container.name">
+                                    </div>
+                                    <div ng-repeat="error in errors.container.name">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" ng-class="{'has-error': errors.description}">
+                                <label class="col-xs-12 col-lg-2 control-label">
+                                    <?php echo __('Description'); ?>
+                                </label>
+                                <div class="col-xs-12 col-lg-10">
+                                    <div class="input-group" style="width: 100%;">
+                                        <input
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="post.description">
+                                    </div>
+                                    <div ng-repeat="error in errors.description">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" ng-class="{'has-error': (errors.latitude || errors.longitude.custom)}">
+                                <label class="col-xs-12 col-lg-2 control-label">
+                                    <?php echo __('Latitude'); ?>
+                                </label>
+                                <div class="col-xs-12 col-lg-10">
+                                    <div class="input-group" style="width: 100%;">
+                                        <input class="form-control"
+                                               type="text"
+                                               ng-model="post.latitude"
+                                               placeholder="<?php echo '50.5558095'; ?>">
+                                    </div>
+                                    <div class="info-block-helptext">
+                                        <?php echo __(' Latitude must be a number between -90 and 90 degree inclusive.'); ?>
+                                    </div>
+                                    <div ng-repeat="error in errors.latitude">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                    <div ng-show="(!errors.latitude.custom && errors.longitude.custom)">
+                                        <div class="help-block text-danger">{{ errors.longitude.custom }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" ng-class="{'has-error': (errors.longitude || errors.latitude.custom)}">
+                                <label class="col-xs-12 col-lg-2 control-label">
+                                    <?php echo __('Longitude'); ?>
+                                </label>
+                                <div class="col-xs-12 col-lg-10">
+                                    <div class="input-group" style="width: 100%;">
+                                        <input class="form-control"
+                                               type="text"
+                                               ng-model="post.longitude"
+                                               placeholder="<?php echo '9.6808449'; ?>">
+                                    </div>
+                                    <div class="info-block-helptext">
+                                        <?php echo __('Longitude must be a number -180 and 180 degree inclusive.'); ?>
+                                    </div>
+                                    <div ng-repeat="error in errors.longitude">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                    <div ng-show="(!errors.longitude.custom && errors.latitude.custom)">
+                                        <div class="help-block text-danger">{{ errors.latitude.custom }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-xs-12 col-lg-2 control-label">
+                                    <?php echo __('Timezone'); ?>
+                                </label>
+                                <div class="col-xs-12 col-lg-10">
+                                    <select class="form-control"
+                                            chosen="{}"
+                                            ng-model="post.timezone">
+                                        <?php foreach ($timezones as $continent => $continentTimezons): ?>
+                                            <optgroup label="<?php echo h($continent); ?>">
+                                                <?php foreach ($continentTimezons as $timezoneKey => $timezoneName): ?>
+                                                    <option value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
+                                                <?php endforeach; ?>
+                                            </optgroup>
+                                        <?php endforeach;; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-lg-10 col-lg-offset-2">
+                                <div id="mapDiv" class="vector-map"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <?php
-                echo $this->Form->input('Container.parent_id', [
-                        'value' => $location['Container']['parent_id'],
-                        'type'  => 'hidden',
-                    ]
-                );
-            endif;
-            echo $this->Form->input('Container.name', ['value' => $location['Container']['name'], 'label' => __('Name')]);
-            echo $this->Form->input('description', ['value' => $location['Location']['description'], 'label' => __('Description')]);
-            echo $this->Form->input('timezone', ['options' => CakeTime::listTimezones(), 'class' => 'chosen', 'style' => 'width: 100%;', 'selected' => $location['Location']['timezone'], 'label' => __('Timezone')]);
-            ?>
-            <div id="locationPonts">
-                <?php
-                echo $this->Form->input('latitude', [
-                    'value' => $location['Location']['latitude'],
-                    'label' => __('Latitude'),
-                    'type'  => 'text'
-                ]);
-                echo $this->Form->input('longitude', [
-                    'value' => $location['Location']['longitude'],
-                    'label' => __('Longitude'),
-                    'type'  => 'text'
-                ]);
-                ?>
-            </div>
-            <div class="form-group has-error" id="LatitudeRangeError" style="display:none;">
-                <div class="col col-xs-10 col-xs-offset-2 required">
-                    <span class="help-block text-danger"><?php echo __('Latitude or Longitude is out of range'); ?></span>
+
+                <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                    <div class="well formactions ">
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-primary">
+                                <?php echo __('Update location'); ?>
+                            </button>
+                            <a back-button fallback-state='LocationsIndex'
+                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <br/><br/>
-            <div id="mapDiv" class="vector-map"></div>
-            <br/>
-            <?php echo $this->Form->formActions(); ?>
+            </form>
         </div>
     </div>
 </div>

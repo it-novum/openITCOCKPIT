@@ -25,7 +25,7 @@
 
 class DebugConfigNagiosTask extends AppShell {
 
-    public $uses = ['Host', 'Hosttemplate', 'Timeperiod', 'Command', 'Contact', 'Contactgroup', 'Container', 'Customvariable', 'Hostescalation', 'Hostgroup', 'Service', 'Servicetemplate', 'Serviceescalations', 'Servicegroup', 'Hostdependency', 'Servicedependency'];
+    public $uses = ['Host', 'Hosttemplate', 'Timeperiod', 'Command', 'Contact', 'Contactgroup', 'Container', 'Customvariable', 'Hostescalation', 'Serviceescalation', 'Hostgroup', 'Service', 'Servicetemplate', 'Serviceescalations', 'Servicegroup', 'Hostdependency', 'Servicedependency'];
 
     public function execute() {
         //Do some cool stuff
@@ -35,7 +35,6 @@ class DebugConfigNagiosTask extends AppShell {
     public function setup($conf = []) {
         $this->conf = $conf;
         $this->monitoringLog = Configure::read('nagios.logfilepath') . Configure::read('nagios.logfilename');
-        App::uses('UUID', 'Lib');
         App::uses('Folder', 'Utility');
         //Loading components
         App::uses('Component', 'Controller');
@@ -47,7 +46,20 @@ class DebugConfigNagiosTask extends AppShell {
 
     private function _buildUuidCache() {
         $this->uuidCache = [];
-        $Models = ['Host', 'Hosttemplate', 'Timeperiod', 'Command', 'Contact', 'Contactgroup', 'Hostgroup', 'Servicegroup', 'Service', 'Servicetemplate'];
+        $Models = [
+            'Host',
+            'Hosttemplate',
+            'Timeperiod',
+            'Command',
+            'Contact',
+            'Contactgroup',
+            'Hostgroup',
+            'Servicegroup',
+            'Service',
+            'Servicetemplate',
+            'Hostescalation',
+            'Serviceescalation'
+        ];
         $options = [
             'Host'            => [
                 'recursive' => -1,
@@ -109,6 +121,22 @@ class DebugConfigNagiosTask extends AppShell {
                 'recursive' => -1,
                 'fields'    => ['Servicetemplate.id', 'Servicetemplate.uuid', 'Servicetemplate.name'],
             ],
+            'Hostescalation'    => [
+                'recursive' => -1,
+                'fields'    => ['id', 'uuid'],
+            ],
+            'Serviceescalation'    => [
+                'recursive' => -1,
+                'fields'    => ['id', 'uuid'],
+            ],
+            'Hostdependency'    => [
+                'recursive' => -1,
+                'fields'    => ['id', 'uuid'],
+            ],
+            'Servicedependency'    => [
+                'recursive' => -1,
+                'fields'    => ['id', 'uuid'],
+            ],
         ];
 
         foreach ($Models as $ModelName) {
@@ -162,7 +190,13 @@ class DebugConfigNagiosTask extends AppShell {
     public function debug($ModelName = null, $confName) {
         if ($ModelName !== null && is_array($this->uses)) {
             $ModelSchema = $this->{$ModelName}->schema();
-            if (in_array('name', array_keys($ModelSchema))) {
+            $IsModelWithoutName = in_array($ModelName, [
+                'Hostescalation',
+                'Serviceescalation',
+                'Hostdependency',
+                'Servicedependency'
+            ], true); // Exclude Escalations, no name exists, get all lists
+            if (in_array('name', array_keys($ModelSchema)) && !$IsModelWithoutName) {
                 $input = $this->in(__d('oitc_console', 'Please enter the name of the ' . $ModelName . '! This is a wildcard search, for example type "default host" or just "def". Hit return to see all ' . Inflector::pluralize($ModelName)));
                 $result = $this->{$ModelName}->find('all', [
                     'conditions' => [
@@ -170,16 +204,20 @@ class DebugConfigNagiosTask extends AppShell {
                     ],
                     'contain'    => [],
                 ]);
-            } else if (in_array('container_id', array_keys($ModelSchema))) {
+            } else if (in_array('container_id', array_keys($ModelSchema)) && !$IsModelWithoutName) {
                 $input = $this->in(__d('oitc_console', 'Please enter the name of the ' . $ModelName . '! This is a wildcard search, for example type "default host" or just "def". Hit return to see all ' . Inflector::pluralize($ModelName)));
                 $result = $this->{$ModelName}->find('all', [
                     'conditions' => [
                         'Container.name LIKE'        => '%' . $input . '%',
-                        'Container.containertype_id' => $this->Constants->containertypeByModelName($ModelName),
+                        'Container.containertype_id' => $this->containertypeByModelName($ModelName),
                     ],
                     ['contain']  => [
                         'Container',
                     ],
+                ]);
+            } else if($IsModelWithoutName){
+                $result = $this->{$ModelName}->find('all', [
+                    'recursive' => -1
                 ]);
             } else {
                 $this->out('<error>' . __d('oitc_console', 'No name field for ' . $ModelName . ' found in database!') . '</error>');
@@ -441,11 +479,10 @@ class DebugConfigNagiosTask extends AppShell {
 
     public function searchUuids($string = '') {
         if (!isset($this->uuidCache) || empty($this->uuidCache) || !is_array($this->uuidCache)) {
-            App::uses('UUID', 'Lib');
             $this->_buildUuidCache();
         }
 
-        $string = preg_replace_callback(UUID::regex(), [$this, '_replaceUuid'], $string);
+        $string = preg_replace_callback(\itnovum\openITCOCKPIT\Core\UUID::regex(), [$this, '_replaceUuid'], $string);
 
         return $string;
     }
@@ -505,5 +542,31 @@ class DebugConfigNagiosTask extends AppShell {
                     }
                 }
         }
+    }
+
+    /**
+     * Returns the containerttype_id of by $ModelName
+     *
+     * @param string $modelName of the Model to check
+     *
+     * @return string with the containertype_id
+     */
+    private function containertypeByModelName($modelName = '') {
+        $objects = [
+            'Servicetemplate' => CT_SERVICETEMPLATEGROUP,
+            'Servicegroup'    => CT_SERVICEGROUP,
+            'Hostgroup'       => CT_HOSTGROUP,
+            'Contactgroup'    => CT_CONTACTGROUP,
+            //'Devicegroup' => CT_DEVICEGROUP,
+            'Location'        => CT_LOCATION,
+            'Tenant'          => CT_TENANT,
+            'Container'       => CT_GLOBAL,
+        ];
+
+        if (isset($objects[$modelName])) {
+            return $objects[$modelName];
+        }
+
+        throw new NotFoundException(__('Object not found'));
     }
 }

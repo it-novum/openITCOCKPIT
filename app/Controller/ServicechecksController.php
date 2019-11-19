@@ -23,158 +23,80 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ServicesTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Request\ServicechecksControllerRequest;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\ServicechecksConditions;
-use itnovum\openITCOCKPIT\Core\ServicestatusFields;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
-use itnovum\openITCOCKPIT\Database\ScrollIndex;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
+/**
+ * Class ServicechecksController
+ * @property AppPaginatorComponent $Paginator
+ * @property AppAuthComponent $Auth
+ * @property DbBackend $DbBackend
+ */
 class ServicechecksController extends AppController {
-    /*
-     * Attention! In this case we load an external Model from the monitoring plugin! The Controller
-     * use this external model to fetch the required data out of the database
+
+    public $layout = 'blank';
+
+    /**
+     * @param null $id
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
-    public $uses = [
-        MONITORING_SERVICECHECK,
-        MONITORING_SERVICESTATUS,
-        'Host',
-        'Service',
-        'Documentation'
-    ];
-
-
-    public $components = ['RequestHandler'];
-    public $helpers = ['Status', 'Monitoring'];
-    public $layout = 'Admin.default';
-
     public function index($id = null) {
-        $this->layout = "angularjs";
-
-        if (!$this->Service->exists($id)) {
-            throw new NotFoundException(__('Invalid service'));
-        }
-
         if (!$this->isAngularJsRequest()) {
-            //Service for .html requests
-            $service = $this->Service->find('first', [
-                'recursive'  => -1,
-                'fields'     => [
-                    'Service.id',
-                    'Service.uuid',
-                    'Service.name',
-                    'Service.service_type',
-                    'Service.service_url'
-                ],
-                'contain'    => [
-                    'Host'            => [
-                        'fields' => [
-                            'Host.id',
-                            'Host.name',
-                            'Host.uuid',
-                            'Host.address'
-                        ],
-                        'Container',
-                    ],
-                    'Servicetemplate' => [
-                        'fields' => [
-                            'Servicetemplate.id',
-                            'Servicetemplate.name',
-                        ],
-                    ],
-                ],
-                'conditions' => [
-                    'Service.id' => $id,
-                ],
-            ]);
-
-            $containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
-            $containerIdsToCheck[] = $service['Host']['container_id'];
-
-            //Check if user is permitted to see this object
-            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-                $this->render403();
-                return;
-            }
-
-            $allowEdit = false;
-            if ($this->allowedByContainerId($containerIdsToCheck)) {
-                $allowEdit = true;
-            }
-
-            //Get meta data and push to front end
-            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields->currentState()->isFlapping();
-            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
-            $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
-            $this->set(compact(['service', 'servicestatus', 'docuExists', 'allowEdit']));
+            //Only ship html template
             return;
         }
 
         session_write_close();
 
-        //Service for .json requests
-        $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.service_type',
-                'Service.service_url'
-            ],
-            'contain'    => [
-                'Host' => [
-                    'fields' => [
-                        'Host.uuid'
-                    ]
-                ]
-            ],
-            'conditions' => [
-                'Service.id' => $id,
-            ],
-        ]);
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-        $AngularServicechecksControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\ServicechecksControllerRequest($this->request);
+        if (!$ServicesTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid service'));
+        }
+
+        /** @var \App\Model\Entity\Service $service */
+        $service = $ServicesTable->getServiceByIdForPermissionsCheck($id);
+        if (!$this->allowedByContainerId($service->getContainerIds(), false)) {
+            $this->render403();
+            return;
+        }
+
+        $ServicechecksControllerRequest = new ServicechecksControllerRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicechecksControllerRequest->getPage());
 
         //Process conditions
         $Conditions = new ServicechecksConditions();
-        $Conditions->setHostUuid($service['Host']['uuid']);
-        $Conditions->setLimit($this->Paginator->settings['limit']);
-        $Conditions->setFrom($AngularServicechecksControllerRequest->getFrom());
-        $Conditions->setTo($AngularServicechecksControllerRequest->getTo());
-        $Conditions->setOrder($AngularServicechecksControllerRequest->getOrderForPaginator('Servicecheck.start_time', 'desc'));
-        $Conditions->setStates($AngularServicechecksControllerRequest->getServiceStates());
-        $Conditions->setStateTypes($AngularServicechecksControllerRequest->getServiceStateTypes());
-        $Conditions->setServiceUuid($service['Service']['uuid']);
+        $Conditions->setHostUuid($service->host->uuid);
+        $Conditions->setFrom($ServicechecksControllerRequest->getFrom());
+        $Conditions->setTo($ServicechecksControllerRequest->getTo());
+        $Conditions->setOrder($ServicechecksControllerRequest->getOrderForPaginator('Servicecheck.start_time', 'desc'));
+        $Conditions->setStates($ServicechecksControllerRequest->getServiceStates());
+        $Conditions->setStateTypes($ServicechecksControllerRequest->getServiceStateTypes());
+        $Conditions->setServiceUuid($service->get('uuid'));
+        $Conditions->setConditions($ServicechecksControllerRequest->getIndexFilters());
 
-        //Query host notification records
-        $query = $this->Servicecheck->getQuery($Conditions, $AngularServicechecksControllerRequest->getIndexFilters());
 
-        $this->Paginator->settings = $query;
-        $this->Paginator->settings['page'] = $AngularServicechecksControllerRequest->getPage();
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $UserTime = $User->getUserTime();
 
-        $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if ($this->isScrollRequest()) {
-            $servicechecks = $this->Servicecheck->find('all', $this->Paginator->settings);
-            $ScrollIndex->determineHasNextPage($servicechecks);
-            $ScrollIndex->scroll();
-        } else {
-            $servicechecks = $this->Paginator->paginate(
-                $this->Servicecheck->alias,
-                [],
-                [key($this->Paginator->settings['order'])]
-            );
-        }
+        $ServicechecksTable = $this->DbBackend->getServicechecksTable();
 
         $all_servicechecks = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        foreach ($servicechecks as $servicecheck) {
-            $Servicecheck = new itnovum\openITCOCKPIT\Core\Views\Servicecheck($servicecheck['Servicecheck'], $UserTime);
+        foreach ($ServicechecksTable->getServicechecks($Conditions, $PaginateOMat) as $servicecheck) {
+            /** @var \Statusengine2Module\Model\Entity\Servicecheck $servicecheck */
+            $Servicecheck = new \itnovum\openITCOCKPIT\Core\Views\Servicecheck($servicecheck->toArray(), $UserTime);
+
             $all_servicechecks[] = [
                 'Servicecheck' => $Servicecheck->toArray()
             ];
         }
 
-        $this->set(compact(['all_servicechecks']));
+        $this->set('all_servicechecks', $all_servicechecks);
         $toJson = ['all_servicechecks', 'paging'];
         if ($this->isScrollRequest()) {
             $toJson = ['all_servicechecks', 'scroll'];

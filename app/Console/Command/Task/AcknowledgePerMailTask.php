@@ -24,6 +24,7 @@
 
 App::import('Vendor', 'ddeboer/imap/src/Server');
 
+use Cake\ORM\TableRegistry;
 use Ddeboer\Imap\Server;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
@@ -51,7 +52,9 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface {
      * @return string all unseen messages from inbox
      */
     private function ackHostsAndServices() {
-        $this->_systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArraySection('MONITORING');
         if (empty($this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_SERVER']) ||
             empty($this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_ADDRESS']) ||
             empty($this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_PASSWORD'])) {

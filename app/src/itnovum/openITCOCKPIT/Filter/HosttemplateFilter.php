@@ -30,10 +30,33 @@ class HosttemplateFilter extends Filter {
     /**
      * @return array
      */
+    public function indexFilter() {
+        $filters = [
+            'like' => [
+                'Hosttemplates.name',
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
+    /**
+     * @return array
+     */
     public function ajaxFilter() {
         $filters = [
             'like' => [
-                'Hosttemplate.name',
+                'Hosttemplates.name',
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
+    public function usedByFilter() {
+        $filters = [
+            'bool' => [
+                'Hosts.disabled',
             ]
         ];
 

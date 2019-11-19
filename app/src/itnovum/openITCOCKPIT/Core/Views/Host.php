@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core\Views;
 
 
+use Cake\Utility\Hash;
+
 class Host {
 
     /**
@@ -51,6 +53,11 @@ class Host {
      * @var string
      */
     private $description;
+
+    /**
+     * @var int
+     */
+    private $hosttemplate_id;
 
     /**
      * @var int|bool
@@ -95,6 +102,13 @@ class Host {
     public function __construct($host, $allowEdit = false) {
         $this->allow_edit = $allowEdit;
 
+        if (isset($host['id']) && isset($host['uuid'])) {
+            //Cake4 result...
+            $host = [
+                'Host' => $host
+            ];
+        }
+
         if (isset($host['Host']['id'])) {
             $this->id = $host['Host']['id'];
         }
@@ -113,6 +127,10 @@ class Host {
 
         if (isset($host['Host']['description'])) {
             $this->description = $host['Host']['description'];
+        }
+
+        if (isset($host['Host']['hosttemplate_id'])) {
+            $this->hosttemplate_id = (int)$host['Host']['hosttemplate_id'];
         }
 
         if (isset($host['Host']['active_checks_enabled'])) {
@@ -148,6 +166,11 @@ class Host {
         if (isset($host['Host']['container_ids'])) {
             //CrateDB
             $this->containerIds = $host['Host']['container_ids'];
+        }
+
+        if (isset($host['Host']['hosts_to_containers_sharing'])) {
+            //MySQL and Cake4
+            $this->containerIds = Hash::extract($host['Host']['hosts_to_containers_sharing'], '{n}.id');
         }
 
         if (isset($host['Host']['tags'])) {
@@ -248,11 +271,19 @@ class Host {
     }
 
     /**
+     * @return int
+     */
+    public function getHosttemplateId() {
+        return $this->hosttemplate_id;
+    }
+
+    /**
      * @return array
      */
     public function toArray() {
         $arr = get_object_vars($this);
         $arr['is_satellite_host'] = $this->isSatelliteHost();
+        $arr['name'] = $this->hostname;
         return $arr;
     }
 

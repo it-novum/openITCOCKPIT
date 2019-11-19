@@ -43,9 +43,9 @@
     }
 
     echo "\t\t\t\t<td class=\"actions\">\n";
-    echo "\t\t\t\t\t<?php echo \$this->Html->link(__('list.details'), array('action' => 'view', \${$singularVar}['{$modelClass}']['{$primaryKey}']), array('class' => 'btn btn-xs')); ?>\n";
-    echo "\t\t\t\t\t<?php echo \$this->Utils->editButton(__('list.edit'), \${$singularVar}['{$modelClass}']['{$primaryKey}']); ?>\n";
-    echo "\t\t\t\t\t<?php echo \$this->Form->postLink(__('list.delete'), array('action' => 'delete', \${$singularVar}['{$modelClass}']['{$primaryKey}']), array('class' => 'btn btn-xs btn-danger'), __('list.really_delete', \${$singularVar}['{$modelClass}']['{$primaryKey}'])); ?>\n";
+    echo "\t\t\t\t\t<?php echo \$this->Html->link(__('details'), array('action' => 'view', \${$singularVar}['{$modelClass}']['{$primaryKey}']), array('class' => 'btn btn-xs')); ?>\n";
+    echo "\t\t\t\t\t<?php echo \$this->Utils->editButton(__('edit'), \${$singularVar}['{$modelClass}']['{$primaryKey}']); ?>\n";
+    echo "\t\t\t\t\t<?php echo \$this->Form->postLink(__('delete'), array('action' => 'delete', \${$singularVar}['{$modelClass}']['{$primaryKey}']), array('class' => 'btn btn-xs btn-danger'), __('Really delete?', \${$singularVar}['{$modelClass}']['{$primaryKey}'])); ?>\n";
     echo "\t\t\t\t</td>\n";
     echo "\t\t\t</tr>\n";
 

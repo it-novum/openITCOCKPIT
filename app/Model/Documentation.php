@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Documentation
+ * @deprecated
+ */
 class Documentation extends AppModel {
     public $validate = [
         'uuid' => [
@@ -40,6 +44,11 @@ class Documentation extends AppModel {
         ],
     ];
 
+    /**
+     * @param null $uuid
+     * @return bool
+     * @deprecated
+     */
     public function existsForUuid($uuid = null) {
         $result = $this->find('first', [
             'recursive'  => -1,

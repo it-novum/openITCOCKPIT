@@ -23,7 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-
+/**
+ * Class Usergroup
+ * @deprecated
+ */
 class Usergroup extends AppModel {
     public $name = 'Usergroup';
     public $actsAs = [
@@ -56,6 +59,12 @@ class Usergroup extends AppModel {
     }
 
     //Return a array of aco ids that needs to enabled for every user! (for ajax requests etc..)
+
+    /**
+     * @param $acosAsNest
+     * @return array
+     * @deprecated
+     */
     public function getAlwaysAllowedAcos($acosAsNest) {
         Configure::load('acl_dependencies');
 
@@ -64,7 +73,7 @@ class Usergroup extends AppModel {
             return strpos($value, 'Module') !== false;
         });
         foreach ($modulePlugins as $moduleName) {
-            $pluginAclConfigFile = APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
+            $pluginAclConfigFile = OLD_APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
             if (file_exists($pluginAclConfigFile)) {
                 Configure::load($moduleName . '.acl_dependencies');
             }
@@ -142,7 +151,7 @@ class Usergroup extends AppModel {
         });
 
         foreach ($modulePlugins as $moduleName) {
-            $pluginAclConfigFile = APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
+            $pluginAclConfigFile = OLD_APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
             if (file_exists($pluginAclConfigFile)) {
                 Configure::load($moduleName . '.acl_dependencies');
             }
@@ -217,7 +226,7 @@ class Usergroup extends AppModel {
             return strpos($value, 'Module') !== false;
         });
         foreach ($modulePlugins as $moduleName) {
-            $pluginAclConfigFile = APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
+            $pluginAclConfigFile = OLD_APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
             if (file_exists($pluginAclConfigFile)) {
                 Configure::load($moduleName . '.acl_dependencies');
             }

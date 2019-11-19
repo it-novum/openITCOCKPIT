@@ -354,16 +354,16 @@ class Debugger {
  * @return string Normalized path
  */
 	public static function trimPath($path) {
-		if (!defined('CAKE_CORE_INCLUDE_PATH') || !defined('APP')) {
+		if (!defined('OLD_CAKE_CORE_INCLUDE_PATH') || !defined('OLD_APP')) {
 			return $path;
 		}
 
-		if (strpos($path, APP) === 0) {
-			return str_replace(APP, 'APP' . DS, $path);
-		} elseif (strpos($path, CAKE_CORE_INCLUDE_PATH) === 0) {
-			return str_replace(CAKE_CORE_INCLUDE_PATH, 'CORE', $path);
-		} elseif (strpos($path, ROOT) === 0) {
-			return str_replace(ROOT, 'ROOT', $path);
+		if (strpos($path, OLD_APP) === 0) {
+			return str_replace(OLD_APP, 'APP' . DS, $path);
+		} elseif (strpos($path, OLD_CAKE_CORE_INCLUDE_PATH) === 0) {
+			return str_replace(OLD_CAKE_CORE_INCLUDE_PATH, 'CORE', $path);
+		} elseif (strpos($path, OLD_ROOT) === 0) {
+			return str_replace(OLD_ROOT, 'ROOT', $path);
 		}
 
 		return $path;
@@ -837,11 +837,11 @@ class Debugger {
  */
 	public static function checkSecurityKeys() {
 		if (Configure::read('Security.salt') === 'DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi') {
-			trigger_error(__d('cake_dev', 'Please change the value of %s in %s to a salt value specific to your application.', '\'Security.salt\'', CONFIG . 'core.php'), E_USER_NOTICE);
+			trigger_error(__d('cake_dev', 'Please change the value of %s in %s to a salt value specific to your application.', '\'Security.salt\'', OLD_CONFIG . 'core.php'), E_USER_NOTICE);
 		}
 
 		if (Configure::read('Security.cipherSeed') === '76859309657453542496749683645') {
-			trigger_error(__d('cake_dev', 'Please change the value of %s in %s to a numeric (digits only) seed value specific to your application.', '\'Security.cipherSeed\'', CONFIG . 'core.php'), E_USER_NOTICE);
+			trigger_error(__d('cake_dev', 'Please change the value of %s in %s to a numeric (digits only) seed value specific to your application.', '\'Security.cipherSeed\'', OLD_CONFIG . 'core.php'), E_USER_NOTICE);
 		}
 	}
 

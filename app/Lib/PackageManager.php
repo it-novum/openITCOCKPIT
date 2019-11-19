@@ -27,8 +27,7 @@
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 
-App::import('Controller', 'Proxy');
-
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Http;
 
 /**
@@ -107,7 +106,7 @@ class PackageManager {
         $this->send('Cleaning up...');
 
         // Move the archive to the plugin directory
-        $pluginDir = new Folder(APP . 'Plugin');
+        $pluginDir = new Folder(OLD_APP . 'Plugin');
         $tempDir = new Folder($tempDir);
         if (!$tempDir->move($pluginDir->path . DS . $pluginName)) {
             $msg = 'Moving archive to Plugin directory failed.' . "\n";
@@ -123,7 +122,7 @@ class PackageManager {
         // Run the install.php file of the package, if it exists
         $acceptedFileNames = ['setup.php', 'install.php'];
         foreach ($acceptedFileNames as $installFileName) {
-            $fileName = APP . 'Plugin' . DS . $pluginName . DS . $installFileName;
+            $fileName = OLD_APP . 'Plugin' . DS . $pluginName . DS . $installFileName;
             //debug($fileName);
             if (file_exists($fileName)) {
                 $this->debugAndSend('Additional installation file found. Executing "' . $fileName . '"');
@@ -141,7 +140,7 @@ class PackageManager {
         // Run the install.php file of the package, if it exists
         $acceptedFileNames = ['uninstall.php', 'delete.php'];
         foreach ($acceptedFileNames as $installFileName) {
-            $fileName = APP . 'Plugin' . DS . $name . DS . $installFileName;
+            $fileName = OLD_APP . 'Plugin' . DS . $name . DS . $installFileName;
             //debug($fileName);
             if (file_exists($fileName)) {
                 $this->debugAndSend('Additional uninstallation file found. Executing "' . $fileName . '"');
@@ -167,7 +166,7 @@ class PackageManager {
             return false;
         }
 
-        $folder = new Folder(APP);
+        $folder = new Folder(OLD_APP);
         if (!$folder->cd('Plugin') || !$folder->cd($name)) {
             $this->debugAndSend('The Plugin directory wasn\'t found!');
 
@@ -210,8 +209,11 @@ class PackageManager {
                 'CURLOPT_SSL_VERIFYHOST' => false,
             ];
         }
-        $proxy = new ProxyController();
-        $httpComponent = new Http($url, $curlSettings, $proxy->getSettings());
+
+        /** @var $Proxy App\Model\Table\ProxiesTable */
+        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+
+        $httpComponent = new Http($url, $curlSettings, $Proxy->getSettings());
         $httpComponent->sendRequest();
 
         if (empty($httpComponent->data)) {

@@ -34,14 +34,14 @@ class HostchecksControllerRequest extends AngularRequest {
     protected $filters = [
         'index' => [
             'like' => [
-                'Hostcheck.output'
+                'Hostchecks.output'
             ]
         ]
     ];
 
-    protected $HostStateField = 'Hostcheck.state';
+    protected $HostStateField = 'Hostchecks.state';
 
-    protected $HostStateTypeField = 'Hostcheck.state_type';
+    protected $HostStateTypeField = 'Hostchecks.state_type';
 
     public function getIndexFilters() {
         $Filter = new BaseFilter($this->getRequest());

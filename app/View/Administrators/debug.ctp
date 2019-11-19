@@ -30,35 +30,37 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 /** @var LsbRelease $LsbRelease */
 
 ?>
+
 <div class="row">
-    <div class="col-xs-12 col-lg-10">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-bug fa-fw "></i>
-            <?php echo __('Debugging information'); ?>
+            {{interfaceInformation.systemname}}
+            <span>>
+                <?php echo __('Debugging information'); ?>
+            </span>
         </h1>
     </div>
 
-    <?php if ($isDebuggingMode): ?>
-        <div class="col-xs-12 col-lg-2">
-            <div class="pull-right">
-                <a href="/Administrators/querylog" class="btn btn-default btn-xl btn-block">
-                    <i class="fa fa-database"></i>
-                    <?php echo __('Show SQL query log'); ?>
-                </a>
-            </div>
-        </div>
-    <?php endif; ?>
-</div>
-
-<?php if (!$gearmanReachable): ?>
-    <div id="error_msg">
-        <div class="alert alert-danger alert-block">
-            <a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i
-                        class="fa fa-warning"></i> <?php echo __('Error'); ?></h5>
-            <?php echo __('Could not connect to Gearman Job Server! No background tasks will be executed!'); ?>
+    <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5" ng-show="interfaceInformation.oitc_is_debugging_mode">
+        <div class="pull-right">
+            <a ui-sref="AdministratorsQuerylog" class="btn btn-default btn-xl btn-block">
+                <i class="fa fa-database"></i>
+                <?php echo __('Show SQL query log'); ?>
+            </a>
         </div>
     </div>
-<?php endif; ?>
+</div>
+
+<div id="error_msg" ng-hide="processInformation.gearmanReachable">
+    <div class="alert alert-danger alert-block">
+        <h5 class="alert-heading"><i class="fa fa-warning"></i>
+            <?php echo __('Critical error!'); ?>
+        </h5>
+        <?php echo __('Could not connect to Gearman Job Server! No background tasks will get executed!'); ?>
+    </div>
+</div>
+
 
 <?php echo $this->element('repository_checker'); ?>
 
@@ -71,7 +73,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
         </h4>
         <?php echo __('Official end of life of Ubuntu Trusty scheduled for April 2019.'); ?>
         <?php echo __('Therefore openITCOCKPIT 3.5 will be the last release for Ubuntu Trusty. Please update to Ubuntu Xenial to receive further updates.'); ?>
-        <br />
+        <br/>
         <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support %s.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
     </div>
 <?php endif; ?>
@@ -85,383 +87,516 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
         </h4>
         <?php echo __('Debian Jessie is not supported by the Debian security team anymore!'); ?>
         <?php echo __('Therefore openITCOCKPIT 3.5 will be the last release for Debian Jessie. Please update to Debian Stretch to receive further updates.'); ?>
-        <br />
+        <br/>
         <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support %s.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
     </div>
 <?php endif; ?>
 
-<div id="error_msg"></div>
+<div class="row">
 
-<div class="jarviswidget jarviswidget-sortable" data-widget-deletebutton="false"  data-widget-colorbutton="false"
-      data-widget-fullscreenbutton="true"  data-widget-editbutton="true"  data-widget-togglebutton="false"
-      style="position: relative; opacity: 1; left: 0px; top: 0px;"  role="widget">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-globe"></i></span>
-        <h2><?php echo __('Interface information'); ?></h2>
-    </header>
-    <!-- widget div-->
-    <div>
-        <!-- end widget edit box -->
-        <div class="widget-body padding-10">
-            <dl class="dl-horizontal">
-                <?php
-                Configure::load('nagios');
-                Configure::load('version');
-                ?>
+    <div class="col-xs-12 col-md-6" style="padding-left: 0;">
 
-                <dt><?php echo __('System name'); ?>:</dt>
-                <dd><?php echo h($systemsetting['FRONTEND']['FRONTEND.SYSTEMNAME']); ?></dd>
-                <dt><?php echo __('Version'); ?>:</dt>
-                <dd><?php echo h(Configure::read('version')); ?></dd>
-                <dt><?php echo __('Edition'); ?>:</dt>
-                <dd><?php echo ($isEnterprise) ? __('Enterprise') : __('Community'); ?></dd>
-                <dt><?php echo __('Path for config'); ?>:</dt>
-                <dd><?php echo h(Configure::read('nagios.export.backupSource')); ?></dd>
-                <dt><?php echo __('Path for backups'); ?>:</dt>
-                <dd><?php echo h(Configure::read('nagios.export.backupTarget')); ?></dd>
-                <dt><?php echo __('Command interface'); ?>:</dt>
-                <dd><?php echo h($systemsetting['MONITORING']['MONITORING.CMD']); ?></dd>
-            </dl>
+        <div class="jarviswidget">
+            <header>
+                <span class="widget-icon"> <i class="fa fa-globe"></i></span>
+                <h2><?php echo __('Interface information'); ?></h2>
+            </header>
+            <div>
+                <div class="widget-body padding-10" style="min-height: 215px;">
+                    <dl class="dl-horizontal">
+                        <dt><?php echo __('System name'); ?>:</dt>
+                        <dd>{{interfaceInformation.systemname}}</dd>
+
+                        <dt><?php echo __('Version'); ?>:</dt>
+                        <dd>{{interfaceInformation.version}}</dd>
+
+                        <dt><?php echo __('Edition'); ?>:</dt>
+                        <dd>{{interfaceInformation.edition}}</dd>
+
+                        <dt><?php echo __('Monitoring Engine'); ?>:</dt>
+                        <dd>{{interfaceInformation.monitoring_engine}}</dd>
+
+                        <dt><?php echo __('Path for config'); ?>:</dt>
+                        <dd>{{interfaceInformation.path_for_config}}</dd>
+
+                        <dt><?php echo __('Path for backups'); ?>:</dt>
+                        <dd>{{interfaceInformation.path_for_backups}}</dd>
+
+                        <dt><?php echo __('Command interface'); ?>:</dt>
+                        <dd>{{interfaceInformation.command_interface}}</dd>
+                    </dl>
+                </div>
+            </div>
         </div>
 
     </div>
-</div>
 
-<div class="jarviswidget jarviswidget-sortable" data-widget-deletebutton="false"  data-widget-colorbutton="false"
-      data-widget-fullscreenbutton="true"  data-widget-editbutton="true"  data-widget-togglebutton="false"
-      style="position: relative; opacity: 1; left: 0px; top: 0px;"  role="widget">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-cogs"></i></span>
-        <h2><?php echo __('Process information'); ?></h2>
-    </header>
-    <!-- widget div-->
-    <div>
-        <!-- end widget edit box -->
-        <div class="widget-body padding-10">
-            <?php if ($gearmanReachable && $isGearmanWorkerRunning): ?>
-                <dl class="dl-horizontal">
-                    <dt><?php echo __('Monitoring engine'); ?>:</dt>
-                    <dd>
-                        <?php echo ($backgroundProcessStatus['isNagiosRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
-                        <a data-original-title="<?php echo h($monitoring_engine); ?>" data-placement="right"
-                           rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
-                    </dd>
-                    <dt><?php echo __('Database connector'); ?>:</dt>
-                    <dd>
+    <div class="col-xs-12 col-md-6" style="padding-right:0;">
 
-                        <?php
-                        $dbConnector = __('NDOUtils');
-                        if ($isStatusengineInstalled):
-                            $dbConnector = __('Statusengine');
-                        endif;
-                        ?>
-                        <?php echo ($backgroundProcessStatus['isNdoRunning'] || $backgroundProcessStatus['isStatusengineRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
-                        <a data-original-title="<?php echo $dbConnector; ?>" data-placement="right" rel="tooltip"
-                           class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
-                    </dd>
-                    <dt><?php echo __('Perfdata processor'); ?>:</dt>
-                    <dd>
-                        <?php
-                        $perfdataProcessor = __('NPCD');
-                        if ($isStatusenginePerfdataProcessor):
-                            $perfdataProcessor = __('Statusengine');
-                        endif;
-                        ?>
-                        <?php echo ($backgroundProcessStatus['isNpcdRunning'] || ($isStatusenginePerfdataProcessor && $backgroundProcessStatus['isStatusengineRunning'])) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
-                        <a data-original-title="<?php echo $perfdataProcessor; ?>" data-placement="right" rel="tooltip"
-                           class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
-                    </dd>
-                    <dt><?php echo __('Queuing engine'); ?>:</dt>
-                    <dd>
-                        <span class="text-success"><i class="fa fa-check"></i> <?php echo __('Running'); ?></span>
-                        <a data-original-title="<?php echo h('openITCOCKPIT uses the Gearman Job Server to run different background tasks'); ?>"
-                           data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                    class="fa fa-info-circle"></i></a>
-                    </dd>
-                    <dt><?php echo __('Gearman Worker'); ?>:</dt>
-                    <dd>
-                        <?php echo ($backgroundProcessStatus['isGearmanWorkerRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
-                        <a data-original-title="<?php echo __('Gearman Worker'); ?>" data-placement="right"
-                           rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
-                    </dd>
-                    <dt><?php echo __('OITC Cmd'); ?>:</dt>
-                    <dd>
-                        <?php echo ($backgroundProcessStatus['isOitcCmdRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
-                        <a data-original-title="<?php echo __('OITC Cmd'); ?>" data-placement="right" rel="tooltip"
-                           class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
-                    </dd>
-                    <dt><?php echo __('phpNSTA'); ?>:</dt>
-                    <dd>
-                        <?php echo ($backgroundProcessStatus['isPhpNstaRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
-                        <a data-original-title="<?php echo __('phpNSTA is only installed and running if you are using Distributed Monitoring'); ?>"
-                           data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                    class="fa fa-info-circle"></i></a>
-                    </dd>
-                    <dt><?php echo __('Push notification service'); ?>:</dt>
-                    <dd>
-                        <?php echo ($backgroundProcessStatus['isPushNotificationRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
-                        <a data-original-title="<?php echo __('Service required to send push notifications to your browser window.'); ?>"
-                           data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                    class="fa fa-info-circle"></i></a>
-                    </dd>
-
-                    <dt><?php echo __('NodeJS Server'); ?>:</dt>
-                    <dd>
-                        <?php echo ($backgroundProcessStatus['isNodeJsServerRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
-                        <a data-original-title="<?php echo __('Service required to run server side JavaScript.'); ?>"
-                           data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i
-                                    class="fa fa-info-circle"></i></a>
-                    </dd>
-                </dl>
-            <?php endif; ?>
-            <?php if ($gearmanReachable === false): ?>
-                <div id="error_msg">
-                    <div class="alert alert-danger alert-block">
-                        <a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i
-                                    class="fa fa-warning"></i> <?php echo __('Error'); ?></h5>
-                        <?php echo __('As long as your Gearman-Job-Server is not running, we can not check the state of other daemons'); ?>
-                        <br/>
-                        <?php echo __('Please start your Gearman-Job-Server first'); ?>
+        <div class="jarviswidget">
+            <header>
+                <span class="widget-icon"> <i class="fa fa-cogs"></i></span>
+                <h2><?php echo __('Process information'); ?></h2>
+            </header>
+            <div>
+                <div class="widget-body padding-10" ng-hide="processInformation.gearmanReachable" style="min-height: 215px;">
+                    <div id="error_msg">
+                        <div class="alert alert-danger alert-block">
+                            <h5 class="alert-heading"><i class="fa fa-warning"></i>
+                                <?php echo __('Error'); ?>
+                            </h5>
+                            <?php echo __('Gearman-Job-Server is not running, openITCOCKPIT could not check the state of background daemons'); ?>
+                            <br/>
+                            <?php echo __('Please start Gearman-Job-Server first'); ?>
+                        </div>
                     </div>
                 </div>
-            <?php endif; ?>
 
-            <?php if ($isGearmanWorkerRunning === false): ?>
-                <div id="error_msg">
-                    <div class="alert alert-danger alert-block">
-                        <a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i
-                                    class="fa fa-warning"></i> <?php echo __('Error'); ?></h5>
-                        <?php echo __('As long as your gearman_worker is not running, we can not check the state of other daemons'); ?>
-                        <br/>
-                        <?php echo __('Please start your gearman_worker first'); ?>
+                <div class="widget-body padding-10" ng-hide="processInformation.isGearmanWorkerRunning" style="min-height: 215px;">
+                    <div id="error_msg">
+                        <div class="alert alert-danger alert-block">
+                            <h5 class="alert-heading"><i class="fa fa-warning"></i>
+                                <?php echo __('Error'); ?></h5>
+                            <?php echo __('gearman_worker is not running, openITCOCKPIT could not check the state of background daemons'); ?>
+                            <br/>
+                            <?php echo __('Please start gearman_worker first'); ?>
+                        </div>
                     </div>
                 </div>
-            <?php endif; ?>
 
+
+                <div class="widget-body padding-10"
+                     ng-show="processInformation.gearmanReachable && processInformation.isGearmanWorkerRunning" style="min-height: 215px;">
+                    <dl class="dl-horizontal">
+                        <dt><?php echo __('Monitoring engine'); ?>:</dt>
+                        <dd>
+                    <span ng-show="processInformation.backgroundProcesses.isNagiosRunning"
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                            <span ng-hide="processInformation.backgroundProcesses.isNagiosRunning"
+                                  class="critical"><i
+                                        class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+                            <a data-original-title="{{interfaceInformation.monitoring_engine}}" data-placement="right"
+                               rel="tooltip" class="text-info" href="javascript:void(0);"><i
+                                        class="fa fa-info-circle"></i></a>
+                        </dd>
+
+                        <dt><?php echo __('Database connector'); ?>:</dt>
+                        <dd ng-if="processInformation.isStatusengineInstalled">
+                    <span ng-show="processInformation.backgroundProcesses.isStatusengineRunning"
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                            <span ng-hide="processInformation.backgroundProcesses.isStatusengineRunning"
+                                  class="critical"><i
+                                        class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+
+                            <a data-original-title="<?php echo __('Statusengine'); ?>" data-placement="right"
+                               rel="tooltip" class="text-info" href="javascript:void(0);"><i
+                                        class="fa fa-info-circle"></i></a>
+                        </dd>
+                        <dd ng-if="processInformation.isNdoInstalled">
+                    <span ng-show="processInformation.backgroundProcesses.isNdoRunning"
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                            <span ng-hide="processInformation.backgroundProcesses.isNdoRunning"
+                                  class="critical"><i
+                                        class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+
+                            <a data-original-title="<?php echo __('NDOUtils'); ?>" data-placement="right"
+                               rel="tooltip" class="text-info" href="javascript:void(0);"><i
+                                        class="fa fa-info-circle"></i></a>
+                        </dd>
+
+                        <dt><?php echo __('Perfdata processor'); ?>:</dt>
+                        <dd ng-if="processInformation.isStatusengineInstalled">
+                    <span ng-show="processInformation.backgroundProcesses.isStatusengineRunning"
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                            <span ng-hide="processInformation.backgroundProcesses.isStatusengineRunning"
+                                  class="critical"><i
+                                        class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+
+                            <a data-original-title="<?php echo __('Statusengine'); ?>" data-placement="right"
+                               rel="tooltip" class="text-info" href="javascript:void(0);"><i
+                                        class="fa fa-info-circle"></i></a>
+                        </dd>
+                        <dd ng-if="!processInformation.isStatusenginePerfdataProcessor">
+                    <span ng-show="processInformation.backgroundProcesses.isNpcdRunning"
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                            <span ng-hide="processInformation.backgroundProcesses.isNpcdRunning"
+                                  class="critical"><i
+                                        class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+
+                            <a data-original-title="<?php echo __('NPCD'); ?>" data-placement="right"
+                               rel="tooltip" class="text-info" href="javascript:void(0);"><i
+                                        class="fa fa-info-circle"></i></a>
+                        </dd>
+
+                        <dt><?php echo __('Queuing engine'); ?>:</dt>
+                        <dd>
+                            <span class="ok"><i class="fa fa-check"></i> <?php echo __('Running'); ?></span>
+                            <a data-original-title="<?php echo h('openITCOCKPIT uses the Gearman Job Server to run different background tasks'); ?>"
+                               data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i
+                                        class="fa fa-info-circle"></i></a>
+                        </dd>
+
+                        <dt><?php echo __('Gearman Worker'); ?>:</dt>
+                        <dd>
+                    <span ng-show="processInformation.backgroundProcesses.isGearmanWorkerRunning"
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                            <span ng-hide="processInformation.backgroundProcesses.isGearmanWorkerRunning"
+                                  class="critical"><i
+                                        class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+
+                            <a data-original-title="<?php echo __('Execute background jobs like refresh of monitoring configuration.'); ?>"
+                               data-placement="right"
+                               rel="tooltip" class="text-info" href="javascript:void(0);"><i
+                                        class="fa fa-info-circle"></i></a>
+                        </dd>
+
+                        <dt><?php echo __('OITC Cmd'); ?>:</dt>
+                        <dd>
+                    <span ng-show="processInformation.backgroundProcesses.isOitcCmdRunning"
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                            <span ng-hide="processInformation.backgroundProcesses.isOitcCmdRunning"
+                                  class="critical"><i
+                                        class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+
+                            <a data-original-title="<?php echo __('External command interface used by Check_MK to pass check results.'); ?>"
+                               data-placement="right"
+                               rel="tooltip" class="text-info" href="javascript:void(0);"><i
+                                        class="fa fa-info-circle"></i></a>
+                        </dd>
+
+                        <dt><?php echo __('phpNSTA'); ?>:</dt>
+                        <dd>
+                    <span ng-show="processInformation.backgroundProcesses.isPhpNstaRunning"
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                            <span ng-hide="processInformation.backgroundProcesses.isPhpNstaRunning"
+                                  class="critical"><i
+                                        class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+
+                            <a data-original-title="<?php echo __('phpNSTA is only installed and running if you are using Distributed Monitoring.'); ?>"
+                               data-placement="right"
+                               rel="tooltip" class="text-info" href="javascript:void(0);"><i
+                                        class="fa fa-info-circle"></i></a>
+                        </dd>
+
+                        <dt><?php echo __('Push notification service'); ?>:</dt>
+                        <dd>
+                    <span ng-show="processInformation.backgroundProcesses.isPushNotificationRunning"
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                            <span ng-hide="processInformation.backgroundProcesses.isPushNotificationRunning"
+                                  class="critical"><i
+                                        class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+
+                            <a data-original-title="<?php echo __('Service required to send push notifications to your browser window.'); ?>"
+                               data-placement="right"
+                               rel="tooltip" class="text-info" href="javascript:void(0);"><i
+                                        class="fa fa-info-circle"></i></a>
+                        </dd>
+
+                        <dt><?php echo __('NodeJS Server'); ?>:</dt>
+                        <dd>
+                    <span ng-show="processInformation.backgroundProcesses.isNodeJsServerRunning"
+                          class="ok"><i class="fa fa-check"></i><?php echo __('Running'); ?></span>
+                            <span ng-hide="processInformation.backgroundProcesses.isNodeJsServerRunning"
+                                  class="critical"><i
+                                        class="fa fa-close"></i><?php echo __('Not running!'); ?></span>
+
+                            <a data-original-title="<?php echo __('Service required to run server side JavaScript to render charts to email notifications and PDF reports.'); ?>"
+                               data-placement="right"
+                               rel="tooltip" class="text-info" href="javascript:void(0);"><i
+                                        class="fa fa-info-circle"></i></a>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
         </div>
-
     </div>
+
 </div>
 
 
-<div class="jarviswidget jarviswidget-sortable" data-widget-deletebutton="false"  data-widget-colorbutton="false"
-      data-widget-fullscreenbutton="true"  data-widget-editbutton="true"  data-widget-togglebutton="false"
-      style="position: relative; opacity: 1; left: 0px; top: 0px;"  role="widget">
+<div class="jarviswidget">
     <header>
         <span class="widget-icon"> <i class="fa fa-hdd-o"></i></span>
         <h2><?php echo __('Server information'); ?></h2>
     </header>
-    <!-- widget div-->
     <div>
-        <!-- end widget edit box -->
         <div class="widget-body padding-10">
             <dl class="dl-horizontal">
                 <dt><?php echo __('Address'); ?>:</dt>
-                <dd><?php echo h($_SERVER['SERVER_ADDR']); ?></dd>
+                <dd>{{serverInformation.address}}</dd>
+
                 <dt><?php echo __('Webserver'); ?>:</dt>
-                <dd><?php echo h($_SERVER['SERVER_SOFTWARE']); ?></dd>
-                <dt><?php echo __('TLS'); ?>:</dt>
-                <dd><?php echo h($_SERVER['HTTPS']); ?></dd>
+                <dd>{{serverInformation.webserver}}</dd>
+
+                <dt><?php echo __('HTTPS / TLS'); ?>:</dt>
+                <dd>{{serverInformation.tls}}</dd>
+
                 <dt><?php echo __('OS'); ?>:</dt>
-                <dd><?php echo h($osVersion); ?></dd>
+                <dd>{{serverInformation.os_version}}</dd>
+
                 <dt><?php echo __('Kernel'); ?>:</dt>
-                <dd><?php echo h(php_uname('r')); ?></dd>
+                <dd>{{serverInformation.kernel}}</dd>
+
                 <dt><?php echo __('Architecture'); ?>:</dt>
-                <dd><?php echo h(php_uname('m')); ?></dd>
+                <dd>{{serverInformation.architecture}}</dd>
+
                 <dt><?php echo __('PHP version'); ?>:</dt>
-                <dd><?php echo h(PHP_VERSION); ?></dd>
+                <dd>{{serverInformation.php_version}}</dd>
+
                 <dt><?php echo __('PHP Memory limit'); ?>:</dt>
-                <dd><?php echo h(str_replace("M", "", get_cfg_var("memory_limit"))); ?>MB</dd>
+                <dd>{{serverInformation.php_memory_limit}}</dd>
+
                 <dt><?php echo __('PHP Max. execution time'); ?>:</dt>
-                <dd><?php echo h(ini_get("max_execution_time")); ?>s</dd>
-                <dt><?php echo __('PHP Libraries'); ?>:</dt>
-                <dd><?php echo implode(', ', get_loaded_extensions()); ?></dd>
+                <dd>{{serverInformation.php_max_execution_time}}</dd>
+
+                <dt><?php echo __('PHP loaded extensions'); ?>:</dt>
+                <dd>{{serverInformation.php_extensions.join(', ')}}</dd>
+
+                <dt><?php echo __('CPU model'); ?>:</dt>
+                <dd>{{serverInformation.cpu_processor}}</dd>
+
+                <dt><?php echo __('Number of CPU cores'); ?>:</dt>
+                <dd>{{serverInformation.cpu_cores}}</dd>
             </dl>
+        </div>
+    </div>
+</div>
 
-            <b><?php echo __('Load average'); ?>:</b>
-            <br/>
-            <?php if (empty($load)): ?>
-                <div class="well text-danger">
-                    <i class="fa fa-warning"></i> <?php echo __('Could not fetch load average information'); ?>
+<div class="jarviswidget">
+    <header>
+        <span class="widget-icon"> <i class="fa fa-bar-chart"></i></span>
+        <h2><?php echo __('CPU load'); ?></h2>
+
+        <div class="widget-toolbar" role="menu">
+            <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                <i class="fa fa-refresh"></i>
+                <?php echo __('Refresh'); ?>
+            </button>
+        </div>
+
+        <div class="widget-toolbar form-group smart-form" role="menu">
+            <label class="checkbox small-checkbox-label display-inline margin-right-5">
+                <input type="checkbox" name="checkbox" checked="checked"
+                       ng-model="graph.keepHistory">
+                <i class="checkbox-primary"></i>
+                <?php echo __('Keep history'); ?>
+            </label>
+        </div>
+
+        <div class="widget-toolbar">
+            <?php echo __('Current load:'); ?> {{currentCpuLoad['1']}}, {{currentCpuLoad['5']}},
+            {{currentCpuLoad['15']}}
+        </div>
+
+    </header>
+    <div>
+        <div class="widget-body padding-10">
+
+            <div class="well" ng-show="!renderGraph">
+                {{currentCpuLoad['1']}}, {{currentCpuLoad['5']}}, {{currentCpuLoad['15']}}
+            </div>
+            <div ng-show="renderGraph">
+                <div class="graph_legend">
+                    <table style="font-size: 11px; color:#545454">
+                        <tbody>
+                        <tr>
+                            <td class="legendColorBox">
+                                <div style="">
+                                    <div style="border:2px solid #6595B4;overflow:hidden"></div>
+                                </div>
+                            </td>
+                            <td class="legendLabel">
+                                <span><?php echo __('1 Minute'); ?></span>
+                            </td>
+                            <td class="legendColorBox">
+                                <div style="">
+                                    <div style="border:2px solid #7E9D3A;overflow:hidden"></div>
+                                </div>
+                            </td>
+                            <td class="legendLabel">
+                                <span><?php echo __('5 Minutes'); ?></span>
+                            </td>
+                            <td class="legendColorBox">
+                                <div style="">
+                                    <div style="border:2px solid #E24913;overflow:hidden"></div>
+                                </div>
+                            </td>
+                            <td class="legendLabel">
+                                <span><?php echo __('15 Minutes'); ?></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
-            <?php else: ?>
-                <div class="well">
-                    <div class="graph_legend" style="display:none;">
-                        <table style="font-size: 11px; color:#545454">
-                            <tbody>
-                            <tr>
-                                <td class="legendColorBox">
-                                    <div style="">
-                                        <div style="border:2px solid #6595B4;overflow:hidden"></div>
-                                    </div>
-                                </td>
-                                <td class="legendLabel">
-                                    <span><?php echo __('1 Minute'); ?></span>
-                                </td>
-                                <td class="legendColorBox">
-                                    <div style="">
-                                        <div style="border:2px solid #7E9D3A;overflow:hidden"></div>
-                                    </div>
-                                </td>
-                                <td class="legendLabel">
-                                    <span><?php echo __('5 Minutes'); ?></span>
-                                </td>
-                                <td class="legendColorBox">
-                                    <div style="">
-                                        <div style="border:2px solid #E24913;overflow:hidden"></div>
-                                    </div>
-                                </td>
-                                <td class="legendLabel">
-                                    <span><?php echo __('15 Minutes'); ?></span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="loadGraph">
-                        <?php echo $load[0]; ?>, <?php echo $load[1]; ?>, <?php echo $load[2]; ?>
-                    </div>
-                </div>
-            <?php endif; ?>
-            <br/>
 
-            <b><?php echo __('Memory usage'); ?>:</b>
-            <?php if (empty($memory)): ?>
-                <div class="well text-danger">
-                    <i class="fa fa-warning"></i> <?php echo __('Could not fetch memory information'); ?>
-                </div>
-            <?php else: ?>
-                <?php if (isset($memory['Memory'])): ?>
-                    <div class="well">
-                        <?php echo __('Total'); ?>: <?php echo $memory['Memory']['total']; ?>M,
-                        <span class="txt-color-green"><?php echo __('used'); ?>
-                            : <?php echo $memory['Memory']['used']; ?>M, </span>
-                        <span class="txt-color-orange"><?php echo __('cached'); ?>
-                            : <?php echo $memory['Memory']['cached']; ?>M,</span>
-                        <span class="txt-color-blue"><?php echo __('buffers'); ?>
-                            : <?php echo $memory['Memory']['buffers']; ?>M</span>
-
-                        <div class="progress" style="margin-bottom: 0px;">
-                            <div style="width: <?php echo (int)($memory['Memory']['used'] / $memory['Memory']['total'] * 100); ?>%; position: unset;"
-                                 class="progress-bar bg-color-green"></div>
-                            <div style="width: <?php echo (int)($memory['Memory']['cached'] / $memory['Memory']['total'] * 100); ?>%; position: unset;"
-                                 class="progress-bar bg-color-orange"></div>
-                            <div style="width: <?php echo (int)($memory['Memory']['buffers'] / $memory['Memory']['total'] * 100); ?>%; position: unset;"
-                                 class="progress-bar bg-color-blue"></div>
-
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (isset($memory['Swap'])): ?>
-                    <br/>
-                    <b><?php echo __('Swap usage'); ?>:</b>
-                    <br/>
-                    <div class="well">
-                        <?php echo __('Total'); ?>: <?php echo $memory['Swap']['total']; ?>M,
-                        <?php echo __('used'); ?>: <?php echo $memory['Swap']['used']; ?>M
-                        <?php echo $this->Html->progressbar($memory['Swap']['used'], [
-                            'unit'               => '',
-                            'min'                => 0,
-                            'max'                => $memory['Swap']['total'],
-                            'display_as_percent' => true,
-                            'thresholds'         => [
-                                1 => [
-                                    'value'   => 5,
-                                    'bgColor' => 'bg-color-orange',
-                                ],
-                                2 => [
-                                    'value'   => 10,
-                                    'bgColor' => 'bg-color-red',
-                                ],
-                            ],
-                        ]); ?>
-                    </div>
-                <?php endif; ?>
-            <?php endif; ?>
-
-            <br/>
-            <b><?php echo __('Disk usage'); ?>:</b>
-            <?php if (empty($disks)): ?>
-                <div class="well text-danger">
-                    <i class="fa fa-warning"></i> <?php echo __('Could not fetch disk information'); ?>
-                </div>
-            <?php else: ?>
-                <?php foreach ($disks as $disk): ?>
-                    <div class="well">
-                        <b><?php echo $disk['disk']; ?></b> (<?php echo __('size'); ?>: <?php echo $disk['size']; ?>
-                        , <?php echo __('available'); ?>: <?php echo $disk['avail']; ?>
-                        , <?php echo __('mount point'); ?>: <?php echo $disk['mountpoint']; ?>)
-                        <?php echo $this->Html->progressbar($disk['use%']); ?>
-                    </div>
-                    <br/>
-                <?php endforeach; ?>
-            <?php endif; ?>
-            <br/>
-            <b><?php echo __('Queuing engine'); ?>:</b>
-            <?php if ($gearmanReachable && !empty($gearmanStatus)): ?>
-                <div class="well">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col col-xs-12 col-md-12 col-lg-3 bold"><?php echo __('Queue name'); ?></div>
-                            <div class="col col-xs-12 col-md-12 col-lg-3 bold text-center"><?php echo __('Jobs waiting'); ?></div>
-                            <div class="col col-xs-12 col-md-12 col-lg-3 bold text-center"><?php echo __('Active jobs'); ?></div>
-                            <div class="col col-xs-12 col-md-12 col-lg-3 bold text-center"><?php echo __('Worker available'); ?></div>
-                            <?php foreach ($gearmanStatus as $queueName => $queueStatus): ?>
-                                <?php
-                                $class = 'txt-color-green';
-                                if ($queueStatus['jobs'] > 5):
-                                    $class = 'text-primary';
-                                endif;
-                                if ($queueStatus['jobs'] > 50):
-                                    $class = 'txt-color-orangeDark';
-                                endif;
-                                if ($queueStatus['jobs'] > 500):
-                                    $class = 'txt-color-white bg-color-red';
-                                endif;
-                                if ($queueStatus['worker'] == 0):
-                                    $class = 'txt-color-white bg-color-orangeDark';
-                                endif;
-                                ?>
-                                <div class="col col-xs-12 col-md-12 col-lg-3 <?php echo $class; ?>"><?php echo h($queueName); ?></div>
-                                <div class="col col-xs-12 col-md-12 col-lg-3 text-center <?php echo $class; ?>"><?php echo h($queueStatus['jobs']); ?></div>
-                                <div class="col col-xs-12 col-md-12 col-lg-3 text-center <?php echo $class; ?>"><?php echo h($queueStatus['running']); ?></div>
-                                <div class="col col-xs-12 col-md-12 col-lg-3 text-center <?php echo $class; ?>"><?php echo h($queueStatus['worker']); ?></div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </div>
-            <?php else: ?>
-                <h2 class="text-danger"><?php echo __('Error: Queuing engine not running!'); ?></h2>
-            <?php endif; ?>
+                <div id="graph_data_tooltip"></div>
+                <div id="graphCanvas" style="height: 300px;"></div>
+            </div>
         </div>
 
     </div>
 </div>
 
-<div class="jarviswidget jarviswidget-sortable" data-widget-deletebutton="false"  data-widget-colorbutton="false"
-      data-widget-fullscreenbutton="true"  data-widget-editbutton="true"  data-widget-togglebutton="false"
-      style="position: relative; opacity: 1; left: 0px; top: 0px;"  role="widget">
+<div class="jarviswidget">
+    <header>
+        <span class="widget-icon"> <i class="fa fa-pie-chart"></i></span>
+        <h2><?php echo __('Memory and disk usage'); ?></h2>
+
+        <div class="widget-toolbar" role="menu">
+            <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                <i class="fa fa-refresh"></i>
+                <?php echo __('Refresh'); ?>
+            </button>
+        </div>
+
+    </header>
+    <div>
+        <div class="widget-body padding-10">
+            <b><?php echo __('Memory usage'); ?>:</b>
+            <div class="well">
+                <?php echo __('Total:'); ?> {{memory.memory.total}}
+
+                <span class="txt-color-green"><?php echo __('Used:'); ?>
+                    {{memory.memory.used}}MB
+                </span>
+
+                <span class="txt-color-orange"><?php echo __('Cached:'); ?>
+                    {{memory.memory.cached}}MB
+                </span>
+
+                <span class="txt-color-blue"><?php echo __('Buffers:'); ?>
+                    {{memory.memory.buffers}}MB
+                </span>
+
+                <div class="progress" style="margin-bottom: 0px;">
+                    <div style="width: {{(memory.memory.used / memory.memory.total) * 100 }}%; position: unset;"
+                         class="progress-bar bg-ok">
+                        <span ng-show="memory.memory.used > 50">{{memory.memory.used}}MB</span>
+                    </div>
+                    <div style="width: {{(memory.memory.cached / memory.memory.total) * 100 }}%; position: unset;"
+                         class="progress-bar bg-warning">
+                        <span ng-show="memory.memory.cached > 10">{{memory.memory.cached}}MB</span>
+                    </div>
+                    <div style="width: {{(memory.memory.buffers / memory.memory.total) * 100 }}%; position: unset;"
+                         class="progress-bar bg-downtime">
+                        <span ng-show="memory.memory.buffers > 10">{{memory.memory.buffers}}MB</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <br/>
+            <b><?php echo __('Swap usage'); ?>:</b>
+            <div class="well">
+                <?php echo __('Total:'); ?> {{memory.swap.total}}
+
+                <span class="txt-color-red"><?php echo __('Used:'); ?>
+                    {{memory.swap.used}}MB
+                </span>
+
+
+                <div class="progress" style="margin-bottom: 0px;">
+                    <div style="width: {{(memory.swap.used / memory.swap.total) * 100 }}%; position: unset;"
+                         class="progress-bar bg-critical">
+                        <span ng-show="memory.swap.used > 50">{{memory.swap.used}}MB</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <br/>
+            <b><?php echo __('Disk usage'); ?>:</b>
+
+            <div class="well" ng-repeat="disk in diskUsage">
+                <b>{{disk.disk}}</b>
+                (
+                <?php echo __('Size'); ?>: {{disk.size}}
+                <?php echo __('Available'); ?>: {{disk.avail}}
+                <?php echo __('Mount point'); ?>: {{disk.mountpoint}}
+                )
+
+
+                <div class="progress" style="margin-bottom: 0px;">
+                    <div style="width: {{disk.use_percentage}}%; position: unset;"
+                         class="progress-bar bg-downtime">
+                        <span ng-show="disk.use_percentage > 5">{{disk.use_percentage}}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="jarviswidget">
+    <header>
+        <span class="widget-icon"> <i class="fa fa-list-ol"></i></span>
+        <h2><?php echo __('Queuing engine'); ?></h2>
+
+        <div class="widget-toolbar" role="menu">
+            <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                <i class="fa fa-refresh"></i>
+                <?php echo __('Refresh'); ?>
+            </button>
+        </div>
+
+    </header>
+    <div>
+        <div class="widget-body padding-10">
+            <table class="table table-striped table-hover table-bordered smart-form" style="">
+                <thead>
+                <tr>
+                    <th class="no-sort">
+                        <?php echo __('Queue name'); ?>
+                    </th>
+                    <th class="no-sort">
+                        <?php echo __('Jobs waiting'); ?>
+                    </th>
+                    <th class="no-sort">
+                        <?php echo __('Active jobs'); ?>
+                    </th>
+                    <th class="no-sort">
+                        <?php echo __('Worker available'); ?>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="(queueName, queue) in gearmanStatus"
+                    class="{{getGearmanStatusClass(queue.jobs, queue.worker)}}">
+                    <td>{{queueName}}</td>
+                    <td>
+                        {{queue.jobs}}
+                        <span id="{{queueName}}_sparkline"></span>
+                    </td>
+                    <td>{{queue.running}}</td>
+                    <td>{{queue.worker}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="jarviswidget">
     <header>
         <span class="widget-icon"> <i class="fa fa-envelope"></i></span>
         <h2><?php echo __('Email configuration'); ?></h2>
     </header>
-    <!-- widget div-->
     <div>
-        <!-- end widget edit box -->
         <div class="widget-body padding-10">
             <dl class="dl-horizontal">
                 <dt><?php echo __('Mail server address'); ?>:</dt>
-                <dd><?php echo h($mailConfig['host']); ?></dd>
+                <dd>{{emailInformation.host}}</dd>
 
                 <dt><?php echo __('Mail server port'); ?>:</dt>
-                <dd><?php echo h($mailConfig['port']); ?></dd>
+                <dd>{{emailInformation.port}}</dd>
 
                 <dt><?php echo __('Transport protocol'); ?>:</dt>
-                <dd><?php echo h($mailConfig['transport']); ?></dd>
+                <dd>{{emailInformation.transport}}</dd>
 
                 <dt><?php echo __('Username'); ?>:</dt>
-                <dd><?php echo h($mailConfig['username']); ?></dd>
+                <dd>{{emailInformation.username}}</dd>
 
                 <dt><?php echo __('Password'); ?>:</dt>
                 <dd>
@@ -470,11 +605,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
                 <dt>&nbsp;</dt>
                 <dd>
-                    <form accept-charset="utf-8" method="post" class="form-horizontal clear" novalidate="novalidate"
-                          action="/Administrators/testMail">
-                        <input type="submit" value="<?php echo __('Send test Email to %s', h($recipientAddress)); ?>"
-                               class="btn btn-xs btn-default">
-                    </form>
+                    <button class="btn btn-xs btn-default" ng-click="sendTestMail()">
+                        <?php echo __('Send test Email to'); ?> {{emailInformation.test_mail_address}}
+                    </button>
                 </dd>
             </dl>
         </div>
@@ -483,73 +616,24 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
     </div>
 </div>
 
-<div class="jarviswidget jarviswidget-sortable" data-widget-deletebutton="false"  data-widget-colorbutton="false"
-      data-widget-fullscreenbutton="true"  data-widget-editbutton="true"  data-widget-togglebutton="false"
-      style="position: relative; opacity: 1; left: 0px; top: 0px;"  role="widget">
+<div class="jarviswidget">
     <header>
-        <span class="widget-icon"> <i class="fa fa-user"></i></span>
-        <h2><?php echo __('User information'); ?></h2>
+        <span class="widget-icon"> <i class="fa fa-desktop"></i></span>
+        <h2><?php echo __('Client information'); ?></h2>
     </header>
-    <!-- widget div-->
     <div>
-        <!-- end widget edit box -->
-
-        <?php
-        $agent = $_SERVER['HTTP_USER_AGENT'];
-        $os = "unknown";
-        if (strstr($agent, "Windows 98")) $os = "Windows 98";
-        else if (strstr($agent, "NT 4.0")) $os = "Windows NT ";
-        else if (strstr($agent, "NT 5.1")) $os = "Windows XP";
-        else if (strstr($agent, "NT 6.0")) $os = "Windows Vista";
-        else if (strstr($agent, "NT 6.1")) $os = "Windows 7";
-        else if (strstr($agent, "NT 6.2")) $os = "Windows 8";
-        else if (strstr($agent, "NT 6.3")) $os = "Windows 8.1";
-        else if (strstr($agent, "NT 6.4")) $os = "Windows 10";
-        else if (strstr($agent, "Win")) $os = "Windows";
-        //Firefox
-        else if (strstr($agent, "Mac OS X 10.5")) $os = "Mac OS X - Leopard";
-        else if (strstr($agent, "Mac OS X 10.6")) $os = "Mac OS X - Snow Leopard";
-        else if (strstr($agent, "Mac OS X 10.7")) $os = "Mac OS X - Lion";
-        else if (strstr($agent, "Mac OS X 10.8")) $os = "Mac OS X - Mountain Lion";
-        else if (strstr($agent, "Mac OS X 10.9")) $os = "Mac OS X - Mavericks";
-        else if (strstr($agent, "Mac OS X 10.10")) $os = "Mac OS X - Yosemite";
-        else if (strstr($agent, "Mac OS X 10.11")) $os = "Mac OS X - El Capitan";
-
-        else if (strstr($agent, "Mac OS X 10.12")) $os = "macOS Sierra";
-        else if (strstr($agent, "Mac OS X 10.13")) $os = "macOS High Sierra";
-        else if (strstr($agent, "Mac OS X 10.14")) $os = "macOS Mojave";
-
-        //Chrome
-        else if (strstr($agent, "Mac OS X 10_5")) $os = "Mac OS X - Leopard";
-        else if (strstr($agent, "Mac OS X 10_6")) $os = "Mac OS X - Snow Leopard";
-        else if (strstr($agent, "Mac OS X 10_7")) $os = "Mac OS X - Lion";
-        else if (strstr($agent, "Mac OS X 10_8")) $os = "Mac OS X - Mountain Lion";
-        else if (strstr($agent, "Mac OS X 10_9")) $os = "Mac OS X - Mavericks";
-        else if (strstr($agent, "Mac OS X 10_10")) $os = "Mac OS X - Yosemite";
-        else if (strstr($agent, "Mac OS X 10_11")) $os = "Mac OS X - El Capitan";
-
-        else if (strstr($agent, "Mac OS X 10_12")) $os = "macOS Sierra";
-        else if (strstr($agent, "Mac OS X 10_13")) $os = "macOS High Sierra";
-        else if (strstr($agent, "Mac OS X 10_14")) $os = "macOS Mojave";
-
-        else if (strstr($agent, "Mac OS")) $os = "Mac OS X";
-        else if (strstr($agent, "Linux")) $os = "Linux";
-        else if (strstr($agent, "Unix")) $os = "Unix";
-        else if (strstr($agent, "Ubuntu")) $os = "Ubuntu";
-        ?>
-
         <div class="widget-body padding-10">
             <dl class="dl-horizontal">
-                <dt><?php echo __('Your OS'); ?>:</dt>
-                <dd><?php echo h($os); ?></dd>
-                <dt><?php echo __('Your browser'); ?>:</dt>
-                <dd><?php echo h($_SERVER['HTTP_USER_AGENT']); ?></dd>
-                <dt><?php echo __('Your Address'); ?>:</dt>
-                <dd><?php echo h($_SERVER['REMOTE_ADDR']); ?></dd>
+                <dt><?php echo __('Client OS'); ?>:</dt>
+                <dd>{{userInformation.user_os}}</dd>
+
+                <dt><?php echo __('Client browser'); ?>:</dt>
+                <dd>{{userInformation.user_agent}}</dd>
+
+                <dt><?php echo __('Client IP address'); ?>:</dt>
+                <dd>{{userInformation.user_remote_address}}</dd>
             </dl>
-
         </div>
-
     </div>
 </div>
 

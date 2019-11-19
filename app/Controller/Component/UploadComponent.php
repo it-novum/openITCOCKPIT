@@ -25,7 +25,6 @@
 
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
-App::uses('UUID', 'Lib');
 
 class UploadComponent extends Component {
 
@@ -40,9 +39,9 @@ class UploadComponent extends Component {
     public function uploadUserimage($fileFromUpload) {
         if (is_dir($this->path)) {
             $fileExtension = pathinfo($fileFromUpload['name'], PATHINFO_EXTENSION);
-            $tmpName = $newFilename = UUID::v4();
+            $tmpName = $newFilename = \itnovum\openITCOCKPIT\Core\UUID::v4();
             if (move_uploaded_file($fileFromUpload['tmp_name'], $this->path . $tmpName)) {
-                $newFilename = UUID::v4() . '.png';
+                $newFilename = \itnovum\openITCOCKPIT\Core\UUID::v4() . '.png';
                 if ($this->createUserImage($tmpName, $newFilename)) {
                     return $newFilename;
                 }

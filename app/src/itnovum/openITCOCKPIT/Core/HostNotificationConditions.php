@@ -32,7 +32,7 @@ class HostNotificationConditions extends ListSettingsConditions {
      * @var array
      */
     protected $order = [
-        'NotificationHost.start_time' => 'DESC'
+        'NotificationHosts.start_time' => 'DESC'
     ];
 
     /**
@@ -77,7 +77,7 @@ class HostNotificationConditions extends ListSettingsConditions {
      * @param HostStates $HostStates
      */
     public function setStates(HostStates $HostStates) {
-        if (sizeof($HostStates->asIntegerArray()) == 4) {
+        if (sizeof($HostStates->asIntegerArray()) == 3) {
             $this->states = [];
             return;
         }

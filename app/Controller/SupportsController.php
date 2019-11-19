@@ -22,24 +22,26 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+use Cake\ORM\TableRegistry;
+
 class SupportsController extends AppController {
 
-    public $layout = 'Admin.default';
-
-    public $uses = [
-        'Register'
-    ];
+    public $layout = 'blank';
 
     public function index() {
 
     }
 
     public function issue() {
+        $Registers = TableRegistry::getTableLocator()->get('Registers');
+        $License = $Registers->getLicense();
 
-        $hasLicense = $this->Register->find('count');
+        $hasLicense = false;
+        if(!empty($License)){
+            $hasLicense = true;
+        }
 
         $this->set('hasLicense', $hasLicense);
-
     }
 
 }

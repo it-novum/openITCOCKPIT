@@ -23,46 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Hoststatus;
-use itnovum\openITCOCKPIT\Core\Views\Host;
-
-//Flapping Workaround while the status date is not loaded via Angular
-echo $this->Html->script('lib/FlappingWorkaround.js');
-
-
-$Host = new Host($host);
-if (!isset($hoststatus['Hoststatus'])):
-    $hoststatus['Hoststatus'] = [];
-endif;
-$Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 ?>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="status_headline <?php echo $Hoststatus->HostStatusColor(); ?>">
-            <?php echo $Hoststatus->getHostFlappingIconColored(); ?>
-            <i class="fa fa-desktop fa-fw"></i>
-            <?php echo h($Host->getHostname()) ?>
-            <span>
-                (<?php echo h($Host->getAddress()) ?>)
-            </span>
-        </h1>
-    </div>
-    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
-        <h5>
-            <div class="pull-right">
-                <a href="<?php echo Router::url([
-                    'controller' => 'hosts',
-                    'action'     => 'browser',
-                    $Host->getId()
-                ]); ?>" class="btn btn-primary btn-sm">
-                    <i class="fa fa-arrow-circle-left"></i>
-                    <?php echo $this->Html->underline('b', __('Back to Host')); ?>
-                </a>
-                <?php echo $this->element('host_browser_menu'); ?>
-            </div>
-        </h5>
-    </div>
-</div>
+<host-browser-menu
+        ng-if="hostBrowserMenuConfig"
+        config="hostBrowserMenuConfig"
+        last-load-date="0"></host-browser-menu>
 
 <section id="widget-grid" class="">
 
@@ -112,7 +77,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by output'); ?>"
-                                                   ng-model="filter.StatehistoryHost.output"
+                                                   ng-model="filter.StatehistoryHosts.output"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -139,7 +104,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.StatehistoryHost.state.recovery"
+                                                       ng-model="filter.StatehistoryHosts.state.recovery"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-success"></i>
                                                 <?php echo __('Up'); ?>
@@ -147,7 +112,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.StatehistoryHost.state.down"
+                                                       ng-model="filter.StatehistoryHosts.state.down"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-danger"></i>
                                                 <?php echo __('Down'); ?>
@@ -155,7 +120,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.StatehistoryHost.state.unreachable"
+                                                       ng-model="filter.StatehistoryHosts.state.unreachable"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-default"></i>
                                                 <?php echo __('Unreachable'); ?>
@@ -170,7 +135,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.StatehistoryHost.state_types.soft"
+                                                       ng-model="filter.StatehistoryHosts.state_types.soft"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Soft'); ?>
@@ -178,7 +143,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.StatehistoryHost.state_types.hard"
+                                                       ng-model="filter.StatehistoryHosts.state_types.hard"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Hard'); ?>
@@ -206,24 +171,24 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                class="table table-striped table-hover table-bordered smart-form">
                             <thead>
                             <tr>
-                                <th class="no-sort" ng-click="orderBy('StatehistoryHost.state')">
-                                    <i class="fa" ng-class="getSortClass('StatehistoryHost.state')"></i>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryHosts.state')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryHosts.state')"></i>
                                     <?php echo __('State'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('StatehistoryHost.state_time')">
-                                    <i class="fa" ng-class="getSortClass('StatehistoryHost.state_time')"></i>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryHosts.state_time')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryHosts.state_time')"></i>
                                     <?php echo __('Date'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('StatehistoryHost.current_check_attempt')">
-                                    <i class="fa" ng-class="getSortClass('StatehistoryHost.current_check_attempt')"></i>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryHosts.current_check_attempt')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryHosts.current_check_attempt')"></i>
                                     <?php echo __('Check attempt'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('StatehistoryHost.state_type')">
-                                    <i class="fa" ng-class="getSortClass('StatehistoryHost.state_type')"></i>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryHosts.state_type')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryHosts.state_type')"></i>
                                     <?php echo __('State type'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('StatehistoryHost.output')">
-                                    <i class="fa" ng-class="getSortClass('StatehistoryHost.output')"></i>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryHosts.output')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryHosts.output')"></i>
                                     <?php echo __('Host output'); ?>
                                 </th>
                             </tr>

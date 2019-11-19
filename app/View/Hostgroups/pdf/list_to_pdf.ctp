@@ -23,9 +23,15 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 $Logo = new Logo();
+
+/** @var \itnovum\openITCOCKPIT\Core\ValueObjects\User $User */
+
+$UserTime = $User->getUserTime();
+
 ?>
 <head>
 
@@ -67,12 +73,12 @@ $Logo = new Logo();
     </div>
     <div class="row padding-left-10 margin-top-10 font-sm">
         <div class="text-left padding-left-10">
-            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hostgroups: ' . $hostgroupCount); ?>
+            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hostgroups: ' . $numberOfHostgroups); ?>
         </div>
     </div>
     <div class="row padding-left-10 margin-top-10 font-sm">
         <div class="text-left padding-left-10">
-            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: ' . $hostgroupHostCount); ?>
+            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: ' . $numberOfHosts); ?>
         </div>
     </div>
     <div class="padding-top-10">
@@ -89,23 +95,26 @@ $Logo = new Logo();
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($hostgroups as $k => $hostgroup): ?>
+            <?php foreach ($hostgroups as $hostgroup): ?>
                 <!-- Hostgroup -->
                 <tr>
                     <td class="bg-color-lightGray" colspan="8">
-                        <span class="font-md"><?php echo $hostgroup['Container']['name']; ?></span>
+                        <span class="font-md"><?php echo h($hostgroup['Hostgroup']['Containers']['name']); ?></span>
                     </td>
                 </tr>
-                <?php if (!empty($hostgroup['Host'])): ?>
-                    <?php foreach ($hostgroup['Host'] as $key => $host): ?>
+                <?php if (!empty($hostgroup['Hosts'])): ?>
+                    <?php foreach ($hostgroup['Hosts'] as $host): ?>
                         <?php
-                        if (isset($hostgroup['all_hoststatus'][$host['uuid']]['Hoststatus'])):
+                        if (isset($hostgroup['Hoststatus'][$host['Host']['uuid']]['Hoststatus'])):
                             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(
-                                $hostgroup['all_hoststatus'][$host['uuid']]['Hoststatus']
+                                $hostgroup['Hoststatus'][$host['Host']['uuid']]['Hoststatus']
                             );
                         else:
                             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
                         endif;
+
+                        $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
+                        $HoststatusIcon->getTextColor()
                         ?>
 
                         <tr>
@@ -113,9 +122,9 @@ $Logo = new Logo();
                             <td class="text-center font-lg">
                                 <?php
                                 if ($Hoststatus->isFlapping()):
-                                    echo $this->Monitoring->hostFlappingIconColored(1, '', $Hoststatus->currentState());
+                                    $Hoststatus->getFlappingIconColored();
                                 else:
-                                    echo '<i class="fa fa-square ' . $this->Status->HostStatusTextColor($Hoststatus->currentState()) . '"></i>';
+                                    echo '<i class="fa fa-square ' . $HoststatusIcon->getTextColor() . '"></i>';
                                 endif;
                                 ?>
                             </td>
@@ -132,17 +141,17 @@ $Logo = new Logo();
                                 <?php endif; ?>
                             </td>
                             <!-- Host -->
-                            <td class="font-xs"><?php echo h($host['name']); ?></td>
+                            <td class="font-xs"><?php echo h($host['Host']['name']); ?></td>
                             <!-- status since -->
                             <td class="font-xs">
-                                <?php echo h($this->Utils->secondsInHumanShort(time() - $Hoststatus->getLastStateChange())); ?>
+                                <?php echo $UserTime->format($Hoststatus->getLastStateChange()); ?>
                             </td>
                             <!-- last check -->
                             <td class="font-xs">
-                                <?php echo $this->Time->format($Hoststatus->getLastCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?>
+                                <?php echo $UserTime->format($Hoststatus->getLastCheck()); ?>
                             </td>
                             <!-- next check -->
-                            <td class="font-xs"><?php echo $this->Time->format($Hoststatus->getNextCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?>
+                            <td class="font-xs"><?php echo $UserTime->format($Hoststatus->getNextCheck()); ?>
                             </td>
                         </tr>
 
@@ -150,7 +159,7 @@ $Logo = new Logo();
                 <?php else: ?>
                     <tr>
                         <td class="text-center font-xs"
-                            colspan="8"><?php echo __('This Hostgroup has no Hosts'); ?></td>
+                            colspan="8"><?php echo __('This host group has no hosts'); ?></td>
                     </tr>
                 <?php endif; ?>
             <?php endforeach; ?>

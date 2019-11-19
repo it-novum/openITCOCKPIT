@@ -22,12 +22,6 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
-/**
- * @property \itnovum\openITCOCKPIT\Monitoring\QueryHandler $QueryHandler
- */
-
-$this->Paginator->options(['url' => $this->params['named']]);
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -41,9 +35,9 @@ $this->Paginator->options(['url' => $this->params['named']]);
     </div>
 </div>
 
+
 <?php echo $this->Flash->render('positive'); ?>
 
-<div id="error_msg"></div>
 
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
     <a href="#" data-dismiss="alert" class="close">×</a>
@@ -51,17 +45,15 @@ $this->Paginator->options(['url' => $this->params['named']]);
     <?php echo __('Page refresh in'); ?> <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
 </div>
 
-<?php if (!$QueryHandler->exists()): ?>
-    <div class="alert alert-danger alert-block">
-        <a href="#" data-dismiss="alert" class="close">×</a>
-        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
-        </h4>
-        <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
-    </div>
-<?php endif; ?>
+<query-handler-directive></query-handler-directive>
 
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
+
+<?php if ($this->Acl->hasPermission('add', 'hostgroups')): ?>
+    <add-hosts-to-hostgroup></add-hosts-to-hostgroup>
+<?php endif; ?>
+
 
 <section id="widget-grid" class="">
 
@@ -76,7 +68,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                         </button>
 
                         <?php if ($this->Acl->hasPermission('add', 'hosts')): ?>
-                            <a href="/hosts/add" class="btn btn-xs btn-success">
+                            <a ui-sref="HostsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
@@ -97,27 +89,27 @@ $this->Paginator->options(['url' => $this->params['named']]);
                     <h2 class="hidden-mobile"><?php echo __('Hosts'); ?></h2>
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <li class="active">
-                            <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'index'], $this->params['named'])); ?>"><i
+                            <a ui-sref="HostsIndex"><i
                                         class="fa fa-stethoscope"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span> </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('notMonitored', 'hosts')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'notMonitored'], $this->params['named'])); ?>"><i
+                                <a ui-sref="HostsNotMonitored"><i
                                             class="fa fa-user-md"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('disabled', 'hosts')): ?>
                             <li>
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'disabled'], $this->params['named'])); ?>"><i
+                                <a ui-sref="HostsDisabled"><i
                                             class="fa fa-power-off"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('index', 'DeletedHosts')): ?>
                             <li>
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'deleted_hosts', 'action' => 'index'], $this->params['named'])); ?>"><i
+                                <a ui-sref="DeletedHostsIndex"><i
                                             class="fa fa-trash-o"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
                             </li>
@@ -337,10 +329,6 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     </th>
 
                                     <th class="no-sort text-center">
-                                        <i class="fa fa fa-area-chart fa-lg" title="<?php echo __('Grapher'); ?>"></i>
-                                    </th>
-
-                                    <th class="no-sort text-center">
                                         <i title="<?php echo __('Shared'); ?>" class="fa fa-sitemap fa-lg"></i>
                                     </th>
 
@@ -348,13 +336,13 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <strong title="<?php echo __('Passively transferred host'); ?>">P</strong>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Host.name')">
-                                        <i class="fa" ng-class="getSortClass('Host.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Hosts.name')">
+                                        <i class="fa" ng-class="getSortClass('Hosts.name')"></i>
                                         <?php echo __('Host name'); ?>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Host.address')">
-                                        <i class="fa" ng-class="getSortClass('Host.address')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Hosts.address')">
+                                        <i class="fa" ng-class="getSortClass('Hosts.address')"></i>
                                         <?php echo __('IP address'); ?>
                                     </th>
 
@@ -374,8 +362,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <?php echo __('Host output'); ?>
                                     </th>
 
-                                    <th class="no-sort" ng-click="orderBy('Host.satellite_id')">
-                                        <i class="fa" ng-class="getSortClass('Host.satellite_id')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Hosts.satellite_id')">
+                                        <i class="fa" ng-class="getSortClass('Hosts.satellite_id')"></i>
                                         <?php echo __('Instance'); ?>
                                     </th>
                                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
@@ -415,24 +403,10 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     </td>
 
                                     <td class="text-center">
-                                        <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                            <a href="/services/serviceList/{{ host.Host.id }}"
-                                               class="txt-color-blueDark"
-                                               ng-if="host.Host.has_graphs">
-                                                <i class="fa fa-lg fa-area-chart"></i>
-                                            </a>
-                                        <?php else: ?>
-                                            <i class="fa fa-lg fa-area-chart txt-color-blueDark"
-                                               ng-if="host.Host.has_graphs">
-                                            </i>
-                                        <?php endif; ?>
-                                    </td>
-
-                                    <td class="text-center">
 
                                         <a class="txt-color-blueDark" title="<?php echo __('Shared'); ?>"
                                            ng-if="host.Host.allow_sharing === true && host.Host.containerIds.length > 1"
-                                           href="/hosts/sharing/{{ host.Host.id }}">
+                                           ui-sref="HostsSharing({id:host.Host.id})">
                                             <i class="fa fa-sitemap fa-lg "></i></a>
 
                                         <i class="fa fa-low-vision fa-lg txt-color-blueLight"
@@ -449,7 +423,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                     <td>
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                            <a href="/hosts/browser/{{ host.Host.id }}">
+                                            <a ui-sref="HostsBrowser({id:host.Host.id})">
                                                 {{ host.Host.hostname }}
                                             </a>
                                         <?php else: ?>
@@ -526,19 +500,19 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     <td class="width-50">
                                         <div class="btn-group">
                                             <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                <a href="/hosts/edit/{{host.Host.id}}"
+                                                <a ui-sref="HostsEdit({id:host.Host.id})"
                                                    ng-if="host.Host.allow_edit"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
                                                 <a href="javascript:void(0);"
                                                    ng-if="!host.Host.allow_edit"
-                                                   class="btn btn-default">
+                                                   class="btn btn-default disabled">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
 
                                             <?php else: ?>
-                                                <a href="javascript:void(0);" class="btn btn-default">
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                             <?php endif; ?>
                                             <a href="javascript:void(0);" data-toggle="dropdown"
@@ -547,14 +521,14 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                             <ul class="dropdown-menu pull-right" id="menuHack-{{host.Host.uuid}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_edit">
-                                                        <a href="/hosts/edit/{{host.Host.id}}">
+                                                        <a ui-sref="HostsEdit({id:host.Host.id})">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('sharing', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_sharing">
-                                                        <a href="/hosts/sharing/{{host.Host.id}}">
+                                                        <a ui-sref="HostsSharing({id:host.Host.id})">
                                                             <i class="fa fa-sitemap fa-rotate-270"></i>
                                                             <?php echo __('Sharing'); ?>
                                                         </a>
@@ -570,16 +544,34 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                                     <li>
-                                                        <a href="/services/serviceList/{{host.Host.id}}">
+                                                        <a ui-sref="ServicesServiceList({id: host.Host.id})">
                                                             <i class="fa fa-list"></i> <?php echo __('Service List'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
                                                     <li>
-                                                        <a href="/hosts/allocateServiceTemplateGroup/{{host.Host.id}}">
+                                                        <a ui-sref="ServicetemplategroupsAllocateToHost({id: 0, hostId: host.Host.id})">
                                                             <i class="fa fa-external-link"></i>
-                                                            <?php echo __('Allocate Service Template Group'); ?>
+                                                            <?php echo __('Allocate service template group'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+
+                                                <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
+                                                    <li>
+                                                        <a ng-click="confirmAddHostsToHostgroup(getObjectForDelete(host))"
+                                                           class="a-clean pointer">
+                                                            <i class="fa fa-sitemap"></i> <?php echo __('Append to host group'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+
+                                                <?php if ($this->Acl->hasPermission('scan', 'agentconfigs', '')): ?>
+                                                    <li>
+                                                        <a ui-sref="AgentconfigsConfig({hostId: host.Host.id})">
+                                                            <i class="fa fa-user-secret"></i>
+                                                            <?php echo __('openITCOCKPIT Agent discovery'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
@@ -671,10 +663,12 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                 </a>
                                             </li>
                                         <?php endif; ?>
+
                                         <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
                                             <li>
-                                                <a ng-href="{{ linkForAddToHostgroup() }}" class="a-clean">
-                                                    <i class="fa fa-sitemap"></i> <?php echo __('Add to hostgroup'); ?>
+                                                <a ng-click="confirmAddHostsToHostgroup(getObjectsForDelete())"
+                                                   class="a-clean pointer">
+                                                    <i class="fa fa-sitemap"></i> <?php echo __('Add to host group'); ?>
                                                 </a>
                                             </li>
                                         <?php endif; ?>

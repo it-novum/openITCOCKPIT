@@ -315,7 +315,7 @@ class App {
 		$defaults = array();
 		foreach ($packageFormat as $package => $format) {
 			foreach ($format as $f) {
-				$defaults[$package][] = sprintf($f, APP);
+				$defaults[$package][] = sprintf($f, OLD_APP);
 			}
 		}
 
@@ -400,7 +400,7 @@ class App {
  * @link https://book.cakephp.org/2.0/en/core-utility-libraries/app.html#App::core
  */
 	public static function core($type) {
-		return array(CAKE . str_replace('/', DS, $type) . DS);
+		return array(OLD_CAKE . str_replace('/', DS, $type) . DS);
 	}
 
 /**
@@ -467,7 +467,7 @@ class App {
 			}
 
 			foreach ((array)$path as $dir) {
-				if ($dir != APP && is_dir($dir)) {
+				if ($dir != OLD_APP && is_dir($dir)) {
 					$files = new RegexIterator(new DirectoryIterator($dir), $extension);
 					foreach ($files as $file) {
 						$fileName = basename($file);
@@ -551,8 +551,8 @@ class App {
 		if (empty($plugin)) {
 			$appLibs = empty(static::$_packages['Lib']) ? APPLIBS : current(static::$_packages['Lib']);
 			$paths[] = $appLibs . $package . DS;
-			$paths[] = APP . $package . DS;
-			$paths[] = CAKE . $package . DS;
+			$paths[] = OLD_APP . $package . DS;
+			$paths[] = OLD_CAKE . $package . DS;
 		} else {
 			$pluginPath = CakePlugin::path($plugin);
 			$paths[] = $pluginPath . 'Lib' . DS . $package . DS;
@@ -874,13 +874,13 @@ class App {
 				),
 				'Vendor' => array(
 					'%s' . 'Vendor' . DS,
-					ROOT . DS . 'vendors' . DS,
-					dirname(dirname(CAKE)) . DS . 'vendors' . DS
+					OLD_ROOT . DS . 'vendors' . DS,
+					dirname(dirname(OLD_CAKE)) . DS . 'vendors' . DS
 				),
 				'Plugin' => array(
-					APP . 'Plugin' . DS,
-					ROOT . DS . 'plugins' . DS,
-					dirname(dirname(CAKE)) . DS . 'plugins' . DS
+					OLD_APP . 'Plugin' . DS,
+					OLD_ROOT . DS . 'plugins' . DS,
+					dirname(dirname(OLD_CAKE)) . DS . 'plugins' . DS
 				)
 			);
 		}

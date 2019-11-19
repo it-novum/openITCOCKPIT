@@ -32,7 +32,7 @@ class Adldap extends AdldapMain {
     protected $myPersonFilter = '(&(objectClass=user)(samaccounttype=805306368)(objectCategory=person)(cn=*))';
 
     public function search() {
-        require_once APP . 'Model' . DS . 'AdldapSearch.php';
+        require_once OLD_APP . 'Model' . DS . 'AdldapSearch.php';
         return new AdldapSearch($this);
     }
 

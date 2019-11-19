@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class UtilsHelper
+ * @deprecated
+ */
 class UtilsHelper extends AppHelper {
     /**
      * Used helpers
@@ -36,6 +40,7 @@ class UtilsHelper extends AppHelper {
      * @param string $date
      *
      * @return string
+     * @deprecated
      */
     public function niceDate($date) {
         return utf8_encode(strftime("%A, %e. %B %Y", strtotime($date)));
@@ -47,6 +52,7 @@ class UtilsHelper extends AppHelper {
      * @param string $date
      *
      * @return string
+     * @deprecated
      */
     public function niceDateAndTime($date) {
         return utf8_encode(strftime("%A, %e. %B %Y at %R", strtotime($date)));
@@ -55,6 +61,7 @@ class UtilsHelper extends AppHelper {
     /**
      * Formats a given number to a price, e.g. 5.000 €
      * @return void
+     * @deprecated
      */
     public function price($number, $decimals = 2, $suffix = ' &euro;') {
         if (empty($number)) {
@@ -70,6 +77,7 @@ class UtilsHelper extends AppHelper {
      * @param string $date
      *
      * @return string
+     * @deprecated
      */
     public function date($date) {
         if (empty($date)) {
@@ -85,6 +93,7 @@ class UtilsHelper extends AppHelper {
      * @param string $date
      *
      * @return string
+     * @deprecated
      */
     public function dateAndTime($date) {
         if (empty($date)) {
@@ -102,6 +111,7 @@ class UtilsHelper extends AppHelper {
      * @param string $format
      *
      * @return string
+     * @deprecated
      */
     public function formatDate($date = null, $format = 'd.m.Y H:i') {
         if ($date) {
@@ -124,6 +134,7 @@ class UtilsHelper extends AppHelper {
      * @param mixed $value
      *
      * @return string
+     * @deprecated
      */
     public function graphicalCheckbox($value) {
         return sprintf('<i class="glyphicon glyphicon-%s"></i>', ($value ? 'ok' : 'remove'));
@@ -135,6 +146,7 @@ class UtilsHelper extends AppHelper {
      * @param array $buttons
      *
      * @return string
+     * @deprecated
      */
     public function customerButtons($buttons = []) {
         $return = '';
@@ -155,6 +167,7 @@ class UtilsHelper extends AppHelper {
      * @param array $options
      *
      * @return void
+     * @deprecated
      */
     public function editButton($title = null, $url = null, $options = []) {
         if (!$title) {
@@ -179,6 +192,7 @@ class UtilsHelper extends AppHelper {
      * @param array $options
      *
      * @return string
+     * @deprecated
      */
     public function addButton($title = null, $options = []) {
         if (!$title) {
@@ -209,6 +223,7 @@ class UtilsHelper extends AppHelper {
      * @param string $body
      *
      * @return string
+     * @deprecated
      */
     public function emailLink($email = null, $subject = null, $body = null) {
         $all = '';
@@ -241,6 +256,7 @@ class UtilsHelper extends AppHelper {
      * @param array $options
      *
      * @return string
+     * @deprecated
      */
     public function deleteButton($title = null, $url = null, $options = [], $confirm = true, $postText = '') {
         $_options = ['icon' => 'fa fa-trash-o'];
@@ -267,7 +283,7 @@ class UtilsHelper extends AppHelper {
         ], $options);
         $title = '<i class="' . $options['icon'] . '"></i> ' . $title;
         if ($confirm) {
-            return $this->Form->postLink($title, $url, $options, __('confirm_delete') . ' ' . $postText);
+            return $this->Form->postLink($title, $url, $options, __('Really delete?') . ' ' . $postText);
         }
 
         return $this->Form->postLink($title, $url, $options);
@@ -281,10 +297,11 @@ class UtilsHelper extends AppHelper {
      * @param array $options
      *
      * @return string
+     * @deprecated
      */
     public function backButton($title = null, $url = null, $options = []) {
         if (!$title) {
-            $title = __('back_to_list');
+            $title = __('Back to list');
         }
         if (!$url) {
             $url = ['action' => 'index'];
@@ -307,14 +324,15 @@ class UtilsHelper extends AppHelper {
      * @param string $options
      *
      * @return void
+     * @deprecated
      */
     public function formActions($saveText = null, array $options = []) {
         if (!$saveText) {
-            $saveText = __('formactions.save');
+            $saveText = __('Save');
         }
         $options = Set::merge([
             'cancelButton' => [
-                'title' => __('formactions.cancel'),
+                'title' => __('Cancel'),
                 'url'   => ['action' => 'index'],
             ],
             'delete'       => null,
@@ -353,6 +371,7 @@ class UtilsHelper extends AppHelper {
      * @param string $url
      *
      * @return void
+     * @deprecated
      */
     public function viewButton($title = null, $url = null) {
         if (!$title) {
@@ -372,6 +391,7 @@ class UtilsHelper extends AppHelper {
      * @param bool $mini
      *
      * @return void
+     * @deprecated
      */
     public function printButton($mini = false) {
         $title = '<i class="glyphicon glyphicon-print"></i> ';
@@ -392,6 +412,7 @@ class UtilsHelper extends AppHelper {
      * @param array $options
      *
      * @return void
+     * @deprecated
      */
     public function button($title, $url, $options = []) {
         $options = Set::merge([
@@ -407,11 +428,19 @@ class UtilsHelper extends AppHelper {
      * @param  string $code
      *
      * @return string
+     * @deprecated
      */
     public function country($code) {
         return Configure::read('countries.' . $code);
     }
 
+    /**
+     * @param $size
+     * @param null $retstring
+     * @param bool $round
+     * @return string
+     * @deprecated
+     */
     public function readableFilesize($size, $retstring = null, $round = true) {
         $sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         if ($retstring === null) {
@@ -441,6 +470,7 @@ class UtilsHelper extends AppHelper {
      * @param  int $seconds
      *
      * @return string          'Sekunde x', 'Minute y:xx' or 'Stunde z:yy:xx'
+     * @deprecated
      */
     public function secToTime($seconds) {
         $seconds = str_replace(',', '.', $seconds);
@@ -482,6 +512,7 @@ class UtilsHelper extends AppHelper {
      * @param  int $seconds
      *
      * @return string          'Sekunde x', 'Minute y:xx' or 'Stunde z:yy:xx'
+     * @deprecated
      */
     public function secToTimestamp($seconds) {
         $seconds = str_replace(',', '.', $seconds);
@@ -523,6 +554,7 @@ class UtilsHelper extends AppHelper {
      * @param  int $backgroundImage number of background image
      *
      * @return string                  classes string
+     * @deprecated
      */
     public function getEpicBgClasses() {
         if (isset($this->_View->viewVars['backgroundImage']) && is_numeric($this->_View->viewVars['backgroundImage'])) {
@@ -547,6 +579,7 @@ class UtilsHelper extends AppHelper {
      * @param  string $adminClass class to be returned if user has admin role
      *
      * @return string             class string
+     * @deprecated
      */
     public function getRightAccessClass($userClass = '', $adminClass = '') {
         if (empty($userClass) && empty($adminClass)) {
@@ -574,6 +607,7 @@ class UtilsHelper extends AppHelper {
      * @param  string $class
      *
      * @return string
+     * @deprecated
      */
     public function flag($countryCode, $class = 'flag-small') {
         $countries = Configure::read('countries');
@@ -593,6 +627,7 @@ class UtilsHelper extends AppHelper {
      * @param  array $match
      *
      * @return string        team_home_total : team_away_total
+     * @deprecated
      */
     public function getFinalScore($match) {
         $scores = Utils::calculateFinalScore($match);
@@ -606,6 +641,7 @@ class UtilsHelper extends AppHelper {
      * @param  int $n
      *
      * @return string
+     * @deprecated
      */
     public function appendEnglishOrdinalSuffix($n) {
         if (!in_array(($n % 100), [11, 12, 13])) {
@@ -625,6 +661,7 @@ class UtilsHelper extends AppHelper {
     /**
      * returns terms and conditions link
      * @return string
+     * @deprecated
      */
     public function termsAndConditionsLink() {
         return __('register.i_accept_the') . ' ' . $this->Html->link(__('terms_and_conditions'),
@@ -646,6 +683,7 @@ class UtilsHelper extends AppHelper {
      * @param array $options
      *
      * @return string
+     * @deprecated
      */
     public function captionTable($data, array $options = []) {
         $options = Set::merge([
@@ -658,6 +696,12 @@ class UtilsHelper extends AppHelper {
         ]);
     }
 
+    /**
+     * @param $order
+     * @param $key
+     * @return string
+     * @deprecated
+     */
     public function getDirection($order, $key) {
         if (!is_array($order))
             $order = [];
@@ -673,6 +717,11 @@ class UtilsHelper extends AppHelper {
         return '<i class="fa fa-sort">&nbsp;</i>';
     }
 
+    /**
+     * @param $count
+     * @return string
+     * @deprecated
+     */
     public function formatExportCount($count) {
         if ($count <= 9) {
             return "&nbsp" . $count . "&nbsp;";
@@ -711,6 +760,7 @@ class UtilsHelper extends AppHelper {
      * @return string $ as human date
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function secondsInHuman($duration) {
         if ($duration == '') {
@@ -747,6 +797,13 @@ class UtilsHelper extends AppHelper {
         return $zero->diff($seconds)->format($format);
     }
 
+    /**
+     * @param $items
+     * @param $singular
+     * @param $plural
+     * @return mixed
+     * @deprecated
+     */
     public function pluralize($items, $singular, $plural) {
         if (is_array($items)) {
             if (sizeof($items) > 1) {
@@ -776,6 +833,7 @@ class UtilsHelper extends AppHelper {
      * @return string $ as human date
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function secondsInHumanShort($duration) {
 

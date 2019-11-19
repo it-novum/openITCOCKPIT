@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Timerange
+ * @deprecated
+ */
 class Timerange extends AppModel {
     public $tablePrefix = 'timeperiod_';
 
@@ -71,6 +75,12 @@ class Timerange extends AppModel {
         ],
     ];
 
+    /**
+     * @param array $field
+     * @param null $compare_field
+     * @return bool
+     * @deprecated
+     */
     public function startBeforeEnd($field = [], $compare_field = null) {
         foreach ($field as $key => $value) {
             $v1 = $value;

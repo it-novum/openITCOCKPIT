@@ -963,7 +963,7 @@ class AuthComponentTest extends CakeTestCase {
 		$_GET = array();
 
 		Configure::write('App', array(
-			'dir' => APP_DIR,
+			'dir' => OLD_APP_DIR,
 			'webroot' => WEBROOT_DIR,
 			'base' => false,
 			'baseUrl' => '/cake/index.php'
@@ -1218,7 +1218,7 @@ class AuthComponentTest extends CakeTestCase {
 		$pref = Configure::read('Routing.prefixes');
 		Configure::write('Routing.prefixes', array('admin'));
 		Router::reload();
-		require CAKE . 'Config' . DS . 'routes.php';
+		require OLD_CAKE . 'Config' . DS . 'routes.php';
 
 		$url = '/admin/auth_test/add';
 		$this->Auth->request->addParams(Router::parse($url));
@@ -1245,7 +1245,7 @@ class AuthComponentTest extends CakeTestCase {
  */
 	public function testAjaxLogin() {
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 		$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
 
@@ -1269,7 +1269,7 @@ class AuthComponentTest extends CakeTestCase {
  */
 	public function testAjaxLoginResponseCode() {
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 		$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
 
@@ -1336,7 +1336,7 @@ class AuthComponentTest extends CakeTestCase {
 		$admin = Configure::read('Routing.prefixes');
 		Configure::write('Routing.prefixes', array('admin'));
 		Router::reload();
-		require CAKE . 'Config' . DS . 'routes.php';
+		require OLD_CAKE . 'Config' . DS . 'routes.php';
 
 		$url = '/admin/auth_test/login';
 		$this->Auth->request->addParams(Router::parse($url));
@@ -1646,7 +1646,7 @@ class AuthComponentTest extends CakeTestCase {
 		$App = Configure::read('App');
 
 		Configure::write('App', array(
-			'dir' => APP_DIR,
+			'dir' => OLD_APP_DIR,
 			'webroot' => WEBROOT_DIR,
 			'base' => false,
 			'baseUrl' => '/cake/index.php'

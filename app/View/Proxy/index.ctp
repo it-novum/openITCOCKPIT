@@ -23,78 +23,97 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<div class="well no-padding">
-    <?php echo $this->Form->create('Proxy', [
-        //'url' => '/login/login',
-        'id'            => 'proxy-form',
-        'class'         => 'smart-form client-form',
-        'inputDefaults' => [
-            'wrapInput' => false,
-            'label'     => false,
-            'div'       => false,
-        ],
-    ]); ?>
-    <header><i class="fa fa-bolt"></i> <?php echo __('Proxy settings:'); ?></header>
-    <fieldset>
-        <div class
-        "row">
-        <section class="col col-10">
-            <label class="label"><?php echo __('IP address'); ?></label>
-            <label class="input"> <i class="icon-prepend fa fa-exchange"></i>
-                <?php
-                $proxyconf = ['placeholder' => 'proxy.example.org', 'disabled' => 'disabled'];
-                if (isset($proxy[0]['Proxy']['ipaddress'])):
-                    $proxyconf = [
-                        'disabled' => 'disabled',
-                        'value'    => $proxy[0]['Proxy']['ipaddress'],
-                    ];
-                endif;
-
-                echo $this->Form->input('ipaddress', $proxyconf); ?>
-                <b class="tooltip tooltip-top-left"><i
-                            class="fa fa-exchange txt-color-teal"></i> <?php echo __('Please enter the address of your proxy server'); ?>
-                </b>
-            </label>
-        </section>
-        <section class="col col-2">
-            <label class="label">Port</label>
-            <label class="input"> <i class="icon-prepend fa fa-terminal"></i>
-                <?php
-                $proxyconf = ['placeholder' => 3128, 'disabled' => 'disabled'];
-                if (isset($proxy[0]['Proxy']['port'])):
-                    $proxyconf = [
-                        'disabled' => 'disabled',
-                        'value'    => $proxy[0]['Proxy']['port'],
-                    ];
-                endif;
-
-                echo $this->Form->input('port', $proxyconf); ?>
-                <b class="tooltip tooltip-top-left"><i
-                            class="fa fa-terminal txt-color-teal"></i> <?php echo __('Please enter the port of your proxy'); ?>
-                </b>
-            </label>
-        </section>
-
-        <?php
-        $checked = '';
-        if (isset($proxy[0]['Proxy']['enabled']) && $proxy[0]['Proxy']['enabled'] === true):
-            $checked = 'checked=checked';
-        endif;
-        ?>
-        <section class="col col-12 pull-right">
-            <label class="toggle">
-                <input type="checkbox" <?php echo $checked; ?> disabled="disabled" name="checkbox-toggle">
-                <i data-swchoff-text="OFF" data-swchon-text="ON"></i><?php echo __('Enable Proxy'); ?>
-            </label>
-        </section>
-
-
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-bolt fa-fw"></i>
+            <?php echo __('HTTP-Proxy'); ?>
+            <span>>
+                <?php echo __('Configuration'); ?>
+            </span>
+        </h1>
+    </div>
 </div>
-</fieldset>
-<?php if ($this->Acl->hasPermission('edit')): ?>
-    <footer>
-        <a href="/proxy/edit" class="btn btn-default pull-left saveEditMode" title="Edit"><i class="fa fa-lock"></i></a>
-    </footer>
-<?php endif; ?>
-<?php echo $this->Form->end(); ?>
+
+
+<div class="jarviswidget" id="wid-id-0">
+    <header>
+        <span class="widget-icon"> <i class="fa fa-bolt"></i> </span>
+        <h2><?php echo __('Edit HTTP-Proxy configuration'); ?></h2>
+    </header>
+    <div>
+        <div class="widget-body">
+            <form ng-submit="submit();" class="form-horizontal"
+                  ng-init="successMessage=
+            {objectName : '<?php echo __('Proxy configuration'); ?>' , message: '<?php echo __('updated successfully'); ?>'}">
+
+                <div class="row">
+                    <div class="form-group required" ng-class="{'has-error': errors.ipaddress}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Proxy address'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    placeholder="proxy.local.lan"
+                                    type="text"
+                                    ng-model="post.Proxy.ipaddress">
+                            <div ng-repeat="error in errors.ipaddress">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.port}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Description'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="number"
+                                    placeholder="3128"
+                                    min="0"
+                                    max="65535"
+                                    ng-model="post.Proxy.port">
+                            <div ng-repeat="error in errors.port">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group"
+                         ng-class="{'has-error': errors.enabled}">
+                        <label class="col col-md-2 control-label" for="enabledProxy">
+                            <?php echo __('Enable Proxy'); ?>
+                        </label>
+
+
+                        <div class="col-xs-10 smart-form">
+                            <label class="checkbox small-checkbox-label no-required">
+                                <input type="checkbox" name="checkbox"
+                                       id="enabledProxy"
+                                       ng-model="post.Proxy.enabled">
+                                <i class="checkbox-primary"></i>
+                            </label>
+                            <div class="help-block">
+                                <?php echo __('If disabled the proxy server will not be used.'); ?>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                    <div class="well formactions ">
+                        <div class="pull-right">
+                            <input class="btn btn-primary" type="submit"
+                                   value="<?php echo __('Update configuration'); ?>">
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
 </div>

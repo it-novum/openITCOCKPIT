@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigurator;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigValue;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigValueInt;
@@ -77,54 +78,48 @@ class SetupShell extends AppShell {
 
     public function setup() {
         if ($this->fetchUserdata()) {
-            $this->User->create();
-            if ($this->User->saveAll($this->Userdata)) {
-                $this->out('<green>User created successfully</green>');
-                if ($this->fetchSystemAddress()) {
-                    if ($this->Systemsetting->save($this->Systemdata)) {
-                        $this->out('<green>Saved IP address successfully</green>');
-                        if ($this->fetchMailconfig()) {
-                            if ($this->Systemsetting->save($this->Systemdata)) {
-                                //Return mail address saved successfully
-                                $file = fopen(APP . 'Config' . DS . 'email.php', 'w+');
-                                $mailHost = new MailConfigValue($this->Mail['host']);
-                                $mailPort = new MailConfigValueInt((int)$this->Mail['port']);
-                                $mailUsername = new MailConfigValue($this->Mail['username']);
-                                $mailPassword = new MailConfigValue($this->Mail['password']);
-                                $mailConfigurator = new MailConfigurator(
-                                    $mailHost, $mailPort, $mailUsername, $mailPassword
-                                );
-                                fwrite($file, $mailConfigurator->getConfig());
-                                fclose($file);
-                                $this->out('<green>Mail configuration saved successfully</green>');
+            /** @var $Users App\Model\Table\UsersTable */
+            $Users = TableRegistry::getTableLocator()->get('Users');
 
-                                //$this->createMysqlPartitions();
-                                $this->createCronjobs();
-                                $this->out('');
-                                $this->hr();
-                                $this->out('<green>You can now open the interface in your browser and login, have a nice day!</green>');
-                                $this->hr();
-                                exit(0);
-                            }
-                        }
-                    }
-
-                }
-            } else {
+            $userEntity = $Users->newEntity($this->Userdata['User']);
+            $Users->save($userEntity);
+            if ($userEntity->hasErrors()) {
                 $this->out('The following errors occured:');
-                $validationErrors = [];
-                foreach ($this->User->validationErrors as $fieldName => $validationErrors) {
-                    foreach ($validationErrors as $validationError) {
-                        $validationErrors[] = $validationError;
-                    }
-                }
-                $validationErrors = array_unique($validationErrors);
-                foreach ($validationErrors as $validationError) {
+                foreach ($userEntity->getErrors() as $validationError) {
                     $this->out("\t" . '<red>' . $validationError . '</red>');
                 }
             }
-        }
+            $this->out('<green>User created successfully</green>');
+            if ($this->fetchSystemAddress()) {
+                if ($this->Systemsetting->save($this->Systemdata)) {
+                    $this->out('<green>Saved IP address successfully</green>');
+                    if ($this->fetchMailconfig()) {
+                        if ($this->Systemsetting->save($this->Systemdata)) {
+                            //Return mail address saved successfully
+                            $file = fopen(OLD_APP . 'Config' . DS . 'email.php', 'w+');
+                            $mailHost = new MailConfigValue($this->Mail['host']);
+                            $mailPort = new MailConfigValueInt((int)$this->Mail['port']);
+                            $mailUsername = new MailConfigValue($this->Mail['username']);
+                            $mailPassword = new MailConfigValue($this->Mail['password']);
+                            $mailConfigurator = new MailConfigurator(
+                                $mailHost, $mailPort, $mailUsername, $mailPassword
+                            );
+                            fwrite($file, $mailConfigurator->getConfig());
+                            fclose($file);
+                            $this->out('<green>Mail configuration saved successfully</green>');
 
+                            //$this->createMysqlPartitions();
+                            $this->createCronjobs();
+                            $this->out('');
+                            $this->hr();
+                            $this->out('<green>You can now open the interface in your browser and login, have a nice day!</green>');
+                            $this->hr();
+                            exit(0);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public function fetchUserdata() {
@@ -238,7 +233,7 @@ class SetupShell extends AppShell {
         $this->out('<blue>This configuration is used by the interface and the monitoring software to send emails</blue>');
         $this->out('<blue>You don\'t need to install a local mailserver</blue>');
         $this->out('<blue>If you want to change this settings later </blue>', false);
-        $this->out('<red>' . APP . 'Config' . DS . 'email.php </red>', false);
+        $this->out('<red>' . OLD_APP . 'Config' . DS . 'email.php </red>', false);
         $this->out('<blue> is the place you need to search for</blue>');
 
         $currentValue = $this->Systemsetting->findByKey('MONITORING.FROM_ADDRESS');
@@ -304,7 +299,7 @@ class SetupShell extends AppShell {
     public function createMysqlPartitions() {
         $this->out('Create MySQL partitions', false);
         if (file_exists('/etc/openitcockpit/mysql.cnf')) {
-            exec('mysql --defaults-extra-file=/etc/openitcockpit/mysql.cnf < ' . APP . 'partitions.sql', $out, $ret);
+            exec('mysql --defaults-extra-file=/etc/openitcockpit/mysql.cnf < ' . OLD_APP . 'partitions.sql', $out, $ret);
             if ($ret == 0) {
                 $this->out('<green> ...OK</green>');
 
@@ -322,22 +317,62 @@ class SetupShell extends AppShell {
 
     public function createCronjobs() {
         $this->out('<blue>Checking for missing cronjobs</blue>');
+
+        /** @var CronjobsTable $Cronjobs */
+        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
+
         //Check if load cronjob exists
-        if (!$this->Cronjob->checkForCronjob('CpuLoad', 'Core')) {
+        if (!$Cronjobs->checkForCronjob('CpuLoad', 'Core')) {
             //Cron does not exists, so we create it
-            $this->Cronjob->add('CpuLoad', 'Core', 15);
+            $cpuCron = $Cronjobs->newEntity([
+                'task'     => 'CpuLoad',
+                'plugin'   => 'Core',
+                'interval' => 15,
+                'enabled'  => 1
+            ]);
+
+            $Cronjobs->save($cpuCron);
+
+            if ($cpuCron->hasErrors()) {
+                $this->out($cpuCron->getErrors());
+            }
         }
 
-        //Check if version check cronjob exists
-        if (!$this->Cronjob->checkForCronjob('VersionCheck', 'Core')) {
+        //Check if load cronjob exists
+        if (!$Cronjobs->checkForCronjob('CpuLoad', 'Core')) {
             //Cron does not exists, so we create it
-            $this->Cronjob->add('VersionCheck', 'Core', 1440);
+            $versionCheckCron = $Cronjobs->newEntity([
+                'task'     => 'VersionCheck',
+                'plugin'   => 'Core',
+                'interval' => 1440,
+                'enabled'  => 1
+            ]);
+
+            $Cronjobs->save($versionCheckCron);
+
+            if ($versionCheckCron->hasErrors()) {
+                $this->out($versionCheckCron->getErrors());
+            }
         }
 
-        //Check if SystemHealth cronjob exists
-        if (!$this->Cronjob->checkForCronjob('SystemHealth', 'Core')) {
+
+        //Check if load cronjob exists
+        if (!$Cronjobs->checkForCronjob('CpuLoad', 'Core')) {
             //Cron does not exists, so we create it
-            $this->Cronjob->add('SystemHealth', 'Core', 1);
+            $systemHealthCron = $Cronjobs->newEntity([
+                'task'     => 'SystemHealth',
+                'plugin'   => 'Core',
+                'interval' => 1,
+                'enabled'  => 1
+            ]);
+
+            $Cronjobs->save($systemHealthCron);
+
+            if ($systemHealthCron->hasErrors()) {
+                $this->out($systemHealthCron->getErrors());
+            }
         }
+
+
     }
 }

@@ -23,6 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Cronjob
+ * @deprecated use cake 4 model
+ */
+
 class Cronjob extends AppModel {
     public $hasOne = ['Cronschedule'];
 
@@ -76,8 +81,8 @@ class Cronjob extends AppModel {
     public function fetchTasks($pluginName) {
         $return = [];
         if ($pluginName == 'Core') {
-            if (is_dir(APP . 'Console/Command/Task/')) {
-                $result = scandir(APP . 'Console/Command/Task/');
+            if (is_dir(OLD_APP . 'Console/Command/Task/')) {
+                $result = scandir(OLD_APP . 'Console/Command/Task/');
                 if (!empty($result) && is_array($result)) {
                     foreach ($result as $file) {
                         if ($file != '.' && $file != '..' && $file != 'empty') {
@@ -88,8 +93,8 @@ class Cronjob extends AppModel {
                 }
             }
         } else {
-            if (is_dir(APP . 'Plugin/' . $pluginName . '/Console/Command/Task/')) {
-                $result = scandir(APP . 'Plugin/' . $pluginName . '/Console/Command/Task/');
+            if (is_dir(OLD_APP . 'Plugin/' . $pluginName . '/Console/Command/Task/')) {
+                $result = scandir(OLD_APP . 'Plugin/' . $pluginName . '/Console/Command/Task/');
                 if (!empty($result) && is_array($result)) {
                     foreach ($result as $file) {
                         if ($file != '.' && $file != '..' && $file != 'empty') {

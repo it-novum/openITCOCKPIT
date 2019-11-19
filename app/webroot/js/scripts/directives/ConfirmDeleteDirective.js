@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('confirmDelete', function($http, $filter, $timeout){
+angular.module('openITCOCKPIT').directive('confirmDelete', function($http, $state, $filter, $timeout){
     return {
         restrict: 'E',
         templateUrl: '/angular/confirm_delete.html',
@@ -15,7 +15,11 @@ angular.module('openITCOCKPIT').directive('confirmDelete', function($http, $filt
                 $scope.isDeleting = true;
                 $http.post($scope.deleteUrl).then(
                     function(result){
-                        window.location.href = $scope.sucessUrl;
+                        if($scope.successState != null){
+                            $state.go($scope.successState);
+                        } else {
+                            window.location.href = $scope.sucessUrl;
+                        }
                     }, function errorCallback(result){
                         console.error(result.data);
                     });

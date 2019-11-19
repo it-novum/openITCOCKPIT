@@ -63,11 +63,11 @@ class ConsoleLogTest extends CakeTestCase {
 
 	public function tearDown() {
 		parent::tearDown();
-		if (file_exists(LOGS . 'error.log')) {
-			unlink(LOGS . 'error.log');
+		if (file_exists(OLD_LOGS . 'error.log')) {
+			unlink(OLD_LOGS . 'error.log');
 		}
-		if (file_exists(LOGS . 'debug.log')) {
-			unlink(LOGS . 'debug.log');
+		if (file_exists(OLD_LOGS . 'debug.log')) {
+			unlink(OLD_LOGS . 'debug.log');
 		}
 	}
 
@@ -111,8 +111,8 @@ class ConsoleLogTest extends CakeTestCase {
 		$mock->expects($this->once())
 			->method('write');
 		TestCakeLog::write(LOG_ERR, $message);
-		$this->assertTrue(file_exists(LOGS . 'error.log'), 'error.log missing');
-		$logOutput = file_get_contents(LOGS . 'error.log');
+		$this->assertTrue(file_exists(OLD_LOGS . 'error.log'), 'error.log missing');
+		$logOutput = file_get_contents(OLD_LOGS . 'error.log');
 		$this->assertContains($message, $logOutput);
 
 		// TestConsoleLog is only interested in `error` type
@@ -122,11 +122,11 @@ class ConsoleLogTest extends CakeTestCase {
 		TestCakeLog::write(LOG_INFO, $message);
 
 		// checks that output is correctly written in the correct logfile
-		$this->assertTrue(file_exists(LOGS . 'error.log'), 'error.log missing');
-		$this->assertTrue(file_exists(LOGS . 'debug.log'), 'debug.log missing');
-		$logOutput = file_get_contents(LOGS . 'error.log');
+		$this->assertTrue(file_exists(OLD_LOGS . 'error.log'), 'error.log missing');
+		$this->assertTrue(file_exists(OLD_LOGS . 'debug.log'), 'debug.log missing');
+		$logOutput = file_get_contents(OLD_LOGS . 'error.log');
 		$this->assertNotContains($message, $logOutput);
-		$logOutput = file_get_contents(LOGS . 'debug.log');
+		$logOutput = file_get_contents(OLD_LOGS . 'debug.log');
 		$this->assertContains($message, $logOutput);
 	}
 

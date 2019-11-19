@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('afterExportCfg', function($http){
+angular.module('openITCOCKPIT').directive('afterExportCfg', function($http, $state, NotyService, RedirectService){
     return {
         restrict: 'E',
         templateUrl: '/ConfigurationFiles/AfterExport.html',
@@ -18,8 +18,12 @@ angular.module('openITCOCKPIT').directive('afterExportCfg', function($http){
                     $scope.post = result.data.config;
                     $scope.init = false;
                 }, function errorCallback(result){
+                    if(result.status === 403){
+                        $state.go('403');
+                    }
+
                     if(result.status === 404){
-                        window.location.href = '/angular/not_found';
+                        $state.go('404');
                     }
                 });
             };
@@ -29,8 +33,10 @@ angular.module('openITCOCKPIT').directive('afterExportCfg', function($http){
                     $scope.post
                 ).then(function(result){
                     console.log('Data saved successfully');
-                    window.location.href = '/ConfigurationFiles/index';
+                    NotyService.genericSuccess();
+                    RedirectService.redirectWithFallback('ConfigurationFilesIndex');
                 }, function errorCallback(result){
+                    NotyService.genericError();
                     if(result.data.hasOwnProperty('error')){
                         $scope.errors = result.data.error;
                     }

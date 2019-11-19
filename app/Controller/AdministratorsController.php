@@ -23,183 +23,89 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\CronjobsTable;
+use App\Model\Table\RegistersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
+use itnovum\openITCOCKPIT\Core\Security\ItcMail;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
+use itnovum\openITCOCKPIT\Core\System\Health\CpuLoad;
+use itnovum\openITCOCKPIT\Core\System\Health\Disks;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
+use itnovum\openITCOCKPIT\Core\System\Health\MemoryUsage;
+use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
 
 /**
  * @property Systemsetting Systemsetting
  */
 class AdministratorsController extends AppController {
     public $components = ['GearmanClient'];
-    public $uses = ['Proxy'];
-    public $layout = 'Admin.default';
 
-    function index() {
-    }
+    public $layout = 'blank';
 
+    /**
+     * @deprecated
+     */
     function debug() {
-        $this->loadModel('Systemsetting');
-        $this->loadModel('Cronjob');
-        $this->loadModel('Register');
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
 
+            $RepositoryChecker = new RepositoryChecker();
+            $LsbRelease = new LsbRelease();
+            $this->set('RepositoryChecker', $RepositoryChecker);
+            $this->set('LsbRelease', $LsbRelease);
+            return;
+        }
 
-        $systemsetting = $this->Systemsetting->findAsArray();
-        $this->set('systemsetting', $systemsetting);
+        /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsetting = $SystemsettingsTable->findAsArray();
 
+        /** @var $RegistersTable RegistersTable */
+        $RegistersTable = TableRegistry::getTableLocator()->get('Registers');
+        $License = $RegistersTable->getLicense();
 
+        Configure::load('nagios');
+        Configure::load('version');
         Configure::load('gearman');
-        $this->Config = Configure::read('gearman');
 
-        $this->GearmanClient->client->setTimeout(5000);
-        $gearmanReachable = @$this->GearmanClient->client->ping(true);
-        $this->set('gearmanReachable', $gearmanReachable);
 
+        //Collect interface information
+        $edition = __('Community - unregistered');
+        if (isset($License['license'])) {
+            $edition = __('Enterprise');
+            if ($License['license'] === $RegistersTable->getCommunityLicenseKey()) {
+                $edition = __('Community - registered');
+            }
+        }
+
+        $MonitoringEngine = new MonitoringEngine();
+
+        $interfaceInformation = [
+            'systemname'             => $systemsetting['FRONTEND']['FRONTEND.SYSTEMNAME'],
+            'version'                => Configure::read('version'),
+            'oitc_is_debugging_mode' => Configure::read('debug') == 2,
+            'edition'                => $edition,
+            'path_for_config'        => Configure::read('nagios.export.backupSource'),
+            'path_for_backups'       => Configure::read('nagios.export.backupTarget'),
+            'command_interface'      => $systemsetting['MONITORING']['MONITORING.CMD'],
+            'monitoring_engine'      => $MonitoringEngine->getMonitoringEngine()
+
+        ];
+
+        //Collect process information
+        $GearmanClient = new Gearman();
+        $gearmanReachable = $GearmanClient->ping();
 
         $isGearmanWorkerRunning = false;
         exec('ps -eaf |grep gearman_worker |grep -v \'grep\'', $output);
         if (sizeof($output) > 0) {
             $isGearmanWorkerRunning = true;
         }
-        $this->set('isGearmanWorkerRunning', $isGearmanWorkerRunning);
-
-
-        //Check if load cronjob exists
-        if (!$this->Cronjob->checkForCronjob('CpuLoad', 'Core')) {
-            //Cron does not exists, so we create it
-            $this->Cronjob->add('CpuLoad', 'Core', 15);
-        }
-
-        $license = $this->Register->find('first');
-        $isEnterprise = false;
-        if (!empty($license)) {
-            $isEnterprise = true;
-        }
-
-        $load = null;
-
-        if (file_exists(TMP . 'loadavg')) {
-            $this->Frontend->setJson('renderGraph', true);
-            $load = file(TMP . 'loadavg');
-            if (sizeof($load) >= 3) {
-                $graphData = [
-                    1  => [],
-                    5  => [],
-                    15 => [],
-                ];
-                foreach ($load as $line) {
-                    $line = explode(' ', $line);
-                    $graphData[1][($line[0] * 1000)] = $line[1];
-                    $graphData[5][($line[0] * 1000)] = $line[2];
-                    $graphData[15][($line[0] * 1000)] = $line[3];
-                }
-                $this->Frontend->setJson('graphData', $graphData);
-            } else {
-                if (file_exists('/proc/loadavg')) {
-                    $load = file('/proc/loadavg');
-                    $load = explode(' ', $load[0]);
-                    $this->Frontend->setJson('renderGraph', false);
-                }
-            }
-        } else {
-            if (file_exists('/proc/loadavg')) {
-                $load = file('/proc/loadavg');
-                $load = explode(' ', $load[0]);
-                $this->Frontend->setJson('renderGraph', false);
-            }
-        }
-
-
-        $output = null;
-        exec('LANG=C df -h', $output, $returncode);
-        $disks = [];
-        if ($returncode == 0) {
-            $ignore = ['none', 'udev', 'Filesystem'];
-            foreach ($output as $line) {
-                $value = preg_split('/\s+/', $line);
-                if (!in_array($value[0], $ignore) && $value[5] != '/run') {
-                    $disks[] = [
-                        'disk'       => $value[0],
-                        'size'       => $value[1],
-                        'used'       => $value[2],
-                        'avail'      => $value[3],
-                        'use%'       => str_replace('%', '', $value[4]),
-                        'mountpoint' => $value[5],
-                    ];
-                }
-            }
-        }
-
-        /*
-         * Uncommented because of reading memory parameters from /proc/meminfo instead
-        $output = null;
-        exec('LANG=C free -m', $output, $returncode);
-        $memory = [];
-        if ($returncode == 0) {
-            foreach ($output as $line) {
-                $value = preg_split('/\s+/', $line);
-                if ($value[0] == 'Mem:') {
-                    $memory['Memory'] = [
-                        'total'   => $value[1],
-                        'used'    => $value[2],
-                        'free'    => $value[3],
-                        'buffers' => $value[5],
-                        'cached'  => $value[6],
-                    ];
-                }
-
-                //if ($value[0] == '-/+') {
-                //    $memory['Memory']['used'] = $value[2];
-                //}
-
-                if ($value[0] == 'Swap:') {
-                    $memory['Swap'] = [
-                        'total' => $value[1],
-                        'used'  => $value[2],
-                        'free'  => $value[3],
-                    ];
-                }
-            }
-        }
-        */
-
-        $data = explode("\n", file_get_contents("/proc/meminfo"));
-        $meminfo = [];
-        foreach ($data as $line) {
-            $temp = explode(":", $line);
-            if (isset($temp[1])) {
-                $meminfo[$temp[0]] = intval(trim(intval(substr($temp[1], 0, strpos($temp[1], "kB")))) / 1000);
-            }
-        }
-
-        $memory['Memory'] = [
-            'total'   => $meminfo['MemTotal'],
-            'used'    => $meminfo['Active'],
-            'free'    => $meminfo['MemFree'],
-            'buffers' => $meminfo['Buffers'],
-            'cached'  => $meminfo['Cached'],
-        ];
-
-        $memory['Swap'] = [
-            'total' => $meminfo['SwapTotal'],
-            'used'  => $meminfo['SwapTotal'] - $meminfo['SwapFree'],
-            'free'  => $meminfo['SwapFree'],
-        ];
-
-        $osVersion = PHP_OS;
-        if (file_exists('/etc/os-release')) {
-            foreach (file('/etc/os-release') as $_line) {
-                $line = explode('=', $_line, 2);
-                if ($line[0] == 'PRETTY_NAME') {
-                    $osVersion = str_replace('"', '', $line[1]);
-                }
-            }
-        }
-        $this->set('osVersion', $osVersion);
 
         if ($gearmanReachable && $isGearmanWorkerRunning) {
-            //Check if your background proesses are running
-            $backgroundProcessStatus = $this->GearmanClient->send('check_background_processes');
-            $this->set('backgroundProcessStatus', $backgroundProcessStatus);
+            //Check if background proesses are running
+            $backgroundProcessStatus = $GearmanClient->send('check_background_processes');
         }
 
         $isNdoInstalled = false;
@@ -210,16 +116,6 @@ class AdministratorsController extends AppController {
         $isStatusengineInstalled = false;
         if (file_exists('/opt/statusengine/cakephp/app/Console/Command/StatusengineLegacyShell.php')) {
             $isStatusengineInstalled = true;
-        }
-
-        $this->set([
-            'isNdoInstalled'          => $isNdoInstalled,
-            'isStatusengineInstalled' => $isStatusengineInstalled,
-        ]);
-
-        $isNpcdInstalled = false;
-        if (file_exists('/opt/openitc/nagios/bin/npcd')) {
-            $isNpcdInstalled = true;
         }
 
         $isStatusenginePerfdataProcessor = false;
@@ -233,14 +129,73 @@ class AdministratorsController extends AppController {
             }
         }
 
-        $this->set('isStatusenginePerfdataProcessor', $isStatusenginePerfdataProcessor);
+        $processInformation = [
+            'gearmanReachable'                => $gearmanReachable,
+            'isGearmanWorkerRunning'          => $isGearmanWorkerRunning,
+            'isNdoInstalled'                  => $isNdoInstalled,
+            'isStatusengineInstalled'         => $isStatusengineInstalled,
+            'isStatusenginePerfdataProcessor' => $isStatusenginePerfdataProcessor,
+            'backgroundProcesses'             => $backgroundProcessStatus
+        ];
 
 
+        //Collect server information
+        $LsbRelease = new LsbRelease();
+        $CpuLoad = new CpuLoad();
+
+        $serverInformation = [
+            'address'                => $_SERVER['SERVER_ADDR'],
+            'webserver'              => $_SERVER['SERVER_SOFTWARE'],
+            'tls'                    => $_SERVER['HTTPS'],
+            'os_version'             => sprintf('%s %s (%s)', $LsbRelease->getVendor(), $LsbRelease->getVersion(), $LsbRelease->getCodename()),
+            'kernel'                 => php_uname('r'),
+            'architecture'           => php_uname('m'),
+            'cpu_processor'          => $CpuLoad->getModel(),
+            'cpu_cores'              => $CpuLoad->getNumberOfCores(),
+            'php_version'            => PHP_VERSION,
+            'php_memory_limit'       => str_replace('M', '', get_cfg_var('memory_limit')) . 'MB',
+            'php_max_execution_time' => ini_get('max_execution_time'),
+            'php_extensions'         => get_loaded_extensions()
+        ];
+
+        //Collect CPU load history
+        $renderGraph = false;
+        $currentCpuLoad = [
+            1  => $CpuLoad->getLoad1(),
+            5  => $CpuLoad->getLoad5(),
+            15 => $CpuLoad->getLoad15()
+        ];
+        $cpuLoadHistoryInformation = [
+            1  => [],
+            5  => [],
+            15 => [],
+        ];
+        if (file_exists(OLD_TMP . 'loadavg')) {
+            $load = file(OLD_TMP . 'loadavg');
+            if (sizeof($load) >= 3) {
+                $renderGraph = true;
+                foreach ($load as $line) {
+                    $line = explode(' ', $line);
+                    $cpuLoadHistoryInformation[1][($line[0] * 1000)] = $line[1];
+                    $cpuLoadHistoryInformation[5][($line[0] * 1000)] = $line[2];
+                    $cpuLoadHistoryInformation[15][($line[0] * 1000)] = $line[3];
+                }
+            }
+        }
+
+        //Collect memory usage
+        $MemoryUsage = new MemoryUsage();
+        $memory = $MemoryUsage->getMemoryUsage();
+
+        //Collect disk usage
+        $Disks = new Disks();
+        $diskUsage = $Disks->getDiskUsage();
+
+
+        //Collect gearman queue information
+        $gearmanStatus = [];
         $output = null;
-        exec($systemsetting['INIT']['INIT.GEARMAN_JOB_SERVER_STATUS'], $output, $returncode);
-        if ($returncode == 0) {
-            $is_gearmand_running = true;
-            $output = null;
+        if ($gearmanReachable) {
             exec('gearadmin --status', $output);
             //Parse output
             $trash = array_pop($output);
@@ -254,84 +209,159 @@ class AdministratorsController extends AppController {
             }
         }
 
-        //Get Monitoring engine + version
-        $output = null;
-        Configure::load('nagios');
-        exec(Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin') . ' --version | head -n 2', $output);
-        $monitoring_engine = $output[1];
-
+        //Collect email configuration
         App::uses('CakeEmail', 'Network/Email');
         $Email = new ItcMail();
         $Email->config('default');
         $mailConfig = $Email->getConfig();
+        $emailInformation = [
+            'transport'         => $mailConfig['transport'],
+            'host'              => $mailConfig['host'],
+            'port'              => $mailConfig['port'],
+            'username'          => $mailConfig['username'],
+            'test_mail_address' => $this->Auth->user('email')
+        ];
 
-        $recipientAddress = $this->Auth->user('email');
+        //Collect remote user information
+        $agent = $_SERVER['HTTP_USER_AGENT'];
+        $os = "unknown";
+        if (strstr($agent, "Windows 98")) $os = "Windows 98";
+        else if (strstr($agent, "NT 4.0")) $os = "Windows NT ";
+        else if (strstr($agent, "NT 5.1")) $os = "Windows XP";
+        else if (strstr($agent, "NT 6.0")) $os = "Windows Vista";
+        else if (strstr($agent, "NT 6.1")) $os = "Windows 7";
+        else if (strstr($agent, "NT 6.2")) $os = "Windows 8";
+        else if (strstr($agent, "NT 6.3")) $os = "Windows 8.1";
+        else if (strstr($agent, "NT 6.4")) $os = "Windows 10";
+        else if (strstr($agent, "Win")) $os = "Windows";
+        //Firefox
+        else if (strstr($agent, "Mac OS X 10.5")) $os = "Mac OS X - Leopard";
+        else if (strstr($agent, "Mac OS X 10.6")) $os = "Mac OS X - Snow Leopard";
+        else if (strstr($agent, "Mac OS X 10.7")) $os = "Mac OS X - Lion";
+        else if (strstr($agent, "Mac OS X 10.8")) $os = "Mac OS X - Mountain Lion";
+        else if (strstr($agent, "Mac OS X 10.9")) $os = "Mac OS X - Mavericks";
+        else if (strstr($agent, "Mac OS X 10.10")) $os = "Mac OS X - Yosemite";
+        else if (strstr($agent, "Mac OS X 10.11")) $os = "Mac OS X - El Capitan";
+
+        else if (strstr($agent, "Mac OS X 10.12")) $os = "macOS Sierra";
+        else if (strstr($agent, "Mac OS X 10.13")) $os = "macOS High Sierra";
+        else if (strstr($agent, "Mac OS X 10.14")) $os = "macOS Mojave";
+
+        //Chrome
+        else if (strstr($agent, "Mac OS X 10_5")) $os = "Mac OS X - Leopard";
+        else if (strstr($agent, "Mac OS X 10_6")) $os = "Mac OS X - Snow Leopard";
+        else if (strstr($agent, "Mac OS X 10_7")) $os = "Mac OS X - Lion";
+        else if (strstr($agent, "Mac OS X 10_8")) $os = "Mac OS X - Mountain Lion";
+        else if (strstr($agent, "Mac OS X 10_9")) $os = "Mac OS X - Mavericks";
+        else if (strstr($agent, "Mac OS X 10_10")) $os = "Mac OS X - Yosemite";
+        else if (strstr($agent, "Mac OS X 10_11")) $os = "Mac OS X - El Capitan";
+
+        else if (strstr($agent, "Mac OS X 10_12")) $os = "macOS Sierra";
+        else if (strstr($agent, "Mac OS X 10_13")) $os = "macOS High Sierra";
+        else if (strstr($agent, "Mac OS X 10_14")) $os = "macOS Mojave";
+
+        else if (strstr($agent, "Mac OS")) $os = "Mac OS X";
+        else if (strstr($agent, "Linux")) $os = "Linux";
+        else if (strstr($agent, "Unix")) $os = "Unix";
+        else if (strstr($agent, "Ubuntu")) $os = "Ubuntu";
+
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        } else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+
+        $userInformation = [
+            'user_agent'          => $agent,
+            'user_os'             => $os,
+            'user_remote_address' => $ip
+        ];
 
 
-        $RepositoryChecker = new RepositoryChecker();
-        $LsbRelease = new LsbRelease();
+        //Check if load cronjob exists
+        /** @var $CronjobsTable CronjobsTable */
+        $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
 
-        $this->set('isDebuggingMode', Configure::read('debug') == 2);
-        $this->set(compact([
-            'disks',
+        if (!$CronjobsTable->checkForCronjob('CpuLoad', 'Core')) {
+            //Cron does not exists, so we create it
+            $newCron = $CronjobsTable->newEntity([
+                'task'     => 'CpuLoad',
+                'plugin'   => 'Core',
+                'interval' => 15,
+                'enabled'  => 1
+            ]);
+
+            $CronjobsTable->save($newCron);
+        }
+
+
+        $this->set('interfaceInformation', $interfaceInformation);
+        $this->set('processInformation', $processInformation);
+        $this->set('renderGraph', $renderGraph);
+        $this->set('cpuLoadHistoryInformation', $cpuLoadHistoryInformation);
+        $this->set('currentCpuLoad', $currentCpuLoad);
+        $this->set('serverInformation', $serverInformation);
+        $this->set('memory', $memory);
+        $this->set('diskUsage', $diskUsage);
+        $this->set('gearmanStatus', $gearmanStatus);
+        $this->set('emailInformation', $emailInformation);
+        $this->set('userInformation', $userInformation);
+
+        $this->set('_serialize', [
+            'interfaceInformation',
+            'processInformation',
+            'renderGraph',
+            'cpuLoadHistoryInformation',
+            'currentCpuLoad',
+            'serverInformation',
             'memory',
-            'load',
-            'isEnterprise',
-            'monitoring_engine',
-            'mailConfig',
+            'diskUsage',
             'gearmanStatus',
-            'recipientAddress',
-            'RepositoryChecker',
-            'LsbRelease'
-        ]));
+            'emailInformation',
+            'userInformation'
+        ]);
     }
 
     public function testMail() {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
         try {
-            $this->loadModel('Systemsetting');
             $recipientAddress = $this->Auth->user('email');
-            $_systemsettings = $this->Systemsetting->findAsArray();
+
+            /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $_systemsettings = $SystemsettingsTable->findAsArray();
 
             $Email = new CakeEmail();
             $Email->config('default');
             $Email->from([$_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
             $Email->to($recipientAddress);
-            $Email->subject(__('System test mail'));
+            $Email->subject(__('System test mail from %s', $_systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']));
 
             $Email->emailFormat('both');
             $Email->template('template-testmail', 'template-testmail');
 
+            $Email->viewVars([
+                'systemname' => $_systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']
+            ]);
             $Email->send();
-            $this->setFlash(__('Test mail send to: %s', $recipientAddress));
 
-            return $this->redirect(['action' => 'debug']);
+            $this->set('success', true);
+            $this->set('message', __('Test mail send to: %s', $recipientAddress));
+            $this->set('_serialize', ['success', 'message']);
+            return;
         } catch (Exception $ex) {
-            $this->setFlash(__('An error occured while sending test mail: %s', $ex->getMessage()), false);
-            return $this->redirect(['action' => 'debug']);
+            $this->set('success', false);
+            $this->set('message', __('An error occured while sending test mail: %s', $ex->getMessage()));
+            $this->set('_serialize', ['success', 'message']);
         }
     }
 
     public function querylog() {
-        $this->layout = 'angularjs';
-    }
-}
-
-App::uses('CakeEmail', 'Network/Email');
-
-class ItcMail extends CakeEmail {
-
-    public function __construct($config = null) {
-        parent::__construct($config);
-    }
-
-    public function getConfig($removePassword = true) {
-        if ($removePassword === true) {
-            $config = $this->_config;
-            unset($config['password']);
-
-            return $config;
-        }
-
-        return $this->_config;
+        //Only ship HTML template
     }
 }

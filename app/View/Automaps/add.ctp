@@ -23,197 +23,505 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-magic fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Auto Maps'); ?>
             <span>>
-                <?php echo __('Automaps'); ?>
-			</span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+                <?php echo __('Add'); ?>
+            </span>
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
 
-<div class="jarviswidget" id="wid-id-0">
+<div class="jarviswidget">
     <header>
-        <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
-        <h2><?php echo __('Add new automap'); ?></h2>
+        <span class="widget-icon"> <i class="fa fa-magic"></i> </span>
+        <h2><?php echo __('Create new auto map'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(); ?>
+            <?php if ($this->Acl->hasPermission('index', 'automaps')): ?>
+                <a back-button fallback-state='AutomapsIndex' class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
+            <?php endif; ?>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <div class="row">
-                <div class="col-xs-12 col-md-12 col-lg-12">
-                    <?php
-                    echo $this->Form->create('Automap', [
-                        'class' => 'form-horizontal clear',
-                    ]);
-                    echo $this->Form->input('container_id', [
-                        'options'   => $containers,
-                        'class'     => 'chosen',
-                        'style'     => 'width: 100%;',
-                        'label'     => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                        'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                    ]);
-                    ?>
-                    <div class="form-group padding-left-20">
-                        <?php echo $this->Form->fancyCheckbox('recursive', [
-                            'caption'          => __('Recursive container lookup'),
-                            'wrapGridClass'    => 'col col-xs-2',
-                            'captionGridClass' => 'col col-xs-2 no-padding',
-                            'captionClass'     => 'control-label text-left no-padding',
-                            'icon'             => '<i class="fa fa-sitemap"></i> ',
-                            'checked'          => (boolean)$this->Html->getParameter('Automap.recursive', false),
-                        ]); ?>
-                    </div>
-                    <?php
-                    echo $this->Form->input('name', [
-                        'label'     => ['text' => __('Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                        'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                    ]);
-                    echo $this->Form->input('description', [
-                        'label'     => ['text' => __('Description'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                        'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                    ]);
-
-                    echo $this->Form->input('host_regex', [
-                        'label'     => ['text' => __('Host RegEx'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                        'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                    ]);
-                    echo $this->Form->input('service_regex', [
-                        'label'     => ['text' => __('Service RegEx'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                        'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                    ]);
-                    ?>
-
-                    <?php $errorClass = $this->CustomValidationErrors->errorClass('show_ok'); ?>
-                    <div class="form-group padding-left-20 <?php echo $errorClass; ?>">
-                        <?php echo $this->Form->fancyCheckbox('show_ok', [
-                            'caption'          => __('Show Ok'),
-                            'wrapGridClass'    => 'col col-xs-2',
-                            'captionGridClass' => 'col col-xs-2 no-padding',
-                            'captionClass'     => 'control-label text-left no-padding ',
-                            'icon'             => '<i class="fa fa-square ok"></i> ',
-                            'required'         => false,
-                            'checked'          => (boolean)$this->Html->getParameter('Automap.show_ok', true),
-                        ]); ?>
-                    </div>
-                    <div class="form-group padding-left-20 <?php echo $errorClass; ?>">
-                        <?php echo $this->Form->fancyCheckbox('show_warning', [
-                            'caption'          => __('Show Warning'),
-                            'wrapGridClass'    => 'col col-xs-2',
-                            'captionGridClass' => 'col col-xs-2 no-padding',
-                            'captionClass'     => 'control-label text-left no-padding',
-                            'icon'             => '<i class="fa fa-square warning"></i> ',
-                            'checked'          => (boolean)$this->Html->getParameter('Automap.show_warning', true),
-                        ]); ?>
-                    </div>
-                    <div class="form-group padding-left-20 <?php echo $errorClass; ?>">
-                        <?php echo $this->Form->fancyCheckbox('show_critical', [
-                            'caption'          => __('Show Critical'),
-                            'wrapGridClass'    => 'col col-xs-2',
-                            'captionGridClass' => 'col col-xs-2 no-padding',
-                            'captionClass'     => 'control-label text-left no-padding',
-                            'icon'             => '<i class="fa fa-square critical"></i> ',
-                            'checked'          => (boolean)$this->Html->getParameter('Automap.show_critical', true),
-                        ]); ?>
-                    </div>
-                    <div class="form-group padding-left-20 <?php echo $errorClass; ?>">
-                        <?php echo $this->Form->fancyCheckbox('show_unknown', [
-                            'caption'          => __('Show Unknown'),
-                            'wrapGridClass'    => 'col col-xs-2',
-                            'captionGridClass' => 'col col-xs-2 no-padding',
-                            'captionClass'     => 'control-label text-left no-padding',
-                            'icon'             => '<i class="fa fa-square unknown"></i> ',
-                            'checked'          => (boolean)$this->Html->getParameter('Automap.show_unknown', true),
-                        ]); ?>
-                    </div>
-                    <div class="form-group padding-left-20 <?php echo $errorClass; ?>">
-                        <?php echo $this->Form->fancyCheckbox('show_downtime', [
-                            'caption'          => __('Show Downtime'),
-                            'wrapGridClass'    => 'col col-xs-2',
-                            'captionGridClass' => 'col col-xs-2 no-padding',
-                            'captionClass'     => 'control-label text-left no-padding',
-                            'icon'             => '<i class="fa fa-power-off"></i> ',
-                            'checked'          => (boolean)$this->Html->getParameter('Automap.show_downtime', true),
-                        ]); ?>
-                    </div>
-                    <div class="form-group padding-left-20 <?php echo $errorClass; ?>">
-                        <?php echo $this->Form->fancyCheckbox('show_acknowledged', [
-                            'caption'          => __('Show Acknowledged'),
-                            'wrapGridClass'    => 'col col-xs-2',
-                            'captionGridClass' => 'col col-xs-2 no-padding',
-                            'captionClass'     => 'control-label text-left no-padding',
-                            'icon'             => '<i class="fa fa-user"></i> ',
-                            'checked'          => (boolean)$this->Html->getParameter('Automap.show_acknowledged', true),
-                        ]); ?>
-                    </div>
-                    <div class="<?php echo $errorClass; ?>">
-                        <div class="col col-xs-2"><!-- spacer --></div>
+            <form ng-submit="submit();" class="form-horizontal"
+                  ng-init="successMessage=
+            {objectName : '<?php echo __('Auto Map'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+                <div class="row">
+                    <div class="form-group required" ng-class="{'has-error': errors.container_id}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Container'); ?>
+                        </label>
                         <div class="col col-xs-10">
-                            <?php echo $this->CustomValidationErrors->errorHTML('show_ok', ['style' => 'margin-left: 15px;']); ?>
-                        </div>
-                    </div>
-                    <div class="form-group padding-left-20">
-                        <?php echo $this->Form->fancyCheckbox('show_label', [
-                            'caption'          => __('Show Label'),
-                            'wrapGridClass'    => 'col col-xs-2',
-                            'captionGridClass' => 'col col-xs-2 no-padding',
-                            'captionClass'     => 'control-label text-left no-padding',
-                            'icon'             => '<i class="fa fa-tag"></i> ',
-                            'checked'          => (boolean)$this->Html->getParameter('Automap.show_label', false),
-                        ]); ?>
-                    </div>
-                    <div class="form-group padding-left-20">
-                        <?php echo $this->Form->fancyCheckbox('group_by_host', [
-                            'caption'          => __('Group by host'),
-                            'wrapGridClass'    => 'col col-xs-2',
-                            'captionGridClass' => 'col col-xs-2 no-padding',
-                            'captionClass'     => 'control-label text-left no-padding',
-                            'icon'             => '<i class="fa fa-sitemap"></i> ',
-                            'checked'          => (boolean)$this->Html->getParameter('Automap.group_by_host', false),
-                        ]); ?>
-                    </div>
-
-                    <div class="form-group form-group-slider">
-                        <label class="col col-md-1 control-label text-left"
-                               for="AutomapFontSize"><?php echo __('Icon size'); ?></label>
-                        <div class="col col-md-2">
-                            <input
-                                    type="text"
-                                    id="AutomapFontSize"
-                                    maxlength="1"
-                                    name="data[Automap][font_size]"
-                                    value="normal"
-                                    class="form-control slider slider-success"
-                                    data-slider-min="1"
-                                    data-slider-max="7"
-                                    data-slider-value="4"
-                                    data-slider-selection="before"
-                                    data-slider-step="1">
-
-                            <div class="text-center" id="fontExample" style="font-size:medium;">
-                                <?php if ((boolean)$this->Html->getParameter('Automap.show_label', false) === true): ?>
-                                    <span><i class="fa fa-square txt-color-greenLight"></i> <?php echo __('Hostname/Servicedescription'); ?></span>
-                                <?php else: ?>
-                                    <span><i class="fa fa-square txt-color-greenLight"></i></span>
-                                <?php endif; ?>
+                            <select
+                                    id="ContainerSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Automap.container_id">
+                            </select>
+                            <div ng-show="post.Automap.container_id < 1" class="warning-glow">
+                                <?php echo __('Please select a container.'); ?>
+                            </div>
+                            <div ng-repeat="error in errors.container_id">
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.recursive}">
+                        <label class="col col-md-2 control-label" for="recursive">
+                            <?php echo __('Recursive'); ?>
+                        </label>
+                        <div class="col-xs-10 smart-form">
+                            <label class="checkbox small-checkbox-label no-required">
+                                <input type="checkbox"
+                                       id="recursive"
+                                       name="checkbox"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       ng-model="post.Automap.recursive">
+                                <i class="checkbox-primary"></i>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.name}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Automap.name">
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.description}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Description'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Automap.description">
+                            <div ng-repeat="error in errors.description">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.host_regex}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Host RegEx'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model-options="{debounce: 500}"
+                                    ng-model="post.Automap.host_regex">
+                            <div ng-repeat="error in errors.host_regex">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block" ng-show="data.hostCount > 0">
+                                <?php echo __('%s hosts matching to regular expression.', '{{data.hostCount}}'); ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.service_regex}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Service RegEx'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model-options="{debounce: 500}"
+                                    ng-model="post.Automap.service_regex">
+                            <div ng-repeat="error in errors.service_regex">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block" ng-show="data.serviceCount > 0">
+                                <?php echo __('%s services matching to regular expression.', '{{data.serviceCount}}'); ?>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
 
-            <?php
-            //echo $this->Form->input('font_size', []);
-            ?>
+                <div class="row">
+                    <article class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="jarviswidget jarviswidget-sortable">
+                            <header role="heading">
+                                <span class="widget-icon">
+                                    <i class="fa fa-filter"></i>
+                                </span>
+                                <h2><?php echo __('Filter and display options'); ?></h2>
+                            </header>
+                            <div role="content" style="min-height:513px;">
+                                <div class="widget-body">
 
-            <?php echo $this->Form->formActions(); ?>
+                                    <div class="form-group margin-bottom-0"
+                                         ng-class="{'has-error': errors.show_ok}">
+
+                                        <label for="show_ok"
+                                               class="col col-md-4 control-label padding-top-0">
+                                            <span class="label label-success notify-label">
+                                                <?php echo __('Show Ok'); ?>
+                                            </span>
+                                        </label>
+
+                                        <div class="col-xs-8 smart-form">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="show_ok"
+                                                       ng-model="post.Automap.show_ok">
+                                                <i class="checkbox-success"></i>
+                                            </label>
+                                            <div ng-repeat="error in errors.show_ok">
+                                                <div class="help-block text-danger">{{ error }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group margin-bottom-0"
+                                         ng-class="{'has-error': errors.show_warning}">
+
+                                        <label for="show_warning"
+                                               class="col col-md-4 control-label padding-top-0">
+                                            <span class="label label-warning notify-label">
+                                                <?php echo __('Show Warning'); ?>
+                                            </span>
+                                        </label>
+
+                                        <div class="col-xs-8 smart-form">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="show_warning"
+                                                       ng-model="post.Automap.show_warning">
+                                                <i class="checkbox-warning"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group margin-bottom-0"
+                                         ng-class="{'has-error': errors.show_critical}">
+
+                                        <label for="show_critical"
+                                               class="col col-md-4 control-label padding-top-0">
+                                            <span class="label label-danger notify-label">
+                                                <?php echo __('Show Critical'); ?>
+                                            </span>
+                                        </label>
+
+                                        <div class="col-xs-8 smart-form">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="show_critical"
+                                                       ng-model="post.Automap.show_critical">
+                                                <i class="checkbox-danger"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group margin-bottom-0"
+                                         ng-class="{'has-error': errors.show_unknown}">
+
+                                        <label for="show_unknown"
+                                               class="col col-md-4 control-label padding-top-0">
+                                            <span class="label label-default notify-label">
+                                                <?php echo __('Show Unknown'); ?>
+                                            </span>
+                                        </label>
+
+                                        <div class="col-xs-8 smart-form">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="show_unknown"
+                                                       ng-model="post.Automap.show_unknown">
+                                                <i class="checkbox-default"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group margin-bottom-0"
+                                         ng-class="{'has-error': errors.show_downtime}">
+
+                                        <label for="show_downtime"
+                                               class="col col-md-4 control-label padding-top-0">
+                                            <span class="label label-primary notify-label">
+                                                <?php echo __('Show Downtimes'); ?>
+                                            </span>
+                                        </label>
+
+                                        <div class="col-xs-8 smart-form">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="show_downtime"
+                                                       ng-model="post.Automap.show_downtime">
+                                                <i class="checkbox-primary"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group margin-bottom-0"
+                                         ng-class="{'has-error': errors.show_acknowledged}">
+
+                                        <label for="show_acknowledged"
+                                               class="col col-md-4 control-label padding-top-0">
+                                            <span class="label label-primary notify-label">
+                                                <?php echo __('Show Acknowledged'); ?>
+                                            </span>
+                                        </label>
+
+                                        <div class="col-xs-8 smart-form">
+                                            <label class="checkbox small-checkbox-label no-required">
+                                                <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="show_acknowledged"
+                                                       ng-model="post.Automap.show_acknowledged">
+                                                <i class="checkbox-primary"></i>
+                                            </label>
+                                        </div>
+                                    </div>
+
+
+                                    <fieldset>
+                                        <legend class="font-sm">
+                                            <div class="required">
+                                                <label>
+                                                    <?php echo __('Display options'); ?>
+                                                </label>
+                                            </div>
+                                        </legend>
+
+                                        <div class="form-group margin-bottom-0"
+                                             ng-class="{'has-error': errors.show_label}">
+
+                                            <label for="show_label"
+                                                   class="col col-md-4 control-label padding-top-0">
+                                                <?php echo __('Show Label'); ?>
+                                            </label>
+
+                                            <div class="col-xs-8 smart-form">
+                                                <label class="checkbox small-checkbox-label no-required">
+                                                    <input type="checkbox" name="checkbox"
+                                                           ng-true-value="1"
+                                                           ng-false-value="0"
+                                                           id="show_label"
+                                                           ng-model="post.Automap.show_label">
+                                                    <i class="checkbox-primary"></i>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group margin-bottom-0"
+                                             ng-class="{'has-error': errors.group_by_host}">
+
+                                            <label for="group_by_host"
+                                                   class="col col-md-4 control-label padding-top-0">
+                                                <?php echo __('Group by host'); ?>
+                                            </label>
+
+                                            <div class="col-xs-8 smart-form">
+                                                <label class="checkbox small-checkbox-label no-required">
+                                                    <input type="checkbox" name="checkbox"
+                                                           ng-true-value="1"
+                                                           ng-false-value="0"
+                                                           id="group_by_host"
+                                                           ng-model="post.Automap.group_by_host">
+                                                    <i class="checkbox-primary"></i>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group margin-bottom-0"
+                                             ng-class="{'has-error': errors.use_paginator}">
+
+                                            <label for="use_paginator"
+                                                   class="col col-md-4 control-label padding-top-0">
+                                                <?php echo __('Use pagination'); ?>
+                                            </label>
+
+                                            <div class="col-xs-8 smart-form">
+                                                <label class="checkbox small-checkbox-label no-required">
+                                                    <input type="checkbox" name="checkbox"
+                                                           ng-true-value="1"
+                                                           ng-false-value="0"
+                                                           id="use_paginator"
+                                                           ng-model="post.Automap.use_paginator">
+                                                    <i class="checkbox-primary"></i>
+                                                </label>
+                                                <div class="help-block">
+                                                    <?php echo __('Will may decrease loading performance if disabled.'); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group padding-top-10"
+                                             ng-class="{'has-error': errors.font_size}">
+                                            <label class="col col-md-2 control-label">
+                                                <?php echo __('Icon size'); ?>
+                                            </label>
+                                            <div class="col col-xs-10">
+                                                <select
+                                                        id="FontsizeSelect"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        ng-model="post.Automap.font_size">
+                                                    <option value="1"><?php echo __('Smallest'); ?></option>
+                                                    <option value="2"><?php echo __('Smaller'); ?></option>
+                                                    <option value="3"><?php echo __('Small'); ?></option>
+                                                    <option value="4"><?php echo __('Normal'); ?></option>
+                                                    <option value="5"><?php echo __('Big'); ?></option>
+                                                    <option value="6"><?php echo __('Bigger'); ?></option>
+                                                    <option value="7"><?php echo __('Biggest'); ?></option>
+                                                </select>
+                                                <div ng-repeat="error in errors.font_size">
+                                                    <div class="help-block text-danger">{{ error }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="jarviswidget jarviswidget-sortable">
+                            <header role="heading">
+                                <span class="widget-icon">
+                                    <i class="fa fa-eye"></i>
+                                </span>
+                                <h2><?php echo __('Icon Preview'); ?></h2>
+                            </header>
+                            <div role="content">
+                                <div class="widget-body">
+
+                                    <div class="row"
+                                         ng-if="post.Automap.show_label === 1 && post.Automap.group_by_host === 1">
+
+                                        <div class="col-xs-12">
+                                            <h3 class="margin-bottom-5">
+                                                <i class="fa fa-desktop"></i>
+                                                <strong>
+                                                    <?php echo __('Example host'); ?>
+                                                </strong>
+                                            </h3>
+                                        </div>
+
+                                        <div class="col-xs-6 ellipsis" ng-style="getFontsize();">
+                                            <i class="fa fa-square up"></i>
+                                            <span
+                                                    title="<?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>">
+                                                <?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-6 ellipsis" ng-style="getFontsize();">
+                                            <i class="fa fa-square critical"></i>
+                                            <span
+                                                    title="<?php echo __('Example host'); ?>/<?php echo __('Service 2'); ?>">
+                                                <?php echo __('Example host'); ?>/<?php echo __('Service 2'); ?>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row"
+                                         ng-if="post.Automap.show_label === 0 && post.Automap.group_by_host === 1">
+
+                                        <div class="col-xs-12">
+                                            <h3 class="margin-bottom-5">
+                                                <i class="fa fa-desktop"></i>
+                                                <strong>
+                                                    <?php echo __('Example host'); ?>
+                                                </strong>
+                                            </h3>
+                                        </div>
+
+                                        <div class="col-xs-12 ellipsis" ng-style="getFontsize();">
+                                            <i class="fa fa-square up" title="<?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>"></i>
+                                            <i class="fa fa-square critical" title="<?php echo __('Example host'); ?>/<?php echo __('Service 2'); ?>"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="row"
+                                         ng-if="post.Automap.show_label === 0 && post.Automap.group_by_host === 0">
+
+                                        <div class="col-xs-12 ellipsis" ng-style="getFontsize();">
+                                            <i class="fa fa-square up" title="<?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>"></i>
+                                            <i class="fa fa-square critical" title="<?php echo __('Example host'); ?>/<?php echo __('Service 2'); ?>"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="row"
+                                         ng-if="post.Automap.show_label === 1 && post.Automap.group_by_host === 0">
+
+                                        <div class="col-xs-6 ellipsis" ng-style="getFontsize();">
+                                            <i class="fa fa-square up"></i>
+                                            <span
+                                                    title="<?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>">
+                                                <?php echo __('Example host'); ?>/<?php echo __('Service 1'); ?>
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-6 ellipsis" ng-style="getFontsize();">
+                                            <i class="fa fa-square critical"></i>
+                                            <span
+                                                    title="<?php echo __('Example host'); ?>/<?php echo __('Service 2'); ?>">
+                                                <?php echo __('Example host'); ?>/<?php echo __('Service 2'); ?>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                    <div class="well formactions ">
+                        <div class="pull-right">
+                            <label>
+                                <input type="checkbox" ng-model="data.createAnother">
+                                <?php echo _('Create another'); ?>
+                            </label>
+
+                            <input class="btn btn-primary" type="submit"
+                                   value="<?php echo __('Create Auto Map'); ?>">
+
+                            <a back-button fallback-state='AutomapsIndex'
+                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

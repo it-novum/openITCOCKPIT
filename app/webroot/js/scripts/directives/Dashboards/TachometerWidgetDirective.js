@@ -113,11 +113,11 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                     }
 
                     if($scope.ACL.services.index){
-                        return '/services/browser/' + $scope.Service.id
+                        return '/ng/#!/services/browser/' + $scope.Service.id
                     }
                 }else{
                     if($scope.ACL.services.index){
-                        return '/services/browser/' + $scope.Service.id
+                        return '/ng/#!/services/browser/' + $scope.Service.id
                     }
                 }
 

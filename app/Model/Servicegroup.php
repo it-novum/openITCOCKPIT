@@ -31,6 +31,10 @@
 
 use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
 
+/**
+ * Class Servicegroup
+ * @deprecated
+ */
 class Servicegroup extends AppModel {
 
     public $belongsTo = [
@@ -77,12 +81,25 @@ class Servicegroup extends AppModel {
         ],
     ];
 
+    /**
+     * Servicegroup constructor.
+     * @param bool $id
+     * @param null $table
+     * @param null $ds
+     * @deprecated
+     */
     public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
-        App::uses('UUID', 'Lib');
         $this->Service = ClassRegistry::init('Service');
     }
 
+    /**
+     * @param array $container_ids
+     * @param string $type
+     * @param string $index
+     * @return array|null
+     * @deprecated
+     */
     public function servicegroupsByContainerId($container_ids = [], $type = 'all', $index = 'id') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -148,6 +165,12 @@ class Servicegroup extends AppModel {
         return [];
     }
 
+    /**
+     * @param ServicegroupConditions $ServicegroupConditions
+     * @param array $selected
+     * @return array|null
+     * @deprecated
+     */
     public function getServicegroupsForAngular(ServicegroupConditions $ServicegroupConditions, $selected = []) {
         $query = [
             'recursive'  => -1,

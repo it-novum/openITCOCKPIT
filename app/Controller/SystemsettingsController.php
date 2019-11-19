@@ -23,36 +23,60 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
+use Cake\Cache\Cache;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+
 class SystemsettingsController extends AppController {
-    public $layout = 'Admin.default';
-    //public $components = ['Bbcode'];
-    //public $helpers = ['Bbcode'];
+
+    public $layout = 'blank';
 
     public function index() {
-        $all_systemsettings = $this->Systemsetting->findNice();
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->Systemsetting->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
 
-                //Update systemname in session
-                $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-                if (isset($systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])) {
-                    $this->Session->write('FRONTEND.SYSTEMNAME', $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
-                }
-                if (isset($systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING'])) {
-                    $this->Session->write('FRONTEND.EXPORT_RUNNING', $systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING']);
-                }
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
 
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $all_systemsettings = $Systemsettings->getSettings();
 
-                $this->setFlash(__('Settings saved successfully'));
-
-                return $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Data could not be saved'), false);
+        foreach ($all_systemsettings as $key => $value) {
+            foreach ($value as $key2 => $systemsetting) {
+                $all_systemsettings[$key][$key2]['exploded'] = explode('.', $systemsetting['key'], 2)[1]; //This parse the PREFIX MONITORIN. or WEBSERVER. or WHATEVER. away
             }
         }
 
         $this->set(compact(['all_systemsettings']));
         $this->set('_serialize', ['all_systemsettings']);
+
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $systemsettingsEntity = $Systemsettings->getSystemsettings(true);
+            $normalizedData = [];
+            foreach ($this->request->data as $requestData) {
+                foreach ($requestData as $data)
+                    $normalizedData[] = $data;
+            }
+            $systemsettingsPatchedEntities = $Systemsettings->patchEntities($systemsettingsEntity, $normalizedData);
+            $result = $Systemsettings->saveMany($systemsettingsPatchedEntities);
+            Cache::clear(false, 'permissions');
+            //debug($result);
+            if (!$result) {
+                $this->response->statusCode(400);
+                $this->set('error',[]);
+                $this->set('_serialize', ['error']);
+                return;
+            }
+            //Update systemname in session
+            $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
+            if (isset($systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])) {
+                $this->Session->write('FRONTEND.SYSTEMNAME', $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
+            }
+            if (isset($systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING'])) {
+                $this->Session->write('FRONTEND.EXPORT_RUNNING', $systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING']);
+            }
+        }
     }
+
 }

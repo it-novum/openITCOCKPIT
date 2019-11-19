@@ -24,7 +24,10 @@
 //	confirmation.
 
 
+use App\Model\Table\HostgroupsTable;
+use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 
 /**
@@ -33,7 +36,6 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
  * @property GrafanaConfigurationHostgroupMembership $GrafanaConfigurationHostgroupMembership
  * @property Hostgroup $Hostgroup
  * @property Container $Container
- * @property Proxy $Proxy
  * @property GrafanaDashboard $GrafanaDashboard
  */
 class GrafanaConfigurationController extends GrafanaModuleAppController {
@@ -45,7 +47,6 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
         'Container',
         'GrafanaModule.GrafanaConfiguration',
         'GrafanaModule.GrafanaConfigurationHostgroupMembership',
-        'Proxy',
         'GrafanaModule.GrafanaDashboard'
     ];
 
@@ -54,6 +55,12 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
     ];
 
     public function index() {
+        $this->layout = 'blank';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship html template
+            return;
+        }
+
         //$this->request->data = Hash::merge($grafanaConfiguration, $this->request->data);
 
         //Save POST||PUT Request
@@ -73,10 +80,6 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
                 $this->GrafanaConfigurationHostgroupMembership->deleteAll(true);
 
                 if ($this->GrafanaConfiguration->saveAll($this->request->data)) {
-
-                    if ($this->isAngularJsRequest()) {
-                        $this->setFlash(__('Grafana configuration successfully saved'));
-                    }
                     $this->serializeId();
                     return;
                 }
@@ -87,18 +90,10 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
         }
 
         //Ship data for GET requests
-        $hostgroups = $this->Hostgroup->findList([
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'order'      => [
-                'Container.name' => 'asc',
-            ],
-            'conditions' => [
-                'Container.parent_id' => $this->MY_RIGHTS,
-            ],
-        ]);
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $hostgroups = $HostgroupsTable->getHostgroupsAsList([], $this->MY_RIGHTS);
+
         $customFieldsToRefill = [
             'GrafanaConfiguration' => [
                 'use_https',
@@ -148,20 +143,11 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
             return;
         }
 
-        $hostgroups = $this->Hostgroup->findList([
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'order'      => [
-                'Container.name' => 'asc',
-            ],
-            'conditions' => [
-                'Container.parent_id' => $this->MY_RIGHTS,
-            ],
-        ]);
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+        $hostgroups = $HostgroupsTable->getHostgroupsAsList([], $this->MY_RIGHTS);
 
-        $hostgroups = $this->Container->makeItJavaScriptAble($hostgroups);
+        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
 
         $this->set('hostgroups', $hostgroups);
         $this->set('_serialize', ['hostgroups']);
@@ -183,7 +169,11 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
 
             $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($config);
 
-            $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration, $this->Proxy->getSettings());
+            /** @var $Proxy App\Model\Table\ProxiesTable */
+            $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+
+
+            $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration, $Proxy->getSettings());
             if ($client instanceof Client) {
                 $status = ['status' => true];
             } else {

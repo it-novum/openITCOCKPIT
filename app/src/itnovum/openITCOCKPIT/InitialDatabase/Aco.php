@@ -1619,7 +1619,7 @@ class Aco extends Importer {
                     'parent_id'   => '141',
                     'model'       => null,
                     'foreign_key' => null,
-                    'alias'       => 'loadTasksByPlugin',
+                    'alias'       => 'getTasks',
                     'lft'         => '327',
                     'rght'        => '328'
                 ]

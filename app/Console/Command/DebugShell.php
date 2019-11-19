@@ -101,10 +101,13 @@ class DebugShell extends AppShell {
         $this->out(__d('oitc_console', '[C] Debug contact configuration files'));
         $this->out(__d('oitc_console', '[CG] Debug contact group configuration files'));
         $this->out(__d('oitc_console', '[HE] Debug host escalation configuration files'));
+        $this->out(__d('oitc_console', '[SE] Debug service escalation configuration files'));
+        $this->out(__d('oitc_console', '[HD] Debug host dependency configuration files'));
+        $this->out(__d('oitc_console', '[SD] Debug service dependency configuration files'));
         $this->out(__d('oitc_console', '[UUID] Search object by UUID'));
         $this->out(__d('oitc_console', '[B]ack'));
 
-        $menuSelection = strtoupper($this->in(__d('oitc_console', 'What would you like to do?'), ['T', 'TF', 'H', 'HT', 'S', 'ST', 'TP', 'CM', 'C', 'CG', 'HE', 'UUID', 'B']));
+        $menuSelection = strtoupper($this->in(__d('oitc_console', 'What would you like to do?'), ['T', 'TF', 'H', 'HT', 'S', 'ST', 'TP', 'CM', 'C', 'CG', 'HE', 'SE', 'HD', 'SD', 'UUID', 'B']));
         $this->DebugConfigNagios->setup($this->conf);
         switch ($menuSelection) {
             case 'T':
@@ -139,6 +142,15 @@ class DebugShell extends AppShell {
                 break;
             case 'HE':
                 $this->DebugConfigNagios->debug('Hostescalation', 'hostescalations');
+                break;
+            case 'SE':
+                $this->DebugConfigNagios->debug('Serviceescalation', 'serviceescalations');
+                break;
+            case 'HD':
+                $this->DebugConfigNagios->debug('Hostdependency', 'hostdependencies');
+                break;
+            case 'SD':
+                $this->DebugConfigNagios->debug('Servicedependency', 'servicedependencies');
                 break;
             case 'UUID':
                 $this->DebugConfigNagios->debugByUuid();

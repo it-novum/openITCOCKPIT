@@ -25,34 +25,12 @@
 
 use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 
+/**
+ * Class BbcodeComponent
+ * @deprecated use \itnovum\openITCOCKPIT\Core\Views\BBCodeParser
+ */
 class BbcodeComponent extends Component {
 
-    /**
-     * @var BBCodeParser
-     */
-    private $parser;
-
-    /**
-     * @var JBBCode\Parser
-     */
-    private $bbparser;
-
-    /**
-     * initialize the BB Code Component
-     *
-     * @param Controller $controller The current CakePHP controller instance
-     *
-     * @set    object $bbparser to the current view for BbcodeHelper
-     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-     * @since  3.0
-     */
-    public function initialize(Controller $controller) {
-        $this->Controller = $controller;
-
-        $this->parser = new BBCodeParser();
-        $bbparser = $this->parser->getParser();
-        $this->bbparser = $bbparser;
-    }
 
     /**
      * Converts BB code to HTML
@@ -63,9 +41,11 @@ class BbcodeComponent extends Component {
      * @return string with HTML parts
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated use \itnovum\openITCOCKPIT\Core\Views\BBCodeParser
      */
     public function asHtml($bbcode, $nl2br = true) {
-        return $this->parser->asHtml($bbcode, $nl2br);
+        $parser = new BBCodeParser();
+        return $parser->asHtml($bbcode, $nl2br);
     }
 
     /**
@@ -76,8 +56,10 @@ class BbcodeComponent extends Component {
      * @return string with HTML <br> for new line
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated use \itnovum\openITCOCKPIT\Core\Views\BBCodeParser
      */
     public function nagiosNl2br($str) {
-        return $this->parser->nagiosNl2br($str);
+        $parser = new BBCodeParser();
+        return $parser->nagiosNl2br($str);
     }
 }

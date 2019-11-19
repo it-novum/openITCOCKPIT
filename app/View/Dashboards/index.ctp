@@ -25,6 +25,12 @@
 
 <?php echo $this->Html->css('vendor/radio_buttons.css'); ?>
 
+<?php if ($this->Acl->hasPermission('index', 'statistics')): ?>
+    <?php if (isset($askForHelp) && $askForHelp === true): ?>
+        <ask-anonymous-statistics></ask-anonymous-statistics>
+    <?php endif; ?>
+<?php endif; ?>
+
 <div class="row">
     <div class="col-xs-12">
         <h1 class="page-title txt-color-blueDark">
@@ -399,7 +405,7 @@
                                 </b>
                                 <input type="text" class="input-sm"
                                        placeholder="<?php echo __('Tab name'); ?>"
-                                       ng-model="newTabName">
+                                       ng-model="data.newTabName">
                             </label>
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -432,7 +438,7 @@
                                 class="form-control"
                                 chosen="sharedTabs"
                                 ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
-                                ng-model="createTabFromSharedTabId">
+                                ng-model="data.createTabFromSharedTabId">
                         </select>
                     </div>
                     <div class="col-xs-12 padding-top-10">
@@ -474,7 +480,7 @@
                         </label>
                         <div class="slidecontainer">
                             <input type="range" step="10" min="0" max="900" class="slider"
-                                   ng-model="viewTabRotateInterval" ng-mouseup="saveTabRotateInterval()">
+                                   ng-model="data.viewTabRotateInterval" ng-mouseup="saveTabRotateInterval()">
                             <div>
                                 <div class="help-block text-muted">{{ intervalText }}</div>
                             </div>
@@ -521,7 +527,7 @@
                                 </b>
                                 <input type="text" class="input-sm"
                                        placeholder="<?php echo __('New tab name'); ?>"
-                                       ng-model="renameTabName">
+                                       ng-model="data.renameTabName">
                             </label>
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -613,7 +619,7 @@
                                 </b>
                                 <input type="text" class="input-sm"
                                        placeholder="<?php echo __('New title of widget'); ?>"
-                                       ng-model="renameWidgetTitle">
+                                       ng-model="data.renameWidgetTitle">
                             </label>
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>

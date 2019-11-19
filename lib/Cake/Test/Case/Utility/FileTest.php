@@ -56,7 +56,7 @@ class FileTest extends CakeTestCase {
 		unset($this->File);
 
 		$Folder = new Folder();
-		$Folder->delete(TMP . 'tests' . DS . 'permissions');
+		$Folder->delete(OLD_TMP . 'tests' . DS . 'permissions');
 	}
 
 /**
@@ -74,7 +74,7 @@ class FileTest extends CakeTestCase {
  * @covers ::Folder
  */
 	public function testBasic() {
-		$file = CAKE . DS . 'LICENSE.txt';
+		$file = OLD_CAKE . DS . 'LICENSE.txt';
 
 		$this->File = new File($file, false);
 
@@ -141,7 +141,7 @@ class FileTest extends CakeTestCase {
 	public function testPermission() {
 		$this->skipIf(DIRECTORY_SEPARATOR === '\\', 'File permissions tests not supported on Windows.');
 
-		$dir = TMP . 'tests' . DS . 'permissions' . DS;
+		$dir = OLD_TMP . 'tests' . DS . 'permissions' . DS;
 		$old = umask();
 
 		umask(0002);
@@ -296,7 +296,7 @@ class FileTest extends CakeTestCase {
  * @covers ::clearStatCache
  */
 	public function testCreate() {
-		$tmpFile = TMP . 'tests' . DS . 'cakephp.file.test.tmp';
+		$tmpFile = OLD_TMP . 'tests' . DS . 'cakephp.file.test.tmp';
 		$File = new File($tmpFile, true, 0777);
 		$this->assertTrue($File->exists());
 	}
@@ -307,7 +307,7 @@ class FileTest extends CakeTestCase {
  * @return void
  */
 	public function testExists() {
-		$tmpFile = TMP . 'tests/cakephp.file.test.tmp';
+		$tmpFile = OLD_TMP . 'tests/cakephp.file.test.tmp';
 		$file = new File($tmpFile, true, 0777);
 		$this->assertTrue($file->exists(), 'absolute path should exist');
 
@@ -326,7 +326,7 @@ class FileTest extends CakeTestCase {
  * @covers ::create
  */
 	public function testOpeningNonExistentFileCreatesIt() {
-		$someFile = new File(TMP . 'some_file.txt', false);
+		$someFile = new File(OLD_TMP . 'some_file.txt', false);
 		$this->assertTrue($someFile->open());
 		$this->assertEquals('', $someFile->read());
 		$someFile->close();
@@ -361,7 +361,7 @@ class FileTest extends CakeTestCase {
  * @covers ::readable
  */
 	public function testReadable() {
-		$someFile = new File(TMP . 'some_file.txt', false);
+		$someFile = new File(OLD_TMP . 'some_file.txt', false);
 		$this->assertTrue($someFile->open());
 		$this->assertTrue($someFile->readable());
 		$someFile->close();
@@ -375,7 +375,7 @@ class FileTest extends CakeTestCase {
  * @covers ::writable
  */
 	public function testWritable() {
-		$someFile = new File(TMP . 'some_file.txt', false);
+		$someFile = new File(OLD_TMP . 'some_file.txt', false);
 		$this->assertTrue($someFile->open());
 		$this->assertTrue($someFile->writable());
 		$someFile->close();
@@ -389,7 +389,7 @@ class FileTest extends CakeTestCase {
  * @covers ::executable
  */
 	public function testExecutable() {
-		$someFile = new File(TMP . 'some_file.txt', false);
+		$someFile = new File(OLD_TMP . 'some_file.txt', false);
 		$this->assertTrue($someFile->open());
 		$this->assertFalse($someFile->executable());
 		$someFile->close();
@@ -403,7 +403,7 @@ class FileTest extends CakeTestCase {
  * @covers ::lastAccess
  */
 	public function testLastAccess() {
-		$someFile = new File(TMP . 'some_file.txt', false);
+		$someFile = new File(OLD_TMP . 'some_file.txt', false);
 		$this->assertFalse($someFile->lastAccess());
 		$this->assertTrue($someFile->open());
 		$this->assertWithinMargin($someFile->lastAccess(), time(), 2);
@@ -418,7 +418,7 @@ class FileTest extends CakeTestCase {
  * @covers ::lastChange
  */
 	public function testLastChange() {
-		$someFile = new File(TMP . 'some_file.txt', false);
+		$someFile = new File(OLD_TMP . 'some_file.txt', false);
 		$this->assertFalse($someFile->lastChange());
 		$this->assertTrue($someFile->open('r+'));
 		$this->assertWithinMargin($someFile->lastChange(), time(), 2);
@@ -549,7 +549,7 @@ class FileTest extends CakeTestCase {
  * @covers ::copy
  */
 	public function testCopy() {
-		$dest = TMP . 'tests' . DS . 'cakephp.file.test.tmp';
+		$dest = OLD_TMP . 'tests' . DS . 'cakephp.file.test.tmp';
 		$file = __FILE__;
 		$this->File = new File($file);
 		$result = $this->File->copy($dest);
@@ -579,7 +579,7 @@ class FileTest extends CakeTestCase {
  */
 	public function testMime() {
 		$this->skipIf(!function_exists('finfo_open') && !function_exists('mime_content_type'), 'Not able to read mime type');
-		$path = CAKE . 'Test' . DS . 'test_app' . DS . 'webroot' . DS . 'img' . DS . 'cake.power.gif';
+		$path = OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'webroot' . DS . 'img' . DS . 'cake.power.gif';
 		$file = new File($path);
 		$expected = 'image/gif';
 		if (function_exists('mime_content_type') && mime_content_type($file->pwd()) === false) {
@@ -595,7 +595,7 @@ class FileTest extends CakeTestCase {
  * @return void
  */
 	protected function _getTmpFile($paintSkip = true) {
-		$tmpFile = TMP . 'tests' . DS . 'cakephp.file.test.tmp';
+		$tmpFile = OLD_TMP . 'tests' . DS . 'cakephp.file.test.tmp';
 		if (is_writable(dirname($tmpFile)) && (!file_exists($tmpFile) || is_writable($tmpFile))) {
 			return $tmpFile;
 		}
@@ -619,7 +619,7 @@ class FileTest extends CakeTestCase {
  */
 	public function testReplaceText() {
 		$TestFile = new File(dirname(__FILE__) . '/../../test_app/Vendor/welcome.php');
-		$TmpFile = new File(TMP . 'tests' . DS . 'cakephp.file.test.tmp');
+		$TmpFile = new File(OLD_TMP . 'tests' . DS . 'cakephp.file.test.tmp');
 
 		// Copy the test file to the temporary location
 		$TestFile->copy($TmpFile->path, true);

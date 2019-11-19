@@ -458,8 +458,8 @@ class CakeSchemaTest extends CakeTestCase {
  */
 	public function tearDown() {
 		parent::tearDown();
-		if (file_exists(TMP . 'tests' . DS . 'schema.php')) {
-			unlink(TMP . 'tests' . DS . 'schema.php');
+		if (file_exists(OLD_TMP . 'tests' . DS . 'schema.php')) {
+			unlink(OLD_TMP . 'tests' . DS . 'schema.php');
 		}
 		unset($this->Schema);
 		CakePlugin::unload();
@@ -624,7 +624,7 @@ class CakeSchemaTest extends CakeTestCase {
 	public function testSchemaReadWithPlugins() {
 		App::objects('model', null, false);
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		));
 		CakePlugin::load('TestPlugin');
 
@@ -774,12 +774,12 @@ class CakeSchemaTest extends CakeTestCase {
 		$write = $this->Schema->write(array(
 			'name' => 'MyOtherApp',
 			'tables' => $this->Schema->tables,
-			'path' => TMP . 'tests'
+			'path' => OLD_TMP . 'tests'
 		));
-		$file = file_get_contents(TMP . 'tests' . DS . 'schema.php');
+		$file = file_get_contents(OLD_TMP . 'tests' . DS . 'schema.php');
 		$this->assertEquals($write, $file);
 
-		require_once TMP . 'tests' . DS . 'schema.php';
+		require_once OLD_TMP . 'tests' . DS . 'schema.php';
 		$OtherSchema = new MyOtherAppSchema();
 		$this->assertEquals($this->Schema->tables, $OtherSchema->tables);
 	}
@@ -1095,7 +1095,7 @@ class CakeSchemaTest extends CakeTestCase {
  * @return void
  */
 	public function testSchemaLoading() {
-		$Other = $this->Schema->load(array('name' => 'MyOtherApp', 'path' => TMP . 'tests'));
+		$Other = $this->Schema->load(array('name' => 'MyOtherApp', 'path' => OLD_TMP . 'tests'));
 		$this->assertEquals('MyOtherApp', $Other->name);
 		$this->assertEquals($Other->tables, $this->Schema->tables);
 	}
@@ -1107,7 +1107,7 @@ class CakeSchemaTest extends CakeTestCase {
  */
 	public function testSchemaLoadingFromPlugin() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		));
 		CakePlugin::load('TestPlugin');
 		$Other = $this->Schema->load(array('name' => 'TestPluginApp', 'plugin' => 'TestPlugin'));

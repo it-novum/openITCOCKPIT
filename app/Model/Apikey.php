@@ -22,6 +22,10 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+/**
+ * Class Apikey
+ * @deprecated
+ */
 class Apikey extends AppModel {
 
     public $belongsTo = ['User'];

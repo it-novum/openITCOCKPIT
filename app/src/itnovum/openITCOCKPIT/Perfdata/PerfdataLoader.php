@@ -36,7 +36,6 @@ use Statusengine\PerfdataParser;
 /**
  * Class PerfdataLoader
  * @package itnovum\openITCOCKPIT\Perfdata
- * @property \Rrd $Rrd
  * @property \Servicestatus $Servicestatus
  */
 class PerfdataLoader {
@@ -56,39 +55,27 @@ class PerfdataLoader {
     private $PerfdataBackend;
 
     /**
-     * @var \Model
-     */
-    private $Servicestatus;
-
-    /**
-     * @var \Model
-     */
-    private $Rrd;
-
-    /**
      * PerfdataLoader constructor.
      * @param DbBackend $DbBackend
      * @param PerfdataBackend $PerfdataBackend
-     * @param \Model $Servicestatus
-     * @param \Model $Rrd
      * @param null|string $gauge
      */
-    public function __construct(DbBackend $DbBackend, PerfdataBackend $PerfdataBackend, \Model $Servicestatus, \Model $Rrd) {
+    public function __construct(DbBackend $DbBackend, PerfdataBackend $PerfdataBackend) {
         $this->DbBackend = $DbBackend;
         $this->PerfdataBackend = $PerfdataBackend;
-        $this->Servicestatus = $Servicestatus;
-        $this->Rrd = $Rrd;
     }
 
+
     /**
-     * @param $hostUuid
-     * @param $serviceUuid
-     * @param $start
-     * @param $end
+     * @param string $hostUuid
+     * @param string $serviceUuid
+     * @param int $start
+     * @param int $end
      * @param bool $jsTimestamp
      * @param string $type
-     * @param null|string $gauge
+     * @param null $gauge
      * @return array
+     * @throws \App\Lib\Exceptions\MissingDbBackendException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp = false, $type = 'avg', $gauge = null) {
@@ -97,17 +84,39 @@ class PerfdataLoader {
         }
 
         $performance_data = [];
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
         if ($this->PerfdataBackend->isWhisper()) {
             $ServicestatusFields = new ServicestatusFields($this->DbBackend);
             $ServicestatusFields->perfdata();
-            $servicestatus = $this->Servicestatus->byUuid($serviceUuid, $ServicestatusFields);
+            $servicestatus = $ServicestatusTable->byUuid($serviceUuid, $ServicestatusFields);
+
             if (!empty($servicestatus)) {
-                $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
-                $perfdataMetadata = $PerfdataParser->parse();
 
                 $GraphiteConfig = new GraphiteConfig();
                 $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
+
+                if(!empty($servicestatus['Servicestatus']['perfdata'])) {
+                    //Use parse perfdata string from database
+                    $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
+                    $perfdataMetadata = $PerfdataParser->parse();
+                }else{
+                    //Query graphite backend for available metrics - for example if service state is unknown
+                    $metrics = $GraphiteLoader->findMetricsByUuid($hostUuid, $serviceUuid);
+
+                    $perfdataMetadata = [];
+                    foreach($metrics as $metric){
+                        $perfdataMetadata[$metric] = [
+                            'current' => null,
+                            'unit' => null,
+                            'warning' => null,
+                            'critical' => null,
+                            'min' => null,
+                            'max' => null
+                        ];
+                    }
+                }
+
                 $GraphiteLoader->setUseJsTimestamp($jsTimestamp);
                 $GraphiteLoader->setAbsoluteDate($start, $end);
 
@@ -136,41 +145,46 @@ class PerfdataLoader {
                         'max'   => $metric['max'],
                     ];
 
-                    switch ($type) {
-                        case 'min':
-                            $performance_data[] = [
-                                'datasource' => $datasource,
-                                'data'       => $GraphiteLoader->getSeriesMin($GraphiteMetric)
-                            ];
-                            break;
+                    if ($metric['unit'] === 'c') {
+                        //Counter datatype
+                        $performance_data[] = [
+                            'datasource' => $datasource,
+                            'data'       => $GraphiteLoader->getSeriesAsCounter($GraphiteMetric)
+                        ];
+                    } else {
+                        //Default Gauge
+                        switch ($type) {
+                            case 'min':
+                                $performance_data[] = [
+                                    'datasource' => $datasource,
+                                    'data'       => $GraphiteLoader->getSeriesMin($GraphiteMetric)
+                                ];
+                                break;
 
-                        case 'max':
-                            $performance_data[] = [
-                                'datasource' => $datasource,
-                                'data'       => $GraphiteLoader->getSeriesMax($GraphiteMetric)
-                            ];
-                            break;
+                            case 'max':
+                                $performance_data[] = [
+                                    'datasource' => $datasource,
+                                    'data'       => $GraphiteLoader->getSeriesMax($GraphiteMetric)
+                                ];
+                                break;
 
-                        default:
-                            $performance_data[] = [
-                                'datasource' => $datasource,
-                                'data'       => $GraphiteLoader->getSeriesAvg($GraphiteMetric)
-                            ];
-                            break;
+                            default:
+                                $performance_data[] = [
+                                    'datasource' => $datasource,
+                                    'data'       => $GraphiteLoader->getSeriesAvg($GraphiteMetric)
+                                ];
+                                break;
+                        }
                     }
-
                 }
             }
         }
 
         if ($this->PerfdataBackend->isRrdtool()) {
             if (file_exists(sprintf('/opt/openitc/nagios/share/perfdata/%s/%s.rrd', $hostUuid, $serviceUuid))) {
-                $options = [
-                    'start' => $start,
-                    'end'   => $end
-                ];
 
-                $rrd_data = $this->Rrd->getPerfDataFiles($hostUuid, $serviceUuid, $options, null, $type);
+                $RrdLoader = new RrdLoader();
+                $rrd_data = $RrdLoader->getPerfDataFiles($hostUuid, $serviceUuid, $start, $end, $type);
 
                 $limit = (int)self::MAX_RESPONSE_GRAPH_POINTS / sizeof($rrd_data['data']);
                 foreach ($rrd_data['xml_data'] as $dataSource) {
@@ -180,7 +194,7 @@ class PerfdataLoader {
                         }
                     }
 
-                    $tmpData = $this->Rrd->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE);
+                    $tmpData = $RrdLoader->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE);
                     $data = [];
 
                     foreach ($tmpData as $timestamp => $value) {

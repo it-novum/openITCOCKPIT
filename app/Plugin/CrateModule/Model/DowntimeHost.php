@@ -24,6 +24,10 @@
 
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 
+/**
+ * Class DowntimeHost
+ * @deprecated
+ */
 class DowntimeHost extends CrateModuleAppModel {
 
     public $useDbConfig = 'Crate';
@@ -34,6 +38,7 @@ class DowntimeHost extends CrateModuleAppModel {
      * @param DowntimeHostConditions $Conditions
      * @param array $filterConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(DowntimeHostConditions $Conditions, $filterConditions = []) {
         $fields = [
@@ -109,6 +114,7 @@ class DowntimeHost extends CrateModuleAppModel {
     /**
      * @param DowntimeHostConditions $Conditions
      * @return array
+     * @deprecated
      */
     public function getQueryForReporting(DowntimeHostConditions $Conditions) {
         $query = [
@@ -156,6 +162,7 @@ class DowntimeHost extends CrateModuleAppModel {
     /**
      * @param int $internalDowntimeId
      * @return array
+     * @deprecated
      */
     public function getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId) {
         $query = [
@@ -186,6 +193,7 @@ class DowntimeHost extends CrateModuleAppModel {
      * @param null $uuid
      * @param bool $isRunning
      * @return array|null
+     * @deprecated
      */
     public function byHostUuid($uuid = null, $isRunning = false) {
         if ($uuid !== null) {

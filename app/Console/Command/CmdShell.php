@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
+
 class CmdShell extends AppShell {
 
     public $uses = [
@@ -47,8 +49,7 @@ class CmdShell extends AppShell {
      * @since     3.0.1
      */
     public function main() {
-        App::uses('UUID', 'Lib');
-        $this->uuidRegex = UUID::regex();
+        $this->uuidRegex = \itnovum\openITCOCKPIT\Core\UUID::regex();
         define('LOGLEVEL_INFO', 1);
         define('LOGLEVEL_WARNING', 2);
         define('LOGLEVEL_FATAL', 4);
@@ -56,7 +57,9 @@ class CmdShell extends AppShell {
 
         Configure::load('cmddaemon');
 
-        $this->_systemsettings = $this->Systemsetting->findAsArray();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArray();
 
         $this->logLevel = Configure::read('loglevel');
 
@@ -383,7 +386,7 @@ class CmdShell extends AppShell {
 
                     return $this->_buildNagCommand($commandAsArray);
                 } else {
-                    //could not find service uuid 
+                    //could not find service uuid
                     $this->_log('Could not find service for given service description and host uuid', LOGLEVEL_FATAL);
 
                     return false;

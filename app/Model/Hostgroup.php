@@ -29,8 +29,14 @@
  * a host belongsTo a container (many to one)
  */
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 
+/**
+ * Class Hostgroup
+ * @deprecated
+ */
 class Hostgroup extends AppModel {
 
     public $belongsTo = [
@@ -64,26 +70,39 @@ class Hostgroup extends AppModel {
         ],
     ];
 
+    /**
+     * Hostgroup constructor.
+     * @param bool $id
+     * @param null $table
+     * @param null $ds
+     * @deprecated
+     */
     public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->Host = ClassRegistry::init('Host');
     }
 
+    /**
+     * @param array $container_ids
+     * @param string $type
+     * @param string $index
+     * @return array|null
+     * @deprecated
+     */
     public function hostgroupsByContainerId($container_ids = [], $type = 'all', $index = 'container_id') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
         }
-        //Lookup for the tenant container of $container_id
-        $this->Container = ClassRegistry::init('Container');
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $tenantContainerIds = [];
 
         foreach ($container_ids as $container_id) {
             if ($container_id != ROOT_CONTAINER) {
-
                 // Get contaier id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-                $path = $this->Container->getPath($container_id);
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'HostgroupHostgroupsByContainerId');
 
                 $tenantContainerIds[] = $path[1]['Container']['id'];
             } else {
@@ -100,7 +119,7 @@ class Hostgroup extends AppModel {
                     'contain'   => [
                         'Container' => [
                             'conditions' => [
-                                'Container.parent_id' => $containerIds,
+                                'Container.parent_id'        => $containerIds,
                                 'Container.containertype_id' => CT_HOSTGROUP
                             ],
                         ],
@@ -128,7 +147,7 @@ class Hostgroup extends AppModel {
                         'Hostgroup.container_id',
                     ],
                     'conditions' => [
-                        'Container.parent_id'      => $containerIds,
+                        'Container.parent_id'        => $containerIds,
                         'Container.containertype_id' => CT_HOSTGROUP
                     ],
                 ]);
@@ -144,10 +163,16 @@ class Hostgroup extends AppModel {
                 }
 
                 return $return;
-
         }
     }
 
+    /**
+     * @param array $container_ids
+     * @param string $type
+     * @param string $index
+     * @return array|null
+     * @deprecated
+     */
     public function hostgroupsByContainerIdNoTenantLookup($container_ids = [], $type = 'all', $index = 'container_id') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -208,26 +233,44 @@ class Hostgroup extends AppModel {
     }
 
 
+    /**
+     * @param string $type
+     * @param array $options
+     * @param string $index
+     * @return array|null
+     * @deprecated
+     */
     public function findHostgroups($type = 'all', $options = [], $index = 'id') {
         if ($type == 'all') {
             return $this->find('all', $options);
         }
 
+        $return = [];
         if ($type == 'list') {
-            $return = [];
             $results = $this->find('all', $options);
             foreach ($results as $result) {
                 $return[$result['Hostgroup'][$index]] = $result['Container']['name'];
             }
-
-            return $return;
         }
+        return $return;
     }
 
+    /**
+     * @param array $options
+     * @param string $index
+     * @return array|null
+     * @deprecated
+     */
     public function findList($options = [], $index = 'id') {
         return $this->findHostgroups('list', $options, $index);
     }
 
+    /**
+     * @param HostgroupConditions $HostgroupConditions
+     * @param array $selected
+     * @return array|null
+     * @deprecated
+     */
     public function getHostgroupsForAngular(HostgroupConditions $HostgroupConditions, $selected = []) {
         $query = [
             'recursive'  => -1,

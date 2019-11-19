@@ -6,7 +6,7 @@ define('SYSSETT_TAB3', '            ');
 define('SYSSETT_TAB4', '                ');
 
 App::uses('File', 'Utility');
-require_once APP . 'src' . DS . 'itnovum' . DS . 'openITCOCKPIT' . DS . 'InitialDatabase' . DS . 'Systemsetting.php';
+require_once OLD_APP . 'src' . DS . 'itnovum' . DS . 'openITCOCKPIT' . DS . 'InitialDatabase' . DS . 'Systemsetting.php';
 
 class DocuGeneratorShell extends AppShell {
 
@@ -17,7 +17,7 @@ class DocuGeneratorShell extends AppShell {
 
         // generating api/systemsettings
         $this->out('generating api/systemsettings.md...    ', false);
-        $systemSettingsNew = new File(APP . DS . 'docs' . DS . 'en' . DS . 'api' . DS . 'systemsettings.md', true, 0777);
+        $systemSettingsNew = new File(OLD_APP . DS . 'docs' . DS . 'en' . DS . 'api' . DS . 'systemsettings.md', true, 0777);
         $systemSettingsNew->delete();
         $systemSettingsNew->write($this->getApiPreText(), 'w');
 
@@ -53,7 +53,7 @@ class DocuGeneratorShell extends AppShell {
         // generating administration/systemsettings
         $this->out('generating administration/systemsettings.md...    ', false);
         unset($systemSettingsNew);
-        $systemSettingsNew = new File(APP . DS . 'docs' . DS . 'en' . DS . 'administration' . DS . 'systemsettings.md', true, 0777);
+        $systemSettingsNew = new File(OLD_APP . DS . 'docs' . DS . 'en' . DS . 'administration' . DS . 'systemsettings.md', true, 0777);
         $systemSettingsNew->delete();
         $systemSettingsNew->write($this->getAdminPreText(), 'w');
 

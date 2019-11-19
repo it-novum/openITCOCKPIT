@@ -51,7 +51,7 @@
                         </button>
 
                         <?php if ($this->Acl->hasPermission('add')): ?>
-                            <a href="/map_module/rotations/add" class="btn btn-xs btn-success">
+                            <a ui-sref="RotationsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
@@ -132,11 +132,10 @@
                                 </td>
                                 <td>
                                     <a ng-if="rotation.Rotation.ids.length"
-                                       ng-href="/map_module/mapeditors/view/{{ rotation.Rotation.first_id }}?rotation={{ rotation.Rotation.ids }}&interval={{ rotation.Rotation.interval }}">
+                                       ui-sref="MapeditorsView({id: rotation.Rotation.first_id, rotation: rotation.Rotation.ids, interval: rotation.Rotation.interval})">
                                         {{ rotation.Rotation.name }}
                                     </a>
-                                    <a ng-if="!rotation.Rotation.ids.length"
-                                       ng-href="/map_module/rotations/edit/{{ rotation.Rotation.id }}">
+                                    <a ui-sref="RotationsEdit({id: rotation.Rotation.id})" ng-if="!rotation.Rotation.ids.length && rotation.Rotation.allowEdit">
                                         {{ rotation.Rotation.name }}
                                     </a>
                                 </td>
@@ -146,7 +145,7 @@
                                 <td>
                                     <div class="btn-group">
                                         <?php if ($this->Acl->hasPermission('edit')): ?>
-                                            <a href="/map_module/rotations/edit/{{rotation.Rotation.id}}"
+                                            <a ui-sref="RotationsEdit({id: rotation.Rotation.id})"
                                                ng-if="rotation.Rotation.allowEdit"
                                                class="btn btn-default">&nbsp;<i class="fa fa-cog "></i>&nbsp;</a>
                                         <?php else: ?>
@@ -161,19 +160,19 @@
                                         <ul class="dropdown-menu pull-right" id="menuHack-{{rotation.Rotation.id}}">
                                             <?php if ($this->Acl->hasPermission('edit')): ?>
                                                 <li ng-if="rotation.Rotation.allowEdit">
-                                                    <a href="/map_module/rotations/edit/{{rotation.Rotation.id}}">
+                                                    <a ui-sref="RotationsEdit({id: rotation.Rotation.id})">
                                                         <i class="fa fa-cog"></i> <?php echo __('Edit Rotation'); ?>
                                                     </a>
                                                 </li>
                                                 <li class="divider" ng-if="map.Map.allowEdit"></li>
                                             <?php endif; ?>
                                             <li ng-if="rotation.Rotation.ids.length">
-                                                <a ng-href="/map_module/mapeditors/view/{{ rotation.Rotation.first_id }}?rotation={{ rotation.Rotation.ids }}&interval={{ rotation.Rotation.interval }}">
+                                                <a ui-sref="MapeditorsView({id: rotation.Rotation.first_id, rotation: rotation.Rotation.ids, interval: rotation.Rotation.interval})">
                                                     <i class="fa fa-eye"></i> <?php echo __('View'); ?>
                                                 </a>
                                             </li>
                                             <li ng-if="rotation.Rotation.ids.length">
-                                                <a ng-href="/map_module/mapeditors/view/{{ rotation.Rotation.first_id }}?rotation={{ rotation.Rotation.ids }}&interval={{ rotation.Rotation.interval }}&fullscreen=true">
+                                                <a ui-sref="MapeditorsView({id: rotation.Rotation.first_id, rotation: rotation.Rotation.ids, interval: rotation.Rotation.interval, fullscreen: 'true'})">
                                                     <i class="glyphicon glyphicon-resize-full"></i> <?php echo __('View in fullscreen'); ?>
                                                 </a>
                                             </li>

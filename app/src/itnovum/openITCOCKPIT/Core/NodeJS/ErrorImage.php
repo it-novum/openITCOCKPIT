@@ -80,7 +80,7 @@ class ErrorImage {
      */
     public function getImageAsPngStream() {
         $fileName = md5(rand() . time() . rand()) . '.png';
-        $tmp = APP . 'tmp';
+        $tmp = OLD_APP . 'tmp';
         if (!is_writable($tmp)) {
             $tmp = '/tmp';
         }

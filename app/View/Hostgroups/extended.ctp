@@ -22,40 +22,28 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
-/**
- * @property \itnovum\openITCOCKPIT\Monitoring\QueryHandler $QueryHandler
- */
-
-
 ?>
-<div id="error_msg"></div>
 
-<?php if (!$QueryHandler->exists()): ?>
-    <div class="alert alert-danger alert-block">
-        <a href="#" data-dismiss="alert" class="close">×</a>
-        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
-        </h4>
-        <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-sitemap fa-fw "></i>
+            <?php echo __('Host groups'); ?>
+            <span>>
+                <?php echo __('Extended overview'); ?>
+            </span>
+        </h1>
     </div>
-<?php endif; ?>
+</div>
+
+<query-handler-directive></query-handler-directive>
 
 <div class="alert alert-success alert-block" ng-show="showFlashSuccess">
     <a href="#" data-dismiss="alert" class="close">×</a>
     <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
     <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter }} <?php echo __('seconds...'); ?>
 </div>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-sidemap fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
-            <span>>
-                <?php echo __('Host Groups'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
+
 <div class="row padding-bottom-10">
     <div class="col col-xs-11">
         <select
@@ -69,7 +57,7 @@
     <div class="col col-xs-1">
         <div class="btn-group">
             <?php if ($this->Acl->hasPermission('edit')): ?>
-                <a href="/hostgroups/edit/{{post.Hostgroup.id}}"
+                <a ui-sref="HostgroupsEdit({id:post.Hostgroup.id})"
                    class="btn btn-default btn-md" ng-show="hostgroup.Hostgroup.allowEdit">&nbsp;<i class="fa fa-md fa-cog"></i>
                 </a>
             <?php else: ?>
@@ -83,7 +71,7 @@
             <ul class="dropdown-menu dropdown-menu-right" ng-if="hostgroup.Hosts.length > 0">
                 <?php if ($this->Acl->hasPermission('edit')): ?>
                     <li ng-show="hostgroup.Hostgroup.allowEdit">
-                        <a href="/hostgroups/edit/{{post.Hostgroup.id}}">
+                        <a ui-sref="HostgroupsEdit({id:post.Hostgroup.id})">
                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                         </a>
                     </li>
@@ -149,23 +137,21 @@
                         </button>
 
                         <?php if ($this->Acl->hasPermission('add')): ?>
-                            <?php echo $this->Html->link(
-                                __('New'), '/' . $this->params['controller'] . '/add', [
-                                    'class' => 'btn btn-xs btn-success',
-                                    'icon'  => 'fa fa-plus'
-                                ]
-                            ); ?>
+                            <a ui-sref="HostgroupsAdd" class="btn btn-xs btn-success">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New'); ?>
+                            </a>
                         <?php endif; ?>
                     </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-sidemap"></i> </span>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-sitemap"></i> </span>
                     <h2 class="hidden-mobile">
-                        {{(hostgroup.Container.name) && hostgroup.Container.name ||
+                        {{(hostgroup.Hostgroup.container.name) && hostgroup.Hostgroup.container.name ||
                         '<?php echo __('Host Groups (0)'); ?>'}}
                     </h2>
                     <?php if ($this->Acl->hasPermission('extended')): ?>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>
-                                <a href="/hostgroups/index"><i class="fa fa-minus-square"></i>
+                                <a ui-sref="HostgroupsIndex"><i class="fa fa-minus-square"></i>
                                     <span class="hidden-mobile hidden-tablet"><?php echo __('Default overview'); ?></span></a>
                             </li>
                         </ul>
@@ -286,7 +272,7 @@
                             </td>
                             <td>
                                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                    <a href="/hosts/browser/{{ host.Host.id }}">
+                                    <a ui-sref="HostsBrowser({id:host.Host.id})">
                                         {{ host.Host.hostname }}
                                     </a>
                                 <?php else: ?>
@@ -357,7 +343,7 @@
                             <td class="width-50">
                                 <div class="btn-group">
                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                        <a href="/hosts/edit/{{host.Host.id}}/_controller:hostgroups/_action:extended/_id:{{hostgroup.Hostgroup.id}}/"
+                                        <a ui-sref="HostsEdit({id:host.Host.id})"
                                            ng-if="host.Host.allow_edit"
                                            class="btn btn-default">
                                             &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -373,7 +359,7 @@
                                         id="menuHack-{{hostgroup.Hostgroup.uuid}}-{{host.Host.uuid}}">
                                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                             <li ng-if="host.Host.allow_edit">
-                                                <a href="/hosts/edit/{{host.Host.id}}/_controller:hostgroups/_action:extended/_id:{{hostgroup.Hostgroup.id}}/">
+                                                <a ui-sref="HostsEdit({id:host.Host.id})">
                                                     <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                 </a>
                                             </li>

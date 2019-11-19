@@ -73,9 +73,9 @@ class ServicestatusConditions {
      */
     public function currentState($currentStateId) {
         if (is_array($currentStateId)) {
-            $this->conditions['Servicestatus.current_state'] = $currentStateId;
+            $this->conditions['Servicestatus.current_state IN'] = $currentStateId;
         } else {
-            $this->conditions['Servicestatus.current_state'][] = $currentStateId;
+            $this->conditions['Servicestatus.current_state IN'][] = $currentStateId;
         }
         return $this;
     }
@@ -99,10 +99,25 @@ class ServicestatusConditions {
      */
     public function setScheduledDowntimeDepth($value, $greaterOrEqThan = true) {
         $value = (int)$value;
+
         if ($value === 0 && $greaterOrEqThan === true) {
             $this->conditions['Servicestatus.scheduled_downtime_depth >'] = $value;
         } else {
             $this->conditions['Servicestatus.scheduled_downtime_depth'] = $value;
+        }
+    }
+
+    /**
+     * @param int $value
+     */
+    public function setActiveChecksEnabled($value) {
+        $value = (int)$value;
+        if ($this->DbBackend->isNdoUtils()) {
+            $this->conditions['Servicestatus.active_checks_enabled'] = $value;
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            $this->conditions['Servicestatus.active_checks_enabled'] = (bool)$value;
         }
     }
 }

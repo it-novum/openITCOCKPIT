@@ -149,7 +149,7 @@ class ExceptionRendererTest extends CakeTestCase {
 		Configure::write('Config.language', 'eng');
 		App::build(array(
 			'View' => array(
-				CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS
+				OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS
 			)
 		), App::RESET);
 		Router::reload();
@@ -275,7 +275,7 @@ class ExceptionRendererTest extends CakeTestCase {
  * @return void
  */
 	public function testCakeErrorHelpersNotLost() {
-		$testApp = CAKE . 'Test' . DS . 'test_app' . DS;
+		$testApp = OLD_CAKE . 'Test' . DS . 'test_app' . DS;
 		App::build(array(
 			'Controller' => array(
 				$testApp . 'Controller' . DS
@@ -803,7 +803,7 @@ class ExceptionRendererTest extends CakeTestCase {
  */
 	public function testMissingPluginRenderSafeWithPlugin() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 		CakePlugin::load('TestPlugin');
 		$exception = new NotFoundException();

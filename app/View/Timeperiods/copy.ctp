@@ -26,47 +26,89 @@
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-pencil-square-o fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <i class="fa fa-clock-o fa-fw "></i>
+            <?php echo __('Time periods'); ?>
             <span>>
-                <?php echo $this->Utils->pluralize($timeperiods, __('Time Periods'), __('Time Periods')); ?>
-			</span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+                <?php echo __('Copy'); ?>
+            </span>
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
-        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Copy'); ?><?php echo $this->Utils->pluralize($timeperiods, __('Time Periods'), __('Time Periods')); ?></h2>
+        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-copy"></i> </span>
+        <h2 class="hidden-mobile hidden-tablet">
+            <?php echo __('Copy timeperiod/s'); ?>
+        </h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-            <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
+            <?php if ($this->Acl->hasPermission('index', 'timeperiods')): ?>
+                <a class="btn btn-default" ui-sref="TimeperiodsIndex">
+                    <i class="fa fa-arrow-left"></i>
+                    <?php echo __('Back to list'); ?>
+                </a>
+            <?php endif; ?>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Timeperiods', [
-                'class' => 'form-horizontal clear',
-            ]);
-            foreach ($timeperiods as $key => $timeperiod): ?>
-                <div class="row">
-                    <div class="col-xs-12 col-md-9 col-lg-7">
-                        <fieldset>
-                            <legend><?php echo $timeperiod['Timeperiod']['name'] ?></legend>
-                            <?php
-                            echo $this->Form->input('Timeperiod.' . $key . '.name', ['value' => $timeperiod['Timeperiod']['name'], 'label' => __('Time Period name'), 'required' => true, 'help' => __('This is the default name for the timeperiod')]);
-                            echo $this->Form->input('Timeperiod.' . $key . '.description', ['value' => $timeperiod['Timeperiod']['description'], 'label' => __('Description'), 'required' => false]);
-                            echo $this->Form->input('Timeperiod.' . $key . '.container_id', ['value' => $timeperiod['Timeperiod']['container_id'], 'type' => 'hidden']);
-                            ?>
-                        </fieldset>
-                    </div> <!-- close col -->
-                </div> <!-- close row-->
-            <?php endforeach; ?>
-            <br/>
-            <?php echo $this->Form->formActions(); ?>
-        </div> <!-- close widget body -->
+            <div class="row form-horizontal" ng-repeat="sourceTimeperiod in sourceTimeperiods">
+                <div class="col-xs-12 col-md-9 col-lg-7">
+                    <fieldset>
+                        <legend>
+                            <span class="text-info"><?php echo __('Source time period:'); ?></span>
+                            {{sourceTimeperiod.Source.name}}
+                        </legend>
+
+                        <div class="form-group required" ng-class="{'has-error': sourceTimeperiod.Error.name}">
+                            <label for="Timeperiod{{$index}}Name" class="col col-md-2 control-label">
+                                <?php echo('Time period name'); ?>
+                            </label>
+                            <div class="col col-xs-10 required">
+                                <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceTimeperiod.Timeperiod.name"
+                                        id="Timeperiod{{$index}}Name">
+                                <span class="help-block">
+                                    <?php echo __('Name of the new time period'); ?>
+                                </span>
+                                <div ng-repeat="error in sourceTimeperiod.Error.name">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': sourceTimeperiod.Error.description}">
+                            <label for="Timeperiod{{$index}}Description" class="col col-md-2 control-label">
+                                <?php echo('Description'); ?>
+                            </label>
+                            <div class="col col-xs-10">
+                                <input
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="sourceTimeperiod.Timeperiod.description"
+                                        id="Timeperiod{{$index}}Description">
+                                <div ng-repeat="error in sourceTimeperiod.Error.description">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="well formactions ">
+                <div class="pull-right">
+                    <button class="btn btn-primary" ng-click="copy()">
+                        <?php echo __('Copy'); ?>
+                    </button>
+                    <?php if ($this->Acl->hasPermission('index', 'timeperiods')): ?>
+                        <a ui-sref="TimeperiodsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+        </div>
     </div>
-</div> <!-- end jarviswidget -->
+</div>

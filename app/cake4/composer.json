@@ -1,0 +1,14 @@
+{
+    "autoload": {
+        "psr-4": {
+            "DistributeModule\\": "./plugins/DistributeModule/src/",
+            "EventcorrelationModule\\": "./plugins/EventcorrelationModule/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DistributeModule\\Test\\": "./plugins/DistributeModule/tests/",
+            "EventcorrelationModule\\Test\\": "./plugins/EventcorrelationModule/tests/"
+        }
+    }
+}

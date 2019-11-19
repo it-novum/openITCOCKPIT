@@ -27,25 +27,28 @@
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-cogs fa-fw "></i>
+            <i class="fa fa-gear fa-fw "></i>
             <?php echo __('Host'); ?>
             <span>>
-                <?php echo __('Services'); ?>
+                <?php echo __('Services of host'); ?>
             </span>
         </h1>
     </div>
 </div>
 
-<?php echo $this->Flash->render('positive'); ?>
+<query-handler-directive></query-handler-directive>
 
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
 <massactivate></massactivate>
 
+<?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
+    <add-services-to-servicegroup></add-services-to-servicegroup>
+<?php endif; ?>
+
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-
 
             <div class="row">
                 <div class="col col-xs-8">
@@ -56,18 +59,18 @@
                             chosen="hosts"
                             callback="loadHosts"
                             ng-options="host.key as host.value for host in hosts"
-                            ng-model="hostId">
+                            ng-model="data.hostId">
                     </select>
                 </div>
 
                 <div class="col col-xs-4" style="padding-left:0;">
                     <div class="btn-group pull-left" style="padding-top: 2px;">
                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                            <a href="/hosts/edit/{{ host.Host.id }}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/"
+                            <a ui-sref="HostsEdit({id:host.Host.id})"
                                ng-show="host.Host.allow_edit"
                                class="btn btn-default">
                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                            </a>
+                            </>
                         <?php else: ?>
                             <a href="javascript:void(0);" class="btn btn-default">
                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -78,14 +81,14 @@
                         <ul class="dropdown-menu" id="menuHack-host">
                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                 <li>
-                                    <a href="/hosts/browser/{{ host.Host.id }}">
+                                    <a href="/ng/#!/hosts/browser/{{ host.Host.id }}">
                                         <i class="fa fa-desktop"></i> <?php echo __('Browser'); ?>
                                     </a>
                                 </li>
                             <?php endif; ?>
                             <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                 <li>
-                                    <a href="/hosts/edit/{{ host.Host.id }}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/"
+                                    <a ui-sref="HostsEdit({id:host.Host.id})"
                                        ng-show="host.Host.allow_edit">
                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                     </a>
@@ -100,7 +103,7 @@
                                     </a>
                                 </li>
                             <?php endif; ?>
-                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                            <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                 <li ng-if="host.Host.allow_edit">
                                     <?php echo $this->AdditionalLinks->renderAsListItems(
                                         $additionalLinksList,
@@ -125,7 +128,7 @@
                             </button>
 
                             <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                                <a href="/services/add/{{ host.Host.id }}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/"
+                                <a ui-sref="ServicesAdd({hostId: host.Host.id})"
                                    class="btn btn-xs btn-success">
                                     <i class="fa fa-plus"></i>
                                     <?php echo __('Add'); ?>
@@ -133,7 +136,8 @@
                             <?php endif; ?>
 
                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                <a href="/hosts/browser/{{host.Host.id}}" class="btn btn-xs btn-primary hidden-mobile">
+                                <a href="/ng/#!/hosts/browser/{{host.Host.id}}"
+                                   class="btn btn-xs btn-primary hidden-mobile">
                                     <i class="fa fa-desktop"></i>
                                     <?php echo __('Open host in browser'); ?>
                                 </a>
@@ -142,32 +146,32 @@
                         <span class="widget-icon hidden-mobile"> <i class="fa fa-desktop"></i> </span>
                         <h2 class="hidden-mobile">{{ host.Host.name }} </h2>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                            <li class="active">
-                                <a href="#tab1" data-toggle="tab" ng-click="changeTab('active')">
+                            <li class="active cursor-pointer">
+                                <a data-toggle="tab" ng-click="changeTab('active')">
                                     <i class="fa fa-stethoscope"></i>
                                     <span class="hidden-mobile hidden-tablet">
                                         <?php echo __('Active'); ?>
                                     </span>
                                 </a>
                             </li>
-                            <li>
-                                <a href="#tab2" data-toggle="tab" ng-click="changeTab('notMonitored')">
+                            <li class="cursor-pointer">
+                                <a data-toggle="tab" ng-click="changeTab('notMonitored')">
                                     <i class="fa fa-user-md"></i>
                                     <span class="hidden-mobile hidden-tablet">
                                         <?php echo __('Not monitored'); ?>
                                     </span>
                                 </a>
                             </li>
-                            <li class="">
-                                <a href="#tab3" data-toggle="tab" ng-click="changeTab('disabled')">
+                            <li class="cursor-pointer">
+                                <a data-toggle="tab" ng-click="changeTab('disabled')">
                                     <i class="fa fa-plug"></i>
                                     <span class="hidden-mobile hidden-tablet">
                                         <?php echo __('Disabled'); ?>
                                     </span>
                                 </a>
                             </li>
-                            <li class="">
-                                <a href="#tab4" data-toggle="tab" ng-click="changeTab('deleted')">
+                            <li class="cursor-pointer">
+                                <a data-toggle="tab" ng-click="changeTab('deleted')">
                                     <i class="fa fa-trash-o"></i>
                                     <span class="hidden-mobile hidden-tablet">
                                         <?php echo __('Deleted'); ?>
@@ -181,11 +185,10 @@
                         <div class="widget-body no-padding">
                             <div class="tab-content">
 
-                                <div id="tab1" class="tab-pane fade active in">
+                                <div ng-if="activeTab === 'active'">
                                     <div class="mobile_table">
                                         <table id="host_list"
-                                               class="table table-striped table-hover table-bordered smart-form"
-                                               ng-if="activeTab === 'active'">
+                                               class="table table-striped table-hover table-bordered smart-form">
                                             <thead>
                                             <tr>
 
@@ -220,8 +223,8 @@
                                                     </strong>
                                                 </th>
 
-                                                <th class="no-sort" ng-click="orderBy('Service.servicename')">
-                                                    <i class="fa" ng-class="getSortClass('Service.servicename')"></i>
+                                                <th class="no-sort" ng-click="orderBy('servicename')">
+                                                    <i class="fa" ng-class="getSortClass('servicename')"></i>
                                                     <?php echo __('Service name'); ?>
                                                 </th>
 
@@ -288,7 +291,7 @@
 
                                                 <td class="text-center">
                                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                        <a href="/services/browser/{{ service.Service.id }}"
+                                                        <a href="/ng/#!/services/browser/{{ service.Service.id }}"
                                                            class="txt-color-blueDark">
                                                             <i class="fa fa-lg fa-area-chart"
                                                                ng-mouseenter="mouseenter($event, host, service)"
@@ -315,7 +318,7 @@
 
                                                 <td>
                                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                        <a href="/services/browser/{{ service.Service.id }}">
+                                                        <a href="/ng/#!/services/browser/{{ service.Service.id }}">
                                                             {{ service.Service.servicename }}
                                                         </a>
                                                     <?php else: ?>
@@ -348,7 +351,7 @@
                                                 <td class="width-50">
                                                     <div class="btn-group">
                                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                            <a href="/services/edit/{{service.Service.id}}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/"
+                                                            <a ui-sref="ServicesEdit({id: service.Service.id})"
                                                                ng-if="service.Service.allow_edit"
                                                                class="btn btn-default">
                                                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -362,9 +365,9 @@
                                                                     class="caret"></span></a>
                                                         <ul class="dropdown-menu pull-right"
                                                             id="menuHack-{{service.Service.uuid}}">
-                                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                            <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                                 <li ng-if="service.Service.allow_edit">
-                                                                    <a href="/services/edit/{{service.Service.id}}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/">
+                                                                    <a ui-sref="ServicesEdit({id: service.Service.id})">
                                                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                                     </a>
                                                                 </li>
@@ -431,7 +434,7 @@
                                             </span>
                                         </div>
                                         <div class="col-xs-12 col-md-2">
-                                            <a ng-href="{{ linkForCopy() }}" class="a-clean">
+                                            <a ui-sref="ServicesCopy({ids: linkForCopy()})" class="a-clean">
                                                 <i class="fa fa-lg fa-files-o"></i>
                                                 <?php echo __('Copy'); ?>
                                             </a>
@@ -460,8 +463,10 @@
                                                     <?php endif; ?>
                                                     <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
                                                         <li>
-                                                            <a ng-href="{{ linkForAddToServicegroup() }}">
-                                                                <i class="fa fa-cogs"></i> <?php echo __('Add to servicegroup'); ?>
+                                                            <a href="javascript:void(0);"
+                                                               ng-click="confirmAddServicesToServicegroup(getObjectsForDelete())">
+                                                                <i class="fa fa-cogs"></i>
+                                                                <?php echo __('Add to service group'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
@@ -508,10 +513,9 @@
 
                                 </div> <!-- close tab1 -->
 
-                                <div id="tab2" class="tab-pane fade">
+                                <div ng-if="activeTab === 'notMonitored'">
 
-                                    <table class="table table-striped table-hover table-bordered smart-form"
-                                           ng-if="activeTab === 'notMonitored'">
+                                    <table class="table table-striped table-hover table-bordered smart-form">
                                         <thead>
                                         <tr>
                                             <th class="no-sort text-center">
@@ -547,7 +551,7 @@
 
                                             <td>
                                                 <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                    <a href="/services/browser/{{ service.Service.id }}">
+                                                    <a href="/ng/#!/services/browser/{{ service.Service.id }}">
                                                         {{ service.Service.servicename }}
                                                     </a>
                                                 <?php else: ?>
@@ -558,7 +562,7 @@
                                             <td class="width-50">
                                                 <div class="btn-group">
                                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                        <a href="/services/edit/{{service.Service.id}}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/"
+                                                        <a ui-sref="ServicesEdit({id: service.Service.id})"
                                                            ng-if="service.Service.allow_edit"
                                                            class="btn btn-default">
                                                             &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -572,9 +576,9 @@
                                                                 class="caret"></span></a>
                                                     <ul class="dropdown-menu pull-right"
                                                         id="menuHack-{{service.Service.uuid}}">
-                                                        <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                             <li ng-if="service.Service.allow_edit">
-                                                                <a href="/services/edit/{{service.Service.id}}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/">
+                                                                <a ui-sref="ServicesEdit({id: service.Service.id})">
                                                                     <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                                 </a>
                                                             </li>
@@ -644,11 +648,10 @@
 
                                 </div> <!-- cloase tab2 -->
 
-                                <div id="tab3" class="tab-pane fade">
+                                <div ng-if="activeTab === 'disabled'">
 
                                     <div class="mobile_table">
-                                        <table class="table table-striped table-hover table-bordered smart-form"
-                                               ng-if="activeTab === 'disabled'">
+                                        <table class="table table-striped table-hover table-bordered smart-form">
                                             <thead>
                                             <tr>
                                                 <th class="no-sort text-center">
@@ -684,7 +687,7 @@
 
                                                 <td>
                                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                        <a href="/services/browser/{{ service.Service.id }}">
+                                                        <a href="/ng/#!/services/browser/{{ service.Service.id }}">
                                                             {{ service.Service.servicename }}
                                                         </a>
                                                     <?php else: ?>
@@ -695,7 +698,7 @@
                                                 <td class="width-50">
                                                     <div class="btn-group">
                                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                            <a href="/services/edit/{{service.Service.id}}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/"
+                                                            <a ui-sref="ServicesEdit({id: service.Service.id})"
                                                                ng-if="service.Service.allow_edit"
                                                                class="btn btn-default">
                                                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -709,14 +712,14 @@
                                                                     class="caret"></span></a>
                                                         <ul class="dropdown-menu pull-right"
                                                             id="menuHack-{{service.Service.uuid}}">
-                                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                            <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                                 <li ng-if="service.Service.allow_edit">
-                                                                    <a href="/services/edit/{{service.Service.id}}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/">
+                                                                    <a ui-sref="ServicesEdit({id: service.Service.id})">
                                                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                                     </a>
                                                                 </li>
                                                             <?php endif; ?>
-                                                            <?php if ($this->Acl->hasPermission('enable')): ?>
+                                                            <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
                                                                 <li ng-if="service.Service.allow_edit">
                                                                     <a href="javascript:void(0);"
                                                                        ng-click="confirmActivate(getObjectForDelete(host, service))">
@@ -781,11 +784,10 @@
 
                                 </div> <!-- cloase tab4 -->
 
-                                <div id="tab4" class="tab-pane fade">
+                                <div ng-if="activeTab === 'deleted'">
 
                                     <div class="mobile_table">
-                                        <table class="table table-striped table-hover table-bordered smart-form"
-                                               ng-if="activeTab === 'deleted'">
+                                        <table class="table table-striped table-hover table-bordered smart-form">
                                             <thead>
                                             <tr>
                                                 <th class="no-sort"><?php echo __('Service name'); ?></th>

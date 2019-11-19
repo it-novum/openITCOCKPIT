@@ -16,8 +16,8 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-define('CORE_TEST_CASES', CAKE . 'Test' . DS . 'Case');
-define('APP_TEST_CASES', TESTS . 'Case');
+define('CORE_TEST_CASES', OLD_CAKE . 'Test' . DS . 'Case');
+define('APP_TEST_CASES', OLD_TESTS . 'Case');
 
 App::uses('CakeTestSuiteCommand', 'TestSuite');
 
@@ -122,7 +122,7 @@ class CakeTestSuiteDispatcher {
 		$found = $this->loadTestFramework();
 		if (!$found) {
 			$baseDir = $this->_baseDir;
-			include CAKE . 'TestSuite' . DS . 'templates' . DS . 'phpunit.php';
+			include OLD_CAKE . 'TestSuite' . DS . 'templates' . DS . 'phpunit.php';
 			exit();
 		}
 	}
@@ -172,7 +172,7 @@ class CakeTestSuiteDispatcher {
 	protected function _checkXdebug() {
 		if (!extension_loaded('xdebug')) {
 			$baseDir = $this->_baseDir;
-			include CAKE . 'TestSuite' . DS . 'templates' . DS . 'xdebug.php';
+			include OLD_CAKE . 'TestSuite' . DS . 'templates' . DS . 'xdebug.php';
 			exit();
 		}
 	}
@@ -260,7 +260,7 @@ class CakeTestSuiteDispatcher {
 		} catch (MissingConnectionException $exception) {
 			ob_end_clean();
 			$baseDir = $this->_baseDir;
-			include CAKE . 'TestSuite' . DS . 'templates' . DS . 'missing_connection.php';
+			include OLD_CAKE . 'TestSuite' . DS . 'templates' . DS . 'missing_connection.php';
 			exit();
 		}
 	}

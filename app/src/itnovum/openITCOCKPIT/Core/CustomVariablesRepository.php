@@ -53,6 +53,7 @@ class CustomVariablesRepository {
     public function getAllCustomVariablesAsArray() {
         $customVariables = [];
         foreach ($this->customvariables as $customvariable) {
+            /** @var $customvariable CustomVariable */
             $customVariables[] = $customvariable->asArray();
         }
 

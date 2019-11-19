@@ -33,7 +33,7 @@ class AcknowledgedHostConditions extends ListSettingsConditions {
      * @var array
      */
     protected $order = [
-        'AcknowledgedHost.entry_time' => 'DESC'
+        'AcknowledgedHosts.entry_time' => 'DESC'
     ];
 
     protected $states = [

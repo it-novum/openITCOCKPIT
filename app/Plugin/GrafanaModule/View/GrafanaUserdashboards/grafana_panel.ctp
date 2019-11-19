@@ -119,7 +119,6 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="metrics"
-                                    callback="loadMoreServices"
                                     ng-options="key as value for (key , value) in metrics"
                                     ng-model="currentServiceMetric">
                             </select>

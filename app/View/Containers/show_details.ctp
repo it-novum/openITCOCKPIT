@@ -23,7 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -44,7 +43,12 @@
                     <span class="widget-icon"> <i class="fa fa-sitemap fa-rotate-270"></i> </span>
                     <h2><?php echo __('Objects overview'); ?> "{{containerDetails.Container.name}}"</h2>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
+                        <a ng-if="!post.backState" ui-sref="ContainersIndex({id: post.Container.tenant})" class="btn btn-default btn-xs" iconcolor="white">
+                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back'); ?>
+                        </a>
+                        <a ng-if="post.backState" ui-sref="{{post.backState}}" class="btn btn-default btn-xs" iconcolor="white">
+                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back'); ?>
+                        </a>
                     </div>
                 </header>
                 <div class="widget-body">
@@ -55,7 +59,10 @@
                                 <i class="fa fa-location-arrow fa-lg"></i>
                                 <?php echo __('Locations'); ?> ({{containerDetails.ContainerLocation.length}})
                             </th>
-                            <th class="width-60"></th>
+                            <th class="no-sort text-center width-60">
+                                <i class="fa fa-cog fa-lg"></i>
+                            </th>
+
                         </tr>
                         <tr ng-repeat="containerlocation in containerDetails.ContainerLocation">
                             <td>
@@ -71,7 +78,7 @@
                             <td>
                                 <div class="btn-group">
                                     <?php if ($this->Acl->hasPermission('edit', 'locations')): ?>
-                                        <a href="/locations/edit/{{containerlocation.Location[0].id}}"
+                                        <a ui-sref="LocationsEdit({id:containerlocation.Location[0].id})"
                                            class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
                                         </a>
                                     <?php else: ?>
@@ -86,14 +93,14 @@
                                         id="menuHack-location-{{containerlocation.id}}">
                                         <?php if ($this->Acl->hasPermission('edit', 'locations')): ?>
                                             <li>
-                                                <a href="/locations/edit/{{containerlocation.Location[0].id}}">
+                                                <a ui-sref="LocationsEdit({id:containerlocation.Location[0].id})">
                                                     <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                 </a>
                                             </li>
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
                                             <li>
-                                                <a href="/containers/showDetails/{{containerlocation.id}}">
+                                                <a ui-sref="ContainersShowDetails({id:containerlocation.id})">
                                                     <i class="fa fa-info-circle"></i> <?php echo __('Show details'); ?>
                                                 </a>
                                             </li>
@@ -198,7 +205,7 @@
                         <tr ng-repeat="host in containerDetails.Host">
                             <td>
                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                    <a href="/hosts/edit/{{ host.id }}"
+                                    <a ui-sref="HostsEdit({id:host.id})"
                                        target="_blank">
                                         {{ host.name }}
                                     </a>
@@ -210,7 +217,7 @@
                             <td>
                                 <div class="btn-group" ng-if="host.id">
                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                        <a href="/hosts/edit/{{host.id}}"
+                                        <a ui-sref="HostsEdit({id:host.id})"
                                            class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
                                         </a>
                                     <?php else: ?>
@@ -224,7 +231,7 @@
                                     <ul class="dropdown-menu pull-right" id="menuHack-host-{{host.id}}">
                                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                             <li>
-                                                <a href="/hosts/edit/{{host.id}}">
+                                                <a ui-sref="HostsEdit({id:host.id})">
                                                     <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                 </a>
                                             </li>

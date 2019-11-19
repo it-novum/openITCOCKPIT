@@ -25,20 +25,20 @@
 namespace itnovum\openITCOCKPIT\Core\System\Health;
 
 
+use itnovum\openITCOCKPIT\Core\UUID;
+
 class SystemId {
 
     private $systemId = null;
 
     public function __construct() {
-        \App::uses('UUID', 'Lib');
-
         if (file_exists('/etc/openitcockpit/system-id')) {
             $this->systemId = trim(file_get_contents('/etc/openitcockpit/system-id'));
             return;
         } else {
             if (is_writable('/etc/openitcockpit')) {
                 $file = fopen('/etc/openitcockpit/system-id', 'w+');
-                $this->systemId = \UUID::v4();
+                $this->systemId = UUID::v4();
                 fwrite($file, $this->systemId);
                 fclose($file);
                 return;

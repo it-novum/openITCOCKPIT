@@ -26,6 +26,10 @@
 use itnovum\openITCOCKPIT\Crate\CrateHosttemplateForHost;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
+/**
+ * Class Hosttemplate
+ * @deprecated
+ */
 class Hosttemplate extends AppModel {
     var $hasAndBelongsToMany = [
         'Contactgroup' => [
@@ -329,9 +333,15 @@ class Hosttemplate extends AppModel {
         ],
     ];
 
+    /**
+     * Hosttemplate constructor.
+     * @param bool $id
+     * @param null $table
+     * @param null $ds
+     * @deprecated
+     */
     public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
-        App::uses('UUID', 'Lib');
         $this->notification_options = [
             'host' => [
                 'notify_on_recovery',
@@ -351,6 +361,12 @@ class Hosttemplate extends AppModel {
         ];
     }
 
+    /**
+     * @param $data
+     * @param $notification_type
+     * @return bool
+     * @deprecated
+     */
     function checkNotificationOptions($data, $notification_type) {
         foreach ($this->data as $request) {
             foreach ($request as $request_key => $request_value) {
@@ -363,6 +379,12 @@ class Hosttemplate extends AppModel {
         return false;
     }
 
+    /**
+     * @param $data
+     * @param $flapdetection_type
+     * @return bool
+     * @deprecated
+     */
     function checkFlapDetectionOptions($data, $flapdetection_type) {
         if (isset($this->data['Hosttemplate']['flap_detection_enabled']) && (boolean)$this->data['Hosttemplate']['flap_detection_enabled'] === true) {
             foreach ($this->data as $request) {
@@ -379,17 +401,30 @@ class Hosttemplate extends AppModel {
         return true;
     }
 
+    /**
+     * @return string
+     * @deprecated
+     */
     public function createUUID() {
-        return UUID::v4();
+        return \itnovum\openITCOCKPIT\Core\UUID::v4();
     }
 
-    /*
-    Custom validation rule for contact and/or contactgroup fields
-    */
+    /**
+     * Custom validation rule for contact and/or contactgroup fields
+     * @deprecated
+     */
     public function atLeastOne($data) {
         return !empty($this->data[$this->name]['Contact']) || !empty($this->data[$this->name]['Contactgroup']);
     }
 
+    /**
+     * @param array $container_ids
+     * @param string $type
+     * @param $hosttemplate_type
+     * @param bool $ignoreType
+     * @return array|null
+     * @deprecated
+     */
     public function hosttemplatesByContainerId($container_ids = [], $type = 'all', $hosttemplate_type = GENERIC_HOST, $ignoreType = false) {
         $conditions = [
             'Hosttemplate.container_id' => $container_ids,
@@ -408,7 +443,11 @@ class Hosttemplate extends AppModel {
         ]);
     }
 
-
+    /**
+     * @param $hosttemplateId
+     * @return bool
+     * @deprecated
+     */
     public function __allowDelete($hosttemplateId) {
         $Host = ClassRegistry::init('Host');
         $hosts = $Host->find('all', [
@@ -460,6 +499,13 @@ class Hosttemplate extends AppModel {
         return true;
     }
 
+    /**
+     * @param array $containerIds
+     * @param HosttemplateFilter $HosttemplateFilter
+     * @param array $selected
+     * @return array|null
+     * @deprecated
+     */
     public function getHosttemplatesForAngular($containerIds = [], HosttemplateFilter $HosttemplateFilter, $selected = []) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
@@ -501,6 +547,7 @@ class Hosttemplate extends AppModel {
     /**
      * @param int $hosttemplateId
      * @return array
+     * @deprecated
      */
     public function getQueryForBrowser($hosttemplateId) {
         return [
@@ -560,6 +607,7 @@ class Hosttemplate extends AppModel {
      * @param bool $created
      * @param array $options
      * @return bool|void
+     * @deprecated
      */
     public function afterSave($created, $options = []) {
         if ($this->DbBackend->isCrateDb() && isset($this->data['Hosttemplate']['id'])) {

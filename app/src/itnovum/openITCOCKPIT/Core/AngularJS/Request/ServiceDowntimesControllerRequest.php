@@ -34,13 +34,13 @@ class ServiceDowntimesControllerRequest extends AngularRequest {
     protected $filters = [
         'index' => [
             'like' => [
-                'Host.name',
-                'Service.name',
-                'DowntimeService.author_name',
-                'DowntimeService.comment_data'
+                'Hosts.name',
+                'servicename',
+                'DowntimeServices.author_name',
+                'DowntimeServices.comment_data'
             ],
             'bool' => [
-                'DowntimeService.was_cancelled'
+                'DowntimeServices.was_cancelled'
             ]
         ]
     ];

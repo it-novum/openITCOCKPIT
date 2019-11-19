@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class DeletedHost
+ * @deprecated Used DeletedHostsTable
+ */
 class DeletedHost extends AppModel {
 
 }

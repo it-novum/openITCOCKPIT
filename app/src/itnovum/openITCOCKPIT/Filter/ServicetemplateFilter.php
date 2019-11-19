@@ -30,10 +30,35 @@ class ServicetemplateFilter extends Filter {
     /**
      * @return array
      */
+    public function indexFilter() {
+        $filters = [
+            'like' => [
+                'Servicetemplates.name',
+                'Servicetemplates.template_name',
+                'Servicetemplates.description',
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
+    /**
+     * @return array
+     */
     public function ajaxFilter() {
         $filters = [
             'like' => [
-                'Servicetemplate.name',
+                'Servicetemplates.name',
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
+    public function usedByFilter() {
+        $filters = [
+            'bool' => [
+                'Services.disabled',
             ]
         ];
 

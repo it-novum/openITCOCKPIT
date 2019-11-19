@@ -24,6 +24,10 @@
 
 namespace itnovum\openITCOCKPIT\ImportTemplates;
 
+use App\Model\Table\CommandsTable;
+use App\Model\Table\ContactsTable;
+use Cake\ORM\TableRegistry;
+
 class ImportTemplates {
     public $mapping = [];
     //root path for json and check files
@@ -43,22 +47,17 @@ class ImportTemplates {
 
     /**
      * check if dependencies for installing the templates
-     * @throws Exception
+     * @throws \Exception
      */
     public function checkDependencies() {
-        $contact = $this->Contact->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Contact.name' => 'info'
-            ],
-            'fields'     => [
-                'Contact.id'
-            ]
-        ]);
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+        $contact = $ContactsTable->getContactByName('info');
         if (empty($contact)) {
             throw new \Exception('Found no "info" contact on your System. To Continue the Installation Please create an "info" Contact!');
         }
-        $this->contactId = \Hash::extract($contact, 'Contact.id');
+        $this->contactId = $contact['Contact']['id'];
     }
 
     public function startInstall($files) {
@@ -196,7 +195,7 @@ class ImportTemplates {
                 //replacing the command uuid with the command id
                 $servicetemplateData[$key]['Servicetemplate']['command_id'] = $commandId;
                 //insert a new UUID for the Servicetemplates
-                //$servicetemplateData[$key]['Servicetemplate']['uuid'] = UUID::v4();
+                //$servicetemplateData[$key]['Servicetemplate']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
                 $i = 0;
                 //go through the servicetemplatecommandarguments
                 if (!empty($servicetemplate['Servicetemplatecommandargumentvalue'])) {
@@ -237,11 +236,10 @@ class ImportTemplates {
      * @return void
      */
     private function mapCommandArgs($commandId) {
-        $commands = $this->Command->find('all', [
-            'conditions' => [
-                'id' => $commandId,
-            ],
-        ]);
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $commands = $CommandsTable->getCommandByIds($commandId);
+
         $commandargIds = \Hash::filter(\Hash::extract($commands, '{n}.Commandargument.{n}.id'));
         $this->mapping['Commandarguments'][$commandId] = $commandargIds;
     }

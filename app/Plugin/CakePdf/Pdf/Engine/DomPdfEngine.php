@@ -14,10 +14,10 @@ class DomPdfEngine extends AbstractPdfEngine
     {
         parent::__construct($Pdf);
         if (!defined('DOMPDF_FONT_CACHE')) {
-            define('DOMPDF_FONT_CACHE', TMP);
+            define('DOMPDF_FONT_CACHE', OLD_TMP);
         }
         if (!defined('DOMPDF_TEMP_DIR')) {
-            define('DOMPDF_TEMP_DIR', TMP);
+            define('DOMPDF_TEMP_DIR', OLD_TMP);
         }
 
         App::import('Vendor', 'CakePdf.DomPDF', ['file' => 'dompdf'.DS.'dompdf_config.inc.php']);

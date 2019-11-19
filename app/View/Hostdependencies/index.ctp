@@ -23,271 +23,541 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
-    <div class="row">
-        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-            <h1 class="page-title txt-color-blueDark">
-                <i class="fa fa-sitemap fa-fw"></i>
-                <?php echo __('Monitoring'); ?>
-                <span>>
-                    <?php echo __('Hostdependencies'); ?>
+<div class="row">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-sitemap fa-fw"></i>
+            <?php echo __('Monitoring'); ?>
+            <span>>
+                    <?php echo __('Host Dependencies'); ?>
                 </span>
-            </h1>
-        </div>
+        </h1>
     </div>
+</div>
+<massdelete></massdelete>
 
-
-    <section id="widget-grid" class="">
-        <div class="row">
-            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                    <header>
-                        <div class="widget-toolbar" role="menu">
-                            <?php
-                            if ($this->Acl->hasPermission('add')):
-                                echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                                echo " "; //Fix HTML if search is implemented
-                            endif;
-                            // TODO Implement Search
-                            //echo $this->Html->link(__('Filter'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter'));
-                            if ($isFilter):
-                                echo " "; //Fix HTML
-                                echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                            endif;
-                            ?>
-                        </div>
-
-                        <div class="jarviswidget-ctrls" role="menu">
-                        </div>
-                        <span class="widget-icon hidden-mobile"> <i class="fa fa-sitemap"></i> </span>
-                        <h2 class="hidden-mobile"><?php echo __('Hostdependencies'); ?> </h2>
-
-                    </header>
-                    <div>
-
-                        <!-- widget content -->
-                        <div class="widget-body no-padding">
-                            <div class="mobile_table">
-                                <table id="hostdependency_list"
-                                       class="table table-striped table-hover table-bordered smart-form"
-                                       style="">
-                                    <thead>
-                                    <tr>
-                                        <th class="no-sort"><?php echo __('Hosts'); ?></th>
-                                        <th class="no-sort"><?php echo __('Dependent hosts'); ?></th>
-                                        <th class="no-sort"><?php echo __('Hostgroups'); ?></th>
-                                        <th class="no-sort"><?php echo __('Dependent hostgroups'); ?></th>
-                                        <th class="no-sort"><?php echo __('Dependency period'); ?></th>
-                                        <th class="no-sort"><?php echo __('Inherits parent'); ?></th>
-                                        <th class="no-sort"><?php echo __('Execution failure criteria'); ?></th>
-                                        <th class="no-sort"><?php echo __('Notification failure criteria'); ?></th>
-                                        <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php foreach ($all_hostdependencies as $hostdependency): ?>
-                                        <?php $allowEdit = $this->Acl->isWritableContainer($hostdependency['Hostdependency']['container_id']); ?>
-                                        <tr>
-                                            <td>
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    foreach (Hash::extract($hostdependency, 'HostdependencyHostMembership.{n}[dependent=0]') as $host):
-                                                        echo '<li>';
-                                                        if ($this->Acl->hasPermission('edit', 'hosts')):
-                                                            echo $this->Html->link(
-                                                                $host['Host']['name'],
-                                                                [
-                                                                    'controller' => 'hosts',
-                                                                    'action'     => 'edit',
-                                                                    $host['host_id'],
-                                                                ],
-                                                                ['escape' => true]
-                                                            );
-                                                        else:
-                                                            echo h($host['Host']['name']);
-                                                        endif;
-                                                        echo ($host['Host']['disabled']) ?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>' : '';
-                                                        echo '</li>';
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-                                            </td>
-                                            <td>
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    foreach (Hash::extract($hostdependency, 'HostdependencyHostMembership.{n}[dependent=1]') as $host_dependent):
-                                                        echo '<li>';
-                                                        if ($this->Acl->hasPermission('edit', 'hosts')):
-                                                            echo $this->Html->link(
-                                                                $host_dependent['Host']['name'],
-                                                                [
-                                                                    'controller' => 'hosts',
-                                                                    'action'     => 'edit',
-                                                                    $host_dependent['host_id'],
-                                                                ],
-                                                                ['escape' => true]
-                                                            );
-                                                        else:
-                                                            echo h($host_dependent['Host']['name']);
-                                                        endif;
-                                                        echo ($host_dependent['Host']['disabled']) ?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>' : '';
-                                                        echo '</li>';
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-                                            </td>
-                                            <td>
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    foreach (Hash::extract($hostdependency, 'HostdependencyHostgroupMembership.{n}[dependent=0]') as $hostgroup):
-                                                        echo '<li>';
-                                                        if ($this->Acl->hasPermission('edit', 'hostgroups')):
-                                                            echo $this->Html->link(
-                                                                $hostgroup['Hostgroup']['Container']['name'],
-                                                                [
-                                                                    'controller' => 'hostgroups',
-                                                                    'action'     => 'edit',
-                                                                    $hostgroup['hostgroup_id'],
-                                                                ],
-                                                                ['escape' => true]
-                                                            );
-                                                        else:
-                                                            echo h($hostgroup['Hostgroup']['Container']['name']);
-                                                        endif;
-                                                        echo '</li>';
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-                                            </td>
-                                            <td>
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    foreach (Hash::extract($hostdependency, 'HostdependencyHostgroupMembership.{n}[dependent=1]') as $hostgroup_dependent):
-                                                        echo '<li>';
-                                                        if ($this->Acl->hasPermission('edit', 'hostgroups')):
-                                                            echo $this->Html->link(
-                                                                $hostgroup_dependent['Hostgroup']['Container']['name'],
-                                                                [
-                                                                    'controller' => 'hostgroups',
-                                                                    'action'     => 'edit',
-                                                                    $hostgroup_dependent['hostgroup_id'],
-                                                                ],
-                                                                ['escape' => true]
-                                                            );
-                                                        else:
-                                                            echo h($hostgroup_dependent['Hostgroup']['Container']['name']);
-                                                        endif;
-                                                        echo '</li>';
-                                                    endforeach;
-                                                    ?>
-                                                </ul>
-                                            </td>
-                                            <td><?php
-                                                if ($this->Acl->hasPermission('edit', 'timeperiods')):
-                                                    echo $this->Html->link($hostdependency['Timeperiod']['name'], [
-                                                        'controller' => 'timeperiods',
-                                                        'action'     => 'edit',
-                                                        $hostdependency['Hostdependency']['timeperiod_id'],
-                                                    ]);
-                                                else:
-                                                    echo h($hostdependency['Timeperiod']['name']);
-                                                endif;
-                                                ?>
-                                            </td>
-                                            <td><?php
-                                                echo $this->Form->fancyCheckbox('', [
-                                                    'caption'   => '',
-                                                    'checked'   => $hostdependency['Hostdependency']['inherits_parent'],
-                                                    'showLabel' => false,
-                                                    'disabled'  => true,
-                                                ]);
-                                                ?></td>
-
-                                            <td><?php echo __viewDependencyOptions($hostdependency, 'execution'); ?></td>
-                                            <td><?php echo __viewDependencyOptions($hostdependency, 'notification'); ?></td>
-                                            <td class="text-center">
-                                                <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                    <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $hostdependency['Hostdependency']['id']; ?>"
-                                                       data-original-title="<?php echo __('edit'); ?>"
-                                                       data-placement="left" rel="tooltip" data-container="body"><i
-                                                                id="list_edit"
-                                                                class="fa fa-gear fa-lg txt-color-teal"></i></a>
-                                                <?php endif; ?>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <?php if (empty($all_hostdependencies)): ?>
-                                <div class="noMatch">
-                                    <center>
-                                        <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                    </center>
-                                </div>
-                            <?php endif; ?>
-
-                            <div style="padding: 5px 10px;">
+<section id="widget-grid" class="">
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+                <header>
+                    <div class="widget-toolbar" role="menu">
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+                        <?php if ($this->Acl->hasPermission('add', 'hostdependencies')): ?>
+                            <a ui-sref="HostdependenciesAdd" class="btn btn-xs btn-success" icon="fa fa-plus">
+                                <i class="fa fa-plus"></i> <?php echo __('New'); ?>
+                            </a>
+                        <?php endif; ?>
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
+                    </div>
+                    <div class="jarviswidget-ctrls" role="menu">
+                    </div>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-sitemap"></i> </span>
+                    <h2 class="hidden-mobile"><?php echo __('Host Dependencies'); ?> </h2>
+                </header>
+                <div>
+                    <div class="list-filter well" ng-show="showFilter">
+                        <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                        <div class="row padding-top-10">
+                            <div class="col col-md-6 bordered-vertical-on-left">
                                 <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
+                                    <div class="col-xs-12 no-padding">
+                                        <div class="form-group smart-form">
+                                            <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
+                                                <input type="text" class="input-sm"
+                                                       placeholder="<?php echo __('Filter by host name'); ?>"
+                                                       ng-model="filter.Hosts.name"
+                                                       ng-model-options="{debounce: 500}"
+                                                       ng-focus="hostFocus=true;filter.HostsDependent.name='';hostDependentFocus=false;">
+                                            </label>
+                                        </div>
                                     </div>
-                                    <div class="col-sm-6 text-right">
-                                        <div class="dataTables_paginate paging_bootstrap">
-                                            <?php echo $this->Paginator->pagination([
-                                                'ul' => 'pagination',
-                                            ]); ?>
+                                </div>
+                                <div class="row padding-top-5 padding-bottom-5">
+                                    <div class="col-xs-12 no-padding help-block helptext text-info">
+                                        <i class="fa fa-info-circle text-info"></i>
+                                        <?php echo __('You can either search for  <b>"host"</b> OR <b>"dependent host"</b>. Opposing field will be reset automatically'); ?>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 no-padding">
+                                        <div class="form-group smart-form">
+                                            <label class="input">
+                                        <span class="icon-prepend fa-stack">
+                                            <i class="fa fa-desktop fa-stack-1x"></i>
+                                            <i class="fa fa-sitemap fa-stack-1x fa-xs cornered cornered-lr text-primary"></i>
+                                        </span>
+                                                <input type="text" class="input-sm"
+                                                       placeholder="<?php echo __('Filter by dependent host name'); ?>"
+                                                       ng-model="filter.HostsDependent.name"
+                                                       ng-model-options="{debounce: 500}"
+                                                       ng-focus="hostDependentFocus=true;filter.Hosts.name='';hostFocus=false;">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col col-md-6 bordered-vertical-on-left">
+                                <div class="row">
+                                    <div class="col-xs-12 no-padding">
+                                        <div class="form-group smart-form">
+                                            <label class="input">
+                                                <i class="icon-prepend fa fa-sitemap"></i>
+                                                <input type="text" class="input-sm"
+                                                       placeholder="<?php echo __('Filter by host group'); ?>"
+                                                       ng-model="filter.Hostgroups.name"
+                                                       ng-model-options="{debounce: 500}"
+                                                       ng-focus="hostgroupFocus=true;filter.HostgroupsDependent.name='';hostgroupDependentFocus=false;">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row padding-top-5 padding-bottom-5">
+                                    <div class="col-xs-12 no-padding help-block helptext text-info">
+                                        <i class="fa fa-info-circle text-info"></i>
+                                        <?php echo __('You can either search for  <b>"host group"</b> OR <b>"dependent host group"</b>.  Opposing field will be reset automatically'); ?>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 no-padding">
+                                        <div class="form-group smart-form">
+                                            <label class="input">
+                                        <span class="icon-prepend fa-stack">
+                                            <i class="fa fa-sitemap fa-stack-1x"></i>
+                                            <i class="fa fa-sitemap fa-stack-1x fa-xs cornered cornered-lr text-primary"></i>
+                                        </span>
+                                                <input type="text" class="input-sm"
+                                                       placeholder="<?php echo __('Filter by dependent host group'); ?>"
+                                                       ng-model="filter.HostgroupsDependent.name"
+                                                       ng-model-options="{debounce: 500}"
+                                                       ng-focus="hostgroupDependentFocus=true;filter.Hostgroups.name='';hostgroupFocus=false;">
+                                            </label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-4">
+                                <fieldset>
+                                    <legend><?php echo __('Execution fail on ...'); ?></legend>
+                                    <div class="form-group smart-form">
+                                        <label class="checkbox small-checkbox-label">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model="filter.Hostdependencies.execution_fail_on_up"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <i class="checkbox-success"></i>
+                                            <?php echo __('Up'); ?>
+                                        </label>
+
+
+                                        <label class="checkbox small-checkbox-label">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model="filter.Hostdependencies.execution_fail_on_down"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <i class="checkbox-danger"></i>
+                                            <?php echo __('Down'); ?>
+                                        </label>
+
+                                        <label class="checkbox small-checkbox-label">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model="filter.Hostdependencies.execution_fail_on_unreachable"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <i class="checkbox-default"></i>
+                                            <?php echo __('Unreachable'); ?>
+                                        </label>
+
+                                        <label class="checkbox small-checkbox-label">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model="filter.Hostdependencies.execution_fail_on_pending"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <i class="checkbox-primary"></i>
+                                            <?php echo __('Pending'); ?>
+                                        </label>
+
+                                        <label class="checkbox small-checkbox-label">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model="filter.Hostdependencies.execution_none"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <i class="checkbox-primary"></i>
+                                            <?php echo __('Execution none'); ?>
+                                        </label>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-xs-12 col-md-4">
+                                <fieldset>
+                                    <legend><?php echo __('Notification fail on ...'); ?></legend>
+                                    <div class="form-group smart-form">
+                                        <label class="checkbox small-checkbox-label">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model="filter.Hostdependencies.notification_fail_on_up"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <i class="checkbox-success"></i>
+                                            <?php echo __('Up'); ?>
+                                        </label>
+
+
+                                        <label class="checkbox small-checkbox-label">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model="filter.Hostdependencies.notification_fail_on_down"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <i class="checkbox-danger"></i>
+                                            <?php echo __('Down'); ?>
+                                        </label>
+
+                                        <label class="checkbox small-checkbox-label">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model="filter.Hostdependencies.notification_fail_on_unreachable"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <i class="checkbox-default"></i>
+                                            <?php echo __('Unreachable'); ?>
+                                        </label>
+
+                                        <label class="checkbox small-checkbox-label">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model="filter.Hostdependencies.notification_fail_on_pending"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <i class="checkbox-primary"></i>
+                                            <?php echo __('Pending'); ?>
+                                        </label>
+
+                                        <label class="checkbox small-checkbox-label">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model="filter.Hostdependencies.notification_none"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-true-value="1"
+                                                   ng-false-value="">
+                                            <i class="checkbox-primary"></i>
+                                            <?php echo __('Notification none'); ?>
+                                        </label>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <fieldset>
+                                    <legend><?php echo __('Options'); ?></legend>
+                                    <div class="col-xs-12 col-md-12 padding-left-0">
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Hostdependencies.inherits_parent"
+                                                       ng-model-options="{debounce: 500}"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Inherits parent'); ?>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- widget content -->
+                    <div class="widget-body no-padding"
+                         ng-init="objectName='<?php echo __('Host dependency #'); ?>'">
+                        <div class="mobile_table">
+                            <table id="hostdependency"
+                                   class="table table-striped table-hover table-bordered smart-form"
+                                   style="">
+                                <thead>
+                                <tr>
+                                    <th class="text-align-center"><i class="fa fa-check-square-o"
+                                                                     aria-hidden="true"></i></th>
+                                    <th><?php echo __('Hosts'); ?></th>
+                                    <th><?php echo __('Dependent hosts'); ?></th>
+                                    <th><?php echo __('Host groups'); ?></th>
+                                    <th><?php echo __('Dependent host groups'); ?></th>
+                                    <th><?php echo __('Timeperiod'); ?></th>
+                                    <th class="no-sort"><?php echo __('Execution failure criteria'); ?></th>
+                                    <th class="no-sort"><?php echo __('Notification failure criteria'); ?></th>
+                                    <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="hostdependency in hostdependencies">
+                                        <td class="text-center" class="width-15">
+                                            <?php if ($this->Acl->hasPermission('delete', 'hostdependencies')): ?>
+                                                <input type="checkbox"
+                                                       ng-model="massChange[hostdependency.id]"
+                                                       ng-show="hostdependency.allowEdit">
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="host in hostdependency.hosts">
+                                                    <div class="label-group label-breadcrumb label-breadcrumb-default padding-2">
+                                                        <label class="label label-default label-xs">
+                                                            <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
+                                                        </label>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                                            <a ui-sref="HostsEdit({id:host.id})"
+                                                               class="label label-light label-xs">
+                                                                {{host.name}}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="label label-light label-xs">
+                                                                {{host.name}}
+                                                            </span>
+                                                        <?php endif; ?>
+                                                        <i ng-if="host.disabled == 1"
+                                                           class="fa fa-power-off text-danger"
+                                                           title="disabled" aria-hidden="true"></i>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="host in hostdependency.hosts_dependent">
+                                                    <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2">
+                                                        <label class="label label-primary label-xs">
+                                                            <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
+                                                        </label>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                                            <a ui-sref="HostsEdit({id:host.id})"
+                                                               class="label label-light label-xs">
+                                                                {{host.name}}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="label label-light label-xs">
+                                                                {{host.name}}
+                                                            </span>
+                                                        <?php endif; ?>
+                                                        <i ng-if="host.disabled == 1"
+                                                           class="fa fa-power-off text-danger"
+                                                           title="disabled" aria-hidden="true"></i>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="hostgroup in hostdependency.hostgroups">
+                                                    <div class="label-group label-breadcrumb label-breadcrumb-default padding-2">
+                                                        <label class="label label-default label-xs">
+                                                            <i class="fa fa-sitemap fa-rotate-270" aria-hidden="true"></i>
+                                                        </label>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
+                                                            <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
+                                                               class="label label-light label-xs">
+                                                                {{hostgroup.container.name}}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="label label-light label-xs">
+                                                            {{hostgroup.container.name}}
+                                                        </span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="hostgroup in hostdependency.hostgroups_dependent">
+                                                    <div class="label-group label-breadcrumb label-breadcrumb-primary padding-2">
+                                                        <label class="label label-primary label-xs">
+                                                            <i class="fa fa-sitemap fa-rotate-90" aria-hidden="true"></i>
+                                                        </label>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
+                                                            <a ui-sref="HostgroupsEdit({id: hostgroup.id})"
+                                                               class="label label-light label-xs">
+                                                                {{hostgroup.container.name}}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <span class="label label-light label-xs">
+                                                                {{hostgroup.container.name}}
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                                <a ui-sref="TimeperiodsEdit({id: hostdependency.timeperiod.id})">{{
+                                                    hostdependency.timeperiod.name }}</a>
+                                            <?php else: ?>
+                                                {{ hostdependency.timeperiod.name }}
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="text-align-center">
+                                            <div>
+                                            <span class="label-forced label-success margin-right-5"
+                                                  title="<?php echo __('Up'); ?>"
+                                                  ng-show="hostdependency.execution_fail_on_up">
+                                                <?php echo __('O'); ?>
+                                            </span>
+                                                <span class="label-forced label-danger margin-right-5"
+                                                      title="<?php echo __('Down'); ?>"
+                                                      ng-show="hostdependency.execution_fail_on_down">
+                                                    <?php echo __('D'); ?>
+                                                </span>
+                                                <span class="label-forced label-default margin-right-5"
+                                                      title="<?php echo __('Unreachable'); ?>"
+                                                      ng-show="hostdependency.execution_fail_on_unreachable">
+                                                    <?php echo __('U'); ?>
+                                                </span>
+                                                <span class="label-forced label-primary margin-right-5"
+                                                      title="<?php echo __('Pending'); ?>"
+                                                      ng-show="hostdependency.execution_fail_on_pending">
+                                                    <?php echo __('P'); ?>
+                                                </span>
+                                                <span class="label-forced label-primary margin-right-5"
+                                                      title="<?php echo __('Execution none'); ?>"
+                                                      ng-show="hostdependency.execution_none">
+                                                    <?php echo __('N'); ?>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="text-align-center">
+                                            <div>
+                                            <span class="label-forced label-success margin-right-5"
+                                                  title="<?php echo __('Up'); ?>"
+                                                  ng-show="hostdependency.notification_fail_on_up">
+                                                <?php echo __('O'); ?>
+                                            </span>
+                                                <span class="label-forced label-danger margin-right-5"
+                                                      title="<?php echo __('Down'); ?>"
+                                                      ng-show="hostdependency.notification_fail_on_down">
+                                                    <?php echo __('D'); ?>
+                                                </span>
+                                                <span class="label-forced label-default margin-right-5"
+                                                      title="<?php echo __('Unreachable'); ?>"
+                                                      ng-show="hostdependency.notification_fail_on_unreachable">
+                                                    <?php echo __('U'); ?>
+                                                </span>
+                                                <span class="label-forced label-primary margin-right-5"
+                                                      title="<?php echo __('Pending'); ?>"
+                                                      ng-show="hostdependency.notification_fail_on_pending">
+                                                    <?php echo __('P'); ?>
+                                                </span>
+                                                <span class="label-forced label-primary margin-right-5"
+                                                      title="<?php echo __('Notification none'); ?>"
+                                                      ng-show="hostdependency.notification_none">
+                                                    <?php echo __('N'); ?>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group smart-form">
+                                                <?php if ($this->Acl->hasPermission('edit', 'hostdependencies')): ?>
+                                                    <a ui-sref="HostdependenciesEdit({id: hostdependency.id})"
+                                                       ng-if="hostdependency.allowEdit"
+                                                       class="btn btn-default">
+                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                    </a>
+                                                    <a href="javascript:void(0);"
+                                                       ng-if="!hostdependency.allowEdit"
+                                                       class="btn btn-default disabled">
+                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                    </a>
+                                                <?php else: ?>
+                                                    <a href="javascript:void(0);" class="btn btn-default">
+                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                    </a>
+                                                <?php endif; ?>
+                                                <a href="javascript:void(0);" data-toggle="dropdown"
+                                                   class="btn btn-default dropdown-toggle"><span
+                                                            class="caret"></span></a>
+                                                <ul class="dropdown-menu pull-right"
+                                                    id="menuHack-{{hostdependency.id}}">
+                                                    <?php if ($this->Acl->hasPermission('edit', 'hostdependencies')): ?>
+                                                        <li ng-if="hostdependency.allowEdit">
+                                                            <a ui-sref="HostdependenciesEdit({id:hostdependency.id})">
+                                                                <i class="fa fa-cog"></i>
+                                                                <?php echo __('Edit'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->Acl->hasPermission('delete', 'hostdependencies')): ?>
+                                                        <li class="divider"
+                                                            ng-if="hostdependency.allowEdit"></li>
+                                                        <li ng-if="hostdependency.allowEdit">
+                                                            <a href="javascript:void(0);"
+                                                               class="txt-color-red"
+                                                               ng-click="confirmDelete(getObjectForDelete(hostdependency))">
+                                                                <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr ng-show="hostdependencies.length == 0">
+                                        <td colspan="9">
+                                            <div class="col-xs-12 text-center txt-color-red italic">
+                                                <?php echo __('No entries match the selection'); ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row margin-top-10 margin-bottom-10" ng-show="hostdependencies.length > 0">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-4 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                        </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
-        </div>
-    </section>
-<?php
-/**
- * This is a view function and ONLY CALLED IN THIS VIEW!
- *
- * @param array $hostdependency from find('first')
- * @param       string          [options_mode] [Dependency options mode execution|notification]
- *
- * @return string `<i />` HTML object with icons for each options
- * @since 3.0
- */
-function __viewDependencyOptions($hostdependency = [], $options_mode) {
-    $options = [
-        $options_mode . '_fail_on_up'          => [
-            'color' => 'txt-color-greenLight',
-            'class' => 'fa fa-square',
-        ],
-        $options_mode . '_fail_on_down'        => [
-            'color' => 'txt-color-redLight',
-            'class' => 'fa fa-square',
-        ],
-        $options_mode . '_fail_on_unreachable' => [
-            'color' => 'txt-color-blueDark',
-            'class' => 'fa fa-square',
-        ],
-        $options_mode . '_fail_on_pending'     => [
-            'color' => '',
-            'class' => 'fa fa-square-o',
-        ],
-        $options_mode . '_none'                => [
-            'color' => '',
-            'class' => 'fa fa-minus-square-o',
-        ],
-    ];
-    $html = '';
-    foreach ($options as $option => $layout_sett) { //$layout_sett => color + icons for options
-        if (isset($hostdependency['Hostdependency'][$option]) && $hostdependency['Hostdependency'][$option] == 1) {
-            $html .= '<i class="' . $layout_sett['class'] . ' ' . $layout_sett['color'] . '" title="' . preg_replace('/(' . $options_mode . '_|fail_on_)/', '', $option) . '"></i>&nbsp';
-        }
-    }
-
-    return $html;
-}
+        </article>
+    </div>
+</section>

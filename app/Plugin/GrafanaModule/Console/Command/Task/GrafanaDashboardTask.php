@@ -1,5 +1,6 @@
 <?php
 
+use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Request;
@@ -20,6 +21,7 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
 use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
+use Statusengine\PerfdataParser;
 
 /**
  * Class GrafanaDashboardTask
@@ -28,11 +30,9 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
  * @property Service $Service
  * @property Hoststatus $Hoststatus
  * @property Servicestatus $Servicestatus
- * @property Rrd $Rrd
  * @property GrafanaConfiguration $GrafanaConfiguration
  * @property GrafanaConfigurationHostgroupMembership $GrafanaConfigurationHostgroupMembership
  * @property GrafanaDashboard $GrafanaDashboard
- * @property Proxy $Proxy
  */
 class GrafanaDashboardTask extends AppShell implements CronjobInterface {
 
@@ -42,11 +42,9 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
         'Service',
         MONITORING_HOSTSTATUS,
         MONITORING_SERVICESTATUS,
-        'Rrd',
         'GrafanaModule.GrafanaConfiguration',
         'GrafanaModule.GrafanaConfigurationHostgroupMembership',
         'GrafanaModule.GrafanaDashboard',
-        'Proxy'
     ];
 
     public $client = [];
@@ -70,9 +68,13 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
             throw new RuntimeException('No Grafana configuration found');
         }
 
+        /** @var $Proxy App\Model\Table\ProxiesTable */
+        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+
+
         $this->GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
         $this->out('Check Connection to Grafana');
-        $this->client = $this->GrafanaConfiguration->testConnection($this->GrafanaApiConfiguration, $this->Proxy->getSettings());
+        $this->client = $this->GrafanaConfiguration->testConnection($this->GrafanaApiConfiguration, $Proxy->getSettings());
 
         if ($this->client instanceof Client) {
             $this->out('<success>Connection check successful</success>');
@@ -221,7 +223,8 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
                 continue;
             }
 
-            $perfdata = $this->Rrd->parsePerfData($servicestatus[$service['uuid']]['Servicestatus']['perfdata']);
+            $PerfdataParser = new PerfdataParser($servicestatus[$service['uuid']]['Servicestatus']['perfdata']);
+            $perfdata = $PerfdataParser->parse();
             $grafanaPanel = new GrafanaPanel($panelId);
             $grafanaPanel->setTitle(sprintf('%s - %s', $host['Host']['name'], $serviceName));
             $grafanaTargetCollection = new GrafanaTargetCollection();

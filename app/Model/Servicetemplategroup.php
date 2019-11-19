@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Servicetemplategroup
+ * @deprecated
+ */
 class Servicetemplategroup extends AppModel {
 
     public $belongsTo = [
@@ -55,6 +59,14 @@ class Servicetemplategroup extends AppModel {
         ],
     ];
 
+    /**
+     * @param int $containerIds
+     * @param string $type
+     * @param array $options
+     * @param string $id
+     * @return array|null
+     * @deprecated
+     */
     public function byContainerId($containerIds = ROOT_CONTAINER, $type = 'all', $options = [], $id = 'id') {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];

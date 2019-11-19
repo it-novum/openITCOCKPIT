@@ -1,6 +1,6 @@
 angular.module('openITCOCKPIT')
-    .controller('Grafana_userdashboardsEditorController', function($scope, $http, QueryStringService){
-        $scope.id = QueryStringService.getCakeId();
+    .controller('Grafana_userdashboardsEditorController', function($scope, $http, $stateParams, $state){
+        $scope.id = $stateParams.id;
         $scope.name = '';
 
         $scope.load = function(){
@@ -31,7 +31,13 @@ angular.module('openITCOCKPIT')
 
             }, function errorCallback(result){
                 if(result.status === 404){
-                    window.location.href = '/angular/not_found';
+                    if(result.status === 403){
+                        $state.go('403');
+                    }
+
+                    if(result.status === 404){
+                        $state.go('404');
+                    }
                 }
             });
         };

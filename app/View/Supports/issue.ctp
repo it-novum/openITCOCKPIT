@@ -34,7 +34,7 @@
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
@@ -154,23 +154,7 @@
                     </div>
                 </div>
 
-                <script type="text/javascript"
-                        src="https://project.it-novum.com/s/19760d6c1bfe1ce14385060c8e7c48c7-T/-4bbefd/73011/76ebf73be4dd92dad1b7a8c846dfbc44/2.0.23/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=de-DE&collectorId=5350ef3b"></script>
-
-
-                <script type="text/javascript">window.ATL_JQ_PAGE_PROPS = {
-                        "triggerFunction": function(showCollectorDialog){
-                            //Requires that jQuery is available!
-                            jQuery("#JIRAIssue").click(function(e){
-                                e.preventDefault();
-                                showCollectorDialog();
-                            });
-                        }
-                    };
-                </script>
-
             </div>
-
         </div>
     </div>
 </div>

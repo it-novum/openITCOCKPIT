@@ -252,8 +252,8 @@ class Shell extends CakeObject {
 		$this->out();
 		$this->out(__d('cake_console', '<info>Welcome to CakePHP %s Console</info>', 'v' . Configure::version()));
 		$this->hr();
-		$this->out(__d('cake_console', 'App : %s', APP_DIR));
-		$this->out(__d('cake_console', 'Path: %s', APP));
+		$this->out(__d('cake_console', 'App : %s', OLD_APP_DIR));
+		$this->out(__d('cake_console', 'Path: %s', OLD_APP));
 		$this->hr();
 	}
 
@@ -853,7 +853,7 @@ class Shell extends CakeObject {
  * @link https://book.cakephp.org/2.0/en/console-and-shells.html#Shell::shortPath
  */
 	public function shortPath($file) {
-		$shortPath = str_replace(ROOT, null, $file);
+		$shortPath = str_replace(OLD_ROOT, null, $file);
 		$shortPath = str_replace('..' . DS, '', $shortPath);
 		return str_replace(DS . DS, DS, $shortPath);
 	}

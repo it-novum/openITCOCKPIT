@@ -25,6 +25,10 @@
 
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 
+/**
+ * Class StatehistoryHost
+ * @deprecated
+ */
 class StatehistoryHost extends NagiosModuleAppModel {
     public $useTable = 'statehistory';
     public $primaryKey = 'statehistory_id';
@@ -45,6 +49,7 @@ class StatehistoryHost extends NagiosModuleAppModel {
      * @param StatehistoryHostConditions $StatehistoryHostConditions
      * @param array $paginatorConditions
      * @return array
+     * @deprecated
      */
     public function getQuery(StatehistoryHostConditions $StatehistoryHostConditions, $paginatorConditions = []) {
         $query = [
@@ -83,6 +88,7 @@ class StatehistoryHost extends NagiosModuleAppModel {
     /**
      * @param StatehistoryHostConditions $StatehistoryHostConditions
      * @return array
+     * @deprecated
      */
     public function getLastRecord(StatehistoryHostConditions $StatehistoryHostConditions) {
         $query = [

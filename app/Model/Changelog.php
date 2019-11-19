@@ -37,60 +37,55 @@ class Changelog extends AppModel {
     public function getCompareRules() {
         $_objectDefaults = [
             'command'              => [
-                'Command'         => '{(command_type|name|description|command_line)}',
-                'Commandargument' => '{n}.{(id|name|human_name)}',
+                'Command'                  => '{(command_type|name|description|command_line)}',
+                'Command.commandarguments' => '{n}.{(id|name|human_name)}',
             ],
-            /*'devicegroup' => [
-                'Devicegroup' => '{(description)}',
-                'Container' => '{(name)}',
-            ],*/
             'timeperiod'           => [
-                'Timeperiod' => '{(name|description)}',
-                'Timerange'  => '{n}.{(id|day|start|end)}',
+                'Timeperiod'                       => '{(name|description)}',
+                'Timeperiod.timeperiod_timeranges' => '{n}.{(id|day|start|end)}',
             ],
             'contact'              => [
-                'Contact'           => '{(name|description|email|phone|notify_).*}',
-                'HostTimeperiod'    => '{(id|name)}',
-                'ServiceTimeperiod' => '{(id|name)}',
-                'HostCommands'      => '{n}.{(id|name)}',
-                'ServiceCommands'   => '{n}.{(id|name)}',
-                'Customvariable'    => '{n}.{(id|name|value)}',
+                'Contact'                 => '{(name|description|email|phone|notify_).*}',
+                'HostTimeperiod'          => '{(id|name)}',
+                'ServiceTimeperiod'       => '{(id|name)}',
+                'HostCommands'            => '{n}.{(id|name)}',
+                'ServiceCommands'         => '{n}.{(id|name)}',
+                'Contact.customvariables' => '{n}.{(id|name|value)}',
             ],
             'contactgroup'         => [
-                'Contactgroup' => '{(description)}',
-                'Container'    => '{(name)}',
-                'Contact'      => '{n}.{(id|name)}',
+                'Contactgroup'           => '{(description)}',
+                'Contactgroup.container' => '{(name)}',
+                'Contact'                => '{n}.{(id|name)}',
             ],
             'hostgroup'            => [
-                'Hostgroup'    => '{(description|hostgroup_url)}',
-                'Container'    => '{(name)}',
-                'Host'         => '{n}.{(id|name)}',
-                'Hosttemplate' => '{n}.{(id|name)}',
+                'Hostgroup'           => '{(description|hostgroup_url)}',
+                'Hostgroup.container' => '{(name)}',
+                'Host'                => '{n}.{(id|name)}',
+                'Hosttemplate'        => '{n}.{(id|name)}',
             ],
             'hosttemplate'         => [
-                'Hosttemplate'                     => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
-                'CheckPeriod'                      => '{(id|name)}',
-                'NotifyPeriod'                     => '{(id|name)}',
-                'CheckCommand'                     => '{(id|name)}',
-                'Customvariable'                   => '{n}.{(id|name|value)}',
-                'Hosttemplatecommandargumentvalue' => '{n}.{(id|value)}',
-                //			'Hosttemplatecommandargumentvalue' => ['prepareFields' => ['{n}.{(id|name|value)}', 'Commandargument.{(human_name)}'], 'fields' => '{n}.{(id|name|human_name)}'],
-                'Contact'                          => '{n}.{(id|name)}',
-                'Contactgroup'                     => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
-                'Hostgroup'                        => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
+                'Hosttemplate'                                   => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
+                'CheckPeriod'                                    => '{(id|name)}',
+                'NotifyPeriod'                                   => '{(id|name)}',
+                'CheckCommand'                                   => '{(id|name)}',
+                'Hosttemplate.customvariables'                   => '{n}.{(id|name|value)}',
+                'Hosttemplate.hosttemplatecommandargumentvalues' => '{n}.{(id|value)}',
+                'Contact'                                        => '{n}.{(id|name)}',
+                'Contactgroup'                                   => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
+                'Hostgroup'                                      => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
             ],
             'servicetemplate'      => [
-                'Servicetemplate'                          => '{(template_name|name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_).*}',
-                'CheckPeriod'                              => '{(id|name)}',
-                'NotifyPeriod'                             => '{(id|name)}',
-                'CheckCommand'                             => '{(id|name)}',
-                'EventhandlerCommand'                      => '{(id|name)}',
-                'Servicetemplateeventcommandargumentvalue' => '{n}.{(id|value)}',
-                'Customvariable'                           => '{n}.{(id|name|value)}',
-                'Servicetemplatecommandargumentvalue'      => '{n}.{(id|value)}',
-                'Contact'                                  => '{n}.{(id|name)}',
-                'Contactgroup'                             => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
-                'Servicegroup'                             => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
+                'Servicetemplate'                                           => '{(template_name|name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_).*}',
+                'CheckPeriod'                                               => '{(id|name)}',
+                'NotifyPeriod'                                              => '{(id|name)}',
+                'CheckCommand'                                              => '{(id|name)}',
+                'EventhandlerCommand'                                       => '{(id|name)}',
+                'Servicetemplate.customvariables'                           => '{n}.{(id|name|value)}',
+                'Servicetemplate.servicetemplatecommandargumentvalues'      => '{n}.{(id|value)}',
+                'Servicetemplate.servicetemplateeventcommandargumentvalues' => '{n}.{(id|value)}',
+                'Contact'                                                   => '{n}.{(id|name)}',
+                'Contactgroup'                                              => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
+                'Servicegroup'                                              => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
             ],
             'servicegroup'         => [
                 'Servicegroup'    => '{(description|servicegroup_url)}',
@@ -104,41 +99,63 @@ class Changelog extends AppModel {
                 'Servicetemplate'      => '{n}.{(id|template_name)}',
             ],
             'host'                 => [
-                'Host'                     => '{(name|address|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
-                'Hosttemplate'             => '{(id|name)}',
-                'CheckPeriod'              => '{(id|name)}',
-                'NotifyPeriod'             => '{(id|name)}',
-                'CheckCommand'             => '{(id|name)}',
-                'Hostgroup'                => '{n}.{(id|name)}',
-                'Parenthost'               => '{n}.{(id|name)}',
-                'Customvariable'           => '{n}.{(id|name|value)}',
-                'Hostcommandargumentvalue' => '{n}.{(id|value)}',
-                'Contact'                  => '{n}.{(id|name)}',
-                'Contactgroup'             => '{n}.{(id|name)}',
+                'Host'                           => '{(name|address|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
+                'Hosttemplate'                   => '{(id|name)}',
+                'CheckPeriod'                    => '{(id|name)}',
+                'NotifyPeriod'                   => '{(id|name)}',
+                'CheckCommand'                   => '{(id|name)}',
+                'Hostgroup'                      => '{n}.{(id|name)}',
+                'Parenthost'                     => '{n}.{(id|name)}',
+                'Host.customvariables'           => '{n}.{(id|name|value)}',
+                'Host.hostcommandargumentvalues' => '{n}.{(id|value)}',
+                'Contact'                        => '{n}.{(id|name)}',
+                'Contactgroup'                   => '{n}.{(id|name)}',
             ],
             'service'              => [
-                'Service'                          => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_).*}',
-                'Host'                             => '{(id|name)}',
-                'Servicetemplate'                  => '{(id|name)}',
-                'CheckPeriod'                      => '{(id|name)}',
-                'NotifyPeriod'                     => '{(id|name)}',
-                'CheckCommand'                     => '{(id|name)}',
-                'Servicegroup'                     => '{n}.{(id|name)}',
-                'Customvariable'                   => '{n}.{(id|name|value)}',
-                'Servicecommandargumentvalue'      => '{n}.{(id|value)}',
-                'Serviceeventcommandargumentvalue' => '{n}.{(id|value)}',
-                'Contact'                          => '{n}.{(id|name)}',
-                'Contactgroup'                     => '{n}.{(id|name)}',
+                'Service'                                   => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_).*}',
+                'Host'                                      => '{(id|name)}',
+                'Servicetemplate'                           => '{(id|name)}',
+                'CheckPeriod'                               => '{(id|name)}',
+                'NotifyPeriod'                              => '{(id|name)}',
+                'CheckCommand'                              => '{(id|name)}',
+                'Servicegroup'                              => '{n}.{(id|name)}',
+                'Service.customvariables'                   => '{n}.{(id|name|value)}',
+                'Service.servicecommandargumentvalues'      => '{n}.{(id|value)}',
+                'Service.serviceeventcommandargumentvalues' => '{n}.{(id|value)}',
+                'Contact'                                   => '{n}.{(id|name)}',
+                'Contactgroup'                              => '{n}.{(id|name)}',
             ],
             'map'                  => [
                 'Map' => '{(name|description)}',
+            ],
+            'tenant'               => [
+                'tenant'           => '{(description|firstname|lastname|street|zipcode|city)}',
+                'tenant.container' => '{(name)}'
+            ],
+            'location'             => [
+                'location'           => '{(description|latitude|longitude|timezone)}',
+                'location.container' => '{(name)}'
             ],
         ];
 
         return $_objectDefaults;
     }
 
-    // use $user_id = 0 to specify cron task 
+    /**
+     *  use $user_id = 0 to specify cron task
+     *
+     * @param $action
+     * @param $controller
+     * @param $object_id
+     * @param $objecttype_id
+     * @param $container_id
+     * @param $user_id
+     * @param $name
+     * @param $requestData
+     * @param array $currentSavedData
+     * @return array|bool|false
+     * @deprecated
+     */
     public function parseDataForChangelog($action, $controller, $object_id, $objecttype_id, $container_id, $user_id, $name, $requestData, $currentSavedData = []) {
         $data_array_keys = ['action', 'controller', 'object_id', 'objecttype_id', 'container_id', 'user_id', 'name', 'data'];
         $changes = [];
@@ -222,7 +239,6 @@ class Changelog extends AppModel {
     function getDiffAsArray($new_values, $old_values, $field_key) {
         $new_values = ($new_values === null) ? [] : $new_values;
         $old_values = ($old_values === null || empty(Hash::filter($old_values, [$this, 'filterNullValues']))) ? [] : $old_values;
-
         // compare the value of 2 array
         // get differences that in new_values but not in old_values
         // get difference that in old_values but not in new_values
@@ -288,7 +304,7 @@ class Changelog extends AppModel {
      * @return boolean
      */
     public static function filterNullValues($var) {
-        if ($var != null || $var === '0' || $var === '') {
+        if ($var != null || $var === '0' || $var === '' || $var === 0) {
             return true;
         }
 

@@ -25,9 +25,10 @@
 
 $config = [
     'acl_dependencies' => [
-        'AppController'  => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403', 'checkForUpdates'],
+        'AppController'  => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403', 'checkForUpdates', 'tableLocator', 'setTableLocator', 'getTableLocator'],
         'always_allowed' => [
             'Angular'          => [
+                'index',
                 'paginator',
                 'scroll',
                 'mass_delete',
@@ -45,7 +46,6 @@ $config = [
                 'export',
                 'not_found',
                 'forbidden',
-                'nested_list',
                 'executing',
                 'acknowledge_service',
                 'downtime_service',
@@ -71,33 +71,46 @@ $config = [
                 'getPieChart',
                 'getHalfPieChart',
                 'getCumulatedHostAndServiceStateIcon',
-                'getHostAndServiceStateSummaryIcon'
+                'getHostAndServiceStateSummaryIcon',
+                'macros',
+                'ldap_configuration',
+                'priority',
+                'intervalInput',
+                'intervalInputWithDiffer',
+                'humanTime',
+                'template_diff',
+                'template_diff_button',
+                'queryhandler',
+                'hostBrowserMenu',
+                'serviceBrowserMenu',
+                'durationInput',
+                'calendar',
+                'reload_required'
             ],
             'Automaps'         => [
-                'icon'
+                'icon',
+                'loadContainers'
             ],
-            'Commands'         => [
-                'sortByCommandType',
+            'Calendars'        => [
+                'loadCalendarsByContainerId'
             ],
             'Containers'       => [
-                'byTenantForSelect', 'byTenant', 'loadContainersForAngular'
+                'byTenantForSelect', 'byTenant', 'loadContainersForAngular', 'loadContainers', 'loadContainersByContainerId'
             ],
             'Downtimes'        => [
-                'validateDowntimeInputFromBrowser',
                 'validateDowntimeInputFromAngular',
                 'icon'
             ],
             'Forward'          => [
                 'index',
             ],
-            'GraphCollections' => [
-                'loadCollectionGraphData',
-            ],
             'Packetmanager'    => [
                 'getPackets',
             ],
             'Profile'          => [
                 'edit',
+                'changePassword',
+                'upload_profile_icon',
                 'deleteImage',
                 'apikey',
                 'edit_apikey',
@@ -107,10 +120,6 @@ $config = [
             'Proxy'            => [
                 'getSettings',
             ],
-            'Rrds'             => [
-                'index',
-                'ajax',
-            ],
             'Search'           => [
                 'index',
                 'hostMacro',
@@ -119,13 +128,12 @@ $config = [
             'Services'         => [
                 'icon',
                 'servicecumulatedstatusicon',
-                'details'
+                'details',
+                'byUuid',
+                'loadServicesByStringCake4',
+                'loadServicesByContainerIdCake4'
             ],
             'Graphgenerators'  => [
-                'fetchGraphData',
-                'loadServicesByHostId',
-                'loadPerfDataStructures',
-                'loadServiceruleFromService',
                 'getPerfdataByUuid'
             ],
             'Dashboards'       => [
@@ -172,8 +180,8 @@ $config = [
                 'icon',
                 'hostservicelist',
                 'loadParentHostsByString',
-                'loadParentHostsById',
-                'hoststatus'
+                'hoststatus',
+                'byUuid'
             ],
             'Statistics'       => [
                 'ask_anonymous_statistics'
@@ -188,89 +196,93 @@ $config = [
             ],
         ],
         'dependencies'   => [
+            'Agentchecks'           => [
+                'add'  => ['loadServicetemplates'],
+                'edit' => ['loadServicetemplates']
+            ],
+            'Agentconfigs'          => [
+                'scan' => ['config', 'createService'],
+            ],
             'Automaps'              => [
-                'view' => ['loadServiceDetails'],
+                'add'  => ['getMatchingHostAndServices'],
+                'edit' => ['getMatchingHostAndServices'],
             ],
             'Browsers'              => [
                 'index' => ['tenantBrowser', 'locationBrowser', 'nodeBrowser'],
             ],
             'Calendars'             => [
-                'add'    => ['loadHolidays'],
-                'edit'   => ['loadHolidays'],
-                'delete' => ['mass_delete'],
+                'add'    => ['loadHolidays', 'loadCountryList'],
+                'edit'   => ['loadHolidays', 'loadCountryList'],
             ],
             'Commands'              => [
-                'index'  => ['view'],
-                'add'    => ['addCommandArg', 'loadMacros'],
-                'edit'   => ['addCommandArg', 'loadMacros'],
-                'delete' => ['mass_delete'],
+                'index' => ['view'],
+                'add'   => ['getConsoleWelcome'],
+                'edit'  => ['getConsoleWelcome']
             ],
             'Timeperiods'           => [
-                'index'  => [
+                'index' => [
                     'view',
                     'loadTimeperiodsByContainerId'
                 ],
-                'delete' => ['mass_delete'],
             ],
             'Contactgroups'         => [
-                'index'  => ['view'],
-                'add'    => ['loadContacts'],
-                'edit'   => ['loadContacts'],
-                'delete' => ['mass_delete'],
+                'index' => ['view'],
+                'add'   => ['loadContacts', 'loadContainers'],
+                'edit'  => ['loadContacts', 'loadContainers'],
             ],
             'Contacts'              => [
                 'index' => ['view'],
-                'add'   => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString', 'loadUsersByContainerId'],
-                'edit'  => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString', 'loadUsersByContainerId'],
+                'add'   => ['loadContainers', 'loadCommands', 'loadTimeperiods', 'loadLdapUserByString', 'loadUsersByContainerId'],
+                'edit'  => ['loadContainers', 'loadCommands', 'loadTimeperiods', 'loadLdapUserByString', 'loadUsersByContainerId'],
             ],
             'Cronjobs'              => [
-                'add'  => ['loadTasksByPlugin'],
-                'edit' => ['loadTasksByPlugin'],
+                'add'  => ['getTasks'],
+                'edit' => ['getTasks'],
             ],
             'Currentstatereports'   => [
                 'index' => ['createPdfReport', 'createHtmlReport'],
             ],
             'Downtimereports'       => [
-                'index' => ['createPdfReport'],
+                'index' => ['createPdfReport', 'hostsBarChart', 'hostAvailabilityOverview', 'serviceAvailabilityOverview'],
             ],
             'Hostdependencies'      => [
                 'index' => ['view'],
-                'add'   => ['loadElementsByContainerId'],
-                'edit'  => ['loadElementsByContainerId'],
+                'add'   => ['loadContainers', 'loadElementsByContainerId'],
+                'edit'  => ['loadContainers', 'loadElementsByContainerId'],
             ],
             'Hostescalations'       => [
                 'index' => ['view'],
-                'add'   => ['loadElementsByContainerId'],
-                'edit'  => ['loadElementsByContainerId'],
+                'add'   => ['loadContainers', 'loadElementsByContainerId'],
+                'edit'  => ['loadContainers', 'loadElementsByContainerId']
             ],
             'Hostgroups'            => [
                 'index'    => ['listToPdf', 'view', 'loadHostgroupsByString', 'loadHosgroupsByContainerId'],
-                'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates', 'loadContainers'],
-                'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
+                'add'      => ['loadHosts', 'loadHosttemplates', 'loadContainers', 'addHostsToHostgroup', 'append'],
+                'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers', 'addHostsToHostgroup', 'append'],
                 'extended' => ['loadHostgroupWithHostsById', 'listToPdf']
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup'],
+                'index'      => ['listToPdf', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid', 'getGrafanaIframeUrlForDatepicker'],
-                'add'        => ['gethostbyname', 'gethostbyaddr', 'loadHosttemplate', 'addCustomMacro', 'loadTemplateMacros', 'loadParametersByCommandId', 'loadArguments', 'loadArgumentsAdd', 'loadHosttemplatesArguments', 'addParentHosts', 'loadElementsByContainerId', 'getSharingContainers'],
-                'edit'       => ['gethostbyname', 'gethostbyaddr', 'loadHosttemplate', 'addCustomMacro', 'loadTemplateMacros', 'loadParametersByCommandId', 'loadArguments', 'loadArgumentsAdd', 'loadHosttemplatesArguments', 'addParentHosts', 'loadElementsByContainerId', 'getSharingContainers'],
+                'add'        => ['loadContainers', 'loadCommands', 'loadElementsByContainerId', 'loadHosttemplate', 'runDnsLookup', 'loadCommandArguments'],
+                'edit'       => ['loadContainers', 'loadCommands', 'loadElementsByContainerId', 'loadHosttemplate', 'runDnsLookup', 'loadCommandArguments'],
             ],
             'Hosttemplates'         => [
                 'index' => ['view'],
-                'add'   => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId'],
-                'edit'  => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId'],
+                'add'   => ['loadElementsByContainerId', 'loadContainers', 'loadCommands', 'loadCommandArguments'],
+                'edit'  => ['loadElementsByContainerId', 'loadContainers', 'loadCommands', 'loadCommandArguments'],
             ],
             'Instantreports'        => [
                 'index' => ['createPdfReport'],
                 'add'   => ['loadContainers']
             ],
             'Macros'                => [
-                'index' => ['addMacro'],
+                'index' => ['add', 'edit', 'delete', 'getAvailableMacroNames'],
             ],
             'Registers'             => [
-                'index' => ['check'],
+                'index' => ['checkLicense'],
             ],
             'Servicedependencies'   => [
                 'index' => ['view'],
@@ -279,47 +291,44 @@ $config = [
             ],
             'Serviceescalations'    => [
                 'index' => ['view'],
-                'add'   => ['loadElementsByContainerId'],
-                'edit'  => ['loadElementsByContainerId'],
+                'add'   => ['loadContainers', 'loadElementsByContainerId'],
+                'edit'  => ['loadContainers', 'loadElementsByContainerId']
             ],
             'Servicegroups'         => [
                 'index'    => ['listToPdf', 'view', 'loadServicegroupsByContainerId', 'loadServicegroupsByString'],
-                'add'      => ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
-                'edit'     => ['loadServices', 'loadServicetemplates'],
+                'add'      => ['loadServicetemplates', 'loadContainers', 'addServicesToServicegroup', 'append'],
+                'edit'     => ['loadServicetemplates', 'loadContainers', 'addServicesToServicegroup', 'append'],
                 'delete'   => ['mass_delete'],
                 'extended' => ['loadServicegroupWithServicesById']
             ],
             'Services'              => [
                 'deactivate'  => ['mass_deactivate'],
-                'index'       => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId', 'loadServicesByString', 'getSelectedServices'],
-                'browser'     => ['servicesByHostId', 'longOutputByUuid'],
-                'add'         => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros', 'loadElementsByHostId'],
-                'edit'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros', 'loadElementsByHostId'],
+                'index'       => ['listToPdf', 'view', 'loadServicesByContainerId', 'loadServicesByString'],
+                'add'         => ['loadElementsByHostId', 'loadServicetemplate', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments'],
+                'edit'        => ['loadElementsByHostId', 'loadServicetemplate', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments'],
                 'serviceList' => ['deleted']
             ],
             'Servicetemplategroups' => [
-                'index' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId', 'view', 'allocateToMatchingHostgroup'],
-                'add'   => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
-                'edit'  => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
+                'index' => ['loadServicetemplatesByContainerId', 'view', 'allocateToMatchingHostgroup', 'loadServicetemplategroupsByString', 'loadHostgroupsByString'],
+                'add'   => ['loadContainers', 'loadServicetemplatesByContainerId', 'append', 'loadServicetemplategroupsByString'],
+                'edit'  => ['loadContainers', 'loadServicetemplatesByContainerId', 'append', 'loadServicetemplategroupsByString']
             ],
             'Servicetemplates'      => [
-                'index' => ['view', 'loadUsersByContainerId', 'loadServicetemplatesByContainerId', 'assignGroup'],
-                'add'   => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
-                'edit'  => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
+                'index' => ['view', 'loadServicetemplatesByContainerId', 'addServicetemplatesToServicetemplategroup'],
+                'add'   => ['loadContainers', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments', 'loadElementsByContainerId'],
+                'edit'  => ['loadContainers', 'loadCommands', 'loadCommandArguments', 'loadEventhandlerCommandArguments', 'loadElementsByContainerId'],
             ],
             'Users'                 => [
-                'index' => ['view', 'loadUsersByContainerId'],
-                'add'   => ['addFromLdap', 'loadLdapUserByString'],
-                'edit'  => ['resetPassword'],
+                'index' => ['view', 'loadUsersByContainerId', 'loadUsergroups'],
+                'add'   => ['addFromLdap', 'loadLdapUserByString', 'loadDateformats', 'loadUsergroups', 'loadContainerRoles', 'loadContainerPermissions'],
+                'edit'  => ['resetPassword', 'loadDateformats', 'loadUsergroups', 'loadContainerRoles', 'loadContainerPermissions'],
             ],
             'Tenants'               => [
                 'index'  => ['view'],
                 'delete' => ['mass_delete'],
             ],
             'Downtimes'             => [
-                'host'    => ['index'],
-                'service' => ['index'],
-                'delete'  => ['mass_delete'],
+                'delete' => ['mass_delete'],
             ],
             'Administrators'        => [
                 'debug' => ['testMail', 'querylog'],
@@ -332,6 +341,8 @@ $config = [
             ],
             'Locations'             => [
                 'index' => ['view'],
+                'add'   => ['loadContainers'],
+                'edit'  => ['loadContainers']
             ],
             /*'Devicegroups' => [
                 'index' => ['view'],
@@ -353,8 +364,8 @@ $config = [
             'Statistics'            => [
                 'index' => ['saveStatisticDecision']
             ],
-            'ConfigurationFiles' => [
-                'edit' => ['NagiosCfg', 'AfterExport', 'NagiosModuleConfig', 'phpNSTAMaster', 'DbBackend', 'PerfdataBackend', 'GraphingDocker', 'StatusengineCfg', 'GraphiteWeb', 'restorDefault']
+            'ConfigurationFiles'    => [
+                'edit' => ['NagiosCfg', 'AfterExport', 'NagiosModuleConfig', 'phpNSTAMaster', 'DbBackend', 'PerfdataBackend', 'GraphingDocker', 'StatusengineCfg', 'GraphiteWeb', 'restorDefault', 'dynamicDirective']
             ]
         ],
         'roles_rights'   => [
@@ -365,7 +376,6 @@ $config = [
                 'Automaps'              => ['index'],
                 'Browsers'              => ['index'],
                 'Calendars'             => ['index'],
-                'Category'              => ['index'],
                 'Changelogs'            => ['index'],
                 'Commands'              => ['index', 'hostchecks', 'notifications', 'handler'],
                 'Contactgroups'         => ['index'],
@@ -374,9 +384,9 @@ $config = [
                 'Cronjobs'              => ['index'],
                 'Currentstatereports'   => ['index'],
                 'DeletedHosts'          => ['index'],
-                'Documentations'        => ['index', 'view', 'wiki'],
+                'Documentations'        => ['view', 'wiki'],
                 'Downtimereports'       => ['index', 'host', 'service'],
-                'GraphCollections'      => ['index', 'display'],
+                'Exports'               => ['index'],
                 'Hostchecks'            => ['index'],
                 'Hostdependencies'      => ['index'],
                 'Hostescalations'       => ['index'],
@@ -402,7 +412,6 @@ $config = [
                 'Servicetemplates'      => ['index'],
                 'Statehistories'        => ['service', 'host'],
                 'Statusmaps'            => ['index', 'hostAndServicesSummaryStatus'],
-                'Systemdowntimes'       => ['index'],
                 'Systemfailures'        => ['index'],
                 'Systemsettings'        => ['index', 'host', 'service', 'hostgroup', 'node'],
                 'Tenants'               => ['index'],

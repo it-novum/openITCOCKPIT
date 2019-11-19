@@ -23,6 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Timezone
+ * @deprecated
+ *
+ * Only used by Graphgenerator anymore
+ */
 class Timezone {
 
     /**
@@ -32,6 +38,7 @@ class Timezone {
      *                        soll (optional, default = now)
      *
      * @return int      Zeitdifferenz in Sekunden (die auf Serverzeit addiert werden muss, um Clientzeit zu erhalten)
+     * @deprecated
      */
     public static function getUserSystemOffset($userTimezone, $datetime = 'now') {
         if (strlen($userTimezone) < 2) {

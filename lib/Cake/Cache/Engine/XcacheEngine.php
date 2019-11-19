@@ -47,7 +47,7 @@ class XcacheEngine extends CacheEngine {
 		if (PHP_SAPI !== 'cli') {
 			parent::init(array_merge(array(
 				'engine' => 'Xcache',
-				'prefix' => Inflector::slug(APP_DIR) . '_',
+				'prefix' => Inflector::slug(OLD_APP_DIR) . '_',
 				'PHP_AUTH_USER' => 'user',
 				'PHP_AUTH_PW' => 'password'
 				), $settings)

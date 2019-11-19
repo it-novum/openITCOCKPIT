@@ -28,6 +28,7 @@ use itnovum\openITCOCKPIT\ApiShell\CoreApi;
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\RecordExistsExceptions;
 use itnovum\openITCOCKPIT\ApiShell\Interfaces\ApiInterface;
 use itnovum\openITCOCKPIT\ApiShell\OptionParser;
+use itnovum\openITCOCKPIT\Core\UUID;
 
 class Api extends CoreApi implements ApiInterface {
 
@@ -42,7 +43,6 @@ class Api extends CoreApi implements ApiInterface {
     private $data;
 
     public function __construct($cake, $modelName) {
-        \App::uses('UUID', 'Lib');
         parent::__construct($cake, $modelName);
     }
 
@@ -77,7 +77,7 @@ class Api extends CoreApi implements ApiInterface {
                 'name'         => $this->getNameOfData(),
                 'command_line' => $this->data[1],
                 'command_type' => $this->data[2],
-                'uuid'         => \UUID::v4(),
+                'uuid'         => UUID::v4(),
                 'description'  => $this->data[3],
             ];
             if ($this->Database->save($data)) {

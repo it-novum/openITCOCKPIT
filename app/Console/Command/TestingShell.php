@@ -23,6 +23,17 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\HostsTable;
+use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\ProxiesTable;
+use App\Model\Table\ServicesTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\Comparison\HostComparison;
+use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
+use itnovum\openITCOCKPIT\Core\MonitoringEngine\StatusDat;
+
 class TestingShell extends AppShell {
     /*
      * This is a test and debuging shell for development purposes
@@ -50,15 +61,35 @@ class TestingShell extends AppShell {
         'Servicecommandargumentvalue',
         'Aro',
         'Aco',
-        'Calendar'
+        'Calendar',
+        'Container',
+        'User',
+        'Browser'
     ];
 
     public function main() {
         //debug($this->Aro->find('all'));
         //debug($this->Aco->find('all', ['recursive' => -1]));
+
+        //Load CakePHP4 Models
+        /** @var $Proxy ProxiesTable */
+        //$Proxy = TableRegistry::getTableLocator()->get('Proxies');
+        //print_r($Proxy->getSettings());
+
         /*
          * Lof of space for your experimental code :)
          */
+
+        $DbBackend = new DbBackend();
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+
+        /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
     }
 
     public function getOptionParser() {
@@ -70,4 +101,5 @@ class TestingShell extends AppShell {
 
         return $parser;
     }
+
 }

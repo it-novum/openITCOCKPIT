@@ -20,7 +20,7 @@ App::uses('AppModel', 'Model');
 App::uses('CakeRequest', 'Network');
 App::uses('CakeResponse', 'Network');
 
-require_once CAKE . 'Test' . DS . 'Case' . DS . 'Model' . DS . 'models.php';
+require_once OLD_CAKE . 'Test' . DS . 'Case' . DS . 'Model' . DS . 'models.php';
 
 /**
  * Test case for FormAuthentication
@@ -263,7 +263,7 @@ class FormAuthenticateTest extends CakeTestCase {
 	public function testPluginModel() {
 		Cache::delete('object_map', '_cake_core_');
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
 		), App::RESET);
 		CakePlugin::load('TestPlugin');
 

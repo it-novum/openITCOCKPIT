@@ -1354,7 +1354,7 @@ class CakeResponse {
 		}
 
 		if (!is_file($path)) {
-			$path = APP . $path;
+			$path = OLD_APP . $path;
 		}
 
 		$file = new File($path);

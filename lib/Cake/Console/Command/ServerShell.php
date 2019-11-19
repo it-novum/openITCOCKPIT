@@ -111,8 +111,8 @@ class ServerShell extends AppShell {
 		$this->out();
 		$this->out(__d('cake_console', '<info>Welcome to CakePHP %s Console</info>', 'v' . Configure::version()));
 		$this->hr();
-		$this->out(__d('cake_console', 'App : %s', APP_DIR));
-		$this->out(__d('cake_console', 'Path: %s', APP));
+		$this->out(__d('cake_console', 'App : %s', OLD_APP_DIR));
+		$this->out(__d('cake_console', 'Path: %s', OLD_APP));
 		$this->out(__d('cake_console', 'DocumentRoot: %s', $this->_documentRoot));
 		$this->hr();
 	}

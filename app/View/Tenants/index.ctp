@@ -23,18 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-home fa-fw "></i>
-            <?php echo __('System'); ?>
+            <?php echo __('Tenants'); ?>
             <span>>
-                <?php echo __('Tenants'); ?>
+                <?php echo __('Overview'); ?>
             </span>
         </h1>
     </div>
 </div>
+
+
 <massdelete></massdelete>
 
 <section id="widget-grid" class="">
@@ -48,22 +49,21 @@
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add')): ?>
-                            <a href="/tenants/add" class="btn btn-xs btn-success">
+                        <?php if ($this->Acl->hasPermission('add', 'tenants')): ?>
+                            <a ui-sref="TenantsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
                         <?php endif; ?>
+
                         <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
                             <i class="fa fa-filter"></i>
                             <?php echo __('Filter'); ?>
                         </button>
                     </div>
 
-                    <div class="jarviswidget-ctrls" role="menu">
-                    </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Tenants'); ?></h2>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-home"></i> </span>
+                    <h2 class="hidden-mobile"><?php echo __('Tenants overview'); ?></h2>
                 </header>
                 <div>
                     <div class="widget-body no-padding">
@@ -76,7 +76,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-cogs"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by name'); ?>"
-                                                   ng-model="filter.container.name"
+                                                   ng-model="filter.containers.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -86,7 +86,7 @@
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by description'); ?>"
-                                                   ng-model="filter.tenant.description"
+                                                   ng-model="filter.tenants.description"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -111,17 +111,13 @@
                                     <th class="no-sort sorting_disabled width-15">
                                         <i class="fa fa-check-square-o fa-lg"></i>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Container.name')">
-                                        <i class="fa" ng-class="getSortClass('Container.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Containers.name')">
+                                        <i class="fa" ng-class="getSortClass('Containers.name')"></i>
                                         <?php echo __('Tenant name'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Tenant.description')">
-                                        <i class="fa" ng-class="getSortClass('Tenant.description')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Tenants.description')">
+                                        <i class="fa" ng-class="getSortClass('Tenants.description')"></i>
                                         <?php echo __('Description'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Tenant.is_active')">
-                                        <i class="fa" ng-class="getSortClass('Tenant.is_active')"></i>
-                                        <?php echo __('Is active'); ?>
                                     </th>
                                     <th class="no-sort text-center">
                                         <i class="fa fa-cog fa-lg"></i>
@@ -136,26 +132,26 @@
                                                ng-show="tenant.Tenant.allowEdit">
                                     </td>
                                     <td>
-                                        {{ tenant.Container.name }}
+                                        {{ tenant.Tenant.container.name }}
                                     </td>
                                     <td>
                                         {{ tenant.Tenant.description }}
                                     </td>
-                                    <td class="text-center">
-                                        <i ng-if="tenant.Tenant.is_active == 1"
-                                           class="fa fa-check fa-lg txt-color-green"></i>
-                                        <i ng-if="tenant.Tenant.is_active == 0"
-                                           class="fa fa-power-off fa-lg txt-color-red"></i>
-                                    </td>
+
                                     <td class="width-50">
                                         <div class="btn-group">
-                                            <?php if ($this->Acl->hasPermission('edit')): ?>
-                                                <a href="/tenants/edit/{{ tenant.Tenant.id}}"
+                                            <?php if ($this->Acl->hasPermission('edit', 'tenants')): ?>
+                                                <a ui-sref="TenantsEdit({id: tenant.Tenant.id})"
                                                    class="btn btn-default" ng-if="tenant.Tenant.allowEdit">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
+                                                <a href="javascript:void(0);"
+                                                   ng-if="!tenant.Tenant.allowEdit"
+                                                   class="btn btn-default disabled">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
                                             <?php else: ?>
-                                                <a href="javascript:void(0);" class="btn btn-default"
+                                                <a href="javascript:void(0);" class="btn btn-default disabled"
                                                    ng-hide="tenant.Tenant.allowEdit">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                             <?php endif; ?>
@@ -164,9 +160,9 @@
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right"
                                                 id="menuHack-{{tenant.Tenant.id}}">
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'tenants')): ?>
                                                     <li>
-                                                        <a href="/tenants/edit/{{tenant.Tenant.id}}"
+                                                        <a ui-sref="TenantsEdit({id: tenant.Tenant.id})"
                                                            ng-if="tenant.Tenant.allowEdit">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
@@ -174,8 +170,17 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
                                                     <li>
-                                                        <a href="/containers/showDetails/{{ tenant.Tenant.container_id}}">
+                                                        <a ui-sref="ContainersShowDetails({id: tenant.Tenant.container_id, tenant: 'TenantsIndex'})">
                                                             <i class="fa fa-info-circle"></i> <?php echo __('Show details'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'tenants')): ?>
+                                                    <li class="divider" ng-if="tenant.Tenant.allowEdit"></li>
+                                                    <li ng-if="tenant.Tenant.allowEdit">
+                                                        <a href="javascript:void(0);" class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(tenant))">
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
@@ -186,7 +191,7 @@
                                 </tbody>
                             </table>
                             <div class="row margin-top-10 margin-bottom-10">
-                                <div class="row margin-top-10 margin-bottom-10" ng-show="maps.length == 0">
+                                <div class="row margin-top-10 margin-bottom-10" ng-show="tenants.length == 0">
                                     <div class="col-xs-12 text-center txt-color-red italic">
                                         <?php echo __('No entries match the selection'); ?>
                                     </div>
@@ -215,7 +220,9 @@
                                 </span>
                                 </div>
                             </div>
+                            <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                             <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                            <?php echo $this->element('paginator_or_scroll'); ?>
                         </div>
                     </div>
                 </div>

@@ -64,7 +64,7 @@
                 <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
                     <li>
                         <a href="javascript:void(0);" id="addToGroupAll"><i
-                                    class="fa fa-sitemap"></i> <?php echo __('Add to hostgroup'); ?></a>
+                                    class="fa fa-sitemap"></i> <?php echo __('Add to host group'); ?></a>
                     </li>
                 <?php endif; ?>
                 <li>

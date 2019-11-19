@@ -61,7 +61,7 @@ class ClearCachePanel extends DebugPanel {
 
         $this->title = __d('clear_cache', 'Clear Cache');
 
-        foreach (glob(CACHE . '*', GLOB_ONLYDIR) as $folder) {
+        foreach (glob(OLD_CACHE . '*', GLOB_ONLYDIR) as $folder) {
             $length = strrpos($folder, DS) + 1;
             $this->folders[] = substr($folder, $length);
         }

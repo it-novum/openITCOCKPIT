@@ -16,8 +16,8 @@ class CompressAssetsTask extends AppShell {
      * @return void
      */
     protected function _compileFrontendDependencies() {
-        if (!is_writable(TMP)) {
-            return $this->error(TMP . ' is not writeable, cannot compile.');
+        if (!is_writable(OLD_TMP)) {
+            return $this->error(OLD_TMP . ' is not writeable, cannot compile.');
         }
         if (!is_writable(JS)) {
             return $this->error(JS . ' is not writeable, cannot compile.');
@@ -113,7 +113,7 @@ class CompressAssetsTask extends AppShell {
                 $this->error("JS dependency {$jsFile} doesn't exist!");
             }
         }
-        $jsTmpFile = TMP . 'uncompressed_js.tmp.js';
+        $jsTmpFile = OLD_TMP . 'uncompressed_js.tmp.js';
         $outputFile = JS . 'app_build.js';
 
         if (file_put_contents($jsTmpFile, $string) !== false) {
@@ -146,7 +146,7 @@ class CompressAssetsTask extends AppShell {
                 $this->error("CSS dependency {$cssFile} doesn't exist!");
             }
         }
-        $cssTmpFile = TMP . 'uncompressed_css.tmp.css';
+        $cssTmpFile = OLD_TMP . 'uncompressed_css.tmp.css';
         $outputFile = CSS . 'app_build.css';
 
         if (file_put_contents($cssTmpFile, $string) !== false) {
@@ -172,7 +172,7 @@ class CompressAssetsTask extends AppShell {
      * @return void
      */
     protected function _runCompressor($inputFile, $outputFile, $assetType) {
-        $compressorPath = APP . 'Vendor/';
+        $compressorPath = OLD_APP . 'Vendor/';
         echo system("java -jar {$compressorPath}yuicompressor-2.4.7.jar --type={$assetType} -o {$outputFile} {$inputFile}");
         #file_put_contents($outputFile, file_get_contents($inputFile));
     }

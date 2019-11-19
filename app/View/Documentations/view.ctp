@@ -22,131 +22,114 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
-
-echo $this->Form->create('Documentation', [
-    'class' => 'form-horizontal clear',
-    'url'   => $this->params->params['pass']
-]);
 ?>
 
-<div class="row">
+<host-browser-menu
+        ng-if="type === 'host' && hostBrowserMenuConfig"
+        config="hostBrowserMenuConfig"
+        last-load-date="0"></host-browser-menu>
+
+<service-browser-menu
+        ng-if="type === 'service' && serviceBrowserMenuConfig"
+        config="serviceBrowserMenuConfig"
+        last-load-date="0"></service-browser-menu>
+
+<div class="row" ng-if="type === 'hosttemplate'">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="page-title">
-            <i class="fa fa-book fa-fw"></i>
-            <?php echo __('Documentation'); ?>
+        <h1 class="status_headline">
+            <?php echo __('Host template:'); ?> {{objectName}}
         </h1>
     </div>
-    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
-        <h5>
-            <div class="pull-right">
-                <?php
-                switch ($type):
-                    case 'host':
-                        ?>
-                        <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>" class="btn btn-primary btn-sm"><i
-                                    class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
-                        </a>
-                        <?php
-                        echo $this->element('host_browser_menu');
-                        break;
 
-                    case 'service':
-                        ?>
-                        <a href="/services/browser/<?php echo $service['Service']['id']; ?>"
-                           class="btn btn-primary btn-sm"><i
-                                    class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
-                        </a>
-                        <?php
-                        echo $this->element('service_browser_menu');
-                        break;
-
-                    case 'servicetemplate':
-                        ?>
-                        <a href="/servicetemplates/index" class="btn btn-primary btn-sm"><i
-                                    class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back')); ?>
-                        </a>
-                        <?php
-                        break;
-
-                    case 'hosttemplate':
-                        ?>
-                        <a href="/hosttemplates/index" class="btn btn-primary btn-sm"><i
-                                    class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back')); ?>
-                        </a>
-                        <?php
-                        break;
-
-                endswitch;
-                ?>
-
-            </div>
-        </h5>
+    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6 margin-top-10">
+        <div class="pull-right">
+            <button
+                    back-button fallback-state='HosttemplatesIndex'
+                    class="btn btn-primary">
+                <i class="fa fa-arrow-circle-left"></i> <?php echo __('Back to overview'); ?>
+            </button>
+        </div>
     </div>
 </div>
 
-<div id="error_msg"></div>
+<div class="row" ng-if="type === 'servicetemplate'">
+    <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
+        <h1 class="status_headline">
+            <?php echo __('Service template:'); ?> {{objectName}}
+        </h1>
+    </div>
 
-<ul id="myTab1" class="nav nav-tabs bordered">
-    <li class="active">
-        <a href="#s1" data-toggle="tab"><i class="fa fa-file-text-o fa-fw "></i> <?php echo __('View'); ?></a>
-    </li>
-    <li>
-        <a href="#s2" data-toggle="tab"><i class="fa fa-pencil-square-o"></i> <?php echo __('Edit'); ?></a>
-    </li>
-</ul>
+    <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6 margin-top-10">
+        <div class="pull-right">
+            <button
+                    back-button fallback-state='ServicetemplatesIndex'
+                    class="btn btn-primary">
+                <i class="fa fa-arrow-circle-left"></i> <?php echo __('Back to overview'); ?>
+            </button>
+        </div>
+    </div>
+</div>
 
-<div id="myTabContent1" class="tab-content padding-10">
-    <div class="tab-pane fade in active" id="s1">
-        <div class="row">
-            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+<div class="tab-content">
+    <div ng-show="docu.displayView" class="tab-pane active">
+        <div class="row no-padding">
+            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding">
                 <div class="jarviswidget">
-                    <?php if (!empty($post)): ?>
-                        <header>
-                            <h2>
-                                <strong class="padding-right-10"><?php echo __('Modified:'); ?><?php echo $this->Time->format($post['Documentation']['modified'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
-                            </h2>
-                        </header>
-                        <div>
-                            <div class="widget-body">
-                                <?php echo $this->Bbcode->asHtml($post['Documentation']['content']); ?>
-                            </div>
+                    <header>
+                        <span class="widget-icon">
+                            <i class="fa fa-book"></i>
+                        </span>
+                        <h2><?php echo __('Object documentation'); ?></h2>
+
+                        <div class="widget-toolbar pull-right" role="menu" ng-show="allowEdit">
+                            <button type="button" class="btn btn-default" ng-click="showEdit()">
+                                <i class="fa fa-pencil"></i> <?php echo __('Edit'); ?>
+                            </button>
                         </div>
-                    <?php else: ?>
-                        <header>
-                            <h2><strong class="padding-right-10"><i
-                                            class="fa fa-exclamation-triangle fa-lg txt-color-red"></i> <?php echo __('Empty page'); ?>
-                                </strong></h2>
-                        </header>
-                        <div>
-                            <div class="widget-body">
-                                <i class="fa fa-exclamation-triangle fa-lg txt-color-red"></i> <span
-                                        class="italic"><?php echo __('No documentation yet been written for this object. Click on "Edit" to start writing...'); ?></span>
-                            </div>
+
+                        <div class="widget-toolbar text-muted cursor-default">
+                            <?php echo __('Last update'); ?>: {{ lastUpdate }}
                         </div>
-                    <?php endif; ?>
+                    </header>
+                    <div ng-hide="docuExists">
+                        <div class="widget-body">
+                            <i class="fa fa-exclamation-triangle fa-lg txt-color-red"></i>
+                            <span class="italic">
+                                <?php echo __('No documentation has been written yet for this object. Click on "Edit" to start writing.'); ?>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div ng-show="docuExists">
+                        <div class="widget-body">
+                            <div
+                                    style="word-wrap: break-word;"
+                                    ng-bind-html="html | trustAsHtml"></div>
+                        </div>
+                    </div>
+
+
                 </div>
             </article>
         </div>
     </div>
 
     <!-- Tab nummer 2 -->
-    <div class="tab-pane fade" id="s2">
-        <div class="row">
-            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="jarviswidget">
+    <div ng-show="!docu.displayView" class="tab-pane active">
+        <div class="row no-padding">
+            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding">
+                <div class="form-horizontal clear jarviswidget">
                     <header>
-                        <?php if (!empty($post)): ?>
-                            <h2><strong class="padding-right-10"><?php echo __('Edit page'); ?></strong></h2>
-                        <?php else: ?>
-                            <h2><strong class="padding-right-10"><?php echo __('Create page'); ?></strong></h2>
-                        <?php endif; ?>
                         <div class="widget-toolbar pull-left" role="menu">
                             <div class="btn-group">
-                                <a href="javascript:void(0);" class="btn btn-xs btn-default"><i
-                                            class="fa fa-font"></i> <?php echo __('Font size'); ?></a>
+                                <a href="javascript:void(0);"
+                                   class="btn btn-xs btn-default">
+                                    <i class="fa fa-font"></i>
+                                    <?php echo __('Font size'); ?>
+                                </a>
                                 <a href="javascript:void(0);" data-toggle="dropdown"
-                                   class="btn btn-xs btn-default dropdown-toggle"><span class="caret"></span></a>
+                                   class="btn btn-xs btn-default dropdown-toggle"><span
+                                            class="caret"></span></a>
                                 <ul class="dropdown-menu">
                                     <li>
                                         <a href="javascript:void(0);" select-fsize="true"
@@ -175,135 +158,160 @@ echo $this->Form->create('Documentation', [
                                     </li>
                                 </ul>
                             </div>
-                            <div class="widget-toolbar pull-left" style="border:0px;" role="menu">
-                                <a href="javascript:void(0);" class="dropdown-toggle color-box selector bg-color-darken"
-                                   id="currentColor" color="#404040" current-color="bg-color-darken"
+                            <div class="widget-toolbar pull-left" style="border:0px;"
+                                 role="menu">
+                                <a href="javascript:void(0);"
+                                   class="dropdown-toggle color-box selector bg-color-darken"
+                                   id="currentColor" color="#404040"
                                    data-toggle="dropdown"></a>
                                 <ul class="dropdown-menu arrow-box-up-right pull-right color-select">
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Green Grass'); ?>"
-                                                data-placement="left" rel="tooltip"
-                                                data-widget-setstyle="jarviswidget-color-green" select-color="true"
-                                                color="#356E35" class="bg-color-green"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Dark Green'); ?>"
-                                                data-placement="top" rel="tooltip"
-                                                data-widget-setstyle="jarviswidget-color-greenDark" select-color="true"
-                                                color="#496949" class="bg-color-greenDark"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Light Green'); ?>"
-                                                data-placement="top" rel="tooltip"
-                                                data-widget-setstyle="jarviswidget-color-greenLight" select-color="true"
-                                                color="#71843F" class="bg-color-greenLight"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Purple'); ?>" data-placement="top"
-                                                rel="tooltip" data-widget-setstyle="jarviswidget-color-purple"
-                                                select-color="true" color="#6E587A" class="bg-color-purple"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Magenta'); ?>" data-placement="top"
-                                                rel="tooltip" data-widget-setstyle="jarviswidget-color-magenta"
-                                                select-color="true" color="#6E3671" class="bg-color-magenta"></span>
-                                    </li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Pink'); ?>" data-placement="right"
-                                                rel="tooltip" data-widget-setstyle="jarviswidget-color-pink"
-                                                select-color="true" color="#AC5287" class="bg-color-pink"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Fade Pink'); ?>"
-                                                data-placement="left" rel="tooltip"
-                                                data-widget-setstyle="jarviswidget-color-pinkDark" select-color="true"
-                                                color="#A8829F" class="bg-color-pinkDark"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Light Blue'); ?>"
-                                                data-placement="top" rel="tooltip"
-                                                data-widget-setstyle="jarviswidget-color-blueLight" select-color="true"
-                                                color="#92A2A8" class="bg-color-blueLight"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Teal'); ?>" data-placement="top"
-                                                rel="tooltip" data-widget-setstyle="jarviswidget-color-teal"
-                                                select-color="true" color="#568A89" class="bg-color-teal"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Ocean Blue'); ?>"
-                                                data-placement="top" rel="tooltip"
-                                                data-widget-setstyle="jarviswidget-color-blue" select-color="true"
-                                                color="#57889C" class="bg-color-blue"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Night Sky'); ?>"
-                                                data-placement="top" rel="tooltip"
-                                                data-widget-setstyle="jarviswidget-color-blueDark" select-color="true"
-                                                color="#4C4F53" class="bg-color-blueDark"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Night'); ?>" data-placement="right"
-                                                rel="tooltip" data-widget-setstyle="jarviswidget-color-darken"
-                                                select-color="true" color="#404040" class="bg-color-darken"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Day Light'); ?>"
-                                                data-placement="left" rel="tooltip"
-                                                data-widget-setstyle="jarviswidget-color-yellow" select-color="true"
-                                                color="#B09B5B" class="bg-color-yellow"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Orange'); ?>"
-                                                data-placement="bottom" rel="tooltip"
-                                                data-widget-setstyle="jarviswidget-color-orange" select-color="true"
-                                                color="#C79121" class="bg-color-orange"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Dark Orange'); ?>"
-                                                data-placement="bottom" rel="tooltip"
-                                                data-widget-setstyle="jarviswidget-color-orangeDark" select-color="true"
-                                                color="#A57225" class="bg-color-orangeDark"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Red Rose'); ?>"
-                                                data-placement="bottom" rel="tooltip"
-                                                data-widget-setstyle="jarviswidget-color-red" select-color="true"
-                                                color="#A90329" class="bg-color-red"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Light Red'); ?>"
-                                                data-placement="bottom" rel="tooltip"
-                                                data-widget-setstyle="jarviswidget-color-redLight" select-color="true"
-                                                color="#A65858" class="bg-color-redLight"></span></li>
-                                    <li style="display: inline-block; margin:0; float: none;"><span
-                                                data-original-title="<?php echo __('Purity'); ?>" data-placement="right"
-                                                rel="tooltip" data-widget-setstyle="jarviswidget-color-white"
-                                                select-color="true" color="#FFFFFF" class="bg-color-white"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Green Grass'); ?>"
+                                                                      data-placement="left" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-green"
+                                                                      select-color="true" color="#356E35"
+                                                                      class="bg-color-green"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Dark Green'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-greenDark"
+                                                                      select-color="true" color="#496949"
+                                                                      class="bg-color-greenDark"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Light Green'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-greenLight"
+                                                                      select-color="true" color="#71843F"
+                                                                      class="bg-color-greenLight"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Purple'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-purple"
+                                                                      select-color="true" color="#6E587A"
+                                                                      class="bg-color-purple"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Magenta'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-magenta"
+                                                                      select-color="true" color="#6E3671"
+                                                                      class="bg-color-magenta"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Pink'); ?>"
+                                                                      data-placement="right" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-pink"
+                                                                      select-color="true" color="#AC5287"
+                                                                      class="bg-color-pink"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Fade Pink'); ?>"
+                                                                      data-placement="left" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-pinkDark"
+                                                                      select-color="true" color="#A8829F"
+                                                                      class="bg-color-pinkDark"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Light Blue'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-blueLight"
+                                                                      select-color="true" color="#92A2A8"
+                                                                      class="bg-color-blueLight"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Teal'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-teal"
+                                                                      select-color="true" color="#568A89"
+                                                                      class="bg-color-teal"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Ocean Blue'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-blue"
+                                                                      select-color="true" color="#57889C"
+                                                                      class="bg-color-blue"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Night Sky'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-blueDark"
+                                                                      select-color="true" color="#4C4F53"
+                                                                      class="bg-color-blueDark"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Night'); ?>"
+                                                                      data-placement="right" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-darken"
+                                                                      select-color="true" color="#404040"
+                                                                      class="bg-color-darken"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Day Light'); ?>"
+                                                                      data-placement="left" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-yellow"
+                                                                      select-color="true" color="#B09B5B"
+                                                                      class="bg-color-yellow"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Orange'); ?>"
+                                                                      data-placement="bottom" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-orange"
+                                                                      select-color="true" color="#C79121"
+                                                                      class="bg-color-orange"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Dark Orange'); ?>"
+                                                                      data-placement="bottom" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-orangeDark"
+                                                                      select-color="true" color="#A57225"
+                                                                      class="bg-color-orangeDark"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Red Rose'); ?>"
+                                                                      data-placement="bottom" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-red"
+                                                                      select-color="true" color="#A90329"
+                                                                      class="bg-color-red"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Light Red'); ?>"
+                                                                      data-placement="bottom" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-redLight"
+                                                                      select-color="true" color="#A65858"
+                                                                      class="bg-color-redLight"></span></li>
+                                    <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Purity'); ?>"
+                                                                      data-placement="right" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-white"
+                                                                      select-color="true" color="#FFFFFF"
+                                                                      class="bg-color-white"></span></li>
                                 </ul>
                             </div>
                             <span class="padding-left-10"></span>
-                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="bold"><i
-                                        class="fa fa-bold"></i></a>
-                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="italic"><i
-                                        class="fa fa-italic"></i></a>
-                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="underline"><i
-                                        class="fa fa-underline"></i></a>
+                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                               task="bold"><i class="fa fa-bold"></i></a>
+                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                               task="italic"><i class="fa fa-italic"></i></a>
+                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                               task="underline"><i class="fa fa-underline"></i></a>
                             <span class="padding-left-10"></span>
-                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="left"><i
-                                        class="fa fa-align-left"></i></a>
-                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="center"><i
-                                        class="fa fa-align-center"></i></a>
-                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="right"><i
-                                        class="fa fa-align-right"></i></a>
-                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="justify"><i
-                                        class="fa fa-align-justify"></i></a>
-                            <span class="padding-left-10"></span>
-                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="code"><i
-                                        class="fa fa-code"></i></a>
+                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                               task="left"><i class="fa fa-align-left"></i></a>
+                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                               task="center"><i class="fa fa-align-center"></i></a>
+                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                               task="right"><i class="fa fa-align-right"></i></a>
+                            <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                               task="justify"><i class="fa fa-align-justify"></i></a>
                             <span class="padding-left-10"></span>
                             <a href="javascript:void(0);" class="btn btn-default" data-toggle="modal"
-                               data-target="#hyerlinkModal"><i class="fa fa-link"></i></a>
+                               data-target="#hyerlinkModal" ng-click="prepareHyperlinkSelection()" id="insert-link"><i
+                                        class="fa fa-link"></i></a>
                         </div>
                         <div class="widget-toolbar pull-right" role="menu">
-                            <button type="submit" class="btn btn-success"><i
-                                        class="fa fa-save"></i> <?php echo __('Save'); ?></button>
+                            <button type="button" class="btn btn-default" ng-click="showView()">
+                                <i class="fa fa-times"></i> <?php echo __('Cancel'); ?>
+                            </button>
+                            <button type="button" class="btn btn-success" ng-click="saveText()">
+                                <i class="fa fa-save"></i> <?php echo __('Save'); ?>
+                            </button>
                         </div>
                     </header>
                     <div>
-                        <div class="jarviswidget-editbox">
-                            <input class="form-control" type="text">
-                            <span class="note"><i class="fa fa-check text-success"></i> Change title to update and save instantly!</span>
-
+                        <div class="widget-body" ng-class="{'has-error': errors.text}">
+                            <textarea class="form-control" ng-model="bbcode"
+                                      style="width: 100%; height: 200px;" id="docuText"></textarea>
                         </div>
-                        <div class="widget-body">
-                            <textarea class="form-control" name="data[Documentation][content]" id="docuText"
-                                      style="width: 100%; height: 1500px;"><?php if (!empty($post)): echo $post['Documentation']['content']; endif; ?></textarea>
+                        <div ng-repeat="error in errors.text">
+                            <div class="help-block text-danger">{{ error }}</div>
                         </div>
                     </div>
                 </div>
@@ -311,13 +319,6 @@ echo $this->Form->create('Documentation', [
         </div>
     </div>
 </div>
-<?php
-if (!empty($post)) {
-    echo $this->Form->input('id', ['type' => 'hidden', 'value' => $post['Documentation']['id']]);
-}
-echo $this->Form->input('uuid', ['type' => 'hidden', 'value' => $uuid]);
-?>
-<?php echo $this->Form->end(); ?>
 
 <div class="modal fade" id="hyerlinkModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
      aria-hidden="true">
@@ -332,21 +333,38 @@ echo $this->Form->input('uuid', ['type' => 'hidden', 'value' => $uuid]);
             <div class="modal-body">
 
                 <div class="row">
-                    <?php echo $this->Form->input('url', [
-                        'label'       => __('URL:'),
-                        'placeholder' => 'https://openitcockpit.io',
-                        'style'       => 'width: 100%;'
-                    ]); ?>
-                    <?php echo $this->Form->input('description', [
-                        'label'       => __('Description:'),
-                        'placeholder' => __('Official page for openITCOCKPIT'),
-                        'style'       => 'width: 100%;'
-                    ]); ?>
+                    <div class="form-group">
+                        <label for="url" class="col col-md-2 control-label">URL:</label>
+                        <div class="col col-xs-10">
+                            <input class="form-control" type="text" ng-model="docu.hyperlink"
+                                   placeholder="<?php echo __('https://openitcockpit.io'); ?>" style="width: 100%;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="description" class="col col-md-2 control-label">Description:</label>
+                        <div class="col col-xs-10">
+                            <input class="form-control" style="width: 100%;" ng-model="docu.hyperlinkDescription"
+                                   placeholder="<?php echo __('Official page for openITCOCKPIT'); ?>" type="text">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form no-padding">
+                            <label class="checkbox small-checkbox-label">
+                                <input type="checkbox" name="checkbox"
+                                       id="modalLinkNewTab">
+                                <i class="checkbox-primary"></i>
+                                <?php echo __('Open in new tab'); ?>
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="insertWysiwygHyperlink" data-dismiss="modal">
+                <button type="button" class="btn btn-primary" ng-click="insertWysiwygHyperlink()" data-dismiss="modal">
                     <?php echo __('Insert'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">

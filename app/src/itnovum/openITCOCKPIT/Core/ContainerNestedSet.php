@@ -24,6 +24,8 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
+use App\Lib\Constants;
+
 /**
  * Class ContainerNestedSet
  * @package itnovum\openITCOCKPIT\Core
@@ -41,7 +43,7 @@ class ContainerNestedSet {
     private $hasRootPrivileges = false;
 
     /**
-     * @var \ConstantsComponent
+     * @var Constants
      */
     private $Constants;
 
@@ -54,7 +56,7 @@ class ContainerNestedSet {
         $this->containers = $containers;
         $this->hasRootPrivileges = $hasRootPrivileges;
 
-        $this->Constants = new \ConstantsComponent();
+        $this->Constants = new Constants();
     }
 
     /**
@@ -71,6 +73,22 @@ class ContainerNestedSet {
 
         return new self($containers, $hasRootPrivileges);
     }
+
+    /**
+     * @param array $containersFindAllResult
+     * @param bool $hasRootPrivileges
+     * @return ContainerNestedSet
+     */
+    public static function fromCake4($containersFindAllResult, $hasRootPrivileges = false) {
+        $containers = [];
+
+        foreach ($containersFindAllResult as $row) {
+            $containers[$row['id']] = $row;
+        }
+
+        return new self($containers, $hasRootPrivileges);
+    }
+
 
     /**
      * @param array|int $ids

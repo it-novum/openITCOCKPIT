@@ -33,7 +33,7 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-xs-12">
-                        <?php echo __('Do you really want delete the selected host downtimes?'); ?>
+                        <?php echo __('Do you really want to cancel the selected host downtimes?'); ?>
                     </div>
 
                     <div class="col-xs-12 padding-top-15">
@@ -42,13 +42,13 @@
                                 <input type="checkbox" name="checkbox" checked="checked"
                                        ng-model="includeServices">
                                 <i class="checkbox-primary"></i>
-                                <?php echo __('Also delete corresponding service downtimes.'); ?>
+                                <?php echo __('Also cancel corresponding service downtimes.'); ?>
                             </label>
                         </div>
                     </div>
 
                     <div class="col-xs-12 margin-top-10" ng-show="isDeleting">
-                        <h4><?php echo __('Deleting...'); ?></h4>
+                        <h4><?php echo __('Canceling...'); ?></h4>
                     </div>
                     <div class="col-xs-12 margin-top-10" ng-show="isDeleting">
                         <div class="progress progress-striped active">
@@ -61,7 +61,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" ng-click="doDeleteHostDowntime()">
-                    <?php echo __('Delete'); ?>
+                    <?php echo __('Cancel downtime'); ?>
                 </button>
 
                 <button type="button" class="btn btn-default" data-dismiss="modal">

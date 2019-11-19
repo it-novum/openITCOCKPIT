@@ -22,54 +22,12 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
-use itnovum\openITCOCKPIT\Core\Servicestatus;
-use itnovum\openITCOCKPIT\Core\Views\Host;
-use itnovum\openITCOCKPIT\Core\Views\Service;
-
-//Flapping Workaround while the status date is not loaded via Angular
-echo $this->Html->script('lib/FlappingWorkaround.js');
-
-$Service = new Service($service);
-$Host = new Host($service);
-if (!isset($servicestatus['Servicestatus'])):
-    $servicestatus['Servicestatus'] = [];
-endif;
-$Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
 ?>
-<div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
-        <h1 class="status_headline <?php echo $Servicestatus->ServiceStatusColor(); ?>">
-            <?php echo $Servicestatus->getServiceFlappingIconColored(); ?>
-            <i class="fa fa-cog fa-fw"></i>
-            <?php echo h($Service->getServicename()); ?>
-            <span>
-                &nbsp;<?php echo __('on'); ?>
-                <?php if ($this->Acl->hasPermission('browser', 'Hosts')): ?>
-                    <a href="<?php echo Router::url([
-                        'controller' => 'hosts',
-                        'action'     => 'browser',
-                        $Service->getHostId()
-                    ]); ?>">
-                    <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
-                </a>
-                <?php else: ?>
-                    <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
-                <?php endif; ?>
-            </span>
-        </h1>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
-        <h5>
-            <div class="pull-right">
-                <a href="/services/browser/<?php echo $service['Service']['id']; ?>" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
-                </a>
-                <?php echo $this->element('service_browser_menu'); ?>
-            </div>
-        </h5>
-    </div>
-</div>
+
+<service-browser-menu
+        ng-if="serviceBrowserMenuConfig"
+        config="serviceBrowserMenuConfig"
+        last-load-date="0"></service-browser-menu>
 
 <section id="widget-grid" class="">
     <div class="row">
@@ -119,7 +77,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by comment'); ?>"
-                                                   ng-model="filter.Acknowledgement.comment"
+                                                   ng-model="filter.AcknowledgementServices.comment"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -142,7 +100,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by author'); ?>"
-                                                   ng-model="filter.Acknowledgement.author"
+                                                   ng-model="filter.AcknowledgementServices.author"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -157,7 +115,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Acknowledgement.state.warning"
+                                                       ng-model="filter.AcknowledgementServices.state.warning"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-warning"></i>
                                                 <?php echo __('Warning'); ?>
@@ -165,7 +123,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Acknowledgement.state.critical"
+                                                       ng-model="filter.AcknowledgementServices.state.critical"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-danger"></i>
                                                 <?php echo __('Critical'); ?>
@@ -173,7 +131,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Acknowledgement.state.unknown"
+                                                       ng-model="filter.AcknowledgementServices.state.unknown"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-default"></i>
                                                 <?php echo __('Unknown'); ?>
@@ -201,24 +159,24 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                style="">
                             <thead>
                             <tr>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedService.state')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedService.state')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementServices.state')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementServices.state')"></i>
                                     <?php echo __('State'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedService.entry_time')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedService.entry_time')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementServices.entry_time')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementServices.entry_time')"></i>
                                     <?php echo __('Date'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedService.author_name')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedService.author_name')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementServices.author_name')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementServices.author_name')"></i>
                                     <?php echo __('Author'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedService.comment_data')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedService.comment_data')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementServices.comment_data')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementServices.comment_data')"></i>
                                     <?php echo __('Comment'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('AcknowledgedService.is_sticky')">
-                                    <i class="fa" ng-class="getSortClass('AcknowledgedService.is_sticky')"></i>
+                                <th class="no-sort" ng-click="orderBy('AcknowledgementServices.is_sticky')">
+                                    <i class="fa" ng-class="getSortClass('AcknowledgementServices.is_sticky')"></i>
                                     <?php echo __('Sticky'); ?>
                                 </th>
                             </tr>

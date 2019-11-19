@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContainersTable;
+use App\Model\Table\SystemsettingsTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeHostListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeServiceListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
@@ -33,6 +36,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use Statusengine\PerfdataParser;
+use Cake\ORM\Locator\LocatorAwareTrait;
 
 /**
  * Class DashboardsController
@@ -45,6 +49,8 @@ use Statusengine\PerfdataParser;
  * @property Service $Service
  */
 class DashboardsController extends AppController {
+
+    use LocatorAwareTrait;
 
     //Most calls are API calls or modal html requests
     //Blank is the best default for Dashboards...
@@ -63,16 +69,20 @@ class DashboardsController extends AppController {
     ];
 
     public function index() {
-        $this->layout = 'angularjs';
+        //CakePHP 4 Model usage Example
+        //$TableLocator = $this->getTableLocator();
+        //$Proxy = $TableLocator->get('Proxies');
+        //debug($Proxy->find()->first());die();
+
+        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             $askForHelp = false;
             if (!$this->Cookie->check('askAgainForHelp')) {
-                $record = $this->Systemsetting->find('first', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'Systemsetting.key' => 'SYSTEM.ANONYMOUS_STATISTICS'
-                    ]
-                ]);
+
+                /** @var $SystemsettingsTable SystemsettingsTable */
+                $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+                $record = $SystemsettingsTable->getSystemsettingByKeyAsCake2('SYSTEM.ANONYMOUS_STATISTICS');
                 if (!empty($record)) {
                     if ($record['Systemsetting']['value'] === '2') {
                         $askForHelp = true;
@@ -87,13 +97,11 @@ class DashboardsController extends AppController {
 
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
-        $userRecord = $this->User->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'User.id' => $User->getId()
-            ]
-        ]);
-        $tabRotationInterval = (int)$userRecord['User']['dashboard_tab_rotation'];
+        /** @var $Users App\Model\Table\UsersTable */
+        $Users = TableRegistry::getTableLocator()->get('Users');
+        $user = $Users->get($User->getId());
+
+        $tabRotationInterval = (int)$user->dashboard_tab_rotation;
 
         //Check if a tab exists for the given user
         if ($this->DashboardTab->hasUserATab($User->getId()) === false) {
@@ -763,10 +771,12 @@ class DashboardsController extends AppController {
             return;
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $containerIds = [];
         if ($this->hasRootPrivileges === false) {
-            $containerIds = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            $containerIds = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
         $query = [

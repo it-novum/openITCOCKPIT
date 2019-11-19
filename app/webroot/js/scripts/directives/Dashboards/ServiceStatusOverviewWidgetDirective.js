@@ -116,7 +116,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', functio
                 };
                 var currentState = 'filter[Servicestatus.current_state][' + $scope.filter.Servicestatus.current_state + ']';
                 options[currentState] = 1;
-                return '/services/index/?' + $httpParamSerializer(options);
+                return '/ng/#!/services/index/?' + $httpParamSerializer(options);
             };
         },
 

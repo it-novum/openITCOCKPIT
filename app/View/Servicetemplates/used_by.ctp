@@ -23,14 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-code-fork fa-fw "></i>
-            <?php echo __('Service Template'); ?>
+            <?php echo __('Service template'); ?>
             <span>>
-                <?php echo __('used by...'); ?>
+                <?php echo __('Used by...'); ?>
             </span>
         </h1>
     </div>
@@ -43,20 +42,42 @@
 
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <div class="jarviswidget">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Utils->backButton(__('Back'), '/servicetemplates/index'); ?>
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
+                        <a back-button fallback-state='ServicetemplatesIndex' class="btn btn-default btn-xs">
+                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                        </a>
                     </div>
 
-                    <div class="jarviswidget-ctrls" role="menu">
+                    <div class="widget-toolbar">
+                        <div class="form-group smart-form no-padding">
+                            <label class="checkbox small-checkbox-label">
+                                <input type="checkbox" name="checkbox"
+                                       ng-model="filter.includeDisabled"
+                                       ng-model-options="{debounce: 500}"
+                                       ng-true-value="true"
+                                       ng-false-value="false">
+                                <i class="checkbox-primary"></i>
+                                <?php echo __('Include disabled services'); ?>
+                            </label>
+                        </div>
                     </div>
+
                     <span class="widget-icon"> <i class="fa fa-code-fork"></i> </span>
-                    <h2><?php echo __('Service Template'); ?>
-                        <strong>{{ servicetemplate.Servicetemplate.name
-                            }}</strong> <?php echo __('is used by the following'); ?> <?php echo __('Services'); ?>
-                        ({{ total }}):</h2>
-
+                    <h2><?php echo __('Service template'); ?>
+                        <strong>
+                            »{{ servicetemplate.name }}«
+                        </strong>
+                        <?php echo __('is used by'); ?>
+                        {{ count }}
+                        <?php echo __('services.'); ?>
+                    </h2>
                 </header>
                 <div>
                     <div class="widget-body no-padding">
@@ -66,24 +87,26 @@
                             <tr>
                                 <th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i></th>
                                 <th class="no-sort"><?php echo __('Service name'); ?></th>
+                                <th class="no-sort text-center editItemWidth">
+                                    <i class="fa fa-gear fa-lg"></i>
+                                </th>
                             </tr>
                             </thead>
-                            <tbody ng-show="serverResult">
-                            <tr ng-repeat-start="host in services">
-                                <td colspan="2" class="service_table_host_header">
-
+                            <tbody ng-show="hostsWithServices">
+                            <tr ng-repeat-start="host in hostsWithServices">
+                                <td colspan="3" class="service_table_host_header">
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                        <a class="padding-left-5 txt-color-blueDark"
-                                           href="/hosts/browser/{{host.Host.id}}">
-                                            {{host.Host.hostname}} ({{host.Host.address}})
+                                        <a ui-sref="HostsBrowser({id:host.id})"
+                                           class="padding-left-5 txt-color-blueDark">
+                                            {{ host.name }} ({{host.address}})
                                         </a>
                                     <?php else: ?>
-                                        {{host.Host.hostname}} ({{host.Host.address}})
+                                        {{host.hostname}} ({{host.address}})
                                     <?php endif; ?>
 
                                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                        <a class="pull-right txt-color-blueDark"
-                                           href="/services/serviceList/{{host.Host.id}}">
+                                        <a ui-sref="ServicesServiceList({id:host.id})"
+                                           class="pull-right txt-color-blueDark">
                                             <i class="fa fa-list"
                                                title=" <?php echo __('Go to Service list'); ?>"></i>
                                         </a>
@@ -91,30 +114,71 @@
                                 </td>
                             </tr>
 
-                            <tr ng-repeat="service in host.Services" ng-repeat-end="">
+                            <tr ng-repeat="service in host.services" ng-repeat-end="">
                                 <td class="width-5">
                                     <input type="checkbox"
-                                           ng-model="massChange[service.Service.id]"
-                                           ng-show="service.Service.allow_edit">
+                                           ng-model="massChange[service.id]"
+                                           ng-show="host.allow_edit">
                                 </td>
-
 
                                 <td>
                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                        <a href="/services/browser/{{ service.Service.id }}">
-                                            {{ service.Service.servicename }}
+                                        <a ui-sref="ServicesBrowser({id: service.id})">
+                                            {{ service.servicename }}
+                                            <span ng-show="service.disabled" title="<?php echo __('Disabled'); ?>">
+                                                <i class="fa fa-plug"></i>
+                                            </span>
                                         </a>
                                     <?php else: ?>
-                                        {{ service.Service.servicename }}
+                                        {{ service.servicename }}
+                                        <span ng-show="service.disabled" title="<?php echo __('Disabled'); ?>">
+                                                <i class="fa fa-plug"></i>
+                                        </span>
                                     <?php endif; ?>
+                                </td>
+
+                                <td class="width-50">
+                                    <div class="btn-group">
+                                        <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                            <a ui-sref="ServicesEdit({id: service.id})"
+                                               ng-if="host.allow_edit"
+                                               class="btn btn-default">
+                                                &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">
+                                                &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle"><span
+                                                    class="caret"></span></a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-{{service.uuid}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                                <li ng-if="host.allow_edit">
+                                                    <a ui-sref="ServicesEdit({id: service.id})">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                                <li class="divider"></li>
+                                                <li ng-if="host.allow_edit">
+                                                    <a href="javascript:void(0);" class="txt-color-red"
+                                                       ng-click="confirmDelete(getObjectForDelete(host, service))">
+                                                        <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
                         <div class="row margin-top-10 margin-bottom-10">
-                            <div class="row margin-top-10 margin-bottom-10" ng-show="!serverResult">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="hostsWithServices.length === 0">
                                 <div class="col-xs-12 text-center txt-color-red italic">
-                                    <?php echo __('This service template is not used by any service'); ?>
+                                    <?php echo __('This service template is not used by any services'); ?>
                                 </div>
                             </div>
                         </div>
