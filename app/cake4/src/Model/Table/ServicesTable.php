@@ -1105,7 +1105,8 @@ class ServicesTable extends Table {
             ]);
 
         $where = [
-            'Services.id IN' => $ids
+            'Services.id IN' => $ids,
+            'Services.service_type NOT IN' => [MK_SERVICE]
         ];
 
         if (!empty($containerIds)) {
