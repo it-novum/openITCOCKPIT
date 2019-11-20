@@ -3,6 +3,7 @@ App::uses('ModelBehavior', 'Model');
 
 /**
  * Class DateRangeBehavior
+ * @deprecated
  */
 class DateRangeBehavior extends ModelBehavior {
 
@@ -12,6 +13,7 @@ class DateRangeBehavior extends ModelBehavior {
      * @param $date_end string d.m.Y H:i:s
      * @param array $time_ranges
      * @return array
+     * @deprecated
      */
     public function createDateRanges(&$Model, $date_start, $date_end, $time_ranges = []) {
         $date_start_timestamp = strtotime($date_start);
@@ -67,6 +69,7 @@ class DateRangeBehavior extends ModelBehavior {
      * @param $date_end string Ymd
      * @param $time_slices array
      * @return array
+     * @deprecated
      */
     private function removeUselessTimeslices($date_start, $date_end, $time_slices) {
         $time_slices_new = [];
@@ -88,6 +91,7 @@ class DateRangeBehavior extends ModelBehavior {
      * @param $Model
      * @param $timeslice_array
      * @return mixed
+     * @deprecated
      */
     public function mergeTimeOverlapping(&$Model, $timeslice_array) {
         $next_key = 0;
@@ -120,6 +124,7 @@ class DateRangeBehavior extends ModelBehavior {
      * @param $end_date
      * @param $current_date
      * @return bool
+     * @deprecated
      */
     private function dateIsBetween($start_date, $end_date, $current_date) {
         return (($current_date >= $start_date) && ($current_date <= $end_date));
@@ -130,6 +135,7 @@ class DateRangeBehavior extends ModelBehavior {
      * @param $time_slices
      * @param $downtimes
      * @return array
+     * @deprecated
      */
     public function setDowntimesInTimeslices(&$Model, $time_slices, $downtimes) {
         $time_slices_new = [];
@@ -191,6 +197,7 @@ class DateRangeBehavior extends ModelBehavior {
      * @param $interval
      * @return array date time slices
      * @throws Exception
+     * @deprecated
      */
     public function createDateSlicesByIntervalAndLastUpdateDate(&$Model, $lastUpdateDate, $interval) {
         if(date('H:i:s', $lastUpdateDate) === '23:59:59'){
@@ -436,6 +443,7 @@ class DateRangeBehavior extends ModelBehavior {
     /**
      * @param $numberOfQuarter
      * @return Datetime $date
+     * @deprecated
      */
     private function firstDayOfQuarter(Datetime $date, $numberOfQuarter) {
         switch ($numberOfQuarter) {
@@ -458,6 +466,7 @@ class DateRangeBehavior extends ModelBehavior {
     /**
      * @param $numberOfQuarter
      * @return Datetime $date
+     * @deprecated
      */
     private function lastDayOfQuarter(Datetime $date, $numberOfQuarter) {
         switch ($numberOfQuarter) {
@@ -480,6 +489,7 @@ class DateRangeBehavior extends ModelBehavior {
     /**
      * @param $date
      * @return float
+     * @deprecated
      */
     private function getNumberFromQuarter($date) {
         $currentMonth = date('m', $date);

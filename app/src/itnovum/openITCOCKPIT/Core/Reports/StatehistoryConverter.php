@@ -25,7 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core\Reports;
 
 
-use itnovum\openITCOCKPIT\Core\FileDebugger;
+use Cake\Utility\Hash;
 
 class StatehistoryConverter {
 
