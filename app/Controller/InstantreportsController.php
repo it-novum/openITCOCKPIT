@@ -28,6 +28,7 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\InstantreportsTable;
 use App\Model\Table\SystemfailuresTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
@@ -36,6 +37,8 @@ use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
+use itnovum\openITCOCKPIT\Core\Reports\DowntimesMerger;
+use itnovum\openITCOCKPIT\Core\Reports\StatehistoryConverter;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
@@ -301,7 +304,8 @@ class InstantreportsController extends AppController {
                 $fromDate,
                 $toDate,
                 $timeperiod['Timeperiod']['timeperiod_timeranges']
-            ), '{n}.is_downtime', false);
+            ), '{n}.is_downtime', false
+        );
         $totalTime = Hash::apply(
             array_map(function ($timeSlice) {
                 return $timeSlice['end'] - $timeSlice['start'];
@@ -319,19 +323,68 @@ class InstantreportsController extends AppController {
                 $toDate
             );
         }
+
         $instantReportObjects['Hosts'] = Hash::sort($instantReportObjects['Hosts'], '{n}.name', 'ASC');
         foreach ($instantReportObjects['Hosts'] as $hostId => $instantReportHostData) {
+            FileDebugger::dump('Host: ---> '.$instantReportHostData['name']);
             if ($instantReport->get('downtimes') === 1) {
                 $DowntimeHostConditions = new DowntimeHostConditions();
                 $DowntimeHostConditions->setFrom($fromDate);
                 $DowntimeHostConditions->setTo($toDate);
                 $DowntimeHostConditions->setContainerIds($this->MY_RIGHTS);
-                $DowntimeHostConditions->setOrder(['DowntimeHosts.scheduled_start_time' => 'asc']);
+                $DowntimeHostConditions->includeCancelledDowntimes(false);
+                $DowntimeHostConditions->setOrder(['DowntimeHosts.scheduled_start_time' => 'ASC']);
                 $DowntimeHostConditions->setHostUuid($instantReportHostData['uuid']);
                 /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
                 $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
                 $instantReportObjects['Hosts'][$hostId]['downtimes'] = $DowntimehistoryHostsTable->getDowntimesForReporting(
                     $DowntimeHostConditions
+                );
+                $hostDowntimeFormatted = [];
+                /** @var  $hostDowntimeObject \Statusengine2Module\Model\Entity\DowntimeHost */
+                foreach ($instantReportObjects['Hosts'][$hostId]['downtimes'] as $hostDowntimeObject) {
+                    $hostDowntimeFormatted[] = [
+                        'DowntimeHost' => [
+                            'id'                   => $hostDowntimeObject->get('downtimehistory_id'),
+                            'author_name'          => $hostDowntimeObject->get('author_name'),
+                            'scheduled_start_time' => $hostDowntimeObject->get('scheduled_start_time')->i18nFormat(Time::UNIX_TIMESTAMP_FORMAT),
+                            'scheduled_end_time'   => $hostDowntimeObject->get('scheduled_end_time')->i18nFormat(Time::UNIX_TIMESTAMP_FORMAT),
+                            'comment_data'         => $hostDowntimeObject->get('comment_data'),
+                            'was_started'          => true,
+                            'was_cancelled'        => false
+                        ]
+                    ];
+                }
+                /** @var  $downtimes DowntimesMerger */
+                $downtimes = DowntimesMerger::mergeDowntimesWithSystemfailures(
+                    'DowntimeHost',
+                    $hostDowntimeFormatted,
+                    $globalDowntimes
+                );
+                $downtimesAndSystemfailures = [];
+                foreach ($downtimes as $downtime) {
+                    $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost']);
+                    $downtimesAndSystemfailures[] = [
+                        'DowntimeHost' => $DowntimeHost->toArray()
+                    ];
+                }
+
+                $downtimesFiltered = DaterangesCreator::mergeTimeOverlapping(
+                    array_map(
+                        function ($downtime) {
+                            return [
+                                'start_time' => $downtime['DowntimeHost']['scheduledStartTime'],
+                                'end_time'   => $downtime['DowntimeHost']['scheduledEndTime'],
+                            ];
+                        },
+                        $downtimesAndSystemfailures
+                    )
+                );
+
+
+                $timeSlices = DaterangesCreator::setDowntimesInTimeslices(
+                    $timeSlices,
+                    $downtimesFiltered
                 );
             }
             //Process conditions
@@ -394,9 +447,14 @@ class InstantreportsController extends AppController {
                 $allStatehistories[] = $StatehistoryHost->toArray();
             }
 
-            FileDebugger::dump($allStatehistories);
-
             $hostUuid = $instantReportHostData['uuid'];
+            $reportData[$hostUuid]['Host']['reportData'] = StatehistoryConverter::generateReportData(
+                $timeSlices,
+                $allStatehistories,
+                ($instantReport->get('reflection') === 2),
+                true
+            );
+            FileDebugger::dump($reportData[$hostUuid]);
 
             if (!empty($instantReportHostData['Services'])) {
                 $instantReportHostData['Services'] = Hash::sort($instantReportHostData['Services'], '{n}.name', 'ASC');
@@ -406,6 +464,7 @@ class InstantreportsController extends AppController {
                         $DowntimeServiceConditions->setFrom($fromDate);
                         $DowntimeServiceConditions->setTo($toDate);
                         $DowntimeServiceConditions->setContainerIds($this->MY_RIGHTS);
+                        $DowntimeServiceConditions->includeCancelledDowntimes(false);
                         $DowntimeServiceConditions->setOrder(['DowntimeServices.scheduled_start_time' => 'asc']);
                         $DowntimeServiceConditions->setServiceUuid($service['uuid']);
                         /** @var DowntimehistoryHostsTableInterface $DowntimehistoryHostsTable */
@@ -413,6 +472,7 @@ class InstantreportsController extends AppController {
                         $instantReportObjects['Hosts'][$hostId]['Services'][$serviceId]['downtimes'] = $DowntimehistoryServicesTable->getDowntimesForReporting(
                             $DowntimeServiceConditions
                         );
+                        FileDebugger::dump($instantReportObjects['Hosts'][$hostId]['Services'][$serviceId]['downtimes']);
                     }
                     $serviceUuid = $service['uuid'];
 

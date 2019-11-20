@@ -109,18 +109,18 @@ class DaterangesCreator {
      * @param $timeslice_array
      * @return mixed
      */
-    public function mergeTimeOverlapping($timeslice_array) {
+    public static function mergeTimeOverlapping($timeslice_array) {
         $next_key = 0;
         for ($i = 0; $i <= sizeof($timeslice_array); $i++) {
             $next_key++;
             if (isset($timeslice_array[$next_key]) && isset($timeslice_array[$i])) {
-                if ($this->dateIsBetween($timeslice_array[$i]['start_time'], $timeslice_array[$i]['end_time'], $timeslice_array[$next_key]['start_time'])
-                    && $this->dateIsBetween($timeslice_array[$i]['start_time'], $timeslice_array[$i]['end_time'], $timeslice_array[$next_key]['end_time'])
+                if (self::dateIsBetween($timeslice_array[$i]['start_time'], $timeslice_array[$i]['end_time'], $timeslice_array[$next_key]['start_time'])
+                    && self::dateIsBetween($timeslice_array[$i]['start_time'], $timeslice_array[$i]['end_time'], $timeslice_array[$next_key]['end_time'])
                 ) {
                     unset($timeslice_array[$next_key]);
                     $i--;
-                } else if ($this->dateIsBetween($timeslice_array[$i]['start_time'], $timeslice_array[$i]['end_time'], $timeslice_array[$next_key]['start_time'])
-                    && !$this->dateIsBetween($timeslice_array[$i]['start_time'], $timeslice_array[$i]['end_time'], $timeslice_array[$next_key]['end_time'])
+                } else if (self::dateIsBetween($timeslice_array[$i]['start_time'], $timeslice_array[$i]['end_time'], $timeslice_array[$next_key]['start_time'])
+                    && !self::dateIsBetween($timeslice_array[$i]['start_time'], $timeslice_array[$i]['end_time'], $timeslice_array[$next_key]['end_time'])
                 ) {
                     $timeslice_array[$i] = [
                         'start_time' => $timeslice_array[$i]['start_time'],
@@ -151,7 +151,7 @@ class DaterangesCreator {
      * @param $downtimes
      * @return array
      */
-    public function setDowntimesInTimeslices($time_slices, $downtimes) {
+    public static function setDowntimesInTimeslices($time_slices, $downtimes) {
         $time_slices_new = [];
         $show_outages_in_dowtime = true;
         if (!empty($downtimes)) {
