@@ -96,6 +96,9 @@
                                        ng-model="post.Proxy.enabled">
                                 <i class="checkbox-primary"></i>
                             </label>
+                            <div class="help-block">
+                                <?php echo __('If disabled the proxy server will not be used.'); ?>
+                            </div>
                         </div>
                     </div>
 
