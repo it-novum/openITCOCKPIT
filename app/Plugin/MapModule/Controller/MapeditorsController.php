@@ -1611,7 +1611,7 @@ class MapeditorsController extends MapModuleAppController {
                     }
 
                     if (!empty($serviceIds)) {
-                        $services = $this->Service->find('all', [
+                        $servicesToMerge = $this->Service->find('all', [
                             'recursive'  => -1,
                             'contain'    => [
                                 'Host'            => [
@@ -1638,13 +1638,13 @@ class MapeditorsController extends MapModuleAppController {
                                 'Service.name'
                             ]
                         ]);
-                        if (!empty($services)) {
+                        if (!empty($servicesToMerge)) {
                             if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'), false)) {
+                                if (!$this->allowedByContainerId(Hash::extract($servicesToMerge, '{n}.Host.Container.{n}.HostsToContainer.container_id'), false)) {
                                     break;
                                 }
                             }
-                            foreach ($services as $service) {
+                            foreach ($servicesToMerge as $service) {
                                 $hosts[$service['Host']['id']] = ['Host' => $service['Host']];
                             }
                         }
