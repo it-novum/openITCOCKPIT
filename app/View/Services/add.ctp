@@ -333,29 +333,31 @@
                                     <label class="col-xs-12 col-lg-2 control-label">
                                         <?php echo __('Max. number of check attempts'); ?>
                                     </label>
-                                    <div class="col-xs-12 col-lg-7">
-                                        <div class="btn-group">
-                                            <?php for ($i = 1; $i <= 10; $i++): ?>
-                                                <button
-                                                        type="button"
-                                                        class="btn btn-default"
-                                                        ng-click="post.Service.max_check_attempts = <?php echo h($i) ?>"
-                                                        ng-class="{'active': post.Service.max_check_attempts == <?php echo h($i); ?>}">
-                                                    <?php echo h($i); ?>
-                                                </button>
-                                            <?php endfor; ?>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-lg-6">
+                                            <div class="btn-group flex-wrap">
+                                                <?php for ($i = 1; $i <= 10; $i++): ?>
+                                                    <button
+                                                            type="button"
+                                                            class="btn btn-default"
+                                                            ng-click="post.Service.max_check_attempts = <?php echo h($i) ?>"
+                                                            ng-class="{'active': post.Service.max_check_attempts == <?php echo h($i); ?>}">
+                                                        <?php echo h($i); ?>
+                                                    </button>
+                                                <?php endfor; ?>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-xs-12 col-lg-3">
-                                        <div class="input-group" style="width: 100%;">
-                                            <input
-                                                    class="form-control"
-                                                    type="number"
-                                                    min="0"
-                                                    ng-model="post.Service.max_check_attempts">
-                                            <template-diff ng-show="post.Service.servicetemplate_id"
-                                                           value="post.Service.max_check_attempts"
-                                                           template-value="servicetemplate.Servicetemplate.max_check_attempts"></template-diff>
+                                        <div class="col-xs-12 col-lg-3">
+                                            <div class="input-group" style="width: 100%;">
+                                                <input
+                                                        class="form-control"
+                                                        type="number"
+                                                        min="0"
+                                                        ng-model="post.Service.max_check_attempts">
+                                                <template-diff ng-show="post.Service.servicetemplate_id"
+                                                               value="post.Service.max_check_attempts"
+                                                               template-value="servicetemplate.Servicetemplate.max_check_attempts"></template-diff>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-xs-12 col-lg-offset-2 col-lg-12">

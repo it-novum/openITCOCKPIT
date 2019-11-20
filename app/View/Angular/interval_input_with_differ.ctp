@@ -87,8 +87,8 @@ $interval = [
 ?>
 
 <div class="row">
-    <div class="col-xs-12 col-md-5 col-lg-7">
-        <div class="btn-group">
+    <div class="col-xs-12 col-lg-6">
+        <div class="btn-group flex-wrap">
             <?php foreach ($interval as $intervalArray): ?>
                 <button
                         type="button"
@@ -101,7 +101,7 @@ $interval = [
             <?php endforeach; ?>
         </div>
     </div>
-    <div class="col-xs-12 col-md-7 col-lg-5">
+    <div class="col-xs-12 col-lg-3">
         <div class="input-group">
             <input
                     class="form-control"
