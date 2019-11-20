@@ -40,7 +40,6 @@
 </ol>
 
 
-
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">
@@ -63,7 +62,7 @@
                           ng-init="successMessage=
             {objectName : '<?php echo __('Service'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
-                        <div class="list-filter card margin-bottom-10">
+                        <div class="card margin-bottom-10">
                             <div class="card-header">
                                 <i class="fa fa-magic"></i> <?php echo __('Basic configuration'); ?>
                             </div>
@@ -125,114 +124,99 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group" ng-class="{'has-error': errors.description}">
-                                    <label class="control-label">
-                                        <?php echo __('Description'); ?>
-                                    </label>
-                                    <div class="input-group">
-                                        <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.Service.description">
-
-                                        <template-diff ng-show="post.Service.servicetemplate_id"
-                                                       value="post.Service.description"
-                                                       template-value="servicetemplate.Servicetemplate.description">
-                                        </template-diff>
-                                    </div>
-                                    <div ng-repeat="error in errors.description">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group" ng-class="{'has-error': errors.servicegroups}">
-                                    <label class="control-label">
-                                        <?php echo __('Service groups'); ?>
-                                    </label>
-                                    <div class="input-group" >
-                                        <select
-                                                id="ServicegroupsSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="custom-select"
-                                                chosen="servicegroups"
-                                                multiple
-                                                ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
-                                                ng-model="post.Service.servicegroups._ids">
-                                        </select>
-                                        <template-diff ng-show="post.Service.servicetemplate_id"
-                                                       value="post.Service.servicegroups._ids"
-                                                       template-value="servicetemplate.Servicetemplate.servicegroups._ids"></template-diff>
-                                    </div>
-                                    <div ng-repeat="error in errors.servicegroups">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-
-
-
-
-
-                                <div class="form-group" ng-class="{'has-error': errors.tags}">
-                                    <label class="control-label">
-                                        <?php echo __('Tags'); ?>
-                                    </label>
-                                    <div class="input-group">
-                                        <div class="col-lg-11">
+                                <div ng-show="post.Service.servicetemplate_id">
+                                    <div class="form-group" ng-class="{'has-error': errors.description}">
+                                        <label class="control-label">
+                                            <?php echo __('Description'); ?>
+                                        </label>
+                                        <div class="input-group">
                                             <input
-                                                    class="form-control form-control-tag"
+                                                    class="form-control"
                                                     type="text"
-                                                    ng-model="post.Service.tags">
-                                            <div class="input-group-append" ng-click="restoreDefault()"
-                                                 title="<?php echo __('Click to restore the template default value:'); ?> {{templateValue}}">
-                                                <span class="input-group-text bg-transparent border-left-0" ng-class="{ 'input-group-addon-no-focus-label-success': !hasDiff , 'input-group-addon-no-focus-label-danger': hasDiff}">
-                                                    <i class="fa text-light"
-                                                       ng-class="{ 'fa-link': !hasDiff , 'fa-chain-broken': hasDiff}">
-                                                    </i>
-                                                </span>
-                                            </div>
+                                                    ng-model="post.Service.description">
 
-
-
-
-
-
-
-                                         <!--   <template-diff ng-show="post.Service.servicetemplate_id"
-                                                           value="post.Service.tags"
-                                                           template-value="servicetemplate.Servicetemplate.tags"
-                                                       callback="restoreTemplateTags"></template-diff> -->
+                                            <template-diff ng-show="post.Service.servicetemplate_id"
+                                                           value="post.Service.description"
+                                                           template-value="servicetemplate.Servicetemplate.description">
+                                            </template-diff>
+                                        </div>
+                                        <div ng-repeat="error in errors.description">
+                                            <div class="help-block text-danger">{{ error }}</div>
                                         </div>
                                     </div>
-                                    <div ng-repeat="error in errors.tags">
-                                        <div class="help-block text-danger">{{ error }}</div>
+
+                                    <div class="form-group" ng-class="{'has-error': errors.servicegroups}">
+                                        <label class="control-label">
+                                            <?php echo __('Service groups'); ?>
+                                        </label>
+                                        <div class="input-group">
+                                            <select
+                                                    id="ServicegroupsSelect"
+                                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                                    class="custom-select"
+                                                    chosen="servicegroups"
+                                                    multiple
+                                                    ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
+                                                    ng-model="post.Service.servicegroups._ids">
+                                            </select>
+                                            <template-diff ng-show="post.Service.servicetemplate_id"
+                                                           value="post.Service.servicegroups._ids"
+                                                           template-value="servicetemplate.Servicetemplate.servicegroups._ids"></template-diff>
+                                        </div>
+                                        <div ng-repeat="error in errors.servicegroups">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
                                     </div>
-                                    <div class="help-block">
-                                        <?php echo __('Press return to separate tags'); ?>
+
+
+                                    <div class="form-group" ng-class="{'has-error': errors.tags}">
+                                        <label class="control-label">
+                                            <?php echo __('Tags'); ?>
+                                        </label>
+                                        <div class="input-group">
+                                            <div class="col">
+                                                <div class="col">
+                                                    <input class="form-control form-control-tag"
+                                                           type="text"
+                                                           ng-model="post.Service.tags">
+                                                </div>
+                                            </div>
+                                            <div style="margin-left: -23px;">
+                                                <template-diff ng-show="post.Service.servicetemplate_id"
+                                                               value="post.Service.tags"
+                                                               template-value="servicetemplate.Servicetemplate.tags"
+                                                               callback="restoreTemplateTags"></template-diff>
+                                            </div>
+                                        </div>
+                                        <div ng-repeat="error in errors.tags">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                        <div class="help-block">
+                                            <?php echo __('Press return to separate tags'); ?>
+                                        </div>
                                     </div>
+
+
+                                    <div class="form-group" ng-class="{'has-error': errors.priority}">
+                                        <label class="control-label">
+                                            <?php echo __('Priority'); ?>
+                                        </label>
+                                        <div class="col-xs-12 col-lg-2">
+                                            <priority-directive priority="post.Service.priority"
+                                                                callback="setPriority"></priority-directive>
+                                            <template-diff-button ng-show="post.Service.servicetemplate_id"
+                                                                  value="post.Service.priority"
+                                                                  template-value="servicetemplate.Servicetemplate.priority">
+                                            </template-diff-button>
+                                        </div>
+                                    </div>
+
                                 </div>
-
-
-
-
-                                <div class="form-group" ng-class="{'has-error': errors.priority}">
-                                    <label class="control-label">
-                                        <?php echo __('Priority'); ?>
-                                    </label>
-                                    <div class="col-xs-12 col-lg-2">
-                                        <priority-directive priority="post.Service.priority"
-                                                            callback="setPriority"></priority-directive>
-                                        <template-diff-button ng-show="post.Service.servicetemplate_id"
-                                                              value="post.Service.priority"
-                                                              template-value="servicetemplate.Servicetemplate.priority">
-                                        </template-diff-button>
-                                    </div>
-                                </div>
-
-
                             </div>
                         </div>
 
-                        <div class="list-filter card margin-bottom-10">
+                        <!--<div class="card margin-bottom-10" ng-show="post.Service.servicetemplate_id"> -->
+                        <div class="card margin-bottom-10">
                             <div class="card-header">
                                 <i class="fa fa-terminal"></i> <?php echo __('Check configuration'); ?>
                             </div>
@@ -344,7 +328,6 @@
                                 </div>
 
 
-
                                 <div class="form-group required"
                                      ng-class="{'has-error': errors.max_check_attempts}">
                                     <label class="col-xs-12 col-lg-2 control-label">
@@ -392,7 +375,7 @@
                             </div>
                         </div>
 
-                        <div class="list-filter card margin-bottom-10">
+                        <div class="card margin-bottom-10" ng-show="post.Service.servicetemplate_id">
                             <div class="card-header">
                                 <i class="fa fa-wrench"></i> <?php echo __('Notification configuration'); ?>
                             </div>
@@ -490,7 +473,6 @@
                                 </div>
 
 
-
                                 <fieldset ng-show="post.Service.flap_detection_enabled">
                                     <legend class="font-sm"
                                             ng-class="{'has-error-no-form': errors.flap_detection_on_ok}">
@@ -573,7 +555,7 @@
                             </div>
                         </div>
 
-                        <div class="list-filter card margin-bottom-10">
+                        <div class="card margin-bottom-10" ng-show="post.Service.servicetemplate_id">
                             <div class="card-header">
                                 <i class="fa fa-exclamation"></i> <?php echo __('Event Handler configuration'); ?>
                             </div>
@@ -638,7 +620,7 @@
                         </div>
 
 
-                        <div class="list-filter card margin-bottom-10">
+                        <div class="card margin-bottom-10" ng-show="post.Service.servicetemplate_id">
                             <div class="card-header">
                                 <i class="fa fa-dollar"></i> <?php echo __('Service macro configuration'); ?>
                             </div>
@@ -675,12 +657,38 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="card margin-top-10">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <label>
+                                        <input type="checkbox" ng-model="data.createAnother">
+                                        <?php echo __('Create another'); ?>
+                                    </label>
+                                    <button class="btn btn-primary"
+                                            type="submit"><?php echo __('Create service'); ?></button>
+                                    <a back-button fallback-state='ServicesIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
