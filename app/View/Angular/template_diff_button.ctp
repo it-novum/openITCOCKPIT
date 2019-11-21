@@ -23,7 +23,7 @@
 //  confirmation.
 ?>
 
-<span class="btn btn-xs margin-left-10 no-padding-top margin-top-2" ng-click="restoreDefault()"
+<span class="btn btn-xs margin-left-10 no-padding-top margin-top-2 small-btn" ng-click="restoreDefault()"
       title="<?php echo __('Click to restore the template default value:'); ?> {{templateValue}}"
       ng-class="{ 'btn-success': !hasDiff , 'btn-danger': hasDiff}">
     <i class="fa" ng-class="{ 'fa-link': !hasDiff , 'fa-chain-broken': hasDiff}"></i>

@@ -1,3 +1,11 @@
+/*
+$color-primary:						#4285F4;
+$color-success:						#00C851;
+$color-info:						#33b5e5;
+$color-warning:						#ffbb33;
+$color-danger:						#CC0000;
+ */
+
 a:not([href]):not([tabindex]) {
     color: #b1b3b2;
     text-decoration: none;
@@ -359,10 +367,10 @@ a:not([href]):not([tabindex]) {
 
 .notify-label-small {
     display: inline-block;
-    line-height: 1.6;
+    line-height: 1.1;
     min-width: 90px;
     width: 100%;
-    margin-top: 2px;
+    margin-top: 3px;
 }
 
 .italic {
@@ -429,7 +437,77 @@ div.custom-control-right{
 
 div.custom-control-right .custom-control-label::before,
 div.custom-control-right .custom-control-label::after{
-    right: -1.3rem;
+    right: -1.8rem;
     left: initial;
     top: 3px;
+}
+
+.small-btn{
+    padding: 0px 4px 0px 4px !important;
+}
+
+
+.custom-control-input:checked ~ .custom-control-label-primary::before {
+    color: #fff;
+    border-color: #4285F4;
+    background-color: #4285F4;
+}
+
+.custom-control-input:checked ~ .custom-control-label-success::before,
+.custom-control-input:checked ~ .custom-control-label-up::before,
+.custom-control-input:checked ~ .custom-control-label-ok::before {
+    color: #fff;
+    border-color: #00C851;
+    background-color: #00C851;
+}
+
+.custom-control-input:checked ~ .custom-control-label-warning::before {
+    color: #fff;
+    border-color: #ffbb33;
+    background-color: #ffbb33;
+}
+
+.custom-control-input:checked ~ .custom-control-label-danger::before,
+.custom-control-input:checked ~ .custom-control-label-down::before,
+.custom-control-input:checked ~ .custom-control-label-critical::before {
+    color: #fff;
+    border-color: #CC0000;
+    background-color: #CC0000;
+}
+
+.custom-control-input:checked ~ .custom-control-label-secondary::before,
+.custom-control-input:checked ~ .custom-control-label-unreachable::before,
+.custom-control-input:checked ~ .custom-control-label-unknown::before {
+    color: #fff;
+    border-color: #92A2A8;
+    background-color: #92A2A8;
+}
+
+
+.custom-control-label-warning::before {
+    color: #fff;
+    border-color: #4285F4;
+}
+
+.custom-control-label-up::before,
+.custom-control-label-ok::before {
+    color: #fff;
+    border-color: #00C851;
+}
+
+.custom-control-label-warning::before {
+    color: #fff;
+    border-color: #ffbb33;
+}
+
+.custom-control-label-down::before,
+.custom-control-label-critical::before {
+    color: #fff;
+    border-color: #CC0000;
+}
+
+.custom-control-label-unknown::before
+.custom-control-label-unreachable::before {
+    color: #fff;
+    border-color: #92A2A8;
 }
