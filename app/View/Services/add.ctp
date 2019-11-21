@@ -215,8 +215,7 @@
                             </div>
                         </div>
 
-                        <!--<div class="card margin-bottom-10" ng-show="post.Service.servicetemplate_id"> -->
-                        <div class="card margin-bottom-10">
+                        <div class="card margin-bottom-10" ng-show="post.Service.servicetemplate_id">
                             <div class="card-header">
                                 <i class="fa fa-terminal"></i> <?php echo __('Check configuration'); ?>
                             </div>
@@ -245,29 +244,29 @@
                                 </div>
 
                                 <div class="form-group" ng-class="{'has-error': errors.active_checks_enabled}">
-                                    <div class="custom-control custom-checkbox margin-bottom-10"
+                                    <div class="custom-control custom-checkbox custom-control-down margin-bottom-10"
                                          ng-class="{'has-error': errors.active_checks_enabled}">
+
                                         <input type="checkbox"
                                                class="custom-control-input"
                                                ng-true-value="1"
                                                ng-false-value="0"
                                                id="active_checks_enabled"
                                                ng-model="post.Service.active_checks_enabled">
-                                        <div class="padding-left-20">
-                                            <template-diff-button ng-show="post.Service.servicetemplate_id"
-                                                                  value="post.Service.active_checks_enabled"
-                                                                  template-value="servicetemplate.Servicetemplate.active_checks_enabled">
-                                            </template-diff-button>
-                                        </div>
                                         <label class="custom-control-label" for="activeChecksEnabled">
                                             <?php echo __('Enable active checks'); ?>
                                         </label>
+                                        <template-diff-button ng-show="post.Service.servicetemplate_id"
+                                                              value="post.Service.active_checks_enabled"
+                                                              template-value="servicetemplate.Servicetemplate.active_checks_enabled">
+                                        </template-diff-button>
                                     </div>
 
                                     <div class="col col-xs-12 col-md-offset-2 help-block">
                                         <?php echo __('If disabled the check command won\'t be executed. This is useful if an external program sends state data to openITCOCKPIT.'); ?>
                                     </div>
                                 </div>
+
 
                                 <div class="form-group required"
                                      ng-class="{'has-error': errors.command_id}">
@@ -454,7 +453,7 @@
 
 
                                 <div class="form-group" ng-class="{'has-error': errors.flap_detection_enabled}">
-                                    <div class="custom-control custom-checkbox margin-bottom-10"
+                                    <div class="custom-control custom-checkbox margin-bottom-10 custom-control-down"
                                          ng-class="{'has-error': errors.flap_detection_enabled}">
                                         <input type="checkbox"
                                                class="custom-control-input"
@@ -462,15 +461,13 @@
                                                ng-false-value="0"
                                                id="flapDetectionEnabled"
                                                ng-model="post.Service.flap_detection_enabled">
-                                        <div class="padding-left-20">
-                                            <template-diff-button ng-show="post.Service.servicetemplate_id"
-                                                                  value="post.Service.flap_detection_enabled"
-                                                                  template-value="servicetemplate.Servicetemplate.flap_detection_enabled">
-                                            </template-diff-button>
-                                        </div>
                                         <label class="custom-control-label" for="flapDetectionEnabled">
                                             <?php echo __('Flap detection enabled'); ?>
                                         </label>
+                                        <template-diff-button ng-show="post.Service.servicetemplate_id"
+                                                              value="post.Service.flap_detection_enabled"
+                                                              template-value="servicetemplate.Servicetemplate.flap_detection_enabled">
+                                        </template-diff-button>
                                     </div>
                                 </div>
 
@@ -524,7 +521,7 @@
 
 
                                 <div class="form-group" ng-class="{'has-error': errors.is_volatile}">
-                                    <div class="custom-control custom-checkbox margin-bottom-10"
+                                    <div class="custom-control custom-checkbox margin-bottom-10 custom-control-down"
                                          ng-class="{'has-error': errors.is_volatile}">
                                         <input type="checkbox"
                                                class="custom-control-input"
@@ -532,15 +529,13 @@
                                                ng-false-value="0"
                                                id="isVolatile"
                                                ng-model="post.Service.is_volatile">
-                                        <div class="padding-left-20">
-                                            <template-diff-button ng-show="post.Service.servicetemplate_id"
-                                                                  value="post.Service.is_volatile"
-                                                                  template-value="servicetemplate.Servicetemplate.is_volatile">
-                                            </template-diff-button>
-                                        </div>
                                         <label class="custom-control-label" for="isVolatile">
                                             <?php echo __('Status volatile'); ?>
                                         </label>
+                                        <template-diff-button ng-show="post.Service.servicetemplate_id"
+                                                              value="post.Service.is_volatile"
+                                                              template-value="servicetemplate.Servicetemplate.is_volatile">
+                                        </template-diff-button>
                                     </div>
 
                                     <div class="col-xs-12 col-lg-offset-2 col-lg-12">

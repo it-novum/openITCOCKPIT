@@ -407,3 +407,17 @@ a:not([href]):not([tabindex]) {
     background-color: #d9534f !important;
     border-color: #ccc;
 }
+
+div.custom-control-down{
+    padding-left: 0;
+}
+
+.custom-control-label{
+    margin-bottom: 1rem;
+}
+
+div.custom-control-down .custom-control-label::before,
+div.custom-control-down .custom-control-label::after{
+    top: 1.5rem;
+    left: initial;
+}
