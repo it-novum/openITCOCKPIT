@@ -421,3 +421,15 @@ div.custom-control-down .custom-control-label::after{
     top: 1.5rem;
     left: initial;
 }
+
+div.custom-control-right{
+    padding-right: 0;
+    padding-left: 0;
+}
+
+div.custom-control-right .custom-control-label::before,
+div.custom-control-right .custom-control-label::after{
+    right: -1.3rem;
+    left: initial;
+    top: 3px;
+}

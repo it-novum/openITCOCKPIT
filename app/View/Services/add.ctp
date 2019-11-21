@@ -62,6 +62,9 @@
                           ng-init="successMessage=
             {objectName : '<?php echo __('Service'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
+
+                        <!-- BASIC CONFIGURATION START -->
+
                         <div class="card margin-bottom-10">
                             <div class="card-header">
                                 <i class="fa fa-magic"></i> <?php echo __('Basic configuration'); ?>
@@ -214,6 +217,10 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- BASIC CONFIGURATION END -->
+
+                        <!-- CHECK CONFIGURATION START -->
 
                         <div class="card margin-bottom-10" ng-show="post.Service.servicetemplate_id">
                             <div class="card-header">
@@ -375,10 +382,250 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- CHECK CONFIGURATION END -->
+
+                        <!-- NOTIFICATION CONFIGURATION START -->
 
                         <div class="card margin-bottom-10" ng-show="post.Service.servicetemplate_id">
                             <div class="card-header">
-                                <i class="fa fa-wrench"></i> <?php echo __('Notification configuration'); ?>
+                                <i class="fa fa-wrench"></i> <?php echo __('Misc. configuration'); ?>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group required"
+                                     ng-class="{'has-error': errors.notify_period_id}">
+                                    <label class="col-xs-12 col-lg-2 control-label">
+                                        <?php echo __('Notification period'); ?>
+                                    </label>
+                                        <div class="input-group" style="width: 100%;">
+                                            <select
+                                                    id="NotifyPeriodSelect"
+                                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                                    class="form-control"
+                                                    chosen="timeperiods"
+                                                    ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                                    ng-model="post.Service.notify_period_id">
+                                            </select>
+                                            <template-diff ng-show="post.Service.servicetemplate_id"
+                                                           value="post.Service.notify_period_id"
+                                                           template-value="servicetemplate.Servicetemplate.notify_period_id"></template-diff>
+                                        </div>
+                                        <div ng-repeat="error in errors.notify_period_id">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                </div>
+
+                                <div class="form-group required"
+                                     ng-class="{'has-error': errors.notification_interval}">
+                                    <label class="col-xs-12 col-lg-2 control-label">
+                                        <?php echo __('Notification interval'); ?>
+                                    </label>
+                                    <interval-input-with-differ-directive
+                                            template-id="post.Service.servicetemplate_id"
+                                            interval="post.Service.notification_interval"
+                                            template-value="servicetemplate.Servicetemplate.notification_interval"></interval-input-with-differ-directive>
+                                    <div class="col-xs-12 col-lg-offset-2">
+                                        <div ng-repeat="error in errors.notification_interval">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group"
+                                     ng-show="data.areContactsInheritedFromHosttemplate || data.areContactsInheritedFromHost || data.areContactsInheritedFromServicetemplate">
+                                    <label class="col-xs-12 col-lg-2 control-label" for="resetContacts">
+                                        <?php echo __('Disable inheritance'); ?>
+                                    </label>
+
+                                    <div class="col-xs-12 col-lg-1 smart-form">
+                                        <label class="checkbox no-required no-padding no-margin label-default-off">
+                                            <input type="checkbox" name="checkbox"
+                                                   id="resetContacts"
+                                                   ng-model="data.disableInheritance">
+                                            <i class="checkbox-primary"></i>
+                                        </label>
+                                    </div>
+                                    <div
+                                            class="col col-xs-12 col-md-offset-2 help-block text-info"
+                                            ng-class="{'strikethrough': data.disableInheritance}">
+                                        <?php echo __('Contacts and contact groups got inherited from'); ?>
+
+                                        <span
+                                                ng-class="{'bold': data.areContactsInheritedFromServicetemplate}">
+                                                <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                                    <a ui-sref="ServicetemplatesEdit({id: post.Service.servicetemplate_id})">
+                                                        <?php echo __('service template'); ?>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <?php echo __('service template'); ?>
+                                                <?php endif; ?>
+                                            </span>
+
+                                        <span ng-show="!data.areContactsInheritedFromServicetemplate"
+                                              ng-class="{'bold': data.areContactsInheritedFromHost}">
+
+                                                <i class="fa fa-angle-double-right"></i>
+
+                                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                                    <a ui-sref="HostsEdit({id: host.Host.id})">
+                                                        <?php echo __('host'); ?>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <?php echo __('host'); ?>
+                                                <?php endif; ?>
+                                            </span>
+
+                                        <span ng-show="data.areContactsInheritedFromHosttemplate" class="bold">
+
+                                                <i class="fa fa-angle-double-right"></i>
+
+                                                <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                                    <a ui-sref="HosttemplatesEdit({id: host.Host.hosttemplate_id})">
+                                                        <?php echo __('host template'); ?>
+                                                    </a>
+                                                <?php else: ?>
+                                                    <?php echo __('host template'); ?>
+                                                <?php endif; ?>
+                                            </span>
+                                        .
+                                    </div>
+                                </div>
+
+
+                                <div id="ContactBlocker">
+                                    <div class="form-group"
+                                         ng-class="{'has-error': errors.contacts}">
+                                        <label class="col-xs-12 col-lg-2 control-label">
+                                            <?php echo __('Contacts'); ?>
+                                        </label>
+                                            <div class="input-group" style="width: 100%">
+                                                <select
+                                                        id="ContactsPeriodSelect"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="contacts"
+                                                        multiple
+                                                        ng-options="contact.key as contact.value for contact in contacts"
+                                                        ng-model="post.Service.contacts._ids">
+                                                </select>
+                                                <template-diff ng-show="post.Service.servicetemplate_id"
+                                                               value="post.Service.contacts._ids"
+                                                               template-value="servicetemplate.Servicetemplate.contacts._ids"></template-diff>
+                                            </div>
+                                        <div ng-repeat="error in errors.contacts">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group"
+                                         ng-class="{'has-error': errors.contactgroups}">
+                                        <label class="col-xs-12 col-lg-2 control-label">
+                                            <?php echo __('Contact groups'); ?>
+                                        </label>
+                                            <div class="input-group" style="width: 100%;">
+                                                <select
+                                                        id="ContactgroupsSelect"
+                                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                                        class="form-control"
+                                                        chosen="contactgroups"
+                                                        multiple
+                                                        ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
+                                                        ng-model="post.Service.contactgroups._ids">
+                                                </select>
+                                                <template-diff ng-show="post.Service.servicetemplate_id"
+                                                               value="post.Service.contactgroups._ids"
+                                                               template-value="servicetemplate.Servicetemplate.contactgroups._ids"></template-diff>
+                                            </div>
+                                            <div ng-repeat="error in errors.contactgroups">
+                                                <div class="help-block text-danger">{{ error }}</div>
+                                            </div>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <?php
+                                $serviceOptions = [
+                                    [
+                                        'field' => 'notify_on_recovery',
+                                        'class' => 'success',
+                                        'text'  => __('Recovery')
+                                    ],
+                                    [
+                                        'field' => 'notify_on_warning',
+                                        'class' => 'warning',
+                                        'text'  => __('Warning')
+                                    ],
+                                    [
+                                        'field' => 'notify_on_critical',
+                                        'class' => 'danger',
+                                        'text'  => __('Critical')
+                                    ],
+                                    [
+                                        'field' => 'notify_on_unknown',
+                                        'class' => 'secondary',
+                                        'text'  => __('Unknown')
+                                    ],
+                                    [
+                                        'field' => 'notify_on_flapping',
+                                        'class' => 'primary',
+                                        'text'  => __('Flapping')
+                                    ],
+                                    [
+                                        'field' => 'notify_on_downtime',
+                                        'class' => 'primary',
+                                        'text'  => __('Downtime')
+                                    ],
+                                ];
+                                ?>
+                                <fieldset>
+                                    <legend class="fs-sm"
+                                            ng-class="{'has-error-no-form': errors.notify_on_recovery}">
+                                        <div class="required">
+                                            <label class="fs-sm">
+                                                <?php echo __('Service notification options'); ?>
+                                            </label>
+
+                                            <div ng-repeat="error in errors.notify_on_recovery">
+                                                <div class="text-danger">{{ error }}</div>
+                                            </div>
+                                        </div>
+                                    </legend>
+                                    <div class="row">
+                                        <?php foreach ($serviceOptions as $serviceOption): ?>
+                                            <div class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                 ng-class="{'has-error': errors.<?php echo $serviceOption['field']; ?>}">
+                                                <input type="checkbox"
+                                                       class="custom-control-input"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       id="<?php echo $serviceOption['field']; ?>"
+                                                       ng-model="post.Service.<?php echo $serviceOption['field']; ?>">
+                                                <label for="<?php echo $serviceOption['field']; ?>"
+                                                       class="col col-md-7 custom-control-label padding-top-0 margin-right-10">
+                                                        <span class="badge badge-<?php echo $serviceOption['class']; ?> notify-label-small">
+                                                            <?php echo $serviceOption['text']; ?>
+                                                        </span>
+                                                </label>
+                                                <template-diff-button ng-show="post.Service.servicetemplate_id"
+                                                                      value="post.Service.<?php echo $serviceOption['field']; ?>"
+                                                                      template-value="servicetemplate.Servicetemplate.<?php echo $serviceOption['field']; ?>">
+                                                </template-diff-button>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+
+
+                        <!-- NOTIFICATION CONFIGURATION END -->
+
+                        <!-- MISC. CONFIGURATION START -->
+
+                        <div class="card margin-bottom-10" ng-show="post.Service.servicetemplate_id">
+                            <div class="card-header">
+                                <i class="fa fa-wrench"></i> <?php echo __('Misc. configuration'); ?>
                             </div>
                             <div class="card-body">
 
@@ -445,7 +692,7 @@
                                     ],
                                     [
                                         'field' => 'flap_detection_on_unknown',
-                                        'class' => 'default',
+                                        'class' => 'secondary',
                                         'text'  => __('Unknown')
                                     ]
                                 ];
@@ -473,10 +720,10 @@
 
 
                                 <fieldset ng-show="post.Service.flap_detection_enabled">
-                                    <legend class="font-sm"
+                                    <legend class="fs-sm"
                                             ng-class="{'has-error-no-form': errors.flap_detection_on_ok}">
                                         <div ng-class="{'required':post.Service.flap_detection_enabled}">
-                                            <label>
+                                            <label class="fs-sm">
                                                 <?php echo __('Flap detection options'); ?>
                                             </label>
 
@@ -485,39 +732,43 @@
                                             </div>
                                         </div>
                                     </legend>
-                                    <ul class="config-flex-inner">
+                                    <div class="row">
                                         <?php foreach ($serviceFlapOptions as $serviceFlapOption): ?>
-                                            <li>
-                                                <div class="margin-bottom-0"
-                                                     ng-class="{'has-error': errors.<?php echo $serviceFlapOption['field']; ?>}">
-
-                                                    <label for="<?php echo $serviceFlapOption['field']; ?>"
-                                                           class="col col-md-7 control-label padding-top-0">
-                                                                <span class="label label-<?php echo $serviceFlapOption['class']; ?> notify-label-small">
-                                                                    <?php echo $serviceFlapOption['text']; ?>
-                                                                </span>
-                                                    </label>
-
-                                                    <div class="col-md-2 smart-form">
-                                                        <label class="checkbox small-checkbox-label no-required">
-                                                            <input type="checkbox" name="checkbox"
-                                                                   ng-true-value="1"
-                                                                   ng-false-value="0"
-                                                                   ng-disabled="!post.Service.flap_detection_enabled"
-                                                                   id="<?php echo $serviceFlapOption['field']; ?>"
-                                                                   ng-model="post.Service.<?php echo $serviceFlapOption['field']; ?>">
-                                                            <i class="checkbox-<?php echo $serviceFlapOption['class']; ?>"></i>
-                                                        </label>
-                                                    </div>
-                                                </div>
+                                            <div class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                 ng-class="{'has-error': errors.<?php echo $serviceFlapOption['field']; ?>}">
+                                                <input type="checkbox" name="checkbox"
+                                                       class="custom-control-input"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
+                                                       ng-disabled="!post.Service.flap_detection_enabled"
+                                                       id="<?php echo $serviceFlapOption['field']; ?>"
+                                                       ng-model="post.Service.<?php echo $serviceFlapOption['field']; ?>">
+                                                <label for="<?php echo $serviceFlapOption['field']; ?>"
+                                                       class="col col-md-7 custom-control-label padding-top-0 margin-right-10">
+                                                        <span class="badge badge-<?php echo $serviceFlapOption['class']; ?> notify-label-small">
+                                                            <?php echo $serviceFlapOption['text']; ?>
+                                                        </span>
+                                                </label>
                                                 <template-diff-button ng-show="post.Service.servicetemplate_id"
                                                                       value="post.Service.<?php echo $serviceFlapOption['field']; ?>"
                                                                       template-value="servicetemplate.Servicetemplate.<?php echo $serviceFlapOption['field']; ?>">
                                                 </template-diff-button>
-                                            </li>
+                                            </div>
                                         <?php endforeach; ?>
-                                    </ul>
+                                    </div>
                                 </fieldset>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
                                 <div class="form-group" ng-class="{'has-error': errors.is_volatile}">
@@ -551,6 +802,10 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- MISC. CONFIGURATION END -->
+
+
+                        <!-- EVENT HANDLER CONFIGURATION START -->
 
                         <div class="card margin-bottom-10" ng-show="post.Service.servicetemplate_id">
                             <div class="card-header">
@@ -615,7 +870,9 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- EVENT HANDLER CONFIGURATION END -->
 
+                        <!-- SERVICE MACRO CONFIGURATION START -->
 
                         <div class="card margin-bottom-10" ng-show="post.Service.servicetemplate_id">
                             <div class="card-header">
@@ -654,6 +911,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- SERVICE MACRO CONFIGURATION END -->
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
@@ -674,6 +932,59 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
