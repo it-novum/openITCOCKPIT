@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <!-- font awesome 4 is usd by the checkbox fa-check -->
+    <link rel="stylesheet" type="text/css" href="/node_modules/font-awesome/css/font-awesome.min.css">
+
     <link rel="stylesheet" type="text/css" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/css/login/adminator.min.css">
@@ -15,7 +18,7 @@
 <body class="app">
 
 
-<div class="peers ai-s fxw-nw h-100vh" ng-controller="LoginController">
+<div class="peers ai-s fxw-nw h-100vh" ng-controller="LoginLayoutController">
 
     <div class="login-screen">
         <figure>
@@ -64,7 +67,6 @@
             </div>
         </form>
 
-
         <div class="float-right" style="padding-top: 100px;">
             <a href="https://openitcockpit.io/" target="_blank" class="btn btn-sm btn-light btn-icon">
                 <i class="fa fa-lg fa-globe"></i>
@@ -90,7 +92,7 @@
 <script src="/node_modules/particles.js/particles.js"></script>
 
 <script src="/js/login/ng.login-app.js"></script>
-<script src="/js/login/LoginController.js"></script>
+<script src="/js/login/LoginLayoutController.js"></script>
 
 </body>
 </html>

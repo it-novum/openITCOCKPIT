@@ -80,7 +80,7 @@ figcaption {
 }
 
 .login-screen > figure:nth-child(1) {
-    background-image:  url('/img/login/spacex-71870.jpg');
+    background-image:  url('/img/login/todd-diemer-67t2GJcD5PI-unsplash.jpg');
 }
 
 .login-screen > figure:nth-child(2) {
@@ -143,6 +143,8 @@ canvas {
 .login-side-bg {
     background: rgba(25, 33, 49, 0.4);
 }
+
+/** fix button with icons **/
 
 .btn-icon{
     padding: 0.35rem .5rem 0.15rem .5rem;

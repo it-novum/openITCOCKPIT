@@ -38,6 +38,7 @@ use Cake\Http\Exception\ConflictException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
 
 /**
  * Class UsersController
@@ -54,9 +55,13 @@ class UsersController extends AppController {
     public function login() {
         $this->viewBuilder()->setLayout('login');
 
+        $LoginBackgrounds = new LoginBackgrounds();
+        $images = $LoginBackgrounds->getImages();
+
         if ($this->request->is('get')) {
             $this->set('_csrfToken', $this->request->getParam('_csrfToken'));
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken']);
+            $this->set('images', $images['winter']);
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images']);
             return;
         }
 

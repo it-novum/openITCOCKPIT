@@ -8,6 +8,7 @@
     "angular": "^1.7.9",
     "angular-ui-router": "^1.0.23",
     "bootstrap": "^4.3.1",
+    "font-awesome": "^4.7.0",
     "jquery": "^3.4.1",
     "particles.js": "^2.0.0",
     "particlesjs": "^2.2.3"
