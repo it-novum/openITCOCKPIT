@@ -1,31 +1,67 @@
-// Copyright (C) <2015>  <it-novum GmbH>
-//
-// This file is dual licensed
-//
-// 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
-//
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
-//
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+loginApp.controller("LoginController", function($scope, $http, $httpParamSerializerJQLike){
 
-// 2.
-//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//	License agreement and license key will be shipped with the order
-//	confirmation.
+    $scope.post = {
+        remember_me: 1
+    };
 
-$(document).ready(function(){
+    $scope.loadCsrf = function(){
+        $http.get("/users/login.json",
+            {}
+        ).then(function(result){
+            $scope._csrfToken = result.data._csrfToken;
+        }, function errorCallback(result){
+            if(result.data.hasOwnProperty('_csrfToken')){
+                $scope._csrfToken = result.data._csrfToken;
+            }else{
+                console.log('Could not load _csrfToken');
+            }
+        });
+    };
+
+    $scope.submit = function(){
+
+        //Submit as classic form (not as json data) so that
+        //CakePHPs FormAuthenticator is able to parse the POST data
+        //AngularJS $httpParamSerializerJQLike is going to encode the data for us...
+
+        $scope.post._method = 'POST';
+        $scope.post._csrfToken = $scope._csrfToken;
+
+        var req = {
+            method: 'POST',
+            url: '/users/login',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRF-Token': $scope._csrfToken
+            },
+            data: $httpParamSerializerJQLike($scope.post)
+        };
+
+        $http(req).then(function(){
+            new Noty({
+                theme: 'metroui',
+                type: 'success',
+                layout: 'topCenter',
+                text: 'Login successful',
+                timeout: 3500
+            }).show();
+            window.location = '/';
+        }, function(){
+            $scope.loadCsrf();
+            new Noty({
+                theme: 'metroui',
+                type: 'error',
+                layout: 'topCenter',
+                text: 'Invalid credentials',
+                timeout: 3500
+            }).show();
+        });
+    };
+
+    //Fire on page load
+    //$scope.loadCsrf();
 
     localStorage.removeItem('browserUuid');
-
 
     particlesJS('particles-js',
 
@@ -145,6 +181,5 @@ $(document).ready(function(){
             }
         }
     );
-
 
 });

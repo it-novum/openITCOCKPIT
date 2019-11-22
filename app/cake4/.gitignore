@@ -41,3 +41,7 @@ nbproject/*
 .vscode
 # Sass preprocessor
 .sass-cache/
+
+# npm modules #
+#######################
+webroot/node_modules
