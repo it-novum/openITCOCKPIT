@@ -1,4 +1,6 @@
 /*
+STD COLORS
+
 $color-primary:						#4285F4;
 $color-success:						#00C851;
 $color-info:						#33b5e5;
@@ -484,11 +486,12 @@ div.custom-control-right .custom-control-label::after{
 }
 
 
-.custom-control-label-warning::before {
+.custom-control-label-primary::before {
     color: #fff;
     border-color: #4285F4;
 }
 
+.custom-control-label-success::before,
 .custom-control-label-up::before,
 .custom-control-label-ok::before {
     color: #fff;
@@ -500,13 +503,15 @@ div.custom-control-right .custom-control-label::after{
     border-color: #ffbb33;
 }
 
+.custom-control-label-danger::before,
 .custom-control-label-down::before,
 .custom-control-label-critical::before {
     color: #fff;
     border-color: #CC0000;
 }
 
-.custom-control-label-unknown::before
+.custom-control-label-secondary::before,
+.custom-control-label-unknown::before,
 .custom-control-label-unreachable::before {
     color: #fff;
     border-color: #92A2A8;

@@ -445,7 +445,7 @@
                                         </label>
                                     </div>
                                     <div class="col col-xs-12 col-md-offset-2 help-block text-info"
-                                            ng-class="{'strikethrough': data.disableInheritance}">
+                                         ng-class="{'strikethrough': data.disableInheritance}">
                                         <?php echo __('Contacts and contact groups got inherited from'); ?>
 
                                         <span ng-class="{'bold': data.areContactsInheritedFromServicetemplate}">
@@ -739,7 +739,7 @@
                                                        id="<?php echo $serviceFlapOption['field']; ?>"
                                                        ng-model="post.Service.<?php echo $serviceFlapOption['field']; ?>">
                                                 <label for="<?php echo $serviceFlapOption['field']; ?>"
-                                                       class="col col-md-7 custom-control-label padding-top-0 margin-right-10">
+                                                       class="col col-md-7 custom-control-label custom-control-label-<?php echo $serviceFlapOption['class']; ?> padding-top-0 margin-right-10">
                                                         <span class="badge badge-<?php echo $serviceFlapOption['class']; ?> notify-label-small">
                                                             <?php echo $serviceFlapOption['text']; ?>
                                                         </span>
@@ -881,18 +881,17 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-9 col-md-offset-2 padding-top-10 text-right">
+                                    <div class="col-xs-12 padding-top-10 text-info"
+                                         ng-show="post.Service.customvariables.length > 0">
+                                        <i class="fa fa-info-circle"></i>
+                                        <?php echo __('Macros in green color are inherited from the service template.'); ?>
+                                    </div>
+                                    <div class="col-lg-12 col-md-offset-2 padding-top-10 text-right">
                                         <button type="button" class="btn btn-success btn-sm"
                                                 ng-click="addMacro()">
                                             <i class="fa fa-plus"></i>
                                             <?php echo __('Add new macro'); ?>
                                         </button>
-                                    </div>
-
-                                    <div class="col-xs-12 padding-top-10 text-info"
-                                         ng-show="post.Service.customvariables.length > 0">
-                                        <i class="fa fa-info-circle"></i>
-                                        <?php echo __('Macros in green color are inherited from the service template.'); ?>
                                     </div>
                                 </div>
                             </div>
@@ -905,10 +904,12 @@
                                         <input type="checkbox" ng-model="data.createAnother">
                                         <?php echo __('Create another'); ?>
                                     </label>
-                                    <button class="btn btn-primary"
-                                            type="submit"><?php echo __('Create service'); ?></button>
-                                    <a back-button fallback-state='ServicesIndex'
-                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                    <button class="btn btn-primary" type="submit">
+                                        <?php echo __('Create service'); ?>
+                                    </button>
+                                    <a back-button fallback-state='ServicesIndex' class="btn btn-default">
+                                        <?php echo __('Cancel'); ?>
+                                    </a>
                                 </div>
                             </div>
                         </div>
