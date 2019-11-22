@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<!-- saved from url=(0044)http://kenedict.com/networks/worldcup14/vis/ , thanks Andre!-->
+<html><head><meta http-equiv="content-type" content="text/html; charset=UTF8">
+  <title>Network |  Static smooth curves - World Cup Network</title>
+
+<script type="text/javascript" src="../../../dist/vis.js"></script>
+<link type="text/css" rel="stylesheet" href="../../../dist/vis-network.min.css">
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+  <style type="text/css">
+  html, body
+{
+    height: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+}
+    #mynetwork {
+      height: 100%;
+    min-height: 100%;
+      border: 1px solid lightgray;
+      background:#cccvis ja inter;
+    }
+  </style>
+
+</head>
+
+<body>
+  <i class="fa fa-flag"></i> We use an icon once in the DOM so the CSS for fontAwesome is loaded.</h2>
+
+<div id="mynetwork"></div>
+
+<script type="text/javascript">
+  var network;
+  var allNodes;
+  var highlightActive = false;
+
+  // create an array with nodes
+var nodes = [
+    {
+        "id": 0,
+        "label": "open[(Ei)]TCOCKPIT",
+        "title": "open[(Ei)]TCOCKPIT",
+        "ip": "127.0.0.1",
+        "uuid": "123456",
+        "size": 15,
+        "current_state": 0,
+        group: 'dotsWithLabel'
+    },
+    {
+      "id": "1",
+      "label": "default host",
+      "title": "default host",
+      "ip": "127.0.0.1",
+      "uuid": "c36b8048-93ce-4385-ac19-ab5c90574b77",
+      "size": 5,
+      "current_state": "0",
+      group: 'diamonds'
+    },
+    {
+      "id": "4",
+      "label": "srvgpu01",
+      "title": "srvgpu01",
+      "ip": "172.16.1.60",
+      "uuid": "0b7a5236-8907-41c7-a84b-ab824dc369da",
+      "size": 5,
+      "current_state": "0",
+      group: 'icons'
+    },
+    {
+      "id": "5",
+      "label": "AVSRV",
+      "title": "AVSRV",
+      "ip": "127.0.0.1",
+      "uuid": "cd3eb7d2-45d7-4188-bd90-c52724bdb258",
+      "size": 3,
+      "current_state": "0",
+      group: 'hostDown'
+    },
+    {
+      "id": "6",
+      "label": "CADSRV",
+      "title": "CADSRV",
+      "ip": "127.0.0.1",
+      "uuid": "df86caeb-1fd7-445e-9e2e-2811dd431870",
+      "size": 3,
+      "current_state": "0",
+      group: 'hostDown'
+    },
+    {
+      "id": "7",
+      "label": "srvbx01",
+      "title": "srvbx01",
+      "ip": "172.16.2.2",
+      "uuid": "4d72fec7-a1dd-439c-b008-6503f65b7560",
+      "size": 3,
+      "current_state": "0",
+      group: 'icons'
+    },
+    {
+      "id": "9",
+      "label": "svhv01",
+      "title": "svhv01",
+      "ip": "172.16.4.123",
+      "uuid": "fb9d0042-2e7d-4d77-a20e-8f180449fc66",
+      "size": 3,
+      "current_state": "0",
+      group: 'mints'
+    },
+    {
+      "id": "10",
+      "label": "ITSM-STACK-Connector-Demo",
+      "title": "ITSM-STACK-Connector-Demo",
+      "ip": "127.0.0.1",
+      "uuid": "d1c94996-727f-4217-b5b8-7beaa21acaba",
+      "size": 5,
+      "current_state": "0",
+      group: 'diamonds'
+    },
+    {
+      "id": "12",
+      "label": "DELETE_Test_1",
+      "title": "DELETE_Test_1",
+      "ip": "127.1.2.3",
+      "uuid": "406a71a0-cdbe-4ea1-b180-9bbb61a603f3",
+      "size": 3,
+      "current_state": "0",
+      group: 'mints'
+    },
+    {
+      "id": "13",
+      "label": "DELETE_Test_2",
+      "title": "DELETE_Test_2",
+      "ip": "127.1.2.3",
+      "uuid": "e0725c7b-c37a-4236-b8e8-1ed8cc796982",
+      "size": 3,
+      "current_state": "0",
+      group: 'mints'
+    },
+    {
+      "id": "14",
+      "label": "DELETE_Test_3",
+      "title": "DELETE_Test_3",
+      "ip": "127.1.2.3",
+      "uuid": "a74579ed-8cf8-49ee-9890-7cc6d6d9a6f5",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "15",
+      "label": "ibering",
+      "title": "ibering",
+      "ip": "127.0.0.1",
+      "uuid": "31d98d71-3dd1-46b8-9928-a27d0806ddc5",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "16",
+      "label": "qAWSDFTGHJK",
+      "ip": "127.1.2.3",
+      "uuid": "8533937a-d246-491c-a992-8462bb583b75",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "62",
+      "label": "localhost",
+      "ip": "127.0.0.1",
+      "uuid": "b33e3f5e-57fe-40eb-b95d-c0aef87af478",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "63",
+      "label": "localhost",
+      "ip": "127.0.0.1",
+      "uuid": "751f634f-dc79-46f7-a999-a252d812f9c6",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "65",
+      "label": "svhv01 NOT MONITORED",
+      "ip": "172.16.4.123",
+      "uuid": "1c3e3832-4d15-4a64-b712-c99127ac9490",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "66",
+      "label": "srvads02.master.dns",
+      "ip": "172.16.101.23",
+      "uuid": "b6a1f469-b3da-460e-98cc-f1c4c49193b6",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "68",
+      "label": "Status Output",
+      "ip": "127.1.2.3",
+      "uuid": "4667eee4-24ef-4953-abde-c37e72ff912e",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "69",
+      "label": "localhost",
+      "ip": "127.0.0.1",
+      "uuid": "1334e1a2-1a7a-44f4-b0f4-b264191fe958",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "70",
+      "label": "srvitcv3sales01.master.dns",
+      "ip": "172.16.14.172",
+      "uuid": "821f5957-6ec4-43e6-99de-d1fd3355a8d6",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "74",
+      "label": "test test",
+      "ip": "127.1.2.3",
+      "uuid": "dc1d0ffc-7d78-4b9f-8708-1f5e4a84e1ed",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "76",
+      "label": "srvads05.master.dns",
+      "ip": "128.1.1.4",
+      "uuid": "7b86e48f-0a92-4621-8b85-9192e34beea7",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "77",
+      "label": "srvads02.master.dns",
+      "ip": "172.16.101.23",
+      "uuid": "31b515a7-d97e-4bf5-8897-76b8b66c5055",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "78",
+      "label": "srvads01.master.dns",
+      "ip": "172.16.101.60",
+      "uuid": "c10136fb-dcb8-414c-a687-a6b1901896f6",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "79",
+      "label": "jabber.it-novum.com",
+      "ip": "195.158.58.132",
+      "uuid": "bd3e7510-0024-45ee-95be-804e241a2bde",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "80",
+      "label": "oitc.it-novum.com",
+      "ip": "172.16.1.94",
+      "uuid": "2bd32280-e25e-41da-8c6f-7c5e26207a87",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "81",
+      "label": "svhv01 Copy 1",
+      "ip": "172.16.4.123",
+      "uuid": "26d91b4f-4713-49ed-8b57-765bd1e60d9b",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "82",
+      "label": "svhv01 Copy 2",
+      "ip": "172.16.4.123",
+      "uuid": "c8a6a313-0ec8-4dca-8284-54ebcd65eea5",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "83",
+      "label": "Chosen Test",
+      "ip": "127.1.2.3",
+      "uuid": "02c80b69-77f4-4b4d-8a6b-edd30a23b8cb",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "84",
+      "label": "svhv01 Copy 1 NOT MONITORED",
+      "ip": "172.16.4.123",
+      "uuid": "7602aefa-9148-4616-a613-09841c9eedce",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "85",
+      "label": "tzrtztrzrtztr",
+      "ip": "127.1.2.3",
+      "uuid": "7e7a4375-f743-4a34-a833-78993b2c6c6e",
+      "size": 3,
+      "current_state": "2"
+    },
+    {
+      "id": "135",
+      "label": "srvoitcvm01.master.dns",
+      "ip": "172.16.166.1",
+      "uuid": "add4b068-ec6b-4889-b9cf-fd27e73e5d58",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "142",
+      "label": "graylog.oitc.itn",
+      "ip": "172.16.166.26",
+      "uuid": "a896b938-96d9-4dc5-b3e9-a274e0dbf129",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "143",
+      "label": "mumble.oitc.itn",
+      "ip": "172.16.166.27",
+      "uuid": "02b5fd3a-3073-4eee-b0c7-c9b7d197e0d1",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "145",
+      "label": "dziegler.oitc.itn",
+      "ip": "172.16.166.32",
+      "uuid": "f2e55afa-ddc5-4fdb-aebb-d97af028d42c",
+      "size": 3,
+      "current_state": "1",
+            group: "hostNotMonitored"
+
+    },
+    {
+      "id": "146",
+      "label": "ibering.oitc.itn",
+      "ip": "172.16.166.34",
+      "uuid": "cdd10113-5067-49bf-961f-712b8d6819ea",
+      "size": 3,
+      "current_state": "1",
+            group: "hostNotMonitored"
+
+    },
+    {
+      "id": "147",
+      "label": "cfleck-selenium.oitc.itn",
+      "ip": "172.16.166.41",
+      "uuid": "554bf03a-eb5c-47d1-984c-f94526119b8c",
+      "size": 3,
+      "current_state": "1"
+    },
+    {
+      "id": "149",
+      "label": "module-templater.oitc.itn",
+      "ip": "172.16.166.54",
+      "uuid": "ed185372-0851-4cd6-a2d6-b5c36b17c6c1",
+      "size": 3,
+      "current_state": "0",
+            group: "hostNotMonitored"
+
+    },
+    {
+      "id": "150",
+      "label": "cfleck-testing.oitc.itn",
+      "ip": "172.16.166.59",
+      "uuid": "e5a50db8-25f9-474d-b06f-6f3b0fcb9f22",
+      "size": 3,
+      "current_state": "0",
+      group: "hostNotMonitored"
+    },
+    {
+      "id": "152",
+      "label": "migration-test.oitc.itn",
+      "ip": "172.16.166.61",
+      "uuid": "a70256ee-a94d-43e8-9a9e-3cfe1aca55b5",
+      "size": 3,
+      "current_state": "1",
+            group: 'hostDowntime'
+
+    },
+    {
+      "id": "153",
+      "label": "mpappert-qala.oitc.itn",
+      "ip": "172.16.166.62",
+      "uuid": "a1e1c52a-d913-495c-ae54-b54b3a1fe800",
+      "size": 3,
+      "current_state": "1",
+            group: 'hostDowntime'
+
+    },
+    {
+      "id": "155",
+      "label": "idoit-license-generator-omueller.oitc.itn",
+      "ip": "172.16.166.66",
+      "uuid": "6914504f-c47c-42af-8606-ca40dcc77558",
+      "size": 3,
+      "current_state": "1"
+    },
+    {
+      "id": "156",
+      "label": "cratedb2.oitc.itn",
+      "ip": "172.16.166.67",
+      "uuid": "43323454-c155-4ee4-a99c-02e656b3d528",
+      "size": 3,
+      "current_state": "1",
+      group: 'hostDowntime'
+    },
+    {
+      "id": "158",
+      "label": "jwiegand-pentaho8.oitc.itn",
+      "ip": "172.16.166.70",
+      "uuid": "1f747276-8011-446f-95a3-091fb0d6969e",
+      "size": 3,
+      "current_state": "0",
+            group: 'hostUp'
+
+    },
+    {
+      "id": "162",
+      "label": "cfleck.oitc.itn",
+      "ip": "172.16.166.79",
+      "uuid": "9ccb10c5-d938-4e1e-9417-d190506ec7d6",
+      "size": 3,
+      "current_state": "1",
+      group: 'hostUp'
+    },
+    {
+      "id": "164",
+      "label": "jdmaster.oitc.itn",
+      "ip": "172.16.166.98",
+      "uuid": "171e18d5-8404-4713-a4fe-141ec9bde4cb",
+      "size": 3,
+      "current_state": "1",
+       group: 'hostUnreachable'
+    },
+    {
+      "id": "165",
+      "label": "mpappert-sat-xenial.oitc.itn",
+      "ip": "172.16.166.103",
+      "uuid": "0091e580-c13d-4772-a3af-f33c2ff49113",
+      "size": 3,
+      "current_state": "1",
+       group: 'hostUnreachable'
+    },
+    {
+      "id": "184",
+      "label": "Test Limit",
+      "ip": "127.1.2.3",
+      "uuid": "7ba2eeee-75d8-4de6-80b0-24cf16477a61",
+      "size": 30,
+      "current_state": "2",
+      group: 'icons'
+    }
+  ];
+
+  // create an array with edges
+var edges = [
+    {
+      "from": 0,
+      "to": 1,
+      arrows:'to'
+    },
+    {
+      "from": 1,
+      "to": 5,
+      arrows:'to',
+      color:{color:'red'}
+    },
+    {
+      "from": 0,
+      "to": 4,
+      arrows:'to',
+      color:{color:'red'}
+    },
+    {
+      "from": 0,
+      "to": 6,
+      arrows:'to',
+      color:{inherit:'to'}
+    },
+    {
+      "from": 6,
+      "to": 5,
+      arrows:'to',
+      color:{inherit:'to'}
+    },
+    {
+      "from": 0,
+      "to": 7,
+      arrows:'to',
+      color:{inherit:'to'}
+    },
+    {
+      "from": 7,
+      "to": 5,
+      arrows:'to',
+      color:{inherit:'to'}
+    },
+    {
+      "from": 0,
+      "to": 9,
+      arrows:'to',
+      color:{inherit:'to'}
+    },
+    {
+      "from": 0,
+      "to": 10,
+      arrows:'to'
+    },
+    {
+      "from": 10,
+      "to": 5,
+      arrows:'to'
+    },
+    {
+      "from": 0,
+      "to": 12,
+    },
+    {
+      "from": 0,
+      "to": 13,
+    },
+    {
+      "from": 0,
+      "to": 14,
+    },
+    {
+      "from": 0,
+      "to": 15,
+    },
+    {
+      "from": 0,
+      "to": 16,
+    },
+    {
+      "from": 0,
+      "to": 62,
+    },
+    {
+      "from": 62,
+      "to": 5,
+    },
+    {
+      "from": 0,
+      "to": 63,
+    },
+    {
+      "from": 0,
+      "to": 65,
+    },
+    {
+      "from": 0,
+      "to": 66,
+      color:{inherit:'to'}
+    },
+    {
+      "from": 0,
+      "to": 68,
+      color:{inherit:'to'}
+    },
+    {
+      "from": 0,
+      "to": 69,
+    },
+    {
+      "from": 0,
+      "to": 70,
+    },
+    {
+      "from": 0,
+      "to": 74,
+    },
+    {
+      "from": 0,
+      "to": 76,
+    },
+    {
+      "from": 0,
+      "to": 77,
+    },
+    {
+      "from": 0,
+      "to": 78,
+    },
+    {
+      "from": 0,
+      "to": 79,
+    },
+    {
+      "from": 0,
+      "to": 80,
+    },
+    {
+      "from": 0,
+      "to": 81,
+    },
+    {
+      "from": 0,
+      "to": 82,
+      color:{color:'red'}
+    },
+    {
+      "from": 0,
+      "to": 83,
+    },
+    {
+      "from": 0,
+      "to": 84,
+    },
+    {
+      "from": 0,
+      "to": 85,
+    },
+    {
+      "from": 0,
+      "to": 135,
+    },
+    {
+      "from": 0,
+      "to": 142,
+    },
+    {
+      "from": 0,
+      "to": 143,
+    },
+    {
+      "from": 0,
+      "to": 145,
+    },
+    {
+      "from": 0,
+      "to": 146,
+    },
+    {
+      "from": 0,
+      "to": 147,
+    },
+    {
+      "from": 0,
+      "to": 149,
+    },
+    {
+      "from": 0,
+      "to": 150,
+    },
+    {
+      "from": 0,
+      "to": 152,
+    },
+    {
+      "from": 0,
+      "to": 153,
+    },
+    {
+      "from": 0,
+      "to": 155,
+    },
+    {
+      "from": 0,
+      "to": 156,
+    },
+    {
+      "from": 0,
+      "to": 158,
+    },
+    {
+      "from": 0,
+      "to": 162,
+    },
+    {
+      "from": 0,
+      "to": 164,
+    },
+    {
+      "from": 0,
+      "to": 165,
+    },
+    {
+      "from": 0,
+      "to": 184,
+    }
+  ];
+
+var nodesDataset = new vis.DataSet(nodes); // these come from WorldCup2014.js
+var edgesDataset = new vis.DataSet(edges); // these come from WorldCup2014.js
+
+ // function redrawAll() {
+    var container = document.getElementById('mynetwork');
+    var afterzoomlimit = { //here we are setting the zoom limit to move to
+        scale: 0.49,
+    };
+    var options = {
+        clickToUse: true,
+        groups: {
+            hostNotMonitored: {
+                shape: 'icon',
+                icon: {
+                    face: 'FontAwesome',
+                    code: '\uf070',
+                    size: 20,
+                }
+            },
+            hostUp: {
+                shape: 'icon',
+                icon: {
+                    face: 'FontAwesome',
+                    code: '\uf058',
+                    size: 20,
+                    color: 'green'
+                }
+            },
+            hostDown: {
+                  shape: 'icon',
+                  icon: {
+                      face: 'FontAwesome',
+                      code: '\uf06a',
+                      size: 20,
+                      color: 'red'
+                  }
+              },
+              hostUnreachable: {
+                  shape: 'icon',
+                  icon: {
+                      face: 'FontAwesome',
+                      code: '\uf059',
+                      size: 20,
+                      color: 'gray'
+                  }
+              },
+              hostDowntime: {
+                  shape: 'icon',
+                  icon: {
+                      face: 'FontAwesome',
+                      code: '\uf011',
+                      size: 20,
+                      color: 'orange'
+                  }
+              },
+              diamonds: {
+                  color: {
+                      background:'red',
+                      border:'white'
+                  },
+                  shape: 'diamond'
+              },
+              dotsWithLabel: {
+                shape: 'icon',
+                  icon: {
+                      face: 'FontAwesome',
+                      code: '\uf21e',
+                      size: 40,
+                     // color: 'blue'
+                  },
+              },
+            mints: {color:'rgb(0,255,140)'},
+
+            icons: {
+                shape: 'icon',
+                icon: {
+                    face: 'FontAwesome',
+                    code: '\uf007',
+                    size: 15,
+                    color: 'orange'
+                }
+            },
+            source: {
+                color:{border:'white'}
+            }
+        },
+        nodes: {
+            shapeProperties: {
+                interpolation: false    // 'true' for intensive zooming
+            },
+            borderWidth: 1,
+            borderWidthSelected: 2,
+            shadow:{
+                enabled: false,
+                color: '#C11818',
+                size:2,
+                x:2,
+                y:2
+            },
+            shape: 'triangle',
+            size : 25,
+            scaling: {
+              min: 10,
+              max: 30,
+              label: {
+                min: 8,
+                max: 30,
+                drawThreshold: 12,
+                maxVisible: 20
+              }
+            },
+            font: {
+              size: 12,
+              face: 'Tahoma'
+            },
+            color: {
+                highlight: {
+                    border: '#2B7CE9',
+                    background: '#D2E5FF'
+                }
+            }
+        },
+        edges: {
+            width: 0.5,
+            /*
+            color: {
+              color:'#848484',
+              highlight:'#848484',
+              hover: '#848484',
+              inherit: 'from',
+              opacity:1.0
+            },
+            */
+            smooth: {
+              //type: 'continuous'
+                enabled: true,
+                type: 'dynamic',
+                roundness: 0.5
+            },
+            scaling:{
+                min: 1,
+                max: 15,
+                label: {
+                    enabled: true,
+                    min: 14,
+                    max: 30,
+                    maxVisible: 30,
+                    drawThreshold: 5
+                },
+                customScalingFunction: function (min,max,total,value) {
+                    if (max === min) {
+                        return 0.5;
+                    }
+                    else {
+                        var scale = 1 / (max - min);
+                        return Math.max(0,(value - min)*scale);
+                    }
+                }
+            },
+            //physics: true
+        },
+        physics: true,
+        interaction: {
+            multiselect: true,
+            tooltipDelay: 200,
+            hideEdgesOnDrag: true,
+            hideNodesOnDrag:false,
+            hoverConnectedEdges: true,
+            hover: true,
+            selectable: true,
+            keyboard: {
+                enabled: false,
+                speed: {
+                    x: 10,
+                    y: 10,
+                    zoom: 0.02
+                },
+                bindToWindow: true
+            },
+        },
+         configure: {
+            enabled: true,
+            filter: 'nodes,edges',
+        }
+        /*
+        physics:{
+            enabled: true,
+            barnesHut: {
+                gravitationalConstant: -2000,
+                centralGravity: 0,
+                springConstant: 0.04,
+                damping: 0.09,
+                avoidOverlap: 1
+            },
+        }
+        */
+    };
+    var data = {nodes:nodesDataset, edges:edgesDataset} // Note: data is coming from ./datasources/WorldCup2014.js
+
+
+    var network = new vis.Network(container, data, options);
+    window.onresize = function() {network.fit()};
+
+    // get a JSON object
+    //allNodes = nodesDataset.get({returnType:"Object"});
+/*
+    network.on("selectNode", function (params) {
+      var selectedNodeId = params.nodes[0];
+      var node = network.body.nodes[selectedNodeId];
+      node.setOptions({
+        font: {
+          size: 20
+        },
+        color: {
+            highlight: {
+            border: '#2B7CE9',
+            background: '#D2E5FF'
+        }
+      }
+      });
+    });
+    network.on("deselectNode", function (params) {
+        var deselectedNodeId = params.previousSelection.nodes[0];
+        var node = network.body.nodes[deselectedNodeId];
+        node.setOptions({
+        font: {
+
+          size: options.nodes.font.size
+        }
+        });
+    });
+
+    network.on("zoom",function(){ //while zooming
+        if(network.getScale() <= 0.49 ){
+            network.moveTo(afterzoomlimit); //set this limit so it stops zooming out here
+        }
+    });
+*/
+</script>
+
+</body></html>

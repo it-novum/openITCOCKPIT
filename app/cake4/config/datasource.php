@@ -2,7 +2,6 @@
 
 $DbConfig = new \DATABASE_CONFIG();
 
-
 return [
     'Datasources' => [
         'default' => [

@@ -28,7 +28,7 @@ if ($sideMenuClosed) {
     $bodyClass = 'minified';
 }
 
-$AngularAssets = new \itnovum\openITCOCKPIT\Core\AngularJS\AngularAssets();
+$AngularAssets = new \itnovum\openITCOCKPIT\Core\AngularJS\AngularAssetsCake2();
 $scripts = $AngularAssets->getJsFiles();
 
 App::uses('Folder', 'Utility');

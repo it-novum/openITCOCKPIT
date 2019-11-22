@@ -1,7 +1,8 @@
 #!/usr/bin/php -q
 <?php
 // Check platform requirements
-require dirname(__DIR__) . '/../Vendor/autoload.php';
+require dirname(__DIR__) . '/config/requirements.php';
+require dirname(__DIR__) . '/vendor/autoload.php';
 
 use App\Application;
 use Cake\Console\CommandRunner;

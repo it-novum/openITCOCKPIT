@@ -1,0 +1,843 @@
+/*
+Copyright (c) 2018 by Captain Anonymous (https://codepen.io/anon/pen/qoeoqb)
+
+Fork of an original work by Chris Spittles (https://codepen.io/chrissp26/pen/RooWMV)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+.progress {
+  background: #ccc;
+  border-radius: 50%;
+  height: 100px;
+  width: 100px;
+  margin: 2em;
+}
+.progress_mask, .progress_fill {
+  -moz-backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 50%;
+  clip: rect(0, 100px, 100px, 50px);
+  height: 100px;
+  overflow: hidden;
+  position: absolute;
+  width: 100px;
+}
+.progress_fill {
+  background: #41c519;
+  clip: rect(0, 50px, 100px, 0);
+}
+.progress:after {
+  content: attr(data-progress);
+  background: #fff;
+  border-radius: 50%;
+  height: 90px;
+  line-height: 90px;
+  margin: 5px;
+  position: absolute;
+  text-align: center;
+  width: 90px;
+}
+.progress[data-progress="1"] .progress_mask.isFull,
+.progress[data-progress="1"] .progress_fill {
+  -webkit-transform: rotate(1.8deg);
+  -moz-transform: rotate(1.8deg);
+  -ms-transform: rotate(1.8deg);
+  -o-transform: rotate(1.8deg);
+  transform: rotate(1.8deg);
+}
+.progress[data-progress="2"] .progress_mask.isFull,
+.progress[data-progress="2"] .progress_fill {
+  -webkit-transform: rotate(3.6deg);
+  -moz-transform: rotate(3.6deg);
+  -ms-transform: rotate(3.6deg);
+  -o-transform: rotate(3.6deg);
+  transform: rotate(3.6deg);
+}
+.progress[data-progress="3"] .progress_mask.isFull,
+.progress[data-progress="3"] .progress_fill {
+  -webkit-transform: rotate(5.4deg);
+  -moz-transform: rotate(5.4deg);
+  -ms-transform: rotate(5.4deg);
+  -o-transform: rotate(5.4deg);
+  transform: rotate(5.4deg);
+}
+.progress[data-progress="4"] .progress_mask.isFull,
+.progress[data-progress="4"] .progress_fill {
+  -webkit-transform: rotate(7.2deg);
+  -moz-transform: rotate(7.2deg);
+  -ms-transform: rotate(7.2deg);
+  -o-transform: rotate(7.2deg);
+  transform: rotate(7.2deg);
+}
+.progress[data-progress="5"] .progress_mask.isFull,
+.progress[data-progress="5"] .progress_fill {
+  -webkit-transform: rotate(9deg);
+  -moz-transform: rotate(9deg);
+  -ms-transform: rotate(9deg);
+  -o-transform: rotate(9deg);
+  transform: rotate(9deg);
+}
+.progress[data-progress="6"] .progress_mask.isFull,
+.progress[data-progress="6"] .progress_fill {
+  -webkit-transform: rotate(10.8deg);
+  -moz-transform: rotate(10.8deg);
+  -ms-transform: rotate(10.8deg);
+  -o-transform: rotate(10.8deg);
+  transform: rotate(10.8deg);
+}
+.progress[data-progress="7"] .progress_mask.isFull,
+.progress[data-progress="7"] .progress_fill {
+  -webkit-transform: rotate(12.6deg);
+  -moz-transform: rotate(12.6deg);
+  -ms-transform: rotate(12.6deg);
+  -o-transform: rotate(12.6deg);
+  transform: rotate(12.6deg);
+}
+.progress[data-progress="8"] .progress_mask.isFull,
+.progress[data-progress="8"] .progress_fill {
+  -webkit-transform: rotate(14.4deg);
+  -moz-transform: rotate(14.4deg);
+  -ms-transform: rotate(14.4deg);
+  -o-transform: rotate(14.4deg);
+  transform: rotate(14.4deg);
+}
+.progress[data-progress="9"] .progress_mask.isFull,
+.progress[data-progress="9"] .progress_fill {
+  -webkit-transform: rotate(16.2deg);
+  -moz-transform: rotate(16.2deg);
+  -ms-transform: rotate(16.2deg);
+  -o-transform: rotate(16.2deg);
+  transform: rotate(16.2deg);
+}
+.progress[data-progress="10"] .progress_mask.isFull,
+.progress[data-progress="10"] .progress_fill {
+  -webkit-transform: rotate(18deg);
+  -moz-transform: rotate(18deg);
+  -ms-transform: rotate(18deg);
+  -o-transform: rotate(18deg);
+  transform: rotate(18deg);
+}
+.progress[data-progress="11"] .progress_mask.isFull,
+.progress[data-progress="11"] .progress_fill {
+  -webkit-transform: rotate(19.8deg);
+  -moz-transform: rotate(19.8deg);
+  -ms-transform: rotate(19.8deg);
+  -o-transform: rotate(19.8deg);
+  transform: rotate(19.8deg);
+}
+.progress[data-progress="12"] .progress_mask.isFull,
+.progress[data-progress="12"] .progress_fill {
+  -webkit-transform: rotate(21.6deg);
+  -moz-transform: rotate(21.6deg);
+  -ms-transform: rotate(21.6deg);
+  -o-transform: rotate(21.6deg);
+  transform: rotate(21.6deg);
+}
+.progress[data-progress="13"] .progress_mask.isFull,
+.progress[data-progress="13"] .progress_fill {
+  -webkit-transform: rotate(23.4deg);
+  -moz-transform: rotate(23.4deg);
+  -ms-transform: rotate(23.4deg);
+  -o-transform: rotate(23.4deg);
+  transform: rotate(23.4deg);
+}
+.progress[data-progress="14"] .progress_mask.isFull,
+.progress[data-progress="14"] .progress_fill {
+  -webkit-transform: rotate(25.2deg);
+  -moz-transform: rotate(25.2deg);
+  -ms-transform: rotate(25.2deg);
+  -o-transform: rotate(25.2deg);
+  transform: rotate(25.2deg);
+}
+.progress[data-progress="15"] .progress_mask.isFull,
+.progress[data-progress="15"] .progress_fill {
+  -webkit-transform: rotate(27deg);
+  -moz-transform: rotate(27deg);
+  -ms-transform: rotate(27deg);
+  -o-transform: rotate(27deg);
+  transform: rotate(27deg);
+}
+.progress[data-progress="16"] .progress_mask.isFull,
+.progress[data-progress="16"] .progress_fill {
+  -webkit-transform: rotate(28.8deg);
+  -moz-transform: rotate(28.8deg);
+  -ms-transform: rotate(28.8deg);
+  -o-transform: rotate(28.8deg);
+  transform: rotate(28.8deg);
+}
+.progress[data-progress="17"] .progress_mask.isFull,
+.progress[data-progress="17"] .progress_fill {
+  -webkit-transform: rotate(30.6deg);
+  -moz-transform: rotate(30.6deg);
+  -ms-transform: rotate(30.6deg);
+  -o-transform: rotate(30.6deg);
+  transform: rotate(30.6deg);
+}
+.progress[data-progress="18"] .progress_mask.isFull,
+.progress[data-progress="18"] .progress_fill {
+  -webkit-transform: rotate(32.4deg);
+  -moz-transform: rotate(32.4deg);
+  -ms-transform: rotate(32.4deg);
+  -o-transform: rotate(32.4deg);
+  transform: rotate(32.4deg);
+}
+.progress[data-progress="19"] .progress_mask.isFull,
+.progress[data-progress="19"] .progress_fill {
+  -webkit-transform: rotate(34.2deg);
+  -moz-transform: rotate(34.2deg);
+  -ms-transform: rotate(34.2deg);
+  -o-transform: rotate(34.2deg);
+  transform: rotate(34.2deg);
+}
+.progress[data-progress="20"] .progress_mask.isFull,
+.progress[data-progress="20"] .progress_fill {
+  -webkit-transform: rotate(36deg);
+  -moz-transform: rotate(36deg);
+  -ms-transform: rotate(36deg);
+  -o-transform: rotate(36deg);
+  transform: rotate(36deg);
+}
+.progress[data-progress="21"] .progress_mask.isFull,
+.progress[data-progress="21"] .progress_fill {
+  -webkit-transform: rotate(37.8deg);
+  -moz-transform: rotate(37.8deg);
+  -ms-transform: rotate(37.8deg);
+  -o-transform: rotate(37.8deg);
+  transform: rotate(37.8deg);
+}
+.progress[data-progress="22"] .progress_mask.isFull,
+.progress[data-progress="22"] .progress_fill {
+  -webkit-transform: rotate(39.6deg);
+  -moz-transform: rotate(39.6deg);
+  -ms-transform: rotate(39.6deg);
+  -o-transform: rotate(39.6deg);
+  transform: rotate(39.6deg);
+}
+.progress[data-progress="23"] .progress_mask.isFull,
+.progress[data-progress="23"] .progress_fill {
+  -webkit-transform: rotate(41.4deg);
+  -moz-transform: rotate(41.4deg);
+  -ms-transform: rotate(41.4deg);
+  -o-transform: rotate(41.4deg);
+  transform: rotate(41.4deg);
+}
+.progress[data-progress="24"] .progress_mask.isFull,
+.progress[data-progress="24"] .progress_fill {
+  -webkit-transform: rotate(43.2deg);
+  -moz-transform: rotate(43.2deg);
+  -ms-transform: rotate(43.2deg);
+  -o-transform: rotate(43.2deg);
+  transform: rotate(43.2deg);
+}
+.progress[data-progress="25"] .progress_mask.isFull,
+.progress[data-progress="25"] .progress_fill {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.progress[data-progress="26"] .progress_mask.isFull,
+.progress[data-progress="26"] .progress_fill {
+  -webkit-transform: rotate(46.8deg);
+  -moz-transform: rotate(46.8deg);
+  -ms-transform: rotate(46.8deg);
+  -o-transform: rotate(46.8deg);
+  transform: rotate(46.8deg);
+}
+.progress[data-progress="27"] .progress_mask.isFull,
+.progress[data-progress="27"] .progress_fill {
+  -webkit-transform: rotate(48.6deg);
+  -moz-transform: rotate(48.6deg);
+  -ms-transform: rotate(48.6deg);
+  -o-transform: rotate(48.6deg);
+  transform: rotate(48.6deg);
+}
+.progress[data-progress="28"] .progress_mask.isFull,
+.progress[data-progress="28"] .progress_fill {
+  -webkit-transform: rotate(50.4deg);
+  -moz-transform: rotate(50.4deg);
+  -ms-transform: rotate(50.4deg);
+  -o-transform: rotate(50.4deg);
+  transform: rotate(50.4deg);
+}
+.progress[data-progress="29"] .progress_mask.isFull,
+.progress[data-progress="29"] .progress_fill {
+  -webkit-transform: rotate(52.2deg);
+  -moz-transform: rotate(52.2deg);
+  -ms-transform: rotate(52.2deg);
+  -o-transform: rotate(52.2deg);
+  transform: rotate(52.2deg);
+}
+.progress[data-progress="30"] .progress_mask.isFull,
+.progress[data-progress="30"] .progress_fill {
+  -webkit-transform: rotate(54deg);
+  -moz-transform: rotate(54deg);
+  -ms-transform: rotate(54deg);
+  -o-transform: rotate(54deg);
+  transform: rotate(54deg);
+}
+.progress[data-progress="31"] .progress_mask.isFull,
+.progress[data-progress="31"] .progress_fill {
+  -webkit-transform: rotate(55.8deg);
+  -moz-transform: rotate(55.8deg);
+  -ms-transform: rotate(55.8deg);
+  -o-transform: rotate(55.8deg);
+  transform: rotate(55.8deg);
+}
+.progress[data-progress="32"] .progress_mask.isFull,
+.progress[data-progress="32"] .progress_fill {
+  -webkit-transform: rotate(57.6deg);
+  -moz-transform: rotate(57.6deg);
+  -ms-transform: rotate(57.6deg);
+  -o-transform: rotate(57.6deg);
+  transform: rotate(57.6deg);
+}
+.progress[data-progress="33"] .progress_mask.isFull,
+.progress[data-progress="33"] .progress_fill {
+  -webkit-transform: rotate(59.4deg);
+  -moz-transform: rotate(59.4deg);
+  -ms-transform: rotate(59.4deg);
+  -o-transform: rotate(59.4deg);
+  transform: rotate(59.4deg);
+}
+.progress[data-progress="34"] .progress_mask.isFull,
+.progress[data-progress="34"] .progress_fill {
+  -webkit-transform: rotate(61.2deg);
+  -moz-transform: rotate(61.2deg);
+  -ms-transform: rotate(61.2deg);
+  -o-transform: rotate(61.2deg);
+  transform: rotate(61.2deg);
+}
+.progress[data-progress="35"] .progress_mask.isFull,
+.progress[data-progress="35"] .progress_fill {
+  -webkit-transform: rotate(63deg);
+  -moz-transform: rotate(63deg);
+  -ms-transform: rotate(63deg);
+  -o-transform: rotate(63deg);
+  transform: rotate(63deg);
+}
+.progress[data-progress="36"] .progress_mask.isFull,
+.progress[data-progress="36"] .progress_fill {
+  -webkit-transform: rotate(64.8deg);
+  -moz-transform: rotate(64.8deg);
+  -ms-transform: rotate(64.8deg);
+  -o-transform: rotate(64.8deg);
+  transform: rotate(64.8deg);
+}
+.progress[data-progress="37"] .progress_mask.isFull,
+.progress[data-progress="37"] .progress_fill {
+  -webkit-transform: rotate(66.6deg);
+  -moz-transform: rotate(66.6deg);
+  -ms-transform: rotate(66.6deg);
+  -o-transform: rotate(66.6deg);
+  transform: rotate(66.6deg);
+}
+.progress[data-progress="38"] .progress_mask.isFull,
+.progress[data-progress="38"] .progress_fill {
+  -webkit-transform: rotate(68.4deg);
+  -moz-transform: rotate(68.4deg);
+  -ms-transform: rotate(68.4deg);
+  -o-transform: rotate(68.4deg);
+  transform: rotate(68.4deg);
+}
+.progress[data-progress="39"] .progress_mask.isFull,
+.progress[data-progress="39"] .progress_fill {
+  -webkit-transform: rotate(70.2deg);
+  -moz-transform: rotate(70.2deg);
+  -ms-transform: rotate(70.2deg);
+  -o-transform: rotate(70.2deg);
+  transform: rotate(70.2deg);
+}
+.progress[data-progress="40"] .progress_mask.isFull,
+.progress[data-progress="40"] .progress_fill {
+  -webkit-transform: rotate(72deg);
+  -moz-transform: rotate(72deg);
+  -ms-transform: rotate(72deg);
+  -o-transform: rotate(72deg);
+  transform: rotate(72deg);
+}
+.progress[data-progress="41"] .progress_mask.isFull,
+.progress[data-progress="41"] .progress_fill {
+  -webkit-transform: rotate(73.8deg);
+  -moz-transform: rotate(73.8deg);
+  -ms-transform: rotate(73.8deg);
+  -o-transform: rotate(73.8deg);
+  transform: rotate(73.8deg);
+}
+.progress[data-progress="42"] .progress_mask.isFull,
+.progress[data-progress="42"] .progress_fill {
+  -webkit-transform: rotate(75.6deg);
+  -moz-transform: rotate(75.6deg);
+  -ms-transform: rotate(75.6deg);
+  -o-transform: rotate(75.6deg);
+  transform: rotate(75.6deg);
+}
+.progress[data-progress="43"] .progress_mask.isFull,
+.progress[data-progress="43"] .progress_fill {
+  -webkit-transform: rotate(77.4deg);
+  -moz-transform: rotate(77.4deg);
+  -ms-transform: rotate(77.4deg);
+  -o-transform: rotate(77.4deg);
+  transform: rotate(77.4deg);
+}
+.progress[data-progress="44"] .progress_mask.isFull,
+.progress[data-progress="44"] .progress_fill {
+  -webkit-transform: rotate(79.2deg);
+  -moz-transform: rotate(79.2deg);
+  -ms-transform: rotate(79.2deg);
+  -o-transform: rotate(79.2deg);
+  transform: rotate(79.2deg);
+}
+.progress[data-progress="45"] .progress_mask.isFull,
+.progress[data-progress="45"] .progress_fill {
+  -webkit-transform: rotate(81deg);
+  -moz-transform: rotate(81deg);
+  -ms-transform: rotate(81deg);
+  -o-transform: rotate(81deg);
+  transform: rotate(81deg);
+}
+.progress[data-progress="46"] .progress_mask.isFull,
+.progress[data-progress="46"] .progress_fill {
+  -webkit-transform: rotate(82.8deg);
+  -moz-transform: rotate(82.8deg);
+  -ms-transform: rotate(82.8deg);
+  -o-transform: rotate(82.8deg);
+  transform: rotate(82.8deg);
+}
+.progress[data-progress="47"] .progress_mask.isFull,
+.progress[data-progress="47"] .progress_fill {
+  -webkit-transform: rotate(84.6deg);
+  -moz-transform: rotate(84.6deg);
+  -ms-transform: rotate(84.6deg);
+  -o-transform: rotate(84.6deg);
+  transform: rotate(84.6deg);
+}
+.progress[data-progress="48"] .progress_mask.isFull,
+.progress[data-progress="48"] .progress_fill {
+  -webkit-transform: rotate(86.4deg);
+  -moz-transform: rotate(86.4deg);
+  -ms-transform: rotate(86.4deg);
+  -o-transform: rotate(86.4deg);
+  transform: rotate(86.4deg);
+}
+.progress[data-progress="49"] .progress_mask.isFull,
+.progress[data-progress="49"] .progress_fill {
+  -webkit-transform: rotate(88.2deg);
+  -moz-transform: rotate(88.2deg);
+  -ms-transform: rotate(88.2deg);
+  -o-transform: rotate(88.2deg);
+  transform: rotate(88.2deg);
+}
+.progress[data-progress="50"] .progress_mask.isFull,
+.progress[data-progress="50"] .progress_fill {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+.progress[data-progress="51"] .progress_mask.isFull,
+.progress[data-progress="51"] .progress_fill {
+  -webkit-transform: rotate(91.8deg);
+  -moz-transform: rotate(91.8deg);
+  -ms-transform: rotate(91.8deg);
+  -o-transform: rotate(91.8deg);
+  transform: rotate(91.8deg);
+}
+.progress[data-progress="52"] .progress_mask.isFull,
+.progress[data-progress="52"] .progress_fill {
+  -webkit-transform: rotate(93.6deg);
+  -moz-transform: rotate(93.6deg);
+  -ms-transform: rotate(93.6deg);
+  -o-transform: rotate(93.6deg);
+  transform: rotate(93.6deg);
+}
+.progress[data-progress="53"] .progress_mask.isFull,
+.progress[data-progress="53"] .progress_fill {
+  -webkit-transform: rotate(95.4deg);
+  -moz-transform: rotate(95.4deg);
+  -ms-transform: rotate(95.4deg);
+  -o-transform: rotate(95.4deg);
+  transform: rotate(95.4deg);
+}
+.progress[data-progress="54"] .progress_mask.isFull,
+.progress[data-progress="54"] .progress_fill {
+  -webkit-transform: rotate(97.2deg);
+  -moz-transform: rotate(97.2deg);
+  -ms-transform: rotate(97.2deg);
+  -o-transform: rotate(97.2deg);
+  transform: rotate(97.2deg);
+}
+.progress[data-progress="55"] .progress_mask.isFull,
+.progress[data-progress="55"] .progress_fill {
+  -webkit-transform: rotate(99deg);
+  -moz-transform: rotate(99deg);
+  -ms-transform: rotate(99deg);
+  -o-transform: rotate(99deg);
+  transform: rotate(99deg);
+}
+.progress[data-progress="56"] .progress_mask.isFull,
+.progress[data-progress="56"] .progress_fill {
+  -webkit-transform: rotate(100.8deg);
+  -moz-transform: rotate(100.8deg);
+  -ms-transform: rotate(100.8deg);
+  -o-transform: rotate(100.8deg);
+  transform: rotate(100.8deg);
+}
+.progress[data-progress="57"] .progress_mask.isFull,
+.progress[data-progress="57"] .progress_fill {
+  -webkit-transform: rotate(102.6deg);
+  -moz-transform: rotate(102.6deg);
+  -ms-transform: rotate(102.6deg);
+  -o-transform: rotate(102.6deg);
+  transform: rotate(102.6deg);
+}
+.progress[data-progress="58"] .progress_mask.isFull,
+.progress[data-progress="58"] .progress_fill {
+  -webkit-transform: rotate(104.4deg);
+  -moz-transform: rotate(104.4deg);
+  -ms-transform: rotate(104.4deg);
+  -o-transform: rotate(104.4deg);
+  transform: rotate(104.4deg);
+}
+.progress[data-progress="59"] .progress_mask.isFull,
+.progress[data-progress="59"] .progress_fill {
+  -webkit-transform: rotate(106.2deg);
+  -moz-transform: rotate(106.2deg);
+  -ms-transform: rotate(106.2deg);
+  -o-transform: rotate(106.2deg);
+  transform: rotate(106.2deg);
+}
+.progress[data-progress="60"] .progress_mask.isFull,
+.progress[data-progress="60"] .progress_fill {
+  -webkit-transform: rotate(108deg);
+  -moz-transform: rotate(108deg);
+  -ms-transform: rotate(108deg);
+  -o-transform: rotate(108deg);
+  transform: rotate(108deg);
+}
+.progress[data-progress="61"] .progress_mask.isFull,
+.progress[data-progress="61"] .progress_fill {
+  -webkit-transform: rotate(109.8deg);
+  -moz-transform: rotate(109.8deg);
+  -ms-transform: rotate(109.8deg);
+  -o-transform: rotate(109.8deg);
+  transform: rotate(109.8deg);
+}
+.progress[data-progress="62"] .progress_mask.isFull,
+.progress[data-progress="62"] .progress_fill {
+  -webkit-transform: rotate(111.6deg);
+  -moz-transform: rotate(111.6deg);
+  -ms-transform: rotate(111.6deg);
+  -o-transform: rotate(111.6deg);
+  transform: rotate(111.6deg);
+}
+.progress[data-progress="63"] .progress_mask.isFull,
+.progress[data-progress="63"] .progress_fill {
+  -webkit-transform: rotate(113.4deg);
+  -moz-transform: rotate(113.4deg);
+  -ms-transform: rotate(113.4deg);
+  -o-transform: rotate(113.4deg);
+  transform: rotate(113.4deg);
+}
+.progress[data-progress="64"] .progress_mask.isFull,
+.progress[data-progress="64"] .progress_fill {
+  -webkit-transform: rotate(115.2deg);
+  -moz-transform: rotate(115.2deg);
+  -ms-transform: rotate(115.2deg);
+  -o-transform: rotate(115.2deg);
+  transform: rotate(115.2deg);
+}
+.progress[data-progress="65"] .progress_mask.isFull,
+.progress[data-progress="65"] .progress_fill {
+  -webkit-transform: rotate(117deg);
+  -moz-transform: rotate(117deg);
+  -ms-transform: rotate(117deg);
+  -o-transform: rotate(117deg);
+  transform: rotate(117deg);
+}
+.progress[data-progress="66"] .progress_mask.isFull,
+.progress[data-progress="66"] .progress_fill {
+  -webkit-transform: rotate(118.8deg);
+  -moz-transform: rotate(118.8deg);
+  -ms-transform: rotate(118.8deg);
+  -o-transform: rotate(118.8deg);
+  transform: rotate(118.8deg);
+}
+.progress[data-progress="67"] .progress_mask.isFull,
+.progress[data-progress="67"] .progress_fill {
+  -webkit-transform: rotate(120.6deg);
+  -moz-transform: rotate(120.6deg);
+  -ms-transform: rotate(120.6deg);
+  -o-transform: rotate(120.6deg);
+  transform: rotate(120.6deg);
+}
+.progress[data-progress="68"] .progress_mask.isFull,
+.progress[data-progress="68"] .progress_fill {
+  -webkit-transform: rotate(122.4deg);
+  -moz-transform: rotate(122.4deg);
+  -ms-transform: rotate(122.4deg);
+  -o-transform: rotate(122.4deg);
+  transform: rotate(122.4deg);
+}
+.progress[data-progress="69"] .progress_mask.isFull,
+.progress[data-progress="69"] .progress_fill {
+  -webkit-transform: rotate(124.2deg);
+  -moz-transform: rotate(124.2deg);
+  -ms-transform: rotate(124.2deg);
+  -o-transform: rotate(124.2deg);
+  transform: rotate(124.2deg);
+}
+.progress[data-progress="70"] .progress_mask.isFull,
+.progress[data-progress="70"] .progress_fill {
+  -webkit-transform: rotate(126deg);
+  -moz-transform: rotate(126deg);
+  -ms-transform: rotate(126deg);
+  -o-transform: rotate(126deg);
+  transform: rotate(126deg);
+}
+.progress[data-progress="71"] .progress_mask.isFull,
+.progress[data-progress="71"] .progress_fill {
+  -webkit-transform: rotate(127.8deg);
+  -moz-transform: rotate(127.8deg);
+  -ms-transform: rotate(127.8deg);
+  -o-transform: rotate(127.8deg);
+  transform: rotate(127.8deg);
+}
+.progress[data-progress="72"] .progress_mask.isFull,
+.progress[data-progress="72"] .progress_fill {
+  -webkit-transform: rotate(129.6deg);
+  -moz-transform: rotate(129.6deg);
+  -ms-transform: rotate(129.6deg);
+  -o-transform: rotate(129.6deg);
+  transform: rotate(129.6deg);
+}
+.progress[data-progress="73"] .progress_mask.isFull,
+.progress[data-progress="73"] .progress_fill {
+  -webkit-transform: rotate(131.4deg);
+  -moz-transform: rotate(131.4deg);
+  -ms-transform: rotate(131.4deg);
+  -o-transform: rotate(131.4deg);
+  transform: rotate(131.4deg);
+}
+.progress[data-progress="74"] .progress_mask.isFull,
+.progress[data-progress="74"] .progress_fill {
+  -webkit-transform: rotate(133.2deg);
+  -moz-transform: rotate(133.2deg);
+  -ms-transform: rotate(133.2deg);
+  -o-transform: rotate(133.2deg);
+  transform: rotate(133.2deg);
+}
+.progress[data-progress="75"] .progress_mask.isFull,
+.progress[data-progress="75"] .progress_fill {
+  -webkit-transform: rotate(135deg);
+  -moz-transform: rotate(135deg);
+  -ms-transform: rotate(135deg);
+  -o-transform: rotate(135deg);
+  transform: rotate(135deg);
+}
+.progress[data-progress="76"] .progress_mask.isFull,
+.progress[data-progress="76"] .progress_fill {
+  -webkit-transform: rotate(136.8deg);
+  -moz-transform: rotate(136.8deg);
+  -ms-transform: rotate(136.8deg);
+  -o-transform: rotate(136.8deg);
+  transform: rotate(136.8deg);
+}
+.progress[data-progress="77"] .progress_mask.isFull,
+.progress[data-progress="77"] .progress_fill {
+  -webkit-transform: rotate(138.6deg);
+  -moz-transform: rotate(138.6deg);
+  -ms-transform: rotate(138.6deg);
+  -o-transform: rotate(138.6deg);
+  transform: rotate(138.6deg);
+}
+.progress[data-progress="78"] .progress_mask.isFull,
+.progress[data-progress="78"] .progress_fill {
+  -webkit-transform: rotate(140.4deg);
+  -moz-transform: rotate(140.4deg);
+  -ms-transform: rotate(140.4deg);
+  -o-transform: rotate(140.4deg);
+  transform: rotate(140.4deg);
+}
+.progress[data-progress="79"] .progress_mask.isFull,
+.progress[data-progress="79"] .progress_fill {
+  -webkit-transform: rotate(142.2deg);
+  -moz-transform: rotate(142.2deg);
+  -ms-transform: rotate(142.2deg);
+  -o-transform: rotate(142.2deg);
+  transform: rotate(142.2deg);
+}
+.progress[data-progress="80"] .progress_mask.isFull,
+.progress[data-progress="80"] .progress_fill {
+  -webkit-transform: rotate(144deg);
+  -moz-transform: rotate(144deg);
+  -ms-transform: rotate(144deg);
+  -o-transform: rotate(144deg);
+  transform: rotate(144deg);
+}
+.progress[data-progress="81"] .progress_mask.isFull,
+.progress[data-progress="81"] .progress_fill {
+  -webkit-transform: rotate(145.8deg);
+  -moz-transform: rotate(145.8deg);
+  -ms-transform: rotate(145.8deg);
+  -o-transform: rotate(145.8deg);
+  transform: rotate(145.8deg);
+}
+.progress[data-progress="82"] .progress_mask.isFull,
+.progress[data-progress="82"] .progress_fill {
+  -webkit-transform: rotate(147.6deg);
+  -moz-transform: rotate(147.6deg);
+  -ms-transform: rotate(147.6deg);
+  -o-transform: rotate(147.6deg);
+  transform: rotate(147.6deg);
+}
+.progress[data-progress="83"] .progress_mask.isFull,
+.progress[data-progress="83"] .progress_fill {
+  -webkit-transform: rotate(149.4deg);
+  -moz-transform: rotate(149.4deg);
+  -ms-transform: rotate(149.4deg);
+  -o-transform: rotate(149.4deg);
+  transform: rotate(149.4deg);
+}
+.progress[data-progress="84"] .progress_mask.isFull,
+.progress[data-progress="84"] .progress_fill {
+  -webkit-transform: rotate(151.2deg);
+  -moz-transform: rotate(151.2deg);
+  -ms-transform: rotate(151.2deg);
+  -o-transform: rotate(151.2deg);
+  transform: rotate(151.2deg);
+}
+.progress[data-progress="85"] .progress_mask.isFull,
+.progress[data-progress="85"] .progress_fill {
+  -webkit-transform: rotate(153deg);
+  -moz-transform: rotate(153deg);
+  -ms-transform: rotate(153deg);
+  -o-transform: rotate(153deg);
+  transform: rotate(153deg);
+}
+.progress[data-progress="86"] .progress_mask.isFull,
+.progress[data-progress="86"] .progress_fill {
+  -webkit-transform: rotate(154.8deg);
+  -moz-transform: rotate(154.8deg);
+  -ms-transform: rotate(154.8deg);
+  -o-transform: rotate(154.8deg);
+  transform: rotate(154.8deg);
+}
+.progress[data-progress="87"] .progress_mask.isFull,
+.progress[data-progress="87"] .progress_fill {
+  -webkit-transform: rotate(156.6deg);
+  -moz-transform: rotate(156.6deg);
+  -ms-transform: rotate(156.6deg);
+  -o-transform: rotate(156.6deg);
+  transform: rotate(156.6deg);
+}
+.progress[data-progress="88"] .progress_mask.isFull,
+.progress[data-progress="88"] .progress_fill {
+  -webkit-transform: rotate(158.4deg);
+  -moz-transform: rotate(158.4deg);
+  -ms-transform: rotate(158.4deg);
+  -o-transform: rotate(158.4deg);
+  transform: rotate(158.4deg);
+}
+.progress[data-progress="89"] .progress_mask.isFull,
+.progress[data-progress="89"] .progress_fill {
+  -webkit-transform: rotate(160.2deg);
+  -moz-transform: rotate(160.2deg);
+  -ms-transform: rotate(160.2deg);
+  -o-transform: rotate(160.2deg);
+  transform: rotate(160.2deg);
+}
+.progress[data-progress="90"] .progress_mask.isFull,
+.progress[data-progress="90"] .progress_fill {
+  -webkit-transform: rotate(162deg);
+  -moz-transform: rotate(162deg);
+  -ms-transform: rotate(162deg);
+  -o-transform: rotate(162deg);
+  transform: rotate(162deg);
+}
+.progress[data-progress="91"] .progress_mask.isFull,
+.progress[data-progress="91"] .progress_fill {
+  -webkit-transform: rotate(163.8deg);
+  -moz-transform: rotate(163.8deg);
+  -ms-transform: rotate(163.8deg);
+  -o-transform: rotate(163.8deg);
+  transform: rotate(163.8deg);
+}
+.progress[data-progress="92"] .progress_mask.isFull,
+.progress[data-progress="92"] .progress_fill {
+  -webkit-transform: rotate(165.6deg);
+  -moz-transform: rotate(165.6deg);
+  -ms-transform: rotate(165.6deg);
+  -o-transform: rotate(165.6deg);
+  transform: rotate(165.6deg);
+}
+.progress[data-progress="93"] .progress_mask.isFull,
+.progress[data-progress="93"] .progress_fill {
+  -webkit-transform: rotate(167.4deg);
+  -moz-transform: rotate(167.4deg);
+  -ms-transform: rotate(167.4deg);
+  -o-transform: rotate(167.4deg);
+  transform: rotate(167.4deg);
+}
+.progress[data-progress="94"] .progress_mask.isFull,
+.progress[data-progress="94"] .progress_fill {
+  -webkit-transform: rotate(169.2deg);
+  -moz-transform: rotate(169.2deg);
+  -ms-transform: rotate(169.2deg);
+  -o-transform: rotate(169.2deg);
+  transform: rotate(169.2deg);
+}
+.progress[data-progress="95"] .progress_mask.isFull,
+.progress[data-progress="95"] .progress_fill {
+  -webkit-transform: rotate(171deg);
+  -moz-transform: rotate(171deg);
+  -ms-transform: rotate(171deg);
+  -o-transform: rotate(171deg);
+  transform: rotate(171deg);
+}
+.progress[data-progress="96"] .progress_mask.isFull,
+.progress[data-progress="96"] .progress_fill {
+  -webkit-transform: rotate(172.8deg);
+  -moz-transform: rotate(172.8deg);
+  -ms-transform: rotate(172.8deg);
+  -o-transform: rotate(172.8deg);
+  transform: rotate(172.8deg);
+}
+.progress[data-progress="97"] .progress_mask.isFull,
+.progress[data-progress="97"] .progress_fill {
+  -webkit-transform: rotate(174.6deg);
+  -moz-transform: rotate(174.6deg);
+  -ms-transform: rotate(174.6deg);
+  -o-transform: rotate(174.6deg);
+  transform: rotate(174.6deg);
+}
+.progress[data-progress="98"] .progress_mask.isFull,
+.progress[data-progress="98"] .progress_fill {
+  -webkit-transform: rotate(176.4deg);
+  -moz-transform: rotate(176.4deg);
+  -ms-transform: rotate(176.4deg);
+  -o-transform: rotate(176.4deg);
+  transform: rotate(176.4deg);
+}
+.progress[data-progress="99"] .progress_mask.isFull,
+.progress[data-progress="99"] .progress_fill {
+  -webkit-transform: rotate(178.2deg);
+  -moz-transform: rotate(178.2deg);
+  -ms-transform: rotate(178.2deg);
+  -o-transform: rotate(178.2deg);
+  transform: rotate(178.2deg);
+}
+.progress[data-progress="100"] .progress_mask.isFull,
+.progress[data-progress="100"] .progress_fill {
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+}

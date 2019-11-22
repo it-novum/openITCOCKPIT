@@ -1,0 +1,44 @@
+.noMatch{
+	margin-top: 15px;
+}
+
+.italic{
+	font-style: italic;
+}
+
+.third_level{
+	font-size: 13px;
+	display: inline;
+	color:#848484;
+	
+}
+
+.host-table-bg{
+	background-color: #DDDBDB;
+}
+
+#list_edit:hover{
+	color: #71843F !important;
+	cursor:pointer;
+}
+
+.list-edit:hover{
+	color: #71843F !important;
+	cursor:pointer;
+}
+
+.padding-left-10{
+	padding-left: 10px;
+}
+
+.padding-left-20{
+	padding-left: 20px;
+}
+
+.padding-left-30{
+	padding-left: 30px;
+}
+
+.pointer{
+	cursor: pointer;
+}

@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<!-- saved from url=(0044)http://kenedict.com/networks/worldcup14/vis/ , thanks Andre!-->
+<html><head><meta http-equiv="content-type" content="text/html; charset=UTF8">
+  <title>Network |  Static smooth curves - World Cup Network</title>
+
+  <script type="text/javascript" src="../../dist/vis.js"></script>
+
+  <style type="text/css">
+    #mynetwork {
+      width: 800px;
+      height: 800px;
+      border: 1px solid lightgray;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<p>
+  Create a simple network with some nodes and edges.
+</p>
+
+<div id="mynetwork"></div>
+
+<script type="text/javascript">
+   var network;
+  var allNodes;
+  var highlightActive = false;
+
+  // create an array with nodes
+  var nodes = new vis.DataSet([
+    {
+      "id": 0,
+      "label": "open[(Ei)]TCOCKPIT",
+      "ip": "127.0.0.1",
+      "uuid": "123456",
+      "size": 5,
+      "current_state": 0
+    },
+    {
+      "id": "1",
+      "label": "default host",
+      "ip": "127.0.0.1",
+      "uuid": "c36b8048-93ce-4385-ac19-ab5c90574b77",
+      "size": 5,
+      "current_state": "0"
+    },
+    {
+      "id": "4",
+      "label": "srvgpu01",
+      "ip": "172.16.1.60",
+      "uuid": "0b7a5236-8907-41c7-a84b-ab824dc369da",
+      "size": 5,
+      "current_state": "0"
+    },
+    {
+      "id": "5",
+      "label": "AVSRV",
+      "ip": "127.0.0.1",
+      "uuid": "cd3eb7d2-45d7-4188-bd90-c52724bdb258",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "6",
+      "label": "CADSRV",
+      "ip": "127.0.0.1",
+      "uuid": "df86caeb-1fd7-445e-9e2e-2811dd431870",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "7",
+      "label": "srvbx01",
+      "ip": "172.16.2.2",
+      "uuid": "4d72fec7-a1dd-439c-b008-6503f65b7560",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "9",
+      "label": "svhv01",
+      "ip": "172.16.4.123",
+      "uuid": "fb9d0042-2e7d-4d77-a20e-8f180449fc66",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "10",
+      "label": "ITSM-STACK-Connector-Demo",
+      "ip": "127.0.0.1",
+      "uuid": "d1c94996-727f-4217-b5b8-7beaa21acaba",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "12",
+      "label": "DELETE_Test_1",
+      "ip": "127.1.2.3",
+      "uuid": "406a71a0-cdbe-4ea1-b180-9bbb61a603f3",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "13",
+      "label": "DELETE_Test_2",
+      "ip": "127.1.2.3",
+      "uuid": "e0725c7b-c37a-4236-b8e8-1ed8cc796982",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "14",
+      "label": "DELETE_Test_3",
+      "ip": "127.1.2.3",
+      "uuid": "a74579ed-8cf8-49ee-9890-7cc6d6d9a6f5",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "15",
+      "label": "ibering",
+      "ip": "127.0.0.1",
+      "uuid": "31d98d71-3dd1-46b8-9928-a27d0806ddc5",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "16",
+      "label": "qAWSDFTGHJK",
+      "ip": "127.1.2.3",
+      "uuid": "8533937a-d246-491c-a992-8462bb583b75",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "62",
+      "label": "localhost",
+      "ip": "127.0.0.1",
+      "uuid": "b33e3f5e-57fe-40eb-b95d-c0aef87af478",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "63",
+      "label": "localhost",
+      "ip": "127.0.0.1",
+      "uuid": "751f634f-dc79-46f7-a999-a252d812f9c6",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "65",
+      "label": "svhv01 NOT MONITORED",
+      "ip": "172.16.4.123",
+      "uuid": "1c3e3832-4d15-4a64-b712-c99127ac9490",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "66",
+      "label": "srvads02.master.dns",
+      "ip": "172.16.101.23",
+      "uuid": "b6a1f469-b3da-460e-98cc-f1c4c49193b6",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "68",
+      "label": "Status Output",
+      "ip": "127.1.2.3",
+      "uuid": "4667eee4-24ef-4953-abde-c37e72ff912e",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "69",
+      "label": "localhost",
+      "ip": "127.0.0.1",
+      "uuid": "1334e1a2-1a7a-44f4-b0f4-b264191fe958",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "70",
+      "label": "srvitcv3sales01.master.dns",
+      "ip": "172.16.14.172",
+      "uuid": "821f5957-6ec4-43e6-99de-d1fd3355a8d6",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "74",
+      "label": "test test",
+      "ip": "127.1.2.3",
+      "uuid": "dc1d0ffc-7d78-4b9f-8708-1f5e4a84e1ed",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "76",
+      "label": "srvads05.master.dns",
+      "ip": "128.1.1.4",
+      "uuid": "7b86e48f-0a92-4621-8b85-9192e34beea7",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "77",
+      "label": "srvads02.master.dns",
+      "ip": "172.16.101.23",
+      "uuid": "31b515a7-d97e-4bf5-8897-76b8b66c5055",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "78",
+      "label": "srvads01.master.dns",
+      "ip": "172.16.101.60",
+      "uuid": "c10136fb-dcb8-414c-a687-a6b1901896f6",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "79",
+      "label": "jabber.it-novum.com",
+      "ip": "195.158.58.132",
+      "uuid": "bd3e7510-0024-45ee-95be-804e241a2bde",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "80",
+      "label": "oitc.it-novum.com",
+      "ip": "172.16.1.94",
+      "uuid": "2bd32280-e25e-41da-8c6f-7c5e26207a87",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "81",
+      "label": "svhv01 Copy 1",
+      "ip": "172.16.4.123",
+      "uuid": "26d91b4f-4713-49ed-8b57-765bd1e60d9b",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "82",
+      "label": "svhv01 Copy 2",
+      "ip": "172.16.4.123",
+      "uuid": "c8a6a313-0ec8-4dca-8284-54ebcd65eea5",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "83",
+      "label": "Chosen Test",
+      "ip": "127.1.2.3",
+      "uuid": "02c80b69-77f4-4b4d-8a6b-edd30a23b8cb",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "84",
+      "label": "svhv01 Copy 1 NOT MONITORED",
+      "ip": "172.16.4.123",
+      "uuid": "7602aefa-9148-4616-a613-09841c9eedce",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "85",
+      "label": "tzrtztrzrtztr",
+      "ip": "127.1.2.3",
+      "uuid": "7e7a4375-f743-4a34-a833-78993b2c6c6e",
+      "size": 3,
+      "current_state": "2"
+    },
+    {
+      "id": "135",
+      "label": "srvoitcvm01.master.dns",
+      "ip": "172.16.166.1",
+      "uuid": "add4b068-ec6b-4889-b9cf-fd27e73e5d58",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "142",
+      "label": "graylog.oitc.itn",
+      "ip": "172.16.166.26",
+      "uuid": "a896b938-96d9-4dc5-b3e9-a274e0dbf129",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "143",
+      "label": "mumble.oitc.itn",
+      "ip": "172.16.166.27",
+      "uuid": "02b5fd3a-3073-4eee-b0c7-c9b7d197e0d1",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "145",
+      "label": "dziegler.oitc.itn",
+      "ip": "172.16.166.32",
+      "uuid": "f2e55afa-ddc5-4fdb-aebb-d97af028d42c",
+      "size": 3,
+      "current_state": "1"
+    },
+    {
+      "id": "146",
+      "label": "ibering.oitc.itn",
+      "ip": "172.16.166.34",
+      "uuid": "cdd10113-5067-49bf-961f-712b8d6819ea",
+      "size": 3,
+      "current_state": "1"
+    },
+    {
+      "id": "147",
+      "label": "cfleck-selenium.oitc.itn",
+      "ip": "172.16.166.41",
+      "uuid": "554bf03a-eb5c-47d1-984c-f94526119b8c",
+      "size": 3,
+      "current_state": "1"
+    },
+    {
+      "id": "149",
+      "label": "module-templater.oitc.itn",
+      "ip": "172.16.166.54",
+      "uuid": "ed185372-0851-4cd6-a2d6-b5c36b17c6c1",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "150",
+      "label": "cfleck-testing.oitc.itn",
+      "ip": "172.16.166.59",
+      "uuid": "e5a50db8-25f9-474d-b06f-6f3b0fcb9f22",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "152",
+      "label": "migration-test.oitc.itn",
+      "ip": "172.16.166.61",
+      "uuid": "a70256ee-a94d-43e8-9a9e-3cfe1aca55b5",
+      "size": 3,
+      "current_state": "1"
+    },
+    {
+      "id": "153",
+      "label": "mpappert-qala.oitc.itn",
+      "ip": "172.16.166.62",
+      "uuid": "a1e1c52a-d913-495c-ae54-b54b3a1fe800",
+      "size": 3,
+      "current_state": "1"
+    },
+    {
+      "id": "155",
+      "label": "idoit-license-generator-omueller.oitc.itn",
+      "ip": "172.16.166.66",
+      "uuid": "6914504f-c47c-42af-8606-ca40dcc77558",
+      "size": 3,
+      "current_state": "1"
+    },
+    {
+      "id": "156",
+      "label": "cratedb2.oitc.itn",
+      "ip": "172.16.166.67",
+      "uuid": "43323454-c155-4ee4-a99c-02e656b3d528",
+      "size": 3,
+      "current_state": "1"
+    },
+    {
+      "id": "158",
+      "label": "jwiegand-pentaho8.oitc.itn",
+      "ip": "172.16.166.70",
+      "uuid": "1f747276-8011-446f-95a3-091fb0d6969e",
+      "size": 3,
+      "current_state": "0"
+    },
+    {
+      "id": "162",
+      "label": "cfleck.oitc.itn",
+      "ip": "172.16.166.79",
+      "uuid": "9ccb10c5-d938-4e1e-9417-d190506ec7d6",
+      "size": 3,
+      "current_state": "1"
+    },
+    {
+      "id": "164",
+      "label": "jdmaster.oitc.itn",
+      "ip": "172.16.166.98",
+      "uuid": "171e18d5-8404-4713-a4fe-141ec9bde4cb",
+      "size": 3,
+      "current_state": "1"
+    },
+    {
+      "id": "165",
+      "label": "mpappert-sat-xenial.oitc.itn",
+      "ip": "172.16.166.103",
+      "uuid": "0091e580-c13d-4772-a3af-f33c2ff49113",
+      "size": 3,
+      "current_state": "1"
+    },
+    {
+      "id": "184",
+      "label": "Test Limit",
+      "ip": "127.1.2.3",
+      "uuid": "7ba2eeee-75d8-4de6-80b0-24cf16477a61",
+      "size": 3,
+      "current_state": "2"
+    }
+  ]);
+
+  // create an array with edges
+  var edges = new vis.DataSet([ {
+      "id": "5acb8215b14dc",
+      "from": 0,
+      "to": "1",
+      "value": 1,
+      arrows:'to'
+    },
+    {
+      "id": "5acb8215b1526",
+      "from": "1",
+      "to": "5",
+      "value": 1,
+      arrows:'to'
+    },
+    {
+      "id": "5acb8215b1a6c",
+      "from": 0,
+      "to": "4",
+      "value": 1,
+      arrows:'to'
+    },
+    {
+      "id": "5acb8215b2398",
+      "from": 0,
+      "to": "6",
+      "value": 1,
+      arrows:'to'
+    },
+    {
+      "id": "5acb8215b23e0",
+      "from": "6",
+      "to": "5",
+      "value": 1,
+      arrows:'to'
+    },
+    {
+      "id": "5acb8215b285d",
+      "from": 0,
+      "to": "7",
+      "value": 1,
+      arrows:'to'
+    },
+    {
+      "id": "5acb8215b28a5",
+      "from": "7",
+      "to": "5",
+      "value": 1,
+      arrows:'to'
+    },
+    {
+      "id": "5acb8215b2e13",
+      "from": 0,
+      "to": "9",
+      "value": 1,
+      arrows:'to'
+    },
+    {
+      "id": "5acb8215b32a8",
+      "from": 0,
+      "to": "10",
+      "value": 1,
+      arrows:'to'
+    },
+    {
+      "id": "5acb8215b32f1",
+      "from": "10",
+      "to": "5",
+      "value": 1,
+      arrows:'to'
+    },
+    {
+      "id": "5acb8215b37f7",
+      "from": 0,
+      "to": "12",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b3d30",
+      "from": 0,
+      "to": "13",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b41df",
+      "from": 0,
+      "to": "14",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b4716",
+      "from": 0,
+      "to": "15",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b4c32",
+      "from": 0,
+      "to": "16",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b508b",
+      "from": 0,
+      "to": "62",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b50d4",
+      "from": "62",
+      "to": "5",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b5537",
+      "from": 0,
+      "to": "63",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b59ab",
+      "from": 0,
+      "to": "65",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b5e8e",
+      "from": 0,
+      "to": "66",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b6316",
+      "from": 0,
+      "to": "68",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b6809",
+      "from": 0,
+      "to": "69",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b6d23",
+      "from": 0,
+      "to": "70",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b7290",
+      "from": 0,
+      "to": "74",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b7701",
+      "from": 0,
+      "to": "76",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b7c03",
+      "from": 0,
+      "to": "77",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b8074",
+      "from": 0,
+      "to": "78",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b85cb",
+      "from": 0,
+      "to": "79",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b8a98",
+      "from": 0,
+      "to": "80",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b8f43",
+      "from": 0,
+      "to": "81",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b9423",
+      "from": 0,
+      "to": "82",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b9908",
+      "from": 0,
+      "to": "83",
+      "value": 1
+    },
+    {
+      "id": "5acb8215b9e07",
+      "from": 0,
+      "to": "84",
+      "value": 1
+    },
+    {
+      "id": "5acb8215ba2b9",
+      "from": 0,
+      "to": "85",
+      "value": 1
+    },
+    {
+      "id": "5acb8215ba77d",
+      "from": 0,
+      "to": "135",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bac22",
+      "from": 0,
+      "to": "142",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bb0ef",
+      "from": 0,
+      "to": "143",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bb6ac",
+      "from": 0,
+      "to": "145",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bbbc8",
+      "from": 0,
+      "to": "146",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bc04d",
+      "from": 0,
+      "to": "147",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bc50c",
+      "from": 0,
+      "to": "149",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bc9f4",
+      "from": 0,
+      "to": "150",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bceac",
+      "from": 0,
+      "to": "152",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bd3ac",
+      "from": 0,
+      "to": "153",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bd852",
+      "from": 0,
+      "to": "155",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bdd12",
+      "from": 0,
+      "to": "156",
+      "value": 1
+    },
+    {
+      "id": "5acb8215be208",
+      "from": 0,
+      "to": "158",
+      "value": 1
+    },
+    {
+      "id": "5acb8215be729",
+      "from": 0,
+      "to": "162",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bec05",
+      "from": 0,
+      "to": "164",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bf071",
+      "from": 0,
+      "to": "165",
+      "value": 1
+    },
+    {
+      "id": "5acb8215bf52d",
+      "from": 0,
+      "to": "184",
+      "value": 1
+    }
+  ]);
+
+var nodesDataset = new vis.DataSet(nodes); // these come from WorldCup2014.js
+  var edgesDataset = new vis.DataSet(edges);
+ function redrawAll() {
+  // create a network
+  var container = document.getElementById('mynetwork');
+
+  var data = {
+    nodes: nodes,
+    edges: edges
+  };
+      var options = {
+      nodes: {
+        shape: 'dot',
+        scaling: {
+          min: 10,
+          max: 30,
+          label: {
+            min: 8,
+            max: 30,
+            drawThreshold: 12,
+            maxVisible: 20
+          }
+        },
+        font: {
+          size: 12,
+          face: 'Tahoma'
+        }
+      },
+      edges: {
+        width: 0.15,
+        color: {inherit: 'from'},
+        smooth: {
+          type: 'continuous'
+        }
+      },
+      physics: false,
+      interaction: {
+        tooltipDelay: 200,
+        hideEdgesOnDrag: true
+      }
+    };
+
+      network = new vis.Network(container, data, options);
+      network.on("click",neighbourhoodHighlight);
+}
+      function neighbourhoodHighlight(params) {
+    // if something is selected:
+    if (params.nodes.length > 0) {
+      highlightActive = true;
+      var i,j;
+      var selectedNode = params.nodes[0];
+      var degrees = 2;
+
+      // mark all nodes as hard to read.
+      for (var nodeId in allNodes) {
+        allNodes[nodeId].color = 'rgba(200,200,200,0.5)';
+        if (allNodes[nodeId].hiddenLabel === undefined) {
+          allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+          allNodes[nodeId].label = undefined;
+        }
+      }
+      var connectedNodes = network.getConnectedNodes(selectedNode);
+      var allConnectedNodes = [];
+
+      // get the second degree nodes
+      for (i = 1; i < degrees; i++) {
+        for (j = 0; j < connectedNodes.length; j++) {
+          allConnectedNodes = allConnectedNodes.concat(network.getConnectedNodes(connectedNodes[j]));
+        }
+      }
+
+      // all second degree nodes get a different color and their label back
+      for (i = 0; i < allConnectedNodes.length; i++) {
+        allNodes[allConnectedNodes[i]].color = 'rgba(150,150,150,0.75)';
+        if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+          allNodes[allConnectedNodes[i]].label = allNodes[allConnectedNodes[i]].hiddenLabel;
+          allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+        }
+      }
+
+      // all first degree nodes get their own color and their label back
+      for (i = 0; i < connectedNodes.length; i++) {
+        allNodes[connectedNodes[i]].color = undefined;
+        if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+          allNodes[connectedNodes[i]].label = allNodes[connectedNodes[i]].hiddenLabel;
+          allNodes[connectedNodes[i]].hiddenLabel = undefined;
+        }
+      }
+
+      // the main node gets its own color and its label back.
+      allNodes[selectedNode].color = undefined;
+      if (allNodes[selectedNode].hiddenLabel !== undefined) {
+        allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+        allNodes[selectedNode].hiddenLabel = undefined;
+      }
+    }
+    else if (highlightActive === true) {
+      // reset all nodes
+      for (var nodeId in allNodes) {
+        allNodes[nodeId].color = undefined;
+        if (allNodes[nodeId].hiddenLabel !== undefined) {
+          allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+          allNodes[nodeId].hiddenLabel = undefined;
+        }
+      }
+      highlightActive = false
+    }
+
+    // transform the object into an array
+    var updateArray = [];
+    for (nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodesDataset.update(updateArray);
+  }
+
+  redrawAll();
+</script>
+
+
+</body>
+</html>

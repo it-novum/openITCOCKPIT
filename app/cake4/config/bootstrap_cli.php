@@ -13,10 +13,8 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 use Cake\Core\Configure;
-use Cake\Core\Exception\MissingPluginException;
-use Cake\Core\Plugin;
 
-/**
+/*
  * Additional bootstrapping and configuration for CLI environments should
  * be put here.
  */

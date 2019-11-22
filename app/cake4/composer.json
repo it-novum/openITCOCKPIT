@@ -1,14 +1,98 @@
 {
+    "name": "it-novum/open-itcockpit",
+    "description": "openITCOCKPIT is an open source monitoring framework based on nagios",
+    "homepage": "https://openitcockpit.io/",
+    "license": "Dual licensed GPLv3 and proprietary",
+    "authors": [
+        {
+            "name": "it-novum GmbH",
+            "role": "Developer"
+        }
+    ],
+    "type": "project",
+    "support": {
+        "issues": "https://github.com/it-novum/openITCOCKPIT/issues",
+        "source": "https://github.com/it-novum/openITCOCKPIT",
+        "irc": "irc://irc.freenode.org/openitcockpit"
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "cakephp/acl",
+                "description": "Acl Plugin for CakePHP 4.x framework",
+                "version": "4.x-dev",
+                "type": "cakephp-plugin",
+                "autoload": {
+                    "psr-4": {
+                        "Acl\\": "src"
+                    }
+                },
+                "autoload-dev": {
+                    "psr-4": {
+                        "Acl\\Test\\": "tests",
+                        "Cake\\Test\\": "vendor/cakephp/cakephp/tests"
+                    }
+                },
+                "source": {
+                    "url": "https://github.com/it-novum/acl.git",
+                    "type": "git",
+                    "reference": "4.x-dev"
+                }
+            }
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "cakephp/cakephp": "4.x-dev",
+        "cakephp/authentication": "2.x-dev",
+        "cakephp/authorization": "2.x-dev",
+        "cakephp/acl": "4.x-dev",
+        "cakephp/migrations": "4.x-dev",
+        "cakephp/plugin-installer": "^1.0",
+        "mobiledetect/mobiledetectlib": "2.*"
+    },
+    "require-dev": {
+        "cakephp/bake": "4.x-dev",
+        "cakephp/cakephp-codesniffer": "dev-next",
+        "cakephp/debug_kit": "4.x-dev",
+        "cakephp/migrations": "4.x-dev",
+        "josegonzalez/dotenv": "3.*",
+        "phpunit/phpunit": "^8.0",
+        "psy/psysh": "@stable"
+    },
+    "suggest": {
+        "markstory/asset_compress": "An asset compression plugin which provides file concatenation and a flexible filter system for preprocessing and minification.",
+        "dereuromark/cakephp-ide-helper": "After baking your code, this keeps your annotations in sync with the code evolving from there on for maximum IDE and PHPStan/Psalm compatibility."
+    },
     "autoload": {
         "psr-4": {
-            "DistributeModule\\": "./plugins/DistributeModule/src/",
-            "EventcorrelationModule\\": "./plugins/EventcorrelationModule/src/"
+            "App\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "DistributeModule\\Test\\": "./plugins/DistributeModule/tests/",
-            "EventcorrelationModule\\Test\\": "./plugins/EventcorrelationModule/tests/"
+            "App\\Test\\": "tests/",
+            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
         }
-    }
+    },
+    "scripts": {
+        "post-install-cmd": "App\\Console\\Installer::postInstall",
+        "post-create-project-cmd": "App\\Console\\Installer::postInstall",
+        "post-autoload-dump": "Cake\\Composer\\Installer\\PluginInstaller::postAutoloadDump",
+        "check": [
+            "@test",
+            "@cs-check"
+        ],
+        "cs-check": "phpcs --colors -p --standard=vendor/cakephp/cakephp-codesniffer/CakePHP src/ tests/",
+        "cs-fix": "phpcbf --colors --standard=vendor/cakephp/cakephp-codesniffer/CakePHP src/ tests/",
+        "stan": "phpstan analyse src/",
+        "stan-setup": "cp composer.json composer.backup && composer require --dev phpstan/phpstan-shim:^0.11 && mv composer.backup composer.json",
+        "test": "phpunit --colors=always"
+    },
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev"
 }

@@ -89,13 +89,13 @@ return [
      */
     'Cache'          => [
         'default' => [
-            'className' => 'Cake\Cache\Engine\FileEngine',
+            'className' => \Cake\Cache\Engine\FileEngine::class,
             'path'      => CACHE,
             'url'       => null
         ],
 
         'migration' => [
-            'className' => 'Redis',
+            'className' => \Cake\Cache\Engine\RedisEngine::class,
             'serialize' => true,
             'prefix'    => 'oitc_',
             'duration'  => '+30 minute',
@@ -104,7 +104,7 @@ return [
         ],
 
         'permissions'   => [
-            'className'   => 'Redis',
+            'className' => \Cake\Cache\Engine\RedisEngine::class,
             'serialize'   => true,
             'prefix'      => 'permissions_',
             'duration'    => '+600 seconds',
@@ -119,7 +119,7 @@ return [
          * If you set 'className' => 'Null' core cache will be disabled.
          */
         '_cake_core_'   => [
-            'className' => 'Cake\Cache\Engine\FileEngine',
+            'className' => \Cake\Cache\Engine\FileEngine::class,
             'prefix'    => 'myapp_cake_core_',
             'path'      => CACHE . 'persistent/',
             'serialize' => true,
@@ -134,7 +134,7 @@ return [
          * Duration will be set to '+2 minutes' in bootstrap.php when debug = true
          */
         '_cake_model_'  => [
-            'className' => 'Cake\Cache\Engine\FileEngine',
+            'className' => \Cake\Cache\Engine\FileEngine::class,
             'prefix'    => 'myapp_cake_model_',
             'path'      => CACHE . 'models/',
             'serialize' => true,
@@ -148,7 +148,7 @@ return [
          * Duration will be set to '+2 seconds' in bootstrap.php when debug = true
          */
         '_cake_routes_' => [
-            'className' => 'Cake\Cache\Engine\FileEngine',
+            'className' => \Cake\Cache\Engine\FileEngine::class,
             'prefix'    => 'myapp_cake_routes_',
             'path'      => CACHE,
             'serialize' => true,
@@ -188,7 +188,7 @@ return [
      */
     'Error'          => [
         'errorLevel'        => E_ALL,
-        'exceptionRenderer' => 'Cake\Error\ExceptionRenderer',
+        'exceptionRenderer' => \Cake\Error\ExceptionRenderer::class,
         'skipLog'           => [],
         'log'               => true,
         'trace'             => true,
@@ -215,7 +215,7 @@ return [
      */
     'EmailTransport' => [
         'default' => [
-            'className' => 'Cake\Mailer\Transport\MailTransport',
+            'className' => \Cake\Mailer\Transport\MailTransport::class,
             /*
              * The following keys are used in SMTP transports:
              */
@@ -254,7 +254,7 @@ return [
      */
     'Log'            => [
         'debug'   => [
-            'className' => 'Cake\Log\Engine\FileLog',
+            'className' => \Cake\Log\Engine\FileLog::class,
             'path'      => LOGS,
             'file'      => 'debug',
             'url'       => env('LOG_DEBUG_URL', null),
@@ -262,7 +262,7 @@ return [
             'levels'    => ['notice', 'info', 'debug'],
         ],
         'error'   => [
-            'className' => 'Cake\Log\Engine\FileLog',
+            'className' => \Cake\Log\Engine\FileLog::class,
             'path'      => LOGS,
             'file'      => 'error',
             'url'       => env('LOG_ERROR_URL', null),
@@ -271,7 +271,7 @@ return [
         ],
         // To enable this dedicated query log, you need set your datasource's log flag to true
         'queries' => [
-            'className' => 'Cake\Log\Engine\FileLog',
+            'className' => \Cake\Log\Engine\FileLog::class,
             'path'      => LOGS,
             'file'      => 'queries',
             'url'       => env('LOG_QUERIES_URL', null),

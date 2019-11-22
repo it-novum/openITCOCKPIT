@@ -1,0 +1,11 @@
+/* FONT PATH
+ * -------------------------- */
+@font-face {
+	font-family: 'Led';
+	src: url('../fonts/digital-7-mono.eot');
+	src: url('../fonts/digital-7-mono.eot?#iefix');
+	src: url('../fonts/digital-7-mono.eot') format('embedded-opentype'),
+			url('../fonts/digital-7-mono.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
