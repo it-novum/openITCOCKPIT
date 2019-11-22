@@ -60,7 +60,7 @@ class UsersController extends AppController {
 
         if ($this->request->is('get')) {
             $this->set('_csrfToken', $this->request->getParam('_csrfToken'));
-            $this->set('images', $images['winter']);
+            $this->set('images', $images);
             $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images']);
             return;
         }

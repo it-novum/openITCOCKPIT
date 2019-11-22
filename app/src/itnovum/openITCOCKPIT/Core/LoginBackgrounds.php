@@ -30,24 +30,24 @@ class LoginBackgrounds {
     /**
      * @var array
      */
-    private  $images = [
+    private $images = [
         'default' => [
             [
-                'iamge' => 'spacex-71870.jpg',
+                'iamge'  => 'spacex-71870.jpg',
                 'credit' => 'Photo by SpaceX on Unsplash'
             ],
             [
-                'iamge' => 'nasa-53884.jpg',
+                'iamge'  => 'nasa-53884.jpg',
                 'credit' => 'Photo by NASA on Unsplash'
             ]
         ],
-        'winter' => [
+        'winter'  => [
             [
-                'iamge' => 'todd-diemer-67t2GJcD5PI-unsplash.jpg',
+                'iamge'  => 'todd-diemer-67t2GJcD5PI-unsplash.jpg',
                 'credit' => 'Photo by Todd Diemer on Unsplash'
             ],
             [
-                'iamge' => 'nasa-53884.jpg',
+                'iamge'  => 'nasa-53884.jpg',
                 'credit' => 'Photo by NASA on Unsplash'
             ]
         ],
@@ -56,27 +56,91 @@ class LoginBackgrounds {
     /**
      * @return array
      */
-    public function getAllImages(){
+    public function getAllImages() {
         return $this->images;
     }
 
-    public function getImages(){
-        $season = 'spring'; //ab März
-        $season = 'summer'; //ab Juni
-        $season = 'fall'; //ab September
-        $season = 'winter'; //ab Dezember
+    public function getImages() {
+        $season = $this->getSeason();
 
-        // Ostern
+        if(!isset($this->images[$season])){
+            return $this->images['default'];
+        }
 
-        //Valentinstag
+        return $this->images[$season];
+    }
 
-        //Tag der deutshen einheit
+    /**
+     * @return string
+     */
+    public function getSeason() {
+        $season = 'winter';
 
-        // Sysadmin day
+        $month = date('n');
+        if ($month >= 3) {
+            $season = 'spring'; //March (3)
+        }
 
-        // Halloween 31. Oct
+        if ($month >= 6) {
+            $season = 'summer'; //June (6)
+        }
+
+        if ($month >= 9) {
+            $season = 'fall'; //September (9)
+        }
+
+        if ($month >= 12) {
+            $season = 'winter'; //December (12)
+        }
+
+        $today = date('d.m');
+
+        // Easter sunday
+        $easter_sunday = easter_date(date('Y'));
+
+        //Good Friday
+        if ($today === strtotime('last friday', $easter_sunday)) {
+            $season = 'easter';
+        }
+
+        //Easter Saturday
+        if ($today === strtotime('last saturday', $easter_sunday)) {
+            $season = 'easter';
+        }
+
+        //Easter Monday
+        if ($today === strtotime('next monday', $easter_sunday)) {
+            $season = 'easter';
+        }
+
+
+        //Valentine's Day - 14. Feb
+        if ($today === '14.02') {
+            $season = 'valentines_day';
+        }
+
+        //German Unity Day - 3. Oct
+        if ($today === '03.10') {
+            $season = 'germany';
+        }
+
+        // Sysadmin day - Last friday of July(7)
+        if ($today === date('d.m', strtotime('last friday of july'))) {
+            $season = 'sysadmin_day';
+        }
+
+
+        // Halloween - 31. Oct
+        if ($today === '31.10') {
+            $season = 'halloween';
+        }
 
         // Christmas 24.12 - 26.12
+        if ($today === '24.12' || $today === '25.12' || $today === '26.12') {
+            $season = 'christmas';
+        }
+
+        return $season;
 
     }
 }
