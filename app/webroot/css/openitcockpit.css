@@ -418,33 +418,33 @@ a:not([href]):not([tabindex]) {
     border-color: #ccc;
 }
 
-div.custom-control-down{
+div.custom-control-down {
     padding-left: 0;
 }
 
-.custom-control-label{
+.custom-control-label {
     margin-bottom: 1rem;
 }
 
 div.custom-control-down .custom-control-label::before,
-div.custom-control-down .custom-control-label::after{
+div.custom-control-down .custom-control-label::after {
     top: 1.5rem;
     left: initial;
 }
 
-div.custom-control-right{
+div.custom-control-right {
     padding-right: 0;
     padding-left: 0;
 }
 
 div.custom-control-right .custom-control-label::before,
-div.custom-control-right .custom-control-label::after{
+div.custom-control-right .custom-control-label::after {
     right: -1.8rem;
     left: initial;
     top: 3px;
 }
 
-.small-btn{
+.small-btn {
     padding: 0px 4px 0px 4px !important;
 }
 
@@ -515,4 +515,12 @@ div.custom-control-right .custom-control-label::after{
 .custom-control-label-unreachable::before {
     color: #fff;
     border-color: #92A2A8;
+}
+
+.bg-color-danger {
+    background: #CC0000;
+}
+
+.txt-color-white {
+    color: #fff !important
 }
