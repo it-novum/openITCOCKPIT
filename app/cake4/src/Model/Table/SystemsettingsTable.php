@@ -82,14 +82,14 @@ class SystemsettingsTable extends Table {
         }
         // sort the list like it is in openITCOCKPIT\InitialDatabase\Systemsettings
         // it is just sorting, no deletions, no additions
-        require_once OLD_APP . 'src' . DS . 'itnovum' . DS . 'openITCOCKPIT' . DS . 'InitialDatabase' . DS . 'Systemsetting.php';
-        $mySytemsettings = new \itnovum\openITCOCKPIT\InitialDatabase\Systemsetting(new Model());
-        $myData = $mySytemsettings->getData();
+        //require_once OLD_APP . 'src' . DS . 'itnovum' . DS . 'openITCOCKPIT' . DS . 'InitialDatabase' . DS . 'Systemsetting.php';
+        //$mySytemsettings = new \itnovum\openITCOCKPIT\InitialDatabase\Systemsetting(new Model());
+        //$myData = $mySytemsettings->getData();
         $sortedSystemSettingsSchema = $sortedSystemSettings = [];
 
-        foreach ($myData as $singleSetting) {
-            $sortedSystemSettingsSchema[$singleSetting['Systemsetting']['section']][] = $singleSetting['Systemsetting']['key'];
-        }
+        //foreach ($myData as $singleSetting) {
+        //    $sortedSystemSettingsSchema[$singleSetting['Systemsetting']['section']][] = $singleSetting['Systemsetting']['key'];
+        //}
 
         foreach ($sortedSystemSettingsSchema as $sSectionName => $sSection) {
             foreach ($sSection as $sSettingOptionKey) {

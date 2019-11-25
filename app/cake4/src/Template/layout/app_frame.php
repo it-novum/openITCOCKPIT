@@ -23,13 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * @var \App\View\AppView $this
+ */
 
 use App\Lib\Environments;
 use Cake\Core\Configure;
 use Cake\Filesystem\Folder;
 use itnovum\openITCOCKPIT\Core\AngularJS\AngularAssets;
-
-$showstatsinmenu = true;
 
 $AngularAssets = new AngularAssets();
 $scripts = $AngularAssets->getJsFiles();
@@ -99,12 +100,11 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     $fileVersion = '?v' . time();
     if (ENVIRONMENT === Environments::PRODUCTION) {
         Configure::load('version');
-        $fileVersion = '?v' . Configure::read('version');
+        $fileVersion = '?v' . OPENITCOCKPIT_VERSION;
     }
 
 
     echo $this->Html->meta('icon');
-    //echo $this->element('assets_css');
 
     foreach ($scripts as $script):
         printf('<script src="/%s%s"></script>%s', $script, $fileVersion, PHP_EOL);
@@ -128,8 +128,9 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     <i class="fa fa-refresh fa-spin"></i>
 </div>
 
-<?php //echo $this->element('Admin.layout/header') ?>
-<?php //echo $this->element('Admin.layout/sidebar') ?>
+<?= $this->element('header') ?>
+<?= $this->element('sidebar') ?>
+
 <div id="uglyDropdownMenuHack"></div>
 <div id="main" role="main" ng-controller="LayoutController">
     <div id="ribbon" class="hidden-mobile hidden-tablet">

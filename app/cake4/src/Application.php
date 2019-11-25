@@ -21,6 +21,7 @@ use App\Policy\RequestPolicy;
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
 use Authentication\AuthenticationServiceProviderInterface;
+use Authentication\Identifier\IdentifierInterface;
 use Authorization\AuthorizationService;
 use Authorization\AuthorizationServiceInterface;
 use Authorization\AuthorizationServiceProviderInterface;
@@ -54,7 +55,6 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
         parent::bootstrap();
 
         $PluginManager = new PluginManager($this);
-
 
         $this->addPlugin('Acl');
         $this->addPlugin('Authentication');
@@ -110,8 +110,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             'unauthenticatedRedirect' => null, //'/users/login'
         ]);
         $fields = [
-            'username' => 'username',
-            'password' => 'password'
+            IdentifierInterface::CREDENTIAL_USERNAME => 'email',
+            IdentifierInterface::CREDENTIAL_PASSWORD => 'password'
         ];
         // Load identifiers
         $service->loadIdentifier('Authentication.Password', [

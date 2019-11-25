@@ -1,3 +1,33 @@
+<?php
+// Copyright (C) <2015>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
+
+/**
+ * @var \App\View\AppView $this
+ */
+?>
+
 <!DOCTYPE html>
 <html ng-app="openITCOCKPITLogin">
 <head>
@@ -9,7 +39,11 @@
 
     <link rel="stylesheet" type="text/css" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" type="text/css" href="/node_modules/noty/lib/noty.css">
+
     <link rel="stylesheet" type="text/css" href="/css/login/adminator.min.css">
+
     <link rel="stylesheet" type="text/css" href="/css/login/login.css">
 
     <title><?= __('Sign In') ?></title>
@@ -83,9 +117,12 @@ endif;
 <script src="/node_modules/angular/angular.min.js"></script>
 <script src="/node_modules/angular-ui-router/release/angular-ui-router.min.js"></script>
 <script src="/node_modules/particles.js/particles.js"></script>
+<script src="/node_modules/noty/lib/noty.min.js"></script>
 
 <script src="/js/login/ng.login-app.js"></script>
 <script src="/js/login/LoginLayoutController.js"></script>
+<script src="/js/login/UsersLoginController.js"></script>
+
 
 </body>
 </html>

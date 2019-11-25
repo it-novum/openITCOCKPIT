@@ -34,7 +34,7 @@ class UsergroupsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('usergroups');
@@ -43,8 +43,15 @@ class UsergroupsTable extends Table {
 
         $this->addBehavior('Timestamp');
 
+        $this->addBehavior('Acl.Acl', ['requester']);
+
         $this->hasMany('Users', [
             'foreignKey' => 'usergroup_id'
+        ]);
+
+        $this->hasOne('Aros', [
+            'className'  => 'Acl.Aros',
+            'foreignKey' => 'foreign_key',
         ]);
     }
 
@@ -54,7 +61,7 @@ class UsergroupsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -387,18 +394,17 @@ class UsergroupsTable extends Table {
     }
 
 
-
-    public function getUsergroupAcosForAddEdit($acos){
+    public function getUsergroupAcosForAddEdit($acos) {
         $alwaysAllowedAcos = $this->getAlwaysAllowedAcos($acos);
         $acoDependencies = $this->getAcoDependencies($acos);
         $dependentAcoIds = $this->getAcoDependencyIds($acoDependencies);
 
-     //   debug($acos);
+        //   debug($acos);
 
-        function walkTree($acos, $alwaysAllowedAcos, $acoDependencies, $dependentAcoIds){
-            foreach($acos as $key => $aco){
+        function walkTree($acos, $alwaysAllowedAcos, $acoDependencies, $dependentAcoIds) {
+            foreach ($acos as $key => $aco) {
                 //debug($aco);
-                if(isset($alwaysAllowedAcos[$aco['Aco']['id']]) || isset($dependentAcoIds[$aco['Aco']['id']])){
+                if (isset($alwaysAllowedAcos[$aco['Aco']['id']]) || isset($dependentAcoIds[$aco['Aco']['id']])) {
                     debug($alwaysAllowedAcos[$aco['Aco']['id']]);
                     debug($dependentAcoIds[$aco['Aco']['id']]);
                     debug($aco);
@@ -407,9 +413,9 @@ class UsergroupsTable extends Table {
                     unset($acos[$key]);
                 }
 
-                if(!empty($aco['children'])){
+                if (!empty($aco['children'])) {
                     walkTree($aco['children'], $alwaysAllowedAcos, $acoDependencies, $dependentAcoIds);
-                }else{
+                } else {
                     return;
                 }
             }
@@ -418,7 +424,6 @@ class UsergroupsTable extends Table {
 
         walkTree($acos, $alwaysAllowedAcos, $acoDependencies, $dependentAcoIds);
         //debug($acos);
-
 
 
     }

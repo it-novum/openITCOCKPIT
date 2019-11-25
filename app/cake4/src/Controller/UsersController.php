@@ -83,8 +83,7 @@ class UsersController extends AppController {
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
         if ($this->request->is('post')) {
-            $user = $UsersTable->newEntity($this->request->getData());
-            $this->set('user', $user);
+            // Docs: https://book.cakephp.org/authentication/1/en/index.html
 
             $result = $this->Authentication->getResult();
             if ($result->getStatus() === ResultInterface::SUCCESS) {

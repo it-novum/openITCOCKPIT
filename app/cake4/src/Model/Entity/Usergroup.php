@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -14,8 +15,7 @@ use Cake\ORM\Entity;
  *
  * @property \App\Model\Entity\User[] $users
  */
-class Usergroup extends Entity
-{
+class Usergroup extends Entity {
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -27,10 +27,14 @@ class Usergroup extends Entity
      * @var array
      */
     protected $_accessible = [
-        'name' => true,
+        'name'        => true,
         'description' => true,
-        'created' => true,
-        'modified' => true,
-        'users' => true
+        'created'     => true,
+        'modified'    => true,
+        'users'       => true
     ];
+
+    public function parentNode() {
+        return null;
+    }
 }

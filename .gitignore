@@ -95,5 +95,3 @@ app/Plugin/NagiosModule/Config/config.php
 app/cake4/vendor/
 app/cake4/plugins/DistributeModule
 app/cake4/plugins/EventcorrelationModule
-
-app/cake4_new

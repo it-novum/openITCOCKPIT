@@ -20,6 +20,8 @@ declare(strict_types=1);
  */
 require __DIR__ . '/paths.php';
 
+require __DIR__ . '/version.php';
+
 if (!defined('PLUGIN')) {
     define('PLUGIN', ROOT . DS . 'plugins' . DS);
 }
