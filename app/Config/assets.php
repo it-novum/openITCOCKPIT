@@ -21,9 +21,9 @@ $config = [
             '/vendor/node_modules/node-waves/dist/waves.js',
             '/vendor/node_modules/font-awesome/css/font-awesome.css',
             '/vendor/node_modules/@fortawesome/fontawesome-free/css/all.min.css',
-          //  '/vendor/node_modules/bootstrap4-tagsinput/tagsinput.css',
+            '/vendor/node_modules/bootstrap4-tagsinput/tagsinput.css',
             '/vendor/node_modules/bootstrap4c-chosen/dist/css/component-chosen.css',
-            '/vendor/node_modules/jquery-tageditor/jquery.tag-editor.css',
+          //  '/vendor/node_modules/jquery-tageditor/jquery.tag-editor.css',
             /*'/smartadmin4/dist/css/fa-brands.css',
             '/smartadmin4/dist/css/fa-regular.css',
             '/smartadmin4/dist/css/fa-solid.css', */

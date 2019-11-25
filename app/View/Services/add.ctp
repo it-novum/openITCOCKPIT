@@ -179,7 +179,8 @@
                                         <div class="input-group">
                                             <div class="col">
                                                 <div class="col">
-                                                    <input class="form-control form-control-tag"
+                                                    <input class="form-control tagsinput"
+                                                           data-role="tagsinput"
                                                            type="text"
                                                            ng-model="post.Service.tags"
                                                            id="ServiceTagsInput">
@@ -882,7 +883,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-xs-12 padding-top-10 text-info"
+                                    <div class="col-xs-12 col-lg-12 padding-top-10 text-info"
                                          ng-show="post.Service.customvariables.length > 0">
                                         <i class="fa fa-info-circle"></i>
                                         <?php echo __('Macros in green color are inherited from the service template.'); ?>

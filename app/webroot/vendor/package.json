@@ -36,7 +36,6 @@
         "node-waves": "^0.7.6",
         "@fortawesome/fontawesome-free": "^5.11.2",
         "bootstrap4c-chosen": "^1.1.1",
-        "jquery-tageditor": "^1.0.1",
         "jquery-blockui": "^2.7.0"
     }
 }
