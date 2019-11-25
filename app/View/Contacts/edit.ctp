@@ -441,7 +441,7 @@
                         </div>
                         <?php if ($this->Acl->hasPermission('wiki', 'documentations')): ?>
                             <div class="row padding-bottom-10">
-                                <div class="col-xs-12 text-info">
+                                <div class="col-xs-12 col-lg-12 text-info">
                                     <i class="fa fa-info-circle"></i>
                                     <?php echo __('Read more about browser push notification in the'); ?>
                                     <a ui-sref="DocumentationsWiki({documentation:'additional_help:browser_push_notifications'})">
