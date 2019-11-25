@@ -45,14 +45,8 @@
                     <i class="fa fa-pencil-square-o"></i>
                 </a>
             </li>
-            <li ng-class="{'active': tabName=='calendarOverview'}" ng-click="tabName='calendarOverview'"
-                ng-show="reportData.downtimes">
-                <a href="javascript:void()" data-toggle="tab">
-                    <i class="fa fa-calendar"></i>
-                </a>
-            </li>
             <li ng-class="{'active': tabName=='hostsServicesOverview'}" ng-click="tabName='hostsServicesOverview'"
-                ng-show="reportData.downtimes">
+                ng-show="reportData">
                 <a href="javascript:void()" data-toggle="tab">
                     <i class="fa fa-pie-chart"></i>
                 </a>

@@ -175,11 +175,29 @@ class InstantreportsController extends AppController {
         $instantreportId = $this->request->data('instantreport_id');
         $fromDate = strtotime($this->request->data('from_date') . ' 00:00:00');
         $toDate = strtotime($this->request->data('to_date') . ' 23:59:59');
-        $instantReportData = $this->generateReport(
+        $instantReport = $this->createReport(
             $instantreportId,
             $fromDate,
             $toDate
         );
+
+
+        if ($instantReport === null) {
+            $this->response->statusCode(400);
+            $this->set('error', [
+                'no_downtimes' => [
+                    'empty' => __('No report data specified time found (%s - %s) !',
+                        date('d.m.Y', $fromDate),
+                        date('d.m.Y', $toDate)
+                    )
+                ]
+            ]);
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $this->set('instantReport', $instantReport);
+        $this->set('_serialize', ['instantReport']);
 
         return;
         $downtimeReportForm = new DowntimereportForm();
@@ -240,7 +258,7 @@ class InstantreportsController extends AppController {
             $this->response->statusCode(400);
             $this->set('error', [
                 'no_downtimes' => [
-                    'empty' => __('No downtimes within specified time found (%s - %s) !',
+                    'empty' => __('No downtimes within specified time found (%s - %s)!',
                         date('d.m.Y', $fromDate),
                         date('d.m.Y', $toDate)
                     )
@@ -259,11 +277,13 @@ class InstantreportsController extends AppController {
      * @param $instantReportId
      * @param $fromDate
      * @param $toDate
+     * @return array|void
      * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
-    private function generateReport($instantReportId, $fromDate, $toDate) {
+    private function createReport($instantReportId, $fromDate, $toDate) {
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
         $UserTime = UserTime::fromUser($User);
+        $reportData = [];
         /** @var $InstantreportsTable InstantreportsTable */
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
         $MY_RIGHTS = [];
@@ -326,7 +346,7 @@ class InstantreportsController extends AppController {
 
         $instantReportObjects['Hosts'] = Hash::sort($instantReportObjects['Hosts'], '{n}.name', 'ASC');
         foreach ($instantReportObjects['Hosts'] as $hostId => $instantReportHostData) {
-            FileDebugger::dump('Host: ---> '.$instantReportHostData['name']);
+            //FileDebugger::dump('Host: ---> ' . $instantReportHostData['name']);
             if ($instantReport->get('downtimes') === 1) {
                 $DowntimeHostConditions = new DowntimeHostConditions();
                 $DowntimeHostConditions->setFrom($fromDate);
@@ -448,13 +468,18 @@ class InstantreportsController extends AppController {
             }
 
             $hostUuid = $instantReportHostData['uuid'];
+            //FileDebugger::dump($instantReportHostData);
+            $reportData[$hostUuid]['Host'] = [
+                'id'   => $instantReportHostData['id'],
+                'name' => $instantReportHostData['name']
+            ];
             $reportData[$hostUuid]['Host']['reportData'] = StatehistoryConverter::generateReportData(
                 $timeSlices,
                 $allStatehistories,
                 ($instantReport->get('reflection') === 2),
                 true
             );
-            FileDebugger::dump($reportData[$hostUuid]);
+            //FileDebugger::dump($reportData[$hostUuid]);
 
             if (!empty($instantReportHostData['Services'])) {
                 $instantReportHostData['Services'] = Hash::sort($instantReportHostData['Services'], '{n}.name', 'ASC');
@@ -472,14 +497,14 @@ class InstantreportsController extends AppController {
                         $instantReportObjects['Hosts'][$hostId]['Services'][$serviceId]['downtimes'] = $DowntimehistoryServicesTable->getDowntimesForReporting(
                             $DowntimeServiceConditions
                         );
-                        FileDebugger::dump($instantReportObjects['Hosts'][$hostId]['Services'][$serviceId]['downtimes']);
+                        //FileDebugger::dump($instantReportObjects['Hosts'][$hostId]['Services'][$serviceId]['downtimes']);
                     }
                     $serviceUuid = $service['uuid'];
 
                 }
             }
         }
-
+        return $reportData;
 
         return;
         $instantReportDetails['onlyHosts'] = ($instantReport['Instantreport']['evaluation'] == 1);

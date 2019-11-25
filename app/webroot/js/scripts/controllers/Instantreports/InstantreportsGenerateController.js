@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT')
         };
         $scope.post.instantreport_id = parseInt($stateParams.id, 10);
 
-        $scope.reportData = {};
+        $scope.reportData = null;
         $scope.instantreports = [];
 
         $scope.loadInstantreports = function(searchString){
@@ -56,7 +56,8 @@ angular.module('openITCOCKPIT')
                         message: $scope.reportMessage.successMessage
                     });
                     $scope.errors = null;
-                    $scope.reportData = result.data.instantReport.reportData;
+                    $scope.reportData = result.data.instantReport;
+                    console.log($scope.reportData);
 
                 }, function errorCallback(result){
                     NotyService.genericError({
