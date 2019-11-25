@@ -47,6 +47,9 @@
                     <span class="fw-300"><i><?php echo __('Update contact'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
+                    <div class="text-muted cursor-default d-none d-sm-none d-md-none d-lg-block margin-right-10">
+                        UUID: {{post.Contact.uuid}}
+                    </div>
                     <?php if ($this->Acl->hasPermission('index', 'contacts')): ?>
                         <a back-button fallback-state='ContactsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
