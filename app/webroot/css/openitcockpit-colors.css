@@ -1,0 +1,127 @@
+/*
+STD COLORS
+
+$color-primary:						#4285F4;
+$color-success:						#00C851;
+$color-info:						#33b5e5;
+$color-warning:						#ffbb33;
+$color-danger:						#CC0000;
+ */
+
+.ok, .up {
+    color: #449D44 !important;
+}
+
+.warning {
+    color: #DF8F1D !important;
+}
+
+.critical, .down {
+    color: #C9302C !important;
+}
+
+.unknown, .unreachable {
+    color: #92A2A8 !important;
+}
+
+.ok-soft, .up-soft {
+    color: #8BC08B !important;
+}
+
+.warning-soft {
+    color: #f2c68a !important;
+}
+
+.critical-soft, .down-soft {
+    color: #C5706D !important;
+}
+
+.unknown-soft, .unreachable-soft {
+    color: #CFCFCF !important;
+}
+
+.custom-control-input:checked ~ .custom-control-label-primary::before {
+    color: #fff;
+    border-color: #4285F4;
+    background-color: #4285F4;
+}
+
+.custom-control-input:checked ~ .custom-control-label-success::before,
+.custom-control-input:checked ~ .custom-control-label-up::before,
+.custom-control-input:checked ~ .custom-control-label-ok::before {
+    color: #fff;
+    border-color: #00C851;
+    background-color: #00C851;
+}
+
+.custom-control-input:checked ~ .custom-control-label-warning::before {
+    color: #fff;
+    border-color: #ffbb33;
+    background-color: #ffbb33;
+}
+
+.custom-control-input:checked ~ .custom-control-label-danger::before,
+.custom-control-input:checked ~ .custom-control-label-down::before,
+.custom-control-input:checked ~ .custom-control-label-critical::before {
+    color: #fff;
+    border-color: #CC0000;
+    background-color: #CC0000;
+}
+
+.custom-control-input:checked ~ .custom-control-label-secondary::before,
+.custom-control-input:checked ~ .custom-control-label-unreachable::before,
+.custom-control-input:checked ~ .custom-control-label-unknown::before {
+    color: #fff;
+    border-color: #92A2A8;
+    background-color: #92A2A8;
+}
+
+
+.custom-control-label-primary::before {
+    color: #fff;
+    border-color: #4285F4;
+}
+
+.custom-control-label-success::before,
+.custom-control-label-up::before,
+.custom-control-label-ok::before {
+    color: #fff;
+    border-color: #00C851;
+}
+
+.custom-control-label-warning::before {
+    color: #fff;
+    border-color: #ffbb33;
+}
+
+.custom-control-label-danger::before,
+.custom-control-label-down::before,
+.custom-control-label-critical::before {
+    color: #fff;
+    border-color: #CC0000;
+}
+
+.custom-control-label-secondary::before,
+.custom-control-label-unknown::before,
+.custom-control-label-unreachable::before {
+    color: #fff;
+    border-color: #92A2A8;
+}
+
+.bg-color-danger {
+    background: #CC0000;
+}
+
+.txt-color-white {
+    color: #fff !important
+}
+
+.input-group-addon-no-focus-label-success {
+    background-color: #5cb85c !important;
+    border-color: #ccc;
+}
+
+.input-group-addon-no-focus-label-danger {
+    background-color: #d9534f !important;
+    border-color: #ccc;
+}

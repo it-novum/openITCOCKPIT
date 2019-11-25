@@ -30,6 +30,8 @@ $config = [
             '/smartadmin4/dist/css/vendors.bundle.css',
             '/smartadmin4/dist/css/app.bundle.css',
             '/smartadmin4/dist/css/themes/cust-theme-10.css',
+            'openitcockpit-colors.css',
+            'openitcockpit-utils.css',
             'openitcockpit.css',
             /*'/vendor/node_modules/@fullcalendar/core/main.css',
             '/vendor/node_modules/@fullcalendar/daygrid/main.css',
