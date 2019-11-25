@@ -524,3 +524,7 @@ div.custom-control-right .custom-control-label::after {
 .txt-color-white {
     color: #fff !important
 }
+
+.chosen-container{
+    font-size: 0.8125rem;
+}
