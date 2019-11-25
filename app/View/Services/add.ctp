@@ -181,7 +181,8 @@
                                                 <div class="col">
                                                     <input class="form-control form-control-tag"
                                                            type="text"
-                                                           ng-model="post.Service.tags">
+                                                           ng-model="post.Service.tags"
+                                                           id="ServiceTagsInput">
                                                 </div>
                                             </div>
                                             <div style="margin-left: -23px;">

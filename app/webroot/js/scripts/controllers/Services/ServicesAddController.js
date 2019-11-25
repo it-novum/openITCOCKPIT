@@ -165,8 +165,23 @@ angular.module('openITCOCKPIT')
                 });
             }
 
-            $('#ServiceTagsInput').tagsinput('removeAll');
-            $('#ServiceTagsInput').tagsinput('add', $scope.post.Service.tags);
+            $('#ServiceTagsInput').tagEditor('addTag', ['bar','foo']);
+
+            //$('#ServiceTagsInput').tagsinput('removeAll');
+            //var tags = $('#ServiceTagsInput').tagEditor('getTags')[0].tags;
+
+            var tags = $('#ServiceTagsInput').tagEditor('getTags')[0].tags;
+
+            console.log(tags);
+            console.log(tags.length);
+            for (i = 0; i < tags.length; i++) {
+                console.log(i);
+                console.log(tags[i]);
+                //$('#ServiceTagsInput').tagEditor('removeTag', tags[i]);
+            }
+            //$('#ServiceTagsInput').tagsinput('add', $scope.post.Service.tags);
+            //$('#ServiceTagsInput').tagEditor('addTag', $scope.post.Service.tags);
+
         };
 
         $scope.loadHosts = function(searchString, selected){

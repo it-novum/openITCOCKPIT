@@ -79,8 +79,9 @@ class AngularAssetsBootstrap4 implements AngularAssetsInterface {
         'vendor/node_modules/angular-gridster/dist/angular-gridster.min.js',
         /*'js/lib/GraphDefaults.js',
         'js/lib/jqconsole.min.js',
-        'js/vendor/jquery.blockUI.js',
-        'js/lib/jquery-jvectormap-1.2.2.min.js',
+        'js/vendor/jquery.blockUI.js', */
+        'vendor/node_modules/jquery-blockui/jquery.blockUI.js'
+        /*'js/lib/jquery-jvectormap-1.2.2.min.js',
         'js/lib/maps/jquery-jvectormap-world-mill-en.js',
         'vendor/node_modules/@fullcalendar/core/main.js',
         'vendor/node_modules/@fullcalendar/interaction/main.js',

@@ -30,8 +30,8 @@
                 <?php echo __('Paginator disabled for better performance. Running in scroll mode.'); ?>
             </div>
         </div>
-        <div class="col-sm-6 text-right">
-            <div class="dataTables_paginate paging_bootstrap">
+        <div class="col-sm-6">
+            <div class="dataTables_paginate paging_bootstrap float-right">
                 <ul class="pagination">
                     <li ng-show="scroll.hasPrevPage" class="page-item">
                         <a href="javascript:void(0)" ng-click="changePage(1)">
