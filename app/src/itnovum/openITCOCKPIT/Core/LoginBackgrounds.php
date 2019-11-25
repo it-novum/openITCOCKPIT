@@ -30,28 +30,191 @@ class LoginBackgrounds {
     /**
      * @var array
      */
-    private $images = [
-        'default' => [
-            [
-                'iamge'  => 'spacex-71870.jpg',
-                'credit' => 'Photo by SpaceX on Unsplash'
+    private $images = [];
+
+    public function __construct() {
+        $this->images = [
+            'default' => [
+                'description' => '',
+                'particles'   => 'default',
+                'images'      => [
+                    [
+                        'image'  => 'spacex-71870.jpg',
+                        'credit' => 'Photo by SpaceX on Unsplash'
+                    ],
+                    [
+                        'image'  => 'nasa-53884.jpg',
+                        'credit' => 'Photo by NASA on Unsplash'
+                    ]
+                ]
             ],
-            [
-                'iamge'  => 'nasa-53884.jpg',
-                'credit' => 'Photo by NASA on Unsplash'
-            ]
-        ],
-        'winter'  => [
-            [
-                'iamge'  => 'todd-diemer-67t2GJcD5PI-unsplash.jpg',
-                'credit' => 'Photo by Todd Diemer on Unsplash'
+
+            'winter' => [
+                'description' => '',
+                'particles'   => 'snow',
+                'images'      => [
+                    [
+                        'image'  => 'todd-diemer-67t2GJcD5PI-unsplash.jpg',
+                        'credit' => 'Photo by Todd Diemer on Unsplash'
+                    ],
+                    [
+                        'image'  => 'aaron-burden-5AiWn2U10cw-unsplash.jpg',
+                        'credit' => 'Photo by Aaron Burden on Unsplash'
+                    ]
+                ]
             ],
-            [
-                'iamge'  => 'nasa-53884.jpg',
-                'credit' => 'Photo by NASA on Unsplash'
+
+            'spring' => [
+                'description' => '',
+                'particles'   => 'default',
+                'images'      => [
+                    [
+                        'image'  => 'anders-jilden-O85h02qZ24w-unsplash.jpg',
+                        'credit' => 'Photo by Anders Jildén on Unsplash'
+                    ],
+                    [
+                        'image'  => 'markus-spiske--UwA6gLNAH0-unsplash.jpg',
+                        'credit' => 'anders-jilden-O85h02qZ24w-unsplash'
+                    ]
+                ]
+            ],
+
+            'summer' => [
+                'description' => '',
+                'particles'   => 'default',
+                'images'      => [
+                    [
+                        'image'  => 'sean-o-KMn4VEeEPR8-unsplash.jpg',
+                        'credit' => 'Photo by Sean O. on Unsplash'
+                    ],
+                    [
+                        'image'  => 'nattu-adnan-atSUvc1hMwk-unsplash.jpg',
+                        'credit' => 'Photo by Nattu Adnan on Unsplash'
+                    ]
+                ]
+            ],
+
+            'fall' => [
+                'description' => '',
+                'particles'   => 'stars',
+                'images'      => [
+                    [
+                        'image'  => 'dawid-zawila-r2GUfVbFroM-unsplash.jpg',
+                        'credit' => 'Photo by Dawid Zawiła on Unsplash'
+                    ],
+                    [
+                        'image'  => 'johannes-plenio-RwHv7LgeC7s-unsplash.jpg',
+                        'credit' => 'Photo by Johannes Plenio on Unsplash'
+                    ]
+                ]
+            ],
+
+            'easter' => [
+                'description' => _('Happy Easter'),
+                'particles'   => 'stars',
+                'images'      => [
+                    [
+                        'image'  => 'daniel-watson-ETXsxLOz_NY-unsplash.jpg',
+                        'credit' => 'Photo by Daniel Watson on Unsplash'
+                    ],
+                    [
+                        'image'  => 'easter-2197043.jpg',
+                        'credit' => 'Photo by Rebekka D on Pixabay'
+                    ]
+                ]
+            ],
+
+            'valentines_day' => [
+                'description' => __('Valentine\'s Day'),
+                'particles'   => 'stars',
+                'images'      => [
+                    [
+                        'image'  => 'christopher-beloch-P2fBIamIbQk-unsplash.jpg',
+                        'credit' => 'Photo by Christopher Beloch on Unsplash'
+                    ],
+                    [
+                        'image'  => 'heart-shape-1714807.jpg',
+                        'credit' => 'Photo by skeeze on Pixabay'
+                    ]
+                ]
+            ],
+
+            'german_unity' => [
+                'description' => __('German Unity Day'),
+                'particles'   => 'stars',
+                'images'      => [
+                    [
+                        'image'  => 'luis-diego-hernandez-zD_MlPGAWUQ-unsplash.jpg',
+                        'credit' => 'Photo by Luis Diego Hernández on Unsplash'
+                    ],
+                    [
+                        'image'  => 'hakon-sataoen-Oog0wehKxYs-unsplash.jpg',
+                        'credit' => 'Photo by Håkon Sataøen on Unsplash'
+                    ]
+                ]
+            ],
+
+            'sysadmin_day' => [
+                'description' => __('System Administrator Appreciation Day'),
+                'particles'   => 'default',
+                'images'      => [
+                    [
+                        'image'  => 'technology-1587673.jpg',
+                        'credit' => 'Photo by Edgar Oliver on Pixabay'
+                    ],
+                    [
+                        'image'  => 'server-1235959.jpg',
+                        'credit' => 'Photo by Colossus Cloud on Pixabay'
+                    ]
+                ]
+            ],
+
+            'beer_day' => [
+                'description' => __('International Beer Day'),
+                'particles'   => 'stars',
+                'images'      => [
+                    [
+                        'image'  => 'beer-3445988.jpg',
+                        'credit' => 'Photo by rawpixel on Pixabay'
+                    ],
+                    [
+                        'image'  => 'beer-2439237.jpg',
+                        'credit' => 'Photo by Alexas_Fotos on Pixabay'
+                    ]
+                ]
+            ],
+
+            'halloween' => [
+                'description' => __('Happy Halloween'),
+                'particles'   => 'default',
+                'images'      => [
+                    [
+                        'image'  => 'grayson-savio-QLtHhwOnuuI-unsplash.jpg',
+                        'credit' => 'Photo by Grayson Savio on Unsplash'
+                    ],
+                    [
+                        'image'  => 'neonbrand-ASNSoeead70-unsplash.jpg',
+                        'credit' => 'Photo by NeONBRAND on Unsplash'
+                    ]
+                ]
+            ],
+
+            'christmas' => [
+                'description' => __('Merry Christmas'),
+                'particles'   => 'snow',
+                'images'      => [
+                    [
+                        'image'  => 'christmas-tree-1149619.jpg',
+                        'credit' => 'Photo by Free-Photos on Pixabay'
+                    ],
+                    [
+                        'image'  => 'mister-james-rxqqVkGx870-unsplash.jpg',
+                        'credit' => 'Photo by Mister James on Unsplash'
+                    ]
+                ]
             ]
-        ],
-    ];
+        ];
+    }
 
     /**
      * @return array
@@ -60,14 +223,43 @@ class LoginBackgrounds {
         return $this->images;
     }
 
-    public function getImages() {
-        $season = $this->getSeason();
+    /**
+     * @return array
+     */
+    public function getCategories() {
+        return array_keys($this->images);
+    }
 
-        if(!isset($this->images[$season])){
-            return $this->images['default'];
+    /**
+     * @param $category
+     * @return array
+     */
+    public function getCategory($category) {
+        if (isset($this->images[$category])) {
+            return $this->images[$category];
         }
 
-        return $this->images[$season];
+        return $this->images['default'];
+    }
+
+    /**
+     * @return array
+     */
+    public function getRandomCategory() {
+        $categories = $this->getCategories();
+        $size = sizeof($categories) - 1;
+
+        $category = $categories[rand(0, $size)];
+
+        return $this->getCategory($category);
+    }
+
+    /**
+     * @return array
+     */
+    public function getImages() {
+        $season = $this->getSeason();
+        return $this->getCategory($season);
     }
 
     /**
@@ -121,7 +313,7 @@ class LoginBackgrounds {
 
         //German Unity Day - 3. Oct
         if ($today === '03.10') {
-            $season = 'germany';
+            $season = 'german_unity';
         }
 
         // Sysadmin day - Last friday of July(7)
@@ -129,6 +321,10 @@ class LoginBackgrounds {
             $season = 'sysadmin_day';
         }
 
+        // International Beer Day - First friday of August(8)
+        if ($today === date('d.m', strtotime('first friday of august'))) {
+            $season = 'beer_day';
+        }
 
         // Halloween - 31. Oct
         if ($today === '31.10') {

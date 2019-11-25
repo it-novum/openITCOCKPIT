@@ -14,8 +14,9 @@ body {
 }
 
 /** Login bg animation */
+/*
 .login-screen-vnc {
-    background-image: url(/img/login_bg/spacex-71870.jpg);
+    background-image: url(/img/login/spacex-71870.jpg);
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -28,6 +29,7 @@ body {
     right: 0;
     left: 0;
 }
+*/
 
 .login-screen {
     /* background-image: url(/img/login_bg/spacex-71870.jpg);*/
@@ -71,22 +73,24 @@ body {
 
 figcaption {
     position: absolute;
-    bottom:0;
-    left:15px;
-    height:50px;
-    line-height:50px;
-    color: white!important;
-    font-size:11px;
+    bottom: 0;
+    left: 15px;
+    height: 50px;
+    line-height: 50px;
+    color: white !important;
+    font-size: 11px;
 }
 
+/*
 .login-screen > figure:nth-child(1) {
-    background-image:  url('/img/login/todd-diemer-67t2GJcD5PI-unsplash.jpg');
+    background-image:  url('/img/login/spacex-71870.jpg');
 }
 
 .login-screen > figure:nth-child(2) {
     animation-delay: 15s;
     background-image:  url('/img/login/nasa-53884.jpg');
 }
+ */
 
 @keyframes imageAnimation {
     0% {
@@ -146,6 +150,6 @@ canvas {
 
 /** fix button with icons **/
 
-.btn-icon{
+.btn-icon {
     padding: 0.35rem .5rem 0.15rem .5rem;
 }

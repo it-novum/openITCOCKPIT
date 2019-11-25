@@ -208,4 +208,18 @@ class SystemsettingsTable extends Table {
             ])
             ->firstOrFail();
     }
+
+    /**
+     * @return bool
+     */
+    public function isLoginAnimationDisabled(){
+        try{
+            $result = $this->getSystemsettingByKey('FRONTEND.DISABLE_LOGIN_ANIMATION');
+
+            $value = (int)$result->get('value');
+            return $value === 1;
+        }catch (\Exception $e){
+            return true;
+        }
+    }
 }

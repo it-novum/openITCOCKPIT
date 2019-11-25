@@ -29,6 +29,7 @@ namespace App\Controller;
 
 
 use App\Lib\Api\ApiPaginator;
+use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsergroupsTable;
 use App\Model\Table\UsersTable;
 use Authentication\Authenticator\ResultInterface;
@@ -54,13 +55,26 @@ class UsersController extends AppController {
 
     public function login() {
         $this->viewBuilder()->setLayout('login');
-
         $LoginBackgrounds = new LoginBackgrounds();
         $images = $LoginBackgrounds->getImages();
 
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $disableAnimation = $SystemsettingsTable->isLoginAnimationDisabled();
+
+        if($this->getRequest()->getQuery('remote')){
+            $disableAnimation = true;
+        }
+
+        if($disableAnimation){
+            $images['particles'] = 'none';
+        }
+
+        $this->set('_csrfToken', $this->request->getParam('_csrfToken'));
+        $this->set('images', $images);
+        $this->set('disableAnimation', $disableAnimation);
+
         if ($this->request->is('get')) {
-            $this->set('_csrfToken', $this->request->getParam('_csrfToken'));
-            $this->set('images', $images);
             $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images']);
             return;
         }
