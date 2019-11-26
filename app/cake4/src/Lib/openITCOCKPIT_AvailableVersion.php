@@ -26,7 +26,7 @@
 namespace App\Lib;
 
 class openITCOCKPIT_AvailableVersion{
-	public static $available_version = '%s';
+	public static $available_version = '3.7.1';
 
 	/**
 	 * @return string

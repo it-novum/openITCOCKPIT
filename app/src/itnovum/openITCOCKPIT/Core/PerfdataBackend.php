@@ -25,16 +25,18 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use Cake\Core\Configure;
+
 class PerfdataBackend {
 
     /**
      * PerfdataBackend constructor.
      */
     public function __construct() {
-        $configFile = APP . 'Config' . DS . 'perfdatabackend.php';
+        $configFile = CONFIG. 'perfdatabackend.php';
         if (file_exists($configFile)) {
-            \Configure::load('perfdatabackend');
-            $this->perfdataBackend = \Configure::read('perfdatabackend');
+            Configure::load('perfdatabackend');
+            $this->perfdataBackend = Configure::read('perfdatabackend');
         } else {
             //Use default backend as fallback
             $this->perfdataBackend = 'Whisper';

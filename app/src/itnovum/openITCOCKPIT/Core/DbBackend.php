@@ -38,6 +38,7 @@ use App\Lib\Interfaces\ServicechecksTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Interfaces\StatehistoryHostTableInterface;
 use App\Lib\Interfaces\StatehistoryServiceTableInterface;
+use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 
 class DbBackend {
@@ -46,10 +47,10 @@ class DbBackend {
      * DbBackend constructor.
      */
     public function __construct() {
-        $configFile = OLD_APP . 'Config' . DS . 'dbbackend.php';
+        $configFile = CONFIG . 'dbbackend.php';
         if (file_exists($configFile)) {
-            \Configure::load('dbbackend');
-            $this->backend = \Configure::read('dbbackend');
+            Configure::load('dbbackend');
+            $this->backend = Configure::read('dbbackend');
         } else {
             //Use default backend as fallback
             $this->backend = 'Statusengine3';

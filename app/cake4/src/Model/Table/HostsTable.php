@@ -1968,4 +1968,144 @@ class HostsTable extends Table {
         return $result;
     }
 
+    /**
+     * @param array $MY_RIGHTS
+     * @param bool $includeOkState
+     * @return array
+     */
+    public function getHoststatusCount($MY_RIGHTS, $includeOkState = false) {
+        $hoststatusCount = [
+            '1' => 0,
+            '2' => 0,
+        ];
+        if ($includeOkState === true) {
+            $hoststatusCount['0'] = 0;
+        }
+
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Hoststatus.current_state',
+                'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.host_object_id)'),
+            ])
+            ->where([
+                'Hosts.disabled'                 => 0,
+                'HostObject.is_active'           => 1,
+            ])
+            ->join([
+                'a' => [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'HostObject',
+                    'conditions' => 'Hosts.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
+                ],
+                'b' => [
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ]
+            ])
+            ->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+                }
+                return $q;
+            })
+            ->contain([
+                'HostsToContainersSharing'
+            ])
+            ->group([
+                'Hoststatus.current_state',
+            ])
+            ->disableHydration();
+
+        if ($includeOkState === false) {
+            $query->andWhere([
+                'Hoststatus.current_state >' => 0
+            ]);
+        }
+
+        $hoststatusCountResult = $query->all();
+
+        foreach ($hoststatusCountResult as $hoststatus) {
+            $hoststatusCount[$hoststatus['Hoststatus']['current_state']] = (int)$hoststatus['count'];
+        }
+        return $hoststatusCount;
+    }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @param bool $includeOkState
+     * @return array
+     */
+    public function getServicestatusCount($MY_RIGHTS, $includeOkState = false) {
+        $servicestatusCount = [
+            '1' => 0,
+            '2' => 0,
+            '3' => 0,
+        ];
+        if ($includeOkState === true) {
+            $servicestatusCount['0'] = 0;
+        }
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Servicestatus.current_state',
+                'count' => $query->newExpr('COUNT(DISTINCT Servicestatus.service_object_id)'),
+            ])
+            ->where([
+                'Services.disabled'               => 0,
+                'ServiceObject.is_active'        => 1,
+            ])
+            ->join([
+                'a' => [
+                    'table'      => 'services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Services',
+                    'conditions' => 'Services.host_id = Hosts.id',
+                ],
+                'b' => [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'ServiceObject',
+                    'conditions' => 'ServiceObject.name2 = Services.uuid',
+                ],
+                'c' => [
+                    'table'      => 'nagios_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
+                ],
+            ])
+            ->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+                }
+                return $q;
+            })
+            ->contain([
+                'HostsToContainersSharing'
+            ])
+            ->group([
+                'Servicestatus.current_state',
+            ])
+            ->disableHydration();
+
+        if ($includeOkState === false) {
+            $query->andWhere([
+                'Servicestatus.current_state >' => 0
+            ]);
+        }
+
+        $servicestatusCountResult = $query->all();
+
+        foreach ($servicestatusCountResult as $servicestatus) {
+            $servicestatusCount[$servicestatus['Servicestatus']['current_state']] = (int)$servicestatus['count'];
+        }
+        return $servicestatusCount;
+    }
+
 }

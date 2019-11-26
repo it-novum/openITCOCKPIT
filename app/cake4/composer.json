@@ -45,6 +45,7 @@
     "require": {
         "php": ">=7.2",
         "ext-calendar": "*",
+        "ext-gd": "*",
         "cakephp/cakephp": "4.x-dev",
         "cakephp/authentication": "2.x-dev",
         "cakephp/authorization": "2.x-dev",

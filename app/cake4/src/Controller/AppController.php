@@ -36,9 +36,12 @@ use Authorization\Identity;
 use Cake\Cache\Cache;
 use Cake\Controller\Controller;
 use Cake\Event\EventInterface;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 
 /**
  * Class AppController
@@ -68,6 +71,16 @@ class AppController extends Controller {
     protected $PERMISSIONS = [];
 
     /**
+     * @var DbBackend
+     */
+    protected $DbBackend;
+
+    /**
+     * @var PerfdataBackend
+     */
+    protected $PerfdataBackend;
+
+    /**
      * Initialization hook method.
      *
      * Use this method to add common initialization code like loading components.
@@ -94,6 +107,112 @@ class AppController extends Controller {
          */
         //$this->loadComponent('Security');
     }
+
+    /**
+     * @param array|int $containerIds
+     * @param bool $useLevel
+     * @return bool
+     */
+    public function allowedByContainerId($containerIds = [], $useLevel = true) {
+        if ($this->hasRootPrivileges === true) {
+            return true;
+        }
+
+        if ($useLevel === true) {
+            $MY_WRITE_RIGHTS = array_filter($this->MY_RIGHTS_LEVEL, function ($value) {
+                if ((int)$value === WRITE_RIGHT) {
+                    return true;
+                }
+
+                return false;
+            });
+            $MY_WRITE_RIGHTS = array_keys($MY_WRITE_RIGHTS);
+            if (!is_array($containerIds)) {
+                $containerIds = [$containerIds];
+            }
+            $result = array_intersect($containerIds, $MY_WRITE_RIGHTS);
+            if (!empty($result)) {
+                return true;
+            }
+
+            if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+                throw new ForbiddenException('403 Forbidden');
+            }
+
+            return false;
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $rights = $this->MY_RIGHTS;
+
+        if (is_array($containerIds)) {
+            $result = array_intersect($containerIds, $rights);
+            if (!empty($result)) {
+                return true;
+            }
+        } else {
+            if (in_array($containerIds, $rights)) {
+                return true;
+            }
+        }
+
+        if ($this->isApiRequest()) {
+            throw new ForbiddenException('403 Forbidden');
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getWriteContainers() {
+        $MY_WRITE_RIGHTS = array_filter($this->MY_RIGHTS_LEVEL, function ($value) {
+            if ((int)$value === WRITE_RIGHT) {
+                return true;
+            }
+
+            return false;
+        });
+        $MY_WRITE_RIGHTS = array_keys($MY_WRITE_RIGHTS);
+
+        return $MY_WRITE_RIGHTS;
+    }
+
+    /**
+     * @param string|null $action
+     * @param string|null $controller
+     * @param string|null $plugin
+     * @return bool
+     */
+    protected function hasPermission($action = null, $controller = null, $plugin = null) {
+        //return false;
+        if ($plugin === null) {
+            $plugin = Inflector::classify($this->getRequest()->getParam('plugin'));
+        }
+
+        if ($plugin === null || $plugin === '') {
+            return isset($this->PERMISSIONS[$controller][$action]);
+        }
+
+        return isset($this->PERMISSIONS[$plugin][$controller][$action]);
+    }
+
+    /**
+     * @param int $containerId
+     * @return bool
+     */
+    protected function isWritableContainer($containerId) {
+        if ($this->hasRootPrivileges === true) {
+            return true;
+        }
+        if (isset($this->MY_RIGHTS_LEVEL[$containerId])) {
+            return (int)$this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT;
+        }
+        return false;
+    }
+
 
     /**
      * @return bool
@@ -131,8 +250,20 @@ class AppController extends Controller {
         return false;
     }
 
+    protected function isAngularJsRequest() {
+        if ($this->isApiRequest()) {
+            return $this->request->getQuery('angular') !== null;
+        }
+        return false;
+    }
+
     public function beforeFilter(EventInterface $event) {
         parent::beforeFilter($event);
+
+        $this->DbBackend = new DbBackend();
+        $this->PerfdataBackend = new PerfdataBackend();
+        $this->set('DbBackend', $this->DbBackend);
+        $this->set('PerfdataBackend', $this->PerfdataBackend);
 
         $user = $this->Authentication->getIdentity();
         $userId = $user->get('id');
@@ -154,6 +285,36 @@ class AppController extends Controller {
             $this->PERMISSIONS = $permissions['PERMISSIONS'];
             $this->hasRootPrivileges = $permissions['hasRootPrivileges'];
         }
+    }
+
+    /**
+     * @return \Authentication\IdentityInterface|null
+     */
+    public function getUser(){
+        return $this->Authentication->getIdentity();
+    }
+
+    public function render403($options = []) {
+        $_options = [
+            'headline' => __('Permission denied'),
+            'error'    => __('You are not permitted to access this object'),
+            'icon'     => 'fa-exclamation-triangle',
+            'referer'  => ['action' => 'index'],
+        ];
+
+        $options = Hash::merge($_options, $options);
+
+        $this->set('options', $options);
+
+        if ($this->isApiRequest()) {
+            //Angular wants json response
+            $this->set('status', 403);
+            $this->set('statusText', 'Forbidden');
+            $this->viewBuilder()->setOption('serialize', ['status', 'statusText']);
+        }
+
+        $this->render('/Errors/error403');
+        return $this->response->withStatus(403);
     }
 
     /**

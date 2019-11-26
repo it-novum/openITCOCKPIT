@@ -23,6 +23,7 @@
 
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Routing\Route\DashedRoute;
+use Cake\Routing\Route\InflectedRoute;
 use Cake\Routing\RouteBuilder;
 
 /*
@@ -43,7 +44,12 @@ use Cake\Routing\RouteBuilder;
  * `:action` markers.
  */
 /** @var \Cake\Routing\RouteBuilder $routes */
-$routes->setRouteClass(DashedRoute::class);
+// If you need lowercased and underscored URLs while migrating from a CakePHP 2.x application, you can instead use the InflectedRoute class.
+// https://book.cakephp.org/3/en/development/routing.html#route-elements
+$routes->setRouteClass(InflectedRoute::class);
+
+//CakePHP 4 default
+//$routes->setRouteClass(DashedRoute::class);
 
 $routes->setExtensions(['json', 'html', 'pdf']);
 

@@ -2,7 +2,7 @@
 
 {{STATIC_FILE_HEADER}}
 
-$config = [
+return [
     'perfdatabackend' => '{{perfdatabackend}}',
 ];
 
