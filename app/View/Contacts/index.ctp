@@ -202,8 +202,8 @@
                                     <span class="badge badge-primary margin-right-5"
                                           title="<?php echo __('Flapping'); ?>"
                                           ng-show="contact.Contact.notify_host_flapping">
-                                            <i class="fa fa-circle"></i>
-                                            <i class="fa fa-circle-o"></i>
+                                            <i class="fas fa-circle"></i>
+                                            <i class="far fa-circle"></i>
                                     </span>
                                     <span class="badge badge-primary"
                                           title="<?php echo __('Downtime'); ?>"
@@ -245,8 +245,8 @@
                                     <span class="badge badge-primary margin-right-5"
                                           title="<?php echo __('Flapping'); ?>"
                                           ng-show="contact.Contact.notify_service_flapping">
-                                            <i class="fa fa-circle"></i>
-                                            <i class="fa fa-circle-o"></i>
+                                            <i class="fas fa-circle"></i>
+                                            <i class="far fa-circle"></i>
                                     </span>
                                     <span class="badge badge-primary"
                                           title="<?php echo __('Downtime'); ?>"
