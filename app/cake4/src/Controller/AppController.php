@@ -266,9 +266,10 @@ class AppController extends Controller {
         $this->set('PerfdataBackend', $this->PerfdataBackend);
 
         $user = $this->Authentication->getIdentity();
-        $userId = $user->get('id');
 
-        if ($userId > 0) {
+        if ($user !== null) {
+            $userId = $user->get('id');
+
             //User is logged in
             $cacheKey = 'userPermissions_' . $userId;
 
