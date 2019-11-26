@@ -34,7 +34,6 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\Reports\DowntimesMerger;
@@ -284,6 +283,7 @@ class InstantreportsController extends AppController {
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
         $UserTime = UserTime::fromUser($User);
         $reportData = [];
+        $reportDetails = [];
         /** @var $InstantreportsTable InstantreportsTable */
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
         $MY_RIGHTS = [];
@@ -334,6 +334,15 @@ class InstantreportsController extends AppController {
             'array_sum'
         );
 
+        $reportDetails = [
+            'name'       => $instantReport->get('name'),
+            'evaluation' => $instantReport->get('evaluation'),
+            'type'       => $instantReport->get('type'),
+            'totalTime'  => $totalTime,
+            'from'       => $UserTime->format($fromDate),
+            'to'         => $UserTime->format($toDate)
+        ];
+        debug($reportDetails);
         $globalDowntimes = [];
         if ($instantReport->get('downtimes') === 1) {
             /** @var $SystemfailuresTable SystemfailuresTable */
@@ -504,6 +513,7 @@ class InstantreportsController extends AppController {
                 }
             }
         }
+        print_r($instantReport->toArray());
         return $reportData;
 
         return;
