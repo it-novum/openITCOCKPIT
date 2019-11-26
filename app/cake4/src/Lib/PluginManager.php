@@ -61,33 +61,22 @@ class PluginManager {
 
         TableRegistry::setTableLocator(new PluginManagerTableLocator());
 
-        $this->getAvailablePlugins();
+        $this->_getAvailablePlugins();
         $this->addAllPlugins();
     }
 
     /**
      * @return array
      */
-    private function getAvailablePlugins() {
-        $Finder = new Finder();
-        $Finder->in(PLUGIN)
-            ->directories()
-            ->ignoreDotFiles(true)
-            ->depth(0);
-        /** @var SplFileInfo $folder */
-        foreach ($Finder as $folder) {
-            $this->modules[] = $folder->getFilename();
-        }
-
-
+    private function _getAvailablePlugins() {
+        $this->modules = self::getAvailablePlugins();
         return $this->modules;
     }
 
     private function addAllPlugins() {
-        return;
+        $loader = require ROOT . '/vendor/autoload.php';
 
-        $loader = require OLD_APP . '/Vendor/autoload.php';
-
+        //Autoload Plugin Classes
         foreach ($this->modules as $moduleName) {
             $this->application->addPlugin($moduleName);
             $loader->setPsr4(
@@ -95,16 +84,35 @@ class PluginManager {
                 PLUGIN . $moduleName . DS . 'src'
             );
 
+            /*
             $pluginAssociationsFile = PLUGIN . $moduleName . DS . 'config' . DS . 'associations.php';
             if (file_exists($pluginAssociationsFile)) {
                 $mapping = require_once $pluginAssociationsFile;
                 self::$associations = Hash::merge(self::$associations, $mapping);
             }
+            */
         }
 
         if ($this->bootstrapPlugins === true) {
             $this->application->pluginBootstrap();
         }
+    }
+
+    public static function getAvailablePlugins() {
+        $Finder = new Finder();
+        $Finder->in(PLUGIN)
+            ->directories()
+            ->ignoreDotFiles(true)
+            ->depth(0);
+
+        $modules = [];
+
+        /** @var SplFileInfo $folder */
+        foreach ($Finder as $folder) {
+            $modules[] = $folder->getFilename();
+        }
+
+        return $modules;
     }
 
 }

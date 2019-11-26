@@ -40,6 +40,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\Menu\Menu;
 use itnovum\openITCOCKPIT\Core\ServiceMacroReplacer;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
@@ -321,6 +322,11 @@ class AngularController extends AppController {
     }
 
     public function menu() {
+        $Menu = new Menu();
+        $Menu->getMenuItems();
+
+        die();
+
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
