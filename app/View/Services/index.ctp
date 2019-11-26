@@ -150,21 +150,46 @@
                                 </div>
                                 <div class="col-xs-12 col-md-6 margin-bottom-10">
                                     <div class="form-group">
-                                        <div class="input-group">
+                                        <!--                                     <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
-                                            <input type="text" class="form-control form-control-sm"
+                                            <input type="text"
+                                                   class="form-control form-control-sm tagsinput"
                                                    data-role="tagsinput"
                                                    id="ServicesKeywordsInput"
                                                    placeholder="<?php echo __('Filter by tags'); ?>"
                                                    ng-model="filter.Services.keywords"
                                                    ng-model-options="{debounce: 500}"
-                                                   style="display: none;"
-                                            >
+                                                   style="display: none;">
+                                        </div>
+                                    </div>
+-->
+
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <div class="col">
+
+                                                <div class="col">
+                                                    <input type="text"
+                                                           class="form-control form-control-sm tagsinput"
+                                                           data-role="tagsinput"
+                                                           id="ServicesKeywordsInput"
+                                                           placeholder="<?php echo __('Filter by tags'); ?>"
+                                                           ng-model="filter.Services.keywords"
+                                                           ng-model-options="{debounce: 500}"
+                                                           style="display: none;">
+                                                </div>
+                                            </div>
+                                            <!--<div style="margin-left: -23px;">
+
+                                            </div> -->
                                         </div>
                                     </div>
                                 </div>
+
 
                                 <div class="col-xs-12 col-md-6 margin-bottom-10">
                                     <div class="form-group">
@@ -319,7 +344,7 @@
                             <tr>
                                 <th colspan="2" class="no-sort" ng-click="orderBy('Servicestatus.current_state')">
                                     <i class="fa" ng-class="getSortClass('Servicestatus.current_state')"></i>
-                                    <?php echo __('Servicestatus'); ?>
+                                    <?php echo __('State'); ?>
                                 </th>
 
                                 <th class="no-sort text-center">
@@ -487,7 +512,6 @@
                                 <td class="width-50">
 
 
-
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                             <a ui-sref="ServicesEdit({id: service.Service.id})"
@@ -541,7 +565,6 @@
                                                 </a>
 
 
-
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host, service))"
@@ -591,10 +614,12 @@
                                 </span>
                             </div>
                             <div class="btn-group btn-group-sm">
-                                <button class="btn btn-default dropdown-toggle waves-effect waves-themed" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button class="btn btn-default dropdown-toggle waves-effect waves-themed" type="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <?php echo __('More actions'); ?>
                                 </button>
-                                <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
+                                <div class="dropdown-menu" x-placement="bottom-start"
+                                     style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
                                     <a ng-href="{{ linkForPdf() }}" class="dropdown-item">
                                         <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
                                     </a>
@@ -630,7 +655,6 @@
                                 </div>
                             </div>
                         </div>
-
 
 
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>

@@ -130,3 +130,9 @@ $color-danger:						#CC0000;
     text-decoration: none !important;
     color: #666;
 }
+
+.status-circle {
+    width: 20px;
+    height: 20px;
+    padding: 0px;
+}

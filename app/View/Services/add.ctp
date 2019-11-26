@@ -50,7 +50,7 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'services')): ?>
-                        <a back-button fallback-state='ContactsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button fallback-state='ServicesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
                         </a>
                     <?php endif; ?>
@@ -71,7 +71,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="form-group required" ng-class="{'has-error': errors.host_id}">
-                                    <label class="control-label" for="ContactContainers">
+                                    <label class="control-label" for="ServiceHosts">
                                         <?php echo __('Host'); ?>
                                     </label>
                                     <select
