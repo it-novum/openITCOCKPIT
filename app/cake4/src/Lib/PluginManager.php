@@ -84,6 +84,8 @@ class PluginManager {
     }
 
     private function addAllPlugins() {
+        return;
+
         $loader = require OLD_APP . '/Vendor/autoload.php';
 
         foreach ($this->modules as $moduleName) {
