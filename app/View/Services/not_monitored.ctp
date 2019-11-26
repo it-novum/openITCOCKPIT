@@ -181,7 +181,7 @@
                                        ng-show="service.allow_edit">
                             </td>
 
-                            <td class="text-center width-90">
+                            <td class="text-center width-55">
                                 <servicestatusicon service="fakeServicestatus"></servicestatusicon>
                             </td>
 

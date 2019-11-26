@@ -1,16 +1,23 @@
+
 <div id="angularMassDeactivate" class="modal" role="dialog">
-    <div class="modal-dialog modal-lg">
+
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header bg-warning txt-color-white">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"><?php echo __('Attention!'); ?></h4>
+            <div class="modal-header bg-color-warning txt-color-white">
+                <h5 class="modal-title">
+                    <?php echo __('Attention!'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-xs-12">
                         <?php echo __('Do you really want deactivate the selected objects?'); ?>
                     </div>
-
+                </div>
+                <div class="row">
                     <div class="col-xs-12 margin-top-10">
                         <ul>
                             <li ng-repeat="(id, object) in objects">
@@ -22,7 +29,8 @@
                             </li>
                         </ul>
                     </div>
-
+                </div>
+                <div class="row">
                     <div class="col-xs-12 margin-top-10" ng-show="isDeactivating">
                         <h4><?php echo __('Deactivating...'); ?></h4>
                     </div>
@@ -31,10 +39,8 @@
                             <div class="progress-bar bg-primary" style="width: {{percentage}}%"></div>
                         </div>
                     </div>
-
                 </div>
             </div>
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-warning" ng-click="deactivate()">
                     <?php echo __('Disable'); ?>
@@ -44,6 +50,8 @@
                 </button>
             </div>
         </div>
-
     </div>
 </div>
+
+
+

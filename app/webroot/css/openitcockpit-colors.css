@@ -112,6 +112,10 @@ $color-danger:						#CC0000;
     background: #CC0000;
 }
 
+.bg-color-warning{
+    background: #ffbb33;
+}
+
 .txt-color-white {
     color: #fff !important
 }
