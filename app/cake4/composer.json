@@ -70,7 +70,9 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/"
+            "App\\": "src/",
+            "itnovum\\openITCOCKPIT\\": "src/itnovum/openITCOCKPIT/",
+            "Statusengine\\": "src/Statusengine/"
         }
     },
     "autoload-dev": {
