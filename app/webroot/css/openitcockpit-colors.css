@@ -125,3 +125,8 @@ $color-danger:						#CC0000;
     background-color: #d9534f !important;
     border-color: #ccc;
 }
+
+.a-clean {
+    text-decoration: none !important;
+    color: #666;
+}
