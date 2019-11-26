@@ -45,14 +45,8 @@
                     <i class="fa fa-pencil-square-o"></i>
                 </a>
             </li>
-            <li ng-class="{'active': tabName=='calendarOverview'}" ng-click="tabName='calendarOverview'"
-                ng-show="reportData.downtimes">
-                <a href="javascript:void()" data-toggle="tab">
-                    <i class="fa fa-calendar"></i>
-                </a>
-            </li>
-            <li ng-class="{'active': tabName=='hostsServicesOverview'}" ng-click="tabName='hostsServicesOverview'"
-                ng-show="reportData.downtimes">
+            <li ng-class="{'active': tabName=='instantReport'}" ng-click="tabName='instantReport'"
+                ng-show="reportData">
                 <a href="javascript:void()" data-toggle="tab">
                     <i class="fa fa-pie-chart"></i>
                 </a>
@@ -139,6 +133,28 @@
             </section>
             <section ng-if="tabName == 'instantReport'" id="instantReport">
                ReportData here !!!!
+                {{reportData}}
+                <div class="row">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget jarviswidget-sortable" role="widget">
+                            <header role="heading">
+                                <h2>
+                                        <span class="fa-stack">
+                                            <i class="fa fa-desktop fa-lg fa-stack-1x"></i>
+                                            <i class="fa fa-check-circle fa-stack-1x fa-xs cornered cornered-lr ok padding-bottom-2"></i>
+                                        </span>
+                                    <?php echo __('Hosts without outages:'); ?>
+                                </h2>
+                            </header>
+                            <div class="well padding-bottom-10">
+                                <div class="row" ng-repeat="(uuid, host) in reportData.hostsWithoutOutages.hosts">
+                                    <host-availability-overview data="host" evaluation-type="1"
+                                                                dynamic-color="false"></host-availability-overview>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
             </section>
         </div>
     </div>

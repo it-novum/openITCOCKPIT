@@ -1724,7 +1724,6 @@ class NagiosExportTask extends AppShell {
             $hostsForCfg = [];
             $excludedHostsForCfg = [];
             $hosts = $hostescalation->get('hosts');
-            $hostgroups = $hostescalation->get('hostgroups');
             if (empty($hosts)) {
                 //This hostescalation is broken!
                 $HostescalationsTable->delete($hostescalation);
@@ -1790,7 +1789,12 @@ class NagiosExportTask extends AppShell {
             $content .= $this->addContent('first_notification', 1, $hostescalation->get('first_notification'));
             $content .= $this->addContent('last_notification', 1, $hostescalation->get('last_notification'));
             $content .= $this->addContent('notification_interval', 1, (int)$hostescalation->get('notification_interval') * 60);
-            $content .= $this->addContent('escalation_period', 1, $hostescalation->get('timeperiod')->get('uuid'));
+
+            $escalationTimeperiod = $hostescalation->get('timeperiod');
+            if (!is_null($escalationTimeperiod)) {
+                $content .= $this->addContent('escalation_period', 1, $escalationTimeperiod->get('uuid'));
+            }
+
             $hostEscalationString = $hostescalation->getHostEscalationStringForCfg();
             if (!empty($hostEscalationString)) {
                 $content .= $this->addContent('escalation_options', 1, $hostEscalationString);
@@ -1889,7 +1893,12 @@ class NagiosExportTask extends AppShell {
                     $content .= $this->addContent('first_notification', 1, $serviceescalation->get('first_notification'));
                     $content .= $this->addContent('last_notification', 1, $serviceescalation->get('last_notification'));
                     $content .= $this->addContent('notification_interval', 1, (int)$serviceescalation->get('notification_interval') * 60);
-                    $content .= $this->addContent('escalation_period', 1, $serviceescalation->get('timeperiod')->get('uuid'));
+
+                    $escalationTimeperiod = $serviceescalation->get('timeperiod');
+                    if (!is_null($escalationTimeperiod)) {
+                        $content .= $this->addContent('escalation_period', 1, $escalationTimeperiod->get('uuid'));
+                    }
+
                     if (!empty($serviceEscalationString)) {
                         $content .= $this->addContent('escalation_options', 1, $serviceEscalationString);
                     }
