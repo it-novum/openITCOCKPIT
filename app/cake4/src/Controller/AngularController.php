@@ -500,7 +500,7 @@ class AngularController extends AppController {
         }
 
         $cache = Cache::read('system_health', 'permissions');
-        if ($cache === false) {
+        if ($cache === null) {
             $status = [
                 'cache_readable' => false,
                 'state'          => 'unknown'
@@ -658,8 +658,7 @@ class AngularController extends AppController {
 
         $image = $PieChart->getImage();
 
-        $this->layout = false;
-        $this->render = false;
+        $this->autoRender = false;
         header('Content-Type: image/png');
         imagepng($image, null, 0);
         imagedestroy($image);
@@ -685,8 +684,7 @@ class AngularController extends AppController {
 
         $image = $PieChart->getImage();
 
-        $this->layout = false;
-        $this->render = false;
+        $this->autoRender = false;
         header('Content-Type: image/png');
         imagepng($image, null, 0);
         imagedestroy($image);
@@ -705,8 +703,7 @@ class AngularController extends AppController {
         $HostAndServiceSummaryIcon->createSummaryIcon($bitMaskHostState, $bitMaskServiceState);
         $image = $HostAndServiceSummaryIcon->getImage();
 
-        $this->layout = false;
-        $this->render = false;
+        $this->autoRender = false;
         header('Content-Type: image/png');
         imagepng($image, null, 0);
         imagedestroy($image);

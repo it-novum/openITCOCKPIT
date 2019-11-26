@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core\System;
 
 
+use Cake\Core\Configure;
+
 class Gearman {
 
     /**
@@ -41,8 +43,8 @@ class Gearman {
      * Gearman constructor.
      */
     public function __construct() {
-        \Configure::load('gearman');
-        $config = \Configure::read('gearman');
+        Configure::load('gearman');
+        $config = Configure::read('gearman');
 
 
         $this->config = $config;

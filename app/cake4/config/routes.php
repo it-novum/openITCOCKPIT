@@ -51,7 +51,7 @@ $routes->setRouteClass(InflectedRoute::class);
 //CakePHP 4 default
 //$routes->setRouteClass(DashedRoute::class);
 
-$routes->setExtensions(['json', 'html', 'pdf']);
+$routes->setExtensions(['json', 'html', 'pdf', 'png']);
 
 $routes->scope('/', function (RouteBuilder $builder) {
     // Register scoped middleware for in scopes.

@@ -290,7 +290,7 @@ class AppController extends Controller {
     /**
      * @return \Authentication\IdentityInterface|null
      */
-    public function getUser(){
+    public function getUser() {
         return $this->Authentication->getIdentity();
     }
 
@@ -321,6 +321,13 @@ class AppController extends Controller {
      * Add CSRF token to all .json requests
      */
     public function beforeRender(EventInterface $event) {
+        if (!$this->isApiRequest()) {
+            //Set Permissions for ACL Helper
+            $this->set('ACLPERMISSIONS', $this->PERMISSIONS);
+            $this->set('hasRootPrivileges', $this->hasRootPrivileges);
+            $this->set('MY_RIGHTS_LEVEL', $this->MY_RIGHTS_LEVEL);
+        }
+
         if ($this->isJsonRequest()) {
             $this->set('_csrfToken', $this->request->getAttribute('csrfToken'));
             $serialize = $this->viewBuilder()->getOption('serialize');

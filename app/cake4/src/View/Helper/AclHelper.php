@@ -23,7 +23,24 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class AclHelper extends AppHelper {
+declare(strict_types=1);
+
+namespace App\View\Helper;
+
+use Cake\Utility\Inflector;
+use Cake\View\Helper;
+
+/**
+ * Class AclHelper
+ */
+class AclHelper extends Helper {
+
+    /**
+     * Default configuration.
+     *
+     * @var array
+     */
+    protected $_defaultConfig = [];
 
     public function hasPermission($action = null, $controller = null, $plugin = null) {
         //return false;
@@ -40,23 +57,28 @@ class AclHelper extends AppHelper {
         $controller = strtolower($controller);
         $action = strtolower($action);
         $plugin = strtolower($plugin);
+
+        $ACLPERMISSIONS = $this->_View->get('ACLPERMISSIONS');
         if ($plugin === null || $plugin === '') {
-            return isset($this->_View->viewVars['aclPermissions'][$controller][$action]);
+            return isset($ACLPERMISSIONS[$controller][$action]);
         }
 
-        return isset($this->_View->viewVars['aclPermissions'][$plugin][$controller][$action]);
+        return isset($ACLPERMISSIONS[$plugin][$controller][$action]);
     }
 
     public function isWritableContainer($containerIds) {
-        if (isset($this->_View->viewVars['hasRootPrivileges']) && $this->_View->viewVars['hasRootPrivileges'] === true) {
+        $hasRootPrivileges = $this->_View->get('hasRootPrivileges');
+        $MY_RIGHTS_LEVEL = $this->_View->get('MY_RIGHTS_LEVEL');
+
+        if ($hasRootPrivileges === true) {
             return true;
         }
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
         foreach ($containerIds as $containerId) {
-            if (isset($this->_View->viewVars['MY_RIGHTS_LEVEL'][$containerId])) {
-                if ($this->_View->viewVars['MY_RIGHTS_LEVEL'][$containerId] == WRITE_RIGHT) {
+            if (isset($MY_RIGHTS_LEVEL[$containerId])) {
+                if ($MY_RIGHTS_LEVEL[$containerId] == WRITE_RIGHT) {
                     return true;
                 }
             }

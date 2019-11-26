@@ -27,7 +27,9 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class RFCRouter extends \Router {
+use Cake\Routing\Route\Route;
+
+class RFCRouter extends Route {
 
     /**
      * Generates a well-formed querystring from $q
