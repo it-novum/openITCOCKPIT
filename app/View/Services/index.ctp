@@ -518,8 +518,6 @@
                                 </td>
 
                                 <td class="width-50">
-
-
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                             <a ui-sref="ServicesEdit({id: service.Service.id})"
