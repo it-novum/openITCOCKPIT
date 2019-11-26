@@ -150,67 +150,39 @@
                                 </div>
                                 <div class="col-xs-12 col-md-6 margin-bottom-10">
                                     <div class="form-group">
-                                        <!--                                     <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
-                                            </div>
-                                            <input type="text"
-                                                   class="form-control form-control-sm tagsinput"
-                                                   data-role="tagsinput"
-                                                   id="ServicesKeywordsInput"
-                                                   placeholder="<?php echo __('Filter by tags'); ?>"
-                                                   ng-model="filter.Services.keywords"
-                                                   ng-model-options="{debounce: 500}"
-                                                   style="display: none;">
-                                        </div>
-                                    </div>
--->
-
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
-                                            <div class="col">
-
-                                                <div class="col">
-                                                    <input type="text"
-                                                           class="form-control form-control-sm tagsinput"
-                                                           data-role="tagsinput"
-                                                           id="ServicesKeywordsInput"
-                                                           placeholder="<?php echo __('Filter by tags'); ?>"
-                                                           ng-model="filter.Services.keywords"
-                                                           ng-model-options="{debounce: 500}"
-                                                           style="display: none;">
-                                                </div>
+                                            <div class="col tagsinputFilter">
+                                                <input type="text"
+                                                       class="form-control form-control-sm "
+                                                       data-role="tagsinput"
+                                                       id="ServicesKeywordsInput"
+                                                       placeholder="<?php echo __('Filter by tags'); ?>"
+                                                       ng-model="filter.Services.keywords"
+                                                       ng-model-options="{debounce: 500}"
+                                                       style="display: none;">
                                             </div>
-                                            <!--<div style="margin-left: -23px;">
-
-                                            </div> -->
                                         </div>
                                     </div>
                                 </div>
 
-
                                 <div class="col-xs-12 col-md-6 margin-bottom-10">
                                     <div class="form-group">
-                                        <i class="icon-prepend fa fa-filter"></i>
-                                        <input type="text" class="input-sm"
-                                               data-role="tagsinput"
-                                               id="ServicesKeywordsInput"
-                                               placeholder="<?php echo __('Filter by tags'); ?>"
-                                               ng-model="filter.Services.keywords"
-                                               ng-model-options="{debounce: 500}">
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-md-6 margin-bottom-10">
-                                    <div class="form-group">
-                                        <i class="icon-prepend fa fa-filter"></i>
-                                        <input type="text" class="input-sm"
-                                               data-role="tagsinput"
-                                               id="ServicesNotKeywordsInput"
-                                               placeholder="<?php echo __('Filter by excluded tags'); ?>"
-                                               ng-model="filter.Services.not_keywords"
-                                               ng-model-options="{debounce: 500}">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <div class="col tagsinputFilter">
+                                                <input type="text" class="input-sm"
+                                                       data-role="tagsinput"
+                                                       id="ServicesNotKeywordsInput"
+                                                       placeholder="<?php echo __('Filter by excluded tags'); ?>"
+                                                       ng-model="filter.Services.not_keywords"
+                                                       ng-model-options="{debounce: 500}">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
