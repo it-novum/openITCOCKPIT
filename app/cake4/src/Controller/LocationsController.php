@@ -74,7 +74,7 @@ class LocationsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_locations', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -100,7 +100,7 @@ class LocationsController extends AppController {
         }
 
         $this->set('location', $location);
-        $this->set('_serialize', ['location']);
+        $this->viewBuilder()->setOption('serialize', ['location']);
     }
 
     public function add() {
@@ -123,7 +123,7 @@ class LocationsController extends AppController {
             if ($location->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $location->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
@@ -153,7 +153,7 @@ class LocationsController extends AppController {
                 }
             }
             $this->set('location', $location);
-            $this->set('_serialize', ['location']);
+            $this->viewBuilder()->setOption('serialize', ['location']);
         }
     }
 
@@ -184,7 +184,7 @@ class LocationsController extends AppController {
             }
 
             $this->set('location', $location);
-            $this->set('_serialize', ['location']);
+            $this->viewBuilder()->setOption('serialize', ['location']);
             return;
         }
 
@@ -208,7 +208,7 @@ class LocationsController extends AppController {
             if ($location->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $location->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
@@ -240,7 +240,7 @@ class LocationsController extends AppController {
                 }
             }
             $this->set('location', $location);
-            $this->set('_serialize', ['location']);
+            $this->viewBuilder()->setOption('serialize', ['location']);
         }
     }
 
@@ -288,13 +288,13 @@ class LocationsController extends AppController {
             }
 
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     /****************************
@@ -321,7 +321,7 @@ class LocationsController extends AppController {
 
 
         $this->set('containers', $containers);
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
 }

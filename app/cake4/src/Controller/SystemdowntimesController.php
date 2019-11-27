@@ -106,7 +106,7 @@ class SystemdowntimesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_host_recurring_downtimes', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function service() {
@@ -167,7 +167,7 @@ class SystemdowntimesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_service_recurring_downtimes', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function hostgroup() {
@@ -225,7 +225,7 @@ class SystemdowntimesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_hostgroup_recurring_downtimes', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function node() {
@@ -282,7 +282,7 @@ class SystemdowntimesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_node_recurring_downtimes', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function addHostdowntime() {
@@ -304,7 +304,7 @@ class SystemdowntimesController extends AppController {
                         '_empty' => __('You have to select at least on object.')
                     ]
                 ]);
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
 
@@ -332,7 +332,7 @@ class SystemdowntimesController extends AppController {
                     //On entity has an error so ALL entities has an error!
                     $this->response->statusCode(400);
                     $this->set('error', $Entity->getErrors());
-                    $this->set('_serialize', ['error']);
+                    $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
                 }
 
@@ -379,7 +379,7 @@ class SystemdowntimesController extends AppController {
             }
 
             $this->set('success', $success);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
         }
     }
 
@@ -402,7 +402,7 @@ class SystemdowntimesController extends AppController {
                         '_empty' => __('You have to select at least on object.')
                     ]
                 ]);
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
 
@@ -430,7 +430,7 @@ class SystemdowntimesController extends AppController {
                     //On entity has an error so ALL entities has an error!
                     $this->response->statusCode(400);
                     $this->set('error', $Entity->getErrors());
-                    $this->set('_serialize', ['error']);
+                    $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
                 }
 
@@ -478,7 +478,7 @@ class SystemdowntimesController extends AppController {
             }
 
             $this->set('success', $success);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
         }
     }
 
@@ -501,7 +501,7 @@ class SystemdowntimesController extends AppController {
                         '_empty' => __('You have to select at least on object.')
                     ]
                 ]);
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
 
@@ -529,7 +529,7 @@ class SystemdowntimesController extends AppController {
                     //On entity has an error so ALL entities has an error!
                     $this->response->statusCode(400);
                     $this->set('error', $Entity->getErrors());
-                    $this->set('_serialize', ['error']);
+                    $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
                 }
 
@@ -581,7 +581,7 @@ class SystemdowntimesController extends AppController {
             }
 
             $this->set('success', $success);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
         }
     }
 
@@ -604,7 +604,7 @@ class SystemdowntimesController extends AppController {
                         '_empty' => __('You have to select at least on object.')
                     ]
                 ]);
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
 
@@ -632,7 +632,7 @@ class SystemdowntimesController extends AppController {
                     //On entity has an error so ALL entities has an error!
                     $this->response->statusCode(400);
                     $this->set('error', $Entity->getErrors());
-                    $this->set('_serialize', ['error']);
+                    $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
                 }
 
@@ -708,7 +708,7 @@ class SystemdowntimesController extends AppController {
             }
 
             $this->set('success', $success);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
         }
     }
 
@@ -731,13 +731,13 @@ class SystemdowntimesController extends AppController {
         if ($SystemdowntimesTable->delete($systemdowntime)) {
             $this->set('success', true);
             $this->set('message', __('Systemdowntime successfully deleted'));
-            $this->set('_serialize', ['success', 'message']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'message']);
             return;
         }
 
         $this->response->statusCode(400);
         $this->set('success', false);
         $this->set('message', __('Error while deleting systemdowntime'));
-        $this->set('_serialize', ['success', 'message']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'message']);
     }
 }

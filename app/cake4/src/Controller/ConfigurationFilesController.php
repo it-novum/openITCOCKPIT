@@ -67,7 +67,7 @@ class ConfigurationFilesController extends AppController {
         }
 
         $this->set('configFileCategories', $configFilesForFrontend);
-        $this->set('_serialize', ['configFileCategories']);
+        $this->viewBuilder()->setOption('serialize', ['configFileCategories']);
     }
 
     public function edit($configFile = null) {
@@ -82,7 +82,7 @@ class ConfigurationFilesController extends AppController {
             if ($ConfigFileObject->getDbKey() === $configFile) {
 
                 $this->set('ConfigFile', $ConfigFileObject->toArray());
-                $this->set('_serialize', ['ConfigFile']);
+                $this->viewBuilder()->setOption('serialize', ['ConfigFile']);
                 return;
             }
         }
@@ -169,13 +169,13 @@ class ConfigurationFilesController extends AppController {
 
             $this->set('success', true);
             $this->set('message', __('Config successfully restored to default'));
-            $this->set('_serialize', ['success', 'message']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'message']);
             return;
         }
 
         $this->response->statusCode(400);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
         return;
     }
 
@@ -196,7 +196,7 @@ class ConfigurationFilesController extends AppController {
             $config = $ConfigurationObjectClassName->mergeDbResultWithDefaultConfiguration($dbConfig);
 
             $this->set('config', $config);
-            $this->set('_serialize', ['config']);
+            $this->viewBuilder()->setOption('serialize', ['config']);
         }
 
         if ($this->request->is('post')) {
@@ -213,7 +213,7 @@ class ConfigurationFilesController extends AppController {
 
                 if ($ConfigurationFilesTable->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $configFileForDatabase)) {
                     $this->set('success', true);
-                    $this->set('_serialize', ['success']);
+                    $this->viewBuilder()->setOption('serialize', ['success']);
 
                     if ($configHasChanged) {
                         //Require rewirte of configuration file on disk?
@@ -234,7 +234,7 @@ class ConfigurationFilesController extends AppController {
                 } else {
                     $this->response->statusCode(400);
                     $this->set('success', false);
-                    $this->set('_serialize', ['success']);
+                    $this->viewBuilder()->setOption('serialize', ['success']);
                     return;
                 }
 
@@ -242,7 +242,7 @@ class ConfigurationFilesController extends AppController {
                 $this->response->statusCode(400);
                 $error = $ConfigurationObjectClassName->validationErrors;
                 $this->set('error', $error);
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
         }

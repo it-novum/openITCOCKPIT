@@ -30,6 +30,8 @@ namespace App\Controller;
 
 use App\Model\Table\ContainersTable;
 use App\Model\Table\TenantsTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use FreeDSx\Ldap\Entry\Change;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -81,7 +83,7 @@ class TenantsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_tenants', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -89,7 +91,7 @@ class TenantsController extends AppController {
      */
     public function view($id) {
         if (!$this->isApiRequest()) {
-            throw new MethodNotAllowedException();
+            throw new MethodNotAllowedException()
         }
 
         /** @var $TenantsTable TenantsTable */
@@ -107,7 +109,7 @@ class TenantsController extends AppController {
         }
 
         $this->set('tenant', $tenant);
-        $this->set('_serialize', ['tenant']);
+        $this->viewBuilder()->setOption('serialize', ['tenant']);
     }
 
     public function add() {
@@ -132,7 +134,7 @@ class TenantsController extends AppController {
             if ($tenant->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $tenant->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
@@ -162,7 +164,7 @@ class TenantsController extends AppController {
                 }
             }
             $this->set('tenant', $tenant);
-            $this->set('_serialize', ['tenant']);
+            $this->viewBuilder()->setOption('serialize', ['tenant']);
         }
     }
 
@@ -193,7 +195,7 @@ class TenantsController extends AppController {
             }
 
             $this->set('tenant', $tenant);
-            $this->set('_serialize', ['tenant']);
+            $this->viewBuilder()->setOption('serialize', ['tenant']);
             return;
         }
 
@@ -218,7 +220,7 @@ class TenantsController extends AppController {
             if ($tenant->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $tenant->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
@@ -250,7 +252,7 @@ class TenantsController extends AppController {
                 }
             }
             $this->set('tenant', $tenant);
-            $this->set('_serialize', ['tenant']);
+            $this->viewBuilder()->setOption('serialize', ['tenant']);
         }
     }
 
@@ -303,16 +305,16 @@ class TenantsController extends AppController {
                 }
 
                 $this->set('message', __('Tenant deleted successfully'));
-                $this->set('_serialize', ['message']);
+                $this->viewBuilder()->setOption('serialize', ['message']);
                 return;
             }
             $this->response->statusCode(400);
             $this->set('message', __('Could not delete tenant'));
-            $this->set('_serialize', ['message']);
+            $this->viewBuilder()->setOption('serialize', ['message']);
         }
         $this->response->statusCode(400);
         $this->set('message', __('Could not delete tenant'));
-        $this->set('_serialize', ['message']);
+        $this->viewBuilder()->setOption('serialize', ['message']);
     }
 
 

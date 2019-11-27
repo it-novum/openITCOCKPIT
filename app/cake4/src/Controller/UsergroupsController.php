@@ -50,7 +50,7 @@ class UsergroupsController extends AppController {
         $allUsergroups = $UsergroupsTable->getUsergroups($PaginateOMat);
 
         $this->set('allUsergroups', $allUsergroups);
-        $this->set('_serialize', ['allUsergroups']);
+        $this->viewBuilder()->setOption('serialize', ['allUsergroups']);
     }
 
     public function view($id = null) {
@@ -67,7 +67,7 @@ class UsergroupsController extends AppController {
         $usergroup = $UsergroupsTable->getUsergroupById($id);
 
         $this->set('usergroup', $usergroup);
-        $this->set('_serialize', ['usergroup']);
+        $this->viewBuilder()->setOption('serialize', ['usergroup']);
     }
 
     public function edit($id = null) {
@@ -194,7 +194,7 @@ class UsergroupsController extends AppController {
         $this->set('alwaysAllowedAcos', $alwaysAllowedAcos);
         $this->set('acoDependencies', $acoDependencies);
         $this->set('dependentAcoIds', $dependentAcoIds);
-        $this->set('_serialize', ['acos', 'aros', 'usergroup', 'alwaysAllowedAcos', 'acoDependencies', 'dependentAcoIds']);
+        $this->viewBuilder()->setOption('serialize', ['acos', 'aros', 'usergroup', 'alwaysAllowedAcos', 'acoDependencies', 'dependentAcoIds']);
 
     }
 
@@ -318,7 +318,7 @@ class UsergroupsController extends AppController {
         $usergroups = Api::makeItJavaScriptAble($usergroups);
 
         $this->set('usergroups', $usergroups);
-        $this->set('_serialize', ['usergroups']);
+        $this->viewBuilder()->setOption('serialize', ['usergroups']);
     }
 
 }

@@ -83,7 +83,7 @@ class ServiceescalationsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_serviceescalations', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function view($id = null) {
@@ -105,7 +105,7 @@ class ServiceescalationsController extends AppController {
         }
 
         $this->set('serviceescalation', $serviceescalation);
-        $this->set('_serialize', ['serviceescalation']);
+        $this->viewBuilder()->setOption('serialize', ['serviceescalation']);
     }
 
     public function edit($id = null) {
@@ -164,7 +164,7 @@ class ServiceescalationsController extends AppController {
             if ($serviceescalation->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $serviceescalation->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->request->ext == 'json') {
@@ -174,7 +174,7 @@ class ServiceescalationsController extends AppController {
             }
         }
         $this->set('serviceescalation', $serviceescalation);
-        $this->set('_serialize', ['serviceescalation']);
+        $this->viewBuilder()->setOption('serialize', ['serviceescalation']);
     }
 
     public function add() {
@@ -203,7 +203,7 @@ class ServiceescalationsController extends AppController {
             if ($serviceescalation->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $serviceescalation->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->request->ext == 'json') {
@@ -212,7 +212,7 @@ class ServiceescalationsController extends AppController {
                 }
             }
             $this->set('serviceescalation', $serviceescalation);
-            $this->set('_serialize', ['serviceescalation']);
+            $this->viewBuilder()->setOption('serialize', ['serviceescalation']);
         }
     }
 
@@ -236,13 +236,13 @@ class ServiceescalationsController extends AppController {
         $serviceescalationEntity = $ServiceescalationsTable->get($id);
         if ($ServiceescalationsTable->delete($serviceescalationEntity)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
         return;
     }
 
@@ -288,7 +288,7 @@ class ServiceescalationsController extends AppController {
         $this->set('contacts', $contacts);
         $this->set('contactgroups', $contactgroups);
 
-        $this->set('_serialize', [
+        $this->viewBuilder()->setOption('serialize', [
             'servicegroups',
             'servicegroupsExcluded',
             'timeperiods',
@@ -312,7 +312,7 @@ class ServiceescalationsController extends AppController {
         }
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 }
 

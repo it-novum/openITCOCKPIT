@@ -77,7 +77,7 @@ class CalendarsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_calendars', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
 
@@ -111,7 +111,7 @@ class CalendarsController extends AppController {
             if ($Entity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $Entity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -121,7 +121,7 @@ class CalendarsController extends AppController {
                 }
             }
             $this->set('calendar', $Entity);
-            $this->set('_serialize', ['calendar']);
+            $this->viewBuilder()->setOption('serialize', ['calendar']);
         }
     }
 
@@ -165,7 +165,7 @@ class CalendarsController extends AppController {
 
             $this->set('calendar', $calendar);
             $this->set('events', $events);
-            $this->set('_serialize', ['calendar', 'events']);
+            $this->viewBuilder()->setOption('serialize', ['calendar', 'events']);
             return;
         }
 
@@ -200,12 +200,12 @@ class CalendarsController extends AppController {
             if ($Entity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $Entity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
 
             $this->set('calendar', $Entity);
-            $this->set('_serialize', ['calendar']);
+            $this->viewBuilder()->setOption('serialize', ['calendar']);
 
             return;
         }
@@ -245,14 +245,14 @@ class CalendarsController extends AppController {
 
             $this->set('success', true);
             $this->set('message', __('Calendar deleted successfully'));
-            $this->set('_serialize', ['success', 'message']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'message']);
             return;
         }
 
         $this->response->statusCode(400);
         $this->set('success', false);
         $this->set('message', __('Issue while deleting calendar'));
-        $this->set('_serialize', ['success', 'message']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'message']);
     }
 
     /**
@@ -264,7 +264,7 @@ class CalendarsController extends AppController {
 
         $holidays = $holiday->getHolidays($countryCode);
         $this->set('holidays', $holidays);
-        $this->set('_serialize', ['holidays']);
+        $this->viewBuilder()->setOption('serialize', ['holidays']);
     }
 
 
@@ -276,7 +276,7 @@ class CalendarsController extends AppController {
 
         $countries = $holiday->getCountries();
         $this->set('countries', $countries);
-        $this->set('_serialize', ['countries']);
+        $this->viewBuilder()->setOption('serialize', ['countries']);
     }
 
 
@@ -295,6 +295,6 @@ class CalendarsController extends AppController {
         );
 
         $this->set('calendars', $calendars);
-        $this->set('_serialize', ['calendars']);
+        $this->viewBuilder()->setOption('serialize', ['calendars']);
     }
 }

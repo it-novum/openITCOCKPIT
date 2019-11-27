@@ -144,7 +144,7 @@ class BrowsersController extends AppController {
 
 
         $this->set('recursiveBrowser', $User->isRecursiveBrowserEnabled());
-        $this->set('_serialize', ['containers', 'recursiveBrowser', 'breadcrumbs']);
+        $this->viewBuilder()->setOption('serialize', ['containers', 'recursiveBrowser', 'breadcrumbs']);
     }
 
 

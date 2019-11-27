@@ -71,7 +71,7 @@ class ContainersController extends AppController {
         }
 
         $this->set('container', $container);
-        $this->set('_serialize', ['container']);
+        $this->viewBuilder()->setOption('serialize', ['container']);
     }
 
 
@@ -198,7 +198,7 @@ class ContainersController extends AppController {
 
 
         $this->set('nest', $result);
-        $this->set('_serialize', ['nest']);
+        $this->viewBuilder()->setOption('serialize', ['nest']);
     }
 
     public function loadContainers() {
@@ -232,7 +232,7 @@ class ContainersController extends AppController {
         $containers = Api::makeItJavaScriptAble($paths);
 
         $this->set('containers', $containers);
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
     /**
@@ -255,7 +255,7 @@ class ContainersController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $this->set('paths', $ContainersTable->easyPath($ContainersTable->resolveChildrenOfContainerIds($id), OBJECT_NODE));
-        $this->set('_serialize', ['paths']);
+        $this->viewBuilder()->setOption('serialize', ['paths']);
     }
 
     /**
@@ -458,18 +458,18 @@ class ContainersController extends AppController {
             if ($this->Container->__delete($id)) {
                 Cache::clear(false, 'permissions');
                 $this->set('success', true);
-                $this->set('_serialize', ['success']);
+                $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             } else {
                 $this->response->statusCode(500);
                 $this->set('success', false);
-                $this->set('_serialize', ['success']);
+                $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
         }
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function loadContainersForAngular() {
@@ -499,7 +499,7 @@ class ContainersController extends AppController {
 
         $containers = Api::makeItJavaScriptAble($containers);
         $this->set('containers', $containers);
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
     /**
@@ -756,7 +756,7 @@ class ContainersController extends AppController {
             }
         }
         $this->set(compact(['containerDetails']));
-        $this->set('_serialize', ['containerDetails']);
+        $this->viewBuilder()->setOption('serialize', ['containerDetails']);
 
     }
 }

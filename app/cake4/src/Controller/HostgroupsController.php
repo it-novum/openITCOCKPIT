@@ -101,7 +101,7 @@ class HostgroupsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_hostgroups', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -131,7 +131,7 @@ class HostgroupsController extends AppController {
         }
 
         $this->set('hostgroup', $hostgroup);
-        $this->set('_serialize', ['hostgroup']);
+        $this->viewBuilder()->setOption('serialize', ['hostgroup']);
     }
 
     public function extended() {
@@ -162,7 +162,7 @@ class HostgroupsController extends AppController {
             if ($hostgroup->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $hostgroup->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -191,7 +191,7 @@ class HostgroupsController extends AppController {
                 }
             }
             $this->set('hostgroup', $hostgroup);
-            $this->set('_serialize', ['hostgroup']);
+            $this->viewBuilder()->setOption('serialize', ['hostgroup']);
         }
     }
 
@@ -223,7 +223,7 @@ class HostgroupsController extends AppController {
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return host group information
             $this->set('hostgroup', $hostgroup);
-            $this->set('_serialize', ['hostgroup']);
+            $this->viewBuilder()->setOption('serialize', ['hostgroup']);
             return;
         }
 
@@ -239,7 +239,7 @@ class HostgroupsController extends AppController {
             if ($hostgroupEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $hostgroupEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -265,7 +265,7 @@ class HostgroupsController extends AppController {
                 }
             }
             $this->set('hostgroup', $hostgroupEntity);
-            $this->set('_serialize', ['hostgroup']);
+            $this->viewBuilder()->setOption('serialize', ['hostgroup']);
         }
     }
 
@@ -317,13 +317,13 @@ class HostgroupsController extends AppController {
             }
 
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
 
@@ -450,7 +450,7 @@ class HostgroupsController extends AppController {
 
 
         $this->set('hostgroup', $data);
-        $this->set('_serialize', ['hostgroup']);
+        $this->viewBuilder()->setOption('serialize', ['hostgroup']);
     }
 
     /**
@@ -644,7 +644,7 @@ class HostgroupsController extends AppController {
             if ($hostgroupEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $hostgroupEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 $fakeRequest = [
@@ -677,7 +677,7 @@ class HostgroupsController extends AppController {
                 }
             }
             $this->set('hostgroup', $hostgroupEntity);
-            $this->set('_serialize', ['hostgroup']);
+            $this->viewBuilder()->setOption('serialize', ['hostgroup']);
         }
     }
 
@@ -705,7 +705,7 @@ class HostgroupsController extends AppController {
 
 
         $this->set('containers', $containers);
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
     public function loadHosts() {
@@ -744,7 +744,7 @@ class HostgroupsController extends AppController {
             $HostsTable->getHostsForAngular($HostCondition, $selected)
         );
         $this->set('hosts', $hosts);
-        $this->set('_serialize', ['hosts']);
+        $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
     /**
@@ -774,7 +774,7 @@ class HostgroupsController extends AppController {
         );
 
         $this->set('hosttemplates', $hosttemplates);
-        $this->set('_serialize', ['hosttemplates']);
+        $this->viewBuilder()->setOption('serialize', ['hosttemplates']);
     }
 
     public function loadHostgroupsByString() {
@@ -797,7 +797,7 @@ class HostgroupsController extends AppController {
         );
 
         $this->set('hostgroups', $hostgroups);
-        $this->set('_serialize', ['hostgroups']);
+        $this->viewBuilder()->setOption('serialize', ['hostgroups']);
     }
 
     public function loadHosgroupsByContainerId() {
@@ -825,7 +825,7 @@ class HostgroupsController extends AppController {
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);
 
         $this->set('hostgroups', $hostgroups);
-        $this->set('_serialize', ['hostgroups']);
+        $this->viewBuilder()->setOption('serialize', ['hostgroups']);
     }
 
 }

@@ -104,7 +104,7 @@ class ContactsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_contacts', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function view($id = null) {
@@ -129,7 +129,7 @@ class ContactsController extends AppController {
             throw new ForbiddenException('403 Forbidden');
         }
         $this->set('contact', $contact);
-        $this->set('_serialize', ['contact']);
+        $this->viewBuilder()->setOption('serialize', ['contact']);
     }
 
     public function add() {
@@ -151,7 +151,7 @@ class ContactsController extends AppController {
             if ($contact->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $contact->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -178,7 +178,7 @@ class ContactsController extends AppController {
                 }
             }
             $this->set('contact', $contact);
-            $this->set('_serialize', ['contact']);
+            $this->viewBuilder()->setOption('serialize', ['contact']);
         }
     }
 
@@ -219,7 +219,7 @@ class ContactsController extends AppController {
             //Return contact information
             $this->set('contact', $contact);
             $this->set('areContainersChangeable', $ContactContainersPermissions->areContainersChangeable());
-            $this->set('_serialize', ['contact', 'areContainersChangeable']);
+            $this->viewBuilder()->setOption('serialize', ['contact', 'areContainersChangeable']);
             return;
         }
 
@@ -241,7 +241,7 @@ class ContactsController extends AppController {
             if ($contactEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $contactEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -267,7 +267,7 @@ class ContactsController extends AppController {
                 }
             }
             $this->set('contact', $contactEntity);
-            $this->set('_serialize', ['contact']);
+            $this->viewBuilder()->setOption('serialize', ['contact']);
         }
     }
 
@@ -323,7 +323,7 @@ class ContactsController extends AppController {
             $this->set('id', $id);
             $this->set('message', __('Issue while deleting contact'));
             $this->set('usedBy', $usedBy);
-            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
             return;
         }
 
@@ -346,13 +346,13 @@ class ContactsController extends AppController {
             }
 
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
         return;
     }
 
@@ -369,7 +369,7 @@ class ContactsController extends AppController {
         if ($this->request->is('get')) {
             $contacts = $ContactsTable->getContactsForCopy(func_get_args());
             $this->set('contacts', $contacts);
-            $this->set('_serialize', ['contacts']);
+            $this->viewBuilder()->setOption('serialize', ['contacts']);
             return;
         }
 
@@ -486,7 +486,7 @@ class ContactsController extends AppController {
             $this->response->statusCode(400);
         }
         $this->set('result', $postData);
-        $this->set('_serialize', ['result']);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     /**
@@ -566,7 +566,7 @@ class ContactsController extends AppController {
         $this->set('contact', $contact->toArray());
         $this->set('objects', $objects);
         $this->set('total', $total);
-        $this->set('_serialize', ['contact', 'objects', 'total']);
+        $this->viewBuilder()->setOption('serialize', ['contact', 'objects', 'total']);
     }
 
     /****************************
@@ -594,7 +594,7 @@ class ContactsController extends AppController {
             'timeperiods' => $timePeriods,
         ];
         $this->set($data);
-        $this->set('_serialize', array_keys($data));
+        $this->viewBuilder()->setOption('serialize', array_keys($data));
     }
 
     public function loadUsersByContainerId() {
@@ -625,7 +625,7 @@ class ContactsController extends AppController {
         );
 
         $this->set('users', $users);
-        $this->set('_serialize', ['users']);
+        $this->viewBuilder()->setOption('serialize', ['users']);
     }
 
     public function loadContainers() {
@@ -644,7 +644,7 @@ class ContactsController extends AppController {
 
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
 
@@ -663,7 +663,7 @@ class ContactsController extends AppController {
         $this->set('hostPushComamndId', $hostPushComamndId);
         $this->set('servicePushComamndId', $servicePushComamndId);
         $this->set('notificationCommands', Api::makeItJavaScriptAble($notificationCommands));
-        $this->set('_serialize', ['hostPushComamndId', 'servicePushComamndId', 'notificationCommands']);
+        $this->viewBuilder()->setOption('serialize', ['hostPushComamndId', 'servicePushComamndId', 'notificationCommands']);
     }
 
     /**
@@ -681,7 +681,7 @@ class ContactsController extends AppController {
         $samaccountname = (string)$this->request->query('samaccountname');
         $ldapUsers = $Ldap->getUsers($samaccountname);
         $this->set('ldapUsers', $ldapUsers);
-        $this->set('_serialize', ['ldapUsers']);
+        $this->viewBuilder()->setOption('serialize', ['ldapUsers']);
     }
 }
 

@@ -75,7 +75,7 @@ class UsercontainerrolesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['scroll', 'all_usercontainerroles'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
 
@@ -102,12 +102,12 @@ class UsercontainerrolesController extends AppController {
             if ($usercontainerrole->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $usercontainerrole->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
 
             $this->set('usercontainerrole', $usercontainerrole);
-            $this->set('_serialize', ['usercontainerrole']);
+            $this->viewBuilder()->setOption('serialize', ['usercontainerrole']);
         }
     }
 
@@ -137,7 +137,7 @@ class UsercontainerrolesController extends AppController {
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return user container roles information
             $this->set('usercontainerrole', $usercontainerrole['Usercontainerrole']);
-            $this->set('_serialize', ['usercontainerrole']);
+            $this->viewBuilder()->setOption('serialize', ['usercontainerrole']);
             return;
         }
 
@@ -156,12 +156,12 @@ class UsercontainerrolesController extends AppController {
             if ($usercontainerrole->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $usercontainerrole->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
 
             $this->set('usercontainerrole', $usercontainerrole);
-            $this->set('_serialize', ['usercontainerrole']);
+            $this->viewBuilder()->setOption('serialize', ['usercontainerrole']);
         }
     }
 
@@ -190,13 +190,13 @@ class UsercontainerrolesController extends AppController {
         $usercontainerrole = $UsercontainerrolesTable->get($id);
         if ($UsercontainerrolesTable->delete($usercontainerrole)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(400);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
         return;
     }
 

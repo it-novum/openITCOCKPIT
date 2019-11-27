@@ -73,7 +73,7 @@ class CommandsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_commands', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -92,7 +92,7 @@ class CommandsController extends AppController {
 
         $command = $CommandsTable->getCommandById($id);
         $this->set('command', $command);
-        $this->set('_serialize', ['command']);
+        $this->viewBuilder()->setOption('serialize', ['command']);
     }
 
     public function add() {
@@ -104,7 +104,7 @@ class CommandsController extends AppController {
         if($this->request->is('get')){
             $DefaultMacros = DefaultMacros::getMacros();
             $this->set('defaultMacros', $DefaultMacros);
-            $this->set('_serialize', ['defaultMacros']);
+            $this->viewBuilder()->setOption('serialize', ['defaultMacros']);
             return;
         }
 
@@ -121,7 +121,7 @@ class CommandsController extends AppController {
             if ($command->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $command->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -146,7 +146,7 @@ class CommandsController extends AppController {
                 }
             }
             $this->set('command', $command);
-            $this->set('_serialize', ['command']);
+            $this->viewBuilder()->setOption('serialize', ['command']);
         }
     }
 
@@ -175,7 +175,7 @@ class CommandsController extends AppController {
             if ($command->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $command->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -207,7 +207,7 @@ class CommandsController extends AppController {
 
         $this->set('command', $command);
         $this->set('defaultMacros', $DefaultMacros);
-        $this->set('_serialize', ['command', 'defaultMacros']);
+        $this->viewBuilder()->setOption('serialize', ['command', 'defaultMacros']);
     }
 
     /**
@@ -241,7 +241,7 @@ class CommandsController extends AppController {
             $this->set('id', $id);
             $this->set('message', __('Issue while deleting command'));
             $this->set('usedBy', $usedBy);
-            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
             return;
         }
 
@@ -263,14 +263,14 @@ class CommandsController extends AppController {
             }
 
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
         return;
 
     }
@@ -281,7 +281,7 @@ class CommandsController extends AppController {
             "User: \033[31mnagios\033[0m\nPWD: \033[35m/opt/openitc/nagios/libexec/\033[0m\n\n";
 
         $this->set('welcomeMessage', $welcomeMessage);
-        $this->set('_serialize', ['welcomeMessage']);
+        $this->viewBuilder()->setOption('serialize', ['welcomeMessage']);
 
     }
 
@@ -355,7 +355,7 @@ class CommandsController extends AppController {
         $this->set('command', $command->toArray());
         $this->set('objects', $objects);
         $this->set('total', $total);
-        $this->set('_serialize', ['command', 'objects', 'total']);
+        $this->viewBuilder()->setOption('serialize', ['command', 'objects', 'total']);
     }
 
     /**
@@ -373,7 +373,7 @@ class CommandsController extends AppController {
         if ($this->request->is('get')) {
             $commands = $CommandsTable->getCommandsForCopy(func_get_args());
             $this->set('commands', $commands);
-            $this->set('_serialize', ['commands']);
+            $this->viewBuilder()->setOption('serialize', ['commands']);
             return;
         }
 
@@ -453,7 +453,7 @@ class CommandsController extends AppController {
             $this->response->statusCode(400);
         }
         $this->set('result', $postData);
-        $this->set('_serialize', ['result']);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 }
 

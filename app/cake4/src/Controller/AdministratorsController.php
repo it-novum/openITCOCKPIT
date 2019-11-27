@@ -313,7 +313,7 @@ class AdministratorsController extends AppController {
         $this->set('emailInformation', $emailInformation);
         $this->set('userInformation', $userInformation);
 
-        $this->set('_serialize', [
+        $this->viewBuilder()->setOption('serialize', [
             'interfaceInformation',
             'processInformation',
             'renderGraph',
@@ -356,12 +356,12 @@ class AdministratorsController extends AppController {
 
             $this->set('success', true);
             $this->set('message', __('Test mail send to: %s', $recipientAddress));
-            $this->set('_serialize', ['success', 'message']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'message']);
             return;
         } catch (Exception $ex) {
             $this->set('success', false);
             $this->set('message', __('An error occured while sending test mail: %s', $ex->getMessage()));
-            $this->set('_serialize', ['success', 'message']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'message']);
         }
     }
 

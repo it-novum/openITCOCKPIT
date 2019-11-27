@@ -83,7 +83,7 @@ class HostescalationsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_hostescalations', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -108,7 +108,7 @@ class HostescalationsController extends AppController {
         }
 
         $this->set('hostescalation', $hostescalation);
-        $this->set('_serialize', ['hostescalation']);
+        $this->viewBuilder()->setOption('serialize', ['hostescalation']);
     }
 
     public function edit($id = null) {
@@ -167,7 +167,7 @@ class HostescalationsController extends AppController {
             if ($hostescalation->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $hostescalation->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->request->ext == 'json') {
@@ -177,7 +177,7 @@ class HostescalationsController extends AppController {
             }
         }
         $this->set('hostescalation', $hostescalation);
-        $this->set('_serialize', ['hostescalation']);
+        $this->viewBuilder()->setOption('serialize', ['hostescalation']);
     }
 
     public function add() {
@@ -206,7 +206,7 @@ class HostescalationsController extends AppController {
             if ($hostescalation->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $hostescalation->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->request->ext == 'json') {
@@ -215,7 +215,7 @@ class HostescalationsController extends AppController {
                 }
             }
             $this->set('hostescalation', $hostescalation);
-            $this->set('_serialize', ['hostescalation']);
+            $this->viewBuilder()->setOption('serialize', ['hostescalation']);
         }
     }
 
@@ -239,13 +239,13 @@ class HostescalationsController extends AppController {
         $hostescalationEntity = $HostescalationsTable->get($id);
         if ($HostescalationsTable->delete($hostescalationEntity)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
         return;
     }
 
@@ -292,7 +292,7 @@ class HostescalationsController extends AppController {
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
         $this->set(compact(['hosts', 'hostsExcluded', 'hostgroups', 'hostgroupsExcluded', 'timeperiods', 'contacts', 'contactgroups']));
-        $this->set('_serialize', ['hosts', 'hostsExcluded', 'hostgroups', 'hostgroupsExcluded', 'timeperiods', 'contacts', 'contactgroups']);
+        $this->viewBuilder()->setOption('serialize', ['hosts', 'hostsExcluded', 'hostgroups', 'hostgroupsExcluded', 'timeperiods', 'contacts', 'contactgroups']);
     }
 
     public function loadContainers() {
@@ -310,7 +310,7 @@ class HostescalationsController extends AppController {
         }
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
 }

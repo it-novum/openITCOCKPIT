@@ -62,7 +62,7 @@ class StatisticsController extends AppController {
         $record = $SystemsettingsTable->getSystemsettingByKeyAsCake2('SYSTEM.ANONYMOUS_STATISTICS');
 
         $this->set('settings', $record);
-        $this->set('_serialize', ['settings']);
+        $this->viewBuilder()->setOption('serialize', ['settings']);
     }
 
     public function ask_anonymous_statistics() {
@@ -103,12 +103,12 @@ class StatisticsController extends AppController {
         if ($record->hasErrors()) {
             $this->set('success', false);
             $this->set('message', __('Error while saving data'));
-            $this->set('_serialize', ['success', 'message']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'message']);
             return;
         }
         $this->set('success', true);
         $this->set('message', __('Record successfully saved'));
-        $this->set('_serialize', ['success', 'message']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'message']);
     }
 
 }

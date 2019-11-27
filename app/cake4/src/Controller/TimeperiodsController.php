@@ -64,7 +64,7 @@ class TimeperiodsController extends AppController {
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             //Legacy API Request
             $this->set('all_timeperiods', $TimeperiodsTable->getAllTimeperiodsAsCake2($this->MY_RIGHTS));
-            $this->set('_serialize', ['all_timeperiods']);
+            $this->viewBuilder()->setOption('serialize', ['all_timeperiods']);
             return;
         }
 
@@ -88,7 +88,7 @@ class TimeperiodsController extends AppController {
             if ($this->isScrollRequest()) {
                 $toJson = ['all_timeperiods', 'scroll'];
             }
-            $this->set('_serialize', $toJson);
+            $this->viewBuilder()->setOption('serialize', $toJson);
             return;
         }
 
@@ -115,7 +115,7 @@ class TimeperiodsController extends AppController {
         }
 
         $this->set('timeperiod', $timeperiod);
-        $this->set('_serialize', ['timeperiod']);
+        $this->viewBuilder()->setOption('serialize', ['timeperiod']);
     }
 
     /**
@@ -152,7 +152,7 @@ class TimeperiodsController extends AppController {
             if ($timeperiod->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $timeperiod->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -181,7 +181,7 @@ class TimeperiodsController extends AppController {
         }
 
         $this->set('timeperiod', $timeperiod);
-        $this->set('_serialize', ['timeperiod']);
+        $this->viewBuilder()->setOption('serialize', ['timeperiod']);
     }
 
     /**
@@ -226,7 +226,7 @@ class TimeperiodsController extends AppController {
                 $this->serializeCake4Id($timeperiod);
             }
             $this->set('timeperiod', $timeperiod);
-            $this->set('_serialize', ['timeperiod']);
+            $this->viewBuilder()->setOption('serialize', ['timeperiod']);
         }
     }
 
@@ -355,7 +355,7 @@ class TimeperiodsController extends AppController {
             $this->set('id', $id);
             $this->set('message', __('Issue while deleting timeperiod'));
             $this->set('usedBy', $usedBy);
-            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
             return;
         }
 
@@ -378,13 +378,13 @@ class TimeperiodsController extends AppController {
             }
 
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
         return;
     }
 
@@ -405,7 +405,7 @@ class TimeperiodsController extends AppController {
         if ($this->request->is('get')) {
             $timeperiods = $TimeperiodsTable->getTimeperiodsForCopy(func_get_args());
             $this->set('timeperiods', $timeperiods);
-            $this->set('_serialize', ['timeperiods']);
+            $this->viewBuilder()->setOption('serialize', ['timeperiods']);
             return;
         }
 
@@ -491,7 +491,7 @@ class TimeperiodsController extends AppController {
             $this->response->statusCode(400);
         }
         $this->set('result', $postData);
-        $this->set('_serialize', ['result']);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     public function loadTimeperiodsByContainerId() {
@@ -512,6 +512,6 @@ class TimeperiodsController extends AppController {
         );
 
         $this->set('timeperiods', $timeperiods);
-        $this->set('_serialize', ['timeperiods']);
+        $this->viewBuilder()->setOption('serialize', ['timeperiods']);
     }
 }

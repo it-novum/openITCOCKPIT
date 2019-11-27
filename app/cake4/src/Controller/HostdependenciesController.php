@@ -77,7 +77,7 @@ class HostdependenciesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_hostdependencies', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -102,7 +102,7 @@ class HostdependenciesController extends AppController {
         }
 
         $this->set('hostdependency', $hostdependency);
-        $this->set('_serialize', ['hostdependency']);
+        $this->viewBuilder()->setOption('serialize', ['hostdependency']);
 
     }
 
@@ -156,7 +156,7 @@ class HostdependenciesController extends AppController {
             if ($hostdependency->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $hostdependency->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->request->ext == 'json') {
@@ -166,7 +166,7 @@ class HostdependenciesController extends AppController {
             }
         }
         $this->set('hostdependency', $hostdependency);
-        $this->set('_serialize', ['hostdependency']);
+        $this->viewBuilder()->setOption('serialize', ['hostdependency']);
     }
 
     public function add() {
@@ -196,7 +196,7 @@ class HostdependenciesController extends AppController {
             if ($hostdependency->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $hostdependency->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->request->ext == 'json') {
@@ -205,7 +205,7 @@ class HostdependenciesController extends AppController {
                 }
             }
             $this->set('hostdependency', $hostdependency);
-            $this->set('_serialize', ['hostdependency']);
+            $this->viewBuilder()->setOption('serialize', ['hostdependency']);
         }
     }
 
@@ -229,13 +229,13 @@ class HostdependenciesController extends AppController {
         $hostdependencyEntity = $HostdependenciesTable->get($id);
         if ($HostdependenciesTable->delete($hostdependencyEntity)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
         return;
     }
 
@@ -276,7 +276,7 @@ class HostdependenciesController extends AppController {
         $this->set('hostgroups', $hostgroups);
         $this->set('hostgroupsDependent', $hostgroupsDependent);
         $this->set('timeperiods', $timeperiods);
-        $this->set('_serialize', [
+        $this->viewBuilder()->setOption('serialize', [
             'hosts',
             'hostsDependent',
             'hostgroups',
@@ -303,7 +303,7 @@ class HostdependenciesController extends AppController {
         }
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
 }

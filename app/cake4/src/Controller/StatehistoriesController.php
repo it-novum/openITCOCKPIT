@@ -106,7 +106,7 @@ class StatehistoriesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_statehistories', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -170,6 +170,6 @@ class StatehistoriesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_statehistories', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 }

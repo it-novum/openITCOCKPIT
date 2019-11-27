@@ -95,7 +95,7 @@ class ServicetemplatesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_servicetemplates', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -126,7 +126,7 @@ class ServicetemplatesController extends AppController {
         }
 
         $this->set('servicetemplate', $servicetemplate);
-        $this->set('_serialize', ['servicetemplate']);
+        $this->viewBuilder()->setOption('serialize', ['servicetemplate']);
     }
 
 
@@ -152,7 +152,7 @@ class ServicetemplatesController extends AppController {
             if ($servicetemplate->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $servicetemplate->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -182,7 +182,7 @@ class ServicetemplatesController extends AppController {
                 }
             }
             $this->set('servicetemplate', $servicetemplate);
-            $this->set('_serialize', ['servicetemplate']);
+            $this->viewBuilder()->setOption('serialize', ['servicetemplate']);
         }
     }
 
@@ -229,7 +229,7 @@ class ServicetemplatesController extends AppController {
             $this->set('commands', Api::makeItJavaScriptAble($commands));
             $this->set('eventhandlerCommands', Api::makeItJavaScriptAble($eventhandlerCommands));
             $this->set('servicetemplate', $servicetemplate);
-            $this->set('_serialize', ['servicetemplate', 'commands', 'eventhandlerCommands']);
+            $this->viewBuilder()->setOption('serialize', ['servicetemplate', 'commands', 'eventhandlerCommands']);
             return;
         }
 
@@ -246,7 +246,7 @@ class ServicetemplatesController extends AppController {
             if ($servicetemplateEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $servicetemplateEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -272,7 +272,7 @@ class ServicetemplatesController extends AppController {
                 }
             }
             $this->set('servicetemplate', $servicetemplateEntity);
-            $this->set('_serialize', ['servicetemplate']);
+            $this->viewBuilder()->setOption('serialize', ['servicetemplate']);
         }
     }
 
@@ -344,7 +344,7 @@ class ServicetemplatesController extends AppController {
 
                 $this->set('success', true);
                 $this->set('message', __('Service template successfully deleted'));
-                $this->set('_serialize', ['success']);
+                $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
 
@@ -361,7 +361,7 @@ class ServicetemplatesController extends AppController {
             $this->set('id', $id);
             $this->set('message', __('Issue while deleting service template'));
             $this->set('usedBy', $usedBy);
-            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
         }
     }
 
@@ -387,7 +387,7 @@ class ServicetemplatesController extends AppController {
             $this->set('servicetemplates', $servicetemplates);
             $this->set('commands', Api::makeItJavaScriptAble($commands));
             $this->set('eventhandlerCommands', Api::makeItJavaScriptAble($eventhandlerCommands));
-            $this->set('_serialize', ['servicetemplates', 'commands', 'eventhandlerCommands']);
+            $this->viewBuilder()->setOption('serialize', ['servicetemplates', 'commands', 'eventhandlerCommands']);
             return;
         }
 
@@ -472,7 +472,7 @@ class ServicetemplatesController extends AppController {
             $this->response->statusCode(400);
         }
         $this->set('result', $postData);
-        $this->set('_serialize', ['result']);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     public function addServicetemplatesToServicetemplategroup() {
@@ -519,7 +519,7 @@ class ServicetemplatesController extends AppController {
             $this->set('servicetemplate', $servicetemplate);
             $this->set('hostsWithServices', []);
             $this->set('count', 0);
-            $this->set('_serialize', ['hostsWithServices', 'servicetemplate', 'count']);
+            $this->viewBuilder()->setOption('serialize', ['hostsWithServices', 'servicetemplate', 'count']);
             return;
         }
 
@@ -568,7 +568,7 @@ class ServicetemplatesController extends AppController {
         $this->set('servicetemplate', $servicetemplate);
         $this->set('hostsWithServices', $groupByHost);
         $this->set('count', sizeof($services));
-        $this->set('_serialize', ['hostsWithServices', 'servicetemplate', 'count']);
+        $this->viewBuilder()->setOption('serialize', ['hostsWithServices', 'servicetemplate', 'count']);
         return;
     }
 
@@ -625,7 +625,7 @@ class ServicetemplatesController extends AppController {
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
         $this->set('areContainersRestricted', $areContainersRestricted);
-        $this->set('_serialize', ['containers', 'areContainersRestricted']);
+        $this->viewBuilder()->setOption('serialize', ['containers', 'areContainersRestricted']);
     }
 
     public function loadCommands() {
@@ -649,7 +649,7 @@ class ServicetemplatesController extends AppController {
 
         $this->set('commands', Api::makeItJavaScriptAble($commands));
         $this->set('eventhandlerCommands', Api::makeItJavaScriptAble($eventhandlerCommands));
-        $this->set('_serialize', ['commands', 'eventhandlerCommands']);
+        $this->viewBuilder()->setOption('serialize', ['commands', 'eventhandlerCommands']);
     }
 
     /**
@@ -744,7 +744,7 @@ class ServicetemplatesController extends AppController {
 
 
         $this->set('servicetemplatecommandargumentvalues', $servicetemplatecommandargumentvalues);
-        $this->set('_serialize', ['servicetemplatecommandargumentvalues']);
+        $this->viewBuilder()->setOption('serialize', ['servicetemplatecommandargumentvalues']);
     }
 
     /**
@@ -812,7 +812,7 @@ class ServicetemplatesController extends AppController {
         };
 
         $this->set('servicetemplateeventhandlercommandargumentvalues', $servicetemplateeventhandlercommandargumentvalues);
-        $this->set('_serialize', ['servicetemplateeventhandlercommandargumentvalues']);
+        $this->viewBuilder()->setOption('serialize', ['servicetemplateeventhandlercommandargumentvalues']);
     }
 
     /**
@@ -858,7 +858,7 @@ class ServicetemplatesController extends AppController {
         $this->set('contacts', $contacts);
         $this->set('contactgroups', $contactgroups);
         $this->set('servicegroups', $servicegroups);
-        $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']);
+        $this->viewBuilder()->setOption('serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']);
     }
 
     /**
@@ -885,7 +885,7 @@ class ServicetemplatesController extends AppController {
             $ServicetemplatesTable->getServicetemplatesForAngular($containerIds, $ServicetemplateFilter, $selected)
         );
         $this->set('servicetemplates', $servicetemplates);
-        $this->set('_serialize', ['servicetemplates']);
+        $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
     }
 
     public function agent() {
@@ -919,7 +919,7 @@ class ServicetemplatesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_servicetemplates', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
 }

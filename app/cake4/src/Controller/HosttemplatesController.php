@@ -88,7 +88,7 @@ class HosttemplatesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_hosttemplates', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -118,7 +118,7 @@ class HosttemplatesController extends AppController {
         }
 
         $this->set('hosttemplate', $hosttemplate);
-        $this->set('_serialize', ['hosttemplate']);
+        $this->viewBuilder()->setOption('serialize', ['hosttemplate']);
     }
 
     /**
@@ -148,7 +148,7 @@ class HosttemplatesController extends AppController {
             if ($hosttemplate->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $hosttemplate->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -178,7 +178,7 @@ class HosttemplatesController extends AppController {
                 }
             }
             $this->set('hosttemplate', $hosttemplate);
-            $this->set('_serialize', ['hosttemplate']);
+            $this->viewBuilder()->setOption('serialize', ['hosttemplate']);
         }
     }
 
@@ -214,7 +214,7 @@ class HosttemplatesController extends AppController {
             $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
             $this->set('commands', Api::makeItJavaScriptAble($commands));
             $this->set('hosttemplate', $hosttemplate);
-            $this->set('_serialize', ['hosttemplate', 'commands']);
+            $this->viewBuilder()->setOption('serialize', ['hosttemplate', 'commands']);
             return;
         }
 
@@ -231,7 +231,7 @@ class HosttemplatesController extends AppController {
             if ($hosttemplateEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $hosttemplateEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -257,7 +257,7 @@ class HosttemplatesController extends AppController {
                 }
             }
             $this->set('hosttemplate', $hosttemplateEntity);
-            $this->set('_serialize', ['hosttemplate']);
+            $this->viewBuilder()->setOption('serialize', ['hosttemplate']);
         }
     }
 
@@ -298,7 +298,7 @@ class HosttemplatesController extends AppController {
             $this->set('id', $id);
             $this->set('message', __('Issue while deleting host template'));
             $this->set('usedBy', $usedBy);
-            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
             return;
         }
 
@@ -327,13 +327,13 @@ class HosttemplatesController extends AppController {
             $DocumentationsTable->deleteDocumentationByUuid($hosttemplate->get('uuid'));
 
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     /**
@@ -355,7 +355,7 @@ class HosttemplatesController extends AppController {
             $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
             $this->set('hosttemplates', $hosttemplates);
             $this->set('commands', Api::makeItJavaScriptAble($commands));
-            $this->set('_serialize', ['hosttemplates', 'commands']);
+            $this->viewBuilder()->setOption('serialize', ['hosttemplates', 'commands']);
             return;
         }
 
@@ -439,7 +439,7 @@ class HosttemplatesController extends AppController {
             $this->response->statusCode(400);
         }
         $this->set('result', $postData);
-        $this->set('_serialize', ['result']);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     /**
@@ -501,7 +501,7 @@ class HosttemplatesController extends AppController {
 
 
         $this->set(compact(['all_hosts', 'hosttemplate']));
-        $this->set('_serialize', ['all_hosts', 'hosttemplate']);
+        $this->viewBuilder()->setOption('serialize', ['all_hosts', 'hosttemplate']);
     }
 
     /****************************
@@ -548,7 +548,7 @@ class HosttemplatesController extends AppController {
         $this->set('contacts', $contacts);
         $this->set('contactgroups', $contactgroups);
         $this->set('hostgroups', $hostgroups);
-        $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']);
+        $this->viewBuilder()->setOption('serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']);
     }
 
     /**
@@ -600,7 +600,7 @@ class HosttemplatesController extends AppController {
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
         $this->set('areContainersRestricted', $areContainersRestricted);
-        $this->set('_serialize', ['containers', 'areContainersRestricted']);
+        $this->viewBuilder()->setOption('serialize', ['containers', 'areContainersRestricted']);
     }
 
     public function loadCommands() {
@@ -613,7 +613,7 @@ class HosttemplatesController extends AppController {
         $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
 
         $this->set('commands', Api::makeItJavaScriptAble($commands));
-        $this->set('_serialize', ['commands']);
+        $this->viewBuilder()->setOption('serialize', ['commands']);
     }
 
     /**
@@ -707,7 +707,7 @@ class HosttemplatesController extends AppController {
         $hosttemplatecommandargumentvalues = $filteredCommandArgumentsValules;
 
         $this->set('hosttemplatecommandargumentvalues', $hosttemplatecommandargumentvalues);
-        $this->set('_serialize', ['hosttemplatecommandargumentvalues']);
+        $this->viewBuilder()->setOption('serialize', ['hosttemplatecommandargumentvalues']);
     }
 
 

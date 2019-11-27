@@ -61,7 +61,7 @@ class ProxyController extends AppController {
             if ($entity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $entity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
 
@@ -70,7 +70,7 @@ class ProxyController extends AppController {
 
         $settings = $ProxiesTable->getSettings();
         $this->set('proxy', $settings);
-        $this->set('_serialize', ['proxy']);
+        $this->viewBuilder()->setOption('serialize', ['proxy']);
     }
 
 }

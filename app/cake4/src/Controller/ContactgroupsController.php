@@ -92,7 +92,7 @@ class ContactgroupsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_contactgroups', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function view($id = null) {
@@ -113,7 +113,7 @@ class ContactgroupsController extends AppController {
         }
 
         $this->set('contactgroup', $contactgroup);
-        $this->set('_serialize', ['contactgroup']);
+        $this->viewBuilder()->setOption('serialize', ['contactgroup']);
     }
 
     public function add() {
@@ -134,7 +134,7 @@ class ContactgroupsController extends AppController {
             if ($contactgroup->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $contactgroup->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -161,7 +161,7 @@ class ContactgroupsController extends AppController {
                 }
             }
             $this->set('contactgroup', $contactgroup);
-            $this->set('_serialize', ['contactgroup']);
+            $this->viewBuilder()->setOption('serialize', ['contactgroup']);
         }
     }
 
@@ -190,7 +190,7 @@ class ContactgroupsController extends AppController {
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return contact group information
             $this->set('contactgroup', $contactgroup);
-            $this->set('_serialize', ['contactgroup']);
+            $this->viewBuilder()->setOption('serialize', ['contactgroup']);
             return;
         }
 
@@ -211,7 +211,7 @@ class ContactgroupsController extends AppController {
             if ($contactgroupEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $contactgroupEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -237,7 +237,7 @@ class ContactgroupsController extends AppController {
                 }
             }
             $this->set('contactgroup', $contactgroupEntity);
-            $this->set('_serialize', ['contactgroup']);
+            $this->viewBuilder()->setOption('serialize', ['contactgroup']);
         }
     }
 
@@ -279,7 +279,7 @@ class ContactgroupsController extends AppController {
             $this->set('id', $id);
             $this->set('message', __('Issue while deleting contact'));
             $this->set('usedBy', $usedBy);
-            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
             return;
         }
 
@@ -309,13 +309,13 @@ class ContactgroupsController extends AppController {
             }
 
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
 
@@ -331,7 +331,7 @@ class ContactgroupsController extends AppController {
         if ($this->request->is('get')) {
             $contactgroups = $ContactgroupsTable->getContactgroupsForCopy(func_get_args());
             $this->set('contactgroups', $contactgroups);
-            $this->set('_serialize', ['contactgroups']);
+            $this->viewBuilder()->setOption('serialize', ['contactgroups']);
             return;
         }
 
@@ -420,7 +420,7 @@ class ContactgroupsController extends AppController {
             $this->response->statusCode(400);
         }
         $this->set('result', $postData);
-        $this->set('_serialize', ['result']);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     /**
@@ -541,7 +541,7 @@ class ContactgroupsController extends AppController {
             return;
         }
         $this->set(compact(['contactgroupWithRelations']));
-        $this->set('_serialize', ['contactgroupWithRelations']);
+        $this->viewBuilder()->setOption('serialize', ['contactgroupWithRelations']);
         $this->set('back_url', $this->referer());
     }
 
@@ -566,7 +566,7 @@ class ContactgroupsController extends AppController {
         }
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
     public function loadContacts($containerIds = null) {
@@ -587,6 +587,6 @@ class ContactgroupsController extends AppController {
             'contacts' => $contacts,
         ];
         $this->set($data);
-        $this->set('_serialize', array_keys($data));
+        $this->viewBuilder()->setOption('serialize', array_keys($data));
     }
 }

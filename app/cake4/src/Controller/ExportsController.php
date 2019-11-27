@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 
 class ExportsController extends AppController {
@@ -101,7 +102,7 @@ class ExportsController extends AppController {
         }
 
         $this->set(compact(['exportRecords', 'exportFinished']));
-        $this->set('_serialize', ['exportRecords', 'exportFinished']);
+        $this->viewBuilder()->setOption('serialize', ['exportRecords', 'exportFinished']);
     }
 
     public function launchExport($createBackup = 1) {
@@ -110,8 +111,8 @@ class ExportsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if (isset($this->request->query['instances'])) {
-            $instancesToExport = $this->request->query['instances'];
+        if ($this->request->getQuery('instances')) {
+            $instancesToExport = $this->request->getQuery('instances');
             if (is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
                 $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
                 $SatelliteModel->disableAllInstanceConfigSyncs();
@@ -148,7 +149,7 @@ class ExportsController extends AppController {
             'exportStarted' => $exportStarted,
         ];
         $this->set('export', $export);
-        $this->set('_serialize', ['export']);
+        $this->viewBuilder()->setOption('serialize', ['export']);
     }
 
     public function saveInstanceConfigSyncSelection() {
@@ -159,13 +160,13 @@ class ExportsController extends AppController {
         if (is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
             $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
             $SatelliteModel->disableAllInstanceConfigSyncs();
-            if (isset($this->request->query['instances'])) {
-                $instancesToExport = $this->request->query['instances'];
+            if ($this->request->getQuery('instances')) {
+                $instancesToExport = $this->request->getQuery('instances');
                 $SatelliteModel->saveInstancesForConfigSync($instancesToExport);
             }
         }
         $result = true;
-        $this->set('_serialize', ['result']);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     public function verifyConfig() {
@@ -175,6 +176,6 @@ class ExportsController extends AppController {
         $result = $this->GearmanClient->client->doNormal("oitc_gearman", serialize(['task' => 'export_verify_config']));
         $result = unserialize($result);
         $this->set('result', $result);
-        $this->set('_serialize', ['result']);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 }

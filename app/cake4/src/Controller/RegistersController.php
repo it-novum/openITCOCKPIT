@@ -65,7 +65,7 @@ class RegistersController extends AppController {
             $this->set('hasLicense', $hasLicense);
             $this->set('license', $license);
             $this->set('licenseResponse', $licenseResponse);
-            $this->set('_serialize', ['hasLicense', 'license', 'licenseResponse']);
+            $this->viewBuilder()->setOption('serialize', ['hasLicense', 'license', 'licenseResponse']);
             return;
         }
 
@@ -96,18 +96,18 @@ class RegistersController extends AppController {
                     if ($licenseEntity->hasErrors()) {
                         $this->response->statusCode(400);
                         $this->set('error', $licenseEntity->getErrors());
-                        $this->set('_serialize', ['error']);
+                        $this->viewBuilder()->setOption('serialize', ['error']);
                         return;
                     }
 
                     $this->set('licenseResponse', $licenseResponse);
-                    $this->set('_serialize', ['licenseResponse']);
+                    $this->viewBuilder()->setOption('serialize', ['licenseResponse']);
                     return;
                 }
             }
 
             $this->set('licenseResponse', $licenseResponse);
-            $this->set('_serialize', ['licenseResponse']);
+            $this->viewBuilder()->setOption('serialize', ['licenseResponse']);
         }
     }
 

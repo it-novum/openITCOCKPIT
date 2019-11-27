@@ -47,7 +47,7 @@ class MacrosController extends AppController {
         if ($this->isJsonRequest() && !$this->isAngularJsRequest()) {
             //Legacy API
             $this->set('all_macros', $Macros->getAllMacrosInCake2Format());
-            $this->set('_serialize', ['all_macros']);
+            $this->viewBuilder()->setOption('serialize', ['all_macros']);
             return;
         }
 
@@ -59,7 +59,7 @@ class MacrosController extends AppController {
         $all_macros = $Macros->find('all')->disableHydration()->toArray();
         $all_macros = Hash::sort($all_macros, '{n}.name', 'asc', 'natural');
         $this->set('all_macros', $all_macros);
-        $this->set('_serialize', ['all_macros']);
+        $this->viewBuilder()->setOption('serialize', ['all_macros']);
     }
 
     public function add() {
@@ -78,12 +78,12 @@ class MacrosController extends AppController {
         if ($macro->hasErrors()) {
             $this->response->statusCode(400);
             $this->set('error', $macro->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
         $this->set('macro', $macro);
-        $this->set('_serialize', ['macro']);
+        $this->viewBuilder()->setOption('serialize', ['macro']);
     }
 
     public function edit($id = null) {
@@ -107,12 +107,12 @@ class MacrosController extends AppController {
         if ($macro->hasErrors()) {
             $this->response->statusCode(400);
             $this->set('error', $macro->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
         $this->set('macro', $macro);
-        $this->set('_serialize', ['macro']);
+        $this->viewBuilder()->setOption('serialize', ['macro']);
     }
 
     public function delete($id = null) {
@@ -131,13 +131,13 @@ class MacrosController extends AppController {
         $macro = $Macros->get($id);
         if ($Macros->delete($macro)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function getAvailableMacroNames() {
@@ -158,6 +158,6 @@ class MacrosController extends AppController {
 
 
         $this->set('availableMacroNames', $availableMacroNames);
-        $this->set('_serialize', ['availableMacroNames']);
+        $this->viewBuilder()->setOption('serialize', ['availableMacroNames']);
     }
 }

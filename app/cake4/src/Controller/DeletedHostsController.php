@@ -67,6 +67,6 @@ class DeletedHostsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['deletedHosts', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 }

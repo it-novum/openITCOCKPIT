@@ -62,7 +62,7 @@ class CurrentstatereportsController extends AppController {
         if (!empty($currentstatereportForm->getErrors())) {
             $this->response->statusCode(400);
             $this->set('error', $currentstatereportForm->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         } else {
             $ServiceFilter = new ServiceFilter($this->request);
@@ -98,7 +98,7 @@ class CurrentstatereportsController extends AppController {
                 $ServicestatusConditions
             );
             $this->set('all_services', $all_services);
-            $this->set('_serialize', ['all_services']);
+            $this->viewBuilder()->setOption('serialize', ['all_services']);
         }
     }
 
@@ -119,14 +119,14 @@ class CurrentstatereportsController extends AppController {
 
             $this->response->statusCode(400);
             $this->set('error', $currentstatereportForm->getErrors());
-            $this->set('_serialize', ['error', 'input']);
+            $this->viewBuilder()->setOption('serialize', ['error', 'input']);
             return;
         }
 
         if ($this->isJsonRequest()) {
             //Only validate parameters
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 

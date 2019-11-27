@@ -112,7 +112,7 @@ class AcknowledgementsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_acknowledgements', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -177,6 +177,6 @@ class AcknowledgementsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_acknowledgements', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 }

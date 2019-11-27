@@ -128,7 +128,7 @@ class LogentriesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_logentries', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
 }

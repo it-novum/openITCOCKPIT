@@ -54,7 +54,7 @@ class CronjobsController extends AppController {
             }
         }
         $this->set(compact('cronjobs'));
-        $this->set('_serialize', ['cronjobs']);
+        $this->viewBuilder()->setOption('serialize', ['cronjobs']);
     }
 
     public function getPlugins() {
@@ -70,7 +70,7 @@ class CronjobsController extends AppController {
         }
 
         $this->set(compact('plugins'));
-        $this->set('_serialize', ['plugins']);
+        $this->viewBuilder()->setOption('serialize', ['plugins']);
     }
 
     public function getTasks() {
@@ -91,7 +91,7 @@ class CronjobsController extends AppController {
         }
 
         $this->set(compact('coreTasks'));
-        $this->set('_serialize', ['coreTasks']);
+        $this->viewBuilder()->setOption('serialize', ['coreTasks']);
     }
 
     public function add() {
@@ -108,11 +108,11 @@ class CronjobsController extends AppController {
         if ($cronjob->hasErrors()) {
             $this->response->statusCode(400);
             $this->set('error', $cronjob->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
         $this->set('cronjob', $cronjob);
-        $this->set('_serialize', ['cronjob']);
+        $this->viewBuilder()->setOption('serialize', ['cronjob']);
     }
 
     public function edit($id = null) {
@@ -130,11 +130,11 @@ class CronjobsController extends AppController {
         if ($cronjob->hasErrors()) {
             $this->response->statusCode(400);
             $this->set('error', $cronjob->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
         $this->set('cronjob', $cronjob);
-        $this->set('_serialize', ['cronjob']);
+        $this->viewBuilder()->setOption('serialize', ['cronjob']);
     }
 
     public function delete($id = null) {
@@ -153,10 +153,10 @@ class CronjobsController extends AppController {
         if ($cronjob->hasErrors()) {
             $this->response->statusCode(400);
             $this->set('error', $cronjob->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
         $this->set('cronjob', $cronjob);
-        $this->set('_serialize', ['cronjob']);
+        $this->viewBuilder()->setOption('serialize', ['cronjob']);
     }
 }

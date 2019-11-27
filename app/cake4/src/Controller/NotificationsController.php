@@ -92,7 +92,7 @@ class NotificationsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_notifications', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function services() {
@@ -143,7 +143,7 @@ class NotificationsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_notifications', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -211,7 +211,7 @@ class NotificationsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_notifications', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -281,7 +281,7 @@ class NotificationsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_notifications', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
 }

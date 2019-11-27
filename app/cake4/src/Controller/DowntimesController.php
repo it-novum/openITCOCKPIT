@@ -127,7 +127,7 @@ class DowntimesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_host_downtimes', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function service() {
@@ -208,7 +208,7 @@ class DowntimesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_service_downtimes', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function validateDowntimeInputFromAngular() {
@@ -258,7 +258,7 @@ class DowntimesController extends AppController {
         }
 
         $this->set('error', $error);
-        $this->set('_serialize', ['error', 'success']);
+        $this->viewBuilder()->setOption('serialize', ['error', 'success']);
     }
 
     /**
@@ -320,7 +320,7 @@ class DowntimesController extends AppController {
                         } catch (RecordNotFoundException $e) {
                             $this->set('success', false);
                             $this->set('message', $e->getMessage());
-                            $this->set('_serialize', ['success', 'message']);
+                            $this->viewBuilder()->setOption('serialize', ['success', 'message']);
                             return;
                         }
 
@@ -342,7 +342,7 @@ class DowntimesController extends AppController {
         }
         $this->set('success', true);
         $this->set('message', __('Successfully'));
-        $this->set('_serialize', ['success', 'message']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'message']);
     }
 
     public function icon() {

@@ -231,7 +231,7 @@ class LoginController extends AppController {
                     }
                     $message = 'Login successful';
                     $this->set('message', $message);
-                    $this->set('_serialize', ['message']);
+                    $this->viewBuilder()->setOption('serialize', ['message']);
 
                     return;
                 }
@@ -258,7 +258,7 @@ class LoginController extends AppController {
 
         $message = 'Please login';
         $this->set('message', $message);
-        $this->set('_serialize', ['message']);
+        $this->viewBuilder()->setOption('serialize', ['message']);
     }
 
     public function onetimetoken($id = null, $rememberMe = false) {

@@ -81,7 +81,7 @@ class ServicedependenciesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_servicedependencies', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -106,7 +106,7 @@ class ServicedependenciesController extends AppController {
         }
 
         $this->set('servicedependency', $servicedependency);
-        $this->set('_serialize', ['servicedependency']);
+        $this->viewBuilder()->setOption('serialize', ['servicedependency']);
     }
 
     public function add() {
@@ -136,7 +136,7 @@ class ServicedependenciesController extends AppController {
             if ($servicedependency->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $servicedependency->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->request->ext == 'json') {
@@ -145,7 +145,7 @@ class ServicedependenciesController extends AppController {
                 }
             }
             $this->set('servicedependency', $servicedependency);
-            $this->set('_serialize', ['servicedependency']);
+            $this->viewBuilder()->setOption('serialize', ['servicedependency']);
         }
     }
 
@@ -194,7 +194,7 @@ class ServicedependenciesController extends AppController {
             if ($servicedependency->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $servicedependency->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->request->ext == 'json') {
@@ -204,7 +204,7 @@ class ServicedependenciesController extends AppController {
             }
         }
         $this->set('servicedependency', $servicedependency);
-        $this->set('_serialize', ['servicedependency']);
+        $this->viewBuilder()->setOption('serialize', ['servicedependency']);
     }
 
     /**
@@ -230,13 +230,13 @@ class ServicedependenciesController extends AppController {
         $servicedependencyEntity = $ServicedependenciesTable->get($id);
         if ($ServicedependenciesTable->delete($servicedependencyEntity)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
         return;
     }
 
@@ -269,7 +269,7 @@ class ServicedependenciesController extends AppController {
         $this->set('servicegroups', $servicegroups);
         $this->set('servicegroupsDependent', $servicegroupsDependent);
         $this->set('timeperiods', $timeperiods);
-        $this->set('_serialize', [
+        $this->viewBuilder()->setOption('serialize', [
             'servicegroups',
             'servicegroupsDependent',
             'timeperiods'
@@ -291,6 +291,6 @@ class ServicedependenciesController extends AppController {
         }
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 }

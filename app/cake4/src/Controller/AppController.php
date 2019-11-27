@@ -257,6 +257,16 @@ class AppController extends Controller {
         return false;
     }
 
+    protected function isScrollRequest() {
+        if ($this->isApiRequest()) {
+            if ($this->request->getQuery('scroll', 'false') !== 'false') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function beforeFilter(EventInterface $event) {
         parent::beforeFilter($event);
 

@@ -76,7 +76,7 @@ class DowntimereportsController extends AppController {
         if (!empty($downtimeReportForm->getErrors())) {
             $this->response->statusCode(400);
             $this->set('error', $downtimeReportForm->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
@@ -90,7 +90,7 @@ class DowntimereportsController extends AppController {
                     'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
                 ]
             ]);
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
         /** @var HostsTable $HostsTable */
@@ -108,7 +108,7 @@ class DowntimereportsController extends AppController {
                     'empty' => 'There are no hosts for downtime report available.'
                 ]
             ]);
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
         $downtimeReport = $this->createReport(
@@ -131,12 +131,12 @@ class DowntimereportsController extends AppController {
                     )
                 ]
             ]);
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
         $this->set('downtimeReport', $downtimeReport);
-        $this->set('_serialize', ['downtimeReport']);
+        $this->viewBuilder()->setOption('serialize', ['downtimeReport']);
     }
 
     /**
@@ -156,14 +156,14 @@ class DowntimereportsController extends AppController {
         if (!empty($downtimeReportForm->getErrors())) {
             $this->response->statusCode(400);
             $this->set('error', $downtimeReportForm->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
         if ($this->isJsonRequest()) {
             //Only validate parameters
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
@@ -177,7 +177,7 @@ class DowntimereportsController extends AppController {
                     'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
                 ]
             ]);
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
         /** @var HostsTable $HostsTable */
@@ -200,7 +200,7 @@ class DowntimereportsController extends AppController {
                     'empty' => 'There are no hosts for downtime report available.'
                 ]
             ]);
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
         $downtimeReport = $this->createReport(
@@ -222,7 +222,7 @@ class DowntimereportsController extends AppController {
                     )
                 ]
             ]);
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
         }
 
         $this->set('downtimeReport', $downtimeReport);

@@ -74,7 +74,7 @@ class ProfileController extends AppController {
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
             $this->set('maxUploadLimit', $FileUploadSize->toArray());
-            $this->set('_serialize', ['user', 'isLdapUser', 'maxUploadLimit']);
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'maxUploadLimit']);
             return;
         }
 
@@ -105,14 +105,14 @@ class ProfileController extends AppController {
             if ($user->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $user->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
 
             //Update user information in $_SESSION
             $this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
             $this->set('user', $user);
-            $this->set('_serialize', ['user']);
+            $this->viewBuilder()->setOption('serialize', ['user']);
         }
     }
 
@@ -132,7 +132,7 @@ class ProfileController extends AppController {
                     __('Current password is incorrect')
                 ]
             ]);
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
@@ -141,13 +141,13 @@ class ProfileController extends AppController {
         if ($user->hasErrors()) {
             $this->response->statusCode(400);
             $this->set('error', $user->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
         $this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
         $this->set('message', __('Password changed successfully.'));
-        $this->set('_serialize', ['message']);
+        $this->viewBuilder()->setOption('serialize', ['message']);
     }
 
     public function upload_profile_icon() {
@@ -179,7 +179,7 @@ class ProfileController extends AppController {
                 if ($user->hasErrors()) {
                     $this->response->statusCode(400);
                     $this->set('error', $user->getErrors());
-                    $this->set('_serialize', ['error']);
+                    $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
                 }
                 $this->Session->write('Auth', $UsersTable->getActiveUsersByIdForCake2Login($User->getId()));
@@ -194,17 +194,17 @@ class ProfileController extends AppController {
                 $this->response->statusCode(200);
                 $this->set('success', true);
                 $this->set('message', __('File Upload success!'));
-                $this->set('_serialize', ['success', 'message']);
+                $this->viewBuilder()->setOption('serialize', ['success', 'message']);
                 return;
             }
             $this->response->statusCode(400);
             $this->set('error', __('Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif'));
             $this->set('message', __('Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif'));
-            $this->set('_serialize', ['error', 'message']);
+            $this->viewBuilder()->setOption('serialize', ['error', 'message']);
             return;
         }
         $this->set('user', []);
-        $this->set('_serialize', ['user']);
+        $this->viewBuilder()->setOption('serialize', ['user']);
 
     }
 
@@ -231,7 +231,7 @@ class ProfileController extends AppController {
                 );
                 $Apikey = new \itnovum\openITCOCKPIT\Core\Views\Apikey($apikey);
                 $this->set('apikey', $Apikey->toArray());
-                $this->set('_serialize', ['apikey']);
+                $this->viewBuilder()->setOption('serialize', ['apikey']);
                 return;
             }
 
@@ -245,7 +245,7 @@ class ProfileController extends AppController {
             }
 
             $this->set('apikeys', $apikeys);
-            $this->set('_serialize', ['apikeys']);
+            $this->viewBuilder()->setOption('serialize', ['apikeys']);
             return;
         }
 
@@ -264,11 +264,11 @@ class ProfileController extends AppController {
                 if ($apikey->hasErrors()) {
                     $this->response->statusCode(400);
                     $this->set('error', $apikey->getErrors());
-                    $this->set('_serialize', ['error']);
+                    $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
                 } else {
                     $this->set('message', __('API key updated successfully'));
-                    $this->set('_serialize', ['message']);
+                    $this->viewBuilder()->setOption('serialize', ['message']);
                     return;
                 }
             }
@@ -296,7 +296,7 @@ class ProfileController extends AppController {
             $this->Session->write('latest_api_key', $newApiKey);
 
             $this->set('apikey', $apikey);
-            $this->set('_serialize', ['apikey']);
+            $this->viewBuilder()->setOption('serialize', ['apikey']);
             return;
         }
 
@@ -328,10 +328,10 @@ class ProfileController extends AppController {
             if ($apikeyEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $apikeyEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
             } else {
                 $this->set('message', __('API key created successfully'));
-                $this->set('_serialize', ['message']);
+                $this->viewBuilder()->setOption('serialize', ['message']);
             }
             return;
         }
@@ -357,13 +357,13 @@ class ProfileController extends AppController {
 
         if ($ApikeysTable->delete($apikey)) {
             $this->set('message', __('Api key deleted successfully'));
-            $this->set('_serialize', ['message']);
+            $this->viewBuilder()->setOption('serialize', ['message']);
             return;
         }
 
         $this->response->statusCode(400);
         $this->set('message', __('Could not delete api key'));
-        $this->set('_serialize', ['message']);
+        $this->viewBuilder()->setOption('serialize', ['message']);
 
     }
 
@@ -391,7 +391,7 @@ class ProfileController extends AppController {
         if ($user->hasErrors()) {
             $this->response->statusCode(400);
             $this->set('error', $user->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
         $this->Session->delete('Auth.User.image');
@@ -399,7 +399,7 @@ class ProfileController extends AppController {
         $this->response->statusCode(200);
         $this->set('success', true);
         $this->set('message', __('File deleted sucessfully'));
-        $this->set('_serialize', ['success', 'message']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'message']);
         return;
     }
 

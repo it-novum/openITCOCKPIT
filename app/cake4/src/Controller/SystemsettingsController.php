@@ -53,7 +53,7 @@ class SystemsettingsController extends AppController {
         }
 
         $this->set(compact(['all_systemsettings']));
-        $this->set('_serialize', ['all_systemsettings']);
+        $this->viewBuilder()->setOption('serialize', ['all_systemsettings']);
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $systemsettingsEntity = $Systemsettings->getSystemsettings(true);
@@ -69,7 +69,7 @@ class SystemsettingsController extends AppController {
             if (!$result) {
                 $this->response->statusCode(400);
                 $this->set('error',[]);
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
             //Update systemname in session

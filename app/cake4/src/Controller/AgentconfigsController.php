@@ -80,7 +80,7 @@ class AgentconfigsController extends AppController {
             $config = $AgentconfigsTable->getConfigByHostId($hostId, true);
             $this->set('host', $host);
             $this->set('config', $config);
-            $this->set('_serialize', ['host', 'config']);
+            $this->viewBuilder()->setOption('serialize', ['host', 'config']);
             return;
         }
 
@@ -96,11 +96,11 @@ class AgentconfigsController extends AppController {
                 $this->response->statusCode(400);
                 $this->set('error', $entity->getErrors());
                 $this->set('success', false);
-                $this->set('_serialize', ['error', 'success']);
+                $this->viewBuilder()->setOption('serialize', ['error', 'success']);
                 return;
             } else {
                 $this->set('success', true);
-                $this->set('_serialize', ['success']);
+                $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
 
@@ -141,7 +141,7 @@ class AgentconfigsController extends AppController {
             if ($runDiscovery === false) {
                 $this->set('host', $host);
                 $this->set('config', $config);
-                $this->set('_serialize', ['host', 'config']);
+                $this->viewBuilder()->setOption('serialize', ['host', 'config']);
                 return;
             }
 
@@ -153,7 +153,7 @@ class AgentconfigsController extends AppController {
                     $this->response->statusCode(400);
                     $this->set('error', $response['error']);
                     $this->set('success', false);
-                    $this->set('_serialize', ['error', 'success']);
+                    $this->viewBuilder()->setOption('serialize', ['error', 'success']);
                     return;
                 }
 
@@ -171,13 +171,13 @@ class AgentconfigsController extends AppController {
                 $mapping = $AgentResponseToServicetemplateMapper->getMapping();
 
                 $this->set('mapping', $mapping);
-                $this->set('_serialize', ['mapping']);
+                $this->viewBuilder()->setOption('serialize', ['mapping']);
                 return;
             } catch (\Exception $e) {
                 $this->response->statusCode(400);
                 $this->set('error', $e->getMessage());
                 $this->set('success', false);
-                $this->set('_serialize', ['error', 'success']);
+                $this->viewBuilder()->setOption('serialize', ['error', 'success']);
             }
         }
     }
@@ -217,7 +217,7 @@ class AgentconfigsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_agentchecks', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
 
     }
 
@@ -237,7 +237,7 @@ class AgentconfigsController extends AppController {
             if ($agentcheck->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $agentcheck->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->request->ext == 'json') {
@@ -246,7 +246,7 @@ class AgentconfigsController extends AppController {
                 }
             }
             $this->set('agentcheck', $agentcheck);
-            $this->set('_serialize', ['agentcheck']);
+            $this->viewBuilder()->setOption('serialize', ['agentcheck']);
         }
     }
 
@@ -281,7 +281,7 @@ class AgentconfigsController extends AppController {
             if ($agentcheck->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $agentcheck->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->request->ext == 'json') {
@@ -291,7 +291,7 @@ class AgentconfigsController extends AppController {
             }
         }
         $this->set('agentcheck', $agentcheck);
-        $this->set('_serialize', ['agentcheck']);
+        $this->viewBuilder()->setOption('serialize', ['agentcheck']);
     }
 
     public function delete($id) {
@@ -316,13 +316,13 @@ class AgentconfigsController extends AppController {
 
         if ($AgentchecksTable->delete($agentcheck)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function loadServicetemplates() {
@@ -333,7 +333,7 @@ class AgentconfigsController extends AppController {
         $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
 
         $this->set('servicetemplates', $servicetemplates);
-        $this->set('_serialize', ['servicetemplates']);
+        $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
     }
 
     public function createService() {
@@ -407,7 +407,7 @@ class AgentconfigsController extends AppController {
             if ($service->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $service->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -437,7 +437,7 @@ class AgentconfigsController extends AppController {
                 }
             }
             $this->set('service', $service);
-            $this->set('_serialize', ['$service']);
+            $this->viewBuilder()->setOption('serialize', ['$service']);
         }
     }
 

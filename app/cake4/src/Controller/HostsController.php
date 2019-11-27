@@ -313,7 +313,7 @@ class HostsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_hosts', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function icon() {
@@ -376,7 +376,7 @@ class HostsController extends AppController {
 
         $this->set('host', $host);
         $this->set('hoststatus', $Hoststatus->toArray());
-        $this->set('_serialize', ['host', 'hoststatus']);
+        $this->viewBuilder()->setOption('serialize', ['host', 'hoststatus']);
     }
 
     public function byUuid($uuid) {
@@ -395,7 +395,7 @@ class HostsController extends AppController {
         }
 
         $this->set('host', $host);
-        $this->set('_serialize', ['host']);
+        $this->viewBuilder()->setOption('serialize', ['host']);
     }
 
     public function notMonitored() {
@@ -495,7 +495,7 @@ class HostsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_hosts', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -540,7 +540,7 @@ class HostsController extends AppController {
             if ($host->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $host->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -570,7 +570,7 @@ class HostsController extends AppController {
                 }
             }
             $this->set('host', $host);
-            $this->set('_serialize', ['host']);
+            $this->viewBuilder()->setOption('serialize', ['host']);
         }
     }
 
@@ -639,7 +639,7 @@ class HostsController extends AppController {
             $this->set('fakeDisplayContainers', Api::makeItJavaScriptAble($fakeDisplayContainers));
             $this->set('areContactsInheritedFromHosttemplate', $HostMergerForView->areContactsInheritedFromHosttemplate());
 
-            $this->set('_serialize', [
+            $this->viewBuilder()->setOption('serialize', [
                 'host',
                 'commands',
                 'hosttemplate',
@@ -696,7 +696,7 @@ class HostsController extends AppController {
             if ($hostEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $hostEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -722,7 +722,7 @@ class HostsController extends AppController {
                 }
             }
             $this->set('host', $hostEntity);
-            $this->set('_serialize', ['host']);
+            $this->viewBuilder()->setOption('serialize', ['host']);
         }
     }
 
@@ -785,7 +785,7 @@ class HostsController extends AppController {
             $this->set('host', $host);
             $this->set('primaryContainerPathSelect', $primaryContainerPathSelect);
             $this->set('sharingContainers', $sharingContainers);
-            $this->set('_serialize', [
+            $this->viewBuilder()->setOption('serialize', [
                 'host',
                 'primaryContainerPathSelect',
                 'sharingContainers'
@@ -809,7 +809,7 @@ class HostsController extends AppController {
             if ($hostEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $hostEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -836,7 +836,7 @@ class HostsController extends AppController {
                 }
             }
             $this->set('host', $hostEntity);
-            $this->set('_serialize', ['host']);
+            $this->viewBuilder()->setOption('serialize', ['host']);
             return;
         }
     }
@@ -1102,7 +1102,7 @@ class HostsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_hosts', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -1122,7 +1122,7 @@ class HostsController extends AppController {
             $this->Service->updateAll(['Service.disabled' => 1], ['Service.host_id' => $id]);
             $this->set('success', true);
             $this->set('message', __('Host successfully disabled'));
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
@@ -1130,7 +1130,7 @@ class HostsController extends AppController {
         $this->set('success', false);
         $this->set('id', $id);
         $this->set('message', __('Issue while disabling host'));
-        $this->set('_serialize', ['success', 'id', 'message']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message']);
     }
 
     /**
@@ -1150,7 +1150,7 @@ class HostsController extends AppController {
             $this->Service->updateAll(['Service.disabled' => 0], ['Service.host_id' => $id]);
             $this->set('success', true);
             $this->set('message', __('Host successfully enabled'));
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
@@ -1158,7 +1158,7 @@ class HostsController extends AppController {
         $this->set('success', false);
         $this->set('id', $id);
         $this->set('message', __('Issue while enabling host'));
-        $this->set('_serialize', ['success', 'id', 'message']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message']);
     }
 
     /**
@@ -1195,7 +1195,7 @@ class HostsController extends AppController {
 
                 $this->set('success', true);
                 $this->set('message', __('Host successfully deleted'));
-                $this->set('_serialize', ['success']);
+                $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
         }
@@ -1211,7 +1211,7 @@ class HostsController extends AppController {
         $this->set('id', $id);
         $this->set('message', __('Issue while deleting host'));
         $this->set('usedBy', $usedBy);
-        $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
     }
 
     /**
@@ -2126,7 +2126,7 @@ class HostsController extends AppController {
         $this->set('acknowledgement', $acknowledgement);
         $this->set('downtime', $downtime);
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
-        $this->set('_serialize', [
+        $this->viewBuilder()->setOption('serialize', [
             'mergedHost',
             'docuExists',
             'hoststatus',
@@ -2341,7 +2341,7 @@ class HostsController extends AppController {
 
         unset($host['Hosttemplate']);
         $this->set('host', $host);
-        $this->set('_serialize', ['host']);
+        $this->viewBuilder()->setOption('serialize', ['host']);
     }
 
     /**
@@ -2368,7 +2368,7 @@ class HostsController extends AppController {
             ];
         }
         $this->set('hoststatus', $hoststatus);
-        $this->set('_serialize', ['hoststatus']);
+        $this->viewBuilder()->setOption('serialize', ['hoststatus']);
     }
 
     /**
@@ -2557,7 +2557,7 @@ class HostsController extends AppController {
 
         $this->set('start', $start);
         $this->set('end', $end);
-        $this->set('_serialize', [
+        $this->viewBuilder()->setOption('serialize', [
             'start',
             'end',
             'groups',
@@ -2613,7 +2613,7 @@ class HostsController extends AppController {
         }
 
         $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
-        $this->set('_serialize', ['GrafanaDashboardExists', 'iframeUrl']);
+        $this->viewBuilder()->setOption('serialize', ['GrafanaDashboardExists', 'iframeUrl']);
     }
 
 
@@ -2636,7 +2636,7 @@ class HostsController extends AppController {
         }
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
     public function loadCommands() {
@@ -2649,7 +2649,7 @@ class HostsController extends AppController {
         $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
 
         $this->set('commands', Api::makeItJavaScriptAble($commands));
-        $this->set('_serialize', ['commands']);
+        $this->viewBuilder()->setOption('serialize', ['commands']);
     }
 
     /**
@@ -2741,7 +2741,7 @@ class HostsController extends AppController {
         $this->set('satellites', $satellites);
         $this->set('sharingContainers', $sharingContainers);
 
-        $this->set('_serialize', [
+        $this->viewBuilder()->setOption('serialize', [
             'hosttemplates',
             'hostgroups',
             'timeperiods',
@@ -2772,7 +2772,7 @@ class HostsController extends AppController {
 
 
         $this->set('hosttemplate', $hosttemplate);
-        $this->set('_serialize', ['hosttemplate']);
+        $this->viewBuilder()->setOption('serialize', ['hosttemplate']);
     }
 
     public function runDnsLookup() {
@@ -2807,7 +2807,7 @@ class HostsController extends AppController {
         }
 
         $this->set('result', $result);
-        $this->set('_serialize', ['result']);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     /**
@@ -2903,7 +2903,7 @@ class HostsController extends AppController {
 
 
         $this->set('hostcommandargumentvalues', $hostcommandargumentvalues);
-        $this->set('_serialize', ['hostcommandargumentvalues']);
+        $this->viewBuilder()->setOption('serialize', ['hostcommandargumentvalues']);
     }
 
     public function loadParentHostsByString() {
@@ -2942,7 +2942,7 @@ class HostsController extends AppController {
         );
 
         $this->set('hosts', $hosts);
-        $this->set('_serialize', ['hosts']);
+        $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
     /**
@@ -2980,7 +2980,7 @@ class HostsController extends AppController {
         );
 
         $this->set('hosts', $hosts);
-        $this->set('_serialize', ['hosts']);
+        $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
     public function loadHostsByContainerId() {
@@ -3014,7 +3014,7 @@ class HostsController extends AppController {
         );
 
         $this->set('hosts', $hosts);
-        $this->set('_serialize', ['hosts']);
+        $this->viewBuilder()->setOption('serialize', ['hosts']);
     }
 
 }

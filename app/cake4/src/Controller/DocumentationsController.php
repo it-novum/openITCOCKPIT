@@ -173,7 +173,7 @@ class DocumentationsController extends AppController {
             $this->set('bbcode', $content);
             $this->set('objectId', $objectId);
             $this->set('objectName', $objectName);
-            $this->set('_serialize', ['lastUpdate', 'allowEdit', 'docuExists', 'bbcode', 'objectId', 'objectName']);
+            $this->viewBuilder()->setOption('serialize', ['lastUpdate', 'allowEdit', 'docuExists', 'bbcode', 'objectId', 'objectName']);
 
             return;
         }
@@ -201,7 +201,7 @@ class DocumentationsController extends AppController {
                 if ($entity->hasErrors()) {
                     $this->response->statusCode(400);
                     $this->set('error', $entity->getErrors());
-                    $this->set('_serialize', ['error']);
+                    $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
                 }
             }else{
@@ -210,7 +210,7 @@ class DocumentationsController extends AppController {
             }
 
             $this->set('documentation', $entity);
-            $this->set('_serialize', ['documentation']);
+            $this->viewBuilder()->setOption('serialize', ['documentation']);
             return;
 
         }
@@ -254,7 +254,7 @@ class DocumentationsController extends AppController {
 
         if ($this->request->is('get')) {
             $this->set('documentations', $documentations);
-            $this->set('_serialize', ['documentations']);
+            $this->viewBuilder()->setOption('serialize', ['documentations']);
             return;
         }
 
@@ -277,7 +277,7 @@ class DocumentationsController extends AppController {
 
             $this->set('documentation', $documentations[$category]['children'][$documentation]);
             $this->set('html', $html);
-            $this->set('_serialize', ['documentation', 'html']);
+            $this->viewBuilder()->setOption('serialize', ['documentation', 'html']);
             return;
         }
     }

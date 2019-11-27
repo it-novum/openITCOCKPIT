@@ -42,6 +42,6 @@ class NagiostatsController extends AppController {
         $MonitoringEngine = new MonitoringEngine();
         $stats = $MonitoringEngine->runNagiostats();
         $this->set('stats', $stats);
-        $this->set('_serialize', ['stats']);
+        $this->viewBuilder()->setOption('serialize', ['stats']);
     }
 }

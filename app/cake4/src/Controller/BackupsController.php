@@ -35,12 +35,12 @@ class BackupsController extends AppController {
         $backup_files = $this->getBackupFiles();
 
         $this->set(compact('backup_files'));
-        $this->set('_serialize', ['backup_files']);
+        $this->viewBuilder()->setOption('serialize', ['backup_files']);
     }
 
     public function backup() {
-        $filenameForBackup = $this->request->query['filename'] . "_" . date("Y-m-d_His") . ".sql";
-        if (preg_match('/^[a-zA-Z0-9_\-]*$/', $this->request->query['filename'])) {
+        $filenameForBackup = $this->request->getQuery('filename') . "_" . date("Y-m-d_His") . ".sql";
+        if (preg_match('/^[a-zA-Z0-9_\-]*$/', $this->request->getQuery('filename'))) {
             $error = false;
             $backupRunning = true;
         } else {
@@ -60,11 +60,11 @@ class BackupsController extends AppController {
         ];
 
         $this->set('backup', $backup);
-        $this->set('_serialize', ['backup']);
+        $this->viewBuilder()->setOption('serialize', ['backup']);
     }
 
     public function restore() {
-        $pathForRestore = $this->request->query['backupfile'];
+        $pathForRestore = $this->request->getQuery('backupfile');
         Configure::load('gearman');
         $this->Config = Configure::read('gearman');
         $this->GearmanClient->client->doBackground("oitc_gearman", serialize(['task' => 'restore_sql_backup', 'path' => $pathForRestore]));
@@ -72,7 +72,7 @@ class BackupsController extends AppController {
             'backupRunning' => true,
         ];
         $this->set('backup', $backup);
-        $this->set('_serialize', ['backup']);
+        $this->viewBuilder()->setOption('serialize', ['backup']);
     }
 
     public function checkBackupFinished() {
@@ -105,11 +105,11 @@ class BackupsController extends AppController {
         ];
 
         $this->set('backupFinished', $backupFinished);
-        $this->set('_serialize', ['backupFinished']);
+        $this->viewBuilder()->setOption('serialize', ['backupFinished']);
     }
 
     public function deleteBackupFile() {
-        $fileToDelete = $this->request->query['fileToDelete'];
+        $fileToDelete = $this->request->getQuery('fileToDelete');
 
         $this->Config = Configure::read('gearman');
         $result = $this->GearmanClient->client->doNormal("oitc_gearman", serialize(['task' => 'delete_sql_backup', 'path' => $fileToDelete]));
@@ -124,7 +124,7 @@ class BackupsController extends AppController {
 
 
         $this->set('success', $success);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     private function getBackupFiles() {

@@ -246,7 +246,7 @@ class StatusmapsController extends AppController {
 
 
         $this->set(compact(['statusMap', 'hasBrowserRight']));
-        $this->set('_serialize', ['statusMap', 'hasBrowserRight']);
+        $this->viewBuilder()->setOption('serialize', ['statusMap', 'hasBrowserRight']);
     }
 
     /**
@@ -283,6 +283,6 @@ class StatusmapsController extends AppController {
         $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus);
 
         $this->set(compact(['serviceStateSummary', 'hostId']));
-        $this->set('_serialize', ['serviceStateSummary']);
+        $this->viewBuilder()->setOption('serialize', ['serviceStateSummary']);
     }
 }

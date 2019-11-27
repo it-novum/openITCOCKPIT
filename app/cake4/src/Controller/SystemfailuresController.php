@@ -76,7 +76,7 @@ class SystemfailuresController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_systemfailures', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function add() {
@@ -114,7 +114,7 @@ class SystemfailuresController extends AppController {
             if ($systemfailure->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $systemfailure->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -125,7 +125,7 @@ class SystemfailuresController extends AppController {
                 }
             }
             $this->set('systemfailure', $systemfailure);
-            $this->set('_serialize', ['systemfailure']);
+            $this->viewBuilder()->setOption('serialize', ['systemfailure']);
         }
     }
 
@@ -148,13 +148,13 @@ class SystemfailuresController extends AppController {
 
         if ($SystemfailuresTable->delete($systemfailure)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
         return;
 
     }

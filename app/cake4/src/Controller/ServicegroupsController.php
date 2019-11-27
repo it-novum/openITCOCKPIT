@@ -99,7 +99,7 @@ class ServicegroupsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_servicegroups', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -129,7 +129,7 @@ class ServicegroupsController extends AppController {
         }
 
         $this->set('servicegroup', $servicegroup);
-        $this->set('_serialize', ['servicegroup']);
+        $this->viewBuilder()->setOption('serialize', ['servicegroup']);
     }
 
 
@@ -154,7 +154,7 @@ class ServicegroupsController extends AppController {
             if ($servicegroup->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $servicegroup->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -184,7 +184,7 @@ class ServicegroupsController extends AppController {
                 }
             }
             $this->set('servicegroup', $servicegroup);
-            $this->set('_serialize', ['servicegroup']);
+            $this->viewBuilder()->setOption('serialize', ['servicegroup']);
         }
     }
 
@@ -216,7 +216,7 @@ class ServicegroupsController extends AppController {
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return host group information
             $this->set('servicegroup', $servicegroup);
-            $this->set('_serialize', ['servicegroup']);
+            $this->viewBuilder()->setOption('serialize', ['servicegroup']);
             return;
         }
 
@@ -232,7 +232,7 @@ class ServicegroupsController extends AppController {
             if ($servicegroupEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $servicegroupEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -258,7 +258,7 @@ class ServicegroupsController extends AppController {
                 }
             }
             $this->set('servicegroup', $servicegroupEntity);
-            $this->set('_serialize', ['servicegroup']);
+            $this->viewBuilder()->setOption('serialize', ['servicegroup']);
         }
     }
 
@@ -310,13 +310,13 @@ class ServicegroupsController extends AppController {
             }
 
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function addServicesToServicegroup() {
@@ -420,7 +420,7 @@ class ServicegroupsController extends AppController {
             if ($servicegroupEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $servicegroupEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 $fakeRequest = [
@@ -453,7 +453,7 @@ class ServicegroupsController extends AppController {
                 }
             }
             $this->set('servicegroup', $servicegroupEntity);
-            $this->set('_serialize', ['servicegroup']);
+            $this->viewBuilder()->setOption('serialize', ['servicegroup']);
         }
     }
 
@@ -577,7 +577,7 @@ class ServicegroupsController extends AppController {
         //Only ship template
         $User = new User($this->Auth);
         $this->set('username', $User->getFullName());
-        $this->set('_serialize', ['username']);
+        $this->viewBuilder()->setOption('serialize', ['username']);
     }
 
 
@@ -605,7 +605,7 @@ class ServicegroupsController extends AppController {
 
 
         $this->set('containers', $containers);
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
     /**
@@ -635,7 +635,7 @@ class ServicegroupsController extends AppController {
         );
 
         $this->set('servicetemplates', $servicetemplates);
-        $this->set('_serialize', ['servicetemplates']);
+        $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
     }
 
     /**
@@ -769,7 +769,7 @@ class ServicegroupsController extends AppController {
         ];
 
         $this->set('servicegroup', $servicegroup);
-        $this->set('_serialize', ['servicegroup']);
+        $this->viewBuilder()->setOption('serialize', ['servicegroup']);
     }
 
     public function loadServicegroupsByContainerId() {
@@ -796,7 +796,7 @@ class ServicegroupsController extends AppController {
         $servicegroups = Api::makeItJavaScriptAble($servicegroups);
 
         $this->set('servicegroups', $servicegroups);
-        $this->set('_serialize', ['servicegroups']);
+        $this->viewBuilder()->setOption('serialize', ['servicegroups']);
     }
 
     public function loadServicegroupsByString() {
@@ -819,6 +819,6 @@ class ServicegroupsController extends AppController {
         );
 
         $this->set('servicegroups', $servicegroups);
-        $this->set('_serialize', ['servicegroups']);
+        $this->viewBuilder()->setOption('serialize', ['servicegroups']);
     }
 }

@@ -247,7 +247,7 @@ class ServicesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_services', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -302,7 +302,7 @@ class ServicesController extends AppController {
 
         $this->set('service', $service);
         $this->set('servicestatus', $Servicestatus->toArray());
-        $this->set('_serialize', ['service', 'servicestatus']);
+        $this->viewBuilder()->setOption('serialize', ['service', 'servicestatus']);
     }
 
     public function byUuid($uuid) {
@@ -323,7 +323,7 @@ class ServicesController extends AppController {
         }
 
         $this->set('service', $service);
-        $this->set('_serialize', ['service']);
+        $this->viewBuilder()->setOption('serialize', ['service']);
     }
 
     public function notMonitored() {
@@ -415,7 +415,7 @@ class ServicesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_services', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function disabled() {
@@ -498,7 +498,7 @@ class ServicesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_services', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function add() {
@@ -569,7 +569,7 @@ class ServicesController extends AppController {
             if ($service->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $service->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -599,7 +599,7 @@ class ServicesController extends AppController {
                 }
             }
             $this->set('service', $service);
-            $this->set('_serialize', ['service']);
+            $this->viewBuilder()->setOption('serialize', ['service']);
         }
     }
 
@@ -656,7 +656,7 @@ class ServicesController extends AppController {
             $this->set('areContactsInheritedFromServicetemplate', $ServiceMergerForView->areContactsInheritedFromServicetemplate());
 
 
-            $this->set('_serialize', [
+            $this->viewBuilder()->setOption('serialize', [
                 'service',
                 'host',
                 'servicetemplate',
@@ -720,7 +720,7 @@ class ServicesController extends AppController {
             if ($serviceEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $serviceEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -750,7 +750,7 @@ class ServicesController extends AppController {
                 }
             }
             $this->set('service', $serviceEntity);
-            $this->set('_serialize', ['service']);
+            $this->viewBuilder()->setOption('serialize', ['service']);
         }
     }
 
@@ -781,7 +781,7 @@ class ServicesController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_services', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -835,7 +835,7 @@ class ServicesController extends AppController {
 
                 $this->set('success', true);
                 $this->set('message', __('Service successfully deleted'));
-                $this->set('_serialize', ['success']);
+                $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
         }
@@ -845,7 +845,7 @@ class ServicesController extends AppController {
         $this->set('id', $id);
         $this->set('message', __('Issue while deleting service'));
         $this->set('usedBy', $this->getUsedByForFrontend($usedBy, 'service'));
-        $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message', 'usedBy']);
     }
 
 
@@ -891,7 +891,7 @@ class ServicesController extends AppController {
             $this->set('services', $services);
             $this->set('commands', Api::makeItJavaScriptAble($commands));
             $this->set('eventhandlerCommands', Api::makeItJavaScriptAble($eventhandlerCommands));
-            $this->set('_serialize', ['services', 'commands', 'eventhandlerCommands']);
+            $this->viewBuilder()->setOption('serialize', ['services', 'commands', 'eventhandlerCommands']);
             return;
         }
 
@@ -1109,7 +1109,7 @@ class ServicesController extends AppController {
             $this->response->statusCode(400);
         }
         $this->set('result', $postData);
-        $this->set('_serialize', ['result']);
+        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     /**
@@ -1144,14 +1144,14 @@ class ServicesController extends AppController {
             $this->set('success', false);
             $this->set('message', __('Issue while disabling service'));
             $this->set('error', $service->getErrors());
-            $this->set('_serialize', ['error', 'success', 'message']);
+            $this->viewBuilder()->setOption('serialize', ['error', 'success', 'message']);
             return;
         }
 
         $this->set('success', true);
         $this->set('id', $id);
         $this->set('message', __('Service successfully disabled'));
-        $this->set('_serialize', ['success', 'message', 'id']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'message', 'id']);
     }
 
     /**
@@ -1183,7 +1183,7 @@ class ServicesController extends AppController {
             $this->set('success', false);
             $this->set('id', $id);
             $this->set('message', __('Could not enable service, because associated host is also disabled.'));
-            $this->set('_serialize', ['success', 'id', 'message']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id', 'message']);
             return;
         }
 
@@ -1195,14 +1195,14 @@ class ServicesController extends AppController {
             $this->set('success', false);
             $this->set('message', __('Issue while enabling service'));
             $this->set('error', $service->getErrors());
-            $this->set('_serialize', ['error', 'success', 'message']);
+            $this->viewBuilder()->setOption('serialize', ['error', 'success', 'message']);
             return;
         }
 
         $this->set('success', true);
         $this->set('id', $id);
         $this->set('message', __('Service successfully enabled'));
-        $this->set('_serialize', ['success', 'message', 'id']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'message', 'id']);
     }
 
     /**
@@ -1516,7 +1516,7 @@ class ServicesController extends AppController {
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
 
 
-        $this->set('_serialize', [
+        $this->viewBuilder()->setOption('serialize', [
             'mergedService',
             'host',
             'areContactsInheritedFromHosttemplate',
@@ -1729,7 +1729,7 @@ class ServicesController extends AppController {
         );
 
         $this->set(compact(['services']));
-        $this->set('_serialize', ['services']);
+        $this->viewBuilder()->setOption('serialize', ['services']);
     }
 
 
@@ -1756,7 +1756,7 @@ class ServicesController extends AppController {
 
 
         $this->set('services', $services);
-        $this->set('_serialize', ['services']);
+        $this->viewBuilder()->setOption('serialize', ['services']);
     }
 
     /**
@@ -2007,7 +2007,7 @@ class ServicesController extends AppController {
 
         $this->set('start', $start);
         $this->set('end', $end);
-        $this->set('_serialize', [
+        $this->viewBuilder()->setOption('serialize', [
             'start',
             'end',
             'groups',
@@ -2099,7 +2099,7 @@ class ServicesController extends AppController {
         $this->set('contacts', $contacts);
         $this->set('contactgroups', $contactgroups);
 
-        $this->set('_serialize', [
+        $this->viewBuilder()->setOption('serialize', [
             'servicetemplates',
             'servicegroups',
             'timeperiods',
@@ -2178,7 +2178,7 @@ class ServicesController extends AppController {
 
 
         $this->set('servicetemplate', $servicetemplate);
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function loadCommands() {
@@ -2202,7 +2202,7 @@ class ServicesController extends AppController {
 
         $this->set('commands', Api::makeItJavaScriptAble($commands));
         $this->set('eventhandlerCommands', Api::makeItJavaScriptAble($eventhandlerCommands));
-        $this->set('_serialize', ['commands', 'eventhandlerCommands']);
+        $this->viewBuilder()->setOption('serialize', ['commands', 'eventhandlerCommands']);
     }
 
     /**
@@ -2294,7 +2294,7 @@ class ServicesController extends AppController {
         $servicecommandargumentvalues = $filteredCommandArgumentsValules;
 
         $this->set('servicecommandargumentvalues', $servicecommandargumentvalues);
-        $this->set('_serialize', ['servicecommandargumentvalues']);
+        $this->viewBuilder()->setOption('serialize', ['servicecommandargumentvalues']);
     }
 
     /**
@@ -2361,7 +2361,7 @@ class ServicesController extends AppController {
         };
 
         $this->set('serviceeventhandlercommandargumentvalues', $serviceeventhandlercommandargumentvalues);
-        $this->set('_serialize', ['serviceeventhandlercommandargumentvalues']);
+        $this->viewBuilder()->setOption('serialize', ['serviceeventhandlercommandargumentvalues']);
     }
 
     public function loadServicesByStringCake4() {
@@ -2397,7 +2397,7 @@ class ServicesController extends AppController {
         );
 
         $this->set('services', $services);
-        $this->set('_serialize', ['services']);
+        $this->viewBuilder()->setOption('serialize', ['services']);
     }
 
     public function loadServicesByContainerIdCake4() {
@@ -2432,6 +2432,6 @@ class ServicesController extends AppController {
         );
 
         $this->set('services', $services);
-        $this->set('_serialize', ['services']);
+        $this->viewBuilder()->setOption('serialize', ['services']);
     }
 }

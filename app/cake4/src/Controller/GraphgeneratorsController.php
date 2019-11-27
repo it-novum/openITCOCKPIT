@@ -74,7 +74,7 @@ class GraphgeneratorsController extends AppController {
         try {
             $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp, 'avg', $gauge);
             $this->set('performance_data', $performance_data);
-            $this->set('_serialize', ['performance_data']);
+            $this->viewBuilder()->setOption('serialize', ['performance_data']);
 
         } catch (\Exception $e) {
             error_log($e->getMessage());
@@ -86,7 +86,7 @@ class GraphgeneratorsController extends AppController {
 
 
         $this->set('performance_data', $performance_data);
-        $this->set('_serialize', ['performance_data']);
+        $this->viewBuilder()->setOption('serialize', ['performance_data']);
 
     }
 }

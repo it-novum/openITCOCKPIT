@@ -203,7 +203,7 @@ class ChangelogsController extends AppController {
             $all_changes = $this->Paginator->paginate();
         }
 
-        $this->set('_serialize', ['all_changes']);
+        $this->viewBuilder()->setOption('serialize', ['all_changes']);
 
         $this->set(compact(['all_changes']));
         $this->set('showUser', $showUser);

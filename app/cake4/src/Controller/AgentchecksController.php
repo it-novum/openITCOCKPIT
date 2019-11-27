@@ -76,7 +76,7 @@ class AgentchecksController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_agentchecks', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
 
     }
 
@@ -96,7 +96,7 @@ class AgentchecksController extends AppController {
             if ($agentcheck->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $agentcheck->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->request->ext == 'json') {
@@ -105,7 +105,7 @@ class AgentchecksController extends AppController {
                 }
             }
             $this->set('agentcheck', $agentcheck);
-            $this->set('_serialize', ['agentcheck']);
+            $this->viewBuilder()->setOption('serialize', ['agentcheck']);
         }
     }
 
@@ -140,7 +140,7 @@ class AgentchecksController extends AppController {
             if ($agentcheck->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $agentcheck->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 if ($this->request->ext == 'json') {
@@ -150,7 +150,7 @@ class AgentchecksController extends AppController {
             }
         }
         $this->set('agentcheck', $agentcheck);
-        $this->set('_serialize', ['agentcheck']);
+        $this->viewBuilder()->setOption('serialize', ['agentcheck']);
     }
 
     public function delete($id) {
@@ -175,13 +175,13 @@ class AgentchecksController extends AppController {
 
         if ($AgentchecksTable->delete($agentcheck)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function loadServicetemplates() {
@@ -192,7 +192,7 @@ class AgentchecksController extends AppController {
         $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
 
         $this->set('servicetemplates', $servicetemplates);
-        $this->set('_serialize', ['servicetemplates']);
+        $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
     }
 
 }

@@ -92,7 +92,7 @@ class InstantreportsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['instantreports', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function add() {
@@ -115,7 +115,7 @@ class InstantreportsController extends AppController {
                 $this->serializeCake4Id($instantreport);
             }
             $this->set('instantreport', $instantreport);
-            $this->set('_serialize', ['instantreport']);
+            $this->viewBuilder()->setOption('serialize', ['instantreport']);
         }
     }
 
@@ -139,7 +139,7 @@ class InstantreportsController extends AppController {
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return instant report information
             $this->set('instantreport', $instantreport);
-            $this->set('_serialize', ['instantreport']);
+            $this->viewBuilder()->setOption('serialize', ['instantreport']);
             return;
         }
 
@@ -151,12 +151,12 @@ class InstantreportsController extends AppController {
             if ($instantreport->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $instantreport->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
 
             $this->set('instantreport', $instantreport);
-            $this->set('_serialize', ['instantreport']);
+            $this->viewBuilder()->setOption('serialize', ['instantreport']);
         }
     }
 
@@ -172,7 +172,7 @@ class InstantreportsController extends AppController {
         if (!empty($instantreportForm->getErrors())) {
             $this->response->statusCode(400);
             $this->set('error', $instantreportForm->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
@@ -196,12 +196,12 @@ class InstantreportsController extends AppController {
                     )
                 ]
             ]);
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
         $this->set('instantReport', $instantReport);
-        $this->set('_serialize', ['instantReport']);
+        $this->viewBuilder()->setOption('serialize', ['instantReport']);
 
         return;
         $downtimeReportForm = new DowntimereportForm();
@@ -213,7 +213,7 @@ class InstantreportsController extends AppController {
         if (!empty($downtimeReportForm->getErrors())) {
             $this->response->statusCode(400);
             $this->set('error', $downtimeReportForm->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
@@ -227,7 +227,7 @@ class InstantreportsController extends AppController {
                     'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
                 ]
             ]);
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
         /** @var HostsTable $HostsTable */
@@ -245,7 +245,7 @@ class InstantreportsController extends AppController {
                     'empty' => 'There are no hosts for downtime report available.'
                 ]
             ]);
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
         $downtimeReport = $this->createReport(
@@ -268,12 +268,12 @@ class InstantreportsController extends AppController {
                     )
                 ]
             ]);
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
         $this->set('downtimeReport', $downtimeReport);
-        $this->set('_serialize', ['downtimeReport']);
+        $this->viewBuilder()->setOption('serialize', ['downtimeReport']);
     }
 
 
@@ -309,7 +309,7 @@ class InstantreportsController extends AppController {
                     'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
                 ]
             ]);
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
         $instantReportObjects = $InstantreportsTable->getHostsAndServicesByInstantreport($instantReport, $MY_RIGHTS);
@@ -320,7 +320,7 @@ class InstantreportsController extends AppController {
                     'empty' => 'There are no elements for instant report available.'
                 ]
             ]);
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
@@ -865,13 +865,13 @@ class InstantreportsController extends AppController {
         $instantreportEntity = $InstantreportsTable->get($id);
         if ($InstantreportsTable->delete($instantreportEntity)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
         return;
     }
 
@@ -929,7 +929,7 @@ class InstantreportsController extends AppController {
         $containers = Api::makeItJavaScriptAble($containers);
 
         $this->set('containers', $containers);
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
 }

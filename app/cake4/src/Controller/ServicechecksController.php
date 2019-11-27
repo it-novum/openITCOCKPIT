@@ -104,6 +104,6 @@ class ServicechecksController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_servicechecks', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 }

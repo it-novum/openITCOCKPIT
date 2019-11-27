@@ -93,7 +93,7 @@ class ServicetemplategroupsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_servicetemplategroups', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -118,7 +118,7 @@ class ServicetemplategroupsController extends AppController {
         }
 
         $this->set('servicetemplategroup', $servicetemplategroup);
-        $this->set('_serialize', ['servicetemplategroup']);
+        $this->viewBuilder()->setOption('serialize', ['servicetemplategroup']);
     }
 
     /**
@@ -143,7 +143,7 @@ class ServicetemplategroupsController extends AppController {
         if ($servicetemplategroup->hasErrors()) {
             $this->response->statusCode(400);
             $this->set('error', $servicetemplategroup->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         } else {
             //No errors
@@ -173,7 +173,7 @@ class ServicetemplategroupsController extends AppController {
             }
         }
         $this->set('servicetemplategroup', $servicetemplategroup);
-        $this->set('_serialize', ['servicetemplategroup']);
+        $this->viewBuilder()->setOption('serialize', ['servicetemplategroup']);
     }
 
     /**
@@ -204,7 +204,7 @@ class ServicetemplategroupsController extends AppController {
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return service template group information
             $this->set('servicetemplategroup', $servicetemplategroup);
-            $this->set('_serialize', ['servicetemplategroup']);
+            $this->viewBuilder()->setOption('serialize', ['servicetemplategroup']);
             return;
         }
 
@@ -225,7 +225,7 @@ class ServicetemplategroupsController extends AppController {
             if ($servicetemplategroupEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $servicetemplategroupEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
@@ -251,7 +251,7 @@ class ServicetemplategroupsController extends AppController {
                 }
             }
             $this->set('servicetemplategroup', $servicetemplategroupEntity);
-            $this->set('_serialize', ['servicetemplategroup']);
+            $this->viewBuilder()->setOption('serialize', ['servicetemplategroup']);
         }
     }
 
@@ -348,7 +348,7 @@ class ServicetemplategroupsController extends AppController {
             if ($servicetemplategroupEntity->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $servicetemplategroupEntity->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 $fakeRequest = [
@@ -382,7 +382,7 @@ class ServicetemplategroupsController extends AppController {
                 }
             }
             $this->set('servicetemplategroup', $servicetemplategroupEntity);
-            $this->set('_serialize', ['servicetemplategroup']);
+            $this->viewBuilder()->setOption('serialize', ['servicetemplategroup']);
         }
     }
 
@@ -439,13 +439,13 @@ class ServicetemplategroupsController extends AppController {
             }
 
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->response->statusCode(500);
         $this->set('success', false);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
 
@@ -512,7 +512,7 @@ class ServicetemplategroupsController extends AppController {
             }
 
             $this->set('servicetemplatesForDeploy', $servicetemplatesForDeploy);
-            $this->set('_serialize', ['servicetemplatesForDeploy']);
+            $this->viewBuilder()->setOption('serialize', ['servicetemplatesForDeploy']);
             return;
         }
 
@@ -529,7 +529,7 @@ class ServicetemplategroupsController extends AppController {
                 //No service templates selected...
                 $this->set('success', false);
                 $this->set('message', __('No service template ids set'));
-                $this->set('_serialize', ['success', 'message']);
+                $this->viewBuilder()->setOption('serialize', ['success', 'message']);
                 return;
             }
 
@@ -603,7 +603,7 @@ class ServicetemplategroupsController extends AppController {
             $this->set('services', ['_ids' => $newServiceIds]);
             $this->set('hostId', $hostId);
             $this->set('errors', $errors);
-            $this->set('_serialize', ['success', 'services', 'hostId', 'errors']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'services', 'hostId', 'errors']);
             return;
         }
     }
@@ -685,7 +685,7 @@ class ServicetemplategroupsController extends AppController {
             }
 
             $this->set('hostsWithServicetemplatesForDeploy', $hosts);
-            $this->set('_serialize', ['hostsWithServicetemplatesForDeploy']);
+            $this->viewBuilder()->setOption('serialize', ['hostsWithServicetemplatesForDeploy']);
             return;
         }
 
@@ -702,7 +702,7 @@ class ServicetemplategroupsController extends AppController {
                 //No service templates selected...
                 $this->set('success', false);
                 $this->set('message', __('No service template ids set'));
-                $this->set('_serialize', ['success', 'message']);
+                $this->viewBuilder()->setOption('serialize', ['success', 'message']);
                 return;
             }
 
@@ -776,7 +776,7 @@ class ServicetemplategroupsController extends AppController {
             $this->set('services', ['_ids' => $newServiceIds]);
             $this->set('hostId', $hostId);
             $this->set('errors', $errors);
-            $this->set('_serialize', ['success', 'services', 'hostId', 'errors']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'services', 'hostId', 'errors']);
             return;
         }
     }
@@ -830,7 +830,7 @@ class ServicetemplategroupsController extends AppController {
             $this->response->statusCode(400);
             $this->set('success', false);
             $this->set('message', __('No matching host group "%s" found.', $servicetemplategroupName));
-            $this->set('_serialize', ['success', 'message']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'message']);
             return;
         }
 
@@ -943,7 +943,7 @@ class ServicetemplategroupsController extends AppController {
         $this->set('services', ['_ids' => $newServiceIds]);
         $this->set('message', __('Created %s new services', sizeof($newServiceIds)));
         $this->set('errors', $errors);
-        $this->set('_serialize', ['success', 'services', 'errors', 'message']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'services', 'errors', 'message']);
     }
 
 
@@ -969,7 +969,7 @@ class ServicetemplategroupsController extends AppController {
         }
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
     /**
@@ -994,7 +994,7 @@ class ServicetemplategroupsController extends AppController {
         $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
 
         $this->set('servicetemplates', $servicetemplates);
-        $this->set('_serialize', ['servicetemplates']);
+        $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
     }
 
     public function loadServicetemplategroupsByString() {
@@ -1017,7 +1017,7 @@ class ServicetemplategroupsController extends AppController {
         );
 
         $this->set('servicetemplategroups', $servicetemplategroups);
-        $this->set('_serialize', ['servicetemplategroups']);
+        $this->viewBuilder()->setOption('serialize', ['servicetemplategroups']);
     }
 
     public function loadHostgroupsByString() {
@@ -1043,7 +1043,7 @@ class ServicetemplategroupsController extends AppController {
         );
 
         $this->set('hostgroups', $hostgroups);
-        $this->set('_serialize', ['hostgroups']);
+        $this->viewBuilder()->setOption('serialize', ['hostgroups']);
     }
 
 }

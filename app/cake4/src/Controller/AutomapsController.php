@@ -91,7 +91,7 @@ class AutomapsController extends AppController {
         if ($this->isScrollRequest()) {
             $toJson = ['all_automaps', 'scroll'];
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     public function add() {
@@ -110,12 +110,12 @@ class AutomapsController extends AppController {
             if ($automap->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $automap->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
 
             $this->set('automap', $automap);
-            $this->set('_serialize', ['automap']);
+            $this->viewBuilder()->setOption('serialize', ['automap']);
         }
     }
 
@@ -163,7 +163,7 @@ class AutomapsController extends AppController {
             }
 
             $this->set('automap', $automap);
-            $this->set('_serialize', ['automap']);
+            $this->viewBuilder()->setOption('serialize', ['automap']);
             return;
         }
 
@@ -175,11 +175,11 @@ class AutomapsController extends AppController {
             if ($automap->hasErrors()) {
                 $this->response->statusCode(400);
                 $this->set('error', $automap->getErrors());
-                $this->set('_serialize', ['error']);
+                $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
             $this->set('automap', $automap);
-            $this->set('_serialize', ['automap']);
+            $this->viewBuilder()->setOption('serialize', ['automap']);
         }
     }
 
@@ -339,7 +339,7 @@ class AutomapsController extends AppController {
         } else {
             $toJson[] = 'paging';
         }
-        $this->set('_serialize', $toJson);
+        $this->viewBuilder()->setOption('serialize', $toJson);
     }
 
     /**
@@ -368,13 +368,13 @@ class AutomapsController extends AppController {
             $this->response->statusCode(400);
             $this->set('success', false);
             $this->set('id', $id);
-            $this->set('_serialize', ['success', 'id']);
+            $this->viewBuilder()->setOption('serialize', ['success', 'id']);
             return;
         }
 
         $this->set('success', true);
         $this->set('id', $id);
-        $this->set('_serialize', ['success', 'id']);
+        $this->viewBuilder()->setOption('serialize', ['success', 'id']);
     }
 
     public function icon() {
@@ -397,7 +397,7 @@ class AutomapsController extends AppController {
         $containers = Api::makeItJavaScriptAble($containers);
 
         $this->set('containers', $containers);
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
     public function getMatchingHostAndServices() {
@@ -472,7 +472,7 @@ class AutomapsController extends AppController {
 
         $this->set('hostCount', $hostCount);
         $this->set('serviceCount', $serviceCount);
-        $this->set('_serialize', ['hostCount', 'serviceCount']);
+        $this->viewBuilder()->setOption('serialize', ['hostCount', 'serviceCount']);
     }
 
 }
