@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2018>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,6 +22,11 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
 use App\Model\Table\ConfigurationFilesTable;
 use App\Model\Table\ConfigurationQueueTable;
 use Cake\ORM\TableRegistry;

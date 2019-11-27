@@ -22,6 +22,11 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
 use App\Form\CurrentstatereportForm;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\HostsTable;

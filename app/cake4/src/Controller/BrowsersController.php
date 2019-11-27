@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+declare(strict_types=1);
+
+namespace App\Controller;
+
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -78,7 +82,7 @@ class BrowsersController extends AppController {
         $containerId = (int)$containerId;
 
         $tenants = $this->getTenants();
-        
+
         $tenantsFiltered = [];
         foreach ($tenants as $tenantId => $tenantName) {
             if (in_array($tenantId, $this->MY_RIGHTS, true)) {

@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+declare(strict_types=1);
+
+namespace App\Controller;
+
 use App\Model\Table\MacrosTable;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\Utility\Hash;

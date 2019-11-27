@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+declare(strict_types=1);
+
+namespace App\Controller;
+
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
@@ -217,7 +221,7 @@ class HosttemplatesController extends AppController {
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update host template data
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-            
+
             $hosttemplateEntity = $HosttemplatesTable->get($id);
             $hosttemplateEntity->setAccess('uuid', false);
             $hosttemplateEntity = $HosttemplatesTable->patchEntity($hosttemplateEntity, $this->request->data('Hosttemplate'));

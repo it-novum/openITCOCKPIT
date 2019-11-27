@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+declare(strict_types=1);
+
+namespace App\Controller;
 class ForwardController extends AppController {
     public $layout = 'Admin.default';
 
