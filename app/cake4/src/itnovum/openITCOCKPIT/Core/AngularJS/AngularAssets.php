@@ -90,7 +90,7 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/js/lib/highlight-within-textarea/jquery.highlight-within-textarea.js',
 
 
-        'js/scripts/ng.app.js',
+        //'js/scripts/ng.app.js',
     ];
 
     private $cssFiles = [
