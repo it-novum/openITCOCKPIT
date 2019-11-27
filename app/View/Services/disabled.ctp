@@ -132,8 +132,8 @@
                     <table id="service_list" class="table table-striped m-0 table-bordered">
                         <thead>
                         <tr>
-                            <th colspan="2" class="no-sort width-90">
-                                <?php echo __('Servicestatus'); ?>
+                            <th colspan="2" class="no-sort">
+                                <?php echo __('State'); ?>
                             </th>
 
                             <th class="no-sort" ng-click="orderBy('servicename')">
@@ -181,7 +181,7 @@
                                        ng-show="service.allow_edit">
                             </td>
 
-                            <td class="text-center width-90">
+                            <td class="text-center width-55">
                                 <servicestatusicon service="fakeServicestatus"></servicestatusicon>
                             </td>
 
@@ -198,56 +198,70 @@
 
 
                             <td class="width-50">
-                                <div class="btn-group">
+                                <div class="btn-group btn-group-xs" role="group">
                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                         <a ui-sref="ServicesEdit({id: service.id})"
                                            ng-if="service.allow_edit"
-                                           class="btn btn-default">
-                                            &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                           class="btn btn-default btn-lower-padding">
+                                            <i class="fa fa-cog"></i>
                                         </a>
                                     <?php else: ?>
-                                        <a href="javascript:void(0);" class="btn btn-default">
-                                            &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                        <a href="javascript:void(0);"
+                                           class="btn btn-default btn-lower-padding">
+                                            <i class="fa fa-cog"></i></a>
                                     <?php endif; ?>
-                                    <a href="javascript:void(0);" data-toggle="dropdown"
-                                       class="btn btn-default dropdown-toggle"><span
-                                                class="caret"></span></a>
-                                    <ul class="dropdown-menu pull-right" id="menuHack-{{service.uuid}}">
+                                    <button type="button"
+                                            class="btn btn-default dropdown-toggle btn-lower-padding"
+                                            data-toggle="dropdown">
+                                        <i class="caret"></i>
+                                    </button>
+                                    <!-- <ul class="dropdown-menu" id="menuHack-{{service.Service.uuid}}" > -->
+                                    <div class="dropdown-menu">
                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                            <li ng-if="service.allow_edit">
-                                                <a ui-sref="ServicesEdit({id: service.id})">
-                                                    <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                                                </a>
-                                            </li>
+                                            <a ui-sref="ServicesEdit({id: service.id})"
+                                               ng-if="service.allow_edit"
+                                               class="dropdown-item">
+                                                <i class="fa fa-cog"></i>
+                                                <?php echo __('Edit'); ?>
+                                            </a>
                                         <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('activate', 'services')): ?>
-                                            <li ng-if="service.allow_edit">
-                                                <a href="javascript:void(0);"
-                                                   ng-click="confirmDeactivate(getObjectForDelete(host, service))">
-                                                    <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
-                                                </a>
-                                            </li>
+                                        <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
+                                            <a href="javascript:void(0);"
+                                               ng-if="service.allow_edit"
+                                               ng-click="confirmActivate(getObjectForDelete(host, service))"
+                                               class="dropdown-item">
+                                                <i class="fa fa-plug"></i>
+                                                <?php echo __('Enable'); ?>
+                                            </a>
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                            <li ng-if="service.allow_edit">
-                                                <?php echo $this->AdditionalLinks->renderAsListItems(
+                                            <a ng-if="service.allow_edit"
+                                               class="dropdown-item">
+                                                <?php
+                                                /**
+                                                 * @fixme
+                                                 * as the additional links helper is deprecated fix this with the replacement !
+                                                 */
+                                                echo $this->AdditionalLinks->renderAsListItems(
                                                     $additionalLinksList,
-                                                    '{{service.id}}',
+                                                    '{{service.Service.id}}',
                                                     [],
                                                     true
                                                 ); ?>
-                                            </li>
+                                            </a>
+
+
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
-                                            <li class="divider"></li>
-                                            <li ng-if="service.allow_edit">
-                                                <a href="javascript:void(0);" class="txt-color-red"
-                                                   ng-click="confirmDelete(getObjectForDelete(host, service))">
-                                                    <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                                                </a>
-                                            </li>
+                                            <a href="javascript:void(0);"
+                                               ng-click="confirmDelete(getObjectForDelete(host, service))"
+                                               ng-if="service.allow_edit"
+                                               class="dropdown-item">
+                                                <i class="fa fa-trash"></i>
+                                                <?php echo __('Delete'); ?>
+                                            </a>
                                         <?php endif; ?>
-                                    </ul>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
