@@ -91,7 +91,7 @@ class TenantsController extends AppController {
      */
     public function view($id) {
         if (!$this->isApiRequest()) {
-            throw new MethodNotAllowedException()
+            throw new MethodNotAllowedException();
         }
 
         /** @var $TenantsTable TenantsTable */
