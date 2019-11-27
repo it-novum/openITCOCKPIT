@@ -39,7 +39,7 @@ class Menu implements MenuInterface {
                 /** @var MenuInterface $PluginMenu */
                 $PluginMenu = new $className();
 
-                debug($PluginMenu->getMenuItems());
+                //debug($PluginMenu->getMenuItems());
 
             }
         }
