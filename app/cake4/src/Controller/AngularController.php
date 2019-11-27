@@ -44,7 +44,6 @@ use itnovum\openITCOCKPIT\Core\Menu\Menu;
 use itnovum\openITCOCKPIT\Core\ServiceMacroReplacer;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
-use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -130,7 +129,7 @@ class AngularController extends AppController {
      * @return bool|int
      * @throws \Exception
      */
-    public function get_timezone_offset($remote_tz, $origin_tz = null) {
+    private function get_timezone_offset($remote_tz, $origin_tz = null) {
         if ($origin_tz === null) {
             if (!is_string($origin_tz = date_default_timezone_get())) {
                 return false; // A UTC timestamp was returned -- bail out!
@@ -215,11 +214,11 @@ class AngularController extends AppController {
         session_write_close();
 
         $recursive = false;
-        if ($this->request->query('recursive') === 'true') {
+        if ($this->request->getQuery('recursive') === 'true') {
             $recursive = true;
         }
 
-        $containerIds = $this->request->query('containerIds');
+        $containerIds = $this->request->getQuery('containerIds');
         if (!is_numeric($containerIds) && !is_array($containerIds)) {
             $containerIds = ROOT_CONTAINER;
         }
@@ -432,11 +431,8 @@ class AngularController extends AppController {
 
     public function executing() {
         //Only ship HTML template
-        if (!isset($this->request->query['id'])) {
-            $id = 'angularExecutingModal';
-        } else {
-            $id = $this->request->query['id'];
-        }
+        $id = $this->request->getQuery('id', 'angularExecutingModal');
+
         $this->set('id', $id);
     }
 
@@ -813,8 +809,8 @@ class AngularController extends AppController {
             return;
         }
 
-        $hostId = $this->request->query('hostId');
-        $includeHoststatus = $this->request->query('includeHoststatus') === 'true';
+        $hostId = $this->request->getQuery('hostId');
+        $includeHoststatus = $this->request->getQuery('includeHoststatus') === 'true';
 
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -888,8 +884,8 @@ class AngularController extends AppController {
             return;
         }
 
-        $serviceId = $this->request->query('serviceId');
-        $includeServicestatus = $this->request->query('includeServicestatus') === 'true';
+        $serviceId = $this->request->getQuery('serviceId');
+        $includeServicestatus = $this->request->getQuery('includeServicestatus') === 'true';
 
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
@@ -910,7 +906,7 @@ class AngularController extends AppController {
             $allowEdit = $this->allowedByContainerId($service->getContainerIds());
         }
 
-        /** @var $DocumentationsTable App\Model\Table\DocumentationsTable */
+        /** @var DocumentationsTable $DocumentationsTable */
         $DocumentationsTable = TableRegistry::getTableLocator()->get('Documentations');
 
         $serviceName = $service->get('name');
