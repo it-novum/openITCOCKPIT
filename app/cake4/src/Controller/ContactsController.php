@@ -607,7 +607,7 @@ class ContactsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->request->is('get')) {
-            $containerIds = $this->request->query('containerIds');
+            $containerIds = $this->request->getQuery('containerIds');
         }
 
         if ($this->request->is('post')) {
@@ -678,7 +678,7 @@ class ContactsController extends AppController {
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $Ldap = LdapClient::fromSystemsettings($Systemsettings->findAsArraySection('FRONTEND'));
 
-        $samaccountname = (string)$this->request->query('samaccountname');
+        $samaccountname = (string)$this->request->getQuery('samaccountname');
         $ldapUsers = $Ldap->getUsers($samaccountname);
         $this->set('ldapUsers', $ldapUsers);
         $this->viewBuilder()->setOption('serialize', ['ldapUsers']);

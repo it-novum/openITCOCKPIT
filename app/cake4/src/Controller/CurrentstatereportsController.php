@@ -105,7 +105,7 @@ class CurrentstatereportsController extends AppController {
 
     public function createPdfReport() {
         //Rewrite GET to "POST"
-        $this->request->data = $this->request->query('data');
+        $this->request->data = $this->request->getQuery('data');
         $this->layout = 'Admin.default';
 
 

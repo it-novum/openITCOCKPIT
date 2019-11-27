@@ -873,7 +873,7 @@ class ServicesController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->request->is('get')) {
-            $hostId = $this->request->query('hostId');
+            $hostId = $this->request->getQuery('hostId');
             if (!$HostsTable->existsById($hostId)) {
                 throw new NotFoundException('Invalid host');
             }
@@ -1707,8 +1707,8 @@ class ServicesController extends AppController {
             throw new MethodNotAllowedException();
         }
         $this->Service->virtualFields['servicename'] = 'CONCAT(Host.name,"/",IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name))';
-        $containerId = $this->request->query('containerId');
-        $selected = $this->request->query('selected');
+        $containerId = $this->request->getQuery('containerId');
+        $selected = $this->request->getQuery('selected');
         $ServiceFilter = new ServiceFilter($this->request);
         $containerIds = [ROOT_CONTAINER, $containerId];
 
@@ -1737,8 +1737,8 @@ class ServicesController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $selected = $this->request->query('selected');
-        $includeDisabled = $this->request->query('includeDisabled') === 'true';
+        $selected = $this->request->getQuery('selected');
+        $includeDisabled = $this->request->getQuery('includeDisabled') === 'true';
 
         $ServiceFilter = new ServiceFilter($this->request);
 
@@ -1800,8 +1800,8 @@ class ServicesController extends AppController {
         $Groups = new Groups();
         $this->set('groups', $Groups->serialize(false));
 
-        $start = $this->request->query('start');
-        $end = $this->request->query('end');
+        $start = $this->request->getQuery('start');
+        $end = $this->request->getQuery('end');
 
 
         if (!is_numeric($start) || $start < 0) {
@@ -2369,8 +2369,8 @@ class ServicesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $selected = $this->request->query('selected');
-        $containerId = $this->request->query('containerId');
+        $selected = $this->request->getQuery('selected');
+        $containerId = $this->request->getQuery('containerId');
         if (empty($containerId)) {
             $containerId = $this->MY_RIGHTS;
         }
@@ -2405,8 +2405,8 @@ class ServicesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $selected = $this->request->query('selected');
-        $containerId = $this->request->query('containerId');
+        $selected = $this->request->getQuery('selected');
+        $containerId = $this->request->getQuery('containerId');
 
         $ServiceFilter = new ServiceFilter($this->request);
         $containerIds = [ROOT_CONTAINER, $containerId];

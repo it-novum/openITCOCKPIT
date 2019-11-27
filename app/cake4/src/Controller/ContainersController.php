@@ -477,7 +477,7 @@ class ContainersController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $onlyWithWritePermissions = $this->request->query('onlyWritePermissions') === 'true';
+        $onlyWithWritePermissions = $this->request->getQuery('onlyWritePermissions') === 'true';
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');

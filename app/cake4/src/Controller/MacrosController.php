@@ -145,7 +145,7 @@ class MacrosController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $include = $this->request->query('include');
+        $include = $this->request->getQuery('include');
 
         $TableLocator = $this->getTableLocator();
         /** @var $Macros MacrosTable */

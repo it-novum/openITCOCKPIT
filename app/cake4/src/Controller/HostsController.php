@@ -2428,8 +2428,8 @@ class HostsController extends AppController {
         $Conditions = new StatehistoryHostConditions();
         $Conditions->setOrder(['StatehistoryHost.state_time' => 'asc']);
 
-        $start = $this->request->query('start');
-        $end = $this->request->query('end');
+        $start = $this->request->getQuery('start');
+        $end = $this->request->getQuery('end');
 
 
         if (!is_numeric($start) || $start < 0) {
@@ -2577,12 +2577,12 @@ class HostsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $hostUuid = $this->request->query('uuid');
-        $timerange = $this->request->query('from');
+        $hostUuid = $this->request->getQuery('uuid');
+        $timerange = $this->request->getQuery('from');
         if ($timerange === null) {
             $timerange = 'now-6h';
         }
-        $refresh = $this->request->query('refresh');
+        $refresh = $this->request->getQuery('refresh');
         if ($refresh === null) {
             $refresh = 0;
         }
@@ -2910,9 +2910,9 @@ class HostsController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $selected = $this->request->query('selected');
-        $hostId = $this->request->query('hostId');
-        $containerId = $this->request->query('containerId');
+        $selected = $this->request->getQuery('selected');
+        $hostId = $this->request->getQuery('hostId');
+        $containerId = $this->request->getQuery('containerId');
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
             /** @var $ContainersTable ContainersTable */
@@ -2953,8 +2953,8 @@ class HostsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $selected = $this->request->query('selected');
-        $includeDisabled = $this->request->query('includeDisabled') === 'true';
+        $selected = $this->request->getQuery('selected');
+        $includeDisabled = $this->request->getQuery('includeDisabled') === 'true';
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -2988,8 +2988,8 @@ class HostsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $containerId = $this->request->query('containerId');
-        $selected = $this->request->query('selected');
+        $containerId = $this->request->getQuery('containerId');
+        $selected = $this->request->getQuery('selected');
 
         /** @var $HostsTable HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');

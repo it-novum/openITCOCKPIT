@@ -249,7 +249,7 @@ class ConfigurationFilesController extends AppController {
     }
 
     public function dynamicDirective() {
-        $directiveName = $this->request->query('directive');
+        $directiveName = $this->request->getQuery('directive');
         $isValidDirective = false;
 
         $GeneratorRegistry = new GeneratorRegistry();

@@ -288,7 +288,7 @@ class CalendarsController extends AppController {
         /** @var $CalendarsTable CalendarsTable */
         $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
 
-        $containerId = $this->request->query('containerId');
+        $containerId = $this->request->getQuery('containerId');
 
         $calendars = Api::makeItJavaScriptAble(
             $CalendarsTable->getCalendarsByContainerIds($containerId, 'list')

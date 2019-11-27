@@ -868,8 +868,8 @@ class ServicetemplatesController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $containerId = $this->request->query('containerId');
-        $selected = $this->request->query('selected');
+        $containerId = $this->request->getQuery('containerId');
+        $selected = $this->request->getQuery('selected');
         $ServicetemplateFilter = new ServicetemplateFilter($this->request);
 
         /** @var $ContainersTable ContainersTable */

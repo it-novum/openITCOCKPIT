@@ -499,7 +499,7 @@ class TimeperiodsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $containerId = $this->request->query('containerId');
+        $containerId = $this->request->getQuery('containerId');
 
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');

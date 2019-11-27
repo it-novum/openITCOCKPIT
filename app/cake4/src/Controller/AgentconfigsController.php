@@ -136,7 +136,7 @@ class AgentconfigsController extends AppController {
 
         if ($this->request->is('get')) {
 
-            $runDiscovery = $this->request->query('runDiscovery') === 'true';
+            $runDiscovery = $this->request->getQuery('runDiscovery') === 'true';
 
             if ($runDiscovery === false) {
                 $this->set('host', $host);

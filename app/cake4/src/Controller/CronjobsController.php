@@ -63,7 +63,7 @@ class CronjobsController extends AppController {
         }
         /** @var $Cronjobs App\Model\Table\CronjobsTable */
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
-        $include = $this->request->query('include');
+        $include = $this->request->getQuery('include');
         $plugins = array_values($Cronjobs->fetchPlugins());
         if ($include !== '') {
             $plugins[] = $include;
@@ -79,10 +79,10 @@ class CronjobsController extends AppController {
         }
         /** @var $Cronjobs App\Model\Table\CronjobsTable */
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
-        $include = $this->request->query('include');
+        $include = $this->request->getQuery('include');
         $pluginName = 'Core';
-        if ($this->request->query('pluginName') != null || $this->request->query('pluginName') != '') {
-            $pluginName = $this->request->query('pluginName');
+        if ($this->request->getQuery('pluginName') != null || $this->request->getQuery('pluginName') != '') {
+            $pluginName = $this->request->getQuery('pluginName');
         }
 
         $coreTasks = $Cronjobs->fetchTasks($pluginName);

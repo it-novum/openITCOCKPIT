@@ -713,8 +713,8 @@ class HostgroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $containerId = $this->request->query('containerId');
-        $selected = $this->request->query('selected');
+        $containerId = $this->request->getQuery('containerId');
+        $selected = $this->request->getQuery('selected');
 
         $HostFilter = new HostFilter($this->request);
 
@@ -755,8 +755,8 @@ class HostgroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $containerId = $this->request->query('containerId');
-        $selected = $this->request->query('selected');
+        $containerId = $this->request->getQuery('containerId');
+        $selected = $this->request->getQuery('selected');
         $HosttemplateFilter = new HosttemplateFilter($this->request);
 
         /** @var $ContainersTable ContainersTable */
@@ -782,7 +782,7 @@ class HostgroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $selected = $this->request->query('selected');
+        $selected = $this->request->getQuery('selected');
 
         $HostgroupFilter = new HostgroupFilter($this->request);
 
@@ -805,7 +805,7 @@ class HostgroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $containerId = $this->request->query('containerId');
+        $containerId = $this->request->getQuery('containerId');
         $HostgroupFilter = new HostgroupFilter($this->request);
 
         /** @var $ContainersTable ContainersTable */

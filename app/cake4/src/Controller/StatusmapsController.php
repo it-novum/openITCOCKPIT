@@ -90,7 +90,7 @@ class StatusmapsController extends AppController {
 
         $allHostIds = [];
         $hasBrowserRight = $this->hasPermission('browser', 'hosts');
-        if ($this->request->query('showAll') === 'false') {
+        if ($this->request->getQuery('showAll') === 'false') {
 
             $parentHostWithChildIds = $this->Parenthost->find('all', [
                 'recursive' => -1,

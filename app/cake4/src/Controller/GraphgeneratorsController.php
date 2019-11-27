@@ -51,13 +51,13 @@ class GraphgeneratorsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $hostUuid = $this->request->query('host_uuid');
-        $serviceUuid = $this->request->query('service_uuid');
-        $hours = $this->request->query('hours');
-        $start = (int)$this->request->query('start');
-        $end = (int)$this->request->query('end');
-        $jsTimestamp = (bool)$this->request->query('jsTimestamp');
-        $gauge = $this->request->query('gauge');
+        $hostUuid = $this->request->getQuery('host_uuid');
+        $serviceUuid = $this->request->getQuery('service_uuid');
+        $hours = $this->request->getQuery('hours');
+        $start = (int)$this->request->getQuery('start');
+        $end = (int)$this->request->getQuery('end');
+        $jsTimestamp = (bool)$this->request->getQuery('jsTimestamp');
+        $gauge = $this->request->getQuery('gauge');
 
         $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
         if (is_numeric($hours)) {

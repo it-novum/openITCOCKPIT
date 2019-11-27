@@ -616,8 +616,8 @@ class ServicegroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $containerId = $this->request->query('containerId');
-        $selected = $this->request->query('selected');
+        $containerId = $this->request->getQuery('containerId');
+        $selected = $this->request->getQuery('selected');
         $ServicetemplateFilter = new ServicetemplateFilter($this->request);
 
         /** @var $ContainersTable ContainersTable */
@@ -782,7 +782,7 @@ class ServicegroupsController extends AppController {
         /** @var $ServicegroupsTable ServicegroupsTable */
         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
-        $containerId = $this->request->query('containerId');
+        $containerId = $this->request->getQuery('containerId');
         if (!is_numeric($containerId)) {
             throw new BadRequestException('containerId is missing or not numeric');
         }
@@ -804,7 +804,7 @@ class ServicegroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $selected = $this->request->query('selected');
+        $selected = $this->request->getQuery('selected');
 
         /** @var $ServicegroupsTable ServicegroupsTable */
         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');

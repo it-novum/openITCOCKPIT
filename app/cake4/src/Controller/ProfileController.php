@@ -219,7 +219,7 @@ class ProfileController extends AppController {
         $ApikeysTable = TableRegistry::getTableLocator()->get('Apikeys');
 
         if ($this->request->is('get')) {
-            $id = $this->request->query('id');
+            $id = $this->request->getQuery('id');
             if (is_numeric($id)) {
                 //Get an api key by id and user_id
                 if (!$ApikeysTable->existsById($id)) {

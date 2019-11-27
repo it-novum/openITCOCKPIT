@@ -475,7 +475,7 @@ class ServicetemplategroupsController extends AppController {
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return list of services that will be created by the system
 
-            $hostId = $this->request->query('hostId');
+            $hostId = $this->request->getQuery('hostId');
             if (!$HostsTable->existsById($hostId)) {
                 throw new NotFoundException('Invalid host');
             }
@@ -632,7 +632,7 @@ class ServicetemplategroupsController extends AppController {
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return list of services that will be created by the system
 
-            $hostgroupId = $this->request->query('hostgroupId');
+            $hostgroupId = $this->request->getQuery('hostgroupId');
             if (!$HostgroupsTable->existsById($hostgroupId)) {
                 throw new NotFoundException('Invalid host group');
             }
@@ -1002,7 +1002,7 @@ class ServicetemplategroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $selected = $this->request->query('selected');
+        $selected = $this->request->getQuery('selected');
 
         $ServicetemplategroupsFilter = new ServicetemplategroupsFilter($this->request);
 
@@ -1028,7 +1028,7 @@ class ServicetemplategroupsController extends AppController {
         /** @var $HostgroupsTable HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
-        $selected = $this->request->query('selected');
+        $selected = $this->request->getQuery('selected');
 
         $HostgroupFilter = new HostgroupFilter($this->request);
 
