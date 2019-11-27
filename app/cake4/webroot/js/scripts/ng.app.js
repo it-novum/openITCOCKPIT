@@ -46,7 +46,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                         onlyShowMenuLoader = true;
                     }
                 }
-                
+
                 if(response.hasOwnProperty('data')){ //POST
                     if(typeof response.data !== "undefined"){
                         if(response.data.hasOwnProperty('disableGlobalLoader')){
@@ -100,6 +100,8 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
 
     .config(function($urlRouterProvider, $stateProvider){
+        $urlRouterProvider.otherwise("/dashboards/index");
+
         $stateProvider
 
             .state('403', {
