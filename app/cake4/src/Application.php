@@ -32,6 +32,7 @@ use Cake\Core\Configure;
 use Cake\Core\Exception\MissingPluginException;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
+use Cake\Http\Middleware\BodyParserMiddleware;
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Http\ServerRequest;
@@ -173,7 +174,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
                 'htmlUnauthenticatedRedirect' => '/users/login'
             ]))
             ->add(new AuthorizationMiddleware($this))
-            ->add(new RequestAuthorizationMiddleware());
+            ->add(new RequestAuthorizationMiddleware())
+            ->add(new BodyParserMiddleware());
 
         return $middlewareQueue;
     }

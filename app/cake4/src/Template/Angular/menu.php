@@ -53,6 +53,46 @@
     </li>
 
 
+    <li ng-repeat="headline in menu" style="color:red;">
+        {{headline.alias}}
+
+        <ul class="open" style="color:white;display: block;">
+            <li class="open" ng-repeat="item in headline.items" style="color:white;">
+                <a ng-if="!item.items" ui-sref="{{item.state}}">
+                    <i class="{{item.icon}}"></i>
+                    <span class="menu-item-parent">
+                        {{item.name}}
+                    </span>
+                </a>
+
+                <ul ng-if="item.items.length > 0" style="color:white;display: block;">
+
+                    <li class="open">
+                        <a  href="#" style="color:cyan!important;">
+                            <i class="{{item.icon}}"></i>
+                            <span class="menu-item-parent">
+                                {{item.alias}}
+                            </span>
+                        </a>
+                    </li>
+
+                    <li class="open" ng-repeat="subItem in item.items" style="color:white;">
+                        <a ui-sref="{{subItem.state}}">
+                            <i class="{{subItem.icon}}"></i>
+                            <span class="menu-item-parent">
+                                {{subItem.name}}
+                            </span>
+                        </a>
+                    </li>
+
+                </ul>
+
+            </li>
+
+        </ul>
+
+    </li>
+
     <li ng-repeat="parentNode in menu" ng-class="{'open': isActiveParent(parentNode)}">
         <a ng-if="parentNode.isAngular != 1" ng-href="{{ parentHref(parentNode) == '#' ? '' : parentHref(parentNode) }}"
            ng-class="{'cursor-pointer': parentHref(parentNode) == '#'}">

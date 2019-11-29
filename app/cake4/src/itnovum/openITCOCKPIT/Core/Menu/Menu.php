@@ -27,7 +27,7 @@ namespace itnovum\openITCOCKPIT\Core\Menu;
 
 use App\Lib\PluginManager;
 
-class Menu implements MenuInterface {
+class Menu {
 
     const MENU_OVERVIEW = 'overview';
     const MENU_MONITORING = 'monitoring';
@@ -35,7 +35,7 @@ class Menu implements MenuInterface {
     const MENU_CONFIGURATION = 'configuration';
 
     /**
-     * @var array
+     * @var MenuHeadline[]
      */
     private $headlines = [];
 
@@ -106,7 +106,7 @@ class Menu implements MenuInterface {
                     'reports_category',
                     __('Reports'),
                     4,
-                    'fa file-text-o'
+                    'fa fa-file-text-o'
                 ))
                     ->addLink(new MenuLink(
                         __('Instant reports'),
@@ -114,7 +114,7 @@ class Menu implements MenuInterface {
                         'instantreports',
                         'index',
                         '',
-                        'fa file-image-o',
+                        'fa fa-file-image-o',
                         ['instantreports'],
                         1
                     ))
@@ -124,7 +124,7 @@ class Menu implements MenuInterface {
                         'downtimereports',
                         'index',
                         '',
-                        'fa file-image-o',
+                        'fa fa-file-image-o',
                         [],
                         2
                     ))
@@ -134,7 +134,7 @@ class Menu implements MenuInterface {
                         'currentstatereports',
                         'index',
                         '',
-                        'fa file-image-o',
+                        'fa fa-file-image-o',
                         [],
                         3
                     ))
@@ -204,7 +204,7 @@ class Menu implements MenuInterface {
                 'objects_category',
                 __('Objects'),
                 3,
-                'fa fa-cubs'
+                'fa fa-cubes'
             ))
                 ->addLink(new MenuLink(
                     __('Contacts'),
@@ -606,7 +606,7 @@ class Menu implements MenuInterface {
                     'ConfigurationFiles',
                     'index',
                     '',
-                    'fa file-text-o',
+                    'fa fa-file-text-o',
                     [],
                     1
                 ))
@@ -637,12 +637,6 @@ class Menu implements MenuInterface {
         $this->addHeadline($Monitoring);
         $this->addHeadline($Administration);
         $this->addHeadline($Configuration);
-
-        debug('Hier');
-        debug($this->getAllMenuCategories());
-        dd($this->headlines);
-        die();
-
     }
 
     /**
@@ -655,6 +649,37 @@ class Menu implements MenuInterface {
 
         $this->headlines = [];
 
+        //Merge headlines with the same name together
+        $names = [];
+        $headlinesToRemove = [];
+        foreach ($headlines as $index => $headline) {
+            /** @var MenuHeadline $headline */
+            if (isset($names[$headline->getName()])) {
+                // Merge with existing headline
+                /** @var MenuHeadline $targetHeadline */
+                $targetHeadline = $names[$headline->getName()];
+                $headlinesToRemove = [$index];
+                foreach ($headline->getItems() as $item) {
+                    if ($item instanceof MenuLink) {
+                        $targetHeadline->addLink($item);
+                    }
+                    if ($item instanceof MenuCategory) {
+                        $targetHeadline->addCategory($item);
+                    }
+                }
+            } else {
+                //Save name
+                $names[$headline->getName()] = $headline;
+            }
+        }
+
+        //Drop merged headlines to remove duplicates
+        foreach ($headlinesToRemove as $index) {
+            unset($headlines[$index]);
+        }
+
+
+        //Order headlines
         $indexesToOrder = [];
         foreach ($headlines as $index => $headline) {
             /** @var MenuHeadline $headline */
@@ -677,7 +702,7 @@ class Menu implements MenuInterface {
         $menuCategories = [];
         foreach ($this->headlines as $headline) {
             /** @var MenuHeadline $headline */
-            if(!isset($menuCategories[$headline->getName()])){
+            if (!isset($menuCategories[$headline->getName()])) {
                 $menuCategories[$headline->getName()] = [];
             }
 
@@ -691,9 +716,10 @@ class Menu implements MenuInterface {
         return $menuCategories;
     }
 
+    /**
+     * @return MenuHeadline[]
+     */
     public function getMenuItems() {
-
-
         $modules = PluginManager::getAvailablePlugins();
         foreach ($modules as $module) {
             $className = sprintf('\\%s\\Lib\\Menu', $module);
@@ -702,10 +728,74 @@ class Menu implements MenuInterface {
                 /** @var MenuInterface $PluginMenu */
                 $PluginMenu = new $className();
 
-                //debug($PluginMenu->getMenuItems());
-
+                foreach ($PluginMenu->getHeadlines() as $headline) {
+                    /** @var MenuHeadline $headline */
+                    $this->addHeadline($headline);
+                }
             }
         }
+
+
+        $this->filterMenuByPermissions();
+        $this->remoteEmptyMenuItems();
+
+        return $this->headlines;
+    }
+
+    private function filterMenuByPermissions() {
+        foreach ($this->headlines as $headline) {
+            foreach ($headline->getItems() as $index => $item) {
+                if ($item instanceof MenuCategory) {
+                    /** @var MenuCategory $item */
+                    foreach ($item->getLinks() as $subIndex => $MenuLink) {
+                        if ($this->hasPermissions($MenuLink) === false) {
+                            $item->removeMenuLinkByIndex($subIndex);
+                        }
+                    }
+
+                } else {
+                    /** @var MenuLink $item */
+                    if ($this->hasPermissions($item) === false) {
+                        $headline->removeMenuLinkByIndex($index);
+                    }
+
+                }
+            }
+        }
+    }
+
+    private function remoteEmptyMenuItems() {
+        foreach ($this->headlines as $headlineIndex => $headline) {
+            foreach ($headline->getItems() as $index => $item) {
+                if ($item instanceof MenuCategory) {
+                    /** @var MenuCategory $item */
+                    if ($item->hasLinks() === false) {
+                        $headline->removeMenuCategoryByIndex($index);
+                    }
+                }
+            }
+
+            if ($headline->hasItems() === false) {
+                unset($this->headlines[$headlineIndex]);
+            }
+        }
+
+    }
+
+    /**
+     * @param MenuLink $MenuLink
+     * @return bool
+     */
+    private function hasPermissions(MenuLink $MenuLink) {
+        $plugin = $MenuLink->getLowerPlugin();
+        $controller = $MenuLink->getLowerController();
+        $action = $MenuLink->getLowerAction();
+
+        if ($MenuLink->isModule()) {
+            return isset($this->PERMISSIONS[$plugin][$controller][$action]);
+        }
+
+        return isset($this->PERMISSIONS[$controller][$action]);
     }
 
 }

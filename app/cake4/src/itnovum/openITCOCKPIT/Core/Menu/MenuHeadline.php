@@ -42,7 +42,7 @@ class MenuHeadline {
      * @param string $name
      * @param int $order
      */
-    public function __construct(string $name, string $alias, int $order = 0) {
+    public function __construct(string $name, string $alias = '', int $order = 0) {
         $this->name = $name;
         $this->alias = $alias;
         $this->order = $order;
@@ -53,25 +53,8 @@ class MenuHeadline {
      * @return $this
      */
     public function addLink(MenuLink $MenuLink) {
-        return $this->addItem($MenuLink);
-    }
-
-    /**
-     * @param MenuCategory $MenuCategory
-     * @return $this
-     */
-    public function addCategory(MenuCategory $MenuCategory) {
-        return $this->addItem($MenuCategory);
-    }
-
-    /**
-     * @param MenuCategory|MenuLink $menuItem
-     * @return $this
-     */
-    private function addItem($menuItem) {
-
         $items = $this->items;
-        $items[] = $menuItem;
+        $items[] = $MenuLink;
 
         $this->items = [];
 
@@ -89,6 +72,87 @@ class MenuHeadline {
 
         return $this;
     }
+
+    /**
+     * @param MenuCategory $MenuCategory
+     * @return $this
+     */
+    public function addCategory(MenuCategory $MenuCategory) {
+        $items = $this->items;
+        $items[] = $MenuCategory;
+
+        $this->items = [];
+
+        //Merge categories with the same name together
+        $names = [];
+        $categoriesToRemove = [];
+        foreach ($items as $index => $item) {
+            if ($item instanceof MenuCategory) {
+                /** @var MenuCategory $item */
+                if (isset($names[$item->getName()])) {
+                    // Merge with existing category
+                    /** @var MenuCategory $targetCategory */
+                    $targetCategory = $names[$item->getName()];
+                    $categoriesToRemove = [$index];
+                    foreach ($item->getLinks() as $MenuLink) {
+                        $targetCategory->addLink($MenuLink);
+                    }
+                } else {
+                    //Save name
+                    $names[$item->getName()] = $item;
+                }
+
+            }
+
+
+        }
+
+        //Drop merged categories to remove duplicates
+        foreach ($categoriesToRemove as $index) {
+            unset($items[$index]);
+        }
+
+        $indexesToOrder = [];
+        foreach ($items as $index => $item) {
+            /** @var MenuCategory|MenuLink */
+            $indexesToOrder[$index] = $item->getOrder();
+        }
+
+        asort($indexesToOrder);
+
+        foreach ($indexesToOrder as $index => $orderNumber) {
+            $this->items[] = $items[$index];
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param int $index
+     * @return bool
+     */
+    public function removeMenuLinkByIndex(int $index): bool {
+        if (isset($this->items[$index])) {
+            unset($this->items[$index]);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $index
+     * @return bool
+     */
+    public function removeMenuCategoryByIndex(int $index): bool {
+        if (isset($this->items[$index])) {
+            unset($this->items[$index]);
+            return true;
+        }
+
+        return false;
+    }
+
 
     /**
      * @return string
@@ -116,6 +180,28 @@ class MenuHeadline {
      */
     public function getItems(): array {
         return $this->items;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasItems(): bool {
+        return !empty($this->items);
+    }
+
+    public function toArray(): array {
+        $asArray = [
+            'name'  => $this->name,
+            'alias' => $this->alias,
+            'order' => $this->order,
+            'items' => []
+        ];
+
+        foreach ($this->items as $item) {
+            $asArray['items'][] = $item->toArray();
+        }
+
+        return $asArray;
     }
 
 }

@@ -38,6 +38,7 @@ use Cake\Cache\Cache;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Menu\Menu;
@@ -321,9 +322,6 @@ class AngularController extends AppController {
     }
 
     public function menu() {
-        $Menu = new Menu();
-        $Menu->getMenuItems();
-
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
@@ -332,27 +330,14 @@ class AngularController extends AppController {
         $user = $this->getUser();
         $cacheKey = sprintf('Menu_%s', $user->get('id'));
 
-        $menu = [
-            json_decode('{
-            "url": "\/",
-            "title": "Dashboard",
-            "icon": "dashboard",
-            "order": 1,
-            "url_array": {
-                "controller": "dashboards",
-                "action": "index",
-                "plugin": ""
-            },
-            "id": "dashboard",
-            "children": []
-        }', true)
-        ];
-
         if (!Cache::read($cacheKey, 'permissions')) {
-            //$menu = $this->Menu->compileMenu();
-            //$menu = $this->Menu->filterMenuByAcl($menu, $this->PERMISSIONS, true);
-            //$menu = $this->Menu->forAngular($menu);
-            Cache::write($cacheKey, $menu, 'permissions');
+            $Menu = new Menu($this->PERMISSIONS);
+            $jsonMenu = [];
+            foreach ($Menu->getMenuItems() as $headline){
+                $jsonMenu[] = $headline->toArray();
+            }
+
+            Cache::write($cacheKey, $jsonMenu, 'permissions');
         }
         session_write_close();
 

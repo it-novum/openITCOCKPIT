@@ -63,4 +63,48 @@ class MenuLink {
         return $this->order;
     }
 
+    /**
+     * @return bool
+     */
+    public function isModule() {
+        return $this->plugin !== '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getLowerController(): string {
+        return strtolower($this->controller);
+    }
+
+    /**
+     * @return string
+     */
+    public function getLowerAction(): string {
+        return strtolower($this->action);
+    }
+
+    /**
+     * @return string
+     */
+    public function getLowerPlugin(): string {
+        return strtolower($this->plugin);
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array {
+        return [
+            'name'       => $this->name,
+            'state'      => $this->state,
+            'controller' => $this->controller,
+            'action'     => $this->action,
+            'plugin'     => $this->plugin,
+            'tags'       => $this->tags,
+            'order'      => $this->order,
+            'icon'       => $this->icon
+        ];
+    }
+
 }

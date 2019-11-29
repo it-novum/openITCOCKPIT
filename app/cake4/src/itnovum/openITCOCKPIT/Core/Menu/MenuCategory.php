@@ -52,7 +52,7 @@ class MenuCategory {
     /**
      * @var array
      */
-    private $children = [];
+    private $links = [];
 
     /**
      * MenuCategory constructor.
@@ -61,7 +61,7 @@ class MenuCategory {
      * @param string $icon
      * @return $this
      */
-    public function __construct(string $name, string $alias, int $order = 0, string $icon = '') {
+    public function __construct(string $name, string $alias = '', int $order = 0, string $icon = '') {
         $this->name = $name;
         $this->alias = $alias;
         $this->order = $order;
@@ -74,8 +74,37 @@ class MenuCategory {
      * @return $this
      */
     public function addLink(MenuLink $MenuLink) {
-        $this->children[] = $MenuLink;
+        $links = $this->links;
+        $links[] = $MenuLink;
+
+        $this->links = [];
+
+        $indexesToOrder = [];
+        foreach ($links as $index => $link) {
+            /** @var MenuLink $link */
+            $indexesToOrder[$index] = $link->getOrder();
+        }
+
+        asort($indexesToOrder);
+
+        foreach ($indexesToOrder as $index => $orderNumber) {
+            $this->links[] = $links[$index];
+        }
+
         return $this;
+    }
+
+    /**
+     * @param int $index
+     * @return bool
+     */
+    public function removeMenuLinkByIndex(int $index): bool {
+        if (isset($this->links[$index])) {
+            unset($this->links[$index]);
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -102,8 +131,34 @@ class MenuCategory {
     /**
      * @return array
      */
-    public function getChildren(): array {
-        return $this->children;
+    public function getLinks(): array {
+        return $this->links;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasLinks(): bool {
+        return !empty($this->links);
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array {
+        $asArray = [
+            'name'  => $this->name,
+            'alias' => $this->alias,
+            'order' => $this->order,
+            'icon'  => $this->icon,
+            'items' => []
+        ];
+
+        foreach ($this->getLinks() as $link) {
+            $asArray['items'][] = $link->toArray();
+        }
+
+        return $asArray;
     }
 
 }

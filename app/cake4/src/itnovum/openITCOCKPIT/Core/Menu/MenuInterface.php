@@ -28,9 +28,9 @@ namespace itnovum\openITCOCKPIT\Core\Menu;
 interface MenuInterface {
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getMenuItems();
+    public function getHeadlines();
 
 }
 
