@@ -42,7 +42,7 @@ class AclHelper extends Helper {
      */
     protected $_defaultConfig = [];
 
-    public function hasPermission($action = null, $controller = null, $plugin = null) {
+    public function hasPermission($action = '', $controller = '', $plugin = '') {
         //return false;
         if ($action === null) {
             $action = $this->params['index'];
