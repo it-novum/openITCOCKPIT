@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Database;
 
 
+use Cake\Controller\Controller;
+
 class PaginateOMat {
 
     /**
@@ -50,19 +52,18 @@ class PaginateOMat {
 
     /**
      * PaginateOMat constructor.
-     * @param \AppPaginatorComponent $PaginatorComponent
      * @param \Controller $Controller
      * @param bool $isScrollRequest
      * @param int $page
      */
-    public function __construct(\AppPaginatorComponent $PaginatorComponent, \Controller $Controller, $isScrollRequest = true, $page = 1) {
+    public function __construct(Controller $Controller, $isScrollRequest = true, $page = 1) {
         $this->Controller = $Controller;
         $this->isScrollRequest = $isScrollRequest;
 
         if ($this->isScrollRequest) {
-            $this->PaginatorOrScrollIndex = new ScrollIndex($PaginatorComponent, $Controller);
+            $this->PaginatorOrScrollIndex = new ScrollIndex($Controller, $page);
         } else {
-            $this->PaginatorOrScrollIndex = new Cake4Paginator($Controller);
+            $this->PaginatorOrScrollIndex = new Cake4Paginator($Controller, $page);
         }
 
         $this->page = $page;

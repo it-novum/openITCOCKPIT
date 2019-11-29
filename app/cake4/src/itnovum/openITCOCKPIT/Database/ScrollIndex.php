@@ -24,17 +24,12 @@
 
 namespace itnovum\openITCOCKPIT\Database;
 
-use AppPaginatorComponent;
-use Controller;
+use Cake\Controller\Controller;
 
 class ScrollIndex {
 
     /**
-     * @var AppPaginatorComponent|Cake4Paginator
-     */
-    private $Paginator;
-
-    /**
+     * Current (CakePHP 4) Controller
      * @var Controller
      */
     private $Controller;
@@ -55,24 +50,24 @@ class ScrollIndex {
     private $hasNextPage = true;
 
 
-    public function __construct(AppPaginatorComponent $PaginatorComponent, Controller $Controller) {
-        $this->Paginator = $PaginatorComponent;
+    /**
+     * ScrollIndex constructor.
+     * @param Controller $Controller
+     * @param int $page
+     * @param int $limit
+     */
+    public function __construct(Controller $Controller, $page = 1, $limit = 25) {
         $this->Controller = $Controller;
 
-        $this->limit = (int)$this->Paginator->settings['limit'];
-        if ($this->limit === 0 || $this->limit < 0) {
-            $this->limit = 25;
-        }
-
-        //Uncomment for development purposes
-        //$this->limit = 1;
-
-        if (isset($this->Paginator->settings['page'])) {
-            $this->page = (int)$this->Paginator->settings['page'];
-        }
+        $this->page = (int)$page;
+        $this->limit = (int)$limit;
 
         if ($this->page === 0 || $this->page < 0) {
             $this->page = 1;
+        }
+
+        if ($this->limit === 0 || $this->limit < 0) {
+            $this->limit = 25;
         }
     }
 
@@ -123,7 +118,7 @@ class ScrollIndex {
     }
 
     public function scroll() {
-        $this->Controller->request['scroll'] = $this->getScroll();
+        $this->Controller->set('scroll', $this->getScroll());
     }
 
 }

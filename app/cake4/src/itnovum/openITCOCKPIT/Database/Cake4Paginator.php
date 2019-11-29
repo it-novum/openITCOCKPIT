@@ -24,11 +24,13 @@
 
 namespace itnovum\openITCOCKPIT\Database;
 
+use Cake\Controller\Controller;
+
 class Cake4Paginator {
 
     /**
-     * Current (CakePHP2) Controller
-     * @var \Controller
+     * Current (CakePHP 4) Controller
+     * @var Controller
      */
     private $Controller;
 
@@ -64,21 +66,23 @@ class Cake4Paginator {
      */
     private $current = 0;
 
-    public function __construct(\Controller $Controller) {
+    /**
+     * Cake4Paginator constructor.
+     * @param Controller $Controller
+     * @param int $page
+     * @param int $limit
+     */
+    public function __construct(Controller $Controller, $page = 1, $limit = 25) {
         $this->Controller = $Controller;
+        $this->page = (int)$page;
+        $this->limit = (int)$limit;
 
-        if (property_exists($this->Controller, 'Paginator')) {
-            $this->limit = (int)$this->Controller->Paginator->settings['limit'];
-            if ($this->limit === 0 || $this->limit < 0) {
-                $this->limit = 25;
-            }
+        if ($this->page === 0 || $this->page < 0) {
+            $this->page = 1;
+        }
 
-            //Uncomment for development purposes
-            //$this->limit = 1;
-
-            if (isset($this->Controller->Paginator->settings['page'])) {
-                $this->page = (int)$this->Controller->Paginator->settings['page'];
-            }
+        if ($this->limit === 0 || $this->limit < 0) {
+            $this->limit = 25;
         }
     }
 

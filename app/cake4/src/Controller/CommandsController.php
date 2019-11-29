@@ -34,26 +34,20 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
 
 /**
  * Class CommandsController
- * @property AppPaginatorComponent Paginator
  * @property AppAuthComponent Auth
  */
 class CommandsController extends AppController {
-
-    public $uses = [
-        'Changelog'
-    ];
-
-    public $layout = 'blank';
-
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -65,7 +59,7 @@ class CommandsController extends AppController {
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
         $CommandFilter = new CommandsFilter($this->request);
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $CommandFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $CommandFilter->getPage());
         $all_commands = $CommandsTable->getCommandsIndex($CommandFilter, $PaginateOMat);
 
         $this->set('all_commands', $all_commands);
@@ -101,7 +95,7 @@ class CommandsController extends AppController {
             return;
         }
 
-        if($this->request->is('get')){
+        if ($this->request->is('get')) {
             $DefaultMacros = DefaultMacros::getMacros();
             $this->set('defaultMacros', $DefaultMacros);
             $this->viewBuilder()->setOption('serialize', ['defaultMacros']);
@@ -115,7 +109,7 @@ class CommandsController extends AppController {
             $command = $CommandsTable->newEmptyEntity();
 
             $command = $CommandsTable->patchEntity($command, $this->request->data('Command'));
-            $command->set('uuid', \itnovum\openITCOCKPIT\Core\UUID::v4());
+            $command->set('uuid', UUID::v4());
 
             $CommandsTable->save($command);
             if ($command->hasErrors()) {

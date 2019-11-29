@@ -8,6 +8,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 
 /**
@@ -123,7 +124,7 @@ class CommandsTable extends Table {
 
     /**
      * @param CommandsFilter $CommandsFilter
-     * @param null $PaginateOMat
+     * @param PaginateOMat|null $PaginateOMat
      * @return array
      */
     public function getCommandsIndex(CommandsFilter $CommandsFilter, $PaginateOMat = null) {

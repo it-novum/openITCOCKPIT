@@ -24,14 +24,17 @@
 
 namespace itnovum\openITCOCKPIT\Filter;
 
-use CakeRequest;
+use Cake\Http\ServerRequest;
 use NotImplementedException;
 
 abstract class Filter {
 
+    /**
+     * @var ServerRequest
+     */
     private $Request;
 
-    public function __construct(CakeRequest $Request) {
+    public function __construct(ServerRequest $Request) {
         $this->Request = $Request;
     }
 
@@ -161,7 +164,8 @@ abstract class Filter {
      * @return bool
      */
     public function queryHasField($field) {
-        return isset($this->Request->query['filter'][$field]);
+        $query = $this->Request->getQuery('filter');
+        return isset($query[$field]);
     }
 
     /**
@@ -171,11 +175,13 @@ abstract class Filter {
     public function getQueryFieldValue($field, $strict = false) {
         if ($this->queryHasField($field)) {
             if ($strict === false) {
-                return $this->Request->query['filter'][$field];
+                $query = $this->Request->getQuery('filter');
+                return $query[$field];
             }
 
             if ($strict === true) {
-                $value = $this->Request->query['filter'][$field];
+                $query = $this->Request->getQuery('filter');
+                $value = $query[$field];
                 if (is_array($value)) {
                     $value = array_filter($value, function ($val) {
                         if ($val === null || $val === '') {
@@ -227,8 +233,10 @@ abstract class Filter {
      * @return string|array
      */
     public function getSort($default = '') {
-        if (isset($this->Request->query['sort']) && $this->Request->query['sort'] !== '') {
-            return $this->Request->query['sort'];
+        $sort = $this->Request->getQuery('sort');
+
+        if ($sort !== null && $sort !== '') {
+            return $sort;
         }
         return $default;
     }
@@ -238,12 +246,14 @@ abstract class Filter {
      * @return string
      */
     public function getDirection($default = '') {
-        if (isset($this->Request->query['direction'])) {
-            if ($this->Request->query['direction'] === 'desc') {
-                return 'desc';
-            }
+        if ($this->Request->getQuery('direction') === 'desc') {
+            return 'desc';
+        }
+
+        if ($default === '') {
             return 'asc';
         }
+
         return $default;
     }
 
@@ -279,8 +289,9 @@ abstract class Filter {
      * @return int
      */
     public function getPage($default = 1) {
-        if (isset($this->Request->query['page'])) {
-            return (int)$this->Request->query['page'];
+
+        if ($this->Request->getQuery('page', 0) > 0) {
+            return (int)$this->Request->getQuery('page');
         }
         return $default;
     }
