@@ -972,7 +972,7 @@ class DashboardsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $config = $HostStatusListJson->standardizedData($this->request->data);
+            $config = $HostStatusListJson->standardizedData($this->request->getData());
 
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode($config)
@@ -1017,7 +1017,7 @@ class DashboardsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $config = $DowntimeHostListJson->standardizedData($this->request->data);
+            $config = $DowntimeHostListJson->standardizedData($this->request->getData());
 
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode($config)
@@ -1063,7 +1063,7 @@ class DashboardsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $config = $DowntimeServiceListJson->standardizedData($this->request->data);
+            $config = $DowntimeServiceListJson->standardizedData($this->request->getData());
 
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode($config)
@@ -1109,7 +1109,7 @@ class DashboardsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $config = $ServiceStatusListJson->standardizedData($this->request->data);
+            $config = $ServiceStatusListJson->standardizedData($this->request->getData());
 
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode($config)
@@ -1123,7 +1123,7 @@ class DashboardsController extends AppController {
 
         throw new MethodNotAllowedException();
     }
-    
+
     public function noticeWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
@@ -1168,15 +1168,13 @@ class DashboardsController extends AppController {
                 ])
             ]);
 
-
             $WidgetsTable->save($widget);
             if ($widget->hasErrors()) {
                 return $this->serializeCake4ErrorMessage($widget);
             }
 
-
-            $this->set('config', $config);
-            $this->viewBuilder()->setOption('serialize', ['config']);
+            $this->set('sucess', true);
+            $this->viewBuilder()->setOption('sucess', ['config']);
             return;
         }
         throw new MethodNotAllowedException();
@@ -1230,7 +1228,7 @@ class DashboardsController extends AppController {
 
 
         if ($this->request->is('post')) {
-            $config = $TrafficlightJson->standardizedData($this->request->data);
+            $config = $TrafficlightJson->standardizedData($this->request->getData());
             $widgetId = (int)$this->request->data('Widget.id');
             $serviceId = (int)$this->request->data('Widget.service_id');
 
