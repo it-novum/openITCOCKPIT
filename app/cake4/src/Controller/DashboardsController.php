@@ -829,7 +829,7 @@ class DashboardsController extends AppController {
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
-    
+
     /****************************
      *      Basic Widgets       *
      ****************************/
