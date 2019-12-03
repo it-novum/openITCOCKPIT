@@ -42,6 +42,15 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-xs-12 margin-top-10" ng-show="doAck">
+                    <h4><?php echo __('Executing command'); ?></h4>
+                </div>
+                <div class="col-lg-12 margin-top-10" ng-show="doAck">
+                    <div class="progress progress-striped active">
+                        <div class="progress-bar bg-primary" style="width: {{percentage}}%"></div>
+                    </div>
+                </div>
+
 
             </div>
             <div class="modal-footer">
