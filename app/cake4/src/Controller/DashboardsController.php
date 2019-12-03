@@ -829,8 +829,10 @@ class DashboardsController extends AppController {
         $this->set('success', true);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
-
-    /***** Basic Widgets *****/
+    
+    /****************************
+     *      Basic Widgets       *
+     ****************************/
     public function welcomeWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
