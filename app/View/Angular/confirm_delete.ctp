@@ -17,7 +17,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" ng-click="delete()">
                     <i class="fa fa-refresh fa-spin" ng-show="isDeleting"></i>
-                    <?php echo __('Deletebsdfgn'); ?>
+                    <?php echo __('Delete'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Cancel'); ?>
