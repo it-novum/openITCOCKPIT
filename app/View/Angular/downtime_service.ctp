@@ -93,7 +93,14 @@
                         </div>
 
                     </div>
-
+                    <div class="col-xs-12 margin-top-10" ng-show="doDowntime">
+                        <h4><?php echo __('Executing command'); ?></h4>
+                    </div>
+                    <div class="col-xs-12 margin-top-10" ng-show="doDowntime">
+                        <div class="progress progress-striped active">
+                            <div class="progress-bar bg-primary" style="width: {{percentage}}%"></div>
+                        </div>
+                    </div>
 
                 </div>
                 <div class="modal-footer">
