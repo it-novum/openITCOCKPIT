@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d78eb4dbc11dc0f08d0ce28234f789bd",
+    "content-hash": "96727cb86bea297953a8d1795f1a9cd8",
     "packages": [
         {
             "name": "aura/intl",
@@ -489,6 +489,96 @@
                 "tls"
             ],
             "time": "2019-08-30T08:44:50+00:00"
+        },
+        {
+            "name": "erusev/parsedown",
+            "version": "1.7.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/erusev/parsedown.git",
+                "reference": "6d893938171a817f4e9bc9e86f2da1e370b7bcd7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/6d893938171a817f4e9bc9e86f2da1e370b7bcd7",
+                "reference": "6d893938171a817f4e9bc9e86f2da1e370b7bcd7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.35"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Parsedown": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Emanuil Rusev",
+                    "email": "hello@erusev.com",
+                    "homepage": "http://erusev.com"
+                }
+            ],
+            "description": "Parser for Markdown.",
+            "homepage": "http://parsedown.org",
+            "keywords": [
+                "markdown",
+                "parser"
+            ],
+            "time": "2019-03-17T18:48:37+00:00"
+        },
+        {
+            "name": "erusev/parsedown-extra",
+            "version": "0.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/erusev/parsedown-extra.git",
+                "reference": "0db5cce7354e4b76f155d092ab5eb3981c21258c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/erusev/parsedown-extra/zipball/0db5cce7354e4b76f155d092ab5eb3981c21258c",
+                "reference": "0db5cce7354e4b76f155d092ab5eb3981c21258c",
+                "shasum": ""
+            },
+            "require": {
+                "erusev/parsedown": "~1.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "ParsedownExtra": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Emanuil Rusev",
+                    "email": "hello@erusev.com",
+                    "homepage": "http://erusev.com"
+                }
+            ],
+            "description": "An extension of Parsedown that adds support for Markdown Extra.",
+            "homepage": "https://github.com/erusev/parsedown-extra",
+            "keywords": [
+                "markdown",
+                "markdown extra",
+                "parsedown",
+                "parser"
+            ],
+            "time": "2015-11-01T10:19:22+00:00"
         },
         {
             "name": "mobiledetect/mobiledetectlib",
@@ -4656,10 +4746,10 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "cakephp/cakephp": 20,
+        "cakephp/acl": 20,
         "cakephp/authentication": 20,
         "cakephp/authorization": 20,
-        "cakephp/acl": 20,
+        "cakephp/cakephp": 20,
         "cakephp/migrations": 20,
         "cakephp/bake": 20,
         "cakephp/cakephp-codesniffer": 20,
@@ -4672,7 +4762,8 @@
         "php": ">=7.2",
         "ext-calendar": "*",
         "ext-gd": "*",
-        "ext-gearman": "*"
+        "ext-gearman": "*",
+        "ext-json": "*"
     },
     "platform-dev": []
 }

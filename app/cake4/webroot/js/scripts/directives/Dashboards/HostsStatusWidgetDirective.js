@@ -86,7 +86,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     'sort': $scope.sort,
                     'page': $scope.currentPage,
                     'direction': $scope.direction,
-                    'filter[Host.name]': $scope.filter.Host.name,
+                    'filter[Hosts.name]': $scope.filter.Host.name,
                     'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
                     'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
                     'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,

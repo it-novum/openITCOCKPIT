@@ -942,32 +942,28 @@ class DashboardsController extends AppController {
         return;
     }
 
-    /**
-     * @deprecated
-     */
     public function hostsStatusListWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
 
-        $widgetId = (int)$this->request->query('widgetId');
+        $widgetId = (int)$this->request->getQuery('widgetId');
         $HostStatusListJson = new HostStatusListJson();
-        if (!$this->Widget->exists($widgetId)) {
+
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if (!$WidgetsTable->existsById($widgetId)) {
             throw new NotFoundException('Widget not found');
         }
 
-        if ($this->request->is('get')) {
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ]
-            ]);
+        $widget = $WidgetsTable->get($widgetId);
 
+        if ($this->request->is('get')) {
             $data = [];
-            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
-                $data = json_decode($widget['Widget']['json_data'], true);
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
             }
             $config = $HostStatusListJson->standardizedData($data);
             $this->set('config', $config);
@@ -978,8 +974,10 @@ class DashboardsController extends AppController {
         if ($this->request->is('post')) {
             $config = $HostStatusListJson->standardizedData($this->request->data);
 
-            $this->Widget->id = $widgetId;
-            $this->Widget->saveField('json_data', json_encode($config));
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode($config)
+            ]);
+            $WidgetsTable->save($widget);
 
             $this->set('config', $config);
             $this->viewBuilder()->setOption('serialize', ['config']);
@@ -989,32 +987,28 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
-    /**
-     * @deprecated
-     */
     public function hostsDowntimeWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
-        $widgetId = (int)$this->request->query('widgetId');
+
+        $widgetId = (int)$this->request->getQuery('widgetId');
         $DowntimeHostListJson = new DowntimeHostListJson();
 
-        if (!$this->Widget->exists($widgetId)) {
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if (!$WidgetsTable->existsById($widgetId)) {
             throw new NotFoundException('Widget not found');
         }
 
-        if ($this->request->is('get')) {
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ]
-            ]);
+        $widget = $WidgetsTable->get($widgetId);
 
+        if ($this->request->is('get')) {
             $data = [];
-            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
-                $data = json_decode($widget['Widget']['json_data'], true);
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
             }
             $config = $DowntimeHostListJson->standardizedData($data);
             $this->set('config', $config);
@@ -1025,8 +1019,10 @@ class DashboardsController extends AppController {
         if ($this->request->is('post')) {
             $config = $DowntimeHostListJson->standardizedData($this->request->data);
 
-            $this->Widget->id = $widgetId;
-            $this->Widget->saveField('json_data', json_encode($config));
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode($config)
+            ]);
+            $WidgetsTable->save($widget);
 
             $this->set('config', $config);
             $this->viewBuilder()->setOption('serialize', ['config']);
@@ -1036,33 +1032,30 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
-    /**
-     * @deprecated
-     */
     public function servicesDowntimeWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
-        $widgetId = (int)$this->request->query('widgetId');
+
+        $widgetId = (int)$this->request->getQuery('widgetId');
         $DowntimeServiceListJson = new DowntimeServiceListJson();
 
-        if (!$this->Widget->exists($widgetId)) {
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if (!$WidgetsTable->existsById($widgetId)) {
             throw new NotFoundException('Widget not found');
         }
 
-        if ($this->request->is('get')) {
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ]
-            ]);
+        $widget = $WidgetsTable->get($widgetId);
 
+        if ($this->request->is('get')) {
             $data = [];
-            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
-                $data = json_decode($widget['Widget']['json_data'], true);
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
             }
+
             $config = $DowntimeServiceListJson->standardizedData($data);
             $this->set('config', $config);
             $this->viewBuilder()->setOption('serialize', ['config']);
@@ -1072,8 +1065,10 @@ class DashboardsController extends AppController {
         if ($this->request->is('post')) {
             $config = $DowntimeServiceListJson->standardizedData($this->request->data);
 
-            $this->Widget->id = $widgetId;
-            $this->Widget->saveField('json_data', json_encode($config));
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode($config)
+            ]);
+            $WidgetsTable->save($widget);
 
             $this->set('config', $config);
             $this->viewBuilder()->setOption('serialize', ['config']);
@@ -1083,32 +1078,30 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
-    /**
-     * @deprecated
-     */
     public function servicesStatusListWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
-        $widgetId = (int)$this->request->query('widgetId');
+
+        $widgetId = (int)$this->request->getQuery('widgetId');
         $ServiceStatusListJson = new ServiceStatusListJson();
-        if (!$this->Widget->exists($widgetId)) {
+
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if (!$WidgetsTable->existsById($widgetId)) {
             throw new NotFoundException('Widget not found');
         }
 
-        if ($this->request->is('get')) {
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ]
-            ]);
+        $widget = $WidgetsTable->get($widgetId);
 
+        if ($this->request->is('get')) {
             $data = [];
-            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
-                $data = json_decode($widget['Widget']['json_data'], true);
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
             }
+
             $config = $ServiceStatusListJson->standardizedData($data);
             $this->set('config', $config);
             $this->viewBuilder()->setOption('serialize', ['config']);
@@ -1118,8 +1111,10 @@ class DashboardsController extends AppController {
         if ($this->request->is('post')) {
             $config = $ServiceStatusListJson->standardizedData($this->request->data);
 
-            $this->Widget->id = $widgetId;
-            $this->Widget->saveField('json_data', json_encode($config));
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode($config)
+            ]);
+            $WidgetsTable->save($widget);
 
             $this->set('config', $config);
             $this->viewBuilder()->setOption('serialize', ['config']);
@@ -1128,39 +1123,35 @@ class DashboardsController extends AppController {
 
         throw new MethodNotAllowedException();
     }
-
-    /**
-     * @deprecated
-     */
+    
     public function noticeWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
-        $widgetId = (int)$this->request->query('widgetId');
+        $widgetId = (int)$this->request->getQuery('widgetId');
         $NoticeJson = new NoticeJson();
 
-        if (!$this->Widget->exists($widgetId)) {
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if (!$WidgetsTable->existsById($widgetId)) {
             throw new NotFoundException('Widget not found');
         }
 
-        if ($this->request->is('get')) {
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ]
-            ]);
+        $widget = $WidgetsTable->get($widgetId);
 
+        if ($this->request->is('get')) {
             $data = [];
             $htmlContent = '';
-            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
-                $data = json_decode($widget['Widget']['json_data'], true);
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
                 if (!empty($data['note'])) {
-                    $parseDown = new ParsedownExtra();
-                    $htmlContent = $parseDown->text($data['note']);
+                    $ParseDown = new \ParsedownExtra();
+                    $htmlContent = $ParseDown->text($data['note']);
                 }
             }
+
             $config = $NoticeJson->standardizedData($data);
             $this->set('config', $config);
             $this->set('htmlContent', $htmlContent);
@@ -1171,29 +1162,21 @@ class DashboardsController extends AppController {
 
 
         if ($this->request->is('post')) {
-            $widgetId = (int)$this->request->query('widgetId');
-            if (!$this->Widget->exists($widgetId)) {
-                throw new \RuntimeException('Invalid widget id');
-            }
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ],
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode([
+                    'note' => $this->request->getData('note', '')
+                ])
             ]);
-            if ($widget) {
-                $widget['Widget']['json_data'] = json_encode([
-                    'note' => $this->request->data('note')
-                ]);
-                if (!$this->Widget->save($widget)) {
-                    $this->response->statusCode(400);
-                    $this->serializeErrorMessageFromModel('Widget');
-                    return;
-                }
-                $this->viewBuilder()->setOption('serialize', ['serviceId']);
-                return;
+
+
+            $WidgetsTable->save($widget);
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
             }
-            $this->response->statusCode(400);
+
+
+            $this->set('config', $config);
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
         throw new MethodNotAllowedException();

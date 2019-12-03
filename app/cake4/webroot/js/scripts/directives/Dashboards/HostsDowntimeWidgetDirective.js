@@ -77,9 +77,9 @@ angular.module('openITCOCKPIT').directive('hostsDowntimeWidget', function($http,
                     'sort': $scope.sort,
                     'page': $scope.currentPage,
                     'direction': $scope.direction,
-                    'filter[DowntimeHost.comment_data]': $scope.filter.DowntimeHost.comment_data,
-                    'filter[DowntimeHost.was_cancelled]': wasCancelled,
-                    'filter[Host.name]': $scope.filter.Host.name,
+                    'filter[DowntimeHosts.comment_data]': $scope.filter.DowntimeHost.comment_data,
+                    'filter[DowntimeHosts.was_cancelled]': wasCancelled,
+                    'filter[Hosts.name]': $scope.filter.Host.name,
                     'filter[hideExpired]': $scope.filter.hideExpired,
                     'filter[isRunning]': $scope.filter.isRunning
                 };
