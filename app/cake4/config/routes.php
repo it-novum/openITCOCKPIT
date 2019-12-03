@@ -71,6 +71,11 @@ $routes->scope('/', function (RouteBuilder $builder) {
     $builder->connect('/', ['controller' => 'Pages', 'action' => 'index']);
 
     /*
+     * Backwards compatibility because Firefox has cached /ng redirect forever
+     */
+    $builder->connect('/ng', ['controller' => 'Pages', 'action' => 'index']);
+
+    /*
      * ...and connect the rest of 'Pages' controller's URLs.
      */
     $builder->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);

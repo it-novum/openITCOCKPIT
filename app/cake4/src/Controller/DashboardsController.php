@@ -30,6 +30,7 @@ namespace App\Controller;
 
 use App\Model\Table\ContainersTable;
 use App\Model\Table\SystemsettingsTable;
+use App\Model\Table\UsersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeHostListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeServiceListJson;
@@ -41,6 +42,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use Statusengine\PerfdataParser;
 use Cake\ORM\Locator\LocatorAwareTrait;
 
@@ -58,6 +60,7 @@ class DashboardsController extends AppController {
 
     use LocatorAwareTrait;
 
+    /*
     //Most calls are API calls or modal html requests
     //Blank is the best default for Dashboards...
     public $layout = 'blank';
@@ -72,7 +75,7 @@ class DashboardsController extends AppController {
         'Service',
         'Host',
         'Systemsetting'
-    ];
+    ];*/
 
     public function index() {
         //CakePHP 4 Model usage Example
@@ -80,10 +83,10 @@ class DashboardsController extends AppController {
         //$Proxy = $TableLocator->get('Proxies');
         //debug($Proxy->find()->first());die();
 
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             $askForHelp = false;
-            if (!$this->Cookie->check('askAgainForHelp')) {
+            $askAgainForHelp = $this->request->getCookie('askAgainForHelp');
+            if ($askAgainForHelp === null) {
 
                 /** @var $SystemsettingsTable SystemsettingsTable */
                 $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
@@ -101,11 +104,11 @@ class DashboardsController extends AppController {
             return;
         }
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
-        /** @var $Users App\Model\Table\UsersTable */
-        $Users = TableRegistry::getTableLocator()->get('Users');
-        $user = $Users->get($User->getId());
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        $user = $UsersTable->get($User->getId());
 
         $tabRotationInterval = (int)$user->dashboard_tab_rotation;
 
