@@ -129,6 +129,10 @@ class DashboardsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval']);
     }
 
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
     public function getWidgetsForTab($tabId) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -647,7 +651,6 @@ class DashboardsController extends AppController {
 
         $id = (int)$this->request->getData('DashboardTab.id', 0);
 
-
         /** @var DashboardTabsTable $DashboardTabsTable */
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
         /** @var WidgetsTable $WidgetsTable */
@@ -719,125 +722,139 @@ class DashboardsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['DashboardTab']);
     }
 
-    /**
-     * @deprecated
-     */
     public function renameWidget() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $User = new User($this->getUser());
 
-        $widgetId = (int)$this->request->data('Widget.id');
-        $name = $this->request->data('Widget.name');
+        $widgetId = (int)$this->request->getData('Widget.id', 0);
+        $name = $this->request->getData('Widget.name', '');
 
-        $widget = $this->Widget->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Widget.id' => $widgetId
-            ]
-        ]);
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
 
-        if (empty($widget)) {
+        $widget = $WidgetsTable->get($widgetId);
+
+        if ($widget === null) {
             throw new NotFoundException();
         }
 
-        $widget['Widget']['name'] = $name;
-        if ($this->Widget->save($widget)) {
-            $this->set('success', true);
-            $this->viewBuilder()->setOption('serialize', ['success']);
-            return;
-        }
+        $widget = $WidgetsTable->patchEntity($widget, [
+            'name' => $name
+        ]);
 
-        $this->serializeErrorMessageFromModel('Widget');
+        $WidgetsTable->save($widget);
+
+        if ($widget->hasErrors()) {
+            return $this->serializeCake4ErrorMessage($widget);
+        }
+        $this->set('success', true);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
-    /**
-     * @deprecated
-     */
     public function lockOrUnlockTab() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
         $User = new User($this->getUser());
 
-        $id = (int)$this->request->data('DashboardTab.id');
-        $locked = $this->request->data('DashboardTab.locked') === 'true';
+        $id = (int)$this->request->getData('DashboardTab.id');
+        $locked = $this->request->getData('DashboardTab.locked') === 'true';
 
-        $dashboardTab = $this->DashboardTab->find('first', [
-            'conditions' => [
-                'DashboardTab.id'      => $id,
-                'DashboardTab.user_id' => $User->getId()
-            ]
-        ]);
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
-        if (empty($dashboardTab)) {
+        $tab = $DashboardTabsTable->find()
+            ->where([
+                'DashboardTabs.id'      => $id,
+                'DashboardTabs.user_id' => $User->getId()
+            ])
+            ->first();
+
+        if ($tab === null) {
             throw new NotFoundException();
         }
 
-        $dashboardTab['DashboardTab']['locked'] = $locked;
+        $tab = $DashboardTabsTable->patchEntity($tab, [
+            'locked' => $locked
+        ]);
 
-        if ($this->DashboardTab->save($dashboardTab)) {
-            $this->set('success', true);
-            $this->viewBuilder()->setOption('serialize', ['success']);
-            return;
+        $DashboardTabsTable->save($tab);
+
+        if ($tab->hasErrors()) {
+            return $this->serializeCake4ErrorMessage($tab);
         }
-        $this->serializeErrorMessageFromModel('DashboardTab');
-        return;
+        $this->set('success', true);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
-    /**
-     * @deprecated
-     */
     public function restoreDefault() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
         $User = new User($this->getUser());
 
-        $id = (int)$this->request->data('DashboardTab.id');
+        $id = (int)$this->request->getData('DashboardTab.id');
 
-        $dashboardTab = $this->DashboardTab->find('first', [
-            'conditions' => [
-                'DashboardTab.id'      => $id,
-                'DashboardTab.user_id' => $User->getId()
-            ]
-        ]);
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
 
-        if (empty($dashboardTab)) {
+        $tab = $DashboardTabsTable->find()
+            ->where([
+                'DashboardTabs.id'      => $id,
+                'DashboardTabs.user_id' => $User->getId()
+            ])
+            ->first();
+
+        if ($tab === null) {
             throw new NotFoundException();
         }
 
         //Delete old widgets
-        $this->Widget->deleteAll([
-            'Widget.dashboard_tab_id' => $id
+        $WidgetsTable->deleteAll([
+            'Widgets.dashboard_tab_id' => $id
         ]);
 
-        $dashboardTab['Widget'] = $this->Widget->getDefaultWidgets($this->PERMISSIONS);
+        $tab = $DashboardTabsTable->patchEntity($tab, [
+            'widgets' => $WidgetsTable->getDefaultWidgets($this->PERMISSIONS)
+        ]);
 
-        if ($this->DashboardTab->saveAll($dashboardTab)) {
-            $this->set('success', true);
-            $this->viewBuilder()->setOption('serialize', ['success']);
-            return;
+        $DashboardTabsTable->save($tab);
+
+        if ($tab->hasErrors()) {
+            return $this->serializeCake4ErrorMessage($tab);
         }
-        $this->serializeErrorMessageFromModel('DashboardTab');
-        return;
+        $this->set('success', true);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     /***** Basic Widgets *****/
-    /**
-     * @deprecated
-     */
     public function welcomeWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
+
+            $user = $this->getUser();
+
+            $userImage = '/img/fallback_user.png';
+            if ($user->get('image') != null && $user->get('image') != '') {
+                if (file_exists(WWW_ROOT . 'userimages' . DS . $user->get('image'))) {
+                    $userImage = '/userimages' . DS . $user->get('image');
+                }
+            }
+
+            $userFullName = sprintf('%s %s', $user->get('firstname'), $user->get('lastname'));
+
+
+            $this->set('userImage', $userImage);
+            $this->set('userFullName', $userFullName);
+            $this->set('userTimezone', $user->get('timezone'));
+
             return;
         }
     }
 
-    /**
-     * @deprecated
-     */
     public function parentOutagesWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template

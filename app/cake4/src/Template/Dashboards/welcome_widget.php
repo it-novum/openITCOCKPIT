@@ -25,25 +25,7 @@
 
 
 <div class="pull-left">
-    <?php
-    if ($this->Auth->user('image') != null && $this->Auth->user('image') != ''):
-        if (file_exists(WWW_ROOT . 'userimages' . DS . $this->Auth->user('image'))):
-            $img = '/userimages' . DS . $this->Auth->user('image');
-        else:
-            $img = '/img/fallback_user.png';
-        endif;
-    else:
-        $img = '/img/fallback_user.png';
-    endif;
-
-    echo $this->html->image($img, [
-        'width'  => 120,
-        'height' => 'auto',
-        'id'     => 'userImage',
-        'style'  => 'border-left: 3px solid #40AC2B;'
-    ]);
-
-    ?>
+    <img src="<?= h($userImage) ?>" id="userImage" style="border-left: 3px solid #40AC2B; height: auto; width: 120px">
 </div>
 <div class="pull-left col-md-7">
     <strong>{{hostCount}}</strong ng-if="hostCount"> <?php echo __('hosts are monitored'); ?>
@@ -53,11 +35,11 @@
     <br/>
     <br/>
     <?php echo __('Your selected Timezone is '); ?>
-    <strong><?php echo h($this->Auth->user('timezone')); ?></strong>
-    <?php if ($this->Auth->user('timezone') !== date_default_timezone_get()): ?>
+    <strong><?= h($userTimezone); ?></strong>
+    <?php if ($userTimezone !== date_default_timezone_get()): ?>
         <br/>
         <?php echo __('Server timezone is:'); ?>
-        <strong><?php echo date_default_timezone_get(); ?></strong>
+        <strong><?= date_default_timezone_get(); ?></strong>
     <?php endif; ?>
 </div>
 
