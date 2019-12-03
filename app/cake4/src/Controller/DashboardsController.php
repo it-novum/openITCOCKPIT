@@ -29,8 +29,15 @@ namespace App\Controller;
 
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
+use App\Model\Table\WidgetsTable;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
+use Cake\I18n\FrozenTime;
+use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeHostListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeServiceListJson;
@@ -44,7 +51,6 @@ use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use Statusengine\PerfdataParser;
-use Cake\ORM\Locator\LocatorAwareTrait;
 
 /**
  * Class DashboardsController
@@ -60,22 +66,6 @@ class DashboardsController extends AppController {
 
     use LocatorAwareTrait;
 
-    /*
-    //Most calls are API calls or modal html requests
-    //Blank is the best default for Dashboards...
-    public $layout = 'blank';
-
-    public $uses = [
-        'DashboardTab',
-        'Widget',
-        'Parenthost',
-        MONITORING_HOSTSTATUS,
-        'User',
-        MONITORING_SERVICESTATUS,
-        'Service',
-        'Host',
-        'Systemsetting'
-    ];*/
 
     public function index() {
         //CakePHP 4 Model usage Example
@@ -109,26 +99,34 @@ class DashboardsController extends AppController {
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
         $user = $UsersTable->get($User->getId());
-
         $tabRotationInterval = (int)$user->dashboard_tab_rotation;
 
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+
         //Check if a tab exists for the given user
-        if ($this->DashboardTab->hasUserATab($User->getId()) === false) {
-            $result = $this->DashboardTab->createNewTab($User->getId());
-            if ($result) {
+        if ($DashboardTabsTable->hasUserATab($User->getId()) === false) {
+            $entitiy = $DashboardTabsTable->createNewTab($User->getId());
+            if ($entitiy) {
                 //Create default widgets
-                $result['Widget'] = $this->Widget->getDefaultWidgets($this->PERMISSIONS);
-                $this->DashboardTab->saveAll($result);
+                $entitiy = $DashboardTabsTable->patchEntity($entitiy, [
+                    'widgets' => $WidgetsTable->getDefaultWidgets($this->PERMISSIONS)
+                ]);
+
+                $DashboardTabsTable->save($entitiy);
             }
         }
-        $tabs = $this->DashboardTab->getAllTabsByUserId($User->getId());
+        $tabs = $DashboardTabsTable->getAllTabsByUserId($User->getId());
 
-        $widgets = $this->Widget->getAvailableWidgets($this->PERMISSIONS);
+        $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
 
         $this->set('tabs', $tabs);
         $this->set('widgets', $widgets);
         $this->set('tabRotationInterval', $tabRotationInterval);
-        $this->set('_serialize', ['tabs', 'widgets', 'tabRotationInterval']);
+        $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval']);
     }
 
     public function getWidgetsForTab($tabId) {
@@ -136,35 +134,41 @@ class DashboardsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->DashboardTab->exists($tabId)) {
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+        if (!$DashboardTabsTable->existsById($tabId)) {
             throw new NotFoundException(sprintf('Tab width id %s not found', $tabId));
         }
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-        $widgets = $this->DashboardTab->getWidgetsForTabByUserIdAndTabId($User->getId(), $tabId);
+        $User = new User($this->getUser());
+        $widgets = $DashboardTabsTable->getWidgetsForTabByUserIdAndTabId($User->getId(), $tabId);
 
         $this->set('widgets', $widgets);
-        $this->set('_serialize', ['widgets']);
+        $this->viewBuilder()->setOption('serialize', ['widgets']);
     }
 
     public function dynamicDirective() {
-        $directiveName = $this->request->query('directive');
+        $directiveName = $this->request->getQuery('directive');
 
-        $widgets = $this->Widget->getAvailableWidgets($this->PERMISSIONS);
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
         $isValidDirective = false;
-        foreach($widgets as $widget){
-            if($widget['directive'] === $directiveName){
+        foreach ($widgets as $widget) {
+            if ($widget['directive'] === $directiveName) {
                 $isValidDirective = true;
                 break;
             }
         }
 
-        if(!$isValidDirective){
+        if (!$isValidDirective) {
             throw new ForbiddenException();
         }
 
         if (strlen($directiveName) < 2) {
-            throw new RuntimeException('Wrong AngularJS directive name?');
+            throw new \RuntimeException('Wrong AngularJS directive name?');
         }
         $this->set('directiveName', $directiveName);
     }
@@ -174,31 +178,41 @@ class DashboardsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if ($this->Widget->saveAll($this->request->data)) {
+        $widgetsData = $this->request->getData(null, []);
+        //Update DashboardTab last modified
+        if (isset($widgetsData[0]['Widget']['dashboard_tab_id'])) {
+            $User = new User($this->getUser());
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+            /** @var WidgetsTable $WidgetsTable */
+            $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
 
-            //Update DashboardTab last modified
-            if (isset($this->request->data[0]['Widget']['dashboard_tab_id'])) {
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-                $tab = $this->DashboardTab->find('first', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'DashboardTab.id'      => $this->request->data[0]['Widget']['dashboard_tab_id'],
-                        'DashboardTab.user_id' => $User->getId()
-                    ]
-                ]);
-
-                if (!empty($tab)) {
-                    $tab['DashboardTab']['modified'] = date('Y-m-d H:i:s');
-                    $this->DashboardTab->save($tab);
-                }
+            //Save all Widgets
+            $widgets = [];
+            foreach ($widgetsData as $widgetData) {
+                $widget = $WidgetsTable->get($widgetData['Widget']['id']);
+                $widget = $WidgetsTable->patchEntity($widget, $widgetData['Widget']);
+                $widgets[] = $widget;
             }
+            if ($WidgetsTable->saveMany($widgets)) {
+                $tab = $DashboardTabsTable->find()
+                    ->where([
+                        'DashboardTabs.id'      => $widgetsData[0]['Widget']['dashboard_tab_id'],
+                        'DashboardTabs.user_id' => $User->getId()
+                    ])
+                    ->first();
 
+                if ($tab) {
+                    $tab->set('modified', date('Y-m-d H:i:s'));
+                    $DashboardTabsTable->save($tab);
+                }
 
-            $this->set('message', __('Successfully saved'));
-            $this->set('_serialize', ['message']);
-            return;
+                $this->set('message', __('Successfully saved'));
+                $this->viewBuilder()->setOption('serialize', ['message']);
+                return;
+            }
+            $this->serializeCake4ErrorMessage($widgets[0]);
         }
-        $this->serializeErrorMessageFromModel('Widget');
     }
 
     public function addWidgetToTab() {
@@ -206,48 +220,51 @@ class DashboardsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if (!isset($this->request->data['Widget']['typeId']) || !isset($this->request->data['Widget']['dashboard_tab_id'])) {
-            throw new RuntimeException('Missing parameter typeId || dashboard_tab_id');
+        $widget = $this->request->getData('Widget', []);
+        if (!isset($widget['typeId']) || !isset($widget['dashboard_tab_id'])) {
+            throw new \RuntimeException('Missing parameter typeId || dashboard_tab_id');
         }
 
-        $this->request->data['Widget']['dashboard_tab_id'] = (int)$this->request->data['Widget']['dashboard_tab_id'];
+        $widget['dashboard_tab_id'] = (int)$widget['dashboard_tab_id'];
 
-        if (!$this->DashboardTab->exists($this->request->data['Widget']['dashboard_tab_id'])) {
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if (!$DashboardTabsTable->existsById($widget['dashboard_tab_id'])) {
             throw new NotFoundException('DashboardTab does not exists!');
         }
 
-        if (!$this->Widget->isWidgetAvailable($this->request->data['Widget']['typeId'], $this->PERMISSIONS)) {
+        if (!$WidgetsTable->isWidgetAvailable($widget['typeId'], $this->PERMISSIONS)) {
             throw new NotFoundException('Widget not found!');
         }
 
-        $widget = $this->Widget->getWidgetByTypeId($this->request->data['Widget']['typeId'], $this->PERMISSIONS);
+        $widgetDefaults = $WidgetsTable->getWidgetByTypeId($widget['typeId'], $this->PERMISSIONS);
         $data = [
-            'dashboard_tab_id' => $this->request->data['Widget']['dashboard_tab_id'],
-            'type_id'          => $this->request->data['Widget']['typeId'],
+            'dashboard_tab_id' => $widget['dashboard_tab_id'],
+            'type_id'          => $widget['typeId'],
             'row'              => 0,
             'col'              => 0,
-            'width'            => $widget['width'],
-            'height'           => $widget['height'],
-            'title'            => $widget['title'],
-            'icon'             => $widget['icon'],
+            'width'            => $widgetDefaults['width'],
+            'height'           => $widgetDefaults['height'],
+            'title'            => $widgetDefaults['title'],
+            'icon'             => $widgetDefaults['icon'],
             'color'            => 'jarviswidget-color-blueDark',
-            'directive'        => $widget['directive']
+            'directive'        => $widgetDefaults['directive']
         ];
 
-        $this->Widget->create();
-        if ($this->Widget->save($data)) {
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $this->Widget->id
-                ]
-            ]);
-            $this->set('message', __('Successfully saved'));
-            $this->set('widget', $widget);
-            $this->set('_serialize', ['message', 'widget']);
-            return;
+        $entity = $WidgetsTable->newEntity($data);
+        $WidgetsTable->save($entity);
+        if ($entity->hasErrors()) {
+            $this->set('error', $entity->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return $this->response->withStatus(400);
         }
-        $this->serializeErrorMessageFromModel('Widget');
+
+        $this->set('message', __('Successfully saved'));
+        $this->set('widget', $WidgetsTable->getWidgetByIdAsCake2($entity->get('id')));
+        $this->viewBuilder()->setOption('serialize', ['message', 'widget']);
     }
 
     public function removeWidgetFromTab() {
@@ -255,21 +272,28 @@ class DashboardsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if (!isset($this->request->data['Widget']['id']) || !isset($this->request->data['Widget']['dashboard_tab_id'])) {
-            throw new RuntimeException('Missing parameter id || dashboard_tab_id');
+        $widget = $this->request->getData('Widget', []);
+        if (!isset($widget['id']) || !isset($widget['dashboard_tab_id'])) {
+            throw new \RuntimeException('Missing parameter id || dashboard_tab_id');
         }
 
-        $this->request->data['Widget']['id'] = (int)$this->request->data['Widget']['id'];
+        $widget['id'] = (int)$widget['id'];
 
-        if (!$this->Widget->exists($this->request->data['Widget']['id'])) {
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if (!$WidgetsTable->existsById($widget['id'])) {
             throw new NotFoundException('Widget does not exists!');
         }
-        if ($this->Widget->delete($this->request->data['Widget']['id'])) {
+        if ($WidgetsTable->delete($WidgetsTable->get($widget['id']))) {
             $this->set('message', __('Successfully deleted'));
-            $this->set('_serialize', ['message', 'widget']);
+            $this->viewBuilder()->setOption('serialize', ['message', 'widget']);
             return;
         }
-        $this->serializeErrorMessageFromModel('Widget');
+
+        $this->set('message', __('Error while deleting Widget'));
+        $this->viewBuilder()->setOption('serialize', ['message']);
+        return $this->response->withStatus(400);
     }
 
     public function saveTabOrder() {
@@ -277,57 +301,65 @@ class DashboardsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $newOrder = $this->request->data('order');
+        $newOrder = $this->request->getData('order', []);
         if (empty($newOrder) || !is_array($newOrder)) {
             return;
         }
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $success = true;
 
-        foreach ($newOrder as $key => $tabId) {
-            $tab = $this->DashboardTab->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'DashboardTab.id'      => $tabId,
-                    'DashboardTab.user_id' => $User->getId()
-                ]
-            ]);
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
-            if (!empty($tab)) {
-                $tab['DashboardTab']['position'] = (int)$key;
-                if (!$this->DashboardTab->save($tab)) {
+        foreach ($newOrder as $key => $tabId) {
+            $tab = $DashboardTabsTable->find()
+                ->where([
+                    'DashboardTabs.id'      => $tabId,
+                    'DashboardTabs.user_id' => $User->getId()
+                ])
+                ->first();
+
+            if ($tab) {
+                $tab = $DashboardTabsTable->patchEntity($tab, [
+                    'position' => (int)$key
+                ]);
+
+                $DashboardTabsTable->save($tab);
+                if ($tab->hasErrors()) {
                     $success = false;
                 }
             }
         }
 
-        if ($success === false) {
-            $this->response->statusCode(400);
-        }
-
         $this->set('success', $success);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+        if ($success === false) {
+            return $this->response->withStatus(400);
+        }
     }
 
-    function addNewTab() {
+    public function addNewTab() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        $name = $this->request->data('DashboardTab.name');
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-        $result = $this->DashboardTab->createNewTab($User->getId(), [
+        $name = $this->request->getData('DashboardTab.name');
+        $User = new User($this->getUser());
+
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+        $entity = $DashboardTabsTable->createNewTab($User->getId(), [
             'name' => $name
         ]);
 
-        if ($result) {
-            $this->set('DashboardTab', $result);
-            $this->set('_serialize', ['DashboardTab']);
-            return;
+        if ($entity->hasErrors()) {
+            return $this->serializeCake4ErrorMessage($entity);
         }
-        $this->serializeErrorMessageFromModel('DashboardTab');
-        return;
+
+        $this->set('DashboardTab', $DashboardTabsTable->getTabByIdAsCake2($entity->get('id')));
+        $this->viewBuilder()->setOption('serialize', ['DashboardTab']);
     }
 
     public function saveTabRotateInterval() {
@@ -335,137 +367,161 @@ class DashboardsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $tabRotationInterval = (int)$this->request->data('User.dashboard_tab_rotation');
+        $tabRotationInterval = (int)$this->request->getData('User.dashboard_tab_rotation', 0);
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
-        $this->User->id = $User->getId();
-        $this->User->saveField('dashboard_tab_rotation', $tabRotationInterval);
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        $entity = $UsersTable->get($User->getId());
+        $entity = $UsersTable->patchEntity($entity, [
+            'dashboard_tab_rotation' => $tabRotationInterval
+        ]);
+        $UsersTable->save($entity);
 
         $this->set('success', true);
-        $this->set('_serialize', ['success']);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function renameDashboardTab() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
-        $name = $this->request->data('DashboardTab.name');
-        $id = (int)$this->request->data('DashboardTab.id');
+        $name = $this->request->getData('DashboardTab.name');
+        $id = (int)$this->request->getData('DashboardTab.id');
 
-        $dashboardTab = $this->DashboardTab->find('first', [
-            'conditions' => [
-                'DashboardTab.id'      => $id,
-                'DashboardTab.user_id' => $User->getId()
-            ]
-        ]);
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
-        if (empty($dashboardTab)) {
+        $tab = $DashboardTabsTable->find()
+            ->where([
+                'DashboardTabs.id'      => $id,
+                'DashboardTabs.user_id' => $User->getId()
+            ])
+            ->first();
+
+        if ($tab === null) {
             throw new NotFoundException();
         }
 
-        $dashboardTab['DashboardTab']['name'] = $name;
-        if ($this->DashboardTab->save($dashboardTab)) {
-            $this->set('DashboardTab', [
-                'DashboardTab' => $dashboardTab
-            ]);
+        $tab = $DashboardTabsTable->patchEntity($tab, [
+            'name' => $name
+        ]);
 
-            $this->set('_serialize', ['DashboardTab']);
-            return;
+        $DashboardTabsTable->save($tab);
+        if ($tab->hasErrors()) {
+            return $this->serializeCake4ErrorMessage($tab);
         }
-        $this->serializeErrorMessageFromModel('DashboardTab');
-        return;
-    }
 
+        $this->set('DashboardTab', [
+            'DashboardTab' => $DashboardTabsTable->getTabByIdAsCake2($tab->get('id'))
+        ]);
+        $this->viewBuilder()->setOption('serialize', ['DashboardTab']);
+    }
 
     public function deleteDashboardTab() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
-        $id = (int)$this->request->data('DashboardTab.id');
+        $id = (int)$this->request->getData('DashboardTab.id');
 
-        $dashboardTab = $this->DashboardTab->find('first', [
-            'conditions' => [
-                'DashboardTab.id'      => $id,
-                'DashboardTab.user_id' => $User->getId()
-            ]
-        ]);
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
-        if (empty($dashboardTab)) {
+        $tab = $DashboardTabsTable->find()
+            ->where([
+                'DashboardTabs.id'      => $id,
+                'DashboardTabs.user_id' => $User->getId()
+            ])
+            ->first();
+
+        if ($tab === null) {
             throw new NotFoundException();
         }
 
-        if ($this->DashboardTab->delete($id)) {
+        if ($DashboardTabsTable->delete($tab)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
-        $this->serializeErrorMessageFromModel('DashboardTab');
-        return;
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
+        return $this->response->withStatus(400);
     }
 
     public function startSharing() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
-        $id = (int)$this->request->data('DashboardTab.id');
+        $id = (int)$this->request->getData('DashboardTab.id', 0);
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
-        $dashboardTab = $this->DashboardTab->find('first', [
-            'conditions' => [
-                'DashboardTab.id'      => $id,
-                'DashboardTab.user_id' => $User->getId()
-            ]
-        ]);
+        $tab = $DashboardTabsTable->find()
+            ->where([
+                'DashboardTabs.id'      => $id,
+                'DashboardTabs.user_id' => $User->getId()
+            ])
+            ->first();
 
-        if (empty($dashboardTab)) {
+        if ($tab === null) {
             throw new NotFoundException();
         }
 
-        $dashboardTab['DashboardTab']['shared'] = 1;
+        $tab = $DashboardTabsTable->patchEntity($tab, [
+            'shared' => 1
+        ]);
 
-        if ($this->DashboardTab->save($dashboardTab)) {
-            $this->set('success', true);
-            $this->set('_serialize', ['success']);
-            return;
+        $DashboardTabsTable->save($tab);
+
+        if ($tab->hasErrors()) {
+            return $this->serializeCake4ErrorMessage($tab);
         }
-        $this->serializeErrorMessageFromModel('DashboardTab');
-        return;
+
+        $this->set('success', true);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function stopSharing() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
-        $id = (int)$this->request->data('DashboardTab.id');
+        $id = (int)$this->request->getData('DashboardTab.id', 0);
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
-        $dashboardTab = $this->DashboardTab->find('first', [
-            'conditions' => [
-                'DashboardTab.id'      => $id,
-                'DashboardTab.user_id' => $User->getId()
-            ]
-        ]);
+        $tab = $DashboardTabsTable->find()
+            ->where([
+                'DashboardTabs.id'      => $id,
+                'DashboardTabs.user_id' => $User->getId()
+            ])
+            ->first();
 
-        if (empty($dashboardTab)) {
+        if ($tab === null) {
             throw new NotFoundException();
         }
 
-        $dashboardTab['DashboardTab']['shared'] = 0;
+        $tab = $DashboardTabsTable->patchEntity($tab, [
+            'shared' => 0
+        ]);
 
-        if ($this->DashboardTab->save($dashboardTab)) {
-            $this->set('success', true);
-            $this->set('_serialize', ['success']);
-            return;
+        $DashboardTabsTable->save($tab);
+
+        if ($tab->hasErrors()) {
+            return $this->serializeCake4ErrorMessage($tab);
         }
-        $this->serializeErrorMessageFromModel('DashboardTab');
-        return;
+
+        $this->set('success', true);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function getSharedTabs() {
@@ -473,70 +529,36 @@ class DashboardsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $tabs = $this->DashboardTab->getSharedTabs();
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+        $tabs = $DashboardTabsTable->getSharedTabs();
 
         $this->set('tabs', $tabs);
-        $this->set('_serialize', ['tabs']);
+        $this->viewBuilder()->setOption('serialize', ['tabs']);
     }
 
     public function createFromSharedTab() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
-        $id = (int)$this->request->data('DashboardTab.id');
+        $id = (int)$this->request->getData('DashboardTab.id', 0);
 
-        $sourceTabWithWidgets = $this->DashboardTab->find('first', [
-            'conditions' => [
-                'DashboardTab.id'     => $id,
-                'DashboardTab.shared' => 1
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+        $newTab = $DashboardTabsTable->copySharedTab($id, $User->getId());
+        if ($newTab->hasErrors()) {
+            return $this->serializeCake4ErrorMessage($newTab);
+        }
+
+        $this->set('DashboardTab', [
+            'DashboardTab' => [
+                'id' => $newTab->get('id')
             ]
         ]);
-
-        if (empty($sourceTabWithWidgets)) {
-            throw new NotFoundException();
-        }
-
-        $copyTabWithWidgets = $sourceTabWithWidgets;
-
-        unset($copyTabWithWidgets['DashboardTab']['id']);
-        $copyTabWithWidgets['DashboardTab']['user_id'] = $User->getId();
-        $copyTabWithWidgets['DashboardTab']['position'] = $this->DashboardTab->getNextPosition($User->getId());
-        $copyTabWithWidgets['DashboardTab']['shared'] = 0;
-        $copyTabWithWidgets['DashboardTab']['source_tab_id'] = $id;
-        $copyTabWithWidgets['DashboardTab']['check_for_updates'] = 1;
-        $copyTabWithWidgets['DashboardTab']['last_update'] = time();
-
-        foreach ($copyTabWithWidgets['Widget'] as $key => $widgetData) {
-            unset($copyTabWithWidgets['Widget'][$key]['id']);
-            unset($copyTabWithWidgets['Widget'][$key]['dashboard_tab_id']);
-        }
-
-        $this->DashboardTab->create();
-        if ($this->DashboardTab->saveAll($copyTabWithWidgets)) {
-            $newCreatedDashboardTab = $this->DashboardTab->find('first', [
-                'conditions' => [
-                    'DashboardTab.id'      => $this->DashboardTab->id,
-                    'DashboardTab.user_id' => $User->getId()
-                ]
-            ]);
-
-            $newCreatedDashboardTab['DashboardTab']['id'] = (int)$newCreatedDashboardTab['DashboardTab']['id'];
-            $newCreatedDashboardTab['DashboardTab']['user_id'] = (int)$newCreatedDashboardTab['DashboardTab']['user_id'];
-            $newCreatedDashboardTab['DashboardTab']['position'] = (int)$newCreatedDashboardTab['DashboardTab']['position'];
-            $newCreatedDashboardTab['DashboardTab']['shared'] = (bool)$newCreatedDashboardTab['DashboardTab']['shared'];
-            $newCreatedDashboardTab['DashboardTab']['source_tab_id'] = (int)$newCreatedDashboardTab['DashboardTab']['source_tab_id'];
-            $newCreatedDashboardTab['DashboardTab']['check_for_updates'] = (bool)$newCreatedDashboardTab['DashboardTab']['check_for_updates'];
-            $newCreatedDashboardTab['DashboardTab']['last_update'] = (int)$newCreatedDashboardTab['DashboardTab']['last_update'];
-            $newCreatedDashboardTab['DashboardTab']['locked'] = (bool)$newCreatedDashboardTab['DashboardTab']['locked'];
-
-            $this->set('DashboardTab', $newCreatedDashboardTab);
-            $this->set('_serialize', ['DashboardTab']);
-            return;
-        }
-
-        $this->serializeErrorMessageFromModel('DashboardTab');
+        $this->viewBuilder()->setOption('serialize', ['DashboardTab']);
     }
 
     public function checkForUpdates() {
@@ -544,137 +566,167 @@ class DashboardsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $tabId = (int)$this->request->query('tabId');
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-        if (!$this->DashboardTab->exists($tabId)) {
+        $tabId = (int)$this->request->getQuery('tabId', 0);
+        $User = new User($this->getUser());
+
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+        if (!$DashboardTabsTable->existsById($tabId)) {
             throw new NotFoundException('DashboardTab not found');
         }
 
-        $tab = $this->DashboardTab->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'DashboardTab.id'      => $tabId,
-                'DashboardTab.user_id' => $User->getId()
-            ]
-        ]);
+        $tab = $DashboardTabsTable->find()
+            ->where([
+                'DashboardTabs.id'      => $tabId,
+                'DashboardTabs.user_id' => $User->getId()
+            ])
+            ->first();
 
-        $sourceTab = $this->DashboardTab->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'DashboardTab.id' => $tab['DashboardTab']['source_tab_id']
-            ]
-        ]);
+        $sourceTab = $DashboardTabsTable->find()
+            ->where([
+                'DashboardTabs.id' => $tab->get('source_tab_id')
+            ])
+            ->first();
 
         $updateAvailable = false;
-        if (!empty($sourceTab) && !empty($tab)) {
-            if (strtotime($sourceTab['DashboardTab']['modified']) > $tab['DashboardTab']['last_update']) {
+        if ($sourceTab !== null && $tab !== null) {
+            /** @var FrozenTime $modified */
+            $modified = $sourceTab->get('modified');
+            $modified = $modified->getTimestamp();
+
+            if ($modified > $tab->get('last_update')) {
                 $updateAvailable = true;
             }
         }
 
         $this->set('updateAvailable', $updateAvailable);
-        $this->set('_serialize', ['updateAvailable']);
+        $this->viewBuilder()->setOption('serialize', ['updateAvailable']);
     }
 
     public function neverPerformUpdates() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
-        $id = (int)$this->request->data('DashboardTab.id');
+        $id = (int)$this->request->getData('DashboardTab.id', 0);
 
-        $dashboardTab = $this->DashboardTab->find('first', [
-            'conditions' => [
-                'DashboardTab.id'      => $id,
-                'DashboardTab.user_id' => $User->getId()
-            ]
-        ]);
-
-        if (empty($dashboardTab)) {
-            throw new NotFoundException();
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+        if (!$DashboardTabsTable->existsById($id)) {
+            throw new NotFoundException('DashboardTab not found');
         }
+
+        $tab = $DashboardTabsTable->find()
+            ->where([
+                'DashboardTabs.id'      => $id,
+                'DashboardTabs.user_id' => $User->getId()
+            ])
+            ->first();
+
+        $tab = $DashboardTabsTable->patchEntity($tab, [
+            'check_for_updates' => 0
+        ]);
+        $DashboardTabsTable->save($tab);
 
         $dashboardTab['DashboardTab']['check_for_updates'] = 0;
 
-        if ($this->DashboardTab->save($dashboardTab)) {
-            $this->set('success', true);
-            $this->set('_serialize', ['success']);
-            return;
+        if ($tab->hasErrors()) {
+            return $this->serializeCake4ErrorMessage($tab);
         }
-        $this->serializeErrorMessageFromModel('DashboardTab');
-        return;
+
+        $this->set('success', true);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function updateSharedTab() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
-        $id = (int)$this->request->data('DashboardTab.id');
+        $id = (int)$this->request->getData('DashboardTab.id', 0);
 
-        $tabToUpdate = $this->DashboardTab->find('first', [
-            'conditions' => [
-                'DashboardTab.id'      => $id,
-                'DashboardTab.user_id' => $User->getId()
-            ]
-        ]);
 
-        $sourceTabWithWidgets = $this->DashboardTab->find('first', [
-            'conditions' => [
-                'DashboardTab.id' => $tabToUpdate['DashboardTab']['source_tab_id']
-            ]
-        ]);
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
 
-        if (empty($sourceTabWithWidgets) || empty($tabToUpdate)) {
+        $tabToUpdate = $DashboardTabsTable->find()
+            ->where([
+                'DashboardTabs.id'      => $id,
+                'DashboardTabs.user_id' => $User->getId()
+            ])
+            ->first();
+
+        if ($tabToUpdate === null) {
             throw new NotFoundException();
         }
 
-        $tabToUpdate['DashboardTab']['last_update'] = time();
-        $tabToUpdate['DashboardTab']['locked'] = (bool)$sourceTabWithWidgets['DashboardTab']['locked'];
-        $tabToUpdate['Widget'] = $sourceTabWithWidgets['Widget'];
+        $sourceTabWithWidgets = $DashboardTabsTable->find()
+            ->where([
+                'DashboardTabs.id' => $tabToUpdate->get('source_tab_id')
+            ])
+            ->contain([
+                'Widgets'
+            ])
+            ->first();
 
-        foreach ($tabToUpdate['Widget'] as $key => $widgetData) {
-            unset($tabToUpdate['Widget'][$key]['id']);
-            unset($tabToUpdate['Widget'][$key]['dashboard_tab_id']);
+        if ($sourceTabWithWidgets === null) {
+            throw new NotFoundException();
         }
 
-        //Delete old widgets
-        $this->Widget->deleteAll([
-            'Widget.dashboard_tab_id' => $id
+        $widgets = [];
+        foreach ($sourceTabWithWidgets->get('widgets') as $widget) {
+            $widgets[] = [
+                'type_id'    => $widget->get('type_id'),
+                'host_id'    => $widget->get('host_id'),
+                'service_id' => $widget->get('service_id'),
+                'row'        => $widget->get('row'),
+                'col'        => $widget->get('col'),
+                'width'      => $widget->get('width'),
+                'height'     => $widget->get('height'),
+                'title'      => $widget->get('title'),
+                'color'      => $widget->get('color'),
+                'directive'  => $widget->get('directive'),
+                'icon'       => $widget->get('icon'),
+                'json_data'  => $widget->get('json_data')
+            ];
+        }
+
+        $tabToUpdate = $DashboardTabsTable->patchEntity($tabToUpdate, [
+            'last_update' => time(),
+            'locked'      => (bool)$sourceTabWithWidgets->get('locked'),
+            'widgets'     => $widgets
         ]);
 
-        if ($this->DashboardTab->saveAll($tabToUpdate)) {
-            $tabToUpdate = $this->DashboardTab->find('first', [
-                'conditions' => [
-                    'DashboardTab.id'      => $id,
-                    'DashboardTab.user_id' => $User->getId()
-                ]
-            ]);
 
-            $newCreatedDashboardTab['DashboardTab']['id'] = (int)$tabToUpdate['DashboardTab']['id'];
-            $newCreatedDashboardTab['DashboardTab']['user_id'] = (int)$tabToUpdate['DashboardTab']['user_id'];
-            $newCreatedDashboardTab['DashboardTab']['position'] = (int)$tabToUpdate['DashboardTab']['position'];
-            $newCreatedDashboardTab['DashboardTab']['shared'] = (bool)$tabToUpdate['DashboardTab']['shared'];
-            $newCreatedDashboardTab['DashboardTab']['source_tab_id'] = (int)$tabToUpdate['DashboardTab']['source_tab_id'];
-            $newCreatedDashboardTab['DashboardTab']['check_for_updates'] = (bool)$tabToUpdate['DashboardTab']['check_for_updates'];
-            $newCreatedDashboardTab['DashboardTab']['last_update'] = (int)$tabToUpdate['DashboardTab']['last_update'];
-            $newCreatedDashboardTab['DashboardTab']['locked'] = (bool)$tabToUpdate['DashboardTab']['locked'];
+        //Delete old widgets
+        $WidgetsTable->deleteAll([
+            'Widgets.dashboard_tab_id' => $id
+        ]);
 
-            $this->set('DashboardTab', $tabToUpdate);
-            $this->set('_serialize', ['DashboardTab']);
-            return;
+        $DashboardTabsTable->save($tabToUpdate);
+
+        if ($tabToUpdate->hasErrors()) {
+            return $this->serializeCake4ErrorMessage($tabToUpdate);
         }
 
-        $this->serializeErrorMessageFromModel('DashboardTab');
+        $this->set('DashboardTab', [
+            'DashboardTab' => $tabToUpdate
+        ]);
+        $this->viewBuilder()->setOption('serialize', ['DashboardTab']);
     }
 
+    /**
+     * @deprecated
+     */
     public function renameWidget() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
         $widgetId = (int)$this->request->data('Widget.id');
         $name = $this->request->data('Widget.name');
@@ -693,18 +745,21 @@ class DashboardsController extends AppController {
         $widget['Widget']['name'] = $name;
         if ($this->Widget->save($widget)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
 
         $this->serializeErrorMessageFromModel('Widget');
     }
 
+    /**
+     * @deprecated
+     */
     public function lockOrUnlockTab() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
         $id = (int)$this->request->data('DashboardTab.id');
         $locked = $this->request->data('DashboardTab.locked') === 'true';
@@ -724,18 +779,21 @@ class DashboardsController extends AppController {
 
         if ($this->DashboardTab->save($dashboardTab)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
         $this->serializeErrorMessageFromModel('DashboardTab');
         return;
     }
 
+    /**
+     * @deprecated
+     */
     public function restoreDefault() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
         $id = (int)$this->request->data('DashboardTab.id');
 
@@ -759,7 +817,7 @@ class DashboardsController extends AppController {
 
         if ($this->DashboardTab->saveAll($dashboardTab)) {
             $this->set('success', true);
-            $this->set('_serialize', ['success']);
+            $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
         $this->serializeErrorMessageFromModel('DashboardTab');
@@ -767,6 +825,9 @@ class DashboardsController extends AppController {
     }
 
     /***** Basic Widgets *****/
+    /**
+     * @deprecated
+     */
     public function welcomeWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -774,6 +835,9 @@ class DashboardsController extends AppController {
         }
     }
 
+    /**
+     * @deprecated
+     */
     public function parentOutagesWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -839,7 +903,7 @@ class DashboardsController extends AppController {
         $parent_outages = $this->Parenthost->find('all', $query);
 
         $this->set(compact(['parent_outages']));
-        $this->set('_serialize', ['parent_outages']);
+        $this->viewBuilder()->setOption('serialize', ['parent_outages']);
     }
 
     public function hostsPiechartWidget() {
@@ -859,6 +923,9 @@ class DashboardsController extends AppController {
         return;
     }
 
+    /**
+     * @deprecated
+     */
     public function hostsStatusListWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
@@ -885,7 +952,7 @@ class DashboardsController extends AppController {
             }
             $config = $HostStatusListJson->standardizedData($data);
             $this->set('config', $config);
-            $this->set('_serialize', ['config']);
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
 
@@ -896,13 +963,16 @@ class DashboardsController extends AppController {
             $this->Widget->saveField('json_data', json_encode($config));
 
             $this->set('config', $config);
-            $this->set('_serialize', ['config']);
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
 
         throw new MethodNotAllowedException();
     }
 
+    /**
+     * @deprecated
+     */
     public function hostsDowntimeWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
@@ -929,7 +999,7 @@ class DashboardsController extends AppController {
             }
             $config = $DowntimeHostListJson->standardizedData($data);
             $this->set('config', $config);
-            $this->set('_serialize', ['config']);
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
 
@@ -940,13 +1010,16 @@ class DashboardsController extends AppController {
             $this->Widget->saveField('json_data', json_encode($config));
 
             $this->set('config', $config);
-            $this->set('_serialize', ['config']);
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
 
         throw new MethodNotAllowedException();
     }
 
+    /**
+     * @deprecated
+     */
     public function servicesDowntimeWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
@@ -973,7 +1046,7 @@ class DashboardsController extends AppController {
             }
             $config = $DowntimeServiceListJson->standardizedData($data);
             $this->set('config', $config);
-            $this->set('_serialize', ['config']);
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
 
@@ -984,13 +1057,16 @@ class DashboardsController extends AppController {
             $this->Widget->saveField('json_data', json_encode($config));
 
             $this->set('config', $config);
-            $this->set('_serialize', ['config']);
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
 
         throw new MethodNotAllowedException();
     }
 
+    /**
+     * @deprecated
+     */
     public function servicesStatusListWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
@@ -1016,7 +1092,7 @@ class DashboardsController extends AppController {
             }
             $config = $ServiceStatusListJson->standardizedData($data);
             $this->set('config', $config);
-            $this->set('_serialize', ['config']);
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
 
@@ -1027,13 +1103,16 @@ class DashboardsController extends AppController {
             $this->Widget->saveField('json_data', json_encode($config));
 
             $this->set('config', $config);
-            $this->set('_serialize', ['config']);
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
 
         throw new MethodNotAllowedException();
     }
 
+    /**
+     * @deprecated
+     */
     public function noticeWidget() {
         if (!$this->isAngularJsRequest()) {
             //Only ship template
@@ -1067,7 +1146,7 @@ class DashboardsController extends AppController {
             $this->set('config', $config);
             $this->set('htmlContent', $htmlContent);
 
-            $this->set('_serialize', ['config', 'htmlContent']);
+            $this->viewBuilder()->setOption('serialize', ['config', 'htmlContent']);
             return;
         }
 
@@ -1075,7 +1154,7 @@ class DashboardsController extends AppController {
         if ($this->request->is('post')) {
             $widgetId = (int)$this->request->query('widgetId');
             if (!$this->Widget->exists($widgetId)) {
-                throw new RuntimeException('Invalid widget id');
+                throw new \RuntimeException('Invalid widget id');
             }
             $widget = $this->Widget->find('first', [
                 'recursive'  => -1,
@@ -1092,7 +1171,7 @@ class DashboardsController extends AppController {
                     $this->serializeErrorMessageFromModel('Widget');
                     return;
                 }
-                $this->set('_serialize', ['serviceId']);
+                $this->viewBuilder()->setOption('serialize', ['serviceId']);
                 return;
             }
             $this->response->statusCode(400);
@@ -1101,7 +1180,9 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
-
+    /**
+     * @deprecated
+     */
     public function trafficLightWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -1113,7 +1194,7 @@ class DashboardsController extends AppController {
         if ($this->request->is('get')) {
             $widgetId = (int)$this->request->query('widgetId');
             if (!$this->Widget->exists($widgetId)) {
-                throw new RuntimeException('Invalid widget id');
+                throw new \RuntimeException('Invalid widget id');
             }
 
             $widget = $this->Widget->find('first', [
@@ -1141,7 +1222,7 @@ class DashboardsController extends AppController {
             $this->set('config', $config);
             $this->set('service', $service);
             $this->set('ACL', $this->getAcls());
-            $this->set('_serialize', ['service', 'config', 'ACL']);
+            $this->viewBuilder()->setOption('serialize', ['service', 'config', 'ACL']);
             return;
         }
 
@@ -1152,7 +1233,7 @@ class DashboardsController extends AppController {
             $serviceId = (int)$this->request->data('Widget.service_id');
 
             if (!$this->Widget->exists($widgetId)) {
-                throw new RuntimeException('Invalid widget id');
+                throw new \RuntimeException('Invalid widget id');
             }
             $widget = $this->Widget->find('first', [
                 'recursive'  => -1,
@@ -1168,7 +1249,7 @@ class DashboardsController extends AppController {
                 $this->set('service', $service);
                 $this->set('config', $config);
                 $this->set('ACL', $this->getAcls());
-                $this->set('_serialize', ['service', 'config', 'ACL']);
+                $this->viewBuilder()->setOption('serialize', ['service', 'config', 'ACL']);
                 return;
             }
 
@@ -1178,6 +1259,9 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
+    /**
+     * @deprecated
+     */
     public function tachoWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -1189,7 +1273,7 @@ class DashboardsController extends AppController {
         if ($this->request->is('get')) {
             $widgetId = (int)$this->request->query('widgetId');
             if (!$this->Widget->exists($widgetId)) {
-                throw new RuntimeException('Invalid widget id');
+                throw new \RuntimeException('Invalid widget id');
             }
 
             $widget = $this->Widget->find('first', [
@@ -1217,7 +1301,7 @@ class DashboardsController extends AppController {
             $this->set('config', $config);
             $this->set('service', $service);
             $this->set('ACL', $this->getAcls());
-            $this->set('_serialize', ['service', 'config', 'ACL']);
+            $this->viewBuilder()->setOption('serialize', ['service', 'config', 'ACL']);
             return;
         }
 
@@ -1228,7 +1312,7 @@ class DashboardsController extends AppController {
             $serviceId = (int)$this->request->data('Widget.service_id');
 
             if (!$this->Widget->exists($widgetId)) {
-                throw new RuntimeException('Invalid widget id');
+                throw new \RuntimeException('Invalid widget id');
             }
             $widget = $this->Widget->find('first', [
                 'recursive'  => -1,
@@ -1244,7 +1328,7 @@ class DashboardsController extends AppController {
                 $this->set('service', $service);
                 $this->set('config', $config);
                 $this->set('ACL', $this->getAcls());
-                $this->set('_serialize', ['service', 'config', 'ACL']);
+                $this->viewBuilder()->setOption('serialize', ['service', 'config', 'ACL']);
                 return;
             }
 
@@ -1254,6 +1338,9 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
+    /**
+     * @deprecated
+     */
     private function getServicestatusByServiceId($id) {
         $query = [
             'recursive'  => -1,
@@ -1344,6 +1431,7 @@ class DashboardsController extends AppController {
 
     /**
      * @return array
+     * @deprecated
      */
     private function getAcls() {
         $acl = [
@@ -1363,6 +1451,9 @@ class DashboardsController extends AppController {
         return $acl;
     }
 
+    /**
+     * @deprecated
+     */
     public function hostStatusOverviewWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -1406,7 +1497,7 @@ class DashboardsController extends AppController {
             $statusCount = $this->{$modelName}->find('count', $query);
             $this->set('config', $config);
             $this->set('statusCount', $statusCount);
-            $this->set('_serialize', ['config', 'statusCount']);
+            $this->viewBuilder()->setOption('serialize', ['config', 'statusCount']);
             return;
         }
 
@@ -1417,7 +1508,7 @@ class DashboardsController extends AppController {
             $this->Widget->saveField('json_data', json_encode($config));
 
             $this->set('config', $config);
-            $this->set('_serialize', ['config']);
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
 
@@ -1425,6 +1516,9 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
+    /**
+     * @deprecated
+     */
     public function serviceStatusOverviewWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -1468,7 +1562,7 @@ class DashboardsController extends AppController {
             $statusCount = $this->{$modelName}->find('count', $query);
             $this->set('config', $config);
             $this->set('statusCount', $statusCount);
-            $this->set('_serialize', ['config', 'statusCount']);
+            $this->viewBuilder()->setOption('serialize', ['config', 'statusCount']);
             return;
         }
 
@@ -1479,7 +1573,7 @@ class DashboardsController extends AppController {
             $this->Widget->saveField('json_data', json_encode($config));
 
             $this->set('config', $config);
-            $this->set('_serialize', ['config']);
+            $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
 
@@ -1487,6 +1581,9 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
+    /**
+     * @deprecated
+     */
     public function getPerformanceDataMetrics($serviceId) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -1515,10 +1612,10 @@ class DashboardsController extends AppController {
         if (!empty($servicestatus)) {
             $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
             $this->set('perfdata', $PerfdataParser->parse());
-            $this->set('_serialize', ['perfdata']);
+            $this->viewBuilder()->setOption('serialize', ['perfdata']);
             return;
         }
         $this->set('perfdata', []);
-        $this->set('_serialize', ['perfdata']);
+        $this->viewBuilder()->setOption('serialize', ['perfdata']);
     }
 }

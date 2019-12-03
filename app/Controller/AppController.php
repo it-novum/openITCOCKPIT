@@ -794,14 +794,15 @@ class AppController extends Controller {
     }
 
     /**
-     * REST API functionality
+     * @param EntityInterface $entity
+     * @return int
      */
     protected function serializeCake4ErrorMessage(EntityInterface $entity) {
-        if ($this->isAngularJsRequest()) {
-            $this->response->statusCode(400);
-        }
         $this->set('error', $entity->getErrors());
         $this->set('_serialize', ['error']);
+        if ($this->isAngularJsRequest()) {
+            return $this->response->statusCode(400);
+        }
     }
 
     ///**

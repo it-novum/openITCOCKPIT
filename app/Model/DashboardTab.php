@@ -22,6 +22,10 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+/**
+ * Class DashboardTab
+ * @deprecated
+ */
 class DashboardTab extends AppModel {
 
 
@@ -59,6 +63,7 @@ class DashboardTab extends AppModel {
      * @param array $options
      * @return mixed
      * @throws Exception
+     * @deprecated
      */
     public function createNewTab($userId, $options = []) {
         $_options = [
@@ -83,6 +88,7 @@ class DashboardTab extends AppModel {
     /**
      * @param $userId
      * @return int
+     * @deprecated
      */
     public function getNextPosition($userId) {
         $result = $this->find('first', [
@@ -105,6 +111,7 @@ class DashboardTab extends AppModel {
     /**
      * @param $userId
      * @return bool
+     * @deprecated
      */
     public function hasUserATab($userId) {
         $result = $this->find('first', [
@@ -121,6 +128,7 @@ class DashboardTab extends AppModel {
     /**
      * @param $userId
      * @return array|null
+     * @deprecated
      */
     public function getAllTabsByUserId($userId) {
         $result = $this->find('all', [
@@ -154,6 +162,7 @@ class DashboardTab extends AppModel {
 
     /**
      * @return array|null
+     * @deprecated
      */
     public function getSharedTabs() {
         $result = $this->find('all', [
@@ -206,6 +215,7 @@ class DashboardTab extends AppModel {
      * @param $userId
      * @param $tabId
      * @return array|null
+     * @deprecated
      */
     public function getWidgetsForTabByUserIdAndTabId($userId, $tabId) {
         $result = $this->find('first', [

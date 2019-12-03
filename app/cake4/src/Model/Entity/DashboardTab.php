@@ -24,8 +24,7 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\SourceTab $source_tab
  * @property \App\Model\Entity\Widget[] $widgets
  */
-class DashboardTab extends Entity
-{
+class DashboardTab extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -36,18 +35,18 @@ class DashboardTab extends Entity
      * @var array
      */
     protected $_accessible = [
-        'user_id' => true,
-        'position' => true,
-        'name' => true,
-        'shared' => true,
-        'source_tab_id' => true,
+        'user_id'           => true,
+        'position'          => true,
+        'name'              => true,
+        'shared'            => true,
+        'source_tab_id'     => true,
         'check_for_updates' => true,
-        'last_update' => true,
-        'locked' => true,
-        'created' => true,
-        'modified' => true,
-        'user' => true,
-        'source_tab' => true,
-        'widgets' => true,
+        'last_update'       => true,
+        'locked'            => true,
+        'created'           => true,
+        'modified'          => true,
+        'user'              => true,
+        'source_tab'        => true,
+        'widgets'           => true,
     ];
 }
