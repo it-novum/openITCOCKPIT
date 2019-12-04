@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Changelog
+ * @deprecated
+ */
 class Changelog extends AppModel {
     public $belongsTo = ['User'];
     public $hasAndBelongsToMany = [
@@ -34,6 +38,10 @@ class Changelog extends AppModel {
         ],
     ];
 
+    /**
+     * @deprecated
+     * @return array
+     */
     public function getCompareRules() {
         $_objectDefaults = [
             'command'              => [
@@ -236,6 +244,13 @@ class Changelog extends AppModel {
         return false;
     }
 
+    /**
+     * @param $new_values
+     * @param $old_values
+     * @param $field_key
+     * @return array
+     * @deprecated
+     */
     function getDiffAsArray($new_values, $old_values, $field_key) {
         $new_values = ($new_values === null) ? [] : $new_values;
         $old_values = ($old_values === null || empty(Hash::filter($old_values, [$this, 'filterNullValues']))) ? [] : $old_values;
@@ -300,6 +315,7 @@ class Changelog extends AppModel {
      * Callback function for filtering.
      *
      * @param array $var Array to filter.
+     * @deprecated
      *
      * @return boolean
      */
