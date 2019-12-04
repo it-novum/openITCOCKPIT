@@ -66,8 +66,8 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                 $http.get("/services/loadServicesByString.json", {
                     params: {
                         'angular': true,
-                        'filter[Host.name]': searchString,
-                        'filter[Service.servicename]': searchString,
+                        //'filter[Hosts.name]': searchString,
+                        'filter[servicename]': searchString,
                         'selected[]': $scope.tacho.service_id
                     }
                 }).then(function(result){
@@ -286,7 +286,7 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
             };
 
             var loadMetrics = function(){
-                $http.get("/map_module/mapeditors/getPerformanceDataMetrics/" + $scope.tacho.service_id + ".json", {
+                $http.get("/dashboards/getPerformanceDataMetrics/" + $scope.tacho.service_id + ".json", {
                     params: {
                         'angular': true
                     }

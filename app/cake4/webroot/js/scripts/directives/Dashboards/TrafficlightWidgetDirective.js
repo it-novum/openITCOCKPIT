@@ -102,8 +102,8 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
                 $http.get("/services/loadServicesByString.json", {
                     params: {
                         'angular': true,
-                        'filter[Host.name]': searchString,
-                        'filter[Service.servicename]': searchString,
+                        //'filter[Hosts.name]': searchString,
+                        'filter[servicename]': searchString,
                         'selected[]': $scope.trafficlight.service_id
                     }
                 }).then(function(result){

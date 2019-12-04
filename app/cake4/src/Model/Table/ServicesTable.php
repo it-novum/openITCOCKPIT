@@ -71,7 +71,7 @@ class ServicesTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('services');
@@ -172,7 +172,7 @@ class ServicesTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -430,7 +430,7 @@ class ServicesTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['uuid']));
         $rules->add($rules->existsIn(['servicetemplate_id'], 'Servicetemplates'));
         $rules->add($rules->existsIn(['host_id'], 'Hosts'));
@@ -654,6 +654,14 @@ class ServicesTable extends Table {
             ];
         }
 
+        $having = null;
+        if (isset($where['servicename LIKE'])) {
+            $having = [
+                'servicename LIKE' => $where['servicename LIKE']
+            ];
+            unset($where['servicename LIKE']);
+        }
+
         $query = $this->find();
         $query
             ->innerJoinWith('Hosts')
@@ -673,7 +681,13 @@ class ServicesTable extends Table {
             ->order([
                 'servicename' => 'asc'
             ])
-            ->limit(ITN_AJAX_LIMIT)
+            ->limit(ITN_AJAX_LIMIT);
+
+        if (!empty($having)) {
+            $query->having($having);
+        }
+
+        $query
             ->disableHydration()
             ->all();
 
@@ -1105,7 +1119,7 @@ class ServicesTable extends Table {
             ]);
 
         $where = [
-            'Services.id IN' => $ids,
+            'Services.id IN'               => $ids,
             'Services.service_type NOT IN' => [MK_SERVICE]
         ];
 
