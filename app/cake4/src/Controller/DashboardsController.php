@@ -268,7 +268,8 @@ class DashboardsController extends AppController {
         if ($entity->hasErrors()) {
             $this->set('error', $entity->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
-            return $this->response->withStatus(400);
+            $this->response = $this->response->withStatus(400);
+            return;
         }
 
         $this->set('message', __('Successfully saved'));
@@ -302,7 +303,8 @@ class DashboardsController extends AppController {
 
         $this->set('message', __('Error while deleting Widget'));
         $this->viewBuilder()->setOption('serialize', ['message']);
-        return $this->response->withStatus(400);
+        $this->response = $this->response->withStatus(400);
+        return;
     }
 
     public function saveTabOrder() {
@@ -344,7 +346,8 @@ class DashboardsController extends AppController {
         $this->set('success', $success);
         $this->viewBuilder()->setOption('serialize', ['success']);
         if ($success === false) {
-            return $this->response->withStatus(400);
+            $this->response = $this->response->withStatus(400);
+            return;
         }
     }
 
@@ -460,7 +463,8 @@ class DashboardsController extends AppController {
         }
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
-        return $this->response->withStatus(400);
+        $this->response = $this->response->withStatus(400);
+        return;
     }
 
     public function startSharing() {

@@ -119,7 +119,8 @@ class CommandsController extends AppController {
             if ($command->hasErrors()) {
                 $this->set('error', $command->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
-                return $this->response->withStatus(403);
+                $this->response = $this->response->withStatus(400);
+                return;
             } else {
                 //No errors
                 $User = new User($this->getUser());
