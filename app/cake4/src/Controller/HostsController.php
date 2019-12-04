@@ -526,7 +526,7 @@ class HostsController extends AppController {
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
             $HostComparisonForSave = new HostComparisonForSave($this->request->data, $hosttemplate);
             $hostData = $HostComparisonForSave->getDataForSaveForAllFields();
-            $hostData['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+            $hostData['uuid'] = UUID::v4();
 
             //Add required fields for validation
             $hostData['hosttemplate_flap_detection_enabled'] = $hosttemplate['Hosttemplate']['flap_detection_enabled'];
@@ -1417,7 +1417,7 @@ class HostsController extends AppController {
                 $newHostData = [
                     'Host'                     => Hash::merge(
                         $sourceHost['Host'], [
-                        'uuid'         => \itnovum\openITCOCKPIT\Core\UUID::v4(),
+                        'uuid'         => UUID::v4(),
                         'name'         => $host2copy['name'],
                         'description'  => $host2copy['description'],
                         'host_url'     => $host2copy['host_url'],
@@ -1758,7 +1758,7 @@ class HostsController extends AppController {
                             $newServiceData = [
                                 'Service'                          => Hash::merge(
                                     $service['Service'], [
-                                    'uuid'         => \itnovum\openITCOCKPIT\Core\UUID::v4(),
+                                    'uuid'         => UUID::v4(),
                                     'host_id'      => $hostId,
                                     'Contact'      => $contactIds,
                                     'Contactgroup' => $contactgroupIds,

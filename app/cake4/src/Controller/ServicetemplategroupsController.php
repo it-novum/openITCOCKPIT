@@ -132,7 +132,7 @@ class ServicetemplategroupsController extends AppController {
 
         /** @var $ServicetemplategroupsTable ServicetemplategroupsTable */
         $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
-        $this->request->data['Servicetemplategroup']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+        $this->request->data['Servicetemplategroup']['uuid'] = UUID::v4();
         $this->request->data['Servicetemplategroup']['container']['containertype_id'] = CT_SERVICETEMPLATEGROUP;
 
 
@@ -561,7 +561,7 @@ class ServicetemplategroupsController extends AppController {
                     $hosttemplateContactsAndContactgroupsById
                 );
                 $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
-                $serviceData['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+                $serviceData['uuid'] = UUID::v4();
 
                 //Add required fields for validation
                 $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
@@ -734,7 +734,7 @@ class ServicetemplategroupsController extends AppController {
                     $hosttemplateContactsAndContactgroupsById
                 );
                 $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
-                $serviceData['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+                $serviceData['uuid'] = UUID::v4();
 
                 //Add required fields for validation
                 $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
@@ -897,7 +897,7 @@ class ServicetemplategroupsController extends AppController {
                         $hosttemplateContactsAndContactgroupsById
                     );
                     $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
-                    $serviceData['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+                    $serviceData['uuid'] = UUID::v4();
 
                     //Add required fields for validation
                     $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];

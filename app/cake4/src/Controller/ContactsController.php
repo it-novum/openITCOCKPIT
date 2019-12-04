@@ -143,7 +143,7 @@ class ContactsController extends AppController {
 
             /** @var $ContactsTable ContactsTable */
             $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-            $this->request->data['Contact']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+            $this->request->data['Contact']['uuid'] = UUID::v4();
             $contact = $ContactsTable->newEmptyEntity();
             $contact = $ContactsTable->patchEntity($contact, $this->request->getData('Contact'));
 
@@ -432,7 +432,7 @@ class ContactsController extends AppController {
                         'description'     => $contactData['Contact']['description'],
                         'email'           => $contactData['Contact']['email'],
                         'phone'           => $contactData['Contact']['phone'],
-                        'uuid'            => \itnovum\openITCOCKPIT\Core\UUID::v4(),
+                        'uuid'            => UUID::v4(),
                         'customvariables' => $sourceContact['customvariables'],
                         'containers'      => [
                             '_ids' => $sourceContact['containers']

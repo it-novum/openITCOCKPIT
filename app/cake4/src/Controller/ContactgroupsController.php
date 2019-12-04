@@ -125,7 +125,7 @@ class ContactgroupsController extends AppController {
         if ($this->request->is('post')) {
             /** @var $ContactgroupsTable ContactgroupsTable */
             $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-            $this->request->data['Contactgroup']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+            $this->request->data['Contactgroup']['uuid'] = UUID::v4();
             $this->request->data['Contactgroup']['container']['containertype_id'] = CT_CONTACTGROUP;
             $contactgroup = $ContactgroupsTable->newEmptyEntity();
             $contactgroup = $ContactgroupsTable->patchEntity($contactgroup, $this->request->getData('Contactgroup'));
@@ -365,7 +365,7 @@ class ContactgroupsController extends AppController {
 
                     $newContactgroupData = [
                         'description' => $contactgroupData['Contactgroup']['description'],
-                        'uuid'        => \itnovum\openITCOCKPIT\Core\UUID::v4(),
+                        'uuid'        => UUID::v4(),
                         'container'   => [
                             'name'             => $contactgroupData['Contactgroup']['container']['name'],
                             'containertype_id' => CT_CONTACTGROUP,
