@@ -13,6 +13,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
@@ -1990,8 +1991,8 @@ class HostsTable extends Table {
                 'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.host_object_id)'),
             ])
             ->where([
-                'Hosts.disabled'                 => 0,
-                'HostObject.is_active'           => 1,
+                'Hosts.disabled'       => 0,
+                'HostObject.is_active' => 1,
             ])
             ->join([
                 'a' => [
@@ -2057,8 +2058,8 @@ class HostsTable extends Table {
                 'count' => $query->newExpr('COUNT(DISTINCT Servicestatus.service_object_id)'),
             ])
             ->where([
-                'Services.disabled'               => 0,
-                'ServiceObject.is_active'        => 1,
+                'Services.disabled'       => 0,
+                'ServiceObject.is_active' => 1,
             ])
             ->join([
                 'a' => [
@@ -2106,6 +2107,73 @@ class HostsTable extends Table {
             $servicestatusCount[$servicestatus['Servicestatus']['current_state']] = (int)$servicestatus['count'];
         }
         return $servicestatusCount;
+    }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @param array $conditions
+     * @return int
+     */
+    public function getHoststatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
+
+        $query = $this->find();
+        $query
+            ->select([
+                'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.host_object_id)'),
+            ])
+            ->where([
+                'HostObject.is_active' => 1,
+                'Hosts.disabled'       => 0
+            ])
+            ->join([
+                'a' => [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'HostObject',
+                    'conditions' => 'Hosts.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
+                ],
+                'b' => [
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ]
+            ])
+            ->innerJoinWith('HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                if (!empty($MY_RIGHTS)) {
+                    return $q->where(['HostsToContainersSharing.id IN' => $MY_RIGHTS]);
+                }
+                return $q;
+            })
+            ->contain([
+                'HostsToContainersSharing'
+            ])
+            ->disableHydration();
+
+        $where = [];
+        if (!empty($conditions['Host']['name'])) {
+            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+
+        $where['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
+
+        if ($where['Hoststatus.current_state'] > 0) {
+            if ($conditions['Hoststatus']['problem_has_been_acknowledged'] === false) {
+                $where['Hoststatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Hoststatus']['scheduled_downtime_depth'] === false) {
+                $where['Hoststatus.scheduled_downtime_depth'] = false;
+            }
+        }
+
+        $query->andWhere($where);
+        $result = $query->first();
+
+        if($result === null){
+            return 0;
+        }
+
+        return $result['count'];
     }
 
 }

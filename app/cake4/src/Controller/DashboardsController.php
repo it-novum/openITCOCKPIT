@@ -1405,9 +1405,6 @@ class DashboardsController extends AppController {
         return $acl;
     }
 
-    /**
-     * @deprecated
-     */
     public function hostStatusOverviewWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -1436,31 +1433,28 @@ class DashboardsController extends AppController {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-
-                $query = $this->Host->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
-                $modelName = 'Host';
+                $count = $HostsTable->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
             }
 
             if ($this->DbBackend->isCrateDb()) {
                 throw new MissingDbBackendException('MissingDbBackendException');
-                $query = $this->Hoststatus->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
-                $modelName = 'Hoststatus';
+                //$query = $this->Hoststatus->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                //$modelName = 'Hoststatus';
             }
 
             if ($this->DbBackend->isStatusengine3()) {
                 throw new MissingDbBackendException('MissingDbBackendException');
-                $query = $this->Host->getHoststatusBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
-                $modelName = 'Host';
+                //$query = $this->Host->getHoststatusBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
+                //$modelName = 'Host';
             }
-            $statusCount = $this->{$modelName}->find('count', $query);
             $this->set('config', $config);
-            $this->set('statusCount', $statusCount);
+            $this->set('statusCount', $count);
             $this->viewBuilder()->setOption('serialize', ['config', 'statusCount']);
             return;
         }
 
         if ($this->request->is('post')) {
-            $config = $HostStatusOverviewJson->standardizedData($this->request->data);
+            $config = $HostStatusOverviewJson->standardizedData($this->request->getData());
             $widgetId = (int)$this->request->getData('Widget.id', 0);
 
             if (!$WidgetsTable->existsById($widgetId)) {
@@ -1495,51 +1489,65 @@ class DashboardsController extends AppController {
         }
         $ServiceStatusOverviewJson = new ServiceStatusOverviewJson();
 
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
         if ($this->request->is('get')) {
-            $widgetId = (int)$this->request->query('widgetId');
-            if (!$this->Widget->exists($widgetId)) {
-                throw new NotFoundException('Widget not found');
+            $widgetId = (int)$this->request->getQuery('widgetId');
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new \RuntimeException('Invalid widget id');
             }
 
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ]
-            ]);
+            $widget = $WidgetsTable->get($widgetId);
 
             $data = [];
-            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
-                $data = json_decode($widget['Widget']['json_data'], true);
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
             }
             $config = $ServiceStatusOverviewJson->standardizedData($data);
 
             if ($this->DbBackend->isNdoUtils()) {
-                $query = $this->Service->getServicestatusCountBySelectedStatus($this->MY_RIGHTS, $config);
-                $modelName = 'Service';
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+                $count = $ServicesTable->getServicestatusCountBySelectedStatus($this->MY_RIGHTS, $config);
             }
 
             if ($this->DbBackend->isCrateDb()) {
-                $query = $this->Servicestatus->getServicestatusCountBySelectedStatus($this->MY_RIGHTS, $config);
-                $modelName = 'Servicestatus';
+                throw new MissingDbBackendException('MissingDbBackendException');
+                //$query = $this->Servicestatus->getServicestatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                //$modelName = 'Servicestatus';
             }
 
             if ($this->DbBackend->isStatusengine3()) {
-                $query = $this->Service->getServicestatusBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
-                $modelName = 'Service';
+                throw new MissingDbBackendException('MissingDbBackendException');
+                //$query = $this->Service->getServicestatusBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
+                //$modelName = 'Service';
             }
-            $statusCount = $this->{$modelName}->find('count', $query);
             $this->set('config', $config);
-            $this->set('statusCount', $statusCount);
+            $this->set('statusCount', $count);
             $this->viewBuilder()->setOption('serialize', ['config', 'statusCount']);
             return;
         }
 
         if ($this->request->is('post')) {
-            $config = $ServiceStatusOverviewJson->standardizedData($this->request->data);
+            $config = $ServiceStatusOverviewJson->standardizedData($this->request->getData());
 
-            $this->Widget->id = (int)$this->request->data('Widget.id');;
-            $this->Widget->saveField('json_data', json_encode($config));
+            $widgetId = (int)$this->request->getData('Widget.id', 0);
+
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new \RuntimeException('Invalid widget id');
+            }
+            $widget = $WidgetsTable->get($widgetId);
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode($config)
+            ]);
+
+            $WidgetsTable->save($widget);
+
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
+            }
 
             $this->set('config', $config);
             $this->viewBuilder()->setOption('serialize', ['config']);

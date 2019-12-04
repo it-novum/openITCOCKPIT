@@ -8,6 +8,7 @@ use App\Model\Entity\Service;
 use App\Model\Entity\Servicedependency;
 use App\Model\Entity\Serviceescalation;
 use Cake\Database\Expression\Comparison;
+use Cake\Database\Expression\QueryExpression;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -15,6 +16,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
@@ -2305,5 +2307,80 @@ class ServicesTable extends Table {
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @param array $conditions
+     * @return int
+     */
+    public function getServicestatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
+        $query = $this->find();
+        $query
+            ->select([
+                'count' => $query->newExpr('COUNT(DISTINCT Servicestatus.service_object_id)')
+            ])
+            ->where([
+                'Services.disabled'       => 0,
+                'ServiceObject.is_active' => 1,
+            ])
+            ->join([
+                'a' => [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'ServiceObject',
+                    'conditions' => 'ServiceObject.name2 = Services.uuid',
+                ],
+                'b' => [
+                    'table'      => 'nagios_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
+                ],
+            ])
+            ->innerJoinWith('Servicetemplates')
+            ->innerJoinWith('Hosts')
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                return $q->where([
+                    'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                ]);
+            })
+            ->group([
+                'Servicestatus.current_state',
+            ])
+            ->disableHydration();
+
+        $where = [];
+        if (!empty($conditions['Host']['name'])) {
+            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+        if (!empty($conditions['Service']['name'])) {
+            $query->andWhere(
+                $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name) LIKE :servicename')
+            );
+            $query->bind(':servicename',  sprintf('%%%s%%', $conditions['Service']['name']));
+        }
+
+
+        $where['Servicestatus.current_state'] = $conditions['Servicestatus']['current_state'];
+
+        if ($where['Servicestatus.current_state'] > 0) {
+            if ($conditions['Servicestatus']['problem_has_been_acknowledged'] === false) {
+                $where['Servicestatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Servicestatus']['scheduled_downtime_depth'] === false) {
+                $where['Servicestatus.scheduled_downtime_depth'] = false;
+            }
+        }
+
+        $query->andWhere($where);
+        //FileDebugger::dieQuery($query);
+        $result = $query->first();
+
+        if ($result === null) {
+            return 0;
+        }
+
+        return $result['count'];
     }
 }
