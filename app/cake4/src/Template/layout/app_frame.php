@@ -119,55 +119,50 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     endforeach;
     ?>
 </head>
-<body ng-cloak class="ng-cloak">
-<script>
-    Dropzone.autoDiscover = false;
-</script>
+<body class="mod-bg-1">
+<div class="page-wrapper">
+    <div class="page-inner">
+        <script>
+            var classHolder = document.getElementsByTagName("BODY")[0]; // may delete this if navigation (plugin) changes
+            Dropzone.autoDiscover = false;
+        </script>
 
-<div id="global-loading">
-    <i class="fa fa-refresh fa-spin"></i>
-</div>
-
-<?= $this->element('header') ?>
-<?= $this->element('sidebar') ?>
-
-<div id="uglyDropdownMenuHack"></div>
-<div id="main" role="main" ng-controller="LayoutController">
-    <div id="ribbon" class="hidden-mobile hidden-tablet">
-        <span class="ribbon-button-alignment"></span>
-        <ol class="breadcrumb">
-            <li>
-                Hardcoded 1
-            </li>
-            <li>
-                Hardcoded 2
-            </li>
-        </ol>
-        <?php if ($showstatsinmenu): ?>
-            <menustats></menustats>
-        <?php endif; ?>
-
-        <div class="pull-right">
-            <span id="global_ajax_loader"><i class="fa fa-refresh fa-spin"></i> <?php echo __('Loading data'); ?></span>
+        <div id="global-loading">
+            <i class="fa fa-refresh fa-spin"></i>
         </div>
 
-    </div>
+        <?= $this->element('sidebar') ?>
 
-    <div id="content" style="opacity: 1;">
+        <div class="page-content-wrapper">
+            <!-- HEADER START -->
+            <?= $this->element('header') ?>
+            <!-- HEADER END -->
 
-        <div ui-view>
-            <?= $this->Flash->render() ?>
-            <?= $this->fetch('content') ?>
+
+            <div id="uglyDropdownMenuHack"></div>
+            <!-- BEGIN Page Content -->
+            <!-- the #js-page-content id is needed for some plugins to initialize -->
+            <main id="js-page-content" role="main" class="page-content" ng-controller="LayoutController">
+                <div id="content" style="opacity: 1;">
+
+                    <div ui-view>
+                        <?= $this->Flash->render() ?>
+                        <?= $this->fetch('content') ?>
+                    </div>
+                </div>
+            </main>
         </div>
+        <div id="scroll-top-container">
+            <i class="fa fa-arrow-up fa-2x" title="<?php echo __('Scroll back to top'); ?>"></i>
+        </div>
+
+        <?php printf('<script src="/%s"></script>', 'legacy/smartadmin/js/app.js'); ?>
     </div>
 </div>
-
-<div id="scroll-top-container">
-    <i class="fa fa-arrow-up fa-2x" title="<?php echo __('Scroll back to top'); ?>"></i>
-</div>
-
-<?php printf('<script src="/%s"></script>', 'legacy/smartadmin/js/app.js'); ?>
-
+<?= $this->element('shortcut_links') ?>
+<?= $this->element('color_profiles') ?>
+<?= $this->element('quick_menu') ?>
+<?php printf('<script src="/%s"></script>', 'smartadmin4/dist/js/app.bundle.js'); ?>
 </body>
 </html>
 

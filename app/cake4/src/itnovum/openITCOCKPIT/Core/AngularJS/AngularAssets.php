@@ -34,110 +34,123 @@ class AngularAssets implements AngularAssetsInterface {
      * @var array
      */
     private $jsFiles = [
-        'legacy/vendor/jquery/dist/jquery.min.js',
-        'legacy/vendor/jqueryui/jquery-ui.min.js',
-        'legacy/vendor/bootstrap/dist/js/bootstrap.min.js',
-        'legacy/vendor/angular/angular.min.js',
-        'legacy/vendor/angular-ui-router/release/angular-ui-router.min.js',
-        'legacy/js/lib/jquery-cookie.js',
+        'node_modules/jquery/dist/jquery.min.js',
+        'node_modules/jquery-ui-dist/jquery-ui.min.js',
+        'node_modules/popper.js/dist/umd/popper.min.js',
+        'node_modules/popper.js/dist/umd/popper-utils.min.js',
+        'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
+        'legacy/smartadmin/js/plugin/throttle-debounce/jquery.ba-throttle-debounce.min.js',
+        'js/jquery-snippets.js',
+        'node_modules/jquery-slimscroll/jquery.slimscroll.js',
+        'node_modules/node-waves/dist/waves.js',
+        'node_modules/angular/angular.min.js',
+        'node_modules/angular-ui-router/release/angular-ui-router.min.js',
+        'node_modules/jquery.cookie/jquery.cookie.js',
         'legacy/js/vendor/chosen.jquery.min.js',
-        'legacy/js/plugin/bootstrap-tags/bootstrap-tagsinput.min.js',
-        //'legacy/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
+        // 'vendor/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.js',
+        'node_modules/bootstrap4-tagsinput/tagsinput.js',
+        //'vendor/node_modules/jquery-tageditor/jquery.tag-editor.js',
+        //'vendor/node_modules/jquery-tageditor/jquery.caret.min.js',
         'legacy/js/app/layoutfix.js',
         'legacy/js/lib/ColorGenerator.js',
         'legacy/js/lib/colr.js',
         'legacy/js/lib/php.js',
-        'legacy/smartadmin/js/plugin/flot/jquery.flot.cust.js',
-        'legacy/smartadmin/js/plugin/flot/jquery.flot.axislabels.js',
-        'legacy/smartadmin/js/plugin/flot/jquery.flot.time.js',
-        //'legacy/smartadmin/js/plugin/jquery-validate/jquery.validate.min.js', //
-        //'legacy/smartadmin/js/plugin/flot/jquery.flot.orderBar.js', //
-        'legacy/smartadmin/js/plugin/flot/jquery.flot.fillbetween.js',
-        //'legacy/smartadmin/js/plugin/flot/jquery.flot.pie.min.js', //
-        'legacy/smartadmin/js/plugin/flot/jquery.flot.resize.js',
-        //'legacy/smartadmin/js/plugin/flot/jquery.flot.navigate.js', //
-        'legacy/smartadmin/js/plugin/flot/jquery.flot.threshold.js',
-        'legacy/smartadmin/js/plugin/flot/jquery.flot.selection.js', //
-        'legacy/js/lib/jquery.nestable.js',
+        /* 'smartadmin/js/plugin/flot/jquery.flot.cust.js',                        //legacy but no new alternative
+         'vendor/node_modules/flot-axislabels/jquery.flot.axislabels.js',
+         'vendor/node_modules/flot/jquery.flot.time.js',
+         'vendor/node_modules/flot/jquery.flot.fillbetween.js',
+         'vendor/node_modules/flot/jquery.flot.resize.js',
+         'vendor/node_modules/flot/jquery.flot.threshold.js',
+         'vendor/node_modules/flot/jquery.flot.selection.js',*/
+        'node_modules/jquery-nestable/jquery.nestable.js',
         'legacy/js/lib/angular-nestable.js',
         'legacy/js/lib/parseuri.js',
-        'legacy/js/vendor/vis-4.21.0/dist/vis.js',
+        //'js/vendor/vis-4.21.0/dist/vis.js',
+        'js/scripts/ng.app.js',
         'legacy/js/vendor/UUID.js-4.0.3/dist/uuid.core.js',
-        'legacy/js/vendor/lodash/vendor/underscore/underscore.js',
-        'legacy/js/vendor/noty/noty.min.js',
+        'node_modules/underscore/underscore-min.js',
+        'node_modules/noty/lib/noty.min.js',
         'legacy/js/vendor/gauge.min.js',
         'legacy/js/lib/jquery.svg.min.js',
         'legacy/js/lib/jquery.svgfilter.min.js',
-        'legacy/smartadmin/js/plugin/dropzone/dropzone.min.js',
-        'legacy/smartadmin/js/notification/SmartNotification.js',
-        'legacy/vendor/noty/noty.min.js',
-        'legacy/js/lib/rangyinputs-jquery-1.1.2.min.js',
-        'legacy/vendor/javascript-detect-element-resize/jquery.resize.js',
-        'legacy/vendor/angular-gridster/dist/angular-gridster.min.js',
+        'node_modules/dropzone/dist/min/dropzone.min.js',
+        /*'smartadmin/js/notification/SmartNotification.js',
+        'vendor/node_modules/rangyinputs/rangyinputs-jquery.js',
+        'vendor/node_modules/javascript-detect-element-resize/jquery.resize.js',*/
+        'node_modules/angular-gridster/dist/angular-gridster.min.js',
         'legacy/js/lib/GraphDefaults.js',
-        'legacy/js/lib/jqconsole.min.js',
-        'legacy/js/vendor/jquery.blockUI.js',
-        'legacy/js/lib/jquery-jvectormap-1.2.2.min.js',
-        'legacy/js/lib/maps/jquery-jvectormap-world-mill-en.js',
-        'legacy/smartadmin/js/plugin/fullcalendar-4.2.0/packages/core/main.js',               //  <-- NEW FC 4.2.0
-        'legacy/smartadmin/js/plugin/fullcalendar-4.2.0/packages/interaction/main.js',        //  <-- NEW FC 4.2.0
-        'legacy/smartadmin/js/plugin/fullcalendar-4.2.0/packages/daygrid/main.js',            //  <-- NEW FC 4.2.0
-        'legacy/smartadmin/js/plugin/fullcalendar-4.2.0/packages/timegrid/main.js',           //  <-- NEW FC 4.2.0
-        'legacy/smartadmin/js/plugin/fullcalendar-4.2.0/packages/list/main.js',               //  <-- NEW FC 4.2.0
-        'legacy/js/vendor/Chart.min.js',
-        'legacy/js/vendor/chartjs-plugin-piechart-center-element.min.js',
-         //'legacyjs/vendor/chartjs-plugin-piechart-outlabels.min.js'
-        'legacy/js/lib/highlight-within-textarea/jquery.highlight-within-textarea.js',
-
-
-        //'js/scripts/ng.app.js',
+        /*'js/lib/jqconsole.min.js',
+        'js/vendor/jquery.blockUI.js', */
+        'node_modules/jquery-blockui/jquery.blockUI.js'
+        /*'js/lib/jquery-jvectormap-1.2.2.min.js',
+        'js/lib/maps/jquery-jvectormap-world-mill-en.js',
+        'vendor/node_modules/@fullcalendar/core/main.js',
+        'vendor/node_modules/@fullcalendar/interaction/main.js',
+        'vendor/node_modules/@fullcalendar/daygrid/main.js',
+        'vendor/node_modules/@fullcalendar/timegrid/main.js',
+        'vendor/node_modules/@fullcalendar/list/main.js',
+        'js/vendor/Chart.min.js',
+        'js/vendor/chartjs-plugin-piechart-center-element.min.js',
+        'js/lib/highlight-within-textarea/jquery.highlight-within-textarea.js' */
     ];
 
     private $cssFiles = [
-        '/legacy/css/lib/jquery-jvectormap-1.2.2.css',
-        '/legacy/css/lib/jquery.imgareaselect-0.9.10/imgareaselect-animated.css',
-        '/legacy/css/lib/jquery.svg.css',
-        '/legacy/css/vendor/bootstrap/css/bootstrap.min.css',
-        //'legacy/css/vendor/jquery.gridster.css',
-        '/legacy/css/vendor/chosen/chosen.css',
-        '/legacy/css/vendor/chosen/chosen-bootstrap.css',
-        '/legacy/css/list_filter.css',
-        '/legacy/css/vendor/fineuploader/fineuploader-3.2.css',
-        '/legacy/css/vendor/select2/select2.css',
-        '/legacy/css/vendor/select2/select2-bootstrap.css',
-        '/legacy/css/vendor/bootstrap-datepicker.css',
-        '/legacy/css/vendor/bootstrap-datetimepicker.min.css',
-        '/legacy/css/vendor/gauge/css/gauge.css',
-        '/legacy/smartadmin/css/font-awesome.min.css',
-        '/legacy/smartadmin/css/smartadmin-production.min.css',
-        '/legacy/smartadmin/css/smartadmin-production-plugins.min.css',
-        '/legacy/smartadmin/css/smartadmin-skins.css',
-        '/legacy/smartadmin/css/demo.css',
-        //'legacy/smartadmin/js/plugin/fullcalendar-2.3.1/fullcalendar.min.css', <---- Old
-        '/legacy/smartadmin/js/plugin/fullcalendar-4.2.0/packages/core/main.css',      // <-- NEW FC 4.2.0
-        '/legacy/smartadmin/js/plugin/fullcalendar-4.2.0/packages/daygrid/main.css',   // <-- NEW FC 4.2.0
-        '/legacy/smartadmin/js/plugin/fullcalendar-4.2.0/packages/timegrid/main.css',   // <-- NEW FC 4.2.0
-        '/legacy/smartadmin/js/plugin/fullcalendar-4.2.0/packages/list/main.css',   // <-- NEW FC 4.2.0
-        '/legacy/smartadmin/css/your_style.css',
-        '/legacy/smartadmin/css/animate.css',
-        '/legacy/css/lockscreen.css',
-        '/legacy/css/base.css',
-        '/legacy/css/app.css',
-        '/legacy/css/status.css',
-        '/legacy/css/lists.css',
-        '/legacy/css/ansi.css',
-        '/legacy/css/console.css',
-        '/legacy/css/animate_new.css',
-        '/legacy/css/vendor/prism.css',
-        '/legacy/css/vendor/gridstack/gridstack.min.css',
-        '/legacy/css/vendor/vis-4.21.0/dist/vis.css',
-        '/legacy/css/my_vis.css',
-        '/legacy/css/vendor/noty/noty.css',
-        '/legacy/css/flippy.css',
-        '/legacy/css/vendor/image-picker.css',
-        '/legacy/vendor/angular-gridster/dist/angular-gridster.css',
-        '/legacy/css/vendor/radio_buttons.css',
-        '/legacy/css/vendor/highlight-within-textarea/jquery.highlight-within-textarea.css'
+        /*'lib/jquery-jvectormap-1.2.2.css',
+           'lib/jquery.imgareaselect-0.9.10/imgareaselect-animated.css',
+           'lib/jquery.svg.css',*/
+        /*'/vendor/node_modules/bootstrap/dist/js/bootstrap.css',
+        '/vendor/node_modules/bootstrap/dist/js/bootstrap-grid.css',*/
+        //'vendor/jquery.gridster.css',
+        /*'vendor/chosen/chosen',
+        'vendor/chosen/chosen-bootstrap',*/
+        /*'list_filter',
+        'vendor/fineuploader/fineuploader-3.2',
+        'vendor/select2/select2',
+        'vendor/select2/select2-bootstrap',
+        'vendor/bootstrap-datepicker.css',
+        'vendor/bootstrap-datetimepicker.min.css',
+        'vendor/gauge/css/gauge.css',*/
+        '/vendor/node_modules/jquery-ui-dist/jquery-ui.css',
+        '/vendor/node_modules/node-waves/dist/waves.js',
+        '/vendor/node_modules/font-awesome/css/font-awesome.css',
+        '/vendor/node_modules/@fortawesome/fontawesome-free/css/all.min.css',
+        '/vendor/node_modules/bootstrap4-tagsinput/tagsinput.css',
+        '/vendor/node_modules/bootstrap4c-chosen/dist/css/component-chosen.css',
+        //  '/vendor/node_modules/jquery-tageditor/jquery.tag-editor.css',
+        /*'/smartadmin4/dist/css/fa-brands.css',
+        '/smartadmin4/dist/css/fa-regular.css',
+        '/smartadmin4/dist/css/fa-solid.css', */
+        '/smartadmin4/dist/css/vendors.bundle.css',
+        '/smartadmin4/dist/css/app.bundle.css',
+        '/smartadmin4/dist/css/themes/cust-theme-10.css',
+        'openitcockpit-colors.css',
+        'openitcockpit-utils.css',
+        'openitcockpit.css',
+        /*'/vendor/node_modules/@fullcalendar/core/main.css',
+        '/vendor/node_modules/@fullcalendar/daygrid/main.css',
+        '/vendor/node_modules/@fullcalendar/timegrid/main.css',
+        '/vendor/node_modules/@fullcalendar/list/main.css',*/
+        //'/smartadmin/css/your_style.css',                             //check if we need this anymore
+        //'/smartadmin/css/animate.css',
+
+        /*'lockscreen.css',
+        'base',
+        'app',
+        'status',
+        'lists',
+        'ansi',
+        'console',
+        'animate_new',
+        'vendor/prism.css',
+        'vendor/gridstack/gridstack.min.css',*/
+        //'vendor/vis-4.21.0/dist/vis.css',
+        //'my_vis.css',
+        '/vendor/node_modules/noty/lib/noty.css',
+        /*'flippy.css',
+        'vendor/image-picker.css',*/
+        //  '/vendor/node_modules/angular-gridster/dist/angular-gridster.css',
+        /*'vendor/radio_buttons.css',
+        '/css/vendor/highlight-within-textarea/jquery.highlight-within-textarea.css'*/
     ];
 
     /**

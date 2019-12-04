@@ -1,0 +1,103 @@
+/*
+STD COLORS
+
+$color-primary:						#4285F4;
+$color-success:						#00C851;
+$color-info:						#33b5e5;
+$color-warning:						#ffbb33;
+$color-danger:						#CC0000;
+ */
+
+a:not([href]):not([tabindex]) {
+    color: #b1b3b2;
+    text-decoration: none;
+}
+
+
+.label-forced {
+    display: inline !important;
+    padding: .2em .6em .3em !important;
+    font-size: 75% !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    color: #fff !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    vertical-align: baseline !important;
+    border-radius: .25em !important;
+}
+
+.btn-lower-padding {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+}
+
+
+.notify-label {
+    display: inline-block;
+    line-height: 1.4;
+    min-width: 150px;
+}
+
+.notify-label-small {
+    display: inline-block;
+    line-height: 1.1;
+    min-width: 90px;
+    width: 100%;
+    margin-top: 3px;
+}
+
+.popup-graph-container {
+    position: absolute;
+    /*top: 320px;*/
+    left: 495px;
+    width: 750px;
+    height: auto;
+    background-color: #FFF;
+    box-shadow: 0 0 15px #9E9E9E;
+    border-radius: 3px;
+    z-index: 1;
+    display: none;
+}
+
+#serviceGraphFlot {
+    width: 100%;
+    height: 260px;
+}
+
+div.custom-control-down {
+    padding-left: 0;
+}
+
+.custom-control-label {
+    margin-bottom: 1rem;
+}
+
+div.custom-control-down .custom-control-label::before,
+div.custom-control-down .custom-control-label::after {
+    top: 1.5rem;
+    left: initial;
+}
+
+div.custom-control-right {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+div.custom-control-right .custom-control-label::before,
+div.custom-control-right .custom-control-label::after {
+    right: -1.8rem;
+    left: initial;
+    top: 3px;
+}
+
+.chosen-container{
+    font-size: 0.8125rem;
+}
+
+.tagsinputFilter{
+    margin: 0 -12px 0 -12px;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-color: #E5E5E5 !important;
+}
