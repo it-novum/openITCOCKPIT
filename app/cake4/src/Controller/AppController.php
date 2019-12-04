@@ -503,4 +503,16 @@ class AppController extends Controller {
 
         return $userPermissions;
     }
+
+    /**
+     * @param EntityInterface $entity
+     */
+    protected function serializeCake4Id(EntityInterface $entity) {
+
+        if (!$this->isJsonRequest()) {
+            return;
+        }
+        $this->set('id', $entity->id);
+        $this->set('_serialize', ['id']);
+    }
 }

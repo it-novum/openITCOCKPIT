@@ -142,7 +142,7 @@ class CommandsController extends AppController {
                     $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
                     $ChangelogsTable->save($changelogEntry);
                 }
-                if ($this->request->is('json')) {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($command); // REST API ID serialization
                     return;
                 }
@@ -202,7 +202,7 @@ class CommandsController extends AppController {
                     $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
                     $ChangelogsTable->save($changelogEntry);
                 }
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($command); // REST API ID serialization
                     return;
                 }
