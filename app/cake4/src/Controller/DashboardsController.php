@@ -60,13 +60,7 @@ use Statusengine\PerfdataParser;
 
 /**
  * Class DashboardsController
- * @property DashboardTab $DashboardTab
- * @property Widget $Widget
- * @property Parenthost $Parenthost
- * @property Hoststatus $Hoststatus
- * @property User $User
- * @property Servicestatus $Servicestatus
- * @property Service $Service
+ * @package App\Controller
  */
 class DashboardsController extends AppController {
 
@@ -1479,9 +1473,6 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
-    /**
-     * @deprecated
-     */
     public function serviceStatusOverviewWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
