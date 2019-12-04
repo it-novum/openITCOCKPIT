@@ -79,7 +79,6 @@ class FileDebugger {
     }
 
     public static function query(Query $query, $die = false, $filename = '/tmp/debug.log') {
-        \App::uses('SqlFormatter', 'Lib');
 
         $sql = (string)$query;
 
@@ -97,8 +96,6 @@ class FileDebugger {
     }
 
     public static function dieQuery(Query $query){
-        \App::uses('SqlFormatter', 'Lib');
-
         $sql = (string)$query;
 
         $result = \SqlFormatter::format($sql, true);
