@@ -133,7 +133,7 @@ class HosttemplatesController extends AppController {
         if ($this->request->is('post')) {
             /** @var $HosttemplatesTable HosttemplatesTable */
             $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-            $this->request->data['Hosttemplate']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+            $this->request->data['Hosttemplate']['uuid'] = UUID::v4();
             $this->request->data['Hosttemplate']['hosttemplatetype_id'] = GENERIC_HOSTTEMPLATE;
 
             if ($hosttemplatetype_id !== null && is_numeric($hosttemplatetype_id)) {
@@ -387,7 +387,7 @@ class HosttemplatesController extends AppController {
                     $sourceHosttemplate = $Cache->get($sourceHosttemplateId);
 
                     $newHosttemplateData = $sourceHosttemplate;
-                    $newHosttemplateData['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+                    $newHosttemplateData['uuid'] = UUID::v4();
                     $newHosttemplateData['name'] = $hosttemplateData['Hosttemplate']['name'];
                     $newHosttemplateData['description'] = $hosttemplateData['Hosttemplate']['description'];
                     $newHosttemplateData['command_id'] = $hosttemplateData['Hosttemplate']['command_id'];

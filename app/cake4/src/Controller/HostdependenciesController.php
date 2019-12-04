@@ -190,7 +190,7 @@ class HostdependenciesController extends AppController {
 
             $data = array_merge($this->request->getData('Hostdependency'), $data);
             $hostdependency = $HostdependenciesTable->newEntity($data);
-            $hostdependency->set('uuid', \itnovum\openITCOCKPIT\Core\UUID::v4());
+            $hostdependency->set('uuid', UUID::v4());
             $HostdependenciesTable->save($hostdependency);
 
             if ($hostdependency->hasErrors()) {

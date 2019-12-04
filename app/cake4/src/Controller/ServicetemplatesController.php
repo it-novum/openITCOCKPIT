@@ -139,7 +139,7 @@ class ServicetemplatesController extends AppController {
         if ($this->request->is('post')) {
             /** @var $ServicetemplatesTable ServicetemplatesTable */
             $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
-            $this->request->data['Servicetemplate']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+            $this->request->data['Servicetemplate']['uuid'] = UUID::v4();
             if (!isset($this->request->data['Servicetemplate']['servicetemplatetype_id'])) {
                 $this->request->data['Servicetemplate']['servicetemplatetype_id'] = GENERIC_SERVICE;
             }
@@ -419,7 +419,7 @@ class ServicetemplatesController extends AppController {
                     $sourceServicetemplate = $Cache->get($sourceServicetemplateId);
 
                     $newServicetemplateData = $sourceServicetemplate;
-                    $newServicetemplateData['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+                    $newServicetemplateData['uuid'] = UUID::v4();
                     $newServicetemplateData['template_name'] = $servicetemplateData['Servicetemplate']['template_name'];
                     $newServicetemplateData['name'] = $servicetemplateData['Servicetemplate']['name'];
                     $newServicetemplateData['description'] = $servicetemplateData['Servicetemplate']['description'];

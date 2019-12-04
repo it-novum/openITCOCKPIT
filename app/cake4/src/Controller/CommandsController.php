@@ -418,7 +418,7 @@ class CommandsController extends AppController {
                         'command_line'     => $commandData['Command']['command_line'],
                         'command_type'     => $sourceCommand['command_type'],
                         'description'      => $commandData['Command']['description'],
-                        'uuid'             => \itnovum\openITCOCKPIT\Core\UUID::v4(),
+                        'uuid'             => UUID::v4(),
                         'commandarguments' => $sourceCommand['commandarguments']
                     ];
 

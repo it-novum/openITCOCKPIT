@@ -186,7 +186,7 @@ class ServiceescalationsController extends AppController {
         if ($this->request->is('post')) {
             /** @var $ServiceescalationsTable ServiceescalationsTable */
             $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
-            $this->request->data['Serviceescalation']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+            $this->request->data['Serviceescalation']['uuid'] = UUID::v4();
             $data['services'] = $ServiceescalationsTable->parseServiceMembershipData(
                 $this->request->getData('Serviceescalation.services._ids'),
                 $this->request->getData('Serviceescalation.services_excluded._ids')

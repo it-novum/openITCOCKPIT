@@ -554,7 +554,7 @@ class ServicesController extends AppController {
                 $HosttemplatesTable->getContactsAndContactgroupsById($host->get('hosttemplate_id'))
             );
             $serviceData = $ServiceComparisonForSave->getDataForSaveForAllFields();
-            $serviceData['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+            $serviceData['uuid'] = UUID::v4();
 
             //Add required fields for validation
             $serviceData['servicetemplate_flap_detection_enabled'] = $servicetemplate['Servicetemplate']['flap_detection_enabled'];
@@ -1052,7 +1052,7 @@ class ServicesController extends AppController {
                 }
 
                 if ($action === 'copy') {
-                    $serviceData['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
+                    $serviceData['uuid'] = UUID::v4();
 
                     $newServiceEntity = $ServicesTable->newEntity($serviceData);
                 } else {

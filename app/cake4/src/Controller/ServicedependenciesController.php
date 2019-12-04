@@ -130,7 +130,7 @@ class ServicedependenciesController extends AppController {
 
             $data = array_merge($this->request->getData('Servicedependency'), $data);
             $servicedependency = $ServicedependenciesTable->newEntity($data);
-            $servicedependency->set('uuid', \itnovum\openITCOCKPIT\Core\UUID::v4());
+            $servicedependency->set('uuid', UUID::v4());
             $ServicedependenciesTable->save($servicedependency);
 
             if ($servicedependency->hasErrors()) {
