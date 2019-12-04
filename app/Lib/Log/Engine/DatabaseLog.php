@@ -2,6 +2,10 @@
 App::uses('ClassRegistry', 'Utility');
 App::uses('CakeLogInterface', 'Log');
 
+/**
+ * Class DatabaseLog
+ * @deprecated
+ */
 class DatabaseLog implements CakeLogInterface {
 
     /**
@@ -11,6 +15,7 @@ class DatabaseLog implements CakeLogInterface {
 
     /**
      * Contruct the model class
+     * @deprecated
      */
     public function __construct($options = []) {
         $this->Changelog = ClassRegistry::init('Changelog');
@@ -18,6 +23,7 @@ class DatabaseLog implements CakeLogInterface {
 
     /**
      * Write the log to database
+     * @deprecated
      */
     public function write($action, $serialized_data_string = '') {
         ///*, $objecttype_id, $user_id, $data, $name*/

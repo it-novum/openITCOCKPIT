@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 
+use App\Model\Entity\Changelog;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactsTable;
@@ -122,14 +123,13 @@ class CommandsController extends AppController {
             } else {
                 //No errors
                 $User = new User($this->getUser());
-                $requestData = $this->request->data;
-
+                $requestData = $this->request->getData();
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
-                    $this->params['controller'],
+                    $this->request->getParam('controller'),
                     $command->get('id'),
                     OBJECT_COMMAND,
                     [ROOT_CONTAINER],
@@ -138,13 +138,11 @@ class CommandsController extends AppController {
                     $requestData
                 );
                 if ($changelog_data) {
-                    $changelogEntry = $ChangelogsTable->newEmptyEntity();
-                    $changelogEntry = $ChangelogsTable->patchEntity($changelog_data);
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
                     $ChangelogsTable->save($changelogEntry);
-
-                    //CakeLog::write('log', serialize($changelog_data));
                 }
-                if ($this->request->ext == 'json') {
+                if ($this->request->is('json')) {
                     $this->serializeCake4Id($command); // REST API ID serialization
                     return;
                 }
@@ -186,7 +184,9 @@ class CommandsController extends AppController {
                 $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
                 $requestData = $this->request->data;
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     $this->params['controller'],
                     $command->get('id'),
@@ -198,7 +198,9 @@ class CommandsController extends AppController {
                     ['Command' => $commandForChangeLog->toArray()]
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
                 if ($this->request->ext == 'json') {
                     $this->serializeCake4Id($command); // REST API ID serialization
@@ -252,14 +254,12 @@ class CommandsController extends AppController {
 
         if ($CommandsTable->delete($CommandsTable->get($id))) {
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-
-
             /** @var  ChangelogsTable $ChangelogsTable */
             $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
             $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                $this->params['action'],
-                $this->params['controller'],
+                $this->request->getParam('action'),
+                $this->request->getParam('controller'),
                 $id,
                 OBJECT_COMMAND,
                 [ROOT_CONTAINER],
@@ -268,11 +268,9 @@ class CommandsController extends AppController {
                 $command
             );
             if ($changelog_data) {
-                $changelogEntry = $ChangelogsTable->newEmptyEntity();
-                $changelogEntry = $ChangelogsTable->patchEntity($changelog_data);
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
                 $ChangelogsTable->save($changelogEntry);
-
-                //CakeLog::write('log', serialize($changelog_data));
             }
 
 
@@ -445,8 +443,10 @@ class CommandsController extends AppController {
                 } else {
                     //No errors
                     $postData[$index]['Command']['id'] = $newCommandEntity->get('id');
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         $this->params['controller'],
                         $postData[$index]['Command']['id'],
@@ -457,7 +457,9 @@ class CommandsController extends AppController {
                         ['Command' => $newCommandData]
                     );
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
                     }
                 }
             }
