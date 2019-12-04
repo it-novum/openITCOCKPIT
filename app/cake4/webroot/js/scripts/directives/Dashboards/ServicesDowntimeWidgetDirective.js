@@ -81,10 +81,10 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                     'sort': $scope.sort,
                     'page': $scope.currentPage,
                     'direction': $scope.direction,
-                    'filter[DowntimeService.comment_data]': $scope.filter.DowntimeService.comment_data,
-                    'filter[DowntimeService.was_cancelled]': wasCancelled,
-                    'filter[Host.name]': $scope.filter.Host.name,
-                    'filter[Service.name]': $scope.filter.Service.name,
+                    'filter[DowntimeServices.comment_data]': $scope.filter.DowntimeService.comment_data,
+                    'filter[DowntimeServices.was_cancelled]': wasCancelled,
+                    'filter[Hosts.name]': $scope.filter.Host.name,
+                    'filter[servicename]': $scope.filter.Service.name,
                     'filter[hideExpired]': $scope.filter.hideExpired,
                     'filter[isRunning]': $scope.filter.isRunning
                 };

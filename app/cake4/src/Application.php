@@ -153,9 +153,12 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
      */
     public function middleware($middlewareQueue): MiddlewareQueue {
         $middlewareQueue
+            ->add(new BodyParserMiddleware())
+
             // Catch any exceptions in the lower layers,
             // and make an error page/response
             ->add(ErrorHandlerMiddleware::class)
+
             // Handle plugin/theme assets like CakePHP normally does.
             ->add(new AssetMiddleware([
                 'cacheTime' => Configure::read('Asset.cacheTime')
@@ -174,8 +177,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
                 'htmlUnauthenticatedRedirect' => '/users/login'
             ]))
             ->add(new AuthorizationMiddleware($this))
-            ->add(new RequestAuthorizationMiddleware())
-            ->add(new BodyParserMiddleware());
+            ->add(new RequestAuthorizationMiddleware());
 
         return $middlewareQueue;
     }

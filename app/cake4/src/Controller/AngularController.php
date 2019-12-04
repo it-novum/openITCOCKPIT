@@ -269,8 +269,8 @@ class AngularController extends AppController {
             /** @var HostsTable $HostsTable */
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-            $hoststatusCount = $HostsTable->getHoststatusCount($this->MY_RIGHTS, false);
-            $servicestatusCount = $HostsTable->getServicestatusCount($this->MY_RIGHTS, false);
+            $hoststatusCount = $HostsTable->getHoststatusCount($this->MY_RIGHTS, true);
+            $servicestatusCount = $HostsTable->getServicestatusCount($this->MY_RIGHTS, true);
         }
 
         if ($this->DbBackend->isCrateDb()) {

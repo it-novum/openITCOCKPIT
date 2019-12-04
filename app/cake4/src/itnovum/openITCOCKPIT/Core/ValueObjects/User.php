@@ -25,14 +25,14 @@
 namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 
 
+use Authorization\IdentityInterface;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class User {
-
     /**
-     * @var \AuthComponent
+     * @var IdentityInterface
      */
-    private $Auth;
+    private $Identity;
 
     /**
      * @var bool
@@ -61,16 +61,16 @@ class User {
 
     /**
      * User constructor.
-     * @param \AuthComponent $Auth
+     * @param IdentityInterface $Identity
      */
-    public function __construct(\AuthComponent $Auth) {
-        $this->Auth = $Auth;
+    public function __construct(IdentityInterface $Identity) {
+        $this->Identity = $Identity;
 
-        $this->recursiveBrowser = (bool)$this->Auth->user('recursive_browser');
-        $this->fullName = $this->Auth->user('full_name');
-        $this->id = (int)$this->Auth->user('id');
-        $this->timezone = $this->Auth->user('timezone');
-        $this->dateformat = $this->Auth->user('dateformat');
+        $this->recursiveBrowser = (bool)$Identity->get('recursive_browser');
+        $this->fullName = sprintf('%s %s', $Identity->get('firstname'), $Identity->get('lastname'));
+        $this->id = (int)$Identity->get('id');
+        $this->timezone = $Identity->get('timezone');
+        $this->dateformat = $Identity->get('dateformat');
 
     }
 
@@ -112,7 +112,7 @@ class User {
     /**
      * @return UserTime
      */
-    public function getUserTime(){
+    public function getUserTime() {
         return new UserTime($this->timezone, $this->dateformat);
     }
 

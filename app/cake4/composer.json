@@ -47,12 +47,15 @@
         "ext-calendar": "*",
         "ext-gd": "*",
         "ext-gearman": "*",
-        "cakephp/cakephp": "4.x-dev",
+        "ext-json": "*",
+        "cakephp/acl": "4.x-dev",
         "cakephp/authentication": "2.x-dev",
         "cakephp/authorization": "2.x-dev",
-        "cakephp/acl": "4.x-dev",
+        "cakephp/cakephp": "4.x-dev",
         "cakephp/migrations": "4.x-dev",
         "cakephp/plugin-installer": "^1.0",
+        "erusev/parsedown": "^1.7",
+        "erusev/parsedown-extra": "^0.7.1",
         "mobiledetect/mobiledetectlib": "2.*"
     },
     "require-dev": {
@@ -73,13 +76,19 @@
             "App\\": "src/",
             "itnovum\\openITCOCKPIT\\": "src/itnovum/openITCOCKPIT/",
             "Statusengine\\": "src/Statusengine/"
-        }
+        },
+        "files": [
+            "src/3rd/imageSmoothArc.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
             "App\\Test\\": "tests/",
             "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
-        }
+        },
+        "files": [
+            "src/3rd/imageSmoothArc.php"
+        ]
     },
     "scripts": {
         "post-install-cmd": "App\\Console\\Installer::postInstall",

@@ -2,6 +2,10 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {
             response: function(result){
+                if(result.data.hasOwnProperty('_csrfToken')){
+                    $rootScope._csrfToken = result.data._csrfToken;
+                }
+
                 var url = result.config.url;
                 if(url === '/angular/system_health.json' || url === '/angular/menustats.json'){
                     return result || $.then(result);
@@ -24,6 +28,10 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 return result || $.then(result);
             },
             request: function(response){
+                if(response.method !== 'GET'){
+                    response.headers['X-CSRF-Token'] = $rootScope._csrfToken;
+                }
+
                 var url = response.url;
                 if(url === '/angular/system_health.json' || url === '/angular/menustats.json'){
                     return response || $q.when(response);

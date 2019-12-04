@@ -40,13 +40,14 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
 
 /**
  * Class CommandsController
- * @property AppAuthComponent Auth
+ * @package App\Controller
  */
 class CommandsController extends AppController {
 
@@ -110,18 +111,17 @@ class CommandsController extends AppController {
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $command = $CommandsTable->newEmptyEntity();
 
-            $command = $CommandsTable->patchEntity($command, $this->request->data('Command'));
+            $command = $CommandsTable->patchEntity($command, $this->request->getData('Command'));
             $command->set('uuid', UUID::v4());
 
             $CommandsTable->save($command);
             if ($command->hasErrors()) {
-                $this->response->statusCode(400);
                 $this->set('error', $command->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
-                return;
+                return $this->response->withStatus(403);
             } else {
                 //No errors
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $User = new User($this->getUser());
                 $requestData = $this->request->data;
 
                 /** @var  ChangelogsTable $ChangelogsTable */

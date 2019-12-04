@@ -1,89 +1,151 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
-//
-// This file is dual licensed
-//
-// 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
-//
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
-//
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+declare(strict_types=1);
 
-// 2.
-//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//	License agreement and license key will be shipped with the order
-//	confirmation.
+namespace App\Model\Table;
+
+use App\Lib\PluginManager;
+use App\Lib\Traits\Cake2ResultTableTrait;
+use Cake\ORM\RulesChecker;
+use Cake\ORM\Table;
+use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\Dashboards\ModuleWidgetsInterface;
 
 /**
- * Class Widget
- * @deprecated
+ * Widgets Model
+ *
+ * @property \App\Model\Table\DashboardTabsTable&\Cake\ORM\Association\BelongsTo $DashboardTabs
+ * @property \App\Model\Table\HostsTable&\Cake\ORM\Association\BelongsTo $Hosts
+ * @property \App\Model\Table\ServicesTable&\Cake\ORM\Association\BelongsTo $Services
+ *
+ * @method \App\Model\Entity\Widget get($primaryKey, $options = [])
+ * @method \App\Model\Entity\Widget newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\Widget[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\Widget|false save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Widget saveOrFail(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\Widget patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\Widget[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\Widget findOrCreate($search, callable $callback = null, $options = [])
+ *
+ * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class Widget extends AppModel {
+class WidgetsTable extends Table {
 
-    public $validate = [
-        'dashboard_tab_id' => [
-            'notBlank' => [
-                'rule'     => 'notBlank',
-                'message'  => 'This field cannot be left blank.',
-                'required' => true,
-                'on'       => 'update'
-            ],
-            'numeric'  => [
-                'rule'     => 'numeric',
-                'message'  => 'This field needs a numeric value.',
-                'required' => true,
-                'on'       => 'update'
-            ],
-            'notZero'  => [
-                'rule'     => ['comparison', '>', 0],
-                'message'  => 'The value should be greate than zero.',
-                'required' => true,
-                'on'       => 'update'
-            ],
-        ],
-        'row'              => [
-            'numeric' => [
-                'rule'     => 'numeric',
-                'message'  => 'This field needs a numeric value.',
-                'required' => true,
-            ],
-        ],
-        'col'              => [
-            'numeric' => [
-                'rule'     => 'numeric',
-                'message'  => 'This field needs a numeric value.',
-                'required' => true,
-            ],
-        ],
-        'height'           => [
-            'numeric' => [
-                'rule'     => 'numeric',
-                'message'  => 'This field needs a numeric value.',
-                'required' => true,
-            ],
-        ],
-        'width'            => [
-            'numeric' => [
-                'rule'     => 'numeric',
-                'message'  => 'This field needs a numeric value.',
-                'required' => true,
-            ],
-        ],
-    ];
+    use Cake2ResultTableTrait;
+
+    /**
+     * Initialize method
+     *
+     * @param array $config The configuration for the Table.
+     * @return void
+     */
+    public function initialize(array $config): void {
+        parent::initialize($config);
+
+        $this->setTable('widgets');
+        $this->setDisplayField('title');
+        $this->setPrimaryKey('id');
+
+        $this->addBehavior('Timestamp');
+
+        $this->belongsTo('DashboardTabs', [
+            'foreignKey' => 'dashboard_tab_id',
+            'joinType'   => 'INNER',
+        ]);
+        $this->belongsTo('Types', [
+            'foreignKey' => 'type_id',
+            'joinType'   => 'INNER',
+        ]);
+        $this->belongsTo('Hosts', [
+            'foreignKey' => 'host_id',
+        ]);
+        $this->belongsTo('Services', [
+            'foreignKey' => 'service_id',
+        ]);
+    }
+
+    /**
+     * Default validation rules.
+     *
+     * @param \Cake\Validation\Validator $validator Validator instance.
+     * @return \Cake\Validation\Validator
+     */
+    public function validationDefault(Validator $validator): Validator {
+        $validator
+            ->integer('id')
+            ->allowEmptyString('id', null, 'create');
+
+        $validator
+            ->integer('row')
+            ->requirePresence('row', 'create')
+            ->numeric('row', __('This field needs a numeric value.'))
+            ->notEmptyString('row');
+
+        $validator
+            ->integer('col')
+            ->requirePresence('col', 'create')
+            ->numeric('col', __('This field needs a numeric value.'))
+            ->notEmptyString('col');
+
+        $validator
+            ->integer('width')
+            ->requirePresence('width', 'create')
+            ->numeric('width', __('This field needs a numeric value.'))
+            ->notEmptyString('width');
+
+        $validator
+            ->integer('height')
+            ->requirePresence('height', 'create')
+            ->numeric('height', __('This field needs a numeric value.'))
+            ->notEmptyString('height');
+
+        $validator
+            ->scalar('title')
+            ->maxLength('title', 255)
+            ->allowEmptyString('title');
+
+        $validator
+            ->scalar('color')
+            ->maxLength('color', 255)
+            ->allowEmptyString('color');
+
+        $validator
+            ->scalar('directive')
+            ->maxLength('directive', 255)
+            ->requirePresence('directive', 'create')
+            ->notEmptyString('directive');
+
+        $validator
+            ->scalar('icon')
+            ->maxLength('icon', 255)
+            ->requirePresence('icon', 'create')
+            ->notEmptyString('icon');
+
+        $validator
+            ->scalar('json_data')
+            ->maxLength('json_data', 2000)
+            ->allowEmptyString('json_data');
+
+        return $validator;
+    }
+
+    /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules): RulesChecker {
+        $rules->add($rules->existsIn(['dashboard_tab_id'], 'DashboardTabs'));
+        $rules->add($rules->existsIn(['host_id'], 'Hosts'));
+        $rules->add($rules->existsIn(['service_id'], 'Services'));
+
+        return $rules;
+    }
 
     /**
      * @param array $ACL_PERMISSIONS
      * @return array
-     * @deprecated
      */
     public function getAvailableWidgets($ACL_PERMISSIONS = []) {
         //Default Widgets static dashboards - no permissions required
@@ -258,19 +320,16 @@ class Widget extends AppModel {
             ];
         }
 
-        //Load Plugin configuration files
-        $loadedModules = array_filter(CakePlugin::loaded(), function ($value) {
-            return strpos($value, 'Module') !== false;
-        });
+        $modules = PluginManager::getAvailablePlugins();
+        foreach ($modules as $module) {
+            $className = sprintf('\\%s\\Lib\\Widgets', $module);
+            if (class_exists($className)) {
 
-        foreach ($loadedModules as $loadedModule) {
-            $file = OLD_APP . 'Plugin' . DS . $loadedModule . DS . 'Lib' . DS . 'Widgets.php';
-            if (file_exists($file)) {
-                require_once $file;
-                $dynamicNamespaceWithClassName = sprintf('itnovum\openITCOCKPIT\%s\Widgets\Widgets', $loadedModule);
-                $ModuleWidgets = new $dynamicNamespaceWithClassName($ACL_PERMISSIONS);
-                foreach ($ModuleWidgets->getAvailableWidgets() as $moduleWidget) {
-                    $widgets[] = $moduleWidget;
+                /** @var ModuleWidgetsInterface $PluginWidgets */
+                $PluginWidgets = new $className($ACL_PERMISSIONS);
+
+                foreach ($PluginWidgets->getAvailableWidgets() as $pluginWidget) {
+                    $widgets[] = $pluginWidget;
                 }
             }
         }
@@ -279,10 +338,17 @@ class Widget extends AppModel {
     }
 
     /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Widgets.id' => $id]);
+    }
+
+    /**
      * @param int $typeId
      * @param array $ACL_PERMISSIONS
      * @return bool
-     * @deprecated
      */
     public function isWidgetAvailable($typeId, $ACL_PERMISSIONS = []) {
         $typeId = (int)$typeId;
@@ -298,7 +364,6 @@ class Widget extends AppModel {
      * @param int $typeId
      * @param array $ACL_PERMISSIONS
      * @return array
-     * @deprecated
      */
     public function getWidgetByTypeId($typeId, $ACL_PERMISSIONS = []) {
         $typeId = (int)$typeId;
@@ -313,7 +378,6 @@ class Widget extends AppModel {
     /**
      * @param $ACL_PERMISSIONS
      * @return array
-     * @deprecated
      */
     public function getDefaultWidgets($ACL_PERMISSIONS) {
         $widgets = [];
@@ -330,4 +394,13 @@ class Widget extends AppModel {
         return $widgets;
     }
 
+    public function getWidgetByIdAsCake2($id){
+        $result = $this->find()
+            ->where([
+                'Widgets.id' => $id
+            ])
+            ->disableHydration()
+            ->first();
+        return $this->formatFirstResultAsCake2($result);
+    }
 }
