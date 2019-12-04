@@ -1254,9 +1254,6 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
-    /**
-     * @deprecated
-     */
     public function tachoWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -1327,7 +1324,7 @@ class DashboardsController extends AppController {
     }
 
     private function getServicestatusByServiceId($id) {
-        if($id === null){
+        if ($id === null) {
             return [
                 'Service'       => [],
                 'Servicestatus' => []
