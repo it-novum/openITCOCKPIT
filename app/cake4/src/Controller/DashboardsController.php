@@ -30,6 +30,7 @@ namespace App\Controller;
 
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
+use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
@@ -48,8 +49,11 @@ use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\Service;
 use Statusengine\PerfdataParser;
 
 /**
@@ -1179,10 +1183,7 @@ class DashboardsController extends AppController {
         }
         throw new MethodNotAllowedException();
     }
-
-    /**
-     * @deprecated
-     */
+    
     public function trafficLightWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -1191,23 +1192,18 @@ class DashboardsController extends AppController {
 
         $TrafficlightJson = new TrafficlightJson();
 
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
         if ($this->request->is('get')) {
-            $widgetId = (int)$this->request->query('widgetId');
-            if (!$this->Widget->exists($widgetId)) {
+            $widgetId = (int)$this->request->getQuery('widgetId');
+            if (!$WidgetsTable->existsById($widgetId)) {
                 throw new \RuntimeException('Invalid widget id');
             }
 
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ],
-                'fields'     => [
-                    'Widget.service_id',
-                    'Widget.json_data'
-                ]
-            ]);
-            $serviceId = (int)$widget['Widget']['service_id'];
+            $widget = $WidgetsTable->get($widgetId);
+
+            $serviceId = (int)$widget->get('service_id');
             if ($serviceId === 0) {
                 $serviceId = null;
             }
@@ -1215,8 +1211,8 @@ class DashboardsController extends AppController {
             $service = $this->getServicestatusByServiceId($serviceId);
 
             $data = [];
-            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
-                $data = json_decode($widget['Widget']['json_data'], true);
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
             }
             $config = $TrafficlightJson->standardizedData($data);
             $this->set('config', $config);
@@ -1229,31 +1225,29 @@ class DashboardsController extends AppController {
 
         if ($this->request->is('post')) {
             $config = $TrafficlightJson->standardizedData($this->request->getData());
-            $widgetId = (int)$this->request->data('Widget.id');
-            $serviceId = (int)$this->request->data('Widget.service_id');
+            $widgetId = (int)$this->request->getData('Widget.id', 0);
+            $serviceId = (int)$this->request->getData('Widget.service_id', 0);
 
-            if (!$this->Widget->exists($widgetId)) {
+            if (!$WidgetsTable->existsById($widgetId)) {
                 throw new \RuntimeException('Invalid widget id');
             }
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ],
+            $widget = $WidgetsTable->get($widgetId);
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'service_id' => $serviceId,
+                'json_data'  => json_encode($config)
             ]);
 
-            $widget['Widget']['service_id'] = $serviceId;
-            $widget['Widget']['json_data'] = json_encode($config);
-            if ($this->Widget->save($widget)) {
-                $service = $this->getServicestatusByServiceId($serviceId);
-                $this->set('service', $service);
-                $this->set('config', $config);
-                $this->set('ACL', $this->getAcls());
-                $this->viewBuilder()->setOption('serialize', ['service', 'config', 'ACL']);
-                return;
+            $WidgetsTable->save($widget);
+
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
             }
 
-            $this->serializeErrorMessageFromModel('Widget');
+            $service = $this->getServicestatusByServiceId($serviceId);
+            $this->set('service', $service);
+            $this->set('config', $config);
+            $this->set('ACL', $this->getAcls());
+            $this->viewBuilder()->setOption('serialize', ['service', 'config', 'ACL']);
             return;
         }
         throw new MethodNotAllowedException();
@@ -1338,91 +1332,50 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
-    /**
-     * @deprecated
-     */
     private function getServicestatusByServiceId($id) {
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.name'
-                    ],
-                ],
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'hosts',
-                    'alias'      => 'Host',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'Host.id = Service.host_id'
-                    ]
-                ],
-                [
-                    'table'      => 'hosts_to_containers',
-                    'alias'      => 'HostsToContainers',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'HostsToContainers.host_id = Host.id',
-                    ],
-                ],
-            ],
-            'fields'     => [
-                'Service.id',
-                'Service.disabled',
-                'Service.name',
-                'Service.uuid',
-                'Service.service_type',
-                'Host.id',
-                'Host.name'
-            ],
-            'conditions' => [
-                'Service.id' => $id,
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
-            ],
-        ];
+        $service = $ServicesTable->getServiceById($id);
+        if ($service) {
+            if ($this->allowedByContainerId($service->get('host')->getContainerIds())) {
 
-        if (!$this->hasRootPrivileges) {
-            $query['conditions']['HostsToContainers.container_id'] = $this->MY_RIGHTS;
-        }
+                $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+                $ServicestatusFields->currentState()->isFlapping()->perfdata();
+                $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
 
-        $service = $this->Service->find('first', $query);
-        if (!empty($service)) {
-            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields->currentState()->isFlapping()->perfdata();
-            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+                if (!empty($servicestatus)) {
+                    $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
+                } else {
+                    $Servicestatus = new Servicestatus([
+                        'Servicestatus' => []
+                    ]);
+                }
+                $Host = new Host($service['host']);
+                $Service = new Service($service->toArray());
+                $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
 
-            if (!empty($servicestatus)) {
-                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
-            } else {
-                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
-                    ['Servicestatus' => []]
-                );
+
+                $serviceForJs = [
+                    'Host'          => $Host->toArray(),
+                    'Service'       => $Service->toArray(),
+                    'Servicestatus' => $Servicestatus->toArray(),
+                    'Perfdata'      => $PerfdataParser->parse()
+                ];
+
+                $serviceForJs['Service']['isGenericService'] = $service['Service']['service_type'] == GENERIC_SERVICE;
+                $serviceForJs['Service']['isEVCService'] = $service['Service']['service_type'] == EVK_SERVICE;
+                $serviceForJs['Service']['isSLAService'] = $service['Service']['service_type'] == SLA_SERVICE;
+                $serviceForJs['Service']['isMkService'] = $service['Service']['service_type'] == MK_SERVICE;
+
+                $serviceForJs['Service']['id'] = (int)$serviceForJs['Service']['id'];
+                $serviceForJs['Host']['id'] = (int)$serviceForJs['Host']['id'];
+
+                return $serviceForJs;
             }
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
-            $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
-
-
-            $serviceForJs = [
-                'Host'          => $Host->toArray(),
-                'Service'       => $Service->toArray(),
-                'Servicestatus' => $Servicestatus->toArray(),
-                'Perfdata'      => $PerfdataParser->parse()
-            ];
-
-            $serviceForJs['Service']['isGenericService'] = $service['Service']['service_type'] == GENERIC_SERVICE;
-            $serviceForJs['Service']['isEVCService'] = $service['Service']['service_type'] == EVK_SERVICE;
-            $serviceForJs['Service']['isSLAService'] = $service['Service']['service_type'] == SLA_SERVICE;
-            $serviceForJs['Service']['isMkService'] = $service['Service']['service_type'] == MK_SERVICE;
-
-            $serviceForJs['Service']['id'] = (int)$serviceForJs['Service']['id'];
-            $serviceForJs['Host']['id'] = (int)$serviceForJs['Host']['id'];
-
-            return $serviceForJs;
         }
+
         return [
             'Service'       => [],
             'Servicestatus' => []
@@ -1431,7 +1384,6 @@ class DashboardsController extends AppController {
 
     /**
      * @return array
-     * @deprecated
      */
     private function getAcls() {
         $acl = [
