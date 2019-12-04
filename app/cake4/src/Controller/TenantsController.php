@@ -132,12 +132,12 @@ class TenantsController extends AppController {
 
             $TenantsTable->save($tenant);
             if ($tenant->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $tenant->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $User = new User($this->getUser());
 
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'add',
@@ -218,12 +218,12 @@ class TenantsController extends AppController {
 
             $TenantsTable->save($tenant);
             if ($tenant->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $tenant->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $User = new User($this->getUser());
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'edit',
                     'tenants',
@@ -289,7 +289,7 @@ class TenantsController extends AppController {
             if ($ContainersTable->delete($ContainersTable->get($container['Tenant']['container_id']))) {
                 Cache::clear(false, 'permissions');
 
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $User = new User($this->getUser());
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'delete',
                     'tenants',
@@ -308,11 +308,11 @@ class TenantsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['message']);
                 return;
             }
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('message', __('Could not delete tenant'));
             $this->viewBuilder()->setOption('serialize', ['message']);
         }
-        $this->response->statusCode(400);
+        $this->response = $this->response->withStatus(400);
         $this->set('message', __('Could not delete tenant'));
         $this->viewBuilder()->setOption('serialize', ['message']);
     }

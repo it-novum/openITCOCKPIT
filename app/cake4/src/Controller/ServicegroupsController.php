@@ -141,18 +141,18 @@ class ServicegroupsController extends AppController {
 
 
         if ($this->request->is('post')) {
-            $User = new User($this->Auth);
+            $User = new User($this->getUser());
 
             /** @var $ServicegroupsTable ServicegroupsTable */
             $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
             $this->request->data['Servicegroup']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
             $this->request->data['Servicegroup']['container']['containertype_id'] = CT_SERVICEGROUP;
             $servicegroup = $ServicegroupsTable->newEmptyEntity();
-            $servicegroup = $ServicegroupsTable->patchEntity($servicegroup, $this->request->data('Servicegroup'));
+            $servicegroup = $ServicegroupsTable->patchEntity($servicegroup, $this->request->getData('Servicegroup'));
 
             $ServicegroupsTable->save($servicegroup);
             if ($servicegroup->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicegroup->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -222,15 +222,15 @@ class ServicegroupsController extends AppController {
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update contact data
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $servicegroupEntity = $ServicegroupsTable->get($id);
 
             $servicegroupEntity->setAccess('uuid', false);
-            $servicegroupEntity = $ServicegroupsTable->patchEntity($servicegroupEntity, $this->request->data('Servicegroup'));
+            $servicegroupEntity = $ServicegroupsTable->patchEntity($servicegroupEntity, $this->request->getData('Servicegroup'));
             $servicegroupEntity->id = $id;
             $ServicegroupsTable->save($servicegroupEntity);
             if ($servicegroupEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicegroupEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -292,7 +292,7 @@ class ServicegroupsController extends AppController {
         }
 
         if ($ContainersTable->delete($container)) {
-            $User = new User($this->Auth);
+            $User = new User($this->getUser());
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 'delete',
                 'servicegroups',
@@ -314,7 +314,7 @@ class ServicegroupsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
@@ -331,8 +331,8 @@ class ServicegroupsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $id = $this->request->data('Servicegroup.id');
-            $serviceIds = $this->request->data('Servicegroup.services._ids');
+            $id = $this->request->getData('Servicegroup.id');
+            $serviceIds = $this->request->getData('Servicegroup.services._ids');
             if (!is_array($serviceIds)) {
                 $serviceIds = [$serviceIds];
             }
@@ -406,7 +406,7 @@ class ServicegroupsController extends AppController {
             }
 
 
-            $User = new User($this->Auth);
+            $User = new User($this->getUser());
             $servicegroupEntity = $ServicegroupsTable->get($id);
 
             $servicegroupEntity->setAccess('uuid', false);
@@ -418,7 +418,7 @@ class ServicegroupsController extends AppController {
             $servicegroupEntity->id = $id;
             $ServicegroupsTable->save($servicegroupEntity);
             if ($servicegroupEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicegroupEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -478,7 +478,7 @@ class ServicegroupsController extends AppController {
         $servicegroups = $ServicegroupsTable->getServicegroupsIndex($ServicegroupFilter, null, $MY_RIGHTS);
 
 
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
 
         $numberOfServicegroups = sizeof($servicegroups);
 
@@ -575,7 +575,7 @@ class ServicegroupsController extends AppController {
 
     public function extended() {
         //Only ship template
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
         $this->set('username', $User->getFullName());
         $this->viewBuilder()->setOption('serialize', ['username']);
     }
@@ -661,7 +661,7 @@ class ServicegroupsController extends AppController {
 
         $servicegroup = $ServicegroupsTable->getServicegroupById($id);
 
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
 
         $serviceIds = $ServicegroupsTable->getServiceIdsByServicegroupId($id);

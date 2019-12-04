@@ -88,8 +88,8 @@ class CalendarsController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $data = $this->request->data('Calendar');
-            $events = $this->request->data('events');
+            $data = $this->request->getData('Calendar');
+            $events = $this->request->getData('events');
             $data['calendar_holidays'] = [];
             foreach ($events as $event) {
                 if (!isset($event['title']) || !isset($event['default_holiday']) || !isset($event['start'])) {
@@ -109,7 +109,7 @@ class CalendarsController extends AppController {
             $Entity = $CalendarsTable->newEntity($data);
             $CalendarsTable->save($Entity);
             if ($Entity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $Entity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -170,8 +170,8 @@ class CalendarsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $data = $this->request->data('Calendar');
-            $events = $this->request->data('events');
+            $data = $this->request->getData('Calendar');
+            $events = $this->request->getData('events');
             $data['calendar_holidays'] = [];
             foreach ($events as $event) {
                 if (!isset($event['title']) || !isset($event['default_holiday']) || !isset($event['start'])) {
@@ -198,7 +198,7 @@ class CalendarsController extends AppController {
 
             $CalendarsTable->save($Entity);
             if ($Entity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $Entity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -249,7 +249,7 @@ class CalendarsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(400);
+        $this->response = $this->response->withStatus(400);
         $this->set('success', false);
         $this->set('message', __('Issue while deleting calendar'));
         $this->viewBuilder()->setOption('serialize', ['success', 'message']);

@@ -90,7 +90,7 @@ class UsercontainerrolesController extends AppController {
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
-            $data = $this->request->data('Usercontainerrole');
+            $data = $this->request->getData('Usercontainerrole');
             if (!isset($data['ContainersUsercontainerrolesMemberships'])) {
                 $data['ContainersUsercontainerrolesMemberships'] = [];
             }
@@ -100,7 +100,7 @@ class UsercontainerrolesController extends AppController {
             $usercontainerrole = $UsercontainerrolesTable->patchEntity($usercontainerrole, $data);
             $UsercontainerrolesTable->save($usercontainerrole);
             if ($usercontainerrole->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $usercontainerrole->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -143,7 +143,7 @@ class UsercontainerrolesController extends AppController {
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
-            $data = $this->request->data('Usercontainerrole');
+            $data = $this->request->getData('Usercontainerrole');
             if (!isset($data['ContainersUsercontainerrolesMemberships'])) {
                 $data['ContainersUsercontainerrolesMemberships'] = [];
             }
@@ -154,7 +154,7 @@ class UsercontainerrolesController extends AppController {
             $usercontainerrole = $UsercontainerrolesTable->patchEntity($usercontainerrole, $data);
             $UsercontainerrolesTable->save($usercontainerrole);
             if ($usercontainerrole->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $usercontainerrole->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -194,7 +194,7 @@ class UsercontainerrolesController extends AppController {
             return;
         }
 
-        $this->response->statusCode(400);
+        $this->response = $this->response->withStatus(400);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;

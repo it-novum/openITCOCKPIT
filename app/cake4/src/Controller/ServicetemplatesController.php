@@ -146,18 +146,18 @@ class ServicetemplatesController extends AppController {
 
 
             $servicetemplate = $ServicetemplatesTable->newEmptyEntity();
-            $servicetemplate = $ServicetemplatesTable->patchEntity($servicetemplate, $this->request->data('Servicetemplate'));
+            $servicetemplate = $ServicetemplatesTable->patchEntity($servicetemplate, $this->request->getData('Servicetemplate'));
 
             $ServicetemplatesTable->save($servicetemplate);
             if ($servicetemplate->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicetemplate->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
 
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $User = new User($this->getUser());
 
                 $extDataForChangelog = $ServicetemplatesTable->resolveDataForChangelog($this->request->data);
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -235,16 +235,16 @@ class ServicetemplatesController extends AppController {
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update service template data
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
 
             $servicetemplateEntity = $ServicetemplatesTable->get($id);
             $servicetemplateEntity->setAccess('uuid', false);
-            $servicetemplateEntity = $ServicetemplatesTable->patchEntity($servicetemplateEntity, $this->request->data('Servicetemplate'));
+            $servicetemplateEntity = $ServicetemplatesTable->patchEntity($servicetemplateEntity, $this->request->getData('Servicetemplate'));
             $servicetemplateEntity->id = $id;
 
             $ServicetemplatesTable->save($servicetemplateEntity);
             if ($servicetemplateEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicetemplateEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -308,11 +308,11 @@ class ServicetemplatesController extends AppController {
         $this->Servicetemplate->id = $id;
 
         if ($this->Servicetemplate->__allowDelete($id)) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             if ($this->Servicetemplate->delete()) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
+                    $this->request->getParam('action'),
+                    $this->request->getParam('controller'),
                     $id,
                     OBJECT_SERVICETEMPLATE,
                     $servicetemplate['Servicetemplate']['container_id'],
@@ -396,8 +396,8 @@ class ServicetemplatesController extends AppController {
         if ($this->request->is('post')) {
             $Cache = new KeyValueStore();
 
-            $postData = $this->request->data('data');
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $postData = $this->request->getData('data');
+            $User = new User($this->getUser());
 
             foreach ($postData as $index => $servicetemplateData) {
                 if (!isset($servicetemplateData['Servicetemplate']['id'])) {
@@ -469,7 +469,7 @@ class ServicetemplatesController extends AppController {
         }
 
         if ($hasErrors) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
         }
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);

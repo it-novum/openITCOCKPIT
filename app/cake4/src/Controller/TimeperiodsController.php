@@ -146,11 +146,11 @@ class TimeperiodsController extends AppController {
         }
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->data('Timeperiod'));
+            $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->getData('Timeperiod'));
             $TimeperiodsTable->checkRules($timeperiod);
             $TimeperiodsTable->save($timeperiod);
             if ($timeperiod->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $timeperiod->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -161,7 +161,7 @@ class TimeperiodsController extends AppController {
 
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'edit',
-                    $this->params['controller'],
+                    $this->request->getParam('controller'),
                     $timeperiod->get('id'),
                     OBJECT_TIMEPERIOD,
                     [$requestData['Timeperiod']['container_id']],
@@ -198,21 +198,21 @@ class TimeperiodsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $timeperiod = $TimeperiodsTable->newEmptyEntity();
-            $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->data('Timeperiod'));
+            $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->getData('Timeperiod'));
             $timeperiod->set('uuid', \itnovum\openITCOCKPIT\Core\UUID::v4());
             $TimeperiodsTable->checkRules($timeperiod);
             $TimeperiodsTable->save($timeperiod);
             if ($timeperiod->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->serializeCake4ErrorMessage($timeperiod);
                 return;
             } else {
                 //No errors
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $User = new User($this->getUser());
                 $requestData = $this->request->data;
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'add',
-                    $this->params['controller'],
+                    $this->request->getParam('controller'),
                     $timeperiod->get('id'),
                     OBJECT_TIMEPERIOD,
                     [ROOT_CONTAINER],
@@ -350,7 +350,7 @@ class TimeperiodsController extends AppController {
                 ]
             ];
 
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('success', false);
             $this->set('id', $id);
             $this->set('message', __('Issue while deleting timeperiod'));
@@ -362,7 +362,7 @@ class TimeperiodsController extends AppController {
 
         $timeperiodEntity = $TimeperiodsTable->get($id);
         if ($TimeperiodsTable->delete($timeperiodEntity)) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 'delete',
                 'timeperiods',
@@ -382,7 +382,7 @@ class TimeperiodsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;
@@ -414,7 +414,7 @@ class TimeperiodsController extends AppController {
         if ($this->request->is('post')) {
             $Cache = new KeyValueStore();
 
-            $postData = $this->request->data('data');
+            $postData = $this->request->getData('data');
             $userId = $this->Auth->user('id');
 
             foreach ($postData as $index => $timeperiodData) {
@@ -488,7 +488,7 @@ class TimeperiodsController extends AppController {
         }
 
         if ($hasErrors) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
         }
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);

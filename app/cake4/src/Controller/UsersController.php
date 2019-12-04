@@ -208,7 +208,7 @@ class UsersController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['success']);
             return;
         }
-        $this->response->statusCode(400);
+        $this->response = $this->response->withStatus(400);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }

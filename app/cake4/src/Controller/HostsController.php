@@ -152,7 +152,7 @@ class HostsController extends AppController {
      * @deprecated
      */
     public function index() {
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
 
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
@@ -185,7 +185,7 @@ class HostsController extends AppController {
 
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
         if ($HostControllerRequest->isRequestFromBrowser() === false) {
             $HostCondition->setIncludeDisabled(false);
             $HostCondition->setContainerIds($this->MY_RIGHTS);
@@ -413,7 +413,7 @@ class HostsController extends AppController {
             $SatelliteNames[0] = $masterInstanceName;
         }
 
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
         if (!$this->isApiRequest()) {
             //Only ship HTML template
 
@@ -509,7 +509,7 @@ class HostsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $hosttemplateId = $this->request->data('Host.hosttemplate_id');
+            $hosttemplateId = $this->request->getData('Host.hosttemplate_id');
             if ($hosttemplateId === null) {
                 throw new Exception('Host.hosttemplate_id needs to set.');
             }
@@ -538,14 +538,14 @@ class HostsController extends AppController {
 
             $HostsTable->save($host);
             if ($host->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $host->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
 
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $User = new User($this->getUser());
 
                 $extDataForChangelog = $HostsTable->resolveDataForChangelog($this->request->data);
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -654,7 +654,7 @@ class HostsController extends AppController {
 
 
         if ($this->request->is('post')) {
-            $hosttemplateId = $this->request->data('Host.hosttemplate_id');
+            $hosttemplateId = $this->request->getData('Host.hosttemplate_id');
             if ($hosttemplateId === null) {
                 throw new Exception('Host.hosttemplate_id needs to set.');
             }
@@ -689,12 +689,12 @@ class HostsController extends AppController {
             $dataForSave['hosttemplate_flap_detection_on_unreachable'] = $hosttemplate['Hosttemplate']['flap_detection_on_unreachable'];
 
             //Update contact data
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $hostEntity = $HostsTable->get($id);
             $hostEntity = $HostsTable->patchEntity($hostEntity, $dataForSave);
             $HostsTable->save($hostEntity);
             if ($hostEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $hostEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -736,7 +736,7 @@ class HostsController extends AppController {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
 
         if (!$HostsTable->existsById($id)) {
             throw new NotFoundException(__('Host not found'));
@@ -798,7 +798,7 @@ class HostsController extends AppController {
 
             //Only use this one field to avoid data manipulation!
             $newSharingContainers = [
-                'hosts_to_containers_sharing' => $this->request->data('Host.hosts_to_containers_sharing')
+                'hosts_to_containers_sharing' => $this->request->getData('Host.hosts_to_containers_sharing')
             ];
 
             //Always add primary container
@@ -807,7 +807,7 @@ class HostsController extends AppController {
             $hostEntity = $HostsTable->patchEntity($hostEntity, $newSharingContainers);
             $HostsTable->save($hostEntity);
             if ($hostEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $hostEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -889,14 +889,14 @@ class HostsController extends AppController {
                     $allowSharing = $hostSharingPermissions->allowSharing();
 
                     if ($allowSharing) {
-                        if ($this->request->data('Host.edit_sharing') == 1) {
-                            if (!empty($this->request->data('Host.shared_container'))) {
-                                if ($this->request->data('Host.keep_sharing') == 1) {
+                        if ($this->request->getData('Host.edit_sharing') == 1) {
+                            if (!empty($this->request->getData('Host.shared_container'))) {
+                                if ($this->request->getData('Host.keep_sharing') == 1) {
                                     $sharedContainer = Hash::extract($host, 'Container.{n}.id');
-                                    $containers = array_merge($sharedContainer, $this->request->data('Host.shared_container'));
+                                    $containers = array_merge($sharedContainer, $this->request->getData('Host.shared_container'));
                                     $data['Container']['Container'] = $containers;
                                 } else {
-                                    $containers = array_merge([$host['Host']['container_id']], $this->request->data('Host.shared_container'));
+                                    $containers = array_merge([$host['Host']['container_id']], $this->request->getData('Host.shared_container'));
                                     $data['Container']['Container'] = $containers;
                                 }
 
@@ -905,25 +905,25 @@ class HostsController extends AppController {
 
                     }
 
-                    if ($this->request->data('Host.edit_description') == 1) {
-                        $data['Host']['description'] = $this->request->data('Host.description');
+                    if ($this->request->getData('Host.edit_description') == 1) {
+                        $data['Host']['description'] = $this->request->getData('Host.description');
                     }
 
-                    if ($this->request->data('Host.edit_contacts') == 1) {
+                    if ($this->request->getData('Host.edit_contacts') == 1) {
                         $_contacts = [];
-                        if ($this->request->data('Host.keep_contacts') == 1) {
+                        if ($this->request->getData('Host.keep_contacts') == 1) {
                             if (!empty($host['Contact'])) {
                                 //Merge exsting contacts with new contacts
                                 $_contacts = Hash::extract($host['Contact'], '{n}.id');
-                                $_contacts = Hash::merge($_contacts, $this->request->data('Host.Contact'));
+                                $_contacts = Hash::merge($_contacts, $this->request->getData('Host.Contact'));
                                 $_contacts = array_unique($_contacts);
                             } else {
                                 // There are no old contacts to overwirte, wo we take the current request data
-                                $_contacts = $this->request->data('Host.Contact');
+                                $_contacts = $this->request->getData('Host.Contact');
                             }
                         } else {
                             ////Overwrite all old contacts
-                            $_contacts = $this->request->data('Host.Contact');
+                            $_contacts = $this->request->getData('Host.Contact');
                         }
                         $data['Host']['Contact'] = $_contacts;
                         $data['Contact'] = [
@@ -931,21 +931,21 @@ class HostsController extends AppController {
                         ];
                     }
 
-                    if ($this->request->data('Host.edit_contactgroups') == 1) {
+                    if ($this->request->getData('Host.edit_contactgroups') == 1) {
                         $_contactgroups = [];
-                        if ($this->request->data('Host.keep_contactgroups') == 1) {
+                        if ($this->request->getData('Host.keep_contactgroups') == 1) {
                             if (!empty($host['Contactgroup'])) {
                                 //Merge existing contactgroups to new contact groups
                                 $_contactgroups = Hash::extract($host['Contactgroup'], '{n}.id');
-                                $_contactgroups = Hash::merge($_contactgroups, $this->request->data('Host.Contactgroup'));
+                                $_contactgroups = Hash::merge($_contactgroups, $this->request->getData('Host.Contactgroup'));
                                 $_contactgroups = array_unique($_contactgroups);
                             } else {
                                 // There are no old contact groups to overwirte, wo we take the current request data
-                                $_contactgroups = $this->request->data('Host.Contactgroup');
+                                $_contactgroups = $this->request->getData('Host.Contactgroup');
                             }
                         } else {
                             //Overwrite all old contact groups
-                            $_contactgroups = $this->request->data('Host.Contactgroup');
+                            $_contactgroups = $this->request->getData('Host.Contactgroup');
                         }
                         $data['Host']['Contactgroup'] = $_contactgroups;
                         $data['Contactgroup'] = [
@@ -967,13 +967,13 @@ class HostsController extends AppController {
                         }
                     }
 
-                    if ($this->request->data('Host.edit_url') == 1) {
-                        $data['Host']['host_url'] = $this->request->data('Host.host_url');
+                    if ($this->request->getData('Host.edit_url') == 1) {
+                        $data['Host']['host_url'] = $this->request->getData('Host.host_url');
                     }
 
-                    if ($this->request->data('Host.edit_tags') == 1) {
-                        $data['Host']['tags'] = $this->request->data('Host.tags');
-                        if ($this->request->data('Host.keep_tags') == 1) {
+                    if ($this->request->getData('Host.edit_tags') == 1) {
+                        $data['Host']['tags'] = $this->request->getData('Host.tags');
+                        if ($this->request->getData('Host.keep_tags') == 1) {
                             if (!empty($host['Host']['tags'])) {
                                 //Host has tags, lets merge this
                                 $data['Host']['tags'] = implode(',', array_unique(Hash::merge(explode(',', $host['Host']['tags']), explode(',', $data['Host']['tags']))));
@@ -986,8 +986,8 @@ class HostsController extends AppController {
                         }
                     }
 
-                    if ($this->request->data('Host.edit_priority') == 1) {
-                        $data['Host']['priority'] = $this->request->data('Host.priority');
+                    if ($this->request->getData('Host.edit_priority') == 1) {
+                        $data['Host']['priority'] = $this->request->getData('Host.priority');
                     }
                     $this->Host->save($data);
                     unset($data);
@@ -1126,7 +1126,7 @@ class HostsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(400);
+        $this->response = $this->response->withStatus(400);
         $this->set('success', false);
         $this->set('id', $id);
         $this->set('message', __('Issue while disabling host'));
@@ -1154,7 +1154,7 @@ class HostsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(400);
+        $this->response = $this->response->withStatus(400);
         $this->set('success', false);
         $this->set('id', $id);
         $this->set('message', __('Issue while enabling host'));
@@ -1206,7 +1206,7 @@ class HostsController extends AppController {
             $this->getUsedByForFrontend($usedBy['service'], 'host')
         );
 
-        $this->response->statusCode(400);
+        $this->response = $this->response->withStatus(400);
         $this->set('success', false);
         $this->set('id', $id);
         $this->set('message', __('Issue while deleting host'));
@@ -1513,8 +1513,8 @@ class HostsController extends AppController {
                     if ($this->Host->saveAll($data)) {
                         $hostDataAfterSave = $this->Host->dataForChangelogCopy($dataForChangeLog[$sourceHostId]['Host'], $dataForChangeLog[$sourceHostId]['Hosttemplate']);
                         $changelog_data = $this->Changelog->parseDataForChangelog(
-                            $this->params['action'],
-                            $this->params['controller'],
+                            $this->request->getParam('action'),
+                            $this->request->getParam('controller'),
                             $this->Host->id,
                             OBJECT_HOST,
                             $data['Host']['container_id'],
@@ -1821,7 +1821,7 @@ class HostsController extends AppController {
                             if ($this->Service->saveAll($newServiceData)) {
                                 $serviceDataAfterSave = $this->Service->dataForChangelogCopy($service, $servicetemplate);
                                 $changelog_data = $this->Changelog->parseDataForChangelog(
-                                    $this->params['action'],
+                                    $this->request->getParam('action'),
                                     'services',
                                     $this->Service->id,
                                     OBJECT_SERVICE,
@@ -1884,7 +1884,7 @@ class HostsController extends AppController {
     public function browser($idOrUuid = null) {
         if (!$this->isAngularJsRequest() && $idOrUuid === null) {
             //AngularJS loads the HTML template via https://xxx/hosts/browser.html
-            $User = new User($this->Auth);
+            $User = new User($this->getUser());
             $ModuleManager = new ModuleManager('GrafanaModule');
             if ($ModuleManager->moduleExists()) {
                 $this->loadModel('GrafanaModule.GrafanaDashboard');
@@ -2191,7 +2191,7 @@ class HostsController extends AppController {
 
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         if ($HostControllerRequest->isRequestFromBrowser() === false) {
@@ -2780,8 +2780,8 @@ class HostsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $hostname = (string)$this->request->data('hostname');
-        $ipAddress = (string)$this->request->data('address');
+        $hostname = (string)$this->request->getData('hostname');
+        $ipAddress = (string)$this->request->getData('address');
 
         $result = [
             'hostname' => null,

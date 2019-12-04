@@ -123,7 +123,7 @@ class UsergroupsController extends AppController {
             ]);
             $aclData = [];
             $avoidMysqlDuplicate = [];
-            foreach ($this->request->data('Usergroup.Aco') as $acoId => $value) {
+            foreach ($this->request->getData('Usergroup.Aco') as $acoId => $value) {
                 if ($value == 1) {
                     $aclData[] = [
                         'Permission' => [
@@ -229,7 +229,7 @@ class UsergroupsController extends AppController {
 
                 $aclData = [];
                 $avoidMysqlDuplicate = [];
-                foreach ($this->request->data('Usergroup.Aco') as $acoId => $value) {
+                foreach ($this->request->getData('Usergroup.Aco') as $acoId => $value) {
                     if ($value == 1) {
                         $aclData[] = [
                             'Permission' => [

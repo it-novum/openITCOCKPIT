@@ -57,7 +57,7 @@ class NotificationsController extends AppController {
         $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         //Process conditions
@@ -106,7 +106,7 @@ class NotificationsController extends AppController {
         $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         //Process conditions
@@ -175,7 +175,7 @@ class NotificationsController extends AppController {
         $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         //Process conditions
@@ -243,7 +243,7 @@ class NotificationsController extends AppController {
         $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         //Process conditions

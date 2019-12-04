@@ -128,17 +128,17 @@ class ContactgroupsController extends AppController {
             $this->request->data['Contactgroup']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
             $this->request->data['Contactgroup']['container']['containertype_id'] = CT_CONTACTGROUP;
             $contactgroup = $ContactgroupsTable->newEmptyEntity();
-            $contactgroup = $ContactgroupsTable->patchEntity($contactgroup, $this->request->data('Contactgroup'));
+            $contactgroup = $ContactgroupsTable->patchEntity($contactgroup, $this->request->getData('Contactgroup'));
 
             $ContactgroupsTable->save($contactgroup);
             if ($contactgroup->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $contactgroup->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $User = new User($this->getUser());
                 $extDataForChangelog = $ContactgroupsTable->resolveDataForChangelog($this->request->data);
                 Cache::clear(false, 'permissions');
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -196,7 +196,7 @@ class ContactgroupsController extends AppController {
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update contact data
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
 
             $contactgroupEntity = $ContactgroupsTable->get($id, [
                 'contain' => [
@@ -204,12 +204,12 @@ class ContactgroupsController extends AppController {
                 ]
             ]);
             $contactgroupEntity->setAccess('uuid', false);
-            $contactgroupEntity = $ContactgroupsTable->patchEntity($contactgroupEntity, $this->request->data('Contactgroup'));
+            $contactgroupEntity = $ContactgroupsTable->patchEntity($contactgroupEntity, $this->request->getData('Contactgroup'));
             $contactgroupEntity->id = $id;
 
             $ContactgroupsTable->save($contactgroupEntity);
             if ($contactgroupEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $contactgroupEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -274,7 +274,7 @@ class ContactgroupsController extends AppController {
                 ]
             ];
 
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('success', false);
             $this->set('id', $id);
             $this->set('message', __('Issue while deleting contact'));
@@ -292,7 +292,7 @@ class ContactgroupsController extends AppController {
         ]);
 
         if ($ContainersTable->delete($container)) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             Cache::clear(false, 'permissions');
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 'delete',
@@ -313,7 +313,7 @@ class ContactgroupsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
@@ -340,8 +340,8 @@ class ContactgroupsController extends AppController {
         if ($this->request->is('post')) {
             $Cache = new KeyValueStore();
 
-            $postData = $this->request->data('data');
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $postData = $this->request->getData('data');
+            $User = new User($this->getUser());
             $userId = $User->getId();
 
             foreach ($postData as $index => $contactgroupData) {
@@ -417,7 +417,7 @@ class ContactgroupsController extends AppController {
         }
 
         if ($hasErrors) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
         }
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);

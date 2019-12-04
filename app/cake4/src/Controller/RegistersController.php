@@ -70,7 +70,7 @@ class RegistersController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $license = $this->request->data('Registers.license');
+            $license = $this->request->getData('Registers.license');
 
 
             $licenseResponse = $RegistersTable->checkLicenseKey($license);
@@ -94,7 +94,7 @@ class RegistersController extends AppController {
                     $RegistersTable->save($licenseEntity);
 
                     if ($licenseEntity->hasErrors()) {
-                        $this->response->statusCode(400);
+                        $this->response = $this->response->withStatus(400);
                         $this->set('error', $licenseEntity->getErrors());
                         $this->viewBuilder()->setOption('serialize', ['error']);
                         return;

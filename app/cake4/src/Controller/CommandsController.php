@@ -173,23 +173,23 @@ class CommandsController extends AppController {
         $commandForChangeLog = $command;
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $command = $CommandsTable->patchEntity($command, $this->request->data('Command'));
+            $command = $CommandsTable->patchEntity($command, $this->request->getData('Command'));
             $CommandsTable->save($command);
             if ($command->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $command->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-                $requestData = $this->request->data;
+                $User = new User($this->getUser());
+                $requestData = $this->request->getData();
 
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
-                    $this->params['controller'],
+                    $this->request->getParam('controller'),
                     $command->get('id'),
                     OBJECT_COMMAND,
                     [ROOT_CONTAINER],
@@ -243,7 +243,7 @@ class CommandsController extends AppController {
                 ]
             ];
 
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('success', false);
             $this->set('id', $id);
             $this->set('message', __('Issue while deleting command'));
@@ -254,7 +254,7 @@ class CommandsController extends AppController {
 
 
         if ($CommandsTable->delete($CommandsTable->get($id))) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             /** @var  ChangelogsTable $ChangelogsTable */
             $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -281,7 +281,7 @@ class CommandsController extends AppController {
         }
 
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;
@@ -393,10 +393,10 @@ class CommandsController extends AppController {
         $hasErrors = false;
 
         if ($this->request->is('post')) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $Cache = new KeyValueStore();
 
-            $postData = $this->request->data('data');
+            $postData = $this->request->getData('data');
 
             foreach ($postData as $index => $commandData) {
                 if (!isset($commandData['Command']['id'])) {
@@ -449,7 +449,7 @@ class CommandsController extends AppController {
 
                     $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
-                        $this->params['controller'],
+                        $this->request->getParam('controller'),
                         $postData[$index]['Command']['id'],
                         OBJECT_COMMAND,
                         [ROOT_CONTAINER],
@@ -467,7 +467,7 @@ class CommandsController extends AppController {
         }
 
         if ($hasErrors) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
         }
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);

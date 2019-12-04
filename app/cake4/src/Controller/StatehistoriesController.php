@@ -76,7 +76,7 @@ class StatehistoriesController extends AppController {
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularStatehistoryControllerRequest->getPage());
 
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         //Process conditions
@@ -140,7 +140,7 @@ class StatehistoriesController extends AppController {
         $AngularStatehistoryControllerRequest = new StatehistoryControllerRequest($this->request);
         $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularStatehistoryControllerRequest->getPage());
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         //Process conditions

@@ -141,20 +141,20 @@ class HostdependenciesController extends AppController {
             /** @var $HostdependenciesTable HostdependenciesTable */
             $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
             $data['hosts'] = $HostdependenciesTable->parseHostMembershipData(
-                $this->request->data('Hostdependency.hosts._ids'),
-                $this->request->data('Hostdependency.hosts_dependent._ids')
+                $this->request->getData('Hostdependency.hosts._ids'),
+                $this->request->getData('Hostdependency.hosts_dependent._ids')
             );
             $data['hostgroups'] = $HostdependenciesTable->parseHostgroupMembershipData(
-                $this->request->data('Hostdependency.hostgroups._ids'),
-                $this->request->data('Hostdependency.hostgroups_dependent._ids')
+                $this->request->getData('Hostdependency.hostgroups._ids'),
+                $this->request->getData('Hostdependency.hostgroups_dependent._ids')
             );
 
-            $data = array_merge($this->request->data('Hostdependency'), $data);
+            $data = array_merge($this->request->getData('Hostdependency'), $data);
             $hostdependency = $HostdependenciesTable->patchEntity($hostdependency, $data);
             $HostdependenciesTable->save($hostdependency);
 
             if ($hostdependency->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $hostdependency->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -180,21 +180,21 @@ class HostdependenciesController extends AppController {
             $data = [];
             $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
             $data['hosts'] = $HostdependenciesTable->parseHostMembershipData(
-                $this->request->data('Hostdependency.hosts._ids'),
-                $this->request->data('Hostdependency.hosts_dependent._ids')
+                $this->request->getData('Hostdependency.hosts._ids'),
+                $this->request->getData('Hostdependency.hosts_dependent._ids')
             );
             $data['hostgroups'] = $HostdependenciesTable->parseHostgroupMembershipData(
-                $this->request->data('Hostdependency.hostgroups._ids'),
-                $this->request->data('Hostdependency.hostgroups_dependent._ids')
+                $this->request->getData('Hostdependency.hostgroups._ids'),
+                $this->request->getData('Hostdependency.hostgroups_dependent._ids')
             );
 
-            $data = array_merge($this->request->data('Hostdependency'), $data);
+            $data = array_merge($this->request->getData('Hostdependency'), $data);
             $hostdependency = $HostdependenciesTable->newEntity($data);
             $hostdependency->set('uuid', \itnovum\openITCOCKPIT\Core\UUID::v4());
             $HostdependenciesTable->save($hostdependency);
 
             if ($hostdependency->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $hostdependency->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -233,7 +233,7 @@ class HostdependenciesController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;

@@ -142,18 +142,18 @@ class HosttemplatesController extends AppController {
             }
 
             $hosttemplate = $HosttemplatesTable->newEmptyEntity();
-            $hosttemplate = $HosttemplatesTable->patchEntity($hosttemplate, $this->request->data('Hosttemplate'));
+            $hosttemplate = $HosttemplatesTable->patchEntity($hosttemplate, $this->request->getData('Hosttemplate'));
 
             $HosttemplatesTable->save($hosttemplate);
             if ($hosttemplate->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $hosttemplate->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
 
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $User = new User($this->getUser());
 
                 $extDataForChangelog = $HosttemplatesTable->resolveDataForChangelog($this->request->data);
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -220,16 +220,16 @@ class HosttemplatesController extends AppController {
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update host template data
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
 
             $hosttemplateEntity = $HosttemplatesTable->get($id);
             $hosttemplateEntity->setAccess('uuid', false);
-            $hosttemplateEntity = $HosttemplatesTable->patchEntity($hosttemplateEntity, $this->request->data('Hosttemplate'));
+            $hosttemplateEntity = $HosttemplatesTable->patchEntity($hosttemplateEntity, $this->request->getData('Hosttemplate'));
             $hosttemplateEntity->id = $id;
 
             $HosttemplatesTable->save($hosttemplateEntity);
             if ($hosttemplateEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $hosttemplateEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -293,7 +293,7 @@ class HosttemplatesController extends AppController {
                 ]
             ];
 
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('success', false);
             $this->set('id', $id);
             $this->set('message', __('Issue while deleting host template'));
@@ -304,7 +304,7 @@ class HosttemplatesController extends AppController {
 
 
         if ($HosttemplatesTable->delete($hosttemplate)) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 'delete',
                 'hosttemplates',
@@ -331,7 +331,7 @@ class HosttemplatesController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
@@ -364,8 +364,8 @@ class HosttemplatesController extends AppController {
         if ($this->request->is('post')) {
             $Cache = new KeyValueStore();
 
-            $postData = $this->request->data('data');
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $postData = $this->request->getData('data');
+            $User = new User($this->getUser());
 
             foreach ($postData as $index => $hosttemplateData) {
                 if (!isset($hosttemplateData['Hosttemplate']['id'])) {
@@ -436,7 +436,7 @@ class HosttemplatesController extends AppController {
         }
 
         if ($hasErrors) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
         }
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);

@@ -268,7 +268,7 @@ class LoginController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->User->exists($id)) {
                 $user = $this->User->findById($id);
-                if ($this->request->data('Onetimetoken.onetimetoken') == $user['User']['onetimetoken']) {
+                if ($this->request->getData('Onetimetoken.onetimetoken') == $user['User']['onetimetoken']) {
                     //Restor the session
                     $this->Session->write('Auth', $this->Session->read('_Auth'));
                     $this->Session->delete('_Auth');

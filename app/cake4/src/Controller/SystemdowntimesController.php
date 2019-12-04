@@ -294,11 +294,11 @@ class SystemdowntimesController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             /** @var $SystemdowntimesTable SystemdowntimesTable */
             $SystemdowntimesTable = TableRegistry::getTableLocator()->get('Systemdowntimes');
-            $data = $this->request->data('Systemdowntime');
+            $data = $this->request->getData('Systemdowntime');
 
 
             if (!isset($data['object_id']) || empty($data['object_id'])) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', [
                     'object_id' => [
                         '_empty' => __('You have to select at least on object.')
@@ -316,7 +316,7 @@ class SystemdowntimesController extends AppController {
                 $data['weekdays'] = implode(',', $data['weekdays']);
             }
 
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
 
             $data['author'] = $User->getFullName();
 
@@ -330,7 +330,7 @@ class SystemdowntimesController extends AppController {
                 $Entity = $SystemdowntimesTable->newEntity($tmpData);
                 if ($Entity->hasErrors()) {
                     //On entity has an error so ALL entities has an error!
-                    $this->response->statusCode(400);
+                    $this->response = $this->response->withStatus(400);
                     $this->set('error', $Entity->getErrors());
                     $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
@@ -392,11 +392,11 @@ class SystemdowntimesController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             /** @var $SystemdowntimesTable SystemdowntimesTable */
             $SystemdowntimesTable = TableRegistry::getTableLocator()->get('Systemdowntimes');
-            $data = $this->request->data('Systemdowntime');
+            $data = $this->request->getData('Systemdowntime');
 
 
             if (!isset($data['object_id']) || empty($data['object_id'])) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', [
                     'object_id' => [
                         '_empty' => __('You have to select at least on object.')
@@ -414,7 +414,7 @@ class SystemdowntimesController extends AppController {
                 $data['weekdays'] = implode(',', $data['weekdays']);
             }
 
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
 
             $data['author'] = $User->getFullName();
 
@@ -428,7 +428,7 @@ class SystemdowntimesController extends AppController {
                 $Entity = $SystemdowntimesTable->newEntity($tmpData);
                 if ($Entity->hasErrors()) {
                     //On entity has an error so ALL entities has an error!
-                    $this->response->statusCode(400);
+                    $this->response = $this->response->withStatus(400);
                     $this->set('error', $Entity->getErrors());
                     $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
@@ -491,11 +491,11 @@ class SystemdowntimesController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             /** @var $SystemdowntimesTable SystemdowntimesTable */
             $SystemdowntimesTable = TableRegistry::getTableLocator()->get('Systemdowntimes');
-            $data = $this->request->data('Systemdowntime');
+            $data = $this->request->getData('Systemdowntime');
 
 
             if (!isset($data['object_id']) || empty($data['object_id'])) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', [
                     'object_id' => [
                         '_empty' => __('You have to select at least on object.')
@@ -513,7 +513,7 @@ class SystemdowntimesController extends AppController {
                 $data['weekdays'] = implode(',', $data['weekdays']);
             }
 
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
 
             $data['author'] = $User->getFullName();
 
@@ -527,7 +527,7 @@ class SystemdowntimesController extends AppController {
                 $Entity = $SystemdowntimesTable->newEntity($tmpData);
                 if ($Entity->hasErrors()) {
                     //On entity has an error so ALL entities has an error!
-                    $this->response->statusCode(400);
+                    $this->response = $this->response->withStatus(400);
                     $this->set('error', $Entity->getErrors());
                     $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
@@ -594,11 +594,11 @@ class SystemdowntimesController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             /** @var $SystemdowntimesTable SystemdowntimesTable */
             $SystemdowntimesTable = TableRegistry::getTableLocator()->get('Systemdowntimes');
-            $data = $this->request->data('Systemdowntime');
+            $data = $this->request->getData('Systemdowntime');
 
 
             if (!isset($data['object_id']) || empty($data['object_id'])) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', [
                     'object_id' => [
                         '_empty' => __('You have to select at least on object.')
@@ -616,7 +616,7 @@ class SystemdowntimesController extends AppController {
                 $data['weekdays'] = implode(',', $data['weekdays']);
             }
 
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
 
             $data['author'] = $User->getFullName();
 
@@ -630,7 +630,7 @@ class SystemdowntimesController extends AppController {
                 $Entity = $SystemdowntimesTable->newEntity($tmpData);
                 if ($Entity->hasErrors()) {
                     //On entity has an error so ALL entities has an error!
-                    $this->response->statusCode(400);
+                    $this->response = $this->response->withStatus(400);
                     $this->set('error', $Entity->getErrors());
                     $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
@@ -735,7 +735,7 @@ class SystemdowntimesController extends AppController {
             return;
         }
 
-        $this->response->statusCode(400);
+        $this->response = $this->response->withStatus(400);
         $this->set('success', false);
         $this->set('message', __('Error while deleting systemdowntime'));
         $this->viewBuilder()->setOption('serialize', ['success', 'message']);

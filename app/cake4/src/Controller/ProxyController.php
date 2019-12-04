@@ -56,10 +56,10 @@ class ProxyController extends AppController {
                 $entity = $ProxiesTable->newEmptyEntity();
             }
 
-            $entity = $ProxiesTable->patchEntity($entity, $this->request->data('Proxy'));
+            $entity = $ProxiesTable->patchEntity($entity, $this->request->getData('Proxy'));
 
             if ($entity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $entity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
