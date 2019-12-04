@@ -564,7 +564,7 @@ class HostsController extends AppController {
                 }
 
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($host); // REST API ID serialization
                     return;
                 }
@@ -716,7 +716,7 @@ class HostsController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostEntity); // REST API ID serialization
                     return;
                 }
@@ -830,7 +830,7 @@ class HostsController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostEntity); // REST API ID serialization
                     return;
                 }

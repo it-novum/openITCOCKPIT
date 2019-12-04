@@ -172,7 +172,7 @@ class HosttemplatesController extends AppController {
                 }
 
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hosttemplate); // REST API ID serialization
                     return;
                 }
@@ -251,7 +251,7 @@ class HosttemplatesController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hosttemplateEntity); // REST API ID serialization
                     return;
                 }

@@ -176,7 +176,7 @@ class ServicetemplatesController extends AppController {
                 }
 
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicetemplate); // REST API ID serialization
                     return;
                 }
@@ -266,7 +266,7 @@ class ServicetemplatesController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicetemplateEntity); // REST API ID serialization
                     return;
                 }

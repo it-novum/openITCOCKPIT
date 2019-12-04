@@ -119,7 +119,7 @@ class SystemfailuresController extends AppController {
             } else {
                 //No errors
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($systemfailure); // REST API ID serialization
                     return;
                 }

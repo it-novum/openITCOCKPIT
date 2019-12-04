@@ -139,7 +139,7 @@ class ServicedependenciesController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicedependency); // REST API ID serialization
                     return;
                 }
@@ -197,7 +197,7 @@ class ServicedependenciesController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicedependency); // REST API ID serialization
                     return;
                 }

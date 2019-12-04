@@ -240,7 +240,7 @@ class AgentconfigsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($agentcheck); // REST API ID serialization
                     return;
                 }
@@ -284,7 +284,7 @@ class AgentconfigsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($agentcheck); // REST API ID serialization
                     return;
                 }
@@ -431,7 +431,7 @@ class AgentconfigsController extends AppController {
                 }
 
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($service); // REST API ID serialization
                     return;
                 }

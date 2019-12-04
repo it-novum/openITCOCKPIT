@@ -44,7 +44,7 @@ use itnovum\openITCOCKPIT\Filter\TimeperiodsFilter;
 
 /**
  * Class TimeperiodsController
- * @property AppPaginatorComponent $Paginator
+ * @package App\Controller
  */
 class TimeperiodsController extends AppController {
 
@@ -168,7 +168,7 @@ class TimeperiodsController extends AppController {
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($timeperiod); // REST API ID serialization
                     return;
                 }

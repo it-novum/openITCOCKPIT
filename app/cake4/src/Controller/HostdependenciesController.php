@@ -159,7 +159,7 @@ class HostdependenciesController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostdependency); // REST API ID serialization
                     return;
                 }
@@ -199,7 +199,7 @@ class HostdependenciesController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostdependency); // REST API ID serialization
                     return;
                 }

@@ -172,7 +172,7 @@ class ContactsController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($contact); // REST API ID serialization
                     return;
                 }
@@ -261,7 +261,7 @@ class ContactsController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($contactEntity); // REST API ID serialization
                     return;
                 }

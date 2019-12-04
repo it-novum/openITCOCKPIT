@@ -115,7 +115,7 @@ class CalendarsController extends AppController {
                 return;
             } else {
                 //No errors
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($Entity); // REST API ID serialization
                     return;
                 }

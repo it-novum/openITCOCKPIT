@@ -167,7 +167,7 @@ class ServicetemplategroupsController extends AppController {
             }
 
 
-            if ($this->request->ext == 'json') {
+            if ($this->isJsonRequest()) {
                 $this->serializeCake4Id($servicetemplategroup); // REST API ID serialization
                 return;
             }
@@ -245,7 +245,7 @@ class ServicetemplategroupsController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicetemplategroupEntity); // REST API ID serialization
                     return;
                 }
@@ -376,7 +376,7 @@ class ServicetemplategroupsController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicetemplategroupEntity); // REST API ID serialization
                     return;
                 }

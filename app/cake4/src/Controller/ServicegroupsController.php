@@ -178,7 +178,7 @@ class ServicegroupsController extends AppController {
                 //@todo refactor with cake4
                 Cache::clear(false, 'permissions');
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicegroup); // REST API ID serialization
                     return;
                 }
@@ -252,7 +252,7 @@ class ServicegroupsController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicegroupEntity); // REST API ID serialization
                     return;
                 }
@@ -447,7 +447,7 @@ class ServicegroupsController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicegroupEntity); // REST API ID serialization
                     return;
                 }
