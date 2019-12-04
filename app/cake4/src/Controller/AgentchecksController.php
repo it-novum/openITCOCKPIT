@@ -90,11 +90,11 @@ class AgentchecksController extends AppController {
             /** @var $AgentchecksTable AgentchecksTable */
             $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
             $agentcheck = $AgentchecksTable->newEmptyEntity();
-            $agentcheck = $AgentchecksTable->patchEntity($agentcheck, $this->request->data('Agentcheck'));
+            $agentcheck = $AgentchecksTable->patchEntity($agentcheck, $this->request->getData('Agentcheck'));
 
             $AgentchecksTable->save($agentcheck);
             if ($agentcheck->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $agentcheck->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -134,11 +134,11 @@ class AgentchecksController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $agentcheck = $AgentchecksTable->patchEntity($agentcheck, $this->request->data('Agentcheck'));
+            $agentcheck = $AgentchecksTable->patchEntity($agentcheck, $this->request->getData('Agentcheck'));
 
             $AgentchecksTable->save($agentcheck);
             if ($agentcheck->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $agentcheck->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -179,7 +179,7 @@ class AgentchecksController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }

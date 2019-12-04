@@ -57,7 +57,7 @@ class SystemfailuresController extends AppController {
 
         $systemfailures = $SystemfailuresTable->getSystemfailuresIndex($SystemfailuresFilter, $PaginateOMat);
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         foreach ($systemfailures as $index => $systemfailure) {
@@ -80,7 +80,7 @@ class SystemfailuresController extends AppController {
     }
 
     public function add() {
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -96,23 +96,23 @@ class SystemfailuresController extends AppController {
             $this->request->data['Systemfailure']['start_time'] = '';
             $this->request->data['Systemfailure']['end_time'] = '';
 
-            $startTime = strtotime(trim($this->request->data('Systemfailure.from_date') . ' ' . trim($this->request->data('Systemfailure.from_time'))));
-            if ($this->request->data('Systemfailure.from_date') !== '' && $startTime > 0) {
+            $startTime = strtotime(trim($this->request->getData('Systemfailure.from_date') . ' ' . trim($this->request->getData('Systemfailure.from_time'))));
+            if ($this->request->getData('Systemfailure.from_date') !== '' && $startTime > 0) {
                 $this->request->data['Systemfailure']['start_time'] = date('Y-m-d H:i:s', $startTime);
             }
 
-            $endTime = strtotime(trim($this->request->data('Systemfailure.to_date') . ' ' . trim($this->request->data('Systemfailure.to_time'))));
-            if ($this->request->data('Systemfailure.to_date') !== '' && $endTime > 0) {
+            $endTime = strtotime(trim($this->request->getData('Systemfailure.to_date') . ' ' . trim($this->request->getData('Systemfailure.to_time'))));
+            if ($this->request->getData('Systemfailure.to_date') !== '' && $endTime > 0) {
                 $this->request->data['Systemfailure']['end_time'] = date('Y-m-d H:i:s', $endTime);
             }
 
 
             $systemfailure = $SystemfailuresTable->newEmptyEntity();
-            $systemfailure = $SystemfailuresTable->patchEntity($systemfailure, $this->request->data('Systemfailure'));
+            $systemfailure = $SystemfailuresTable->patchEntity($systemfailure, $this->request->getData('Systemfailure'));
 
             $SystemfailuresTable->save($systemfailure);
             if ($systemfailure->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $systemfailure->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -152,7 +152,7 @@ class SystemfailuresController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;

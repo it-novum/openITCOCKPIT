@@ -173,7 +173,7 @@ class ConfigurationFilesController extends AppController {
             return;
         }
 
-        $this->response->statusCode(400);
+        $this->response = $this->response->withStatus(400);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;
@@ -232,14 +232,14 @@ class ConfigurationFilesController extends AppController {
 
                     return;
                 } else {
-                    $this->response->statusCode(400);
+                    $this->response = $this->response->withStatus(400);
                     $this->set('success', false);
                     $this->viewBuilder()->setOption('serialize', ['success']);
                     return;
                 }
 
             } else {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $error = $ConfigurationObjectClassName->validationErrors;
                 $this->set('error', $error);
                 $this->viewBuilder()->setOption('serialize', ['error']);

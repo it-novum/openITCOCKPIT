@@ -70,11 +70,11 @@ class DowntimereportsController extends AppController {
         $downtimeReportForm = new DowntimereportForm();
         $downtimeReportForm->execute($this->request->data);
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
 
         if (!empty($downtimeReportForm->getErrors())) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $downtimeReportForm->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
@@ -82,9 +82,9 @@ class DowntimereportsController extends AppController {
 
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->data('timeperiod_id'));
+        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getData('timeperiod_id'));
         if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'timeperiod_id' => [
                     'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
@@ -95,14 +95,14 @@ class DowntimereportsController extends AppController {
         }
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        $fromDate = strtotime($this->request->data('from_date') . ' 00:00:00');
-        $toDate = strtotime($this->request->data('to_date') . ' 23:59:59');
-        $evaluationType = $this->request->data('evaluation_type');
-        $reflectionState = $this->request->data('reflection_state');
+        $fromDate = strtotime($this->request->getData('from_date') . ' 00:00:00');
+        $toDate = strtotime($this->request->getData('to_date') . ' 23:59:59');
+        $evaluationType = $this->request->getData('evaluation_type');
+        $reflectionState = $this->request->getData('reflection_state');
 
         $hostsUuids = $HostsTable->getHostsByContainerId($this->MY_RIGHTS, 'list', 'uuid');
         if (empty($hostsUuids)) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'hosts' => [
                     'empty' => 'There are no hosts for downtime report available.'
@@ -122,7 +122,7 @@ class DowntimereportsController extends AppController {
         );
 
         if ($downtimeReport === null) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'no_downtimes' => [
                     'empty' => __('No downtimes within specified time found (%s - %s) !',
@@ -150,11 +150,11 @@ class DowntimereportsController extends AppController {
         $downtimeReportForm = new DowntimereportForm();
         $downtimeReportForm->execute($this->request->data);
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
 
         if (!empty($downtimeReportForm->getErrors())) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $downtimeReportForm->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
@@ -169,9 +169,9 @@ class DowntimereportsController extends AppController {
 
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->data('timeperiod_id'));
+        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getData('timeperiod_id'));
         if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'timeperiod_id' => [
                     'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
@@ -182,19 +182,19 @@ class DowntimereportsController extends AppController {
         }
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        $fromDate = strtotime($this->request->data('from_date') . ' 00:00:00');
-        $toDate = strtotime($this->request->data('to_date') . ' 23:59:59');
+        $fromDate = strtotime($this->request->getData('from_date') . ' 00:00:00');
+        $toDate = strtotime($this->request->getData('to_date') . ' 23:59:59');
 
         $this->set('fromDate', $fromDate);
         $this->set('toDate', $toDate);
 
 
-        $evaluationType = $this->request->data('evaluation_type');
-        $reflectionState = $this->request->data('reflection_state');
+        $evaluationType = $this->request->getData('evaluation_type');
+        $reflectionState = $this->request->getData('reflection_state');
 
         $hostsUuids = $HostsTable->getHostsByContainerId($this->MY_RIGHTS, 'list', 'uuid');
         if (empty($hostsUuids)) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'hosts' => [
                     'empty' => 'There are no hosts for downtime report available.'

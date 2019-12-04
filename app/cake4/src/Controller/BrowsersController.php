@@ -55,7 +55,7 @@ class BrowsersController extends AppController {
      * @deprecated Refactor Satellite Model ->Satellite->
      */
     function index($containerId = null) {
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
         if (!$this->isApiRequest()) {
             /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
@@ -154,7 +154,7 @@ class BrowsersController extends AppController {
      * @deprecated
      */
     private function getTenants() {
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');

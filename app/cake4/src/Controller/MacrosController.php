@@ -72,11 +72,11 @@ class MacrosController extends AppController {
         $Macros = $TableLocator->get('Macros');
 
         $macro = $Macros->newEmptyEntity();
-        $macro = $Macros->patchEntity($macro, $this->request->data('Macro'));
+        $macro = $Macros->patchEntity($macro, $this->request->getData('Macro'));
         $Macros->save($macro);
 
         if ($macro->hasErrors()) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $macro->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
@@ -100,12 +100,12 @@ class MacrosController extends AppController {
         }
 
         $macro = $Macros->get($id);
-        $macro = $Macros->patchEntity($macro, $this->request->data('Macro'));
+        $macro = $Macros->patchEntity($macro, $this->request->getData('Macro'));
 
         $Macros->save($macro);
 
         if ($macro->hasErrors()) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $macro->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
@@ -135,7 +135,7 @@ class MacrosController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }

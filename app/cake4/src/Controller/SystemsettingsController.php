@@ -67,7 +67,7 @@ class SystemsettingsController extends AppController {
             Cache::clear(false, 'permissions');
             //debug($result);
             if (!$result) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error',[]);
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;

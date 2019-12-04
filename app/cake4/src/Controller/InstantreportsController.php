@@ -104,10 +104,10 @@ class InstantreportsController extends AppController {
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $instantreport = $InstantreportsTable->newEmptyEntity();
-            $instantreport = $InstantreportsTable->patchEntity($instantreport, $this->request->data('Instantreport'));
+            $instantreport = $InstantreportsTable->patchEntity($instantreport, $this->request->getData('Instantreport'));
             $InstantreportsTable->save($instantreport);
             if ($instantreport->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->serializeCake4ErrorMessage($instantreport);
                 return;
             } else {
@@ -144,12 +144,12 @@ class InstantreportsController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $data = $this->request->data('Instantreport');
+            $data = $this->request->getData('Instantreport');
             $instantreport = $InstantreportsTable->get($id);
             $instantreport = $InstantreportsTable->patchEntity($instantreport, $data);
             $InstantreportsTable->save($instantreport);
             if ($instantreport->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $instantreport->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -170,15 +170,15 @@ class InstantreportsController extends AppController {
         $instantreportForm->execute($this->request->data);
 
         if (!empty($instantreportForm->getErrors())) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $instantreportForm->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
-        $instantreportId = $this->request->data('instantreport_id');
-        $fromDate = strtotime($this->request->data('from_date') . ' 00:00:00');
-        $toDate = strtotime($this->request->data('to_date') . ' 23:59:59');
+        $instantreportId = $this->request->getData('instantreport_id');
+        $fromDate = strtotime($this->request->getData('from_date') . ' 00:00:00');
+        $toDate = strtotime($this->request->getData('to_date') . ' 23:59:59');
         $instantReport = $this->createReport(
             $instantreportId,
             $fromDate,
@@ -187,7 +187,7 @@ class InstantreportsController extends AppController {
 
 
         if ($instantReport === null) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'no_downtimes' => [
                     'empty' => __('No report data specified time found (%s - %s) !',
@@ -207,11 +207,11 @@ class InstantreportsController extends AppController {
         $downtimeReportForm = new DowntimereportForm();
         $downtimeReportForm->execute($this->request->data);
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
 
         if (!empty($downtimeReportForm->getErrors())) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $downtimeReportForm->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
@@ -219,9 +219,9 @@ class InstantreportsController extends AppController {
 
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->data('timeperiod_id'));
+        $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($this->request->getData('timeperiod_id'));
         if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'timeperiod_id' => [
                     'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
@@ -232,14 +232,14 @@ class InstantreportsController extends AppController {
         }
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        $fromDate = strtotime($this->request->data('from_date') . ' 00:00:00');
-        $toDate = strtotime($this->request->data('to_date') . ' 23:59:59');
-        $evaluationType = $this->request->data('evaluation_type');
-        $reflectionState = $this->request->data('reflection_state');
+        $fromDate = strtotime($this->request->getData('from_date') . ' 00:00:00');
+        $toDate = strtotime($this->request->getData('to_date') . ' 23:59:59');
+        $evaluationType = $this->request->getData('evaluation_type');
+        $reflectionState = $this->request->getData('reflection_state');
 
         $hostsUuids = $HostsTable->getHostsByContainerId($this->MY_RIGHTS, 'list', 'uuid');
         if (empty($hostsUuids)) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'hosts' => [
                     'empty' => 'There are no hosts for downtime report available.'
@@ -259,7 +259,7 @@ class InstantreportsController extends AppController {
         );
 
         if ($downtimeReport === null) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'no_downtimes' => [
                     'empty' => __('No downtimes within specified time found (%s - %s)!',
@@ -285,7 +285,7 @@ class InstantreportsController extends AppController {
      * @throws \App\Lib\Exceptions\MissingDbBackendException
      */
     private function createReport($instantReportId, $fromDate, $toDate) {
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
         $reportData = [];
         $reportDetails = [];
@@ -303,7 +303,7 @@ class InstantreportsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         $timeperiod = $TimeperiodsTable->getTimeperiodWithTimerangesById($instantReport->get('timeperiod_id'));
         if (empty($timeperiod['Timeperiod']['timeperiod_timeranges'])) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'timeperiod_id' => [
                     'empty' => 'There are no time frames defined. Time evaluation report data is not available for the selected period.'
@@ -314,7 +314,7 @@ class InstantreportsController extends AppController {
         }
         $instantReportObjects = $InstantreportsTable->getHostsAndServicesByInstantreport($instantReport, $MY_RIGHTS);
         if (empty($instantReportObjects)) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'instantreport_objects' => [
                     'empty' => 'There are no elements for instant report available.'
@@ -869,7 +869,7 @@ class InstantreportsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;

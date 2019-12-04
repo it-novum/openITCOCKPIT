@@ -149,20 +149,20 @@ class ServiceescalationsController extends AppController {
             /** @var $ServiceescalationsTable ServiceescalationsTable */
             $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
             $data['services'] = $ServiceescalationsTable->parseServiceMembershipData(
-                $this->request->data('Serviceescalation.services._ids'),
-                $this->request->data('Serviceescalation.services_excluded._ids')
+                $this->request->getData('Serviceescalation.services._ids'),
+                $this->request->getData('Serviceescalation.services_excluded._ids')
             );
             $data['servicegroups'] = $ServiceescalationsTable->parseServicegroupMembershipData(
-                $this->request->data('Serviceescalation.servicegroups._ids'),
-                $this->request->data('Serviceescalation.servicegroups_excluded._ids')
+                $this->request->getData('Serviceescalation.servicegroups._ids'),
+                $this->request->getData('Serviceescalation.servicegroups_excluded._ids')
             );
 
-            $data = array_merge($this->request->data('Serviceescalation'), $data);
+            $data = array_merge($this->request->getData('Serviceescalation'), $data);
             $serviceescalation = $ServiceescalationsTable->patchEntity($serviceescalation, $data);
             $ServiceescalationsTable->save($serviceescalation);
 
             if ($serviceescalation->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $serviceescalation->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -188,20 +188,20 @@ class ServiceescalationsController extends AppController {
             $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
             $this->request->data['Serviceescalation']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
             $data['services'] = $ServiceescalationsTable->parseServiceMembershipData(
-                $this->request->data('Serviceescalation.services._ids'),
-                $this->request->data('Serviceescalation.services_excluded._ids')
+                $this->request->getData('Serviceescalation.services._ids'),
+                $this->request->getData('Serviceescalation.services_excluded._ids')
             );
             $data['servicegroups'] = $ServiceescalationsTable->parseServicegroupMembershipData(
-                $this->request->data('Serviceescalation.servicegroups._ids'),
-                $this->request->data('Serviceescalation.servicegroups_excluded._ids')
+                $this->request->getData('Serviceescalation.servicegroups._ids'),
+                $this->request->getData('Serviceescalation.servicegroups_excluded._ids')
             );
 
-            $data = array_merge($this->request->data('Serviceescalation'), $data);
+            $data = array_merge($this->request->getData('Serviceescalation'), $data);
             $serviceescalation = $ServiceescalationsTable->newEntity($data);
             $ServiceescalationsTable->save($serviceescalation);
 
             if ($serviceescalation->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $serviceescalation->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -240,7 +240,7 @@ class ServiceescalationsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;

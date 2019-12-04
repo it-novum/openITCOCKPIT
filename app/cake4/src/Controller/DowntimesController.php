@@ -97,7 +97,7 @@ class DowntimesController extends AppController {
 
         //Prepare data for API
         $all_host_downtimes = [];
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         foreach ($hostDowntimes as $hostDowntime) {
@@ -176,7 +176,7 @@ class DowntimesController extends AppController {
 
         //Prepare data for API
         $all_service_downtimes = [];
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         foreach ($serviceDowntimes as $serviceDowntime) {
@@ -251,7 +251,7 @@ class DowntimesController extends AppController {
         }
 
         if (!empty($error['Downtime'])) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('success', false);
         } else {
             $this->set('success', true);

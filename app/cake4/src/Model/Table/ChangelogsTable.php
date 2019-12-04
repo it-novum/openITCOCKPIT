@@ -268,7 +268,7 @@ class ChangelogsTable extends Table {
                 ];
                 break;
             case 'edit':
-                foreach ($compareRules[strtolower(\Inflector::singularize($controller))] as $key => $fields) {
+                foreach ($compareRules[strtolower(Inflector::singularize($controller))] as $key => $fields) {
                     $tmp = [];
                     if (is_array($fields)) {
                         foreach ($fields['prepareFields'] as $field) {
@@ -305,7 +305,7 @@ class ChangelogsTable extends Table {
             case 'mass_delete':
                 return [
                     'action'        => $action,
-                    'model'         => ucwords(\Inflector::singularize($controller)),
+                    'model'         => ucwords(Inflector::singularize($controller)),
                     'object_id'     => $object_id,
                     'objecttype_id' => $objecttype_id,
                     'containers'    => [

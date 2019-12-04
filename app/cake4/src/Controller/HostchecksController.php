@@ -77,7 +77,7 @@ class HostchecksController extends AppController {
         $Conditions->setHostUuid($host->get('uuid'));
         $Conditions->setConditions($HostchecksControllerRequest->getIndexFilters());
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         $HostchecksTable = $this->DbBackend->getHostchecksTable();

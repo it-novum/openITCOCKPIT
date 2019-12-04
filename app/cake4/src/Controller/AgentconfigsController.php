@@ -87,13 +87,13 @@ class AgentconfigsController extends AppController {
         if ($this->request->is('post')) {
             //Save agent configuration
             $entity = $AgentconfigsTable->getConfigOrEmptyEntity($hostId);
-            $entity = $AgentconfigsTable->patchEntity($entity, $this->request->data('Agentconfig'));
+            $entity = $AgentconfigsTable->patchEntity($entity, $this->request->getData('Agentconfig'));
 
             $entity->set('host_id', $hostId);
 
             $AgentconfigsTable->save($entity);
             if ($entity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $entity->getErrors());
                 $this->set('success', false);
                 $this->viewBuilder()->setOption('serialize', ['error', 'success']);
@@ -150,7 +150,7 @@ class AgentconfigsController extends AppController {
                 $response = $HttpLoader->queryAgent();
 
                 if ($response['error'] !== null) {
-                    $this->response->statusCode(400);
+                    $this->response = $this->response->withStatus(400);
                     $this->set('error', $response['error']);
                     $this->set('success', false);
                     $this->viewBuilder()->setOption('serialize', ['error', 'success']);
@@ -174,7 +174,7 @@ class AgentconfigsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['mapping']);
                 return;
             } catch (\Exception $e) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $e->getMessage());
                 $this->set('success', false);
                 $this->viewBuilder()->setOption('serialize', ['error', 'success']);
@@ -231,11 +231,11 @@ class AgentconfigsController extends AppController {
             /** @var $AgentchecksTable AgentchecksTable */
             $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
             $agentcheck = $AgentchecksTable->newEmptyEntity();
-            $agentcheck = $AgentchecksTable->patchEntity($agentcheck, $this->request->data('Agentcheck'));
+            $agentcheck = $AgentchecksTable->patchEntity($agentcheck, $this->request->getData('Agentcheck'));
 
             $AgentchecksTable->save($agentcheck);
             if ($agentcheck->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $agentcheck->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -275,11 +275,11 @@ class AgentconfigsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $agentcheck = $AgentchecksTable->patchEntity($agentcheck, $this->request->data('Agentcheck'));
+            $agentcheck = $AgentchecksTable->patchEntity($agentcheck, $this->request->getData('Agentcheck'));
 
             $AgentchecksTable->save($agentcheck);
             if ($agentcheck->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $agentcheck->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -320,7 +320,7 @@ class AgentconfigsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
@@ -343,12 +343,12 @@ class AgentconfigsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $servicetemplateId = $this->request->data('Service.servicetemplate_id');
+            $servicetemplateId = $this->request->getData('Service.servicetemplate_id');
             if ($servicetemplateId === null) {
                 throw new BadRequestException('Service.servicetemplate_id needs to set.');
             }
 
-            $hostId = $this->request->data('Service.host_id');
+            $hostId = $this->request->getData('Service.host_id');
             if ($hostId === null) {
                 throw new BadRequestException('Service.host_id needs to set.');
             }
@@ -379,7 +379,7 @@ class AgentconfigsController extends AppController {
             $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicetemplateId);
 
 
-            $servicename = $this->request->data('Service.name');
+            $servicename = $this->request->getData('Service.name');
             if ($servicename === null || $servicename === '') {
                 $servicename = $servicetemplate['Servicetemplate']['name'];
             }
@@ -405,14 +405,14 @@ class AgentconfigsController extends AppController {
 
             $ServicesTable->save($service);
             if ($service->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $service->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
 
-                $User = new User($this->Auth);
+                $User = new User($this->getUser());
 
                 $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(

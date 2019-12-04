@@ -152,20 +152,20 @@ class HostescalationsController extends AppController {
             /** @var $HostescalationsTable HostescalationsTable */
             $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
             $data['hosts'] = $HostescalationsTable->parseHostMembershipData(
-                $this->request->data('Hostescalation.hosts._ids'),
-                $this->request->data('Hostescalation.hosts_excluded._ids')
+                $this->request->getData('Hostescalation.hosts._ids'),
+                $this->request->getData('Hostescalation.hosts_excluded._ids')
             );
             $data['hostgroups'] = $HostescalationsTable->parseHostgroupMembershipData(
-                $this->request->data('Hostescalation.hostgroups._ids'),
-                $this->request->data('Hostescalation.hostgroups_excluded._ids')
+                $this->request->getData('Hostescalation.hostgroups._ids'),
+                $this->request->getData('Hostescalation.hostgroups_excluded._ids')
             );
 
-            $data = array_merge($this->request->data('Hostescalation'), $data);
+            $data = array_merge($this->request->getData('Hostescalation'), $data);
             $hostescalation = $HostescalationsTable->patchEntity($hostescalation, $data);
             $HostescalationsTable->save($hostescalation);
 
             if ($hostescalation->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $hostescalation->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -191,20 +191,20 @@ class HostescalationsController extends AppController {
             $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
             $this->request->data['Hostescalation']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
             $data['hosts'] = $HostescalationsTable->parseHostMembershipData(
-                $this->request->data('Hostescalation.hosts._ids'),
-                $this->request->data('Hostescalation.hosts_excluded._ids')
+                $this->request->getData('Hostescalation.hosts._ids'),
+                $this->request->getData('Hostescalation.hosts_excluded._ids')
             );
             $data['hostgroups'] = $HostescalationsTable->parseHostgroupMembershipData(
-                $this->request->data('Hostescalation.hostgroups._ids'),
-                $this->request->data('Hostescalation.hostgroups_excluded._ids')
+                $this->request->getData('Hostescalation.hostgroups._ids'),
+                $this->request->getData('Hostescalation.hostgroups_excluded._ids')
             );
 
-            $data = array_merge($this->request->data('Hostescalation'), $data);
+            $data = array_merge($this->request->getData('Hostescalation'), $data);
             $hostescalation = $HostescalationsTable->newEntity($data);
             $HostescalationsTable->save($hostescalation);
 
             if ($hostescalation->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $hostescalation->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -243,7 +243,7 @@ class HostescalationsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;

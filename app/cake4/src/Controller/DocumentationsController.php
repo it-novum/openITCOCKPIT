@@ -152,7 +152,7 @@ class DocumentationsController extends AppController {
 
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $UserTime = $User->getUserTime();
 
             $docuExists = $DocumentationsTable->existsByUuid($uuid);
@@ -183,7 +183,7 @@ class DocumentationsController extends AppController {
                 $this->render403();
                 return;
             }
-            $content = $this->request->data('content');
+            $content = $this->request->getData('content');
 
             if ($DocumentationsTable->existsByUuid($uuid)) {
                 $entity = $DocumentationsTable->getDocumentationByUuid($uuid);
@@ -199,7 +199,7 @@ class DocumentationsController extends AppController {
             if(strlen(trim($content)) > 0) {
                 $DocumentationsTable->save($entity);
                 if ($entity->hasErrors()) {
-                    $this->response->statusCode(400);
+                    $this->response = $this->response->withStatus(400);
                     $this->set('error', $entity->getErrors());
                     $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
@@ -260,8 +260,8 @@ class DocumentationsController extends AppController {
 
         if ($this->request->is('post')) {
 
-            $category = $this->request->data('category');
-            $documentation = $this->request->data('documentation');
+            $category = $this->request->getData('category');
+            $documentation = $this->request->getData('documentation');
 
             if (!isset($documentations[$category]['children'][$documentation])) {
                 throw new NotFoundException();

@@ -121,12 +121,12 @@ class LocationsController extends AppController {
 
             $LocationsTable->save($location);
             if ($location->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $location->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $User = new User($this->getUser());
 
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'add',
@@ -206,12 +206,12 @@ class LocationsController extends AppController {
 
             $LocationsTable->save($location);
             if ($location->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $location->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $User = new User($this->getUser());
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'edit',
                     'locations',
@@ -270,7 +270,7 @@ class LocationsController extends AppController {
         }
 
         if ($ContainersTable->delete($container)) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 'delete',
                 'locations',
@@ -292,7 +292,7 @@ class LocationsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }

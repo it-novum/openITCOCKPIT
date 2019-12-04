@@ -87,7 +87,7 @@ class AcknowledgementsController extends AppController {
         $Conditions->setHostUuid($host->get('uuid'));
 
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         $AcknowledgementHostsTable = $this->DbBackend->getAcknowledgementHostsTable();
@@ -155,7 +155,7 @@ class AcknowledgementsController extends AppController {
         $Conditions->setConditions($AngularAcknowledgementsControllerRequest->getServiceFilters());
         $Conditions->setServiceUuid($service->get('uuid'));
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         $AcknowledgementServicesTable = $this->DbBackend->getAcknowledgementServicesTable();

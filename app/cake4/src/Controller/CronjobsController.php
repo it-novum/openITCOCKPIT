@@ -106,7 +106,7 @@ class CronjobsController extends AppController {
         $Cronjobs->save($cronjob);
 
         if ($cronjob->hasErrors()) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $cronjob->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
@@ -128,7 +128,7 @@ class CronjobsController extends AppController {
         $Cronjobs->save($cronjob);
 
         if ($cronjob->hasErrors()) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $cronjob->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
@@ -151,7 +151,7 @@ class CronjobsController extends AppController {
 
         $Cronjobs->delete($cronjob);
         if ($cronjob->hasErrors()) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $cronjob->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;

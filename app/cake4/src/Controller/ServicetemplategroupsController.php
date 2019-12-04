@@ -137,18 +137,18 @@ class ServicetemplategroupsController extends AppController {
 
 
         $servicetemplategroup = $ServicetemplategroupsTable->newEmptyEntity();
-        $servicetemplategroup = $ServicetemplategroupsTable->patchEntity($servicetemplategroup, $this->request->data('Servicetemplategroup'));
+        $servicetemplategroup = $ServicetemplategroupsTable->patchEntity($servicetemplategroup, $this->request->getData('Servicetemplategroup'));
 
         $ServicetemplategroupsTable->save($servicetemplategroup);
         if ($servicetemplategroup->hasErrors()) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $servicetemplategroup->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         } else {
             //No errors
 
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
 
             $extDataForChangelog = $ServicetemplategroupsTable->resolveDataForChangelog($this->request->data);
             $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -210,7 +210,7 @@ class ServicetemplategroupsController extends AppController {
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update service template group data
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
 
             $servicetemplategroupEntity = $ServicetemplategroupsTable->get($id, [
                 'contain' => [
@@ -218,12 +218,12 @@ class ServicetemplategroupsController extends AppController {
                 ]
             ]);
             $servicetemplategroupEntity->setAccess('uuid', false);
-            $servicetemplategroupEntity = $ServicetemplategroupsTable->patchEntity($servicetemplategroupEntity, $this->request->data('Servicetemplategroup'));
+            $servicetemplategroupEntity = $ServicetemplategroupsTable->patchEntity($servicetemplategroupEntity, $this->request->getData('Servicetemplategroup'));
             $servicetemplategroupEntity->id = $id;
 
             $ServicetemplategroupsTable->save($servicetemplategroupEntity);
             if ($servicetemplategroupEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicetemplategroupEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -263,8 +263,8 @@ class ServicetemplategroupsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $id = $this->request->data('Servicetemplategroup.id');
-            $servicetemplateIds = $this->request->data('Servicetemplategroup.servicetemplates._ids');
+            $id = $this->request->getData('Servicetemplategroup.id');
+            $servicetemplateIds = $this->request->getData('Servicetemplategroup.servicetemplates._ids');
             if (!is_array($servicetemplateIds)) {
                 $servicetemplateIds = [$servicetemplateIds];
             }
@@ -334,7 +334,7 @@ class ServicetemplategroupsController extends AppController {
             }
 
 
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $servicetemplategroupEntity = $ServicetemplategroupsTable->get($id);
 
             $servicetemplategroupEntity->setAccess('uuid', false);
@@ -346,7 +346,7 @@ class ServicetemplategroupsController extends AppController {
             $servicetemplategroupEntity->id = $id;
             $ServicetemplategroupsTable->save($servicetemplategroupEntity);
             if ($servicetemplategroupEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicetemplategroupEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -422,7 +422,7 @@ class ServicetemplategroupsController extends AppController {
         ]);
 
         if ($ContainersTable->delete($container)) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             Cache::clear(false, 'permissions');
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 'delete',
@@ -443,7 +443,7 @@ class ServicetemplategroupsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
@@ -519,12 +519,12 @@ class ServicetemplategroupsController extends AppController {
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Create the services out of the service template group on the selected host
 
-            $hostId = $this->request->data('Host.id');
+            $hostId = $this->request->getData('Host.id');
             if (!$HostsTable->existsById($hostId)) {
                 throw new NotFoundException('Invalid host');
             }
 
-            $servicetemplateIds = $this->request->data('Servicetemplates._ids');
+            $servicetemplateIds = $this->request->getData('Servicetemplates._ids');
             if (empty($servicetemplateIds)) {
                 //No service templates selected...
                 $this->set('success', false);
@@ -540,7 +540,7 @@ class ServicetemplategroupsController extends AppController {
             /** @var $ServicesTable ServicesTable */
             $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
 
             $host = $HostsTable->get($hostId);
             $hostContactsAndContactgroupsById = $HostsTable->getContactsAndContactgroupsById($host->get('id'));
@@ -692,12 +692,12 @@ class ServicetemplategroupsController extends AppController {
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Create the services out of the service template group on the selected host
 
-            $hostId = $this->request->data('Host.id');
+            $hostId = $this->request->getData('Host.id');
             if (!$HostsTable->existsById($hostId)) {
                 throw new NotFoundException('Invalid host');
             }
 
-            $servicetemplateIds = $this->request->data('Servicetemplates._ids');
+            $servicetemplateIds = $this->request->getData('Servicetemplates._ids');
             if (empty($servicetemplateIds)) {
                 //No service templates selected...
                 $this->set('success', false);
@@ -713,7 +713,7 @@ class ServicetemplategroupsController extends AppController {
             /** @var $ServicesTable ServicesTable */
             $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
 
             $host = $HostsTable->get($hostId);
             $hostContactsAndContactgroupsById = $HostsTable->getContactsAndContactgroupsById($host->get('id'));
@@ -808,7 +808,7 @@ class ServicetemplategroupsController extends AppController {
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
         $ServicetemplateCache = new KeyValueStore();
 
@@ -827,7 +827,7 @@ class ServicetemplategroupsController extends AppController {
         try {
             $hostgroup = $HostgroupsTable->getHostgroupByName($servicetemplategroupName, $MY_RIGHTS);
         } catch (RecordNotFoundException $e) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('success', false);
             $this->set('message', __('No matching host group "%s" found.', $servicetemplategroupName));
             $this->viewBuilder()->setOption('serialize', ['success', 'message']);

@@ -136,7 +136,7 @@ class HostgroupsController extends AppController {
 
     public function extended() {
         if (!$this->isApiRequest()) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $this->set('username', $User->getFullName());
         }
     }
@@ -149,18 +149,18 @@ class HostgroupsController extends AppController {
 
 
         if ($this->request->is('post')) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
 
             /** @var $HostgroupsTable HostgroupsTable */
             $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
             $this->request->data['Hostgroup']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
             $this->request->data['Hostgroup']['container']['containertype_id'] = CT_HOSTGROUP;
             $hostgroup = $HostgroupsTable->newEmptyEntity();
-            $hostgroup = $HostgroupsTable->patchEntity($hostgroup, $this->request->data('Hostgroup'));
+            $hostgroup = $HostgroupsTable->patchEntity($hostgroup, $this->request->getData('Hostgroup'));
 
             $HostgroupsTable->save($hostgroup);
             if ($hostgroup->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $hostgroup->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -229,15 +229,15 @@ class HostgroupsController extends AppController {
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update contact data
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $hostgroupEntity = $HostgroupsTable->get($id);
 
             $hostgroupEntity->setAccess('uuid', false);
-            $hostgroupEntity = $HostgroupsTable->patchEntity($hostgroupEntity, $this->request->data('Hostgroup'));
+            $hostgroupEntity = $HostgroupsTable->patchEntity($hostgroupEntity, $this->request->getData('Hostgroup'));
             $hostgroupEntity->id = $id;
             $HostgroupsTable->save($hostgroupEntity);
             if ($hostgroupEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $hostgroupEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -299,7 +299,7 @@ class HostgroupsController extends AppController {
         }
 
         if ($ContainersTable->delete($container)) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 'delete',
                 'hostgroups',
@@ -321,7 +321,7 @@ class HostgroupsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
@@ -350,7 +350,7 @@ class HostgroupsController extends AppController {
 
         $hostgroup = $HostgroupsTable->getHostgroupById($id);
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
 
         $hostIds = $HostgroupsTable->getHostIdsByHostgroupId($id);
@@ -475,7 +475,7 @@ class HostgroupsController extends AppController {
         $hostgroups = $HostgroupsTable->getHostgroupsIndex($HostgroupFilter, null, $MY_RIGHTS);
 
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
         $numberOfHostgroups = sizeof($hostgroups);
         $numberOfHosts = 0;
@@ -565,8 +565,8 @@ class HostgroupsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $id = $this->request->data('Hostgroup.id');
-            $hostIds = $this->request->data('Hostgroup.hosts._ids');
+            $id = $this->request->getData('Hostgroup.id');
+            $hostIds = $this->request->getData('Hostgroup.hosts._ids');
             if (!is_array($hostIds)) {
                 $hostIds = [$hostIds];
             }
@@ -630,7 +630,7 @@ class HostgroupsController extends AppController {
             }
 
 
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $hostgroupEntity = $HostgroupsTable->get($id);
 
             $hostgroupEntity->setAccess('uuid', false);
@@ -642,7 +642,7 @@ class HostgroupsController extends AppController {
             $hostgroupEntity->id = $id;
             $HostgroupsTable->save($hostgroupEntity);
             if ($hostgroupEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $hostgroupEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;

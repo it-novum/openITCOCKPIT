@@ -60,7 +60,7 @@ class CurrentstatereportsController extends AppController {
         $currentstatereportForm->execute($this->request->data);
 
         if (!empty($currentstatereportForm->getErrors())) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $currentstatereportForm->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
@@ -73,7 +73,7 @@ class CurrentstatereportsController extends AppController {
             );
 
 
-            $ServiceConditions->setServiceIds($this->request->data('services'));
+            $ServiceConditions->setServiceIds($this->request->getData('services'));
             $ServiceConditions->setContainerIds($this->MY_RIGHTS);
             $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
                 'Hosts.name'  => 'asc',
@@ -81,16 +81,16 @@ class CurrentstatereportsController extends AppController {
             ]));
 
             $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
-            $ServicestatusConditions->currentState($this->request->data('Servicestatus.current_state'));
+            $ServicestatusConditions->currentState($this->request->getData('Servicestatus.current_state'));
 
-            if ($this->request->data('Servicestatus.hasBeenAcknowledged') !== null) {
-                $ServicestatusConditions->setProblemHasBeenAcknowledged($this->request->data('Servicestatus.hasBeenAcknowledged'));
+            if ($this->request->getData('Servicestatus.hasBeenAcknowledged') !== null) {
+                $ServicestatusConditions->setProblemHasBeenAcknowledged($this->request->getData('Servicestatus.hasBeenAcknowledged'));
             }
-            if ($this->request->data('Servicestatus.inDowntime') !== null) {
-                $ServicestatusConditions->setScheduledDowntimeDepth($this->request->data('Servicestatus.inDowntime'));
+            if ($this->request->getData('Servicestatus.inDowntime') !== null) {
+                $ServicestatusConditions->setScheduledDowntimeDepth($this->request->getData('Servicestatus.inDowntime'));
             }
-            if ($this->request->data('Servicestatus.passive') !== null) {
-                $ServicestatusConditions->setActiveChecksEnabled($this->request->data('Servicestatus.passive'));
+            if ($this->request->getData('Servicestatus.passive') !== null) {
+                $ServicestatusConditions->setActiveChecksEnabled($this->request->getData('Servicestatus.passive'));
             }
 
             $all_services = $this->createReport(
@@ -117,7 +117,7 @@ class CurrentstatereportsController extends AppController {
 
             $this->set('input', $this->request->data);
 
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $currentstatereportForm->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error', 'input']);
             return;
@@ -138,7 +138,7 @@ class CurrentstatereportsController extends AppController {
         );
 
 
-        $ServiceConditions->setServiceIds($this->request->data('services'));
+        $ServiceConditions->setServiceIds($this->request->getData('services'));
         $ServiceConditions->setContainerIds($this->MY_RIGHTS);
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
             'Hosts.name'  => 'asc',
@@ -146,16 +146,16 @@ class CurrentstatereportsController extends AppController {
         ]));
 
         $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
-        $ServicestatusConditions->currentState($this->request->data('Servicestatus.current_state'));
+        $ServicestatusConditions->currentState($this->request->getData('Servicestatus.current_state'));
 
-        if ($this->request->data('Servicestatus.hasBeenAcknowledged') !== null) {
-            $ServicestatusConditions->setProblemHasBeenAcknowledged($this->request->data('Servicestatus.hasBeenAcknowledged'));
+        if ($this->request->getData('Servicestatus.hasBeenAcknowledged') !== null) {
+            $ServicestatusConditions->setProblemHasBeenAcknowledged($this->request->getData('Servicestatus.hasBeenAcknowledged'));
         }
-        if ($this->request->data('Servicestatus.inDowntime') !== null) {
-            $ServicestatusConditions->setScheduledDowntimeDepth($this->request->data('Servicestatus.inDowntime'));
+        if ($this->request->getData('Servicestatus.inDowntime') !== null) {
+            $ServicestatusConditions->setScheduledDowntimeDepth($this->request->getData('Servicestatus.inDowntime'));
         }
-        if ($this->request->data('Servicestatus.passive') !== null) {
-            $ServicestatusConditions->setActiveChecksEnabled($this->request->data('Servicestatus.passive'));
+        if ($this->request->getData('Servicestatus.passive') !== null) {
+            $ServicestatusConditions->setActiveChecksEnabled($this->request->getData('Servicestatus.passive'));
         }
 
         $all_services = $this->createReport(
@@ -205,7 +205,7 @@ class CurrentstatereportsController extends AppController {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $services = [];
 
         if ($this->DbBackend->isNdoUtils()) {

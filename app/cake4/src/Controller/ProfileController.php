@@ -50,7 +50,7 @@ class ProfileController extends AppController {
             return;
         }
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
         /** @var $UsersTable UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
@@ -79,7 +79,7 @@ class ProfileController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $data = $this->request->data('User');
+            $data = $this->request->getData('User');
 
             $user = $UsersTable->get($User->getId());
             $user->setAccess('id', false);
@@ -103,7 +103,7 @@ class ProfileController extends AppController {
             $user = $UsersTable->patchEntity($user, $data);
             $UsersTable->save($user);
             if ($user->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $user->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -117,16 +117,16 @@ class ProfileController extends AppController {
     }
 
     public function changePassword() {
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
         /** @var $UsersTable UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
         $user = $UsersTable->get($User->getId());
 
-        $data = $this->request->data('Password');
+        $data = $this->request->getData('Password');
         if ($UsersTable->getPasswordHash($data['current_password']) !== $user->get('password')) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', [
                 'current_password' => [
                     __('Current password is incorrect')
@@ -139,7 +139,7 @@ class ProfileController extends AppController {
         $user = $UsersTable->patchEntity($user, $data);
         $UsersTable->save($user);
         if ($user->hasErrors()) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $user->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
@@ -156,7 +156,7 @@ class ProfileController extends AppController {
             return;
         }
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
         /** @var $UsersTable UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
@@ -177,7 +177,7 @@ class ProfileController extends AppController {
                 unset($user->password);
                 $UsersTable->save($user);
                 if ($user->hasErrors()) {
-                    $this->response->statusCode(400);
+                    $this->response = $this->response->withStatus(400);
                     $this->set('error', $user->getErrors());
                     $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
@@ -197,7 +197,7 @@ class ProfileController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['success', 'message']);
                 return;
             }
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', __('Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif'));
             $this->set('message', __('Could not save image data, may be wrong data type. Allowed types are .png, .jpg and .gif'));
             $this->viewBuilder()->setOption('serialize', ['error', 'message']);
@@ -213,7 +213,7 @@ class ProfileController extends AppController {
             throw new MethodNotAllowedException('Only API requests.');
         }
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
         /** @var $ApikeysTable ApikeysTable */
         $ApikeysTable = TableRegistry::getTableLocator()->get('Apikeys');
@@ -262,7 +262,7 @@ class ProfileController extends AppController {
 
                 $ApikeysTable->save($apikey);
                 if ($apikey->hasErrors()) {
-                    $this->response->statusCode(400);
+                    $this->response = $this->response->withStatus(400);
                     $this->set('error', $apikey->getErrors());
                     $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
@@ -301,7 +301,7 @@ class ProfileController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             //Save new API key
             //Resolve ITC-2170
             $newApiKey = $this->Session->read('latest_api_key');
@@ -317,7 +317,7 @@ class ProfileController extends AppController {
 
             $apikey = [
                 'apikey'      => $newApiKey['key'],
-                'description' => $this->request->data('Apikey.description'),
+                'description' => $this->request->getData('Apikey.description'),
                 'user_id'     => $User->getId()
             ];
 
@@ -326,7 +326,7 @@ class ProfileController extends AppController {
 
             $ApikeysTable->save($apikeyEntity);
             if ($apikeyEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $apikeyEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
             } else {
@@ -344,7 +344,7 @@ class ProfileController extends AppController {
         }
 
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
 
         /** @var $ApikeysTable ApikeysTable */
         $ApikeysTable = TableRegistry::getTableLocator()->get('Apikeys');
@@ -361,7 +361,7 @@ class ProfileController extends AppController {
             return;
         }
 
-        $this->response->statusCode(400);
+        $this->response = $this->response->withStatus(400);
         $this->set('message', __('Could not delete api key'));
         $this->viewBuilder()->setOption('serialize', ['message']);
 
@@ -389,7 +389,7 @@ class ProfileController extends AppController {
 
         $UsersTable->save($user);
         if ($user->hasErrors()) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $user->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;

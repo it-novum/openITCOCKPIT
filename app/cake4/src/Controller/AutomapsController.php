@@ -105,10 +105,10 @@ class AutomapsController extends AppController {
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $automap = $AutomapsTable->newEmptyEntity();
-            $automap = $AutomapsTable->patchEntity($automap, $this->request->data('Automap'));
+            $automap = $AutomapsTable->patchEntity($automap, $this->request->getData('Automap'));
             $AutomapsTable->save($automap);
             if ($automap->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $automap->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -169,11 +169,11 @@ class AutomapsController extends AppController {
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update automap data
-            $automap = $AutomapsTable->patchEntity($automap, $this->request->data('Automap'));
+            $automap = $AutomapsTable->patchEntity($automap, $this->request->getData('Automap'));
             $automap->id = $id;
             $AutomapsTable->save($automap);
             if ($automap->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $automap->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -365,7 +365,7 @@ class AutomapsController extends AppController {
         }
 
         if (!$AutomapsTable->delete($automap)) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('success', false);
             $this->set('id', $id);
             $this->viewBuilder()->setOption('serialize', ['success', 'id']);
@@ -419,7 +419,7 @@ class AutomapsController extends AppController {
         $hostCount = 0;
         $serviceCount = 0;
 
-        $post = $this->request->data('Automap');
+        $post = $this->request->getData('Automap');
         $post = \Cake\Utility\Hash::merge($defaults, $post);
 
         if ($post['container_id'] > 0) {

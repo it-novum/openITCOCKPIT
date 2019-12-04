@@ -113,7 +113,7 @@ class ServicesController extends AppController {
 
     public function index() {
         if (!$this->isApiRequest()) {
-            $User = new User($this->Auth);
+            $User = new User($this->getUser());
             $this->set('username', $User->getFullName());
             //Only ship HTML template
             return;
@@ -126,7 +126,7 @@ class ServicesController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $ServiceFilter = new ServiceFilter($this->request);
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
 
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions(
@@ -390,7 +390,7 @@ class ServicesController extends AppController {
 
 
         $all_services = [];
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
         foreach ($services as $service) {
             $allowEdit = $service['allow_edit'];
@@ -473,7 +473,7 @@ class ServicesController extends AppController {
 
 
         $all_services = [];
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
         foreach ($services as $service) {
             $allowEdit = $service['allow_edit'];
@@ -508,12 +508,12 @@ class ServicesController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $servicetemplateId = $this->request->data('Service.servicetemplate_id');
+            $servicetemplateId = $this->request->getData('Service.servicetemplate_id');
             if ($servicetemplateId === null) {
                 throw new BadRequestException('Service.servicetemplate_id needs to set.');
             }
 
-            $hostId = $this->request->data('Service.host_id');
+            $hostId = $this->request->getData('Service.host_id');
             if ($hostId === null) {
                 throw new BadRequestException('Service.host_id needs to set.');
             }
@@ -542,7 +542,7 @@ class ServicesController extends AppController {
             $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicetemplateId);
 
 
-            $servicename = $this->request->data('Service.name');
+            $servicename = $this->request->getData('Service.name');
             if ($servicename === null || $servicename === '') {
                 $servicename = $servicetemplate['Servicetemplate']['name'];
             }
@@ -567,14 +567,14 @@ class ServicesController extends AppController {
 
             $ServicesTable->save($service);
             if ($service->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $service->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
 
-                $User = new User($this->Auth);
+                $User = new User($this->getUser());
 
                 $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -671,7 +671,7 @@ class ServicesController extends AppController {
 
 
         if ($this->request->is('post')) {
-            $servicetemplateId = $this->request->data('Service.servicetemplate_id');
+            $servicetemplateId = $this->request->getData('Service.servicetemplate_id');
             if ($servicetemplateId === null) {
                 throw new Exception('Service.servicetemplate_id needs to set.');
             }
@@ -681,7 +681,7 @@ class ServicesController extends AppController {
             }
             $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicetemplateId);
 
-            $servicename = $this->request->data('Service.name');
+            $servicename = $this->request->getData('Service.name');
             if ($servicename === null || $servicename === '') {
                 $servicename = $servicetemplate['Servicetemplate']['name'];
             }
@@ -718,14 +718,14 @@ class ServicesController extends AppController {
             ];
 
             if ($serviceEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $serviceEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
                 //No errors
 
-                $User = new User($this->Auth);
+                $User = new User($this->getUser());
 
                 $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
 
@@ -823,7 +823,7 @@ class ServicesController extends AppController {
         $moduleConstants = $Constants->getModuleConstants();
 
         $usedBy = $service->isUsedByModules($moduleConstants);
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
         if (empty($usedBy)) {
             //Not used by any module
             if ($ServicesTable->__delete($service, $User)) {
@@ -840,7 +840,7 @@ class ServicesController extends AppController {
             }
         }
 
-        $this->response->statusCode(400);
+        $this->response = $this->response->withStatus(400);
         $this->set('success', false);
         $this->set('id', $id);
         $this->set('message', __('Issue while deleting service'));
@@ -902,8 +902,8 @@ class ServicesController extends AppController {
             $ServicetemplateCache = new KeyValueStore();
             $ServicetemplateEditCache = new KeyValueStore();
 
-            $postData = $this->request->data('data');
-            $hostId = $this->request->data('hostId');
+            $postData = $this->request->getData('data');
+            $hostId = $this->request->getData('hostId');
 
             if (!$HostsTable->existsById($hostId)) {
                 throw new NotFoundException('Invalid host');
@@ -913,7 +913,7 @@ class ServicesController extends AppController {
             $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsById($host['Host']['id']);
             $hosttemplateContactsAndContactgroups = $HosttemplatesTable->getContactsAndContactgroupsById($host['Host']['hosttemplate_id']);
 
-            $User = new User($this->Auth);
+            $User = new User($this->getUser());
 
             foreach ($postData as $index => $serviceData) {
                 if (!isset($serviceData['Service']['id'])) {
@@ -1106,7 +1106,7 @@ class ServicesController extends AppController {
         }
 
         if ($hasErrors) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
         }
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);
@@ -1140,7 +1140,7 @@ class ServicesController extends AppController {
         $ServicesTable->save($service);
 
         if ($service->hasErrors()) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('success', false);
             $this->set('message', __('Issue while disabling service'));
             $this->set('error', $service->getErrors());
@@ -1179,7 +1179,7 @@ class ServicesController extends AppController {
         }
 
         if ($host['Host']['disabled'] === 1) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('success', false);
             $this->set('id', $id);
             $this->set('message', __('Could not enable service, because associated host is also disabled.'));
@@ -1191,7 +1191,7 @@ class ServicesController extends AppController {
         $ServicesTable->save($service);
 
         if ($service->hasErrors()) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('success', false);
             $this->set('message', __('Issue while enabling service'));
             $this->set('error', $service->getErrors());
@@ -1211,7 +1211,7 @@ class ServicesController extends AppController {
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function browser($id = null) {
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         if (!$this->isAngularJsRequest()) {
@@ -1539,7 +1539,7 @@ class ServicesController extends AppController {
      * @param int|null $host_id
      */
     public function serviceList($host_id = null) {
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
 
         //Only ship HTML template
         $this->set('username', $User->getFullName());
@@ -1549,7 +1549,7 @@ class ServicesController extends AppController {
     public function listToPdf() {
         $this->layout = 'Admin.default';
 
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         /** @var $HostsTable HostsTable */
@@ -1694,7 +1694,7 @@ class ServicesController extends AppController {
      */
     public function details() {
         //Only ship template for auto maps modal
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
         $this->set('username', $User->getFullName());
         return;
     }
@@ -1793,7 +1793,7 @@ class ServicesController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         $checkTimePeriod = $TimeperiodsTable->getTimeperiodWithTimerangesById($timeperiodId);
 
-        $User = new User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
 

@@ -91,11 +91,11 @@ class ContainersController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        $container = $ContainersTable->newEntity($this->request->data('Container'));
+        $container = $ContainersTable->newEntity($this->request->getData('Container'));
 
         $ContainersTable->save($container);
         if ($container->hasErrors()) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->serializeCake4ErrorMessage($container);
             return;
         }
@@ -118,11 +118,11 @@ class ContainersController extends AppController {
                 throw new NotFoundException(__('Invalid container'));
             }
             $container = $ContainersTable->get($containerId);
-            $container = $ContainersTable->patchEntity($container, $this->request->data('Container'));
+            $container = $ContainersTable->patchEntity($container, $this->request->getData('Container'));
 
             $ContainersTable->save($container);
             if ($container->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->serializeCake4ErrorMessage($container);
                 return;
             }
@@ -461,13 +461,13 @@ class ContainersController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             } else {
-                $this->response->statusCode(500);
+                $this->response = $this->response->withStatus(500);
                 $this->set('success', false);
                 $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
         }
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }

@@ -139,17 +139,17 @@ class ContactsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
 
             /** @var $ContactsTable ContactsTable */
             $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
             $this->request->data['Contact']['uuid'] = \itnovum\openITCOCKPIT\Core\UUID::v4();
             $contact = $ContactsTable->newEmptyEntity();
-            $contact = $ContactsTable->patchEntity($contact, $this->request->data('Contact'));
+            $contact = $ContactsTable->patchEntity($contact, $this->request->getData('Contact'));
 
             $ContactsTable->save($contact);
             if ($contact->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $contact->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -163,7 +163,7 @@ class ContactsController extends AppController {
                     'contacts',
                     $contact->id,
                     OBJECT_CONTACT,
-                    $this->request->data('Contact.containers._ids'),
+                    $this->request->getData('Contact.containers._ids'),
                     $User->getId(),
                     $contact->name,
                     array_merge($extDataForChangelog, $this->request->data)
@@ -225,7 +225,7 @@ class ContactsController extends AppController {
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             //Update contact data
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $contactEntity = $ContactsTable->get($id);
 
             if ($ContactContainersPermissions->areContainersChangeable() === false) {
@@ -235,11 +235,11 @@ class ContactsController extends AppController {
             }
 
             $contactEntity->setAccess('uuid', false);
-            $contactEntity = $ContactsTable->patchEntity($contactEntity, $this->request->data('Contact'));
+            $contactEntity = $ContactsTable->patchEntity($contactEntity, $this->request->getData('Contact'));
             $contactEntity->id = $id;
             $ContactsTable->save($contactEntity);
             if ($contactEntity->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $contactEntity->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -251,7 +251,7 @@ class ContactsController extends AppController {
                     'contacts',
                     $contactEntity->id,
                     OBJECT_CONTACT,
-                    $this->request->data('Contact.containers._ids'),
+                    $this->request->getData('Contact.containers._ids'),
                     $User->getId(),
                     $contactEntity->name,
                     array_merge($ContactsTable->resolveDataForChangelog($this->request->data), $this->request->data),
@@ -318,7 +318,7 @@ class ContactsController extends AppController {
                 ]
             ];
 
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('success', false);
             $this->set('id', $id);
             $this->set('message', __('Issue while deleting contact'));
@@ -330,7 +330,7 @@ class ContactsController extends AppController {
 
         $contactEntity = $ContactsTable->get($id);
         if ($ContactsTable->delete($contactEntity)) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $User = new User($this->getUser());
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 'delete',
                 'contacts',
@@ -350,7 +350,7 @@ class ContactsController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;
@@ -378,8 +378,8 @@ class ContactsController extends AppController {
         if ($this->request->is('post')) {
             $Cache = new KeyValueStore();
 
-            $postData = $this->request->data('data');
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $postData = $this->request->getData('data');
+            $User = new User($this->getUser());
             $userId = $User->getId();
 
             foreach ($postData as $index => $contactData) {
@@ -483,7 +483,7 @@ class ContactsController extends AppController {
         }
 
         if ($hasErrors) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
         }
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);
@@ -611,7 +611,7 @@ class ContactsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $containerIds = $this->request->data('containerIds');
+            $containerIds = $this->request->getData('containerIds');
         }
 
         if (!is_array($containerIds)) {

@@ -84,7 +84,7 @@ class ServicechecksController extends AppController {
         $Conditions->setConditions($ServicechecksControllerRequest->getIndexFilters());
 
 
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
         $ServicechecksTable = $this->DbBackend->getServicechecksTable();

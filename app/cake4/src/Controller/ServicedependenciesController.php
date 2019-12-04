@@ -120,21 +120,21 @@ class ServicedependenciesController extends AppController {
             $data = [];
             $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
             $data['services'] = $ServicedependenciesTable->parseServiceMembershipData(
-                $this->request->data('Servicedependency.services._ids'),
-                $this->request->data('Servicedependency.services_dependent._ids')
+                $this->request->getData('Servicedependency.services._ids'),
+                $this->request->getData('Servicedependency.services_dependent._ids')
             );
             $data['servicegroups'] = $ServicedependenciesTable->parseServicegroupMembershipData(
-                $this->request->data('Servicedependency.servicegroups._ids'),
-                $this->request->data('Servicedependency.servicegroups_dependent._ids')
+                $this->request->getData('Servicedependency.servicegroups._ids'),
+                $this->request->getData('Servicedependency.servicegroups_dependent._ids')
             );
 
-            $data = array_merge($this->request->data('Servicedependency'), $data);
+            $data = array_merge($this->request->getData('Servicedependency'), $data);
             $servicedependency = $ServicedependenciesTable->newEntity($data);
             $servicedependency->set('uuid', \itnovum\openITCOCKPIT\Core\UUID::v4());
             $ServicedependenciesTable->save($servicedependency);
 
             if ($servicedependency->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicedependency->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -179,20 +179,20 @@ class ServicedependenciesController extends AppController {
         }
         if ($this->request->is('post')) {
             $data['services'] = $ServicedependenciesTable->parseServiceMembershipData(
-                $this->request->data('Servicedependency.services._ids'),
-                $this->request->data('Servicedependency.services_dependent._ids')
+                $this->request->getData('Servicedependency.services._ids'),
+                $this->request->getData('Servicedependency.services_dependent._ids')
             );
             $data['servicegroups'] = $ServicedependenciesTable->parseServicegroupMembershipData(
-                $this->request->data('Servicedependency.servicegroups._ids'),
-                $this->request->data('Servicedependency.servicegroups_dependent._ids')
+                $this->request->getData('Servicedependency.servicegroups._ids'),
+                $this->request->getData('Servicedependency.servicegroups_dependent._ids')
             );
 
-            $data = array_merge($this->request->data('Servicedependency'), $data);
+            $data = array_merge($this->request->getData('Servicedependency'), $data);
             $servicedependency = $ServicedependenciesTable->patchEntity($servicedependency, $data);
             $ServicedependenciesTable->save($servicedependency);
 
             if ($servicedependency->hasErrors()) {
-                $this->response->statusCode(400);
+                $this->response = $this->response->withStatus(400);
                 $this->set('error', $servicedependency->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
@@ -234,7 +234,7 @@ class ServicedependenciesController extends AppController {
             return;
         }
 
-        $this->response->statusCode(500);
+        $this->response = $this->response->withStatus(500);
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;
