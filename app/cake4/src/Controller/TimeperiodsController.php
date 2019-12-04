@@ -31,9 +31,14 @@ use App\Model\Table\ContactsTable;
 use App\Model\Table\HostescalationsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TimeperiodsFilter;
 
@@ -42,17 +47,8 @@ use itnovum\openITCOCKPIT\Filter\TimeperiodsFilter;
  * @property AppPaginatorComponent $Paginator
  */
 class TimeperiodsController extends AppController {
-    public $layout = 'Admin.default';
-
-    public $uses = [
-        'Timeperiod',
-        'Timerange',
-        'Calendar'
-    ];
-
 
     function index() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
@@ -71,7 +67,7 @@ class TimeperiodsController extends AppController {
         if ($this->isAngularJsRequest()) {
             //AngularJS API Request
             $TimeperiodsFilter = new TimeperiodsFilter($this->request);
-            $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $TimeperiodsFilter->getPage());
+            $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $TimeperiodsFilter->getPage());
             $all_timeperiods = $TimeperiodsTable->getTimeperiodsIndex($TimeperiodsFilter, $PaginateOMat);
 
             foreach ($all_timeperiods as $index => $timeperiod) {
@@ -124,7 +120,6 @@ class TimeperiodsController extends AppController {
      * @todo refactor me
      */
     public function edit($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -188,7 +183,6 @@ class TimeperiodsController extends AppController {
      * @throws Exception
      */
     public function add() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -392,8 +386,6 @@ class TimeperiodsController extends AppController {
      * @param int|null $id
      */
     public function copy($id = null) {
-        $this->layout = 'blank';
-
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
