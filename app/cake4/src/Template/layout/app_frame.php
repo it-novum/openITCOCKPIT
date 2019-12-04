@@ -126,11 +126,11 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
             var classHolder = document.getElementsByTagName("BODY")[0]; // may delete this if navigation (plugin) changes
             Dropzone.autoDiscover = false;
         </script>
-
+<!--
         <div id="global-loading">
             <i class="fa fa-refresh fa-spin"></i>
         </div>
-
+-->
         <?= $this->element('sidebar') ?>
 
         <div class="page-content-wrapper">
@@ -152,10 +152,6 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
                 </div>
             </main>
         </div>
-        <div id="scroll-top-container">
-            <i class="fa fa-arrow-up fa-2x" title="<?php echo __('Scroll back to top'); ?>"></i>
-        </div>
-
         <?php printf('<script src="/%s"></script>', 'legacy/smartadmin/js/app.js'); ?>
     </div>
 </div>
