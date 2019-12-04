@@ -122,8 +122,8 @@ angular.module('openITCOCKPIT')
             $http.get("/services/loadServicesByString.json", {
                 params: {
                     'angular': true,
-                    'filter[Host.name]': searchString,
-                    'filter[Service.servicename]': searchString,
+                    //'filter[Hosts.name]': searchString,
+                    'filter[servicename]': searchString,
                     'selected[]': $scope.post.services
                 }
             }).then(function(result){

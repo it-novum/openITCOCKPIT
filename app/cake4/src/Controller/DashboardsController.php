@@ -28,8 +28,11 @@ declare(strict_types=1);
 namespace App\Controller;
 
 
+use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
+use App\Model\Table\HostsTable;
+use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
@@ -48,8 +51,11 @@ use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\Service;
 use Statusengine\PerfdataParser;
 
 /**
@@ -65,7 +71,6 @@ use Statusengine\PerfdataParser;
 class DashboardsController extends AppController {
 
     use LocatorAwareTrait;
-
 
     public function index() {
         //CakePHP 4 Model usage Example
@@ -263,7 +268,8 @@ class DashboardsController extends AppController {
         if ($entity->hasErrors()) {
             $this->set('error', $entity->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
-            return $this->response->withStatus(400);
+            $this->response = $this->response->withStatus(400);
+            return;
         }
 
         $this->set('message', __('Successfully saved'));
@@ -297,7 +303,8 @@ class DashboardsController extends AppController {
 
         $this->set('message', __('Error while deleting Widget'));
         $this->viewBuilder()->setOption('serialize', ['message']);
-        return $this->response->withStatus(400);
+        $this->response = $this->response->withStatus(400);
+        return;
     }
 
     public function saveTabOrder() {
@@ -339,7 +346,8 @@ class DashboardsController extends AppController {
         $this->set('success', $success);
         $this->viewBuilder()->setOption('serialize', ['success']);
         if ($success === false) {
-            return $this->response->withStatus(400);
+            $this->response = $this->response->withStatus(400);
+            return;
         }
     }
 
@@ -455,7 +463,8 @@ class DashboardsController extends AppController {
         }
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
-        return $this->response->withStatus(400);
+        $this->response = $this->response->withStatus(400);
+        return;
     }
 
     public function startSharing() {
@@ -1180,9 +1189,6 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
-    /**
-     * @deprecated
-     */
     public function trafficLightWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -1191,23 +1197,18 @@ class DashboardsController extends AppController {
 
         $TrafficlightJson = new TrafficlightJson();
 
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
         if ($this->request->is('get')) {
-            $widgetId = (int)$this->request->query('widgetId');
-            if (!$this->Widget->exists($widgetId)) {
+            $widgetId = (int)$this->request->getQuery('widgetId');
+            if (!$WidgetsTable->existsById($widgetId)) {
                 throw new \RuntimeException('Invalid widget id');
             }
 
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ],
-                'fields'     => [
-                    'Widget.service_id',
-                    'Widget.json_data'
-                ]
-            ]);
-            $serviceId = (int)$widget['Widget']['service_id'];
+            $widget = $WidgetsTable->get($widgetId);
+
+            $serviceId = (int)$widget->get('service_id');
             if ($serviceId === 0) {
                 $serviceId = null;
             }
@@ -1215,8 +1216,8 @@ class DashboardsController extends AppController {
             $service = $this->getServicestatusByServiceId($serviceId);
 
             $data = [];
-            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
-                $data = json_decode($widget['Widget']['json_data'], true);
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
             }
             $config = $TrafficlightJson->standardizedData($data);
             $this->set('config', $config);
@@ -1229,39 +1230,34 @@ class DashboardsController extends AppController {
 
         if ($this->request->is('post')) {
             $config = $TrafficlightJson->standardizedData($this->request->getData());
-            $widgetId = (int)$this->request->data('Widget.id');
-            $serviceId = (int)$this->request->data('Widget.service_id');
+            $widgetId = (int)$this->request->getData('Widget.id', 0);
+            $serviceId = (int)$this->request->getData('Widget.service_id', 0);
 
-            if (!$this->Widget->exists($widgetId)) {
+            if (!$WidgetsTable->existsById($widgetId)) {
                 throw new \RuntimeException('Invalid widget id');
             }
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ],
+            $widget = $WidgetsTable->get($widgetId);
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'service_id' => $serviceId,
+                'json_data'  => json_encode($config)
             ]);
 
-            $widget['Widget']['service_id'] = $serviceId;
-            $widget['Widget']['json_data'] = json_encode($config);
-            if ($this->Widget->save($widget)) {
-                $service = $this->getServicestatusByServiceId($serviceId);
-                $this->set('service', $service);
-                $this->set('config', $config);
-                $this->set('ACL', $this->getAcls());
-                $this->viewBuilder()->setOption('serialize', ['service', 'config', 'ACL']);
-                return;
+            $WidgetsTable->save($widget);
+
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
             }
 
-            $this->serializeErrorMessageFromModel('Widget');
+            $service = $this->getServicestatusByServiceId($serviceId);
+            $this->set('service', $service);
+            $this->set('config', $config);
+            $this->set('ACL', $this->getAcls());
+            $this->viewBuilder()->setOption('serialize', ['service', 'config', 'ACL']);
             return;
         }
         throw new MethodNotAllowedException();
     }
 
-    /**
-     * @deprecated
-     */
     public function tachoWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -1270,23 +1266,18 @@ class DashboardsController extends AppController {
 
         $TachoJson = new TachoJson();
 
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
         if ($this->request->is('get')) {
-            $widgetId = (int)$this->request->query('widgetId');
-            if (!$this->Widget->exists($widgetId)) {
+            $widgetId = (int)$this->request->getQuery('widgetId');
+            if (!$WidgetsTable->existsById($widgetId)) {
                 throw new \RuntimeException('Invalid widget id');
             }
 
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ],
-                'fields'     => [
-                    'Widget.service_id',
-                    'Widget.json_data'
-                ]
-            ]);
-            $serviceId = (int)$widget['Widget']['service_id'];
+            $widget = $WidgetsTable->get($widgetId);
+
+            $serviceId = (int)$widget->get('service_id');
             if ($serviceId === 0) {
                 $serviceId = null;
             }
@@ -1294,8 +1285,8 @@ class DashboardsController extends AppController {
             $service = $this->getServicestatusByServiceId($serviceId);
 
             $data = [];
-            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
-                $data = json_decode($widget['Widget']['json_data'], true);
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
             }
             $config = $TachoJson->standardizedData($data);
             $this->set('config', $config);
@@ -1307,122 +1298,86 @@ class DashboardsController extends AppController {
 
 
         if ($this->request->is('post')) {
-            $config = $TachoJson->standardizedData($this->request->data);
-            $widgetId = (int)$this->request->data('Widget.id');
-            $serviceId = (int)$this->request->data('Widget.service_id');
+            $config = $TachoJson->standardizedData($this->request->getData());
+            $widgetId = (int)$this->request->getData('Widget.id', 0);
+            $serviceId = (int)$this->request->getData('Widget.service_id', 0);
 
-            if (!$this->Widget->exists($widgetId)) {
+            if (!$WidgetsTable->existsById($widgetId)) {
                 throw new \RuntimeException('Invalid widget id');
             }
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ],
+            $widget = $WidgetsTable->get($widgetId);
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'service_id' => $serviceId,
+                'json_data'  => json_encode($config)
             ]);
 
-            $widget['Widget']['service_id'] = $serviceId;
-            $widget['Widget']['json_data'] = json_encode($config);
-            if ($this->Widget->save($widget)) {
-                $service = $this->getServicestatusByServiceId($serviceId);
-                $this->set('service', $service);
-                $this->set('config', $config);
-                $this->set('ACL', $this->getAcls());
-                $this->viewBuilder()->setOption('serialize', ['service', 'config', 'ACL']);
-                return;
+            $WidgetsTable->save($widget);
+
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
             }
 
-            $this->serializeErrorMessageFromModel('Widget');
+            $service = $this->getServicestatusByServiceId($serviceId);
+            $this->set('service', $service);
+            $this->set('config', $config);
+            $this->set('ACL', $this->getAcls());
+            $this->viewBuilder()->setOption('serialize', ['service', 'config', 'ACL']);
             return;
         }
         throw new MethodNotAllowedException();
     }
 
-    /**
-     * @deprecated
-     */
     private function getServicestatusByServiceId($id) {
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.name'
-                    ],
-                ],
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'hosts',
-                    'alias'      => 'Host',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'Host.id = Service.host_id'
-                    ]
-                ],
-                [
-                    'table'      => 'hosts_to_containers',
-                    'alias'      => 'HostsToContainers',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'HostsToContainers.host_id = Host.id',
-                    ],
-                ],
-            ],
-            'fields'     => [
-                'Service.id',
-                'Service.disabled',
-                'Service.name',
-                'Service.uuid',
-                'Service.service_type',
-                'Host.id',
-                'Host.name'
-            ],
-            'conditions' => [
-                'Service.id' => $id,
-
-            ],
-        ];
-
-        if (!$this->hasRootPrivileges) {
-            $query['conditions']['HostsToContainers.container_id'] = $this->MY_RIGHTS;
-        }
-
-        $service = $this->Service->find('first', $query);
-        if (!empty($service)) {
-            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields->currentState()->isFlapping()->perfdata();
-            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
-
-            if (!empty($servicestatus)) {
-                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
-            } else {
-                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
-                    ['Servicestatus' => []]
-                );
-            }
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
-            $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
-
-
-            $serviceForJs = [
-                'Host'          => $Host->toArray(),
-                'Service'       => $Service->toArray(),
-                'Servicestatus' => $Servicestatus->toArray(),
-                'Perfdata'      => $PerfdataParser->parse()
+        if ($id === null) {
+            return [
+                'Service'       => [],
+                'Servicestatus' => []
             ];
-
-            $serviceForJs['Service']['isGenericService'] = $service['Service']['service_type'] == GENERIC_SERVICE;
-            $serviceForJs['Service']['isEVCService'] = $service['Service']['service_type'] == EVK_SERVICE;
-            $serviceForJs['Service']['isSLAService'] = $service['Service']['service_type'] == SLA_SERVICE;
-            $serviceForJs['Service']['isMkService'] = $service['Service']['service_type'] == MK_SERVICE;
-
-            $serviceForJs['Service']['id'] = (int)$serviceForJs['Service']['id'];
-            $serviceForJs['Host']['id'] = (int)$serviceForJs['Host']['id'];
-
-            return $serviceForJs;
         }
+
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+
+        $service = $ServicesTable->getServiceById($id);
+        if ($service) {
+            if ($this->allowedByContainerId($service->get('host')->getContainerIds())) {
+
+                $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+                $ServicestatusFields->currentState()->isFlapping()->perfdata();
+                $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+
+                if (!empty($servicestatus)) {
+                    $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
+                } else {
+                    $Servicestatus = new Servicestatus([
+                        'Servicestatus' => []
+                    ]);
+                }
+                $Host = new Host($service['host']);
+                $Service = new Service($service->toArray());
+                $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
+
+
+                $serviceForJs = [
+                    'Host'          => $Host->toArray(),
+                    'Service'       => $Service->toArray(),
+                    'Servicestatus' => $Servicestatus->toArray(),
+                    'Perfdata'      => $PerfdataParser->parse()
+                ];
+
+                $serviceForJs['Service']['isGenericService'] = $service['Service']['service_type'] == GENERIC_SERVICE;
+                $serviceForJs['Service']['isEVCService'] = $service['Service']['service_type'] == EVK_SERVICE;
+                $serviceForJs['Service']['isSLAService'] = $service['Service']['service_type'] == SLA_SERVICE;
+                $serviceForJs['Service']['isMkService'] = $service['Service']['service_type'] == MK_SERVICE;
+
+                $serviceForJs['Service']['id'] = (int)$serviceForJs['Service']['id'];
+                $serviceForJs['Host']['id'] = (int)$serviceForJs['Host']['id'];
+
+                return $serviceForJs;
+            }
+        }
+
         return [
             'Service'       => [],
             'Servicestatus' => []
@@ -1431,7 +1386,6 @@ class DashboardsController extends AppController {
 
     /**
      * @return array
-     * @deprecated
      */
     private function getAcls() {
         $acl = [
@@ -1461,36 +1415,40 @@ class DashboardsController extends AppController {
         }
         $HostStatusOverviewJson = new HostStatusOverviewJson();
 
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
         if ($this->request->is('get')) {
-            $widgetId = (int)$this->request->query('widgetId');
-            if (!$this->Widget->exists($widgetId)) {
-                throw new NotFoundException('Widget not found');
+            $widgetId = (int)$this->request->getQuery('widgetId');
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new \RuntimeException('Invalid widget id');
             }
 
-            $widget = $this->Widget->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ]
-            ]);
+            $widget = $WidgetsTable->get($widgetId);
 
             $data = [];
-            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
-                $data = json_decode($widget['Widget']['json_data'], true);
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
             }
             $config = $HostStatusOverviewJson->standardizedData($data);
 
             if ($this->DbBackend->isNdoUtils()) {
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+
                 $query = $this->Host->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
                 $modelName = 'Host';
             }
 
             if ($this->DbBackend->isCrateDb()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
                 $query = $this->Hoststatus->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
                 $modelName = 'Hoststatus';
             }
 
             if ($this->DbBackend->isStatusengine3()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
                 $query = $this->Host->getHoststatusBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
                 $modelName = 'Host';
             }
@@ -1503,15 +1461,26 @@ class DashboardsController extends AppController {
 
         if ($this->request->is('post')) {
             $config = $HostStatusOverviewJson->standardizedData($this->request->data);
+            $widgetId = (int)$this->request->getData('Widget.id', 0);
 
-            $this->Widget->id = (int)$this->request->data('Widget.id');;
-            $this->Widget->saveField('json_data', json_encode($config));
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new \RuntimeException('Invalid widget id');
+            }
+            $widget = $WidgetsTable->get($widgetId);
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode($config)
+            ]);
+
+            $WidgetsTable->save($widget);
+
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
+            }
 
             $this->set('config', $config);
             $this->viewBuilder()->setOption('serialize', ['config']);
             return;
         }
-
 
         throw new MethodNotAllowedException();
     }
@@ -1581,40 +1550,35 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
-    /**
-     * @deprecated
-     */
-    public function getPerformanceDataMetrics($serviceId) {
+    public function getPerformanceDataMetrics($serviceId = 0) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->Service->exists($serviceId)) {
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        $ServicestatusTable = $this->DbBackend->getServicestatusTable();
+
+        if (!$ServicesTable->existsById($serviceId)) {
             throw new NotFoundException();
         }
 
-        $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
-                'Service.id',
-                'Service.uuid'
-            ],
-            'conditions' => [
-                'Service.id' => $serviceId,
-            ],
-        ]);
+        $service = $ServicesTable->getServiceById($serviceId);
+        if ($service) {
+            if ($this->allowedByContainerId($service->get('host')->getContainerIds())) {
+                $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+                $ServicestatusFields->perfdata();
+                $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
 
-
-        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-        $ServicestatusFields->perfdata();
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
-
-        if (!empty($servicestatus)) {
-            $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
-            $this->set('perfdata', $PerfdataParser->parse());
-            $this->viewBuilder()->setOption('serialize', ['perfdata']);
-            return;
+                if (!empty($servicestatus)) {
+                    $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
+                    $this->set('perfdata', $PerfdataParser->parse());
+                    $this->viewBuilder()->setOption('serialize', ['perfdata']);
+                    return;
+                }
+            }
         }
+
         $this->set('perfdata', []);
         $this->viewBuilder()->setOption('serialize', ['perfdata']);
     }

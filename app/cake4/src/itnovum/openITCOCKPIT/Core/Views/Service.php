@@ -96,8 +96,16 @@ class Service {
                 'Service' => $service
             ];
 
+            if(isset($service['Service']['servicetemplate'])){
+                $service['Servicetemplate'] = $service['Service']['servicetemplate'];
+            }
+
             if(isset($service['Service']['_matchingData']['Servicetemplates'])){
                 $service['Servicetemplate'] = $service['Service']['_matchingData']['Servicetemplates'];
+            }
+
+            if(isset($service['Service']['host'])){
+                $service['Host'] = $service['Service']['host'];
             }
 
             if(isset($service['Service']['_matchingData']['Hosts'])){

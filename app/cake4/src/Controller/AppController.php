@@ -325,19 +325,20 @@ class AppController extends Controller {
             $this->viewBuilder()->setOption('serialize', ['status', 'statusText']);
         }
 
+        $this->response = $this->response->withStatus(403);
         $this->render('/Errors/error403');
-        return $this->response->withStatus(403);
+        return;
     }
 
     /**
      * @param EntityInterface $entity
-     * @return \Cake\Http\Response
      */
     protected function serializeCake4ErrorMessage(EntityInterface $entity) {
         $this->set('error', $entity->getErrors());
         $this->set('_serialize', ['error']);
         if ($this->isAngularJsRequest()) {
-            return $this->response->withStatus(400);
+            $this->response = $this->response->withStatus(400);
+            return;
         }
     }
 
@@ -502,5 +503,17 @@ class AppController extends Controller {
         ];
 
         return $userPermissions;
+    }
+
+    /**
+     * @param EntityInterface $entity
+     */
+    protected function serializeCake4Id(EntityInterface $entity) {
+
+        if (!$this->isJsonRequest()) {
+            return;
+        }
+        $this->set('id', $entity->id);
+        $this->set('_serialize', ['id']);
     }
 }

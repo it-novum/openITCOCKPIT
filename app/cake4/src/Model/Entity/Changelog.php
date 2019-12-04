@@ -33,17 +33,15 @@ class Changelog extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'model'                    => true,
-        'action'                   => true,
-        'object_id'                => true,
-        'objecttype_id'            => true,
-        'user_id'                  => true,
-        'data'                     => true,
-        'name'                     => true,
-        'created'                  => true,
-        'object'                   => true,
-        'objecttype'               => true,
-        'user'                     => true,
-        'changelogs_to_containers' => true
+        'model'         => true,
+        'action'        => true,
+        'object_id'     => true,
+        'objecttype_id' => true,
+        'user_id'       => true,
+        'data'          => true,
+        'name'          => true,
+        'created'       => true,
+        'user'          => true,
+        'containers'    => true
     ];
 }
