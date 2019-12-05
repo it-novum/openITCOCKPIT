@@ -32,7 +32,6 @@ use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\ServiceescalationsTable;
 use App\Model\Table\ServicegroupsTable;
-use App\Model\Table\ServicesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;

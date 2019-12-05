@@ -141,7 +141,7 @@ class ContactgroupsController extends AppController {
                 $User = new User($this->getUser());
                 $extDataForChangelog = $ContactgroupsTable->resolveDataForChangelog($this->request->data);
                 Cache::clear(false, 'permissions');
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -221,7 +221,7 @@ class ContactgroupsController extends AppController {
             } else {
                 //No errors
 
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -304,10 +304,10 @@ class ContactgroupsController extends AppController {
         if ($ContainersTable->delete($container)) {
             $User = new User($this->getUser());
             Cache::clear(false, 'permissions');
-                            /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'contactgroup',
                 $id,
@@ -412,10 +412,10 @@ class ContactgroupsController extends AppController {
                     //No errors
                     $postData[$index]['Contactgroup']['id'] = $newContactgroupEntity->get('id');
 
-                                    /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'contactgroups',
                         $postData[$index]['Contactgroup']['id'],
@@ -426,10 +426,10 @@ class ContactgroupsController extends AppController {
                         ['Contactgroup' => $newContactgroupData]
                     );
                     if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
                 }
             }
         }

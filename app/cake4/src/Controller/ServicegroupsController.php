@@ -160,7 +160,7 @@ class ServicegroupsController extends AppController {
                 //No errors
 
                 $extDataForChangelog = $ServicegroupsTable->resolveDataForChangelog($this->request->data);
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -242,7 +242,7 @@ class ServicegroupsController extends AppController {
             } else {
                 //No errors
 
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -303,10 +303,10 @@ class ServicegroupsController extends AppController {
 
         if ($ContainersTable->delete($container)) {
             $User = new User($this->getUser());
-                            /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'servicegroups',
                 $id,
@@ -445,7 +445,7 @@ class ServicegroupsController extends AppController {
                 ];
 
                 //No errors
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(

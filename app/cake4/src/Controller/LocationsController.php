@@ -128,7 +128,7 @@ class LocationsController extends AppController {
             } else {
                 $User = new User($this->getUser());
 
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -217,7 +217,7 @@ class LocationsController extends AppController {
                 return;
             } else {
                 $User = new User($this->getUser());
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -281,10 +281,10 @@ class LocationsController extends AppController {
 
         if ($ContainersTable->delete($container)) {
             $User = new User($this->getUser());
-                            /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'locations',
                 $id,

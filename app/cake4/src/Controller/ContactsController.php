@@ -41,7 +41,6 @@ use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Permissions\ContactContainersPermissions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -155,7 +154,7 @@ class ContactsController extends AppController {
 
                 $extDataForChangelog = $ContactsTable->resolveDataForChangelog($this->request->data);
 
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -248,7 +247,7 @@ class ContactsController extends AppController {
             } else {
                 //No errors
 
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -338,10 +337,10 @@ class ContactsController extends AppController {
         $contactEntity = $ContactsTable->get($id);
         if ($ContactsTable->delete($contactEntity)) {
             $User = new User($this->getUser());
-                            /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'contacts',
                 $id,
@@ -475,10 +474,10 @@ class ContactsController extends AppController {
                     //No errors
                     $postData[$index]['Contact']['id'] = $newContactEntity->get('id');
 
-                                    /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'contacts',
                         $postData[$index]['Contact']['id'],
@@ -489,10 +488,10 @@ class ContactsController extends AppController {
                         ['Contact' => $newContactData]
                     );
                     if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
                 }
             }
         }

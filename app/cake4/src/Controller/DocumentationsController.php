@@ -196,7 +196,7 @@ class DocumentationsController extends AppController {
                 'uuid'    => $uuid
             ]);
 
-            if(strlen(trim($content)) > 0) {
+            if (strlen(trim($content)) > 0) {
                 $DocumentationsTable->save($entity);
                 if ($entity->hasErrors()) {
                     $this->response = $this->response->withStatus(400);
@@ -204,7 +204,7 @@ class DocumentationsController extends AppController {
                     $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
                 }
-            }else{
+            } else {
                 //Delete existing record if any
                 $DocumentationsTable->deleteDocumentationByUuid($uuid);
             }

@@ -32,7 +32,6 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\UsersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 
 

@@ -33,7 +33,6 @@ use App\Model\Table\TenantsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
-use FreeDSx\Ldap\Entry\Change;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
 
@@ -139,7 +138,7 @@ class TenantsController extends AppController {
             } else {
                 $User = new User($this->getUser());
 
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -229,7 +228,7 @@ class TenantsController extends AppController {
                 return;
             } else {
                 $User = new User($this->getUser());
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -300,7 +299,7 @@ class TenantsController extends AppController {
                 Cache::clear(false, 'permissions');
 
                 $User = new User($this->getUser());
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(

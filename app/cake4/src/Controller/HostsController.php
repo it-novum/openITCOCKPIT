@@ -548,7 +548,7 @@ class HostsController extends AppController {
                 $User = new User($this->getUser());
 
                 $extDataForChangelog = $HostsTable->resolveDataForChangelog($this->request->data);
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -706,7 +706,7 @@ class HostsController extends AppController {
             } else {
                 //No errors
 
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -825,7 +825,7 @@ class HostsController extends AppController {
                 //No errors
 
                 // @todo fix changelog
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -1527,10 +1527,10 @@ class HostsController extends AppController {
                     $this->Host->create();
                     if ($this->Host->saveAll($data)) {
                         $hostDataAfterSave = $this->Host->dataForChangelogCopy($dataForChangeLog[$sourceHostId]['Host'], $dataForChangeLog[$sourceHostId]['Hosttemplate']);
-                                        /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                        /** @var  ChangelogsTable $ChangelogsTable */
+                        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                        $changelog_data = $ChangelogsTable->parseDataForChangelog(
                             $this->request->getParam('action'),
                             $this->request->getParam('controller'),
                             $this->Host->id,
@@ -1541,10 +1541,10 @@ class HostsController extends AppController {
                             $hostDataAfterSave
                         );
                         if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+                            /** @var Changelog $changelogEntry */
+                            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                            $ChangelogsTable->save($changelogEntry);
+                        }
                         $hostId = $this->Host->id;
                         $services = $this->Service->find('all', [
                             'recursive'  => -1,
@@ -1840,10 +1840,10 @@ class HostsController extends AppController {
                             $this->Service->create();
                             if ($this->Service->saveAll($newServiceData)) {
                                 $serviceDataAfterSave = $this->Service->dataForChangelogCopy($service, $servicetemplate);
-                                                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                                     $this->request->getParam('action'),
                                     'services',
                                     $this->Service->id,
@@ -1854,10 +1854,10 @@ class HostsController extends AppController {
                                     $serviceDataAfterSave
                                 );
                                 if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+                                    /** @var Changelog $changelogEntry */
+                                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                                    $ChangelogsTable->save($changelogEntry);
+                                }
                             }
                         }
                     }

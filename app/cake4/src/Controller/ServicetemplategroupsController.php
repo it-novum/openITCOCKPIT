@@ -151,10 +151,10 @@ class ServicetemplategroupsController extends AppController {
             $User = new User($this->getUser());
 
             $extDataForChangelog = $ServicetemplategroupsTable->resolveDataForChangelog($this->request->data);
-                            /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'add',
                 'servicetemplategroups',
                 $servicetemplategroup->get('id'),
@@ -233,7 +233,7 @@ class ServicetemplategroupsController extends AppController {
             } else {
                 //No errors
 
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -369,7 +369,7 @@ class ServicetemplategroupsController extends AppController {
                 ];
 
                 //No errors
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -437,10 +437,10 @@ class ServicetemplategroupsController extends AppController {
         if ($ContainersTable->delete($container)) {
             $User = new User($this->getUser());
             Cache::clear(false, 'permissions');
-                            /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'servicetemplategroups',
                 $id,
@@ -595,10 +595,10 @@ class ServicetemplategroupsController extends AppController {
                     //No errors
 
                     $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
-                                    /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         'add',
                         'services',
                         $service->get('id'),
@@ -610,10 +610,10 @@ class ServicetemplategroupsController extends AppController {
                     );
 
                     if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
 
                     $newServiceIds[] = $service->get('id');
                 }
@@ -773,10 +773,10 @@ class ServicetemplategroupsController extends AppController {
                     //No errors
 
                     $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
-                                    /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         'add',
                         'services',
                         $service->get('id'),
@@ -788,10 +788,10 @@ class ServicetemplategroupsController extends AppController {
                     );
 
                     if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
 
                     $newServiceIds[] = $service->get('id');
                 }
@@ -941,10 +941,10 @@ class ServicetemplategroupsController extends AppController {
                         //No errors
 
                         $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
-                                        /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                        /** @var  ChangelogsTable $ChangelogsTable */
+                        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                        $changelog_data = $ChangelogsTable->parseDataForChangelog(
                             'add',
                             'services',
                             $service->get('id'),
@@ -956,10 +956,10 @@ class ServicetemplategroupsController extends AppController {
                         );
 
                         if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+                            /** @var Changelog $changelogEntry */
+                            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                            $ChangelogsTable->save($changelogEntry);
+                        }
 
                         $newServiceIds[] = $service->get('id');
                     }

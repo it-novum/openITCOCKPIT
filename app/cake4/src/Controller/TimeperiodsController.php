@@ -28,7 +28,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\ContactsTable;
-use App\Model\Table\HostescalationsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -154,7 +153,7 @@ class TimeperiodsController extends AppController {
                 $userId = $this->Auth->user('id');
                 $requestData = $this->request->data;
 
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -209,7 +208,7 @@ class TimeperiodsController extends AppController {
                 //No errors
                 $User = new User($this->getUser());
                 $requestData = $this->request->data;
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -367,10 +366,10 @@ class TimeperiodsController extends AppController {
         $timeperiodEntity = $TimeperiodsTable->get($id);
         if ($TimeperiodsTable->delete($timeperiodEntity)) {
             $User = new User($this->getUser());
-                            /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'timeperiods',
                 $id,
@@ -475,10 +474,10 @@ class TimeperiodsController extends AppController {
                     //No errors
                     $postData[$index]['Timeperiod']['id'] = $newTimeperiodEntity->get('id');
 
-                                    /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'timeperiods',
                         $postData[$index]['Timeperiod']['id'],
@@ -489,10 +488,10 @@ class TimeperiodsController extends AppController {
                         ['Timeperiod' => $newTimeperiodData]
                     );
                     if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
                 }
             }
         }

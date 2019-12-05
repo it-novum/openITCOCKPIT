@@ -62,11 +62,11 @@ class UsersController extends AppController {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $disableAnimation = $SystemsettingsTable->isLoginAnimationDisabled();
 
-        if($this->getRequest()->getQuery('remote')){
+        if ($this->getRequest()->getQuery('remote')) {
             $disableAnimation = true;
         }
 
-        if($disableAnimation){
+        if ($disableAnimation) {
             $images['particles'] = 'none';
         }
 
@@ -221,9 +221,9 @@ class UsersController extends AppController {
 
         //Rewrite hashmap to array because javascript will break the "orderd hashmap" because hashmaps have no order
         $usergroups = [];
-        foreach($_usergroups as $id => $name){
+        foreach ($_usergroups as $id => $name) {
             $usergroups[] = [
-                'key' => $id,
+                'key'   => $id,
                 'value' => $name
             ];
         }

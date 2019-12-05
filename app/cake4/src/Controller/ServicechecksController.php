@@ -26,6 +26,7 @@
 declare(strict_types=1);
 
 namespace App\Controller;
+
 use App\Model\Table\ServicesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\ServicechecksControllerRequest;

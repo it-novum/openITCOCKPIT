@@ -76,7 +76,7 @@ class BrowsersController extends AppController {
             return;
         }
 
-        if($containerId === null){
+        if ($containerId === null) {
             throw new BadRequestException("containerId is missing");
         }
         $containerId = (int)$containerId;

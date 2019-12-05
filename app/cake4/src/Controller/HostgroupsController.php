@@ -168,7 +168,7 @@ class HostgroupsController extends AppController {
                 //No errors
 
                 $extDataForChangelog = $HostgroupsTable->resolveDataForChangelog($this->request->data);
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -249,7 +249,7 @@ class HostgroupsController extends AppController {
             } else {
                 //No errors
 
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -310,10 +310,10 @@ class HostgroupsController extends AppController {
 
         if ($ContainersTable->delete($container)) {
             $User = new User($this->getUser());
-                            /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'hostgroups',
                 $id,
@@ -480,7 +480,7 @@ class HostgroupsController extends AppController {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         $MY_RIGHTS = [];
-        if(!$this->hasRootPrivileges){
+        if (!$this->hasRootPrivileges) {
             $MY_RIGHTS = $this->MY_RIGHTS;
         }
         $HostgroupFilter = new HostgroupFilter($this->request);
@@ -494,7 +494,7 @@ class HostgroupsController extends AppController {
         $numberOfHosts = 0;
 
         $all_hostgroups = [];
-        foreach($hostgroups as $hostgroup) {
+        foreach ($hostgroups as $hostgroup) {
             /** @var \App\Model\Entity\Hostgroup $hostgroup */
 
             $hostIds = $HostgroupsTable->getHostIdsByHostgroupId($hostgroup->get('id'));
@@ -529,8 +529,8 @@ class HostgroupsController extends AppController {
             $hoststatusOfHostgroup = $HoststatusTable->byUuids($hostgroupHostUuids, $HoststatusFields);
 
             $all_hostgroups[] = [
-                'Hostgroup' => $hostgroup->toArray(),
-                'Hosts' => $hosts,
+                'Hostgroup'  => $hostgroup->toArray(),
+                'Hosts'      => $hosts,
                 'Hoststatus' => $hoststatusOfHostgroup
             ];
         }
@@ -669,7 +669,7 @@ class HostgroupsController extends AppController {
                 ];
 
                 //No errors
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(

@@ -577,7 +577,7 @@ class ServicesController extends AppController {
                 $User = new User($this->getUser());
 
                 $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -734,7 +734,7 @@ class ServicesController extends AppController {
 
                 $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
 
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -1084,10 +1084,10 @@ class ServicesController extends AppController {
                     $postData[$index]['Service']['id'] = $newServiceEntity->get('id');
 
                     if ($action === 'copy') {
-                                        /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                        /** @var  ChangelogsTable $ChangelogsTable */
+                        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                        $changelog_data = $ChangelogsTable->parseDataForChangelog(
                             $action,
                             'services',
                             $postData[$index]['Service']['id'],
@@ -1098,10 +1098,10 @@ class ServicesController extends AppController {
                             $serviceData
                         );
                     } else {
-                                        /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                        /** @var  ChangelogsTable $ChangelogsTable */
+                        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                        $changelog_data = $ChangelogsTable->parseDataForChangelog(
                             $action,
                             'services',
                             $postData[$index]['Service']['id'],
@@ -1115,10 +1115,10 @@ class ServicesController extends AppController {
                     }
 
                     if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
                 }
             }
         }
@@ -1411,7 +1411,7 @@ class ServicesController extends AppController {
         $mergedService['has_graph'] = $PerfdataChecker->hasPerfdata();
         $mergedService['allowEdit'] = $allowEdit;
 
-        if(empty($Servicestatus->getPerfdata()) && $mergedService['has_graph'] === true && $this->PerfdataBackend->isWhisper()){
+        if (empty($Servicestatus->getPerfdata()) && $mergedService['has_graph'] === true && $this->PerfdataBackend->isWhisper()) {
             //Query graphite backend to get available metrics - used if perfdata string is empty for example on unknown state
 
             $mergedService['Perfdata'] = [];
@@ -1420,18 +1420,18 @@ class ServicesController extends AppController {
             $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
             $metrics = $GraphiteLoader->findMetricsByUuid($hostObj->getUuid(), $serviceObj->getUuid());
 
-            foreach($metrics as $metric){
+            foreach ($metrics as $metric) {
                 $mergedService['Perfdata'][$metric] = [
-                    'current' => null,
-                    'unit' => null,
-                    'warning' => null,
+                    'current'  => null,
+                    'unit'     => null,
+                    'warning'  => null,
                     'critical' => null,
-                    'min' => null,
-                    'max' => null
+                    'min'      => null,
+                    'max'      => null
                 ];
             }
 
-        }else{
+        } else {
             //Parse perfdata string from database to get metrics - this is the default
             $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
             $mergedService['Perfdata'] = $PerfdataParser->parse();

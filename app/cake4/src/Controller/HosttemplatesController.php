@@ -156,7 +156,7 @@ class HosttemplatesController extends AppController {
                 $User = new User($this->getUser());
 
                 $extDataForChangelog = $HosttemplatesTable->resolveDataForChangelog($this->request->data);
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -241,7 +241,7 @@ class HosttemplatesController extends AppController {
             } else {
                 //No errors
 
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -315,10 +315,10 @@ class HosttemplatesController extends AppController {
 
         if ($HosttemplatesTable->delete($hosttemplate)) {
             $User = new User($this->getUser());
-                            /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'hosttemplates',
                 $id,
@@ -431,10 +431,10 @@ class HosttemplatesController extends AppController {
                     //No errors
                     $postData[$index]['Hosttemplate']['id'] = $newHosttemplateEntity->get('id');
 
-                                    /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'hosttemplates',
                         $postData[$index]['Hosttemplate']['id'],
@@ -445,10 +445,10 @@ class HosttemplatesController extends AppController {
                         ['Hosttemplate' => $newHosttemplateData]
                     );
                     if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
                 }
             }
         }
@@ -494,7 +494,7 @@ class HosttemplatesController extends AppController {
         $filter = $HosttemplateFilter->usedByFilter();
 
         $includeDisabled = true;
-        if(isset($filter['Hosts.disabled']) && $filter['Hosts.disabled'] === 0){
+        if (isset($filter['Hosts.disabled']) && $filter['Hosts.disabled'] === 0) {
             $includeDisabled = false;
         }
 
@@ -702,15 +702,15 @@ class HosttemplatesController extends AppController {
         // Merge new command arguments that are missing in the host template to host template command arguments
         // and remove old command arguments that don't exists in the command anymore.
         $filteredCommandArgumentsValules = [];
-        foreach ($commandarguments as $commandargument){
+        foreach ($commandarguments as $commandargument) {
             $valueExists = false;
-            foreach($hosttemplatecommandargumentvalues as $hosttemplatecommandargumentvalue){
-                if($commandargument['Commandargument']['id'] === $hosttemplatecommandargumentvalue['commandargument_id']){
+            foreach ($hosttemplatecommandargumentvalues as $hosttemplatecommandargumentvalue) {
+                if ($commandargument['Commandargument']['id'] === $hosttemplatecommandargumentvalue['commandargument_id']) {
                     $filteredCommandArgumentsValules[] = $hosttemplatecommandargumentvalue;
                     $valueExists = true;
                 }
             }
-            if(!$valueExists){
+            if (!$valueExists) {
                 $filteredCommandArgumentsValules[] = [
                     'commandargument_id' => $commandargument['Commandargument']['id'],
                     'value'              => '',

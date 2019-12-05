@@ -100,11 +100,11 @@ class UsergroupsController extends AppController {
 */
         $usergroup = $UsergroupsTable->getUsergroupById($id);
 
-/*
-        $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
-        $acoDependencies = $UsergroupsTable->getAcoDependencies($acos);
-        $dependentAcoIds = $UsergroupsTable->getAcoDependencyIds($acoDependencies);
-*/
+        /*
+                $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
+                $acoDependencies = $UsergroupsTable->getAcoDependencies($acos);
+                $dependentAcoIds = $UsergroupsTable->getAcoDependencyIds($acoDependencies);
+        */
         $allAcos = $this->Acl->Aco->find('threaded', [
             'recursive' => -1,
         ]);
@@ -205,7 +205,7 @@ class UsergroupsController extends AppController {
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
 
         $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
-        $acoDependencies =$UsergroupsTable->getAcoDependencies($acos);
+        $acoDependencies = $UsergroupsTable->getAcoDependencies($acos);
         $dependenAcoIds = $UsergroupsTable->getAcoDependencyIds($acoDependencies);
 
         if ($this->request->is('post') || $this->request->is('put')) {

@@ -38,7 +38,6 @@ use Cake\Cache\Cache;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
-use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Menu\Menu;
@@ -333,7 +332,7 @@ class AngularController extends AppController {
         if (!Cache::read($cacheKey, 'permissions')) {
             $Menu = new Menu($this->PERMISSIONS);
             $jsonMenu = [];
-            foreach ($Menu->getMenuItems() as $headline){
+            foreach ($Menu->getMenuItems() as $headline) {
                 $jsonMenu[] = $headline->toArray();
             }
 

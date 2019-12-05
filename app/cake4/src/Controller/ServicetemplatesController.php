@@ -160,7 +160,7 @@ class ServicetemplatesController extends AppController {
                 $User = new User($this->getUser());
 
                 $extDataForChangelog = $ServicetemplatesTable->resolveDataForChangelog($this->request->data);
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -256,7 +256,7 @@ class ServicetemplatesController extends AppController {
             } else {
                 //No errors
 
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -320,7 +320,7 @@ class ServicetemplatesController extends AppController {
         if ($this->Servicetemplate->__allowDelete($id)) {
             $User = new User($this->getUser());
             if ($this->Servicetemplate->delete()) {
-                                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -466,10 +466,10 @@ class ServicetemplatesController extends AppController {
                     //No errors
                     $postData[$index]['Servicetemplate']['id'] = $newServicetemplateEntity->get('id');
 
-                                    /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'servicetemplates',
                         $postData[$index]['Servicetemplate']['id'],
@@ -480,10 +480,10 @@ class ServicetemplatesController extends AppController {
                         ['Servicetemplate' => $newServicetemplateData]
                     );
                     if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
+                    }
                 }
             }
         }
@@ -740,15 +740,15 @@ class ServicetemplatesController extends AppController {
         // Merge new command arguments that are missing in the service template to service template command arguments
         // and remove old command arguments that don't exists in the command anymore.
         $filteredCommandArgumentsValules = [];
-        foreach ($commandarguments as $commandargument){
+        foreach ($commandarguments as $commandargument) {
             $valueExists = false;
-            foreach($servicetemplatecommandargumentvalues as $servicetemplatecommandargumentvalue){
-                if($commandargument['Commandargument']['id'] === $servicetemplatecommandargumentvalue['commandargument_id']){
+            foreach ($servicetemplatecommandargumentvalues as $servicetemplatecommandargumentvalue) {
+                if ($commandargument['Commandargument']['id'] === $servicetemplatecommandargumentvalue['commandargument_id']) {
                     $filteredCommandArgumentsValules[] = $servicetemplatecommandargumentvalue;
                     $valueExists = true;
                 }
             }
-            if(!$valueExists){
+            if (!$valueExists) {
                 $filteredCommandArgumentsValules[] = [
                     'commandargument_id' => $commandargument['Commandargument']['id'],
                     'value'              => '',
