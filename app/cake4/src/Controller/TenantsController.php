@@ -27,15 +27,16 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\TenantsTable;
-use Cake\Http\Exception\MethodNotAllowedException;
-use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
-use FreeDSx\Ldap\Entry\Change;
+use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
+
 
 /**
  * @property Tenant $Tenant
@@ -65,7 +66,7 @@ class TenantsController extends AppController {
         $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
         $TenantFilter = new TenantFilter($this->request);
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $TenantFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $TenantFilter->getPage());
         $all_tenants = $TenantsTable->getTenantsIndex($TenantFilter, $PaginateOMat);
 
         foreach ($all_tenants as $key => $tenant) {
@@ -139,7 +140,10 @@ class TenantsController extends AppController {
             } else {
                 $User = new User($this->getUser());
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'tenants',
                     $tenant->get('id'),
@@ -152,13 +156,15 @@ class TenantsController extends AppController {
                     ]
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 //@todo refactor with cake4
                 Cache::clear(false, 'permissions');
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($tenant); // REST API ID serialization
                     return;
                 }
@@ -224,7 +230,10 @@ class TenantsController extends AppController {
                 return;
             } else {
                 $User = new User($this->getUser());
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'tenants',
                     $tenant->get('id'),
@@ -240,13 +249,15 @@ class TenantsController extends AppController {
                     ]
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 //@todo refactor with cake4
                 Cache::clear(false, 'permissions');
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($tenant); // REST API ID serialization
                     return;
                 }
@@ -290,7 +301,10 @@ class TenantsController extends AppController {
                 Cache::clear(false, 'permissions');
 
                 $User = new User($this->getUser());
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'delete',
                     'tenants',
                     $id,
@@ -301,7 +315,9 @@ class TenantsController extends AppController {
                     []
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 $this->set('message', __('Tenant deleted successfully'));

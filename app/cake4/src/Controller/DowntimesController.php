@@ -27,10 +27,12 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Lib\Interfaces\DowntimehistoryServicesTableInterface;
 use App\Model\Table\HostsTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\HostDowntimesControllerRequest;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\ServiceDowntimesControllerRequest;
@@ -38,7 +40,11 @@ use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\Downtime;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
@@ -59,7 +65,7 @@ class DowntimesController extends AppController {
         }
 
         $HostDowntimesControllerRequest = new HostDowntimesControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostDowntimesControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostDowntimesControllerRequest->getPage());
 
         //Process conditions
         $DowntimeHostConditions = new DowntimeHostConditions();
@@ -112,8 +118,8 @@ class DowntimesController extends AppController {
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
 
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($hostDowntime->get('Hosts'), $allowEdit);
-            $HostDowntime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($hostDowntime->toArray(), $allowEdit, $UserTime);
+            $Host = new Host($hostDowntime->get('Hosts'), $allowEdit);
+            $HostDowntime = new Downtime($hostDowntime->toArray(), $allowEdit, $UserTime);
 
             $all_host_downtimes[] = [
                 'Host'         => $Host->toArray(),
@@ -136,7 +142,7 @@ class DowntimesController extends AppController {
         }
 
         $ServiceDowntimesControllerRequest = new ServiceDowntimesControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceDowntimesControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceDowntimesControllerRequest->getPage());
 
         //Process conditions
         $DowntimeServiceConditions = new DowntimeServiceConditions();
@@ -192,9 +198,9 @@ class DowntimesController extends AppController {
             }
 
 
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($serviceDowntime->get('Hosts'), $allowEdit);
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($serviceDowntime->get('Services'), $serviceDowntime->get('servicename'), $allowEdit);
-            $ServiceDowntime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($serviceDowntime->toArray(), $allowEdit, $UserTime);
+            $Host = new Host($serviceDowntime->get('Hosts'), $allowEdit);
+            $Service = new Service($serviceDowntime->get('Services'), $serviceDowntime->get('servicename'), $allowEdit);
+            $ServiceDowntime = new Downtime($serviceDowntime->toArray(), $allowEdit, $UserTime);
 
             $all_service_downtimes[] = [
                 'Host'            => $Host->toArray(),
@@ -263,7 +269,7 @@ class DowntimesController extends AppController {
 
     /**
      * @param int $internalDowntimeId
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     public function delete($internalDowntimeId = null) {
         if (!$this->request->is('post')) {
@@ -297,7 +303,7 @@ class DowntimesController extends AppController {
                     //Find current downtime
                     $downtime = $DowntimeHostsTable->getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId);
                     if (!empty($downtime)) {
-                        $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHosts']);
+                        $Downtime = new Downtime($downtime['DowntimeHosts']);
                         try {
                             $host = $HostsTable->getHostByUuid($downtime['Hosts']['uuid']);
                             $servicesInternalDowntimeIds = $DowntimeServicesTable->getServiceDowntimesByHostAndDowntime(

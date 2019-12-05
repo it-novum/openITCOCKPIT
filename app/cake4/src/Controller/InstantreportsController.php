@@ -28,17 +28,22 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Form\InstantreportForm;
+use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\InstantreportsTable;
 use App\Model\Table\SystemfailuresTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\Reports\DowntimesMerger;
@@ -46,9 +51,14 @@ use itnovum\openITCOCKPIT\Core\Reports\StatehistoryConverter;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\Downtime;
+use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
+use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
+use Statusengine2Module\Model\Entity\DowntimeHost;
 use Statusengine2Module\Model\Table\StatehistoryHostsTable;
 
 
@@ -76,7 +86,7 @@ class InstantreportsController extends AppController {
         /** @var $InstantreportsTable InstantreportsTable */
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $InstantreportFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $InstantreportFilter->getPage());
         $MY_RIGHTS = [];
         if ($this->hasRootPrivileges === false) {
             /** @var $ContainersTable ContainersTable */
@@ -282,7 +292,7 @@ class InstantreportsController extends AppController {
      * @param $fromDate
      * @param $toDate
      * @return array|void
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     private function createReport($instantReportId, $fromDate, $toDate) {
         $User = new User($this->getUser());
@@ -375,7 +385,7 @@ class InstantreportsController extends AppController {
                     $DowntimeHostConditions
                 );
                 $hostDowntimeFormatted = [];
-                /** @var  $hostDowntimeObject \Statusengine2Module\Model\Entity\DowntimeHost */
+                /** @var  $hostDowntimeObject DowntimeHost */
                 foreach ($instantReportObjects['Hosts'][$hostId]['downtimes'] as $hostDowntimeObject) {
                     $hostDowntimeFormatted[] = [
                         'DowntimeHost' => [
@@ -397,7 +407,7 @@ class InstantreportsController extends AppController {
                 );
                 $downtimesAndSystemfailures = [];
                 foreach ($downtimes as $downtime) {
-                    $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost']);
+                    $DowntimeHost = new Downtime($downtime['DowntimeHost']);
                     $downtimesAndSystemfailures[] = [
                         'DowntimeHost' => $DowntimeHost->toArray()
                     ];
@@ -455,8 +465,8 @@ class InstantreportsController extends AppController {
                     ->lastStateChange();
                 $hoststatus = $HoststatusTable->byUuid($instantReportHostData['uuid'], $HoststatusFields);
                 if (!empty($hoststatus)) {
-                    /** @var \itnovum\openITCOCKPIT\Core\Hoststatus $Hoststatus */
-                    $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
+                    /** @var Hoststatus $Hoststatus */
+                    $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                     if ($Hoststatus->getLastStateChange() <= $fromDate) {
                         $stateHistoryHostTmp = [
                             'StatehistoryHost' => [
@@ -468,16 +478,16 @@ class InstantreportsController extends AppController {
                             ]
                         ];
 
-                        /** @var \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost $StatehistoryHost */
-                        $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
+                        /** @var StatehistoryHost $StatehistoryHost */
+                        $StatehistoryHost = new StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
                         $statehistoriesHost[] = $StatehistoryHost;
                     }
                 }
             }
 
             foreach ($statehistoriesHost as $statehistoryHost) {
-                /** @var StatehistoryHostsTable|\itnovum\openITCOCKPIT\Core\Views\StatehistoryHost $statehistoryHost */
-                $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistoryHost->toArray(), $UserTime);
+                /** @var StatehistoryHostsTable|StatehistoryHost $statehistoryHost */
+                $StatehistoryHost = new StatehistoryHost($statehistoryHost->toArray(), $UserTime);
                 $allStatehistories[] = $StatehistoryHost->toArray();
             }
 
@@ -589,7 +599,7 @@ class InstantreportsController extends AppController {
                 $statehistories = $this->StatehistoryHost->find('all', $query);
                 $all_statehistories[$hostUuid] = [];
                 foreach ($statehistories as $statehistory) {
-                    $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
+                    $StatehistoryHost = new StatehistoryHost($statehistory['StatehistoryHost']);
                     $all_statehistories[$hostUuid]['Statehistory'][] = $StatehistoryHost->toArray();
                 }
 
@@ -600,7 +610,7 @@ class InstantreportsController extends AppController {
                     $record = $this->StatehistoryHost->find('first', $query);
                     if (!empty($record)) {
                         $record['StatehistoryHost']['state_time'] = $startDateSqlFormat;
-                        $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+                        $StatehistoryHost = new StatehistoryHost($record['StatehistoryHost']);
                         $all_statehistories[$hostUuid]['Statehistory'][] = $StatehistoryHost->toArray();
                     }
                 }
@@ -628,7 +638,7 @@ class InstantreportsController extends AppController {
 
                     $downtimesAndSystemfailures = [];
                     foreach ($downtimes as $downtime) {
-                        $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost']);
+                        $DowntimeHost = new Downtime($downtime['DowntimeHost']);
                         $downtimesAndSystemfailures[] = [
                             'DowntimeHost' => $DowntimeHost->toArray()
                         ];
@@ -696,7 +706,7 @@ class InstantreportsController extends AppController {
 
                     $all_statehistories[$serviceUuid] = [];
                     foreach ($statehistories as $statehistory) {
-                        $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($statehistory['StatehistoryService']);
+                        $StatehistoryService = new StatehistoryService($statehistory['StatehistoryService']);
                         $all_statehistories[$serviceUuid]['Statehistory'][] = $StatehistoryService->toArray();
                     }
 
@@ -707,7 +717,7 @@ class InstantreportsController extends AppController {
                         $record = $this->StatehistoryService->find('first', $query);
                         if (!empty($record)) {
                             $record['StatehistoryService']['state_time'] = $startDateSqlFormat;
-                            $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record['StatehistoryService']);
+                            $StatehistoryService = new StatehistoryService($record['StatehistoryService']);
                             $all_statehistories[$serviceUuid]['Statehistory'][] = $StatehistoryService->toArray();
                         }
                     }
@@ -735,7 +745,7 @@ class InstantreportsController extends AppController {
 
                         $downtimesAndSystemfailures = [];
                         foreach ($downtimes as $downtime) {
-                            $DowntimeService = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeService']);
+                            $DowntimeService = new Downtime($downtime['DowntimeService']);
                             $downtimesAndSystemfailures[] = [
                                 'DowntimeService' => $DowntimeService->toArray()
                             ];

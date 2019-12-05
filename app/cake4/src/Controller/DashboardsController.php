@@ -27,7 +27,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
@@ -36,12 +35,10 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
-use Cake\Http\Exception\ForbiddenException;
-use Cake\Http\Exception\MethodNotAllowedException;
-use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeHostListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeServiceListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
@@ -51,12 +48,16 @@ use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
+use itnovum\openITCOCKPIT\Core\HoststatusConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
-use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
+use ParsedownExtra;
+use RuntimeException;
 use Statusengine\PerfdataParser;
+
 
 /**
  * Class DashboardsController
@@ -171,7 +172,7 @@ class DashboardsController extends AppController {
         }
 
         if (strlen($directiveName) < 2) {
-            throw new \RuntimeException('Wrong AngularJS directive name?');
+            throw new RuntimeException('Wrong AngularJS directive name?');
         }
         $this->set('directiveName', $directiveName);
     }
@@ -225,7 +226,7 @@ class DashboardsController extends AppController {
 
         $widget = $this->request->getData('Widget', []);
         if (!isset($widget['typeId']) || !isset($widget['dashboard_tab_id'])) {
-            throw new \RuntimeException('Missing parameter typeId || dashboard_tab_id');
+            throw new RuntimeException('Missing parameter typeId || dashboard_tab_id');
         }
 
         $widget['dashboard_tab_id'] = (int)$widget['dashboard_tab_id'];
@@ -278,7 +279,7 @@ class DashboardsController extends AppController {
 
         $widget = $this->request->getData('Widget', []);
         if (!isset($widget['id']) || !isset($widget['dashboard_tab_id'])) {
-            throw new \RuntimeException('Missing parameter id || dashboard_tab_id');
+            throw new RuntimeException('Missing parameter id || dashboard_tab_id');
         }
 
         $widget['id'] = (int)$widget['id'];
@@ -911,9 +912,9 @@ class DashboardsController extends AppController {
 
         $parentHosts = $this->Parenthost->find('all', $query);
         $hostUuids = Hash::extract($parentHosts, '{n}.Host.uuid');
-        $HoststatusFields = new \itnovum\openITCOCKPIT\Core\HoststatusFields($this->DbBackend);
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->currentState();
-        $HoststatusConditions = new \itnovum\openITCOCKPIT\Core\HoststatusConditions($this->DbBackend);
+        $HoststatusConditions = new HoststatusConditions($this->DbBackend);
         $HoststatusConditions->hostsDownAndUnreachable();
         $hoststatus = $this->Hoststatus->byUuid($hostUuids, $HoststatusFields, $HoststatusConditions);
         $query['conditions']['Host.uuid'] = array_keys($hoststatus);
@@ -1150,7 +1151,7 @@ class DashboardsController extends AppController {
             if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
                 $data = json_decode($widget->get('json_data'), true);
                 if (!empty($data['note'])) {
-                    $ParseDown = new \ParsedownExtra();
+                    $ParseDown = new ParsedownExtra();
                     $htmlContent = $ParseDown->text($data['note']);
                 }
             }
@@ -1197,7 +1198,7 @@ class DashboardsController extends AppController {
         if ($this->request->is('get')) {
             $widgetId = (int)$this->request->getQuery('widgetId');
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new \RuntimeException('Invalid widget id');
+                throw new RuntimeException('Invalid widget id');
             }
 
             $widget = $WidgetsTable->get($widgetId);
@@ -1228,7 +1229,7 @@ class DashboardsController extends AppController {
             $serviceId = (int)$this->request->getData('Widget.service_id', 0);
 
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new \RuntimeException('Invalid widget id');
+                throw new RuntimeException('Invalid widget id');
             }
             $widget = $WidgetsTable->get($widgetId);
             $widget = $WidgetsTable->patchEntity($widget, [
@@ -1266,7 +1267,7 @@ class DashboardsController extends AppController {
         if ($this->request->is('get')) {
             $widgetId = (int)$this->request->getQuery('widgetId');
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new \RuntimeException('Invalid widget id');
+                throw new RuntimeException('Invalid widget id');
             }
 
             $widget = $WidgetsTable->get($widgetId);
@@ -1297,7 +1298,7 @@ class DashboardsController extends AppController {
             $serviceId = (int)$this->request->getData('Widget.service_id', 0);
 
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new \RuntimeException('Invalid widget id');
+                throw new RuntimeException('Invalid widget id');
             }
             $widget = $WidgetsTable->get($widgetId);
             $widget = $WidgetsTable->patchEntity($widget, [
@@ -1412,7 +1413,7 @@ class DashboardsController extends AppController {
         if ($this->request->is('get')) {
             $widgetId = (int)$this->request->getQuery('widgetId');
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new \RuntimeException('Invalid widget id');
+                throw new RuntimeException('Invalid widget id');
             }
 
             $widget = $WidgetsTable->get($widgetId);
@@ -1452,7 +1453,7 @@ class DashboardsController extends AppController {
             $widgetId = (int)$this->request->getData('Widget.id', 0);
 
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new \RuntimeException('Invalid widget id');
+                throw new RuntimeException('Invalid widget id');
             }
             $widget = $WidgetsTable->get($widgetId);
             $widget = $WidgetsTable->patchEntity($widget, [
@@ -1486,7 +1487,7 @@ class DashboardsController extends AppController {
         if ($this->request->is('get')) {
             $widgetId = (int)$this->request->getQuery('widgetId');
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new \RuntimeException('Invalid widget id');
+                throw new RuntimeException('Invalid widget id');
             }
 
             $widget = $WidgetsTable->get($widgetId);
@@ -1527,7 +1528,7 @@ class DashboardsController extends AppController {
             $widgetId = (int)$this->request->getData('Widget.id', 0);
 
             if (!$WidgetsTable->existsById($widgetId)) {
-                throw new \RuntimeException('Invalid widget id');
+                throw new RuntimeException('Invalid widget id');
             }
             $widget = $WidgetsTable->get($widgetId);
             $widget = $WidgetsTable->patchEntity($widget, [

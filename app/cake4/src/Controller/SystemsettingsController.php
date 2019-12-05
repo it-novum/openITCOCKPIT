@@ -27,9 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use Cake\ORM\TableRegistry;
 use Cake\Cache\Cache;
-use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use Cake\ORM\TableRegistry;
 
 class SystemsettingsController extends AppController {
 
@@ -68,7 +67,7 @@ class SystemsettingsController extends AppController {
             //debug($result);
             if (!$result) {
                 $this->response = $this->response->withStatus(400);
-                $this->set('error',[]);
+                $this->set('error', []);
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }

@@ -27,29 +27,39 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Contact;
+use App\Model\Entity\Contactgroup;
+use App\Model\Entity\Container;
+use App\Model\Entity\Service;
+use App\Model\Entity\Serviceescalation;
+use App\Model\Entity\Servicegroup;
+use App\Model\Entity\Timeperiod;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\ServiceescalationsTable;
 use App\Model\Table\ServicegroupsTable;
-use App\Model\Table\ServicesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceescalationsFilter;
 
 /**
- * @property \App\Model\Entity\Serviceescalation $Serviceescalation
- * @property \App\Model\Entity\Timeperiod $Timeperiod
- * @property \App\Model\Entity\Service Service
- * @property \App\Model\Entity\Servicegroup $Servicegroup
- * @property \App\Model\Entity\Contact $Contact
- * @property \App\Model\Entity\Contactgroup $Contactgroup
+ * @property Serviceescalation $Serviceescalation
+ * @property Timeperiod $Timeperiod
+ * @property Service Service
+ * @property Servicegroup $Servicegroup
+ * @property Contact $Contact
+ * @property Contactgroup $Contactgroup
  * @property ServiceescalationServiceMembership $ServiceescalationServiceMembership
  * @property ServiceescalationServicegroupMembership $ServiceescalationServicegroupMembership
- * @property \App\Model\Entity\Container $Container
+ * @property Container $Container
  */
 class ServiceescalationsController extends AppController {
 
@@ -66,7 +76,7 @@ class ServiceescalationsController extends AppController {
         $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
 
         $ServiceescalationsFilter = new ServiceescalationsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceescalationsFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceescalationsFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
@@ -167,7 +177,7 @@ class ServiceescalationsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($serviceescalation); // REST API ID serialization
                     return;
                 }
@@ -206,7 +216,7 @@ class ServiceescalationsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($serviceescalation); // REST API ID serialization
                     return;
                 }

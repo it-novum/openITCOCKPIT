@@ -27,14 +27,20 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\LocationsTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\LocationFilter;
+
 
 /**
  * Class LocationsController
@@ -56,7 +62,7 @@ class LocationsController extends AppController {
         $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
         $LocationFilter = new LocationFilter($this->request);
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $LocationFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $LocationFilter->getPage());
         $all_locations = $LocationsTable->getLocationsIndex($LocationFilter, $PaginateOMat);
 
         foreach ($all_locations as $key => $location) {
@@ -128,7 +134,10 @@ class LocationsController extends AppController {
             } else {
                 $User = new User($this->getUser());
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'locations',
                     $location->get('id'),
@@ -141,13 +150,15 @@ class LocationsController extends AppController {
                     ]
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 //@todo refactor with cake4
                 Cache::clear(false, 'permissions');
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($location); // REST API ID serialization
                     return;
                 }
@@ -212,7 +223,10 @@ class LocationsController extends AppController {
                 return;
             } else {
                 $User = new User($this->getUser());
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'locations',
                     $location->get('id'),
@@ -228,13 +242,15 @@ class LocationsController extends AppController {
                     ]
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 //@todo refactor with cake4
                 Cache::clear(false, 'permissions');
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($location); // REST API ID serialization
                     return;
                 }
@@ -271,7 +287,10 @@ class LocationsController extends AppController {
 
         if ($ContainersTable->delete($container)) {
             $User = new User($this->getUser());
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'locations',
                 $id,

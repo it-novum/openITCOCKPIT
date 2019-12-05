@@ -26,12 +26,17 @@
 declare(strict_types=1);
 
 namespace App\Controller;
+
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostdependenciesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostdependenciesFilter;
 
@@ -60,7 +65,7 @@ class HostdependenciesController extends AppController {
         $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
 
         $HostdependenciesFilter = new HostdependenciesFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostdependenciesFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostdependenciesFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
@@ -159,7 +164,7 @@ class HostdependenciesController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostdependency); // REST API ID serialization
                     return;
                 }
@@ -199,7 +204,7 @@ class HostdependenciesController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostdependency); // REST API ID serialization
                     return;
                 }

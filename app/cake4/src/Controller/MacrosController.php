@@ -28,6 +28,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\MacrosTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\Utility\Hash;
 

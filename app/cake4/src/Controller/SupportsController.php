@@ -42,7 +42,7 @@ class SupportsController extends AppController {
         $License = $Registers->getLicense();
 
         $hasLicense = false;
-        if(!empty($License)){
+        if (!empty($License)) {
             $hasLicense = true;
         }
 

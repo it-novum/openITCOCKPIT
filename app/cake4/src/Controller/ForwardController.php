@@ -26,6 +26,10 @@
 declare(strict_types=1);
 
 namespace App\Controller;
+
+use Cake\Http\Exception\NotFoundException;
+use Cake\Utility\Hash;
+
 class ForwardController extends AppController {
     public $layout = 'Admin.default';
 

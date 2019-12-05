@@ -29,6 +29,8 @@ namespace App\Controller;
 
 use App\Model\Table\CalendarsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
@@ -55,7 +57,7 @@ class CalendarsController extends AppController {
         /** @var $CalendarsTable CalendarsTable */
         $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
         $CalendarFilter = new CalendarFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $CalendarFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $CalendarFilter->getPage());
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
             $MY_RIGHTS = [];
@@ -115,7 +117,7 @@ class CalendarsController extends AppController {
                 return;
             } else {
                 //No errors
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($Entity); // REST API ID serialization
                     return;
                 }

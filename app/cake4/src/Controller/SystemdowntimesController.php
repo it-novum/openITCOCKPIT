@@ -32,12 +32,19 @@ use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemdowntimesTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\AngularRequest;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Core\Views\Systemdowntime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\SystemdowntimesFilter;
 
@@ -58,7 +65,7 @@ class SystemdowntimesController extends AppController {
         }
 
         $AngularRequest = new AngularRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularRequest->getPage());
 
         $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $Conditions = new SystemdowntimesConditions();
@@ -85,13 +92,13 @@ class SystemdowntimesController extends AppController {
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
-                $containerIds = \Cake\Utility\Hash::extract($recurringHostDowntime['host']['hosts_to_containers_sharing'], '{n}.id');
+                $containerIds = Hash::extract($recurringHostDowntime['host']['hosts_to_containers_sharing'], '{n}.id');
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
 
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($recurringHostDowntime['host']);
-            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($recurringHostDowntime);
+            $Host = new Host($recurringHostDowntime['host']);
+            $Systemdowntime = new Systemdowntime($recurringHostDowntime);
 
             $tmpRecord = [
                 'Host'           => $Host->toArray(),
@@ -116,7 +123,7 @@ class SystemdowntimesController extends AppController {
         }
 
         $AngularRequest = new AngularRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularRequest->getPage());
 
         $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $Conditions = new SystemdowntimesConditions();
@@ -143,14 +150,14 @@ class SystemdowntimesController extends AppController {
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
-                $containerIds = \Cake\Utility\Hash::extract($recurringServiceDowntime['host']['hosts_to_containers_sharing'], '{n}.id');
+                $containerIds = Hash::extract($recurringServiceDowntime['host']['hosts_to_containers_sharing'], '{n}.id');
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
 
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($recurringServiceDowntime['service'], $recurringServiceDowntime['servicename'], $allowEdit);
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($recurringServiceDowntime['service']['host'], $allowEdit);
-            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($recurringServiceDowntime);
+            $Service = new Service($recurringServiceDowntime['service'], $recurringServiceDowntime['servicename'], $allowEdit);
+            $Host = new Host($recurringServiceDowntime['service']['host'], $allowEdit);
+            $Systemdowntime = new Systemdowntime($recurringServiceDowntime);
 
             $tmpRecord = [
                 'Service'        => $Service->toArray(),
@@ -177,7 +184,7 @@ class SystemdowntimesController extends AppController {
         }
 
         $AngularRequest = new AngularRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularRequest->getPage());
 
         $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $Conditions = new SystemdowntimesConditions();
@@ -208,7 +215,7 @@ class SystemdowntimesController extends AppController {
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
 
-            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($recurringHostgroupDowntime);
+            $Systemdowntime = new Systemdowntime($recurringHostgroupDowntime);
 
             $tmpRecord = [
                 'Container'      => $recurringHostgroupDowntime['hostgroup']['container'],
@@ -235,7 +242,7 @@ class SystemdowntimesController extends AppController {
         }
 
         $AngularRequest = new AngularRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularRequest->getPage());
 
         $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $Conditions = new SystemdowntimesConditions();
@@ -266,7 +273,7 @@ class SystemdowntimesController extends AppController {
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
 
-            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($recurringNodeDowntime);
+            $Systemdowntime = new Systemdowntime($recurringNodeDowntime);
 
             $tmpRecord = [
                 'Container'      => $recurringNodeDowntime['container'],

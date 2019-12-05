@@ -32,8 +32,10 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
  * Class DocumentationsController
@@ -196,7 +198,7 @@ class DocumentationsController extends AppController {
                 'uuid'    => $uuid
             ]);
 
-            if(strlen(trim($content)) > 0) {
+            if (strlen(trim($content)) > 0) {
                 $DocumentationsTable->save($entity);
                 if ($entity->hasErrors()) {
                     $this->response = $this->response->withStatus(400);
@@ -204,7 +206,7 @@ class DocumentationsController extends AppController {
                     $this->viewBuilder()->setOption('serialize', ['error']);
                     return;
                 }
-            }else{
+            } else {
                 //Delete existing record if any
                 $DocumentationsTable->deleteDocumentationByUuid($uuid);
             }

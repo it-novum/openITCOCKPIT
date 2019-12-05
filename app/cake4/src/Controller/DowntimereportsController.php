@@ -28,23 +28,31 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Form\DowntimereportForm;
+use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Model\Table\HostsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\Reports\DowntimeReportBarChartWidgetDataPreparer;
 use itnovum\openITCOCKPIT\Core\Reports\DowntimeReportPieChartWidgetDataPreparer;
 use itnovum\openITCOCKPIT\Core\Reports\StatehistoryConverter;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
+use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use Statusengine2Module\Model\Entity\DowntimeService;
 use Statusengine2Module\Model\Table\StatehistoryHostsTable;
 
 /**
@@ -140,7 +148,7 @@ class DowntimereportsController extends AppController {
     }
 
     /**
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     public function createPdfReport() {
         //Rewrite GET to "POST"
@@ -261,7 +269,7 @@ class DowntimereportsController extends AppController {
      * @param array $hostsUuids
      * @param UserTime $UserTime
      * @return array $reportData
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     protected function createReport($fromDate, $toDate, $evaluationType, $reflectionState, $timeperiodRanges, $hostsUuids, $UserTime) {
         $DowntimeHostConditions = new DowntimeHostConditions();
@@ -296,7 +304,7 @@ class DowntimereportsController extends AppController {
             $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
 
             $downtimes['Services'] = $DowntimehistoryServicesTable->getDowntimesForReporting($DowntimeServiceConditions);
-            /** @var \Statusengine2Module\Model\Entity\DowntimeService $serviceDowntime */
+            /** @var DowntimeService $serviceDowntime */
             foreach ($downtimes['Services'] as $serviceDowntime) {
                 $hosts[$serviceDowntime->get('Hosts')['uuid']] = $serviceDowntime->get('Hosts');
                 $services[$serviceDowntime->get('Services')['uuid']] = [
@@ -363,7 +371,7 @@ class DowntimereportsController extends AppController {
                     ->lastStateChange();
                 $hoststatus = $HoststatusTable->byUuid($uuid, $HoststatusFields);
                 if (!empty($hoststatus)) {
-                    $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
+                    $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                     if ($Hoststatus->getLastStateChange() <= $fromDate) {
                         $stateHistoryHostTmp = [
                             'StatehistoryHost' => [
@@ -375,15 +383,15 @@ class DowntimereportsController extends AppController {
                             ]
                         ];
 
-                        $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
+                        $StatehistoryHost = new StatehistoryHost($stateHistoryHostTmp['StatehistoryHost']);
                         $statehistoriesHost[] = $StatehistoryHost;
                     }
                 }
             }
 
             foreach ($statehistoriesHost as $statehistoryHost) {
-                /** @var StatehistoryHostsTable|\itnovum\openITCOCKPIT\Core\Views\StatehistoryHost $statehistoryHost */
-                $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistoryHost->toArray(), $UserTime);
+                /** @var StatehistoryHostsTable|StatehistoryHost $statehistoryHost */
+                $StatehistoryHost = new StatehistoryHost($statehistoryHost->toArray(), $UserTime);
                 $allStatehistories[] = $StatehistoryHost->toArray();
             }
 
@@ -426,7 +434,7 @@ class DowntimereportsController extends AppController {
                     ->lastStateChange();
                 $servicestatus = $ServicestatusTable->byUuid($uuid, $ServicestatusFields);
                 if (!empty($servicestatus)) {
-                    $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
+                    $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                     if ($Servicestatus->getLastStateChange() <= $fromDate) {
                         $stateHistoryServiceTmp = [
                             'StatehistoryService' => [
@@ -438,15 +446,15 @@ class DowntimereportsController extends AppController {
                             ]
                         ];
 
-                        $StateHistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($stateHistoryServiceTmp['StatehistoryService']);
+                        $StateHistoryService = new StatehistoryService($stateHistoryServiceTmp['StatehistoryService']);
                         $statehistoriesService[] = $StateHistoryService;
                     }
                 }
             }
 
             foreach ($statehistoriesService as $statehistoryService) {
-                /** @var \Statusengine2Module\Model\Entity\StatehistoryService|\itnovum\openITCOCKPIT\Core\Views\StatehistoryService $statehistoryService */
-                $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($statehistoryService->toArray(), $UserTime);
+                /** @var \Statusengine2Module\Model\Entity\StatehistoryService|StatehistoryService $statehistoryService */
+                $StatehistoryService = new StatehistoryService($statehistoryService->toArray(), $UserTime);
                 $allStatehistories[] = $StatehistoryService->toArray();
             }
             $reportData[$services[$uuid]['Host']['uuid']]['Services'][$uuid] = $services[$uuid];

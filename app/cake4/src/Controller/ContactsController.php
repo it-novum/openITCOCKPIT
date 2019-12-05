@@ -27,6 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
@@ -40,23 +42,22 @@ use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
+use FreeDSx\Ldap\Exception\BindException;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Permissions\ContactContainersPermissions;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactsFilter;
 use itnovum\openITCOCKPIT\Ldap\LdapClient;
 
 
 /**
- * @property AppPaginatorComponent $Paginator
- * @property AppAuthComponent $Auth
- * @property DbBackend $DbBackend
+ * Class ContactsController
+ * @package App\Controller
  */
 class ContactsController extends AppController {
-
-    public $layout = 'blank';
 
 
     public function index() {
@@ -75,7 +76,7 @@ class ContactsController extends AppController {
 
 
         $ContactsFilter = new ContactsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ContactsFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ContactsFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
@@ -158,7 +159,10 @@ class ContactsController extends AppController {
 
                 $extDataForChangelog = $ContactsTable->resolveDataForChangelog($this->request->data);
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'contacts',
                     $contact->id,
@@ -169,10 +173,12 @@ class ContactsController extends AppController {
                     array_merge($extDataForChangelog, $this->request->data)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($contact); // REST API ID serialization
                     return;
                 }
@@ -246,7 +252,10 @@ class ContactsController extends AppController {
             } else {
                 //No errors
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'contacts',
                     $contactEntity->id,
@@ -258,10 +267,12 @@ class ContactsController extends AppController {
                     array_merge($ContactsTable->resolveDataForChangelog($contactForChangeLog), $contactForChangeLog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($contactEntity); // REST API ID serialization
                     return;
                 }
@@ -331,7 +342,10 @@ class ContactsController extends AppController {
         $contactEntity = $ContactsTable->get($id);
         if ($ContactsTable->delete($contactEntity)) {
             $User = new User($this->getUser());
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'contacts',
                 $id,
@@ -465,7 +479,10 @@ class ContactsController extends AppController {
                     //No errors
                     $postData[$index]['Contact']['id'] = $newContactEntity->get('id');
 
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'contacts',
                         $postData[$index]['Contact']['id'],
@@ -476,7 +493,9 @@ class ContactsController extends AppController {
                         ['Contact' => $newContactData]
                     );
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
                     }
                 }
             }
@@ -667,7 +686,7 @@ class ContactsController extends AppController {
     }
 
     /**
-     * @throws \FreeDSx\Ldap\Exception\BindException
+     * @throws BindException
      */
     public function loadLdapUserByString() {
         if (!$this->isAngularJsRequest()) {

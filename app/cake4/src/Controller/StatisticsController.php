@@ -31,6 +31,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\System\Health\StatisticsCollector;
 

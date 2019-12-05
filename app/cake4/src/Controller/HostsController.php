@@ -27,11 +27,12 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
@@ -44,7 +45,11 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
+use DistributeModule\Model\Table\SatellitesTable;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
@@ -55,12 +60,14 @@ use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForView;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\Permissions\HostContainersPermissions;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\Timeline\AcknowledgementSerializer;
@@ -69,14 +76,20 @@ use itnovum\openITCOCKPIT\Core\Timeline\Groups;
 use itnovum\openITCOCKPIT\Core\Timeline\NotificationSerializer;
 use itnovum\openITCOCKPIT\Core\Timeline\StatehistorySerializer;
 use itnovum\openITCOCKPIT\Core\Timeline\TimeRangeSerializer;
-use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\Downtime;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\Hosttemplate;
 use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
+use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
+use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
+
 
 /**
  * @property Host $Host
@@ -161,7 +174,7 @@ class HostsController extends AppController {
         $satellites = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
-            /** @var $SatellitesTable \DistributeModule\Model\Table\SatellitesTable */
+            /** @var $SatellitesTable SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
             $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
@@ -219,7 +232,7 @@ class HostsController extends AppController {
             }
         }
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostFilter->getPage());
 
         if ($this->DbBackend->isNdoUtils()) {
             /** @var $HostsTable HostsTable */
@@ -259,7 +272,7 @@ class HostsController extends AppController {
                 ]
             ]);
             $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
-            $ServicestatusObjects = \itnovum\openITCOCKPIT\Core\Servicestatus::fromServicestatusByUuid($servicestatus);
+            $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatus);
             $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
 
             $serviceStateSummary['state'] = array_combine(
@@ -272,8 +285,8 @@ class HostsController extends AppController {
                 $serviceStateSummary['state']
             );
 
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host['Host']);
-            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Host']['Hoststatus'], $UserTime);
+            $Host = new Host($host['Host']);
+            $Hoststatus = new Hoststatus($host['Host']['Hoststatus'], $UserTime);
 
             $hostSharingPermissions = new HostSharingPermissions(
                 $Host->getContainerId(), $this->hasRootPrivileges, $Host->getContainerIds(), $this->MY_RIGHTS
@@ -372,7 +385,7 @@ class HostsController extends AppController {
                 'Hoststatus' => []
             ];
         }
-        $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
+        $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 
         $this->set('host', $host);
         $this->set('hoststatus', $Hoststatus->toArray());
@@ -430,7 +443,7 @@ class HostsController extends AppController {
         $HostCondition->setContainerIds($this->MY_RIGHTS);
 
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostFilter->getPage());
 
 
         if ($this->DbBackend->isNdoUtils()) {
@@ -454,7 +467,7 @@ class HostsController extends AppController {
 
         $all_hosts = [];
         foreach ($hosts as $host) {
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+            $Host = new Host($host);
 
             $hostSharingPermissions = new HostSharingPermissions(
                 $Host->getContainerId(), $this->hasRootPrivileges, $Host->getContainerIds(), $this->MY_RIGHTS
@@ -548,7 +561,10 @@ class HostsController extends AppController {
                 $User = new User($this->getUser());
 
                 $extDataForChangelog = $HostsTable->resolveDataForChangelog($this->request->data);
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'hosts',
                     $host->get('id'),
@@ -560,11 +576,13 @@ class HostsController extends AppController {
                 );
 
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($host); // REST API ID serialization
                     return;
                 }
@@ -701,7 +719,10 @@ class HostsController extends AppController {
             } else {
                 //No errors
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'hosts',
                     $hostEntity->get('id'),
@@ -713,10 +734,12 @@ class HostsController extends AppController {
                     array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostEntity); // REST API ID serialization
                     return;
                 }
@@ -815,7 +838,10 @@ class HostsController extends AppController {
                 //No errors
 
                 // @todo fix changelog
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'hosts',
                     $hostEntity->get('id'),
@@ -827,10 +853,12 @@ class HostsController extends AppController {
                     array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostEntity); // REST API ID serialization
                     return;
                 }
@@ -1048,7 +1076,7 @@ class HostsController extends AppController {
 
         $HostFilter = new HostFilter($this->request);
         $HostCondition = new HostConditions();
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostFilter->getPage());
 
         $HostCondition->setIncludeDisabled(true);
         if ($this->hasRootPrivileges === false) {
@@ -1060,8 +1088,8 @@ class HostsController extends AppController {
 
         $all_hosts = [];
         foreach ($hosts as $host) {
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
-            $Hosttemplate = new \itnovum\openITCOCKPIT\Core\Views\Hosttemplate($host);
+            $Host = new Host($host);
+            $Hosttemplate = new Hosttemplate($host);
 
             $hostSharingPermissions = new HostSharingPermissions(
                 $Host->getContainerId(), $this->hasRootPrivileges, $Host->getContainerIds(), $this->MY_RIGHTS
@@ -1436,7 +1464,7 @@ class HostsController extends AppController {
                 ];
                 /* Data for Changelog Start*/
                 $sourceHost['Customvariable'] = $customVariables;
-                $hosttemplate['Customvariable'] = (!empty($sourceHost['Customvariable']) && !is_null($sourceHost['Customvariable'])) ? Hash::remove($sourceHost['Customvariable'], '{n}.object_id') : [];;
+                $hosttemplate['Customvariable'] = (!empty($sourceHost['Customvariable']) && !is_null($sourceHost['Customvariable'])) ? Hash::remove($sourceHost['Customvariable'], '{n}.object_id') : [];
 
 
                 if (!empty($sourceHost['Parenthost'])) {
@@ -1512,7 +1540,10 @@ class HostsController extends AppController {
                     $this->Host->create();
                     if ($this->Host->saveAll($data)) {
                         $hostDataAfterSave = $this->Host->dataForChangelogCopy($dataForChangeLog[$sourceHostId]['Host'], $dataForChangeLog[$sourceHostId]['Hosttemplate']);
-                        $changelog_data = $this->Changelog->parseDataForChangelog(
+                        /** @var  ChangelogsTable $ChangelogsTable */
+                        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                        $changelog_data = $ChangelogsTable->parseDataForChangelog(
                             $this->request->getParam('action'),
                             $this->request->getParam('controller'),
                             $this->Host->id,
@@ -1523,7 +1554,9 @@ class HostsController extends AppController {
                             $hostDataAfterSave
                         );
                         if ($changelog_data) {
-                            CakeLog::write('log', serialize($changelog_data));
+                            /** @var Changelog $changelogEntry */
+                            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                            $ChangelogsTable->save($changelogEntry);
                         }
                         $hostId = $this->Host->id;
                         $services = $this->Service->find('all', [
@@ -1775,7 +1808,7 @@ class HostsController extends AppController {
                             /* Data for Changelog Start*/
                             $service['Host'] = ['id' => $hostId, 'name' => $data['Host']['name']];
                             $service['Customvariable'] = $customVariables;
-                            $servicetemplate['Customvariable'] = (!empty($service['Customvariable']) && !is_null($service['Customvariable'])) ? Hash::remove($service['Customvariable'], '{n}.object_id') : [];;
+                            $servicetemplate['Customvariable'] = (!empty($service['Customvariable']) && !is_null($service['Customvariable'])) ? Hash::remove($service['Customvariable'], '{n}.object_id') : [];
 
                             if (!empty($service['Contactgroup'])) {
                                 $contactgroups = [];
@@ -1820,7 +1853,10 @@ class HostsController extends AppController {
                             $this->Service->create();
                             if ($this->Service->saveAll($newServiceData)) {
                                 $serviceDataAfterSave = $this->Service->dataForChangelogCopy($service, $servicetemplate);
-                                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                                     $this->request->getParam('action'),
                                     'services',
                                     $this->Service->id,
@@ -1831,7 +1867,9 @@ class HostsController extends AppController {
                                     $serviceDataAfterSave
                                 );
                                 if ($changelog_data) {
-                                    CakeLog::write('log', serialize($changelog_data));
+                                    /** @var Changelog $changelogEntry */
+                                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                                    $ChangelogsTable->save($changelogEntry);
                                 }
                             }
                         }
@@ -1891,7 +1929,7 @@ class HostsController extends AppController {
                 $this->loadModel('GrafanaModule.GrafanaConfiguration');
                 $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
                 if (!empty($grafanaConfiguration)) {
-                    $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                    $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
                     $this->set('GrafanaConfiguration', $GrafanaConfiguration);
                 }
             }
@@ -1906,7 +1944,7 @@ class HostsController extends AppController {
 
         $id = $idOrUuid;
         if (!is_numeric($idOrUuid)) {
-            if (preg_match(\itnovum\openITCOCKPIT\Core\UUID::regex(), $idOrUuid)) {
+            if (preg_match(UUID::regex(), $idOrUuid)) {
                 $lookupHost = $this->Host->find('first', [
                     'recursive'  => -1,
                     'fields'     => [
@@ -2053,7 +2091,7 @@ class HostsController extends AppController {
                 'Hoststatus' => []
             ];
         }
-        $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus'], $UserTime);
+        $Hoststatus = new Hoststatus($hoststatus['Hoststatus'], $UserTime);
         $hoststatus = $Hoststatus->toArrayForBrowser();
         $hoststatus['longOutputHtml'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($Hoststatus->getLongOutput(), true));
         $parenthosts = $host['Parenthost'];
@@ -2066,7 +2104,7 @@ class HostsController extends AppController {
         );
         $parentHostStatus = [];
         foreach ($parentHostStatusRaw as $uuid => $parentHoststatus) {
-            $ParentHoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($parentHoststatus['Hoststatus'], $UserTime);
+            $ParentHoststatus = new Hoststatus($parentHoststatus['Hoststatus'], $UserTime);
             $parentHostStatus[$uuid] = $ParentHoststatus->toArrayForBrowser();
         }
         //Get Containers
@@ -2111,7 +2149,7 @@ class HostsController extends AppController {
         if ($Hoststatus->isInDowntime()) {
             $downtime = $this->DowntimeHost->byHostUuid($host['Host']['uuid'], true);
             if (!empty($downtime)) {
-                $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost'], $allowEdit, $UserTime);
+                $Downtime = new Downtime($downtime['DowntimeHost'], $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();
             }
         }
@@ -2468,7 +2506,7 @@ class HostsController extends AppController {
         $record = $this->StatehistoryHost->find('first', $query);
         if (!empty($record)) {
             $record['StatehistoryHost']['state_time'] = $start;
-            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+            $StatehistoryHost = new StatehistoryHost($record['StatehistoryHost']);
             $statehistoryRecords[] = $StatehistoryHost;
         }
         if (empty($statehistories) && empty($record)) {
@@ -2483,12 +2521,12 @@ class HostsController extends AppController {
                 $record['StatehistoryHost']['state_time'] = $hoststatus['Hoststatus']['last_state_change'];
                 $record['StatehistoryHost']['state'] = $hoststatus['Hoststatus']['current_state'];
                 $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type']) ? true : false;
-                $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+                $StatehistoryHost = new StatehistoryHost($record['StatehistoryHost']);
                 $statehistoryRecords[] = $StatehistoryHost;
             }
         }
         foreach ($statehistories as $statehistory) {
-            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
+            $StatehistoryHost = new StatehistoryHost($statehistory['StatehistoryHost']);
             $statehistoryRecords[] = $StatehistoryHost;
         }
 
@@ -2510,7 +2548,7 @@ class HostsController extends AppController {
         $downtimes = $this->DowntimeHost->find('all', $query);
         $downtimeRecords = [];
         foreach ($downtimes as $downtime) {
-            $downtimeRecords[] = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost']);
+            $downtimeRecords[] = new Downtime($downtime['DowntimeHost']);
         }
 
         $DowntimeSerializer = new DowntimeSerializer($downtimeRecords, $UserTime);
@@ -2603,7 +2641,7 @@ class HostsController extends AppController {
                     ]
                 ]);
 
-                $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
                 $GrafanaConfiguration->setHostUuid($hostUuid);
                 if (isset($dashboardFromDatabase['GrafanaDashboard']['grafana_uid'])) {
                     $GrafanaConfiguration->setGrafanaUid($dashboardFromDatabase['GrafanaDashboard']['grafana_uid']);
@@ -2874,7 +2912,7 @@ class HostsController extends AppController {
                     ]
                 ];
             }
-        };
+        }
 
         // Merge new command arguments that are missing in the host to host command arguments
         // and remove old command arguments that don't exists in the command anymore.

@@ -27,32 +27,26 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContactsTable;
-use App\Model\Table\HostescalationsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TimeperiodsFilter;
 
 /**
  * Class TimeperiodsController
- * @property AppPaginatorComponent $Paginator
+ * @package App\Controller
  */
 class TimeperiodsController extends AppController {
-    public $layout = 'Admin.default';
-
-    public $uses = [
-        'Timeperiod',
-        'Timerange',
-        'Calendar'
-    ];
-
 
     function index() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
@@ -71,7 +65,7 @@ class TimeperiodsController extends AppController {
         if ($this->isAngularJsRequest()) {
             //AngularJS API Request
             $TimeperiodsFilter = new TimeperiodsFilter($this->request);
-            $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $TimeperiodsFilter->getPage());
+            $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $TimeperiodsFilter->getPage());
             $all_timeperiods = $TimeperiodsTable->getTimeperiodsIndex($TimeperiodsFilter, $PaginateOMat);
 
             foreach ($all_timeperiods as $index => $timeperiod) {
@@ -124,7 +118,6 @@ class TimeperiodsController extends AppController {
      * @todo refactor me
      */
     public function edit($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -159,7 +152,10 @@ class TimeperiodsController extends AppController {
                 $userId = $this->Auth->user('id');
                 $requestData = $this->request->data;
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     $this->request->getParam('controller'),
                     $timeperiod->get('id'),
@@ -171,9 +167,11 @@ class TimeperiodsController extends AppController {
                     $timeperiodForChangeLog
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($timeperiod); // REST API ID serialization
                     return;
                 }
@@ -188,7 +186,6 @@ class TimeperiodsController extends AppController {
      * @throws Exception
      */
     public function add() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -210,7 +207,10 @@ class TimeperiodsController extends AppController {
                 //No errors
                 $User = new User($this->getUser());
                 $requestData = $this->request->data;
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     $this->request->getParam('controller'),
                     $timeperiod->get('id'),
@@ -221,7 +221,9 @@ class TimeperiodsController extends AppController {
                     $requestData
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
                 $this->serializeCake4Id($timeperiod);
             }
@@ -363,7 +365,10 @@ class TimeperiodsController extends AppController {
         $timeperiodEntity = $TimeperiodsTable->get($id);
         if ($TimeperiodsTable->delete($timeperiodEntity)) {
             $User = new User($this->getUser());
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'timeperiods',
                 $id,
@@ -392,8 +397,6 @@ class TimeperiodsController extends AppController {
      * @param int|null $id
      */
     public function copy($id = null) {
-        $this->layout = 'blank';
-
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -470,7 +473,10 @@ class TimeperiodsController extends AppController {
                     //No errors
                     $postData[$index]['Timeperiod']['id'] = $newTimeperiodEntity->get('id');
 
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'timeperiods',
                         $postData[$index]['Timeperiod']['id'],
@@ -481,7 +487,9 @@ class TimeperiodsController extends AppController {
                         ['Timeperiod' => $newTimeperiodData]
                     );
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
                     }
                 }
             }

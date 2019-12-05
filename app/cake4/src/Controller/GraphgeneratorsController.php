@@ -27,6 +27,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Cake\Http\Exception\MethodNotAllowedException;
+use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
@@ -44,7 +47,7 @@ class GraphgeneratorsController extends AppController {
 
     /**
      * New method for AngularJS
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function getPerfdataByUuid() {
         if (!$this->isAngularJsRequest()) {
@@ -76,7 +79,7 @@ class GraphgeneratorsController extends AppController {
             $this->set('performance_data', $performance_data);
             $this->viewBuilder()->setOption('serialize', ['performance_data']);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log($e->getMessage());
             $performance_data[] = [
                 'datasource' => [],

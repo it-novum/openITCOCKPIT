@@ -27,6 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
@@ -40,9 +42,15 @@ use App\Model\Table\ServicetemplatecommandargumentvaluesTable;
 use App\Model\Table\ServicetemplateeventcommandargumentvaluesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
@@ -74,7 +82,7 @@ class ServicetemplatesController extends AppController {
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
         $ServicetemplateFilter = new ServicetemplateFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
@@ -160,7 +168,10 @@ class ServicetemplatesController extends AppController {
                 $User = new User($this->getUser());
 
                 $extDataForChangelog = $ServicetemplatesTable->resolveDataForChangelog($this->request->data);
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'servicetemplates',
                     $servicetemplate->get('id'),
@@ -172,11 +183,13 @@ class ServicetemplatesController extends AppController {
                 );
 
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicetemplate); // REST API ID serialization
                     return;
                 }
@@ -251,7 +264,10 @@ class ServicetemplatesController extends AppController {
             } else {
                 //No errors
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'servicetemplates',
                     $servicetemplateEntity->id,
@@ -263,10 +279,12 @@ class ServicetemplatesController extends AppController {
                     array_merge($ServicetemplatesTable->resolveDataForChangelog($servicetemplateForChangeLog), $servicetemplateForChangeLog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicetemplateEntity); // REST API ID serialization
                     return;
                 }
@@ -310,7 +328,10 @@ class ServicetemplatesController extends AppController {
         if ($this->Servicetemplate->__allowDelete($id)) {
             $User = new User($this->getUser());
             if ($this->Servicetemplate->delete()) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     $this->request->getParam('action'),
                     $this->request->getParam('controller'),
                     $id,
@@ -321,7 +342,9 @@ class ServicetemplatesController extends AppController {
                     $servicetemplate
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 //Delete Documentation record if exists
@@ -451,7 +474,10 @@ class ServicetemplatesController extends AppController {
                     //No errors
                     $postData[$index]['Servicetemplate']['id'] = $newServicetemplateEntity->get('id');
 
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'servicetemplates',
                         $postData[$index]['Servicetemplate']['id'],
@@ -462,7 +488,9 @@ class ServicetemplatesController extends AppController {
                         ['Servicetemplate' => $newServicetemplateData]
                     );
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
                     }
                 }
             }
@@ -523,11 +551,11 @@ class ServicetemplatesController extends AppController {
             return;
         }
 
-        $hostIds = array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.id'));
+        $hostIds = array_unique(Hash::extract($services, '{n}._matchingData.Hosts.id'));
         $tmpHosts = $HostsTable->getHostsByIds($hostIds, false);
 
         foreach ($tmpHosts as $index => $host) {
-            $hostContainerIds = \Cake\Utility\Hash::extract($host['hosts_to_containers_sharing'], '{n}.id');
+            $hostContainerIds = Hash::extract($host['hosts_to_containers_sharing'], '{n}.id');
 
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
@@ -715,20 +743,20 @@ class ServicetemplatesController extends AppController {
                     ]
                 ];
             }
-        };
+        }
 
         // Merge new command arguments that are missing in the service template to service template command arguments
         // and remove old command arguments that don't exists in the command anymore.
         $filteredCommandArgumentsValules = [];
-        foreach ($commandarguments as $commandargument){
+        foreach ($commandarguments as $commandargument) {
             $valueExists = false;
-            foreach($servicetemplatecommandargumentvalues as $servicetemplatecommandargumentvalue){
-                if($commandargument['Commandargument']['id'] === $servicetemplatecommandargumentvalue['commandargument_id']){
+            foreach ($servicetemplatecommandargumentvalues as $servicetemplatecommandargumentvalue) {
+                if ($commandargument['Commandargument']['id'] === $servicetemplatecommandargumentvalue['commandargument_id']) {
                     $filteredCommandArgumentsValules[] = $servicetemplatecommandargumentvalue;
                     $valueExists = true;
                 }
             }
-            if(!$valueExists){
+            if (!$valueExists) {
                 $filteredCommandArgumentsValules[] = [
                     'commandargument_id' => $commandargument['Commandargument']['id'],
                     'value'              => '',
@@ -809,7 +837,7 @@ class ServicetemplatesController extends AppController {
                     ]
                 ];
             }
-        };
+        }
 
         $this->set('servicetemplateeventhandlercommandargumentvalues', $servicetemplateeventhandlercommandargumentvalues);
         $this->viewBuilder()->setOption('serialize', ['servicetemplateeventhandlercommandargumentvalues']);
@@ -898,7 +926,7 @@ class ServicetemplatesController extends AppController {
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
         $ServicetemplateFilter = new ServicetemplateFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {

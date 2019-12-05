@@ -29,6 +29,7 @@ namespace App\Controller;
 
 use App\Model\Table\CronjobsTable;
 use App\Model\Table\RegistersTable;
+use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
 use itnovum\openITCOCKPIT\Core\Security\ItcMail;

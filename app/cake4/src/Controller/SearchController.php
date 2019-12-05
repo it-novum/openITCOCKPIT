@@ -27,8 +27,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\RFCRouter;
+
 
 class SearchController extends AppController {
     public $layout = 'Admin.default';

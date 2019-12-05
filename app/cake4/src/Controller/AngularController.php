@@ -34,26 +34,32 @@ use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
+use AppAuthComponent;
 use Cake\Cache\Cache;
-use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
-use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use DateTime;
+use DateTimeZone;
+use Exception;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Menu\Menu;
 use itnovum\openITCOCKPIT\Core\ServiceMacroReplacer;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
+use MenuComponent;
+use RuntimeException;
 
 /**
  * Class AngularController
- * @property \AppAuthComponent Auth
- * @property \MenuComponent Menu
+ * @property AppAuthComponent Auth
+ * @property MenuComponent Menu
  */
 class AngularController extends AppController {
 
@@ -94,7 +100,7 @@ class AngularController extends AppController {
     private $state = 'unknown';
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function user_timezone() {
         if (!$this->isApiRequest()) {
@@ -109,9 +115,9 @@ class AngularController extends AppController {
         if (strlen($userTimezone) < 2) {
             $userTimezone = 'Europe/Berlin';
         }
-        $UserTime = new \DateTime($userTimezone);
-        $ServerTime = new \DateTime();
-        $ServerTimeZone = new \DateTimeZone($ServerTime->getTimezone()->getName());
+        $UserTime = new DateTime($userTimezone);
+        $ServerTime = new DateTime();
+        $ServerTimeZone = new DateTimeZone($ServerTime->getTimezone()->getName());
         $timezone = [
             'user_timezone'              => $userTimezone,
             'user_time_to_server_offset' => $this->get_timezone_offset($ServerTimeZone->getName(), $userTimezone),
@@ -128,7 +134,7 @@ class AngularController extends AppController {
      * @param $remote_tz
      * @param null $origin_tz
      * @return bool|int
-     * @throws \Exception
+     * @throws Exception
      */
     private function get_timezone_offset($remote_tz, $origin_tz = null) {
         if ($origin_tz === null) {
@@ -136,10 +142,10 @@ class AngularController extends AppController {
                 return false; // A UTC timestamp was returned -- bail out!
             }
         }
-        $origin_dtz = new \DateTimeZone($origin_tz);
-        $remote_dtz = new \DateTimeZone($remote_tz);
-        $origin_dt = new \DateTime("now", $origin_dtz);
-        $remote_dt = new \DateTime("now", $remote_dtz);
+        $origin_dtz = new DateTimeZone($origin_tz);
+        $remote_dtz = new DateTimeZone($remote_tz);
+        $origin_dt = new DateTime("now", $origin_dtz);
+        $remote_dt = new DateTime("now", $remote_dtz);
         $offset = $origin_dtz->getOffset($origin_dt) - $remote_dtz->getOffset($remote_dt);
         return $offset;
     }
@@ -210,7 +216,7 @@ class AngularController extends AppController {
 
     public function statuscount() {
         if (!$this->isApiRequest()) {
-            throw new \RuntimeException('Only for API requests');
+            throw new RuntimeException('Only for API requests');
         }
         session_write_close();
 
@@ -333,7 +339,7 @@ class AngularController extends AppController {
         if (!Cache::read($cacheKey, 'permissions')) {
             $Menu = new Menu($this->PERMISSIONS);
             $jsonMenu = [];
-            foreach ($Menu->getMenuItems() as $headline){
+            foreach ($Menu->getMenuItems() as $headline) {
                 $jsonMenu[] = $headline->toArray();
             }
 
@@ -644,7 +650,7 @@ class AngularController extends AppController {
      * @param int $down down|warning
      * @param int $unreachable unreachable|critical
      * @param int $unknown unknown
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPieChart($up = 0, $down = 0, $unreachable = 1, $unknown = null) {
         session_write_close();
@@ -670,7 +676,7 @@ class AngularController extends AppController {
      * @param int $down down|warning
      * @param int $unreachable unreachable|critical
      * @param int $unknown unknown
-     * @throws \Exception
+     * @throws Exception
      */
     public function getHalfPieChart($up = 0, $down = 0, $unreachable = 1, $unknown = null) {
         session_write_close();
@@ -695,7 +701,7 @@ class AngularController extends AppController {
      * @param int $size
      * @param int $bitMaskHostState
      * @param int $bitMaskServiceState
-     * @throws \Exception
+     * @throws Exception
      */
 
     public function getHostAndServiceStateSummaryIcon($size = 100, $bitMaskHostState = 0, $bitMaskServiceState = 0) {
@@ -839,9 +845,9 @@ class AngularController extends AppController {
             if (!isset($hoststatus['Hoststatus'])) {
                 $hoststatus['Hoststatus'] = [];
             }
-            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
+            $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
         } else {
-            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([
+            $Hoststatus = new Hoststatus([
                 'Hoststatus' => []
             ]);
 
@@ -921,9 +927,9 @@ class AngularController extends AppController {
             if (!isset($servicestatus['Servicestatus'])) {
                 $servicestatus['Servicestatus'] = [];
             }
-            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
+            $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
         } else {
-            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus([
+            $Servicestatus = new Servicestatus([
                 'Servicestatus' => []
             ]);
         }

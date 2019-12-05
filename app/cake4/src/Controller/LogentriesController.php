@@ -27,6 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\Views\Logentry;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\LogentryFilter;
@@ -96,7 +98,7 @@ class LogentriesController extends AppController {
         $foundUuids = [];
         foreach ($logentries as $logentry) {
             $matches = [];
-            preg_match_all(\itnovum\openITCOCKPIT\Core\UUID::regex(), $logentry['Logentry']['logentry_data'], $matches);
+            preg_match_all(UUID::regex(), $logentry['Logentry']['logentry_data'], $matches);
             foreach ($matches[0] as $uuid) {
                 $foundUuids[$uuid] = $uuid;
             }
@@ -106,7 +108,7 @@ class LogentriesController extends AppController {
         $uuidToName = $this->Uuid->getNameForUuids($foundUuids, false);
 
         foreach ($logentries as $logentry) {
-            $logentry['Logentry']['logentry_data'] = preg_replace_callback(\itnovum\openITCOCKPIT\Core\UUID::regex(), function ($matches) use ($uuidToName) {
+            $logentry['Logentry']['logentry_data'] = preg_replace_callback(UUID::regex(), function ($matches) use ($uuidToName) {
                 foreach ($matches as $match) {
                     if (isset($uuidToName[$match])) {
                         return $uuidToName[$match];
@@ -114,7 +116,7 @@ class LogentriesController extends AppController {
                 }
             }, $logentry['Logentry']['logentry_data']);
 
-            $Logentry = new \itnovum\openITCOCKPIT\Core\Views\Logentry($logentry, $UserTime);
+            $Logentry = new Logentry($logentry, $UserTime);
 
             $all_logentries[] = [
                 'Logentry' => $Logentry->toArray()

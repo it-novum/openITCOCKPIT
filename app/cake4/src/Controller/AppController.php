@@ -32,15 +32,16 @@ use Acl\Model\Table\ArosTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\UsersTable;
 use Authentication\Controller\Component\AuthenticationComponent;
+use Authentication\IdentityInterface;
 use Authorization\Identity;
 use Cake\Cache\Cache;
 use Cake\Controller\Controller;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\EventInterface;
-use Cake\Http\Exception\ForbiddenException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
+use Exception;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 
@@ -89,7 +90,7 @@ class AppController extends Controller {
      * e.g. `$this->loadComponent('Security');`
      *
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function initialize(): void {
         parent::initialize();
@@ -300,7 +301,7 @@ class AppController extends Controller {
     }
 
     /**
-     * @return \Authentication\IdentityInterface|null
+     * @return IdentityInterface|null
      */
     public function getUser() {
         return $this->Authentication->getIdentity();

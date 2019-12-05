@@ -25,11 +25,12 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;.
+namespace App\Controller;
 
 use App\Model\Table\RegistersTable;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
+
 
 class RegistersController extends AppController {
     use LocatorAwareTrait;

@@ -27,6 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
@@ -35,12 +37,17 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServicetemplategroupsConditions;
+use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\ServicetemplategroupsFilter;
@@ -72,7 +79,7 @@ class ServicetemplategroupsController extends AppController {
         $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
 
         $ServicetemplategroupsFilter = new ServicetemplategroupsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicetemplategroupsFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServicetemplategroupsFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
@@ -151,7 +158,10 @@ class ServicetemplategroupsController extends AppController {
             $User = new User($this->getUser());
 
             $extDataForChangelog = $ServicetemplategroupsTable->resolveDataForChangelog($this->request->data);
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'add',
                 'servicetemplategroups',
                 $servicetemplategroup->get('id'),
@@ -167,7 +177,7 @@ class ServicetemplategroupsController extends AppController {
             }
 
 
-            if ($this->request->ext == 'json') {
+            if ($this->isJsonRequest()) {
                 $this->serializeCake4Id($servicetemplategroup); // REST API ID serialization
                 return;
             }
@@ -230,7 +240,10 @@ class ServicetemplategroupsController extends AppController {
             } else {
                 //No errors
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'servicetemplategroups',
                     $servicetemplategroupEntity->get('id'),
@@ -242,10 +255,12 @@ class ServicetemplategroupsController extends AppController {
                     array_merge($ServicetemplategroupsTable->resolveDataForChangelog($servicetemplategroupForChangeLog), $servicetemplategroupForChangeLog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicetemplategroupEntity); // REST API ID serialization
                     return;
                 }
@@ -361,7 +376,10 @@ class ServicetemplategroupsController extends AppController {
                 ];
 
                 //No errors
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'servicetemplategroups',
                     $servicetemplategroupEntity->id,
@@ -373,10 +391,12 @@ class ServicetemplategroupsController extends AppController {
                     array_merge($ServicetemplategroupsTable->resolveDataForChangelog($servicetemplategroupForChangelog), $servicetemplategroupForChangelog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicetemplategroupEntity); // REST API ID serialization
                     return;
                 }
@@ -424,7 +444,10 @@ class ServicetemplategroupsController extends AppController {
         if ($ContainersTable->delete($container)) {
             $User = new User($this->getUser());
             Cache::clear(false, 'permissions');
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'servicetemplategroups',
                 $id,
@@ -579,7 +602,10 @@ class ServicetemplategroupsController extends AppController {
                     //No errors
 
                     $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         'add',
                         'services',
                         $service->get('id'),
@@ -591,7 +617,9 @@ class ServicetemplategroupsController extends AppController {
                     );
 
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
                     }
 
                     $newServiceIds[] = $service->get('id');
@@ -645,7 +673,7 @@ class ServicetemplategroupsController extends AppController {
             $hosts = [];
             foreach ($hostIds as $hostId) {
                 $host = $HostsTable->get($hostId);
-                $viewHost = new \itnovum\openITCOCKPIT\Core\Views\Host($host->toArray());
+                $viewHost = new Host($host->toArray());
                 if ($viewHost->isDisabled()) {
                     continue;
                 }
@@ -752,7 +780,10 @@ class ServicetemplategroupsController extends AppController {
                     //No errors
 
                     $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         'add',
                         'services',
                         $service->get('id'),
@@ -764,7 +795,9 @@ class ServicetemplategroupsController extends AppController {
                     );
 
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
                     }
 
                     $newServiceIds[] = $service->get('id');
@@ -850,7 +883,7 @@ class ServicetemplategroupsController extends AppController {
         $errors = [];
         foreach ($hostIds as $hostId) {
             $host = $HostsTable->get($hostId);
-            $viewHost = new \itnovum\openITCOCKPIT\Core\Views\Host($host->toArray());
+            $viewHost = new Host($host->toArray());
             if ($viewHost->isDisabled()) {
                 continue;
             }
@@ -915,7 +948,10 @@ class ServicetemplategroupsController extends AppController {
                         //No errors
 
                         $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
-                        $changelog_data = $this->Changelog->parseDataForChangelog(
+                        /** @var  ChangelogsTable $ChangelogsTable */
+                        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                        $changelog_data = $ChangelogsTable->parseDataForChangelog(
                             'add',
                             'services',
                             $service->get('id'),
@@ -927,7 +963,9 @@ class ServicetemplategroupsController extends AppController {
                         );
 
                         if ($changelog_data) {
-                            CakeLog::write('log', serialize($changelog_data));
+                            /** @var Changelog $changelogEntry */
+                            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                            $ChangelogsTable->save($changelogEntry);
                         }
 
                         $newServiceIds[] = $service->get('id');

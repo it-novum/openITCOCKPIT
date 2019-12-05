@@ -28,8 +28,11 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\SystemfailuresTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\SystemfailuresFilter;
 
@@ -53,7 +56,7 @@ class SystemfailuresController extends AppController {
         $SystemfailuresTable = TableRegistry::getTableLocator()->get('Systemfailures');
 
         $SystemfailuresFilter = new SystemfailuresFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $SystemfailuresFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $SystemfailuresFilter->getPage());
 
         $systemfailures = $SystemfailuresTable->getSystemfailuresIndex($SystemfailuresFilter, $PaginateOMat);
 
@@ -119,7 +122,7 @@ class SystemfailuresController extends AppController {
             } else {
                 //No errors
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($systemfailure); // REST API ID serialization
                     return;
                 }

@@ -26,11 +26,17 @@
 declare(strict_types=1);
 
 namespace App\Controller;
+
+use App\Lib\Exceptions\MissingDbBackendException;
+use App\Model\Entity\Service;
 use App\Model\Table\ServicesTable;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\ServicechecksControllerRequest;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\ServicechecksConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\Servicecheck;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
@@ -45,7 +51,7 @@ class ServicechecksController extends AppController {
 
     /**
      * @param null $id
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     public function index($id = null) {
         if (!$this->isAngularJsRequest()) {
@@ -62,7 +68,7 @@ class ServicechecksController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        /** @var \App\Model\Entity\Service $service */
+        /** @var Service $service */
         $service = $ServicesTable->getServiceByIdForPermissionsCheck($id);
         if (!$this->allowedByContainerId($service->getContainerIds(), false)) {
             $this->render403();
@@ -70,7 +76,7 @@ class ServicechecksController extends AppController {
         }
 
         $ServicechecksControllerRequest = new ServicechecksControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicechecksControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServicechecksControllerRequest->getPage());
 
         //Process conditions
         $Conditions = new ServicechecksConditions();
@@ -92,7 +98,7 @@ class ServicechecksController extends AppController {
         $all_servicechecks = [];
         foreach ($ServicechecksTable->getServicechecks($Conditions, $PaginateOMat) as $servicecheck) {
             /** @var \Statusengine2Module\Model\Entity\Servicecheck $servicecheck */
-            $Servicecheck = new \itnovum\openITCOCKPIT\Core\Views\Servicecheck($servicecheck->toArray(), $UserTime);
+            $Servicecheck = new Servicecheck($servicecheck->toArray(), $UserTime);
 
             $all_servicechecks[] = [
                 'Servicecheck' => $Servicecheck->toArray()

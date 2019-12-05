@@ -27,6 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
@@ -43,10 +45,10 @@ class CronjobsController extends AppController {
         $cronjobs = $Cronjobs->getCronjobs();
 
         //add start_time as last_scheduled_usertime in usertime format
-        foreach ($cronjobs as $key => $cronjob){
-            if(isset($cronjob['Cronschedule'])){
+        foreach ($cronjobs as $key => $cronjob) {
+            if (isset($cronjob['Cronschedule'])) {
                 $cronjobs[$key]['Cronschedule']['last_scheduled_usertime'] = null;
-                if(!empty($cronjob['Cronschedule']['start_time'])){
+                if (!empty($cronjob['Cronschedule']['start_time'])) {
                     $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
                     $UserTime = $UserTime->format($cronjob['Cronschedule']['start_time']);
                     $cronjobs[$key]['Cronschedule']['last_scheduled_usertime'] = $UserTime;

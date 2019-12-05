@@ -35,6 +35,8 @@ use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Lib\Interfaces\DowntimehistoryServicesTableInterface;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
@@ -52,7 +54,11 @@ use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
+use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CommandArgReplacer;
@@ -61,6 +67,7 @@ use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForBrowser;
@@ -71,6 +78,7 @@ use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ServiceMacroReplacer;
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
@@ -80,12 +88,22 @@ use itnovum\openITCOCKPIT\Core\Timeline\Groups;
 use itnovum\openITCOCKPIT\Core\Timeline\NotificationSerializer;
 use itnovum\openITCOCKPIT\Core\Timeline\StatehistorySerializer;
 use itnovum\openITCOCKPIT\Core\Timeline\TimeRangeSerializer;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
 use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
+use itnovum\openITCOCKPIT\Core\Views\Command;
+use itnovum\openITCOCKPIT\Core\Views\Contact;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\DeletedService;
+use itnovum\openITCOCKPIT\Core\Views\Downtime;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\NotificationService;
 use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
+use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
+use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
@@ -155,7 +173,7 @@ class ServicesController extends AppController {
                 //get recursive container ids
                 $containerIdToResolve = $browserContainerIds;
                 $children = $ContainersTable->getChildren($containerIdToResolve[0]);
-                $containerIds = \Cake\Utility\Hash::extract($children, '{n}.id');
+                $containerIds = Hash::extract($children, '{n}.id');
                 $recursiveContainerIds = [];
                 foreach ($containerIds as $containerId) {
                     if (in_array($containerId, $this->MY_RIGHTS)) {
@@ -172,7 +190,7 @@ class ServicesController extends AppController {
         ]));
 
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
 
         if ($this->DbBackend->isNdoUtils()) {
             $services = $ServicesTable->getServiceIndex($ServiceConditions, $PaginateOMat);
@@ -214,7 +232,7 @@ class ServicesController extends AppController {
             ->isFlapping()
             ->lastHardStateChange();
         $hoststatusCache = $HoststatusTable->byUuid(
-            array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
+            array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
         );
 
@@ -222,14 +240,14 @@ class ServicesController extends AppController {
         $UserTime = $User->getUserTime();
         foreach ($services as $service) {
             $allowEdit = $service['allow_edit'];
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts'], $allowEdit);
+            $Host = new Host($service['_matchingData']['Hosts'], $allowEdit);
             if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
+                $Hoststatus = new Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
             } else {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([], $UserTime);
+                $Hoststatus = new Hoststatus([], $UserTime);
             }
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
-            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
+            $Service = new Service($service, null, $allowEdit);
+            $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
             $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus, $this->DbBackend);
 
             $tmpRecord = [
@@ -298,7 +316,7 @@ class ServicesController extends AppController {
                 'Servicestatus' => []
             ];
         }
-        $Servicestatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($servicestatus['Servicestatus']);
+        $Servicestatus = new Hoststatus($servicestatus['Servicestatus']);
 
         $this->set('service', $service);
         $this->set('servicestatus', $Servicestatus->toArray());
@@ -346,7 +364,7 @@ class ServicesController extends AppController {
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
 
         if ($this->DbBackend->isNdoUtils()) {
             $services = $ServicesTable->getServiceNotMonitored($ServiceConditions, $PaginateOMat);
@@ -384,7 +402,7 @@ class ServicesController extends AppController {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->currentState();
         $hoststatusCache = $HoststatusTable->byUuid(
-            array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
+            array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
         );
 
@@ -394,13 +412,13 @@ class ServicesController extends AppController {
         $UserTime = $User->getUserTime();
         foreach ($services as $service) {
             $allowEdit = $service['allow_edit'];
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts'], $allowEdit);
+            $Host = new Host($service['_matchingData']['Hosts'], $allowEdit);
             if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
+                $Hoststatus = new Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
             } else {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([], $UserTime);
+                $Hoststatus = new Hoststatus([], $UserTime);
             }
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
+            $Service = new Service($service, null, $allowEdit);
 
             $tmpRecord = [
                 'Service'    => $Service->toArray(),
@@ -439,7 +457,7 @@ class ServicesController extends AppController {
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
 
         $services = $ServicesTable->getServicesForDisabled($ServiceConditions, $PaginateOMat);
 
@@ -467,7 +485,7 @@ class ServicesController extends AppController {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->currentState();
         $hoststatusCache = $HoststatusTable->byUuid(
-            array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
+            array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
         );
 
@@ -477,13 +495,13 @@ class ServicesController extends AppController {
         $UserTime = $User->getUserTime();
         foreach ($services as $service) {
             $allowEdit = $service['allow_edit'];
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts'], $allowEdit);
+            $Host = new Host($service['_matchingData']['Hosts'], $allowEdit);
             if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
+                $Hoststatus = new Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
             } else {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([], $UserTime);
+                $Hoststatus = new Hoststatus([], $UserTime);
             }
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
+            $Service = new Service($service, null, $allowEdit);
 
             $tmpRecord = [
                 'Service'    => $Service->toArray(),
@@ -577,7 +595,10 @@ class ServicesController extends AppController {
                 $User = new User($this->getUser());
 
                 $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'services',
                     $service->get('id'),
@@ -589,11 +610,13 @@ class ServicesController extends AppController {
                 );
 
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($service); // REST API ID serialization
                     return;
                 }
@@ -729,7 +752,10 @@ class ServicesController extends AppController {
 
                 $extDataForChangelog = $ServicesTable->resolveDataForChangelog($this->request->data);
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'services',
                     $serviceEntity->get('id'),
@@ -741,10 +767,12 @@ class ServicesController extends AppController {
                     array_merge($ServicesTable->resolveDataForChangelog($serviceForChangelog), $serviceForChangelog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($serviceEntity); // REST API ID serialization
                     return;
                 }
@@ -764,13 +792,13 @@ class ServicesController extends AppController {
         $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
         $ServiceFilter = new ServiceFilter($this->request);
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
         $result = $DeletedServicesTable->getDeletedServicesIndex($ServiceFilter, $PaginateOMat);
 
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
         $all_services = [];
         foreach ($result as $deletedService) {
-            $DeletedService = new \itnovum\openITCOCKPIT\Core\Views\DeletedService($deletedService, $UserTime);
+            $DeletedService = new DeletedService($deletedService, $UserTime);
             $all_services[] = [
                 'DeletedService' => $DeletedService->toArray()
             ];
@@ -1074,7 +1102,10 @@ class ServicesController extends AppController {
                     $postData[$index]['Service']['id'] = $newServiceEntity->get('id');
 
                     if ($action === 'copy') {
-                        $changelog_data = $this->Changelog->parseDataForChangelog(
+                        /** @var  ChangelogsTable $ChangelogsTable */
+                        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                        $changelog_data = $ChangelogsTable->parseDataForChangelog(
                             $action,
                             'services',
                             $postData[$index]['Service']['id'],
@@ -1085,7 +1116,10 @@ class ServicesController extends AppController {
                             $serviceData
                         );
                     } else {
-                        $changelog_data = $this->Changelog->parseDataForChangelog(
+                        /** @var  ChangelogsTable $ChangelogsTable */
+                        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                        $changelog_data = $ChangelogsTable->parseDataForChangelog(
                             $action,
                             'services',
                             $postData[$index]['Service']['id'],
@@ -1099,7 +1133,9 @@ class ServicesController extends AppController {
                     }
 
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
                     }
                 }
             }
@@ -1208,7 +1244,7 @@ class ServicesController extends AppController {
     /**
      * @param int|string|null $idOrUuid
      * @throws MissingDbBackendException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function browser($id = null) {
         $User = new User($this->getUser());
@@ -1253,7 +1289,7 @@ class ServicesController extends AppController {
         }
 
         $service = $ServicesTable->getServiceForBrowser($id);
-        $serviceObj = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
+        $serviceObj = new Service($service);
 
         //Check permissions
         $host = $HostsTable->getHostForServiceEdit($service['host_id']);
@@ -1284,7 +1320,7 @@ class ServicesController extends AppController {
 
         //Load host
         $hostEntity = $HostsTable->getHostById($host['Host']['id']);
-        $hostObj = new \itnovum\openITCOCKPIT\Core\Views\Host($hostEntity, $allowEdit);
+        $hostObj = new Host($hostEntity, $allowEdit);
         $host = $hostObj->toArray();
         $host['is_satellite_host'] = $hostObj->isSatelliteHost();
 
@@ -1361,7 +1397,7 @@ class ServicesController extends AppController {
                 'Hoststatus' => []
             ];
         }
-        $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus'], $UserTime);
+        $Hoststatus = new Hoststatus($hoststatus['Hoststatus'], $UserTime);
         $hoststatus = $Hoststatus->toArrayForBrowser();
 
 
@@ -1375,7 +1411,7 @@ class ServicesController extends AppController {
                 'Servicestatus' => []
             ];
         }
-        $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus'], $UserTime);
+        $Servicestatus = new Servicestatus($servicestatus['Servicestatus'], $UserTime);
         $servicestatus = $Servicestatus->toArrayForBrowser();
 
         //Parse BBCode in long output
@@ -1393,7 +1429,7 @@ class ServicesController extends AppController {
         $mergedService['has_graph'] = $PerfdataChecker->hasPerfdata();
         $mergedService['allowEdit'] = $allowEdit;
 
-        if(empty($Servicestatus->getPerfdata()) && $mergedService['has_graph'] === true && $this->PerfdataBackend->isWhisper()){
+        if (empty($Servicestatus->getPerfdata()) && $mergedService['has_graph'] === true && $this->PerfdataBackend->isWhisper()) {
             //Query graphite backend to get available metrics - used if perfdata string is empty for example on unknown state
 
             $mergedService['Perfdata'] = [];
@@ -1402,18 +1438,18 @@ class ServicesController extends AppController {
             $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
             $metrics = $GraphiteLoader->findMetricsByUuid($hostObj->getUuid(), $serviceObj->getUuid());
 
-            foreach($metrics as $metric){
+            foreach ($metrics as $metric) {
                 $mergedService['Perfdata'][$metric] = [
-                    'current' => null,
-                    'unit' => null,
-                    'warning' => null,
+                    'current'  => null,
+                    'unit'     => null,
+                    'warning'  => null,
                     'critical' => null,
-                    'min' => null,
-                    'max' => null
+                    'min'      => null,
+                    'max'      => null
                 ];
             }
 
-        }else{
+        } else {
             //Parse perfdata string from database to get metrics - this is the default
             $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
             $mergedService['Perfdata'] = $PerfdataParser->parse();
@@ -1454,7 +1490,7 @@ class ServicesController extends AppController {
         if ($Servicestatus->isInDowntime()) {
             $downtime = $DowntimehistoryServicesTable->byServiceUuid($serviceObj->getUuid());
             if (!empty($downtime)) {
-                $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime, $allowEdit, $UserTime);
+                $Downtime = new Downtime($downtime, $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();
             }
         }
@@ -1491,7 +1527,7 @@ class ServicesController extends AppController {
         if ($Hoststatus->isInDowntime()) {
             $hostDowntime = $DowntimehistoryHostsTable->byHostUuid($hostObj->getUuid());
             if (!empty($hostDowntime)) {
-                $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($hostDowntime, $allowEdit, $UserTime);
+                $DowntimeHost = new Downtime($hostDowntime, $allowEdit, $UserTime);
                 $hostDowntime = $DowntimeHost->toArray();
             }
         }
@@ -1584,7 +1620,7 @@ class ServicesController extends AppController {
                 //get recursive container ids
                 $containerIdToResolve = $browserContainerIds;
                 $children = $ContainersTable->getChildren($containerIdToResolve[0]);
-                $containerIds = \Cake\Utility\Hash::extract($children, '{n}.id');
+                $containerIds = Hash::extract($children, '{n}.id');
                 $recursiveContainerIds = [];
                 foreach ($containerIds as $containerId) {
                     if (in_array($containerId, $this->MY_RIGHTS)) {
@@ -1598,7 +1634,7 @@ class ServicesController extends AppController {
             'Hosts.name'  => 'asc',
             'servicename' => 'asc'
         ]));
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
         if ($this->DbBackend->isNdoUtils()) {
             $services = $ServicesTable->getServiceIndex($ServiceConditions, $PaginateOMat);
         }
@@ -1615,20 +1651,20 @@ class ServicesController extends AppController {
             ->isFlapping()
             ->lastHardStateChange();
         $hoststatusCache = $HoststatusTable->byUuid(
-            array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
+            array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
         );
         $all_services = [];
         $UserTime = $User->getUserTime();
         foreach ($services as $service) {
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts']);
+            $Host = new Host($service['_matchingData']['Hosts']);
             if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
+                $Hoststatus = new Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
             } else {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([], $UserTime);
+                $Hoststatus = new Hoststatus([], $UserTime);
             }
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null);
-            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
+            $Service = new Service($service, null);
+            $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
             $tmpRecord = [
                 'Service'       => $Service,
                 'Host'          => $Host,
@@ -1851,7 +1887,7 @@ class ServicesController extends AppController {
         $record = $StatehistoryHostsTable->getLastRecord($Conditions);
         if (!empty($record)) {
             $record->set('state_time', $start);
-            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record->toArray());
+            $StatehistoryHost = new StatehistoryHost($record->toArray());
             $statehistoryRecords[] = $StatehistoryHost;
         }
 
@@ -1870,13 +1906,13 @@ class ServicesController extends AppController {
                     'state'      => $hoststatus['Hoststatus']['current_state'],
                     'state_type' => ($hoststatus['Hoststatus']['state_type']) ? true : false
                 ];
-                $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record);
+                $StatehistoryHost = new StatehistoryHost($record);
                 $statehistoryRecords[] = $StatehistoryHost;
             }
         }
 
         foreach ($statehistories as $statehistory) {
-            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory);
+            $StatehistoryHost = new StatehistoryHost($statehistory);
             $statehistoryRecords[] = $StatehistoryHost;
         }
 
@@ -1904,7 +1940,7 @@ class ServicesController extends AppController {
         $record = $StatehistoryServicesTable->getLastRecord($StatehistoryServiceConditions);
         if (!empty($record)) {
             $record->set('state_time', $start);
-            $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record->toArray());
+            $StatehistoryService = new StatehistoryService($record->toArray());
             $statehistoryServiceRecords[] = $StatehistoryService;
         }
 
@@ -1924,13 +1960,13 @@ class ServicesController extends AppController {
                     'state_type' => $servicestatus['Servicestatus']['state_type']
                 ];
 
-                $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record);
+                $StatehistoryService = new StatehistoryService($record);
                 $statehistoryServiceRecords[] = $StatehistoryService;
             }
         }
 
         foreach ($statehistoriesService as $statehistoryService) {
-            $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($statehistoryService['StatehistoryService']);
+            $StatehistoryService = new StatehistoryService($statehistoryService['StatehistoryService']);
             $statehistoryServiceRecords[] = $StatehistoryService;
         }
 
@@ -1953,7 +1989,7 @@ class ServicesController extends AppController {
         $downtimes = $DowntimehistoryServicesTable->getDowntimesForReporting($DowntimeServiceConditions);
         $downtimeRecords = [];
         foreach ($downtimes as $downtime) {
-            $downtimeRecords[] = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime);
+            $downtimeRecords[] = new Downtime($downtime);
         }
 
         $DowntimeSerializer = new DowntimeSerializer($downtimeRecords, $UserTime);
@@ -1975,9 +2011,9 @@ class ServicesController extends AppController {
             $notification = $notification->toArray();
 
             $notificationRecords[] = [
-                'NotificationService' => new \itnovum\openITCOCKPIT\Core\Views\NotificationService($notification),
-                'Command'             => new \itnovum\openITCOCKPIT\Core\Views\Command($notification['Commands']),
-                'Contact'             => new \itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contacts'])
+                'NotificationService' => new NotificationService($notification),
+                'Command'             => new Command($notification['Commands']),
+                'Contact'             => new Contact($notification['Contacts'])
             ];
         }
 
@@ -2266,7 +2302,7 @@ class ServicesController extends AppController {
                     ]
                 ];
             }
-        };
+        }
 
         // Merge new command arguments that are missing in the service to service command arguments
         // and remove old command arguments that don't exists in the command anymore.
@@ -2358,7 +2394,7 @@ class ServicesController extends AppController {
                     ]
                 ];
             }
-        };
+        }
 
         $this->set('serviceeventhandlercommandargumentvalues', $serviceeventhandlercommandargumentvalues);
         $this->viewBuilder()->setOption('serialize', ['serviceeventhandlercommandargumentvalues']);

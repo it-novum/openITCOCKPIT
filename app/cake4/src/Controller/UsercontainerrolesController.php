@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\UsercontainerrolesTable;
+use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -50,7 +51,7 @@ class UsercontainerrolesController extends AppController {
         }
 
         $UsercontainerrolesFilter = new UsercontainerrolesFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $UsercontainerrolesFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $UsercontainerrolesFilter->getPage());
 
         /** @var $Usercontainerroles App\Model\Table\UsercontainerrolesTable */
         $Usercontainerroles = TableRegistry::getTableLocator()->get('Usercontainerroles');

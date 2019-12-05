@@ -27,6 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
@@ -38,10 +40,16 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatecommandargumentvaluesTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
@@ -67,7 +75,7 @@ class HosttemplatesController extends AppController {
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
         $HosttemplateFilter = new HosttemplateFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HosttemplateFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HosttemplateFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
@@ -156,7 +164,10 @@ class HosttemplatesController extends AppController {
                 $User = new User($this->getUser());
 
                 $extDataForChangelog = $HosttemplatesTable->resolveDataForChangelog($this->request->data);
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'hosttemplates',
                     $hosttemplate->get('id'),
@@ -168,11 +179,13 @@ class HosttemplatesController extends AppController {
                 );
 
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hosttemplate); // REST API ID serialization
                     return;
                 }
@@ -236,7 +249,10 @@ class HosttemplatesController extends AppController {
             } else {
                 //No errors
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'hosttemplates',
                     $hosttemplateEntity->id,
@@ -248,10 +264,12 @@ class HosttemplatesController extends AppController {
                     array_merge($HosttemplatesTable->resolveDataForChangelog($hosttemplateForChangeLog), $hosttemplateForChangeLog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hosttemplateEntity); // REST API ID serialization
                     return;
                 }
@@ -305,7 +323,10 @@ class HosttemplatesController extends AppController {
 
         if ($HosttemplatesTable->delete($hosttemplate)) {
             $User = new User($this->getUser());
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'hosttemplates',
                 $id,
@@ -418,7 +439,10 @@ class HosttemplatesController extends AppController {
                     //No errors
                     $postData[$index]['Hosttemplate']['id'] = $newHosttemplateEntity->get('id');
 
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'hosttemplates',
                         $postData[$index]['Hosttemplate']['id'],
@@ -429,7 +453,9 @@ class HosttemplatesController extends AppController {
                         ['Hosttemplate' => $newHosttemplateData]
                     );
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
                     }
                 }
             }
@@ -476,7 +502,7 @@ class HosttemplatesController extends AppController {
         $filter = $HosttemplateFilter->usedByFilter();
 
         $includeDisabled = true;
-        if(isset($filter['Hosts.disabled']) && $filter['Hosts.disabled'] === 0){
+        if (isset($filter['Hosts.disabled']) && $filter['Hosts.disabled'] === 0) {
             $includeDisabled = false;
         }
 
@@ -484,7 +510,7 @@ class HosttemplatesController extends AppController {
 
         $all_hosts = [];
         foreach ($hosts as $host) {
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+            $Host = new Host($host);
 
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
@@ -679,20 +705,20 @@ class HosttemplatesController extends AppController {
                     ]
                 ];
             }
-        };
+        }
 
         // Merge new command arguments that are missing in the host template to host template command arguments
         // and remove old command arguments that don't exists in the command anymore.
         $filteredCommandArgumentsValules = [];
-        foreach ($commandarguments as $commandargument){
+        foreach ($commandarguments as $commandargument) {
             $valueExists = false;
-            foreach($hosttemplatecommandargumentvalues as $hosttemplatecommandargumentvalue){
-                if($commandargument['Commandargument']['id'] === $hosttemplatecommandargumentvalue['commandargument_id']){
+            foreach ($hosttemplatecommandargumentvalues as $hosttemplatecommandargumentvalue) {
+                if ($commandargument['Commandargument']['id'] === $hosttemplatecommandargumentvalue['commandargument_id']) {
                     $filteredCommandArgumentsValules[] = $hosttemplatecommandargumentvalue;
                     $valueExists = true;
                 }
             }
-            if(!$valueExists){
+            if (!$valueExists) {
                 $filteredCommandArgumentsValules[] = [
                     'commandargument_id' => $commandargument['Commandargument']['id'],
                     'value'              => '',

@@ -27,17 +27,21 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostescalationsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostescalationsFilter;
+
 
 /**
  * @property Hostescalation $Hostescalation
@@ -65,7 +69,7 @@ class HostescalationsController extends AppController {
         $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
 
         $HostescalationsFilter = new HostescalationsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostescalationsFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostescalationsFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
@@ -170,7 +174,7 @@ class HostescalationsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostescalation); // REST API ID serialization
                     return;
                 }
@@ -209,7 +213,7 @@ class HostescalationsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             } else {
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostescalation); // REST API ID serialization
                     return;
                 }

@@ -27,14 +27,21 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContactsToContactgroupsTable;
 use App\Model\Table\ContainersTable;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactgroupsFilter;
 
@@ -72,7 +79,7 @@ class ContactgroupsController extends AppController {
         $ContactsToContactgroupsTable = TableRegistry::getTableLocator()->get('ContactsToContactgroups');
 
         $ContactgroupsFilter = new ContactgroupsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ContactgroupsFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ContactgroupsFilter->getPage());
 
         $MY_RIGHTS = [];
         if ($this->hasRootPrivileges === false) {
@@ -141,7 +148,10 @@ class ContactgroupsController extends AppController {
                 $User = new User($this->getUser());
                 $extDataForChangelog = $ContactgroupsTable->resolveDataForChangelog($this->request->data);
                 Cache::clear(false, 'permissions');
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'contactgroups',
                     $contactgroup->get('id'),
@@ -152,10 +162,12 @@ class ContactgroupsController extends AppController {
                     array_merge($this->request->data, $extDataForChangelog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($contactgroup); // REST API ID serialization
                     return;
                 }
@@ -216,7 +228,10 @@ class ContactgroupsController extends AppController {
             } else {
                 //No errors
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'contactgroups',
                     $contactgroupEntity->get('id'),
@@ -228,10 +243,12 @@ class ContactgroupsController extends AppController {
                     array_merge($ContactgroupsTable->resolveDataForChangelog($contactgroupForChangeLog), $contactgroupForChangeLog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($contactgroupEntity); // REST API ID serialization
                     return;
                 }
@@ -294,7 +311,10 @@ class ContactgroupsController extends AppController {
         if ($ContainersTable->delete($container)) {
             $User = new User($this->getUser());
             Cache::clear(false, 'permissions');
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'contactgroup',
                 $id,
@@ -399,7 +419,10 @@ class ContactgroupsController extends AppController {
                     //No errors
                     $postData[$index]['Contactgroup']['id'] = $newContactgroupEntity->get('id');
 
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                    /** @var  ChangelogsTable $ChangelogsTable */
+                    $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                    $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'contactgroups',
                         $postData[$index]['Contactgroup']['id'],
@@ -410,7 +433,9 @@ class ContactgroupsController extends AppController {
                         ['Contactgroup' => $newContactgroupData]
                     );
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
+                        /** @var Changelog $changelogEntry */
+                        $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                        $ChangelogsTable->save($changelogEntry);
                     }
                 }
             }

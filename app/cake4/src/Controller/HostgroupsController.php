@@ -29,20 +29,31 @@ namespace App\Controller;
 
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HoststatusTableInterface;
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Hostgroup;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\CumulatedValue;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\ServiceStateSummary;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -77,7 +88,7 @@ class HostgroupsController extends AppController {
         /** @var $HostgroupsTable HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
         $HostgroupFilter = new HostgroupFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostgroupFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostgroupFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
@@ -168,7 +179,10 @@ class HostgroupsController extends AppController {
                 //No errors
 
                 $extDataForChangelog = $HostgroupsTable->resolveDataForChangelog($this->request->data);
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'hostgroups',
                     $hostgroup->get('id'),
@@ -179,13 +193,15 @@ class HostgroupsController extends AppController {
                     array_merge($this->request->data, $extDataForChangelog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 //@todo refactor with cake4
                 Cache::clear(false, 'permissions');
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostgroup); // REST API ID serialization
                     return;
                 }
@@ -244,7 +260,10 @@ class HostgroupsController extends AppController {
             } else {
                 //No errors
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'hostgroups',
                     $hostgroupEntity->id,
@@ -256,10 +275,12 @@ class HostgroupsController extends AppController {
                     array_merge($HostgroupsTable->resolveDataForChangelog($hostgroupForChangelog), $hostgroupForChangelog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostgroupEntity); // REST API ID serialization
                     return;
                 }
@@ -300,7 +321,10 @@ class HostgroupsController extends AppController {
 
         if ($ContainersTable->delete($container)) {
             $User = new User($this->getUser());
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'hostgroups',
                 $id,
@@ -393,11 +417,11 @@ class HostgroupsController extends AppController {
 
 
         foreach ($hosts as $host) {
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+            $Host = new Host($host);
 
             $serviceUuids = $ServicesTable->getServiceUuidsOfHostByHostId($Host->getId());
             $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
-            $ServicestatusObjects = \itnovum\openITCOCKPIT\Core\Servicestatus::fromServicestatusByUuid($servicestatus);
+            $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatus);
             $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
 
             $CumulatedValue = new CumulatedValue($serviceStateSummary['state']);
@@ -413,7 +437,7 @@ class HostgroupsController extends AppController {
                 $serviceStateSummary['state']
             );
 
-            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Host']['Hoststatus'], $UserTime);
+            $Hoststatus = new Hoststatus($host['Host']['Hoststatus'], $UserTime);
 
 
             if ($this->hasRootPrivileges) {
@@ -454,7 +478,7 @@ class HostgroupsController extends AppController {
     }
 
     /**
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     public function listToPdf() {
         $this->layout = 'Admin.default';
@@ -467,7 +491,7 @@ class HostgroupsController extends AppController {
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         $MY_RIGHTS = [];
-        if(!$this->hasRootPrivileges){
+        if (!$this->hasRootPrivileges) {
             $MY_RIGHTS = $this->MY_RIGHTS;
         }
         $HostgroupFilter = new HostgroupFilter($this->request);
@@ -481,8 +505,8 @@ class HostgroupsController extends AppController {
         $numberOfHosts = 0;
 
         $all_hostgroups = [];
-        foreach($hostgroups as $hostgroup) {
-            /** @var \App\Model\Entity\Hostgroup $hostgroup */
+        foreach ($hostgroups as $hostgroup) {
+            /** @var Hostgroup $hostgroup */
 
             $hostIds = $HostgroupsTable->getHostIdsByHostgroupId($hostgroup->get('id'));
 
@@ -510,14 +534,14 @@ class HostgroupsController extends AppController {
 
             $numberOfHosts += sizeof($hosts);
 
-            $hostgroupHostUuids = \Cake\Utility\Hash::extract($hosts, '{n}.Host.uuid');
+            $hostgroupHostUuids = Hash::extract($hosts, '{n}.Host.uuid');
             $HoststatusFields = new HoststatusFields($this->DbBackend);
             $HoststatusFields->wildcard();
             $hoststatusOfHostgroup = $HoststatusTable->byUuids($hostgroupHostUuids, $HoststatusFields);
 
             $all_hostgroups[] = [
-                'Hostgroup' => $hostgroup->toArray(),
-                'Hosts' => $hosts,
+                'Hostgroup'  => $hostgroup->toArray(),
+                'Hosts'      => $hosts,
                 'Hoststatus' => $hoststatusOfHostgroup
             ];
         }
@@ -656,7 +680,10 @@ class HostgroupsController extends AppController {
                 ];
 
                 //No errors
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'hostgroups',
                     $hostgroupEntity->id,
@@ -668,10 +695,12 @@ class HostgroupsController extends AppController {
                     array_merge($HostgroupsTable->resolveDataForChangelog($hostgroupForChangelog), $hostgroupForChangelog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
-                if ($this->request->ext == 'json') {
+                if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($hostgroupEntity); // REST API ID serialization
                     return;
                 }

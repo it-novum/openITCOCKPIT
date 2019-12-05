@@ -27,7 +27,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
 use App\Lib\Api\ApiPaginator;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsergroupsTable;
@@ -36,10 +35,9 @@ use Authentication\Authenticator\ResultInterface;
 use Authentication\Controller\Component\AuthenticationComponent;
 use Cake\Event\EventInterface;
 use Cake\Http\Exception\ConflictException;
-use Cake\Http\Exception\MethodNotAllowedException;
-use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
+
 
 /**
  * Class UsersController
@@ -62,11 +60,11 @@ class UsersController extends AppController {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $disableAnimation = $SystemsettingsTable->isLoginAnimationDisabled();
 
-        if($this->getRequest()->getQuery('remote')){
+        if ($this->getRequest()->getQuery('remote')) {
             $disableAnimation = true;
         }
 
-        if($disableAnimation){
+        if ($disableAnimation) {
             $images['particles'] = 'none';
         }
 
@@ -221,9 +219,9 @@ class UsersController extends AppController {
 
         //Rewrite hashmap to array because javascript will break the "orderd hashmap" because hashmaps have no order
         $usergroups = [];
-        foreach($_usergroups as $id => $name){
+        foreach ($_usergroups as $id => $name) {
             $usergroups[] = [
-                'key' => $id,
+                'key'   => $id,
                 'value' => $name
             ];
         }
