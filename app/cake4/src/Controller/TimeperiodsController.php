@@ -37,6 +37,7 @@ use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TimeperiodsFilter;
 
@@ -149,8 +150,8 @@ class TimeperiodsController extends AppController {
                 return;
             } else {
                 //No errors
-                $userId = $this->Auth->user('id');
-                $requestData = $this->request->data;
+                $User = new User($this->getUser());
+                $requestData = $this->request->getData();
 
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
@@ -161,7 +162,7 @@ class TimeperiodsController extends AppController {
                     $timeperiod->get('id'),
                     OBJECT_TIMEPERIOD,
                     [$requestData['Timeperiod']['container_id']],
-                    $userId,
+                    $User->getId(),
                     $requestData['Timeperiod']['name'],
                     $requestData,
                     $timeperiodForChangeLog
@@ -206,7 +207,7 @@ class TimeperiodsController extends AppController {
             } else {
                 //No errors
                 $User = new User($this->getUser());
-                $requestData = $this->request->data;
+                $requestData = $this->request->getData();
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
