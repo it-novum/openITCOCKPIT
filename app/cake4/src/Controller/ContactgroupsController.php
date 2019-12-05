@@ -33,6 +33,7 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContactsToContactgroupsTable;
 use App\Model\Table\ContainersTable;
+use Cake\Cache\Cache;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -47,25 +48,10 @@ use itnovum\openITCOCKPIT\Filter\ContactgroupsFilter;
 
 
 /**
- * @property Contactgroup $Contactgroup
- * @property Container $Container
- * @property Contact $Contact
- * @property User $User
- * @property Changelog $Changelog
- *
- * @property AppPaginatorComponent $Paginator
+ * Class ContactgroupsController
+ * @package App\Controller
  */
 class ContactgroupsController extends AppController {
-
-    public $uses = [
-        'Contactgroup',
-        'Container',
-        'Contact',
-        'User',
-    ];
-
-    public $layout = 'blank';
-
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -147,7 +133,7 @@ class ContactgroupsController extends AppController {
                 //No errors
                 $User = new User($this->getUser());
                 $extDataForChangelog = $ContactgroupsTable->resolveDataForChangelog($this->request->data);
-                Cache::clear(false, 'permissions');
+                Cache::clear('permissions');
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -310,7 +296,7 @@ class ContactgroupsController extends AppController {
 
         if ($ContainersTable->delete($container)) {
             $User = new User($this->getUser());
-            Cache::clear(false, 'permissions');
+            Cache::clear('permissions');
             /** @var  ChangelogsTable $ChangelogsTable */
             $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 

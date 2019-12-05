@@ -31,6 +31,7 @@ use App\Model\Entity\User;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\UsersTable;
+use Cake\Cache\Cache;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -104,7 +105,7 @@ class ContainersController extends AppController {
             return;
         }
 
-        Cache::clear(false, 'permissions');
+        Cache::clear('permissions');
         $this->serializeCake4Id($container);
     }
 
@@ -131,7 +132,7 @@ class ContainersController extends AppController {
                 return;
             }
 
-            Cache::clear(false, 'permissions');
+            Cache::clear('permissions');
             $this->serializeCake4Id($container);
         }
     }
@@ -457,10 +458,10 @@ class ContainersController extends AppController {
                 }
             }
         }
-        Cache::clear(false, 'permissions');
+        Cache::clear('permissions');
         if ($allowDeleteRoot) {
             if ($this->Container->__delete($id)) {
-                Cache::clear(false, 'permissions');
+                Cache::clear('permissions');
                 $this->set('success', true);
                 $this->viewBuilder()->setOption('serialize', ['success']);
                 return;

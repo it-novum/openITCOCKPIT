@@ -31,6 +31,7 @@ use App\Model\Entity\Changelog;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\TenantsTable;
+use Cake\Cache\Cache;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -162,7 +163,7 @@ class TenantsController extends AppController {
                 }
 
                 //@todo refactor with cake4
-                Cache::clear(false, 'permissions');
+                Cache::clear('permissions');
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($tenant); // REST API ID serialization
@@ -255,7 +256,7 @@ class TenantsController extends AppController {
                 }
 
                 //@todo refactor with cake4
-                Cache::clear(false, 'permissions');
+                Cache::clear('permissions');
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($tenant); // REST API ID serialization
@@ -298,7 +299,7 @@ class TenantsController extends AppController {
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
             if ($ContainersTable->delete($ContainersTable->get($container['Tenant']['container_id']))) {
-                Cache::clear(false, 'permissions');
+                Cache::clear('permissions');
 
                 $User = new User($this->getUser());
                 /** @var  ChangelogsTable $ChangelogsTable */

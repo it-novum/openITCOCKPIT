@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Cake\Cache\Cache;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -184,7 +185,7 @@ class UsergroupsController extends AppController {
                 ]);
                 //Save new permissions
                 $this->Acl->Aro->Permission->saveAll($aclData);
-                Cache::clear(false, 'permissions');
+                Cache::clear('permissions');
                 $this->setFlash(__('User role successfully saved'));
                 $this->redirect(['action' => 'index']);
             } else {

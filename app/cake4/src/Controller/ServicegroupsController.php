@@ -37,6 +37,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Cache\Cache;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -191,7 +192,7 @@ class ServicegroupsController extends AppController {
                 }
 
                 //@todo refactor with cake4
-                Cache::clear(false, 'permissions');
+                Cache::clear('permissions');
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($servicegroup); // REST API ID serialization
