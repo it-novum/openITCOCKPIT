@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b9271b9fa6482e9446413c40aed4851f",
+    "content-hash": "6a3519000d811d5dc9a721246ec8ba76",
     "packages": [
         {
             "name": "aura/intl",
@@ -581,6 +581,157 @@
                 "parser"
             ],
             "time": "2015-11-01T10:19:22+00:00"
+        },
+        {
+            "name": "freedsx/asn1",
+            "version": "0.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FreeDSx/ASN1.git",
+                "reference": "d1f7c9dc0bbe047a95a527cd134e3d7dece97ac3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FreeDSx/ASN1/zipball/d1f7c9dc0bbe047a95a527cd134e3d7dece97ac3",
+                "reference": "d1f7c9dc0bbe047a95a527cd134e3d7dece97ac3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpspec/phpspec": "^5.0"
+            },
+            "suggest": {
+                "ext-gmp": "For big integer support in Integer/Enumerated/OID types and tag numbers."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FreeDSx\\Asn1\\": "src/FreeDSx/Asn1"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chad Sikorra",
+                    "email": "Chad.Sikorra@gmail.com"
+                }
+            ],
+            "description": "An ASN.1 library for PHP.",
+            "homepage": "https://github.com/FreeDSx/ASN1",
+            "keywords": [
+                "DER",
+                "asn.1",
+                "asn1",
+                "ber",
+                "x.690"
+            ],
+            "time": "2019-03-10T22:33:37+00:00"
+        },
+        {
+            "name": "freedsx/ldap",
+            "version": "0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FreeDSx/LDAP.git",
+                "reference": "0cffaaeb6495d1e1c032fbae0027fe9526834df5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FreeDSx/LDAP/zipball/0cffaaeb6495d1e1c032fbae0027fe9526834df5",
+                "reference": "0cffaaeb6495d1e1c032fbae0027fe9526834df5",
+                "shasum": ""
+            },
+            "require": {
+                "freedsx/asn1": "^0.4.0",
+                "freedsx/socket": "^0.3.0",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpspec/phpspec": "^5.0",
+                "phpunit/phpunit": "^7.0"
+            },
+            "suggest": {
+                "ext-openssl": "For SSL/TLS support."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FreeDSx\\Ldap\\": "src/FreeDSx/Ldap"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chad Sikorra",
+                    "email": "Chad.Sikorra@gmail.com"
+                }
+            ],
+            "description": "A Pure PHP LDAP library",
+            "homepage": "https://github.com/FreeDSx/LDAP",
+            "keywords": [
+                "ldap"
+            ],
+            "time": "2019-03-11T19:19:01+00:00"
+        },
+        {
+            "name": "freedsx/socket",
+            "version": "0.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FreeDSx/Socket.git",
+                "reference": "51441af8bff810b3a46af3cf65e1e4edbd83e939"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FreeDSx/Socket/zipball/51441af8bff810b3a46af3cf65e1e4edbd83e939",
+                "reference": "51441af8bff810b3a46af3cf65e1e4edbd83e939",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "freedsx/asn1": "^0.4.0",
+                "phpspec/phpspec": "^5.0",
+                "phpstan/phpstan": "^0.11.15",
+                "phpstan/phpstan-strict-rules": "^0.11.1"
+            },
+            "suggest": {
+                "ext-openssl": "For SSL/TLS support.",
+                "freedsx/asn1": "For ASN.1 based message queues."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FreeDSx\\Socket\\": "src/FreeDSx/Socket"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chad Sikorra",
+                    "email": "Chad.Sikorra@gmail.com"
+                }
+            ],
+            "description": "A simple socket library for FreeDSx",
+            "homepage": "https://github.com/FreeDSx/Socket",
+            "keywords": [
+                "Socket",
+                "tcp",
+                "udp"
+            ],
+            "time": "2019-09-01T23:07:27+00:00"
         },
         {
             "name": "jdorn/sql-formatter",

@@ -336,7 +336,7 @@ class AppController extends Controller {
      */
     protected function serializeCake4ErrorMessage(EntityInterface $entity) {
         $this->set('error', $entity->getErrors());
-        $this->set('_serialize', ['error']);
+        $this->viewBuilder()->setOption('serialize', ['error']);
         if ($this->isAngularJsRequest()) {
             $this->response = $this->response->withStatus(400);
             return;
@@ -515,6 +515,6 @@ class AppController extends Controller {
             return;
         }
         $this->set('id', $entity->id);
-        $this->set('_serialize', ['id']);
+        $this->viewBuilder()->setOption('serialize', ['id']);
     }
 }

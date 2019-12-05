@@ -324,9 +324,11 @@ class ContactgroupsController extends AppController {
                 $contactgroupEntity->get('container')->get('name'),
                 $contactgroupEntity->toArray()
             );
-            if ($changelog_data) {
-                CakeLog::write('log', serialize($changelog_data));
-            }
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
 
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
