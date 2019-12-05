@@ -1122,4 +1122,24 @@ class ServicetemplatesTable extends Table {
         return $servicetemplate;
     }
 
+    /**
+     * @param int $timeperiodId
+     * @return bool
+     */
+    public function isTimeperiodUsedByServicetemplate($timeperiodId) {
+        $count = $this->find()
+            ->where([
+                'OR' => [
+                    'Servicetemplates.check_period_id'  => $timeperiodId,
+                    'Servicetemplates.notify_period_id' => $timeperiodId
+                ]
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
 }

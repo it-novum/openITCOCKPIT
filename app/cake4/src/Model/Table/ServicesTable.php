@@ -2383,4 +2383,24 @@ class ServicesTable extends Table {
 
         return $result['count'];
     }
+
+    /**
+     * @param int $timeperiodId
+     * @return bool
+     */
+    public function isTimeperiodUsedByService($timeperiodId) {
+        $count = $this->find()
+            ->where([
+                'OR' => [
+                    'Services.check_period_id'  => $timeperiodId,
+                    'Services.notify_period_id' => $timeperiodId
+                ]
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        return false;
+    }
 }

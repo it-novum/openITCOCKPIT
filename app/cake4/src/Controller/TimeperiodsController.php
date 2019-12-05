@@ -32,6 +32,7 @@ use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Plugin;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -253,36 +254,6 @@ class TimeperiodsController extends AppController {
             return false;
         }
 
-        //Check service templates
-        $this->loadModel('Servicetemplate');
-        $servicetemplateCount = $this->Servicetemplate->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'or' => [
-                    'check_period_id'  => $timeperiodId,
-                    'notify_period_id' => $timeperiodId,
-                ],
-            ],
-        ]);
-        if ($servicetemplateCount > 0) {
-            return false;
-        }
-
-        //Check services
-        $this->loadModel('Service');
-        $serviceCount = $this->Service->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'or' => [
-                    'check_period_id'  => $timeperiodId,
-                    'notify_period_id' => $timeperiodId,
-                ],
-            ],
-        ]);
-        if ($serviceCount > 0) {
-            return false;
-        }
-
         //Check host templates
         /** @var $HosttemplatesTable HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
@@ -291,22 +262,29 @@ class TimeperiodsController extends AppController {
         }
 
         //Check hosts
-        $this->loadModel('Host');
-        $hostCount = $this->Host->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'or' => [
-                    'check_period_id'  => $timeperiodId,
-                    'notify_period_id' => $timeperiodId,
-                ],
-            ],
-        ]);
-        if ($hostCount > 0) {
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        if ($HostsTable->isTimeperiodUsedByHost($timeperiodId)) {
+            return false;
+        }
+
+
+        //Check service templates
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        if ($ServicetemplatesTable->isTimeperiodUsedByServicetemplate($timeperiodId)) {
+            return false;
+        }
+
+        //Check services
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        if ($ServicesTable->isTimeperiodUsedByService($timeperiodId)) {
             return false;
         }
 
         //Check autoreports
-        if (in_array('AutoreportModule', CakePlugin::loaded())) {
+        if (in_array('AutoreportModule', Plugin::loaded())) {
             $this->loadModel('AutoreportModule.Autoreport');
             $autoreportCount = $this->Autoreport->find('count', [
                 'recursive'  => -1,

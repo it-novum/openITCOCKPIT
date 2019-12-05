@@ -2176,4 +2176,24 @@ class HostsTable extends Table {
         return $result['count'];
     }
 
+    /**
+     * @param int $timeperiodId
+     * @return bool
+     */
+    public function isTimeperiodUsedByHost($timeperiodId) {
+        $count = $this->find()
+            ->where([
+                'OR' => [
+                    'Hosts.check_period_id'  => $timeperiodId,
+                    'Hosts.notify_period_id' => $timeperiodId
+                ]
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
 }
