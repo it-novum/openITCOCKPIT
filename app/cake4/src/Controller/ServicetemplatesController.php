@@ -160,7 +160,10 @@ class ServicetemplatesController extends AppController {
                 $User = new User($this->getUser());
 
                 $extDataForChangelog = $ServicetemplatesTable->resolveDataForChangelog($this->request->data);
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'servicetemplates',
                     $servicetemplate->get('id'),
@@ -172,7 +175,9 @@ class ServicetemplatesController extends AppController {
                 );
 
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
 
@@ -251,7 +256,10 @@ class ServicetemplatesController extends AppController {
             } else {
                 //No errors
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'servicetemplates',
                     $servicetemplateEntity->id,
@@ -263,7 +271,9 @@ class ServicetemplatesController extends AppController {
                     array_merge($ServicetemplatesTable->resolveDataForChangelog($servicetemplateForChangeLog), $servicetemplateForChangeLog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 if ($this->isJsonRequest()) {
@@ -310,7 +320,10 @@ class ServicetemplatesController extends AppController {
         if ($this->Servicetemplate->__allowDelete($id)) {
             $User = new User($this->getUser());
             if ($this->Servicetemplate->delete()) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     $this->request->getParam('action'),
                     $this->request->getParam('controller'),
                     $id,
@@ -321,7 +334,9 @@ class ServicetemplatesController extends AppController {
                     $servicetemplate
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 //Delete Documentation record if exists
@@ -451,7 +466,10 @@ class ServicetemplatesController extends AppController {
                     //No errors
                     $postData[$index]['Servicetemplate']['id'] = $newServicetemplateEntity->get('id');
 
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                                    /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'servicetemplates',
                         $postData[$index]['Servicetemplate']['id'],
@@ -462,8 +480,10 @@ class ServicetemplatesController extends AppController {
                         ['Servicetemplate' => $newServicetemplateData]
                     );
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
-                    }
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
                 }
             }
         }

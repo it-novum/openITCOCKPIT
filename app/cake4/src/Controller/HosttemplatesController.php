@@ -156,7 +156,10 @@ class HosttemplatesController extends AppController {
                 $User = new User($this->getUser());
 
                 $extDataForChangelog = $HosttemplatesTable->resolveDataForChangelog($this->request->data);
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'hosttemplates',
                     $hosttemplate->get('id'),
@@ -168,7 +171,9 @@ class HosttemplatesController extends AppController {
                 );
 
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
 
@@ -236,7 +241,10 @@ class HosttemplatesController extends AppController {
             } else {
                 //No errors
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'hosttemplates',
                     $hosttemplateEntity->id,
@@ -248,7 +256,9 @@ class HosttemplatesController extends AppController {
                     array_merge($HosttemplatesTable->resolveDataForChangelog($hosttemplateForChangeLog), $hosttemplateForChangeLog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 if ($this->isJsonRequest()) {
@@ -305,7 +315,10 @@ class HosttemplatesController extends AppController {
 
         if ($HosttemplatesTable->delete($hosttemplate)) {
             $User = new User($this->getUser());
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+                            /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'hosttemplates',
                 $id,
@@ -418,7 +431,10 @@ class HosttemplatesController extends AppController {
                     //No errors
                     $postData[$index]['Hosttemplate']['id'] = $newHosttemplateEntity->get('id');
 
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                                    /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'hosttemplates',
                         $postData[$index]['Hosttemplate']['id'],
@@ -429,8 +445,10 @@ class HosttemplatesController extends AppController {
                         ['Hosttemplate' => $newHosttemplateData]
                     );
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
-                    }
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
                 }
             }
         }

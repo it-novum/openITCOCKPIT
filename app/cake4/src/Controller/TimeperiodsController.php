@@ -154,7 +154,10 @@ class TimeperiodsController extends AppController {
                 $userId = $this->Auth->user('id');
                 $requestData = $this->request->data;
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     $this->request->getParam('controller'),
                     $timeperiod->get('id'),
@@ -166,7 +169,9 @@ class TimeperiodsController extends AppController {
                     $timeperiodForChangeLog
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($timeperiod); // REST API ID serialization
@@ -204,7 +209,10 @@ class TimeperiodsController extends AppController {
                 //No errors
                 $User = new User($this->getUser());
                 $requestData = $this->request->data;
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     $this->request->getParam('controller'),
                     $timeperiod->get('id'),
@@ -215,7 +223,9 @@ class TimeperiodsController extends AppController {
                     $requestData
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
                 $this->serializeCake4Id($timeperiod);
             }
@@ -357,7 +367,10 @@ class TimeperiodsController extends AppController {
         $timeperiodEntity = $TimeperiodsTable->get($id);
         if ($TimeperiodsTable->delete($timeperiodEntity)) {
             $User = new User($this->getUser());
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+                            /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'timeperiods',
                 $id,
@@ -462,7 +475,10 @@ class TimeperiodsController extends AppController {
                     //No errors
                     $postData[$index]['Timeperiod']['id'] = $newTimeperiodEntity->get('id');
 
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                                    /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'timeperiods',
                         $postData[$index]['Timeperiod']['id'],
@@ -473,8 +489,10 @@ class TimeperiodsController extends AppController {
                         ['Timeperiod' => $newTimeperiodData]
                     );
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
-                    }
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
                 }
             }
         }

@@ -155,7 +155,10 @@ class ContactsController extends AppController {
 
                 $extDataForChangelog = $ContactsTable->resolveDataForChangelog($this->request->data);
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'contacts',
                     $contact->id,
@@ -166,7 +169,9 @@ class ContactsController extends AppController {
                     array_merge($extDataForChangelog, $this->request->data)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 if ($this->isJsonRequest()) {
@@ -243,7 +248,10 @@ class ContactsController extends AppController {
             } else {
                 //No errors
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'contacts',
                     $contactEntity->id,
@@ -255,7 +263,9 @@ class ContactsController extends AppController {
                     array_merge($ContactsTable->resolveDataForChangelog($contactForChangeLog), $contactForChangeLog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 if ($this->isJsonRequest()) {
@@ -328,7 +338,10 @@ class ContactsController extends AppController {
         $contactEntity = $ContactsTable->get($id);
         if ($ContactsTable->delete($contactEntity)) {
             $User = new User($this->getUser());
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+                            /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'contacts',
                 $id,
@@ -462,7 +475,10 @@ class ContactsController extends AppController {
                     //No errors
                     $postData[$index]['Contact']['id'] = $newContactEntity->get('id');
 
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                                    /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'contacts',
                         $postData[$index]['Contact']['id'],
@@ -473,8 +489,10 @@ class ContactsController extends AppController {
                         ['Contact' => $newContactData]
                     );
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
-                    }
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
                 }
             }
         }

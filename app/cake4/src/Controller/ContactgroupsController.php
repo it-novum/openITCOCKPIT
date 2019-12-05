@@ -141,7 +141,10 @@ class ContactgroupsController extends AppController {
                 $User = new User($this->getUser());
                 $extDataForChangelog = $ContactgroupsTable->resolveDataForChangelog($this->request->data);
                 Cache::clear(false, 'permissions');
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'contactgroups',
                     $contactgroup->get('id'),
@@ -152,7 +155,9 @@ class ContactgroupsController extends AppController {
                     array_merge($this->request->data, $extDataForChangelog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 if ($this->isJsonRequest()) {
@@ -216,7 +221,10 @@ class ContactgroupsController extends AppController {
             } else {
                 //No errors
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'contactgroups',
                     $contactgroupEntity->get('id'),
@@ -228,7 +236,9 @@ class ContactgroupsController extends AppController {
                     array_merge($ContactgroupsTable->resolveDataForChangelog($contactgroupForChangeLog), $contactgroupForChangeLog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 if ($this->isJsonRequest()) {
@@ -294,7 +304,10 @@ class ContactgroupsController extends AppController {
         if ($ContainersTable->delete($container)) {
             $User = new User($this->getUser());
             Cache::clear(false, 'permissions');
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+                            /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'contactgroup',
                 $id,
@@ -399,7 +412,10 @@ class ContactgroupsController extends AppController {
                     //No errors
                     $postData[$index]['Contactgroup']['id'] = $newContactgroupEntity->get('id');
 
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                                    /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         $action,
                         'contactgroups',
                         $postData[$index]['Contactgroup']['id'],
@@ -410,8 +426,10 @@ class ContactgroupsController extends AppController {
                         ['Contactgroup' => $newContactgroupData]
                     );
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
-                    }
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
                 }
             }
         }

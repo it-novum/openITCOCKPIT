@@ -151,7 +151,10 @@ class ServicetemplategroupsController extends AppController {
             $User = new User($this->getUser());
 
             $extDataForChangelog = $ServicetemplategroupsTable->resolveDataForChangelog($this->request->data);
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+                            /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'add',
                 'servicetemplategroups',
                 $servicetemplategroup->get('id'),
@@ -230,7 +233,10 @@ class ServicetemplategroupsController extends AppController {
             } else {
                 //No errors
 
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'servicetemplategroups',
                     $servicetemplategroupEntity->get('id'),
@@ -242,7 +248,9 @@ class ServicetemplategroupsController extends AppController {
                     array_merge($ServicetemplategroupsTable->resolveDataForChangelog($servicetemplategroupForChangeLog), $servicetemplategroupForChangeLog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 if ($this->isJsonRequest()) {
@@ -361,7 +369,10 @@ class ServicetemplategroupsController extends AppController {
                 ];
 
                 //No errors
-                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
                     'servicetemplategroups',
                     $servicetemplategroupEntity->id,
@@ -373,7 +384,9 @@ class ServicetemplategroupsController extends AppController {
                     array_merge($ServicetemplategroupsTable->resolveDataForChangelog($servicetemplategroupForChangelog), $servicetemplategroupForChangelog)
                 );
                 if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
 
                 if ($this->isJsonRequest()) {
@@ -424,7 +437,10 @@ class ServicetemplategroupsController extends AppController {
         if ($ContainersTable->delete($container)) {
             $User = new User($this->getUser());
             Cache::clear(false, 'permissions');
-            $changelog_data = $this->Changelog->parseDataForChangelog(
+                            /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'servicetemplategroups',
                 $id,
@@ -579,7 +595,10 @@ class ServicetemplategroupsController extends AppController {
                     //No errors
 
                     $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                                    /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         'add',
                         'services',
                         $service->get('id'),
@@ -591,8 +610,10 @@ class ServicetemplategroupsController extends AppController {
                     );
 
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
-                    }
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
 
                     $newServiceIds[] = $service->get('id');
                 }
@@ -752,7 +773,10 @@ class ServicetemplategroupsController extends AppController {
                     //No errors
 
                     $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                                    /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                         'add',
                         'services',
                         $service->get('id'),
@@ -764,8 +788,10 @@ class ServicetemplategroupsController extends AppController {
                     );
 
                     if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
-                    }
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
 
                     $newServiceIds[] = $service->get('id');
                 }
@@ -915,7 +941,10 @@ class ServicetemplategroupsController extends AppController {
                         //No errors
 
                         $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
-                        $changelog_data = $this->Changelog->parseDataForChangelog(
+                                        /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
                             'add',
                             'services',
                             $service->get('id'),
@@ -927,8 +956,10 @@ class ServicetemplategroupsController extends AppController {
                         );
 
                         if ($changelog_data) {
-                            CakeLog::write('log', serialize($changelog_data));
-                        }
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
 
                         $newServiceIds[] = $service->get('id');
                     }
