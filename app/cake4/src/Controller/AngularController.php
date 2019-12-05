@@ -38,7 +38,6 @@ use AppAuthComponent;
 use Cake\Cache\Cache;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
-use Cake\Utility\Hash;
 use DateTime;
 use DateTimeZone;
 use Exception;

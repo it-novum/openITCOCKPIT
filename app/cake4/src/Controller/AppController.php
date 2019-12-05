@@ -40,7 +40,6 @@ use Cake\Datasource\EntityInterface;
 use Cake\Event\EventInterface;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
-use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Exception;
 use itnovum\openITCOCKPIT\Core\DbBackend;

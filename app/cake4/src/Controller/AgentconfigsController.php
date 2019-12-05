@@ -32,7 +32,6 @@ use App\Model\Entity\Host;
 use App\Model\Table\AgentchecksTable;
 use App\Model\Table\AgentconfigsTable;
 use App\Model\Table\ChangelogsTable;
-use App\Model\Table\ChangelogsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;

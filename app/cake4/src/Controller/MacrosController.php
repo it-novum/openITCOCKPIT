@@ -32,7 +32,6 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\Utility\Hash;
-use Cake\Utility\Hash;
 
 class MacrosController extends AppController {
 
