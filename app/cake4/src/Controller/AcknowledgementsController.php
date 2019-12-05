@@ -75,7 +75,7 @@ class AcknowledgementsController extends AppController {
         }
 
         $AngularAcknowledgementsControllerRequest = new AcknowledgementsControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularAcknowledgementsControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularAcknowledgementsControllerRequest->getPage());
 
         //Process conditions
         $Conditions = new AcknowledgedHostConditions();
@@ -144,7 +144,7 @@ class AcknowledgementsController extends AppController {
         }
 
         $AngularAcknowledgementsControllerRequest = new AcknowledgementsControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularAcknowledgementsControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularAcknowledgementsControllerRequest->getPage());
 
         //Process conditions
         $Conditions = new AcknowledgedServiceConditions();

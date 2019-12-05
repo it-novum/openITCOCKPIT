@@ -80,7 +80,7 @@ class ServicegroupsController extends AppController {
         }
 
         $ServicegroupFilter = new ServicegroupFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicegroupFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServicegroupFilter->getPage());
         $servicegroups = $ServicegroupsTable->getServicegroupsIndex($ServicegroupFilter, $PaginateOMat, $MY_RIGHTS);
 
 

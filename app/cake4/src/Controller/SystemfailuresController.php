@@ -53,7 +53,7 @@ class SystemfailuresController extends AppController {
         $SystemfailuresTable = TableRegistry::getTableLocator()->get('Systemfailures');
 
         $SystemfailuresFilter = new SystemfailuresFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $SystemfailuresFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $SystemfailuresFilter->getPage());
 
         $systemfailures = $SystemfailuresTable->getSystemfailuresIndex($SystemfailuresFilter, $PaginateOMat);
 

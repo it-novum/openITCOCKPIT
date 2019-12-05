@@ -65,7 +65,7 @@ class AutomapsController extends AppController {
         $AutomapsTable = TableRegistry::getTableLocator()->get('Automaps');
 
         $AutomapsFilter = new AutomapsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AutomapsFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AutomapsFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
@@ -250,7 +250,7 @@ class AutomapsController extends AppController {
         $ServicesConditions->setServicenameRegex($automap['service_regex']);
 
         $ServiceFilter = new ServiceFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
 
         if ($automap['use_paginator'] === false) {
             $PaginateOMat = null;

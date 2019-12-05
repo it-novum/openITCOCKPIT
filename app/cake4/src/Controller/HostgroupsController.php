@@ -77,7 +77,7 @@ class HostgroupsController extends AppController {
         /** @var $HostgroupsTable HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
         $HostgroupFilter = new HostgroupFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostgroupFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostgroupFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {

@@ -58,7 +58,7 @@ class SystemdowntimesController extends AppController {
         }
 
         $AngularRequest = new AngularRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularRequest->getPage());
 
         $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $Conditions = new SystemdowntimesConditions();
@@ -116,7 +116,7 @@ class SystemdowntimesController extends AppController {
         }
 
         $AngularRequest = new AngularRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularRequest->getPage());
 
         $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $Conditions = new SystemdowntimesConditions();
@@ -177,7 +177,7 @@ class SystemdowntimesController extends AppController {
         }
 
         $AngularRequest = new AngularRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularRequest->getPage());
 
         $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $Conditions = new SystemdowntimesConditions();
@@ -235,7 +235,7 @@ class SystemdowntimesController extends AppController {
         }
 
         $AngularRequest = new AngularRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularRequest->getPage());
 
         $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
         $Conditions = new SystemdowntimesConditions();

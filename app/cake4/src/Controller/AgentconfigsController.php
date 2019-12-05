@@ -192,7 +192,7 @@ class AgentconfigsController extends AppController {
         $AgentchecksTable = TableRegistry::getTableLocator()->get('Agentchecks');
 
         $AgentchecksFilter = new AgentchecksFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AgentchecksFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AgentchecksFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {

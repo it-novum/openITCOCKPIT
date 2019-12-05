@@ -72,7 +72,7 @@ class ContactgroupsController extends AppController {
         $ContactsToContactgroupsTable = TableRegistry::getTableLocator()->get('ContactsToContactgroups');
 
         $ContactgroupsFilter = new ContactgroupsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ContactgroupsFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ContactgroupsFilter->getPage());
 
         $MY_RIGHTS = [];
         if ($this->hasRootPrivileges === false) {

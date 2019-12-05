@@ -65,7 +65,7 @@ class TenantsController extends AppController {
         $TenantsTable = TableRegistry::getTableLocator()->get('Tenants');
         $TenantFilter = new TenantFilter($this->request);
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $TenantFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $TenantFilter->getPage());
         $all_tenants = $TenantsTable->getTenantsIndex($TenantFilter, $PaginateOMat);
 
         foreach ($all_tenants as $key => $tenant) {

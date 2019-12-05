@@ -76,7 +76,7 @@ class InstantreportsController extends AppController {
         /** @var $InstantreportsTable InstantreportsTable */
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $InstantreportFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $InstantreportFilter->getPage());
         $MY_RIGHTS = [];
         if ($this->hasRootPrivileges === false) {
             /** @var $ContainersTable ContainersTable */

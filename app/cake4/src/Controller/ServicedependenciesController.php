@@ -63,7 +63,7 @@ class ServicedependenciesController extends AppController {
         $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
 
         $ServicedependenciesFilter = new ServicedependenciesFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicedependenciesFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServicedependenciesFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {

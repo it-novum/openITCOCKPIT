@@ -50,7 +50,7 @@ class DeletedHostsController extends AppController {
         $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
         $HostFilter = new HostFilter($this->request);
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostFilter->getPage());
         $result = $DeletedHostsTable->getDeletedHostsIndex($HostFilter, $PaginateOMat);
 
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));

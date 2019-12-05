@@ -59,7 +59,7 @@ class DowntimesController extends AppController {
         }
 
         $HostDowntimesControllerRequest = new HostDowntimesControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostDowntimesControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostDowntimesControllerRequest->getPage());
 
         //Process conditions
         $DowntimeHostConditions = new DowntimeHostConditions();
@@ -136,7 +136,7 @@ class DowntimesController extends AppController {
         }
 
         $ServiceDowntimesControllerRequest = new ServiceDowntimesControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceDowntimesControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceDowntimesControllerRequest->getPage());
 
         //Process conditions
         $DowntimeServiceConditions = new DowntimeServiceConditions();

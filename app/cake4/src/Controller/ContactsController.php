@@ -50,13 +50,10 @@ use itnovum\openITCOCKPIT\Ldap\LdapClient;
 
 
 /**
- * @property AppPaginatorComponent $Paginator
- * @property AppAuthComponent $Auth
- * @property DbBackend $DbBackend
+ * Class ContactsController
+ * @package App\Controller
  */
 class ContactsController extends AppController {
-
-    public $layout = 'blank';
 
 
     public function index() {
@@ -75,7 +72,7 @@ class ContactsController extends AppController {
 
 
         $ContactsFilter = new ContactsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ContactsFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ContactsFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {

@@ -73,7 +73,7 @@ class StatehistoriesController extends AppController {
         }
 
         $AngularStatehistoryControllerRequest = new StatehistoryControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularStatehistoryControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularStatehistoryControllerRequest->getPage());
 
 
         $User = new User($this->getUser());
@@ -138,7 +138,7 @@ class StatehistoriesController extends AppController {
         }
 
         $AngularStatehistoryControllerRequest = new StatehistoryControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularStatehistoryControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularStatehistoryControllerRequest->getPage());
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();

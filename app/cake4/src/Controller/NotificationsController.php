@@ -55,7 +55,7 @@ class NotificationsController extends AppController {
         session_write_close();
 
         $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
@@ -104,7 +104,7 @@ class NotificationsController extends AppController {
         session_write_close();
 
         $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
@@ -173,7 +173,7 @@ class NotificationsController extends AppController {
         session_write_close();
 
         $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
@@ -241,7 +241,7 @@ class NotificationsController extends AppController {
         }
 
         $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();

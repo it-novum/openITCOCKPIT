@@ -70,7 +70,7 @@ class ServicechecksController extends AppController {
         }
 
         $ServicechecksControllerRequest = new ServicechecksControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicechecksControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServicechecksControllerRequest->getPage());
 
         //Process conditions
         $Conditions = new ServicechecksConditions();

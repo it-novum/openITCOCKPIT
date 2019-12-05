@@ -56,7 +56,7 @@ class LocationsController extends AppController {
         $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
         $LocationFilter = new LocationFilter($this->request);
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $LocationFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $LocationFilter->getPage());
         $all_locations = $LocationsTable->getLocationsIndex($LocationFilter, $PaginateOMat);
 
         foreach ($all_locations as $key => $location) {

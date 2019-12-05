@@ -60,7 +60,7 @@ class HostdependenciesController extends AppController {
         $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
 
         $HostdependenciesFilter = new HostdependenciesFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostdependenciesFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostdependenciesFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {

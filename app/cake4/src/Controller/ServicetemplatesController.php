@@ -74,7 +74,7 @@ class ServicetemplatesController extends AppController {
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
         $ServicetemplateFilter = new ServicetemplateFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
@@ -898,7 +898,7 @@ class ServicetemplatesController extends AppController {
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
         $ServicetemplateFilter = new ServicetemplateFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServicetemplateFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {

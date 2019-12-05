@@ -50,7 +50,7 @@ class UsercontainerrolesController extends AppController {
         }
 
         $UsercontainerrolesFilter = new UsercontainerrolesFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $UsercontainerrolesFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $UsercontainerrolesFilter->getPage());
 
         /** @var $Usercontainerroles App\Model\Table\UsercontainerrolesTable */
         $Usercontainerroles = TableRegistry::getTableLocator()->get('Usercontainerroles');

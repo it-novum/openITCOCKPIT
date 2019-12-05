@@ -219,7 +219,7 @@ class HostsController extends AppController {
             }
         }
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostFilter->getPage());
 
         if ($this->DbBackend->isNdoUtils()) {
             /** @var $HostsTable HostsTable */
@@ -430,7 +430,7 @@ class HostsController extends AppController {
         $HostCondition->setContainerIds($this->MY_RIGHTS);
 
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostFilter->getPage());
 
 
         if ($this->DbBackend->isNdoUtils()) {
@@ -1048,7 +1048,7 @@ class HostsController extends AppController {
 
         $HostFilter = new HostFilter($this->request);
         $HostCondition = new HostConditions();
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostFilter->getPage());
 
         $HostCondition->setIncludeDisabled(true);
         if ($this->hasRootPrivileges === false) {

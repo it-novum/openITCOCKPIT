@@ -66,7 +66,7 @@ class ServiceescalationsController extends AppController {
         $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
 
         $ServiceescalationsFilter = new ServiceescalationsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceescalationsFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceescalationsFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {

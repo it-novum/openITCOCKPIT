@@ -65,7 +65,7 @@ class HostescalationsController extends AppController {
         $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
 
         $HostescalationsFilter = new HostescalationsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostescalationsFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostescalationsFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {

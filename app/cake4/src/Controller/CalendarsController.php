@@ -55,7 +55,7 @@ class CalendarsController extends AppController {
         /** @var $CalendarsTable CalendarsTable */
         $CalendarsTable = TableRegistry::getTableLocator()->get('Calendars');
         $CalendarFilter = new CalendarFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $CalendarFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $CalendarFilter->getPage());
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {
             $MY_RIGHTS = [];

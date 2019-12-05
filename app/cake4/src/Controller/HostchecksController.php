@@ -65,7 +65,7 @@ class HostchecksController extends AppController {
         }
 
         $HostchecksControllerRequest = new HostchecksControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HostchecksControllerRequest->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostchecksControllerRequest->getPage());
 
         //Process conditions
         $Conditions = new HostcheckConditions();

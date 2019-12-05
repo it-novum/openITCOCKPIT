@@ -67,7 +67,7 @@ class HosttemplatesController extends AppController {
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
         $HosttemplateFilter = new HosttemplateFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HosttemplateFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HosttemplateFilter->getPage());
 
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges) {

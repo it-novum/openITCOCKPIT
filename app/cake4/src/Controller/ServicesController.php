@@ -172,7 +172,7 @@ class ServicesController extends AppController {
         ]));
 
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
 
         if ($this->DbBackend->isNdoUtils()) {
             $services = $ServicesTable->getServiceIndex($ServiceConditions, $PaginateOMat);
@@ -346,7 +346,7 @@ class ServicesController extends AppController {
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
 
         if ($this->DbBackend->isNdoUtils()) {
             $services = $ServicesTable->getServiceNotMonitored($ServiceConditions, $PaginateOMat);
@@ -439,7 +439,7 @@ class ServicesController extends AppController {
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
 
         $services = $ServicesTable->getServicesForDisabled($ServiceConditions, $PaginateOMat);
 
@@ -764,7 +764,7 @@ class ServicesController extends AppController {
         $DeletedServicesTable = TableRegistry::getTableLocator()->get('DeletedServices');
         $ServiceFilter = new ServiceFilter($this->request);
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
         $result = $DeletedServicesTable->getDeletedServicesIndex($ServiceFilter, $PaginateOMat);
 
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
@@ -1598,7 +1598,7 @@ class ServicesController extends AppController {
             'Hosts.name'  => 'asc',
             'servicename' => 'asc'
         ]));
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ServiceFilter->getPage());
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $ServiceFilter->getPage());
         if ($this->DbBackend->isNdoUtils()) {
             $services = $ServicesTable->getServiceIndex($ServiceConditions, $PaginateOMat);
         }
