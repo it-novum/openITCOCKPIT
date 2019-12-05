@@ -399,7 +399,7 @@ class TimeperiodsController extends AppController {
             $Cache = new KeyValueStore();
 
             $postData = $this->request->getData('data');
-            $userId = $this->Auth->user('id');
+            $User = new User($this->getUser());
 
             foreach ($postData as $index => $timeperiodData) {
                 if (!isset($timeperiodData['Timeperiod']['id'])) {
@@ -463,7 +463,7 @@ class TimeperiodsController extends AppController {
                         $postData[$index]['Timeperiod']['id'],
                         OBJECT_TIMEPERIOD,
                         [ROOT_CONTAINER],
-                        $userId,
+                        $User->getId(),
                         $newTimeperiodEntity->get('name'),
                         ['Timeperiod' => $newTimeperiodData]
                     );
