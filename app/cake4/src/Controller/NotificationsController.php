@@ -27,13 +27,17 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Exceptions\MissingDbBackendException;
+use App\Model\Entity\Host;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsOverviewControllerRequest;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
@@ -148,7 +152,7 @@ class NotificationsController extends AppController {
 
     /**
      * @param int|null $id
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     public function hostNotification($id = null) {
         if (!$this->isApiRequest()) {
@@ -163,7 +167,7 @@ class NotificationsController extends AppController {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        /** @var \App\Model\Entity\Host $host */
+        /** @var Host $host */
         $host = $HostsTable->getHostByIdForPermissionCheck($id);
         if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
             $this->render403();
@@ -216,7 +220,7 @@ class NotificationsController extends AppController {
 
     /**
      * @param int|null $id
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     public function serviceNotification($id = null) {
         if (!$this->isApiRequest()) {

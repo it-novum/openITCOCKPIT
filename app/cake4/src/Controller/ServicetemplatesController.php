@@ -27,6 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
@@ -40,9 +42,15 @@ use App\Model\Table\ServicetemplatecommandargumentvaluesTable;
 use App\Model\Table\ServicetemplateeventcommandargumentvaluesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
@@ -543,11 +551,11 @@ class ServicetemplatesController extends AppController {
             return;
         }
 
-        $hostIds = array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.id'));
+        $hostIds = array_unique(Hash::extract($services, '{n}._matchingData.Hosts.id'));
         $tmpHosts = $HostsTable->getHostsByIds($hostIds, false);
 
         foreach ($tmpHosts as $index => $host) {
-            $hostContainerIds = \Cake\Utility\Hash::extract($host['hosts_to_containers_sharing'], '{n}.id');
+            $hostContainerIds = Hash::extract($host['hosts_to_containers_sharing'], '{n}.id');
 
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
@@ -735,7 +743,7 @@ class ServicetemplatesController extends AppController {
                     ]
                 ];
             }
-        };
+        }
 
         // Merge new command arguments that are missing in the service template to service template command arguments
         // and remove old command arguments that don't exists in the command anymore.
@@ -829,7 +837,7 @@ class ServicetemplatesController extends AppController {
                     ]
                 ];
             }
-        };
+        }
 
         $this->set('servicetemplateeventhandlercommandargumentvalues', $servicetemplateeventhandlercommandargumentvalues);
         $this->viewBuilder()->setOption('serialize', ['servicetemplateeventhandlercommandargumentvalues']);

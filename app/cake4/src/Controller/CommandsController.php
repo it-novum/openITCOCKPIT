@@ -27,8 +27,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
 use App\Model\Entity\Changelog;
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactsTable;
@@ -36,15 +37,14 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
-use Cake\Http\Exception\MethodNotAllowedException;
-use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\UUID;
-use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
+
 
 /**
  * Class CommandsController

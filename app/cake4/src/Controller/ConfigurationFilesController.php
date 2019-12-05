@@ -29,6 +29,9 @@ namespace App\Controller;
 
 use App\Model\Table\ConfigurationFilesTable;
 use App\Model\Table\ConfigurationQueueTable;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
 use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;

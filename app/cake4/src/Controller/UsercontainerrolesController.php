@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\UsercontainerrolesTable;
+use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;

@@ -27,8 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\UUID;
 
 class ExportsController extends AppController {
     public $layout = 'Admin.default';
@@ -71,7 +71,7 @@ class ExportsController extends AppController {
         $this->set('exportRunning', $exportRunning);
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->Frontend->setJson('exportRunning', $exportRunning);
-        $this->Frontend->setJson('uuidRegEx', \itnovum\openITCOCKPIT\Core\UUID::JSregex());
+        $this->Frontend->setJson('uuidRegEx', UUID::JSregex());
     }
 
     public function broadcast() {

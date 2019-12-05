@@ -27,6 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
@@ -38,10 +40,16 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatecommandargumentvaluesTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
@@ -502,7 +510,7 @@ class HosttemplatesController extends AppController {
 
         $all_hosts = [];
         foreach ($hosts as $host) {
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+            $Host = new Host($host);
 
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
@@ -697,7 +705,7 @@ class HosttemplatesController extends AppController {
                     ]
                 ];
             }
-        };
+        }
 
         // Merge new command arguments that are missing in the host template to host template command arguments
         // and remove old command arguments that don't exists in the command anymore.

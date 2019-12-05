@@ -27,10 +27,15 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\User;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\UsersTable;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 
@@ -183,7 +188,7 @@ class ContainersController extends AppController {
             ];
         }
 
-        $nest = \Cake\Utility\Hash::nest($cake2Containers);
+        $nest = Hash::nest($cake2Containers);
 
         $parent['children'] = ($hasChilds) ? $nest : [];
 
@@ -324,7 +329,7 @@ class ContainersController extends AppController {
                         $usersToDelete = $UsersTable->getUsersToDeleteByContainerIds($containerIds);
                         if ($allowDelete) {
                             foreach ($usersToDelete as $user) {
-                                /** @var \App\Model\Entity\User $user */
+                                /** @var User $user */
                                 $UsersTable->delete($user);
                             }
                         }

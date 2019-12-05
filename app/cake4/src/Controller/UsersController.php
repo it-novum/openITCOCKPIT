@@ -27,7 +27,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
 use App\Lib\Api\ApiPaginator;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsergroupsTable;
@@ -36,10 +35,9 @@ use Authentication\Authenticator\ResultInterface;
 use Authentication\Controller\Component\AuthenticationComponent;
 use Cake\Event\EventInterface;
 use Cake\Http\Exception\ConflictException;
-use Cake\Http\Exception\MethodNotAllowedException;
-use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
+
 
 /**
  * Class UsersController

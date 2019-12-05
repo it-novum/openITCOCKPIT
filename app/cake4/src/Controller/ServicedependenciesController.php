@@ -27,21 +27,29 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Service;
+use App\Model\Entity\Servicedependency;
+use App\Model\Entity\Servicegroup;
+use App\Model\Entity\Timeperiod;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\ServicedependenciesTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicedependenciesFilter;
 
 /**
- * @property \App\Model\Entity\Servicedependency $Servicedependency
- * @property \App\Model\Entity\Timeperiod $Timeperiod
- * @property \App\Model\Entity\Service $Service
- * @property \App\Model\Entity\Servicegroup $Servicegroup
+ * @property Servicedependency $Servicedependency
+ * @property Timeperiod $Timeperiod
+ * @property Service $Service
+ * @property Servicegroup $Servicegroup
  * @property Contact $Contact
  * @property Contactgroup $Contactgroup
  * @property ServicedependencyServiceMembership $ServicedependencyServiceMembership

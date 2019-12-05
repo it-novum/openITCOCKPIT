@@ -27,8 +27,11 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Agentcheck;
 use App\Model\Table\AgentchecksTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -62,7 +65,7 @@ class AgentchecksController extends AppController {
 
         $all_agentchecks = [];
         foreach ($agentchecks as $index => $agentcheck) {
-            /** @var \App\Model\Entity\Agentcheck $agentcheck */
+            /** @var Agentcheck $agentcheck */
             $all_agentchecks[$index] = $agentcheck->toArray();
             $all_agentchecks[$index]['allow_edit'] = true;
             if ($this->hasRootPrivileges === false) {

@@ -27,13 +27,16 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
 use App\Model\Table\ContainersTable;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Filter\StatusmapFilter;
+
 
 /**
  * Class StatusmapsController
@@ -213,7 +216,7 @@ class StatusmapsController extends AppController {
                         'Hoststatus' => []
                     ];
                 }
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(
+                $Hoststatus = new Hoststatus(
                     $hoststatus[$hostChunk['Host']['uuid']]['Hoststatus']
                 );
 

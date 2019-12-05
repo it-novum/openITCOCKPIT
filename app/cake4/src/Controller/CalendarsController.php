@@ -29,6 +29,8 @@ namespace App\Controller;
 
 use App\Model\Table\CalendarsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;

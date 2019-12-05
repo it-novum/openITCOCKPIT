@@ -27,19 +27,25 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Agentcheck;
+use App\Model\Entity\Host;
 use App\Model\Table\AgentchecksTable;
 use App\Model\Table\AgentconfigsTable;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Exception;
 use itnovum\openITCOCKPIT\Agent\AgentResponseToServicetemplateMapper;
 use itnovum\openITCOCKPIT\Agent\HttpLoader;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
-use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AgentchecksFilter;
 
@@ -66,7 +72,7 @@ class AgentconfigsController extends AppController {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        /** @var \App\Model\Entity\Host $host */
+        /** @var Host $host */
         $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
         if (!$this->allowedByContainerId($host->getContainerIds(), true)) {
             $this->render403();
@@ -123,7 +129,7 @@ class AgentconfigsController extends AppController {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        /** @var \App\Model\Entity\Host $host */
+        /** @var Host $host */
         $host = $HostsTable->getHostByIdForPermissionCheck($hostId);
         if (!$this->allowedByContainerId($host->getContainerIds(), true)) {
             $this->render403();
@@ -173,7 +179,7 @@ class AgentconfigsController extends AppController {
                 $this->set('mapping', $mapping);
                 $this->viewBuilder()->setOption('serialize', ['mapping']);
                 return;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $e->getMessage());
                 $this->set('success', false);
@@ -203,7 +209,7 @@ class AgentconfigsController extends AppController {
 
         $all_agentchecks = [];
         foreach ($agentchecks as $index => $agentcheck) {
-            /** @var \App\Model\Entity\Agentcheck $agentcheck */
+            /** @var Agentcheck $agentcheck */
             $all_agentchecks[$index] = $agentcheck->toArray();
             $all_agentchecks[$index]['allow_edit'] = true;
             if ($this->hasRootPrivileges === false) {

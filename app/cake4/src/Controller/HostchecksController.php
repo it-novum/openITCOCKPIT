@@ -27,10 +27,14 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Host;
 use App\Model\Table\HostsTable;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\HostchecksControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostcheckConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\Hostcheck;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
@@ -57,7 +61,7 @@ class HostchecksController extends AppController {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        /** @var \App\Model\Entity\Host $host */
+        /** @var Host $host */
         $host = $HostsTable->getHostByIdForPermissionCheck($id);
         if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
             $this->render403();
@@ -85,7 +89,7 @@ class HostchecksController extends AppController {
         $all_hostchecks = [];
         foreach ($HostchecksTable->getHostchecks($Conditions, $PaginateOMat) as $hostcheck) {
             /** @var \Statusengine2Module\Model\Entity\Hostcheck $hostcheck */
-            $Hostcheck = new \itnovum\openITCOCKPIT\Core\Views\Hostcheck($hostcheck->toArray(), $UserTime);
+            $Hostcheck = new Hostcheck($hostcheck->toArray(), $UserTime);
 
             $all_hostchecks[] = [
                 'Hostcheck' => $Hostcheck->toArray()

@@ -30,9 +30,13 @@ namespace App\Controller;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostdependenciesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostdependenciesFilter;
 

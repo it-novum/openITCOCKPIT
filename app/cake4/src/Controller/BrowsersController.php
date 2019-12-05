@@ -29,8 +29,10 @@ namespace App\Controller;
 
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
@@ -105,13 +107,13 @@ class BrowsersController extends AppController {
 
             if ($this->hasRootPrivileges === true) {
                 $children = $ContainersTable->getChildren($containerId);
-                $browser = \Cake\Utility\Hash::extract($children, '{n}[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
+                $browser = Hash::extract($children, '{n}[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
             } else {
                 $containerNest = $ContainersTable->getChildren($containerId, true);
                 $browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
             }
 
-            $browser = \Cake\Utility\Hash::sort($browser, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
+            $browser = Hash::sort($browser, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
 
             if ($this->hasRootPrivileges === false) {
                 foreach ($browser as $key => $containerRecord) {

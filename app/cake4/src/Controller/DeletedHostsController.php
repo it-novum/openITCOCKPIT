@@ -29,6 +29,7 @@ namespace App\Controller;
 
 use App\Model\Table\DeletedHostsTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\Views\DeletedHost;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
@@ -56,7 +57,7 @@ class DeletedHostsController extends AppController {
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
         $deletedHosts = [];
         foreach ($result as $host) {
-            $DeletedHost = new \itnovum\openITCOCKPIT\Core\Views\DeletedHost($host, $UserTime);
+            $DeletedHost = new DeletedHost($host, $UserTime);
             $deletedHosts[] = [
                 'DeletedHost' => $DeletedHost->toArray()
             ];

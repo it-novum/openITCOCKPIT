@@ -27,6 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
@@ -35,12 +37,17 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplategroupsTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServicetemplategroupsConditions;
+use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\ServicetemplategroupsFilter;
@@ -666,7 +673,7 @@ class ServicetemplategroupsController extends AppController {
             $hosts = [];
             foreach ($hostIds as $hostId) {
                 $host = $HostsTable->get($hostId);
-                $viewHost = new \itnovum\openITCOCKPIT\Core\Views\Host($host->toArray());
+                $viewHost = new Host($host->toArray());
                 if ($viewHost->isDisabled()) {
                     continue;
                 }
@@ -876,7 +883,7 @@ class ServicetemplategroupsController extends AppController {
         $errors = [];
         foreach ($hostIds as $hostId) {
             $host = $HostsTable->get($hostId);
-            $viewHost = new \itnovum\openITCOCKPIT\Core\Views\Host($host->toArray());
+            $viewHost = new Host($host->toArray());
             if ($viewHost->isDisabled()) {
                 continue;
             }

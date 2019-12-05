@@ -27,14 +27,16 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\TenantsTable;
-use Cake\Http\Exception\MethodNotAllowedException;
-use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
+
 
 /**
  * @property Tenant $Tenant

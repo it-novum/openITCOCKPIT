@@ -27,23 +27,33 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
-use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
+use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
@@ -527,12 +537,12 @@ class ServicegroupsController extends AppController {
             }
 
 
-            $servicegroupServiceUuids = \Cake\Utility\Hash::extract($services, '{n}.Service.uuid');
+            $servicegroupServiceUuids = Hash::extract($services, '{n}.Service.uuid');
             $ServicestatusFields = new ServicestatusFields($this->DbBackend);
             $ServicestatusFields->wildcard();
             $servicestatusOfServicegroup = $ServicestatusTable->byUuids($servicegroupServiceUuids, $ServicestatusFields);
 
-            $hostUuids = array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid'));
+            $hostUuids = array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid'));
 
             $HoststatusFields = new HoststatusFields($this->DbBackend);
             $HoststatusFields
@@ -543,7 +553,7 @@ class ServicegroupsController extends AppController {
             );
 
             foreach ($services as $index => $service) {
-                $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts']);
+                $Host = new Host($service['_matchingData']['Hosts']);
                 $hoststatus = [];
                 if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
                     $hoststatus = $hoststatusCache[$Host->getUuid()]['Hoststatus'];
@@ -557,8 +567,8 @@ class ServicegroupsController extends AppController {
                 'Servicestatus' => $servicestatusOfServicegroup
             ];
         }
-        $numberOfHosts = sizeof(array_unique(\Cake\Utility\Hash::extract($all_servicegroups, '{n}.Services.{n}._matchingData.Hosts.uuid')));
-        $numberOfServices = sizeof(array_unique(\Cake\Utility\Hash::extract($all_servicegroups, '{n}.Services.{n}.uuid')));
+        $numberOfHosts = sizeof(array_unique(Hash::extract($all_servicegroups, '{n}.Services.{n}._matchingData.Hosts.uuid')));
+        $numberOfServices = sizeof(array_unique(Hash::extract($all_servicegroups, '{n}.Services.{n}.uuid')));
         $this->set('servicegroups', $all_servicegroups);
         $this->set('numberOfServicegroups', $numberOfServicegroups);
         $this->set('numberOfServices', $numberOfServices);
@@ -658,7 +668,7 @@ class ServicegroupsController extends AppController {
 
     /**
      * @param int|null $id
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     public function loadServicegroupWithServicesById($id = null) {
         if (!$this->isAngularJsRequest()) {
@@ -744,20 +754,20 @@ class ServicegroupsController extends AppController {
         $HoststatusFields
             ->currentState();
         $hoststatusCache = $HoststatusTable->byUuid(
-            array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
+            array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
         );
 
         foreach ($services as $service) {
             $allowEdit = $service['allow_edit'];
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts'], $allowEdit);
+            $Host = new Host($service['_matchingData']['Hosts'], $allowEdit);
             if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
+                $Hoststatus = new Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
             } else {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([], $UserTime);
+                $Hoststatus = new Hoststatus([], $UserTime);
             }
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
-            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
+            $Service = new Service($service, null, $allowEdit);
+            $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
             $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus, $this->DbBackend);
 
             $tmpRecord = [

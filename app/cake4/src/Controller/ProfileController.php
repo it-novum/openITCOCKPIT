@@ -29,9 +29,13 @@ namespace App\Controller;
 
 use App\Model\Table\ApikeysTable;
 use App\Model\Table\UsersTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Session;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\Apikey;
 
 /**
  * Class ProfileController
@@ -229,7 +233,7 @@ class ProfileController extends AppController {
                     $id,
                     $User->getId()
                 );
-                $Apikey = new \itnovum\openITCOCKPIT\Core\Views\Apikey($apikey);
+                $Apikey = new Apikey($apikey);
                 $this->set('apikey', $Apikey->toArray());
                 $this->viewBuilder()->setOption('serialize', ['apikey']);
                 return;
@@ -240,7 +244,7 @@ class ProfileController extends AppController {
 
             $apikeys = [];
             foreach ($apikeysResult as $apikey) {
-                $Apikey = new \itnovum\openITCOCKPIT\Core\Views\Apikey($apikey);
+                $Apikey = new Apikey($apikey);
                 $apikeys[] = $Apikey->toArray();
             }
 

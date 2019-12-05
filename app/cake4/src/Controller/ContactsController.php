@@ -27,6 +27,10 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Changelog;
+use App\Model\Entity\Changelog;
+use App\Model\Table\ChangelogsTable;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
@@ -40,9 +44,14 @@ use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
+use Cake\Utility\Hash;
+use FreeDSx\Ldap\Exception\BindException;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Permissions\ContactContainersPermissions;
+use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactsFilter;
 use itnovum\openITCOCKPIT\Ldap\LdapClient;
@@ -681,7 +690,7 @@ class ContactsController extends AppController {
     }
 
     /**
-     * @throws \FreeDSx\Ldap\Exception\BindException
+     * @throws BindException
      */
     public function loadLdapUserByString() {
         if (!$this->isAngularJsRequest()) {

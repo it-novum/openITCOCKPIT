@@ -28,8 +28,11 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Table\SystemfailuresTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\SystemfailuresFilter;
 

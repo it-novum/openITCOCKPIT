@@ -32,8 +32,10 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
  * Class DocumentationsController

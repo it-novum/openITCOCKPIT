@@ -86,13 +86,13 @@ class PagesController extends AppController {
      * Displays a view
      *
      * @param array ...$path Path segments.
-     * @return \Cake\Http\Response|null
-     * @throws \Cake\Http\Exception\ForbiddenException When a directory traversal attempt.
-     * @throws \Cake\View\Exception\MissingTemplateException When the view file could not
+     * @return Response|null
+     * @throws ForbiddenException When a directory traversal attempt.
+     * @throws MissingTemplateException When the view file could not
      *   be found and in debug mode.
-     * @throws \Cake\Http\Exception\NotFoundException When the view file could not
+     * @throws NotFoundException When the view file could not
      *   be found and not in debug mode.
-     * @throws \Cake\View\Exception\MissingTemplateException In debug mode.
+     * @throws MissingTemplateException In debug mode.
      */
     public function display(...$path): ?Response {
         if (!$path) {

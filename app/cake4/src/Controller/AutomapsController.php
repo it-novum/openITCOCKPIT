@@ -27,18 +27,27 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\ServicestatusTableInterface;
+use App\Model\Entity\Automap;
 use App\Model\Table\AutomapsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
+use Exception;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AutomapsFilter;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
@@ -75,7 +84,7 @@ class AutomapsController extends AppController {
         $all_automaps = [];
 
         foreach ($automaps as $automap) {
-            /** @var \App\Model\Entity\Automap $automap */
+            /** @var Automap $automap */
             $automap = $automap->toArray();
             $automap['allow_edit'] = $this->hasRootPrivileges;
 
@@ -185,7 +194,7 @@ class AutomapsController extends AppController {
 
     /**
      * @param int|null $id
-     * @throws \App\Lib\Exceptions\MissingDbBackendException
+     * @throws MissingDbBackendException
      */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
@@ -258,14 +267,14 @@ class AutomapsController extends AppController {
 
         try {
             $services = $ServicesTable->getServicesByRegularExpression($ServicesConditions, $PaginateOMat, 'all');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $services = null;
         }
         if (!is_array($services)) {
             $services = [];
         }
         $servicesByHost = [];
-        $serviceUuids = \Cake\Utility\Hash::extract($services, '{n}.uuid');
+        $serviceUuids = Hash::extract($services, '{n}.uuid');
 
         // Load service status information
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
@@ -310,9 +319,9 @@ class AutomapsController extends AppController {
                 continue;
             }
 
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts']);
-            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus[$Service->getUuid()]['Servicestatus']);
+            $Service = new Service($service);
+            $Host = new Host($service['_matchingData']['Hosts']);
+            $Servicestatus = new Servicestatus($servicestatus[$Service->getUuid()]['Servicestatus']);
 
             if (!isset($servicesByHost[$Host->getId()])) {
                 $servicesByHost[$Host->getId()] = [
@@ -420,7 +429,7 @@ class AutomapsController extends AppController {
         $serviceCount = 0;
 
         $post = $this->request->getData('Automap');
-        $post = \Cake\Utility\Hash::merge($defaults, $post);
+        $post = Hash::merge($defaults, $post);
 
         if ($post['container_id'] > 0) {
             /** @var $ContainersTable ContainersTable */
@@ -451,7 +460,7 @@ class AutomapsController extends AppController {
             if ($post['host_regex'] != '') {
                 try {
                     $hostCount = $HostsTable->getHostsByRegularExpression($HostFilter, $HostConditions, null, 'count');
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $hostCount = 0;
                 }
             }
@@ -463,7 +472,7 @@ class AutomapsController extends AppController {
             if ($post['service_regex'] != '') {
                 try {
                     $serviceCount = $ServicesTable->getServicesByRegularExpression($ServicesConditions, null, 'count');
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $serviceCount = 0;
                 }
             }

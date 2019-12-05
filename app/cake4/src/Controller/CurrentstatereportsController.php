@@ -32,12 +32,18 @@ use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use Statusengine\PerfdataParser;
 
@@ -257,7 +263,7 @@ class CurrentstatereportsController extends AppController {
             ->output();
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $hoststatusCache = $HoststatusTable->byUuid(
-            array_unique(\Cake\Utility\Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
+            array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
         );
 
@@ -266,11 +272,11 @@ class CurrentstatereportsController extends AppController {
         $UserTime = $User->getUserTime();
         foreach ($services as $service) {
             $allowEdit = $service['allow_edit'];
-            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service['_matchingData']['Hosts'], $allowEdit);
+            $Host = new Host($service['_matchingData']['Hosts'], $allowEdit);
             if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
+                $Hoststatus = new Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
             } else {
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([], $UserTime);
+                $Hoststatus = new Hoststatus([], $UserTime);
             }
             $currentHostId = $Host->getId();
             if (!isset($all_services[$currentHostId])) {
@@ -279,8 +285,8 @@ class CurrentstatereportsController extends AppController {
                     'Hoststatus' => (!$pdf) ? $Hoststatus->toArrayForBrowser() : $Hoststatus->toArray()
                 ];
             }
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
-            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
+            $Service = new Service($service, null, $allowEdit);
+            $Servicestatus = new Servicestatus($service['Servicestatus'], $UserTime);
             $currentServiceId = $Service->getId();
             $tmpRecord = [
                 'Service'       => $Service->toArray(),
