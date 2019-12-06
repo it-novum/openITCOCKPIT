@@ -84,32 +84,30 @@
             <div class="row" ng-show="valid">
                 <div class="col-xs-12 col-md-12 col-lg-12">
 
-                    <div class="well" style="margin-bottom: 20px; padding: 10px;">
-                        <h1>
-                            <i class="fa fa-check-circle ok"></i>
-                            <span class="semi-bold"><?php echo __('Valid openITCOCKPIT Enterprise license'); ?></span>
-                        </h1>
+                    <div class="row" ng-show="hasLicense">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6" style="background-image: url('/img/certs/{{certImage}}'); min-height: 667px; background-repeat: no-repeat; background-size: 100%;">
 
-                        <dl class="dl-horizontal">
-                            <dt><?php echo __('First name'); ?>:</dt>
-                            <dd class="code-font text-info">{{license.firstname}}</dd>
+                            <dl class="dl-horizontal" style="padding-top: 30%;">
+                                <dt><?php echo __('First name'); ?>:</dt>
+                                <dd class="code-font text-info">{{license.firstname}}</dd>
 
-                            <dt><?php echo __('Last name'); ?>:</dt>
-                            <dd class="code-font text-info">{{license.lastname}}</dd>
+                                <dt><?php echo __('Last name'); ?>:</dt>
+                                <dd class="code-font text-info">{{license.lastname}}</dd>
 
-                            <dt><?php echo __('Email'); ?>:</dt>
-                            <dd class="code-font text-info">{{license.email}}</dd>
+                                <dt><?php echo __('Email'); ?>:</dt>
+                                <dd class="code-font text-info">{{license.email}}</dd>
 
-                            <dt><?php echo __('Company'); ?>:</dt>
-                            <dd class="code-font text-info">{{license.company}}</dd>
+                                <dt><?php echo __('Company'); ?>:</dt>
+                                <dd class="code-font text-info">{{license.company}}</dd>
 
-                            <dt><?php echo __('Expires'); ?>:</dt>
-                            <dd class="code-font text-info">{{license.expire}}</dd>
+                                <dt><?php echo __('Expires'); ?>:</dt>
+                                <dd class="code-font text-info">{{license.expire}}</dd>
 
-                            <dt><?php echo __('License key'); ?>:</dt>
-                            <dd class="code-font text-info">{{license.licence}}</dd>
-                        </dl>
+                                <dt><?php echo __('License key'); ?>:</dt>
+                                <dd class="code-font text-info">{{license.licence}}</dd>
+                            </dl>
 
+                        </div>
                     </div>
 
                 </div>

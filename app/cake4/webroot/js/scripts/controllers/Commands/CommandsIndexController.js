@@ -8,7 +8,6 @@ angular.module('openITCOCKPIT')
 
         $scope.useScroll = true;
 
-
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
