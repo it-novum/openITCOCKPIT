@@ -33,6 +33,8 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.Usergroups = result.data.allUsergroups;
+                $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -47,9 +49,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.selectAll = function(){
-            if($scope.commands){
-                for(var key in $scope.commands){
-                    var id = $scope.commands[key].Command.id;
+            if($scope.Usergroups){
+                for(var key in $scope.Usergroups){
+                    var id = $scope.Usergroups[key].id;
                     $scope.massChange[id] = true;
                 }
             }
@@ -61,19 +63,19 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
-        $scope.getObjectForDelete = function(command){
+        $scope.getObjectForDelete = function(usergroup){
             var object = {};
-            object[command.Command.id] = command.Command.name;
+            object[usergroup.id] = usergroup.name;
             return object;
         };
 
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.commands){
+            for(var key in $scope.Usergroups){
                 for(var id in selectedObjects){
-                    if(id == $scope.commands[key].Command.id){
-                        objects[id] = $scope.commands[key].Command.name;
+                    if(id == $scope.Usergroups[key].id){
+                        objects[id] = $scope.Usergroups[key].name;
                     }
                 }
             }

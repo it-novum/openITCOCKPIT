@@ -27,7 +27,6 @@ use itnovum\openITCOCKPIT\Filter\GenericFilter;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class UsergroupsTable extends Table {
-    use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
 
     /**
@@ -118,9 +117,9 @@ class UsergroupsTable extends Table {
             $result = $this->formatResultAsCake2($query->toArray(), false);
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler(), false);
             } else {
-                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler(), false);
             }
         }
 

@@ -307,20 +307,33 @@ class UsergroupsController extends AppController {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Usergroup->exists($id)) {
-            throw new NotFoundException(__('invalid_userrole'));
+
+        /** @var UsergroupsTable $UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+
+        if (!$UsergroupsTable->existsById($id)) {
+            throw new NotFoundException(__('User group not found'));
         }
 
-        if ($this->Usergroup->delete($id)) {
-            $this->setFlash(__('User role deleted'));
-            $this->redirect(['action' => 'index']);
+        $user = $this->getUser();
+        if((int)$user->get('usergroup_id') === (int)$id){
+            throw new \RuntimeException('You cannot delete your own user group!');
         }
-        $this->setFlash(__('Could not delete user role'), false);
-        $this->redirect(['action' => 'index']);
+
+        $usergroup = $UsergroupsTable->get($id);
+
+        if ($UsergroupsTable->delete($usergroup)) {
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
+        $this->response = $this->response->withStatus(500);
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     public function loadUsergroups() {
-        $this->layout = 'blank';
         /** @var UsergroupsTable $UsergroupsTable */
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
         $usergroups = $UsergroupsTable->getUsergroupsList();
