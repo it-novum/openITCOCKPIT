@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\UsergroupsTable;
 use Cake\Cache\Cache;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -34,24 +35,29 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
 class UsergroupsController extends AppController {
-    public $layout = 'Admin.default';
-    public $components = ['Acl'];
-
-    public $uses = ['Usergroup', 'Aro', 'Tenant'];
 
     public function index() {
-        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
         }
 
-        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest());
-        /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+        $GenericFilter = new GenericFilter($this->request);
+        $GenericFilter->setFilters([
+            'like' => [
+                'Usergroups.name',
+                'Usergroups.description'
+            ]
+        ]);
+
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $GenericFilter->getPage());
+
+        /** @var UsergroupsTable $UsergroupsTable */
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
-        $allUsergroups = $UsergroupsTable->getUsergroups($PaginateOMat);
+        $allUsergroups = $UsergroupsTable->getUsergroups($PaginateOMat, $GenericFilter);
 
         $this->set('allUsergroups', $allUsergroups);
         $this->viewBuilder()->setOption('serialize', ['allUsergroups']);
@@ -62,7 +68,7 @@ class UsergroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+        /** @var UsergroupsTable $UsergroupsTable */
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
 
         if (!$UsergroupsTable->exists($id)) {
@@ -81,7 +87,7 @@ class UsergroupsController extends AppController {
             return;
         }
 
-        /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+        /** @var UsergroupsTable $UsergroupsTable */
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
 
         if (!$UsergroupsTable->exists($id)) {
@@ -205,7 +211,7 @@ class UsergroupsController extends AppController {
     public function add() {
         $acos = $this->Acl->Aco->find('threaded');
 
-        /** @var $UsergroupsTable App\Model\Table\UsergroupsTable */
+        /** @var UsergroupsTable $UsergroupsTable */
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
 
         $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
@@ -315,9 +321,9 @@ class UsergroupsController extends AppController {
 
     public function loadUsergroups() {
         $this->layout = 'blank';
-        /** @var $Usergroups App\Model\Table\UsergroupsTable */
-        $Usergroups = TableRegistry::getTableLocator()->get('Usergroups');
-        $usergroups = $Usergroups->getUsergroupsList();
+        /** @var UsergroupsTable $UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+        $usergroups = $UsergroupsTable->getUsergroupsList();
 
         $usergroups = Api::makeItJavaScriptAble($usergroups);
 

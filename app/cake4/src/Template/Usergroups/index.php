@@ -23,44 +23,94 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
+
 <div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-users fa-fw "></i>
-            <?php echo __('Administration'); ?>
+            <?php echo __('User groups'); ?>
             <span>>
-                <?php echo __('Manage user roles'); ?>
-			</span>
+                <?php echo __('Overview'); ?>
+            </span>
         </h1>
     </div>
 </div>
+
 <section id="widget-grid" class="">
     <div class="row">
 
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <div class="jarviswidget jarviswidget-color-blueDark">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php
-                        if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('New'),
-                                '/' . $this->params['controller'] . '/add', [
-                                    'class' => 'btn btn-xs btn-success',
-                                    'icon'  => 'fa fa-plus',
-                                ]);
-                        endif;
-                        ?>
-                    </div>
-                    <div class="jarviswidget-ctrls" role="menu">
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+                        <?php if ($this->Acl->hasPermission('add', 'usergroups')): ?>
+                            <a ui-sref="UsergroupsAdd" class="btn btn-xs btn-success">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New'); ?>
+                            </a>
+                        <?php endif; ?>
+
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-users"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('User role'); ?></h2>
+                    <h2 class="hidden-mobile">
+                        <?php echo __('User groups overview'); ?>
+                    </h2>
                 </header>
+
                 <div>
                     <div class="widget-body no-padding">
+
+                        <!-- Start Filter -->
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by name'); ?>"
+                                                   ng-model="filter.Usergroups.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by description'); ?>"
+                                                   ng-model="filter.Usergroups.description"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Filter -->
+
                         <div class="mobile_table">
-                            <table id="timeperiod_list"
+                            <table id="usergroups_list"
                                    class="table table-striped table-hover table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
@@ -79,8 +129,8 @@
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="usergroup in Usergroups">
-                                    <td>{{usergroup.name}}</td>
-                                    <td>{{usergroup.description}}</td>
+                                    <td>{{usergroup.Usergroup.name}}</td>
+                                    <td>{{usergroup.Usergroup.description}}</td>
 
                                     <td class="width-50">
                                         <div class="btn-group smart-form">

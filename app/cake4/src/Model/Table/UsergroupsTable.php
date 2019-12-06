@@ -7,6 +7,8 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Configure;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
 /**
  * Usergroups Model
@@ -97,15 +99,19 @@ class UsergroupsTable extends Table {
     }
 
     /**
-     * @param null $PaginateOMat
+     * @param PaginateOMat|null $PaginateOMat
+     * @param GenericFilter $GenericFilter
      * @return array
      */
-    public function getUsergroups($PaginateOMat = null) {
+    public function getUsergroups($PaginateOMat, GenericFilter $GenericFilter) {
         $query = $this->find()
-            ->disableHydration()
-            ->order([
-                'name' => 'asc'
-            ]);
+            ->order($GenericFilter->getOrderForPaginator('Usergroups.name', 'asc'))
+            ->disableHydration();
+
+
+        if (!empty($GenericFilter->genericFilters())) {
+            $query->where($GenericFilter->genericFilters());
+        }
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -117,7 +123,7 @@ class UsergroupsTable extends Table {
                 $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
             }
         }
-        $result = $query->toArray();
+
         return $result;
     }
 

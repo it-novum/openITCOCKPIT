@@ -38,19 +38,15 @@ use itnovum\openITCOCKPIT\Filter\SystemfailuresFilter;
 
 /**
  * Class SystemfailuresController
- * @property AppPaginatorComponent $Paginator
- * @property AppAuthComponent $Auth
+ * @package App\Controller
  */
 class SystemfailuresController extends AppController {
-
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
-
 
         /** @var $SystemfailuresTable SystemfailuresTable */
         $SystemfailuresTable = TableRegistry::getTableLocator()->get('Systemfailures');
@@ -94,24 +90,27 @@ class SystemfailuresController extends AppController {
         if ($this->request->is('post')) {
             /** @var $SystemfailuresTable SystemfailuresTable */
             $SystemfailuresTable = TableRegistry::getTableLocator()->get('Systemfailures');
-            $this->request->data['Systemfailure']['user_id'] = $User->getId();
 
-            $this->request->data['Systemfailure']['start_time'] = '';
-            $this->request->data['Systemfailure']['end_time'] = '';
+            $requestData = $this->request->getData('Systemfailure', []);
+
+            $requestData['user_id'] = $User->getId();
+
+            $requestData['start_time'] = '';
+            $requestData['end_time'] = '';
 
             $startTime = strtotime(trim($this->request->getData('Systemfailure.from_date') . ' ' . trim($this->request->getData('Systemfailure.from_time'))));
-            if ($this->request->getData('Systemfailure.from_date') !== '' && $startTime > 0) {
-                $this->request->data['Systemfailure']['start_time'] = date('Y-m-d H:i:s', $startTime);
+            if ($this->request->getData('Systemfailure.from_date', '') !== '' && $startTime > 0) {
+                $requestData['start_time'] = date('Y-m-d H:i:s', $startTime);
             }
 
             $endTime = strtotime(trim($this->request->getData('Systemfailure.to_date') . ' ' . trim($this->request->getData('Systemfailure.to_time'))));
-            if ($this->request->getData('Systemfailure.to_date') !== '' && $endTime > 0) {
-                $this->request->data['Systemfailure']['end_time'] = date('Y-m-d H:i:s', $endTime);
+            if ($this->request->getData('Systemfailure.to_date', '') !== '' && $endTime > 0) {
+                $requestData['end_time'] = date('Y-m-d H:i:s', $endTime);
             }
 
 
             $systemfailure = $SystemfailuresTable->newEmptyEntity();
-            $systemfailure = $SystemfailuresTable->patchEntity($systemfailure, $this->request->getData('Systemfailure'));
+            $systemfailure = $SystemfailuresTable->patchEntity($systemfailure, $requestData);
 
             $SystemfailuresTable->save($systemfailure);
             if ($systemfailure->hasErrors()) {
