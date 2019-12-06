@@ -23,211 +23,88 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php
-$defaultActions = [
-    'all'    => [
-        'icon'  => 'asterisk',
-        'class' => 'txt-color-greenLight',
-    ],
-    'index'  => [
-        'icon'  => 'eye',
-        'class' => 'text-primary',
-    ],
-    'add'    => [
-        'icon'  => 'plus',
-        'class' => 'text-success',
-    ],
-    'edit'   => [
-        'icon'  => 'pencil',
-        'class' => 'text-primary',
-    ],
-    'delete' => [
-        'icon'  => 'trash-o',
-        'class' => 'text-danger',
-    ],
-];
-?>
+
 <div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-users fa-fw "></i>
-            <?php echo __('Administration'); ?>
+            <?php echo __('Manage User Roles'); ?>
             <span>>
-                <?php echo __('Manage User Roles'); ?>
-			</span>
+                <?php echo __('Add'); ?>
+            </span>
         </h1>
     </div>
 </div>
+
+
 <div class="jarviswidget">
     <header>
         <span class="widget-icon"> <i class="fa fa-users"></i> </span>
-        <h2><?php echo __('Add User Role'); ?></h2>
+        <h2><?php echo __('Create new user role'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton() ?>
+            <?php if ($this->Acl->hasPermission('index', 'usergroups')): ?>
+                <a back-button fallback-state='UsergroupsIndex' class="btn btn-default btn-xs">
+                    <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                </a>
+            <?php endif; ?>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Usergroup', [
-                'class' => 'form-horizontal clear',
-            ]);
-            echo $this->Form->input('Usergroup.name');
-            echo $this->Form->input('Usergroup.description');
-            if (!empty($acos)):
-            ?>
-            <div class="padding-left-50 row">
-                <div class="row">
-                    <div class="col-md-2 no-padding">
-                        <div class="row pointer" id="collapseAll">
-                            <i class="fa fa-folder text-primary"
-                               title="<?php echo __('Collapse all'); ?>"></i> <?php echo __('Collapse all'); ?>
-                        </div>
-                        <div class="row pointer" id="expandAll">
-                            <i class="fa fa-folder-open text-primary"
-                               title="<?php echo __('Expand all'); ?>"></i> <?php echo __('Expand all'); ?>
-                        </div>
-                    </div>
-                    <div class="col-xs-7 col-md-7 col-lg-7 col-xs-offset-1 col-md-offset-1 col-lg-offset-1">
-                        <div class="row">
-                            <?php
-                            foreach ($defaultActions as $action => $actionDetails):?>
-                                <div class="col-xs-1 col-md-1 col-lg-1 text-center">
-                                    <i class="fa fa-<?php echo $actionDetails['icon'] . ' ' . $actionDetails['class']; ?> "
-                                       title="<?php echo ucfirst(__($action)); ?>"></i>
-                                </div>
-                            <?php
-                            endforeach;
-                            ?>
-                        </div>
-                        <div class="row text-center">
-                            <?php
-                            foreach ($defaultActions as $action => $actionDetails):?>
-                                <div class="no-padding col-xs-1 col-md-1 col-lg-1">
-                                    <i class="fa fa-check-square-o pointer txt-color-blueDark"
-                                       title="<?php echo __('Select all'); ?>" data-action="<?php echo $action; ?>"
-                                       click-action="on"></i>
-                                    <i class="fa fa-square-o pointer txt-color-blueDark"
-                                       title="<?php echo __('Deselect all'); ?>" data-action="<?php echo $action; ?>"
-                                       click-action="off"></i>
-                                </div>
-                            <?php
-                            endforeach;
-                            ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row padding-top-20 padding-left-50">
-                <div>
-                    <div id="tree" class="tree custom-tree">
-                        <ul>
-                            <?php
-                            foreach ($acos as $rootElement => $rootArray):?>
-                                <li>
-									<span class="label btn-primary font-sm">
-										<i class="fa fa-lg fa-folder-open"></i>
-                                        <?php echo __('Access Control Objects'); ?>
-									</span>
+            <form ng-submit="submit();" class="form-horizontal"
+                  ng-init="successMessage=
+            {objectName : '<?php echo __('User role'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
-                                    <ul>
-                                        <?php
-                                        foreach ($rootArray['children'] as $key => $controllerWithActions):?>
-                                            <?php
-                                            if (!empty($controllerWithActions['children'])):
-                                                $isModule = preg_match('/Module/', $controllerWithActions['Aco']['alias']);
-                                                ?>
-                                                <li>
-												<span class="font-sm no-padding">
-													<i class="fa fa-lg fa-folder-open text-<?php echo ($isModule) ? 'success module-controller' : 'primary'; ?>"></i>
-                                                    <?php
-                                                    echo h(preg_replace('/Controller/', '', $controllerWithActions['Aco']['alias'])); ?>
-												</span>
-                                                    <ul>
-                                                        <?php
-                                                        foreach ($controllerWithActions['children'] as $action):
-                                                            if (!$isModule):
-                                                                //Hide always allowed acos
-                                                                if (!isset($alwaysAllowedAcos[$action['Aco']['id']]) && !isset($dependenAcoIds[$action['Aco']['id']])): ?>
-                                                                    <li>
-                                                                        <?php
-                                                                        echo $this->Form->input('Usergroup.Aco.' . $action['Aco']['id'], [
-                                                                                'type'      => 'checkbox',
-                                                                                'label'     => [
-                                                                                    'text'  => $action['Aco']['alias'],
-                                                                                    'class' => 'aco-' . $action['Aco']['alias'],
-                                                                                ],
-                                                                                'wrapInput' => false,
-                                                                                'div'       => [
-                                                                                    'class' => 'padding-right-5',
-                                                                                ],
-                                                                                'value'     => 1,
-                                                                                'class'     => '_' . $action['Aco']['alias'],
-                                                                            ]
-                                                                        );
-                                                                        ?>
-                                                                    </li>
-                                                                <?php
-                                                                endif;
-                                                            else:
-                                                                if (!empty($action['children'])):?>
-                                                                    <li class="awesomeTest">
-																	<span class="font-sm no-padding">
-																		<i class="fa fa-lg fa-folder text-success"></i>
-                                                                        <?php
-                                                                        echo h(preg_replace('/Controller/', '', $action['Aco']['alias'])); ?>
-																	</span>
-                                                                        <ul>
-                                                                            <?php
-                                                                            foreach ($action['children'] as $moduleAction):
-                                                                                if (!isset($alwaysAllowedAcos[$moduleAction['Aco']['id']]) && !isset($dependenAcoIds[$moduleAction['Aco']['id']])): ?>
-                                                                                    <li>
-                                                                                        <?php
-                                                                                        echo $this->Form->input('Usergroup.Aco.' . $moduleAction['Aco']['id'], [
-                                                                                                'type'      => 'checkbox',
-                                                                                                'label'     => [
-                                                                                                    'text'  => $moduleAction['Aco']['alias'],
-                                                                                                    'class' => 'aco-' . $moduleAction['Aco']['alias'],
-                                                                                                ],
-                                                                                                'wrapInput' => false,
-                                                                                                'div'       => [
-                                                                                                    'class' => 'padding-right-5',
-                                                                                                ],
-                                                                                                'value'     => 1,
-                                                                                                'class'     => '_' . $moduleAction['Aco']['alias'],
-                                                                                            ]
-                                                                                        );
-                                                                                        ?>
-                                                                                    </li>
-                                                                                <?php
-                                                                                endif;
-                                                                            endforeach;
-                                                                            ?>
-                                                                        </ul>
-                                                                    </li>
-                                                                <?php
-                                                                endif;
-                                                            endif;
-                                                        endforeach;
-                                                        ?>
-                                                    </ul>
-                                                </li>
-                                            <?php
-                                            endif;
-                                        endforeach; ?>
-                                    </ul>
-                                </li>
-                            <?php
-                            endforeach;
-                            ?>
-                        </ul>
+                <div class="row">
+                    <div class="form-group required" ng-class="{'has-error': errors.container.name}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Usergroup.name">
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.description}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Description'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Usergroup.description">
+                            <div ng-repeat="error in errors.description">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <?php
-                endif;
-                ?>
-            </div>
-            <?php echo $this->Form->formActions(); ?>
+
+
+                <div class="col-xs-12 margin-top-10 margin-bottom-10">
+                    <div class="well formactions ">
+                        <div class="pull-right">
+
+                            <label>
+                                <input type="checkbox" ng-model="data.createAnother">
+                                <?php echo _('Create another'); ?>
+                            </label>
+
+                            <input class="btn btn-primary" type="submit" value="<?php echo __('Create user role'); ?>">
+                            <a back-button fallback-state='UsergroupsIndex'
+                               class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
         </div>
     </div>
 </div>
