@@ -38,6 +38,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\StatisticsCollector;
 
 /**
  * Class StatisticsController
+ * @package App\Controller
  */
 class StatisticsController extends AppController {
 
