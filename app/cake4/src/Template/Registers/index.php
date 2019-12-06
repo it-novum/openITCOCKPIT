@@ -154,27 +154,27 @@
 
         <h2 class="credits-h2">Powered by</h2>
         <p>
-            <img src="/img/logos/php.png">
+            <img src="/img/logos/3rd/php.png">
         </p>
 
         <p>
-            <img src="/img/logos/We-bake-with-CakePHP.png" style="width: 300px;">
+            <img src="/img/logos/3rd/We-bake-with-CakePHP.png" style="width: 300px;">
         </p>
 
         <p>
-            <img src="/img/logos/jquery.png">
+            <img src="/img/logos/3rd/jquery.png">
         </p>
 
         <p>
-            <img src="/img/logos/jquery_ui.png" >
+            <img src="/img/logos/3rd/jquery_ui.png" >
         </p>
 
         <p>
-            <img src="/img/logos/AngularJS-medium.png">
+            <img src="/img/logos/3rd/AngularJS-medium.png">
         </p>
 
         <p class="padding-top-80">
-            <img src="/img/logos/Statusengine_dark.png">
+            <img src="/img/logos/3rd/Statusengine_dark.png">
         </p>
 
         <div class="credits-fineprint">All trademarks are the property of the trademark owners.</div>
