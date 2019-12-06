@@ -42,18 +42,16 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
                         <?php if ($this->Acl->hasPermission('add', 'Cronjobs')): ?>
                             <button type="button" class="btn btn-xs btn-success" ng-click="triggerAddModal()">
                                 <i class="fa fa-plus"></i> <?php echo __('New'); ?>
                             </button>
                         <?php endif; ?>
-                    </div>
-
-                    <div class="widget-toolbar" role="menu">
-                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
-                            <i class="fa fa-refresh"></i>
-                            <?php echo __('Refresh'); ?>
-                        </button>
                     </div>
 
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-clock-o"></i> </span>
@@ -130,18 +128,6 @@
                             <center>
                                 <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
                             </center>
-                        </div>
-                        <div style="padding: 5px 10px;">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"></div>
-                                </div>
-                                <div class="col-sm-6 text-right">
-                                    <div class="dataTables_paginate paging_bootstrap">
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

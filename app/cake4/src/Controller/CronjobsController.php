@@ -32,7 +32,6 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class CronjobsController extends AppController {
 
@@ -103,7 +102,8 @@ class CronjobsController extends AppController {
         }
         /** @var CronjobsTable $CronjobsTable */
         $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
-        $data = $this->request->data['Cronjob'];
+
+        $data = $this->request->getData('Cronjob', []);
         $cronjob = $CronjobsTable->newEmptyEntity();
         $cronjob = $CronjobsTable->patchEntity($cronjob, $data);
         $CronjobsTable->save($cronjob);
@@ -125,7 +125,8 @@ class CronjobsController extends AppController {
 
         /** @var CronjobsTable $CronjobsTable */
         $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
-        $data = $this->request->data['Cronjob'];
+
+        $data = $this->request->getData('Cronjob', []);
         $cronjob = $CronjobsTable->get($id);
         $cronjob = $CronjobsTable->patchEntity($cronjob, $data);
         $CronjobsTable->save($cronjob);
@@ -149,7 +150,7 @@ class CronjobsController extends AppController {
         $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
         $cronjob = $CronjobsTable->get($id);
 
-        if (empty($cronjob)) {
+        if ($cronjob === null) {
             throw new NotFoundException(__('Invalid cronjob'));
         }
 
