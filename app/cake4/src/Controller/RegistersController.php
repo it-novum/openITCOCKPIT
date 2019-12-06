@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Environments;
 use App\Model\Table\RegistersTable;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
@@ -36,7 +37,6 @@ class RegistersController extends AppController {
     use LocatorAwareTrait;
 
     public function index() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //get also the state env for License input autocompletion
             $disableAutocomplete = ENVIRONMENT === Environments::PRODUCTION;

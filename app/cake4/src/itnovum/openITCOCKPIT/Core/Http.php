@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use Cake\Utility\Hash;
+
 class Http {
 
     public function __construct($url = '', $settings = [], $proxy = []) {
@@ -37,14 +39,14 @@ class Http {
             'CURLOPT_TIMEOUT'        => 10,
             'CURLOPT_RETURNTRANSFER' => 1,
         ];
-        $this->curlOptions = \Hash::merge($_curlDefaults, $settings);
+        $this->curlOptions = Hash::merge($_curlDefaults, $settings);
 
         $_proxyDefaults = [
             'ipaddress' => '',
             'port'      => 0,
             'enabled'   => false,
         ];
-        $this->proxy = \Hash::merge($_proxyDefaults, $proxy);
+        $this->proxy = Hash::merge($_proxyDefaults, $proxy);
 
         $this->lastError = false;
 
