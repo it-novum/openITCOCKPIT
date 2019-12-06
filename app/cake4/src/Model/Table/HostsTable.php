@@ -13,7 +13,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
@@ -1079,6 +1078,31 @@ class HostsTable extends Table {
         }
 
         return $list;
+    }
+
+    /**
+     * @param array $containerIds
+     * @return array
+     */
+    public function getHostsByContainerIdForDelete($containerIds = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $containerIds = array_unique($containerIds);
+
+        $query = $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.name'
+            ])->where([
+                'Hosts.container_id IN' => $containerIds
+            ])->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        return $result;
     }
 
     /**
@@ -2169,7 +2193,7 @@ class HostsTable extends Table {
         $query->andWhere($where);
         $result = $query->first();
 
-        if($result === null){
+        if ($result === null) {
             return 0;
         }
 

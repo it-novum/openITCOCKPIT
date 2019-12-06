@@ -84,6 +84,9 @@ class MacrosController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['macro']);
     }
 
+    /**
+     * @param null $id
+     */
     public function edit($id = null) {
         if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -113,6 +116,9 @@ class MacrosController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['macro']);
     }
 
+    /**
+     * @param null $id
+     */
     public function delete($id = null) {
         if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();
