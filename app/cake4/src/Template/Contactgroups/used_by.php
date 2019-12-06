@@ -55,7 +55,7 @@
 
                     <h2><?php echo __('Contact group'); ?>
                         <strong>
-                            »{{ contactgroupWithRelations.Container.name }}«
+                            »{{ contactgroupWithRelations.container.name }}«
                         </strong>
                         <?php echo __('is used by'); ?>
                         {{ total }}
@@ -68,17 +68,17 @@
                         <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
                                style="">
                             <tbody>
-                            <tr ng-if="contactgroupWithRelations.Hosttemplate.length > 0">
+                            <tr ng-if="contactgroupWithRelations.hosttemplates.length > 0">
                                 <th class="bg-color-lightGray">
                                     <i class="fa fa-pencil-square-o"></i>
                                     <?php echo __('Host template'); ?>
-                                    ({{contactgroupWithRelations.Hosttemplate.length}})
+                                    ({{contactgroupWithRelations.hosttemplates.length}})
                                 </th>
                             </tr>
-                            <tr ng-repeat="hosttemplate in contactgroupWithRelations.Hosttemplate">
+                            <tr ng-repeat="hosttemplate in contactgroupWithRelations.hosttemplates">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
-                                        <a href="/hosttemplates/edit/{{ hosttemplate.id }}" target="_blank">
+                                        <a ui-sref="HosttemplatesEdit({id: hosttemplate.id})" target="_blank">
                                             {{ hosttemplate.name }}
                                         </a>
                                     <?php else: ?>
@@ -86,13 +86,13 @@
                                     <?php endif; ?>
                                 </td>
                             </tr>
-                            <tr ng-if="contactgroupWithRelations.Host.length > 0">
+                            <tr ng-if="contactgroupWithRelations.hosts.length > 0">
                                 <th class="bg-color-lightGray">
                                     <i class="fa fa-desktop"></i>
-                                    <?php echo __('Host'); ?> ({{contactgroupWithRelations.Host.length}})
+                                    <?php echo __('Host'); ?> ({{contactgroupWithRelations.hosts.length}})
                                 </th>
                             </tr>
-                            <tr ng-repeat="host in contactgroupWithRelations.Host">
+                            <tr ng-repeat="host in contactgroupWithRelations.hosts">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                         <a ui-sref="HostsEdit({id:host.id})" target="_blank">
@@ -103,17 +103,17 @@
                                     <?php endif; ?>
                                 </td>
                             </tr>
-                            <tr ng-if="contactgroupWithRelations.Servicetemplate.length > 0">
+                            <tr ng-if="contactgroupWithRelations.servicetemplates.length > 0">
                                 <th class="bg-color-lightGray">
                                     <i class="fa fa-pencil-square-o"></i>
                                     <?php echo __('Service template'); ?>
-                                    ({{contactgroupWithRelations.Servicetemplate.length}})
+                                    ({{contactgroupWithRelations.servicetemplates.length}})
                                 </th>
                             </tr>
-                            <tr ng-repeat="servicetemplate in contactgroupWithRelations.Servicetemplate">
+                            <tr ng-repeat="servicetemplate in contactgroupWithRelations.servicetemplates">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
-                                        <a href="/servicetemplates/edit/{{ servicetemplate.id }}" target="_blank">
+                                        <a ui-sref="ServicetemplatesEdit({id: servicetemplate.id})" target="_blank">
                                             {{ servicetemplate.name }}
                                         </a>
                                     <?php else: ?>
@@ -121,13 +121,13 @@
                                     <?php endif; ?>
                                 </td>
                             </tr>
-                            <tr ng-if="contactgroupWithRelations.Service.length > 0">
+                            <tr ng-if="contactgroupWithRelations.services.length > 0">
                                 <th class="bg-color-lightGray">
                                     <i class="fa fa-cog"></i>
-                                    <?php echo __('Service'); ?> ({{contactgroupWithRelations.Service.length}})
+                                    <?php echo __('Service'); ?> ({{contactgroupWithRelations.services.length}})
                                 </th>
                             </tr>
-                            <tr ng-repeat="service in contactgroupWithRelations.Service">
+                            <tr ng-repeat="service in contactgroupWithRelations.services">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                         <a ui-sref="ServicesEdit({id: service.id})" target="_blank">
@@ -138,17 +138,17 @@
                                     <?php endif; ?>
                                 </td>
                             </tr>
-                            <tr ng-if="contactgroupWithRelations.Hostescalation.length > 0">
+                            <tr ng-if="contactgroupWithRelations.hostescalations.length > 0">
                                 <th class="bg-color-lightGray">
                                     <i class="fa fa-bomb"></i>
                                     <?php echo __('Host escalation'); ?>
-                                    ({{contactgroupWithRelations.Hostescalation.length}})
+                                    ({{contactgroupWithRelations.hostescalations.length}})
                                 </th>
                             </tr>
-                            <tr ng-repeat="hostescalation in contactgroupWithRelations.Hostescalation">
+                            <tr ng-repeat="hostescalation in contactgroupWithRelations.hostescalations">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
-                                        <a href="/hostescalations/edit/{{ hostescalation.id }}" target="_blank">
+                                        <a ui-sref="HostescalationsEdit({id: hostescalation.id})" target="_blank">
                                             <?php echo __('Host escalation'); ?> #{{ $index +1 }}
                                         </a>
                                     <?php else: ?>
@@ -156,17 +156,17 @@
                                     <?php endif; ?>
                                 </td>
                             </tr>
-                            <tr ng-if="contactgroupWithRelations.Serviceescalation.length > 0">
+                            <tr ng-if="contactgroupWithRelations.serviceescalations.length > 0">
                                 <th class="bg-color-lightGray">
                                     <i class="fa fa-bomb"></i>
                                     <?php echo __('Service escalation'); ?>
-                                    ({{contactgroupWithRelations.Serviceescalation.length}})
+                                    ({{contactgroupWithRelations.serviceescalations.length}})
                                 </th>
                             </tr>
-                            <tr ng-repeat="serviceescalation in contactgroupWithRelations.Serviceescalation">
+                            <tr ng-repeat="serviceescalation in contactgroupWithRelations.serviceescalations">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'serviceescalations')): ?>
-                                        <a href="/serviceescalations/edit/{{ serviceescalation.id }}" target="_blank">
+                                        <a ui-sref="ServiceescalationsEdit({id: serviceescalation.id})" target="_blank">
                                             <?php echo __('Service escalation'); ?> #{{ $index +1 }}
                                         </a>
                                     <?php else: ?>
@@ -178,7 +178,8 @@
                         </table>
                         <div class="noMatch" ng-if="total == 0">
                             <center>
-                                <span class="txt-color-red italic"><?php echo __('This contact group is not used by any object'); ?></span>
+                                <span
+                                    class="txt-color-red italic"><?php echo __('This contact group is not used by any object'); ?></span>
                             </center>
                         </div>
                     </div>
