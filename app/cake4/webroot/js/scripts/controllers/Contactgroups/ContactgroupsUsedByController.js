@@ -25,12 +25,12 @@ angular.module('openITCOCKPIT')
 
         $scope.getTotal = function(){
             var total = 0;
-            total += $scope.contactgroupWithRelations.Hosttemplate.length;
-            total += $scope.contactgroupWithRelations.Host.length;
-            total += $scope.contactgroupWithRelations.Servicetemplate.length;
-            total += $scope.contactgroupWithRelations.Service.length;
-            total += $scope.contactgroupWithRelations.Hostescalation.length;
-            total += $scope.contactgroupWithRelations.Serviceescalation.length;
+            total += $scope.contactgroupWithRelations.hosttemplates.length;
+            total += $scope.contactgroupWithRelations.hosts.length;
+            total += $scope.contactgroupWithRelations.servicetemplates.length;
+            total += $scope.contactgroupWithRelations.services.length;
+            total += $scope.contactgroupWithRelations.hostescalations.length;
+            total += $scope.contactgroupWithRelations.serviceescalations.length;
 
             return total;
         };
