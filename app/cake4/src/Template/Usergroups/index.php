@@ -36,6 +36,8 @@
     </div>
 </div>
 
+<massdelete></massdelete>
+
 <section id="widget-grid" class="">
     <div class="row">
 
@@ -114,6 +116,9 @@
                                    class="table table-striped table-hover table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
+                                    <th class="no-sort width-15">
+                                        <i class="fa fa-check-square-o fa-lg"></i>
+                                    </th>
                                     <th class="no-sort" ng-click="orderBy('Usergroups.name')">
                                         <i class="fa" ng-class="getSortClass('Usergroups.name')"></i>
                                         <?php echo __('Name'); ?>
@@ -129,8 +134,14 @@
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="usergroup in Usergroups">
-                                    <td>{{usergroup.Usergroup.name}}</td>
-                                    <td>{{usergroup.Usergroup.description}}</td>
+                                    <td class="text-center" class="width-15">
+                                        <?php if ($this->Acl->hasPermission('edit', 'usergroups')): ?>
+                                            <input type="checkbox"
+                                                   ng-model="massChange[usergroup.id]">
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>{{usergroup.name}}</td>
+                                    <td>{{usergroup.description}}</td>
 
                                     <td class="width-50">
                                         <div class="btn-group smart-form">
@@ -140,12 +151,12 @@
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
                                             <?php else: ?>
-                                                <a href="javascript:void(0);" class="btn btn-default">
+                                                <a href="javascript:void(0);" class="btn btn-default disabled">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                             <?php endif; ?>
                                             <a href="javascript:void(0);" data-toggle="dropdown"
                                                class="btn btn-default dropdown-toggle"><span
-                                                        class="caret"></span></a>
+                                                    class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right"
                                                 id="menuHack-{{usergroup.id}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'usergroups')): ?>
@@ -173,9 +184,49 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="contacts.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <a ui-sref="ContactsCopy({ids: linkForCopy()})" class="a-clean">
+                                    <i class="fa fa-lg fa-files-o"></i>
+                                    <?php echo __('Copy'); ?>
+                                </a>
+                            </div>
+                            <div class="col-xs-12 col-md-4 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                        </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>
         </article>
     </div>
 </section>
+

@@ -42,7 +42,9 @@ angular.module('openITCOCKPIT')
 
         $scope.loadContacts = function(){
             var id = $scope.post.Contactgroup.container.parent_id;
-            $http.post("/contactgroups/loadContacts/" + id + ".json?angular=true", {}).then(function(result){
+            $http.post("/contactgroups/loadContacts/" + id + ".json?angular=true", {
+                empty: true //https://github.com/cakephp/cakephp/issues/13980
+            }).then(function(result){
                 $scope.contacts = result.data.contacts;
             });
         };
