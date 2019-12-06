@@ -31,6 +31,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Http\Cookie\Cookie;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\System\Health\StatisticsCollector;
@@ -40,11 +41,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\StatisticsCollector;
  */
 class StatisticsController extends AppController {
 
-    public $layout = 'angularjs';
-
     public function index() {
-        $this->layout = 'blank';
-
         if (!$this->isAngularJsRequest()) {
             /** @var $HostsTable HostsTable */
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
@@ -67,7 +64,6 @@ class StatisticsController extends AppController {
     }
 
     public function ask_anonymous_statistics() {
-        $this->layout = 'blank';
         //Only ship HTML template
         return;
     }
@@ -84,20 +80,25 @@ class StatisticsController extends AppController {
             $record = $SystemsettingsTable->getSystemsettingByKey('SYSTEM.ANONYMOUS_STATISTICS');
         } catch (RecordNotFoundException $e) {
             if (empty($record)) {
-                throw new RuntimeException('Systemsetting is missing - did you executed openitcockpit-update?');
+                throw new \RuntimeException('Systemsetting is missing - did you executed openitcockpit-update?');
             }
         }
 
 
-        if (!isset($this->request->data['statistics']['decision'])) {
-            throw new RuntimeException('Wrong POST request');
+        if ($this->request->getData('statistics.decision', null) === null) {
+            throw new \RuntimeException('Wrong POST request');
         }
 
 
-        $record->set('value', (int)$this->request->data['statistics']['decision']);
+        $record->set('value', (int)$this->request->getData('statistics.decision', 0));
 
-        if (isset($this->request->data['statistics']['cookie']) && $record->get('value') === 2) {
-            $this->Cookie->write('askAgainForHelp', 'Remind me later', false, (3600 * 16));
+        if ($this->request->getData('statistics.cookie', null) !== null && $record->get('value') === 2) {
+            $this->response = $this->response->withCookie(new Cookie(
+                'askAgainForHelp',
+                'Remind me later',
+                new \DateTime('+16 hours'),
+                '/'
+            ));
         }
 
         $SystemsettingsTable->save($record);
