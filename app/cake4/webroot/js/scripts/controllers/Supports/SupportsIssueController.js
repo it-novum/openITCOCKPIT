@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('SupportsIssueController', function($scope, $http){
         jQuery.ajax({
-            url: "/js/lib/jquery-migrate-1.4.1.min.js",
+            url: "/legacy/js/lib/jquery-migrate-1.4.1.min.js",
             type: "get",
             cache: true,
             dataType: "script"

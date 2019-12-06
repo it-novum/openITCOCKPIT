@@ -630,6 +630,16 @@ class Menu {
                     [],
                     3
                 ))
+                ->addLink(new MenuLink(
+                    __('Report an issue'),
+                    'SupportsIssue',
+                    'supports',
+                    'issue',
+                    '',
+                    'fa fa-bug',
+                    [],
+                    4
+                ))
             );
 
 

@@ -89,6 +89,8 @@ class AngularAssets implements AngularAssetsInterface {
          //'legacyjs/vendor/chartjs-plugin-piechart-outlabels.min.js'
         'legacy/js/lib/highlight-within-textarea/jquery.highlight-within-textarea.js',
 
+        'node_modules/jquery-sparkline/jquery.sparkline.min.js'
+
 
         //'js/scripts/ng.app.js',
     ];

@@ -29,7 +29,7 @@ class Logo {
     private $logoName = 'logo.png';
     private $smallLogoName = 'logo_small.png';
 
-    private $logoBasePath = '%swebroot/img/%s';
+    private $logoBasePath = '%s/img/%s';
 
     private $customLogoName = 'logo_custom.png';
     private $customSmallLogoName = 'logo_small_custom.png';
@@ -75,7 +75,7 @@ class Logo {
      * @return bool
      */
     public function isCustomLogo() {
-        $file = sprintf($this->logoBasePath, OLD_APP, $this->customLogoName);
+        $file = sprintf($this->logoBasePath, APP, $this->customLogoName);
         return file_exists($file);
     }
 
@@ -83,7 +83,7 @@ class Logo {
      * @return bool
      */
     public function isCustomSmallLogo() {
-        $file = sprintf($this->logoBasePath, OLD_APP, $this->customSmallLogoName);
+        $file = sprintf($this->logoBasePath, APP, $this->customSmallLogoName);
         return file_exists($file);
     }
 
@@ -91,42 +91,42 @@ class Logo {
      * @return string
      */
     public function getLogoDiskPath() {
-        return sprintf($this->logoBasePath, OLD_APP, $this->getLogoName());
+        return sprintf($this->logoBasePath, APP, $this->getLogoName());
     }
 
     /**
      * @return string
      */
     public function getSmallLogoDiskPath() {
-        return sprintf($this->logoBasePath, OLD_APP, $this->getSmallLogoName());
+        return sprintf($this->logoBasePath, WWW_ROOT, $this->getSmallLogoName());
     }
 
     /**
      * @return string
      */
     public function getDefaultLogoDiskPath() {
-        return sprintf($this->logoBasePath, OLD_APP, $this->logoName);
+        return sprintf($this->logoBasePath, APP, $this->logoName);
     }
 
     /**
      * @return string
      */
     public function getDefaultSmallLogoDiskPath() {
-        return sprintf($this->logoBasePath, OLD_APP, $this->smallLogoName);
+        return sprintf($this->logoBasePath, APP, $this->smallLogoName);
     }
 
     /**
      * @return string
      */
     public function getCustomLogoDiskPath() {
-        return sprintf($this->logoBasePath, OLD_APP, $this->customLogoName);
+        return sprintf($this->logoBasePath, APP, $this->customLogoName);
     }
 
     /**
      * @return string
      */
     public function getCustomSmallLogoDiskPath() {
-        return sprintf($this->logoBasePath, OLD_APP, $this->customSmallLogoName);
+        return sprintf($this->logoBasePath, APP, $this->customSmallLogoName);
     }
 
 

@@ -9,7 +9,7 @@ return [
      * Development Mode:
      * true: Errors and warnings shown.
      */
-    'debug'          => filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
+    'debug'    => filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
 
     /**
      * Configure basic information about the application.
@@ -39,7 +39,7 @@ return [
      *   `plugins`, `templates`, `locales` subkeys, which allow the definition of
      *   paths for plugins, view templates and locale files respectively.
      */
-    'App'            => [
+    'App'      => [
         'namespace'       => 'App',
         'encoding'        => 'UTF-8',
         'defaultLocale'   => 'en_US',
@@ -67,7 +67,7 @@ return [
      *   The salt value is also used as the encryption key.
      *   You should treat it as extremely sensitive data.
      */
-    'Security'       => [
+    'Security' => [
         'salt' => 'cf4515a2c1833f4aed69591f81598da0124cbd460449b2812495a64d8d70aadc'
     ],
 
@@ -79,7 +79,7 @@ return [
      * Set to true to apply timestamps when debug is true. Set to 'force' to always
      * enable timestamping regardless of debug value.
      */
-    'Asset'          => [
+    'Asset'    => [
         //'timestamp' => true,
         // 'cacheTime' => '+1 year'
     ],
@@ -87,7 +87,7 @@ return [
     /**
      * Configure the cache adapters.
      */
-    'Cache'          => [
+    'Cache'    => [
         'default' => [
             'className' => \Cake\Cache\Engine\FileEngine::class,
             'path'      => CACHE,
@@ -105,11 +105,11 @@ return [
 
         'permissions'   => [
             'className' => \Cake\Cache\Engine\RedisEngine::class,
-            'serialize'   => true,
-            'prefix'      => 'permissions_',
-            'duration'    => '+600 seconds',
-            'host'        => '127.0.0.1',
-            'port'        => 6379
+            'serialize' => true,
+            'prefix'    => 'permissions_',
+            'duration'  => '+600 seconds',
+            'host'      => '127.0.0.1',
+            'port'      => 6379
         ],
 
         /**
@@ -186,7 +186,7 @@ return [
      *   the memory limit by when a fatal error is encountered. This allows
      *   breathing room to complete logging or error handling.
      */
-    'Error'          => [
+    'Error'    => [
         'errorLevel'        => E_ALL,
         'exceptionRenderer' => \Cake\Error\ExceptionRenderer::class,
         'skipLog'           => [],
@@ -194,65 +194,11 @@ return [
         'trace'             => true,
     ],
 
-    /**
-     * Email configuration.
-     *
-     * By defining transports separately from delivery profiles you can easily
-     * re-use transport configuration across multiple profiles.
-     *
-     * You can specify multiple configurations for production, development and
-     * testing.
-     *
-     * Each transport needs a `className`. Valid options are as follows:
-     *
-     *  Mail   - Send using PHP mail function
-     *  Smtp   - Send using SMTP
-     *  Debug  - Do not send the email, just return the result
-     *
-     * You can add custom transports (or override existing transports) by adding the
-     * appropriate file to src/Mailer/Transport. Transports should be named
-     * 'YourTransport.php', where 'Your' is the name of the transport.
-     */
-    'EmailTransport' => [
-        'default' => [
-            'className' => \Cake\Mailer\Transport\MailTransport::class,
-            /*
-             * The following keys are used in SMTP transports:
-             */
-            'host'      => 'localhost',
-            'port'      => 25,
-            'timeout'   => 30,
-            'username'  => null,
-            'password'  => null,
-            'client'    => null,
-            'tls'       => null,
-            'url'       => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
-        ],
-    ],
-
-    /**
-     * Email delivery profiles
-     *
-     * Delivery profiles allow you to predefine various properties about email
-     * messages from your application and give the settings a name. This saves
-     * duplication across your application and makes maintenance and development
-     * easier. Each profile accepts a number of keys. See `Cake\Mailer\Email`
-     * for more information.
-     */
-    'Email'          => [
-        'default' => [
-            'transport' => 'default',
-            'from'      => 'you@localhost',
-            //'charset' => 'utf-8',
-            //'headerCharset' => 'utf-8',
-        ],
-    ],
-
 
     /**
      * Configures logging options
      */
-    'Log'            => [
+    'Log'      => [
         'debug'   => [
             'className' => \Cake\Log\Engine\FileLog::class,
             'path'      => LOGS,
@@ -318,7 +264,7 @@ return [
      *
      * To use database sessions, load the SQL file located at config/schema/sessions.sql
      */
-    'Session'        => [
+    'Session'  => [
         'defaults' => env('SESSION_DEFAULTS', 'php'),
     ],
 ];

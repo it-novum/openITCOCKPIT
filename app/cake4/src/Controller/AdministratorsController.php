@@ -29,24 +29,25 @@ namespace App\Controller;
 
 use App\Model\Table\CronjobsTable;
 use App\Model\Table\RegistersTable;
+use App\Model\Table\SystemsettingsTable;
+use Cake\Core\Configure;
 use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
-use itnovum\openITCOCKPIT\Core\Security\ItcMail;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\System\Health\CpuLoad;
 use itnovum\openITCOCKPIT\Core\System\Health\Disks;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 use itnovum\openITCOCKPIT\Core\System\Health\MemoryUsage;
 use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
+use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 /**
- * @property Systemsetting Systemsetting
+ * Class AdministratorsController
+ * @package App\Controller
  */
 class AdministratorsController extends AppController {
-    public $components = ['GearmanClient'];
-
-    public $layout = 'blank';
 
     /**
      * @deprecated
@@ -62,7 +63,7 @@ class AdministratorsController extends AppController {
             return;
         }
 
-        /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+        /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsetting = $SystemsettingsTable->findAsArray();
 
@@ -71,7 +72,6 @@ class AdministratorsController extends AppController {
         $License = $RegistersTable->getLicense();
 
         Configure::load('nagios');
-        Configure::load('version');
         Configure::load('gearman');
 
 
@@ -88,8 +88,8 @@ class AdministratorsController extends AppController {
 
         $interfaceInformation = [
             'systemname'             => $systemsetting['FRONTEND']['FRONTEND.SYSTEMNAME'],
-            'version'                => Configure::read('version'),
-            'oitc_is_debugging_mode' => Configure::read('debug') == 2,
+            'version'                => OPENITCOCKPIT_VERSION,
+            'oitc_is_debugging_mode' => Configure::read('debug'),
             'edition'                => $edition,
             'path_for_config'        => Configure::read('nagios.export.backupSource'),
             'path_for_backups'       => Configure::read('nagios.export.backupTarget'),
@@ -108,6 +108,7 @@ class AdministratorsController extends AppController {
             $isGearmanWorkerRunning = true;
         }
 
+        $backgroundProcessStatus = [];
         if ($gearmanReachable && $isGearmanWorkerRunning) {
             //Check if background proesses are running
             $backgroundProcessStatus = $GearmanClient->send('check_background_processes');
@@ -175,8 +176,8 @@ class AdministratorsController extends AppController {
             5  => [],
             15 => [],
         ];
-        if (file_exists(OLD_TMP . 'loadavg')) {
-            $load = file(OLD_TMP . 'loadavg');
+        if (file_exists(TMP . 'loadavg')) {
+            $load = file(TMP . 'loadavg');
             if (sizeof($load) >= 3) {
                 $renderGraph = true;
                 foreach ($load as $line) {
@@ -215,16 +216,19 @@ class AdministratorsController extends AppController {
         }
 
         //Collect email configuration
-        App::uses('CakeEmail', 'Network/Email');
-        $Email = new ItcMail();
-        $Email->config('default');
-        $mailConfig = $Email->getConfig();
+        Configure::load('email', 'default', false);
+        $mailConfig = Configure::read('EmailTransport');
+
+        $User = $this->getUser();
+        //$Email = new Mailer('default');
+        //debug($Email::getConfig('default'));
+
         $emailInformation = [
-            'transport'         => $mailConfig['transport'],
-            'host'              => $mailConfig['host'],
-            'port'              => $mailConfig['port'],
-            'username'          => $mailConfig['username'],
-            'test_mail_address' => $this->Auth->user('email')
+            'transport'         => $mailConfig['default']['className'],
+            'host'              => $mailConfig['default']['host'],
+            'port'              => $mailConfig['default']['port'],
+            'username'          => $mailConfig['default']['username'],
+            'test_mail_address' => $User->get('email')
         ];
 
         //Collect remote user information
@@ -251,6 +255,7 @@ class AdministratorsController extends AppController {
         else if (strstr($agent, "Mac OS X 10.12")) $os = "macOS Sierra";
         else if (strstr($agent, "Mac OS X 10.13")) $os = "macOS High Sierra";
         else if (strstr($agent, "Mac OS X 10.14")) $os = "macOS Mojave";
+        else if (strstr($agent, "Mac OS X 10.15")) $os = "macOS Catalina";
 
         //Chrome
         else if (strstr($agent, "Mac OS X 10_5")) $os = "Mac OS X - Leopard";
@@ -264,6 +269,7 @@ class AdministratorsController extends AppController {
         else if (strstr($agent, "Mac OS X 10_12")) $os = "macOS Sierra";
         else if (strstr($agent, "Mac OS X 10_13")) $os = "macOS High Sierra";
         else if (strstr($agent, "Mac OS X 10_14")) $os = "macOS Mojave";
+        else if (strstr($agent, "Mac OS X 10_15")) $os = "macOS Catalina";
 
         else if (strstr($agent, "Mac OS")) $os = "Mac OS X";
         else if (strstr($agent, "Linux")) $os = "Linux";
@@ -335,33 +341,40 @@ class AdministratorsController extends AppController {
         }
 
         try {
-            $recipientAddress = $this->Auth->user('email');
+            $User = $this->getUser();
+            $recipientAddress = $User->get('email');
 
-            /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+            /** @var SystemsettingsTable $SystemsettingsTable */
             $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
             $_systemsettings = $SystemsettingsTable->findAsArray();
 
-            $Email = new CakeEmail();
-            $Email->config('default');
-            $Email->from([$_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
-            $Email->to($recipientAddress);
-            $Email->subject(__('System test mail from %s', $_systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']));
+            $Logo = new Logo();
 
-            $Email->emailFormat('both');
-            $Email->template('template-testmail', 'template-testmail');
-
-            $Email->viewVars([
-                'systemname' => $_systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']
+            $Mailer = new Mailer();
+            $Mailer->setFrom($_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'], $_systemsettings['MONITORING']['MONITORING.FROM_NAME']);
+            $Mailer->addTo($recipientAddress);
+            $Mailer->setSubject(__('System test mail from ') . $_systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
+            $Mailer->setEmailFormat('both');
+            $Mailer->setAttachments([
+                'logo.png' => [
+                    'file' => $Logo->getSmallLogoDiskPath(),
+                    'mimetype' => 'image/png',
+                    'contentId' => '100'
+                ]
             ]);
-            $Email->send();
+            $Mailer->viewBuilder()
+                ->setTemplate('test_mail')
+                ->setVar('systemname', $_systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
+
+            $Mailer->deliver();
 
             $this->set('success', true);
-            $this->set('message', __('Test mail send to: %s', $recipientAddress));
+            $this->set('message', __('Test mail send to: ') . $recipientAddress);
             $this->viewBuilder()->setOption('serialize', ['success', 'message']);
             return;
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             $this->set('success', false);
-            $this->set('message', __('An error occured while sending test mail: %s', $ex->getMessage()));
+            $this->set('message', __('An error occured while sending test mail: ') . $ex->getMessage());
             $this->viewBuilder()->setOption('serialize', ['success', 'message']);
         }
     }

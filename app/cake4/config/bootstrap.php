@@ -29,7 +29,7 @@ if (!defined('PLUGIN')) {
 //Load CakePHP 2 Database @todo remove me
 
 if (!defined('OLD_APP')) {
-    define('OLD_APP', APP  . '../../');
+    define('OLD_APP', APP . '../../');
 }
 
 if (!defined('ENVIRONMENT')) {
@@ -100,6 +100,7 @@ $Constnats = new Constants();
 try {
     Configure::config('default', new PhpConfig());
     Configure::load('app', 'default', false);
+    Configure::load('email', 'default', false);
     Configure::load('datasource', 'default', false);
 } catch (\Exception $e) {
     exit($e->getMessage() . "\n");
