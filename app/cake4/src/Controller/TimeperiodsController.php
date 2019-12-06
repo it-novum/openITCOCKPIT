@@ -32,11 +32,13 @@ use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Plugin;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TimeperiodsFilter;
 
@@ -149,8 +151,8 @@ class TimeperiodsController extends AppController {
                 return;
             } else {
                 //No errors
-                $userId = $this->Auth->user('id');
-                $requestData = $this->request->data;
+                $User = new User($this->getUser());
+                $requestData = $this->request->getData();
 
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
@@ -161,7 +163,7 @@ class TimeperiodsController extends AppController {
                     $timeperiod->get('id'),
                     OBJECT_TIMEPERIOD,
                     [$requestData['Timeperiod']['container_id']],
-                    $userId,
+                    $User->getId(),
                     $requestData['Timeperiod']['name'],
                     $requestData,
                     $timeperiodForChangeLog
@@ -206,7 +208,7 @@ class TimeperiodsController extends AppController {
             } else {
                 //No errors
                 $User = new User($this->getUser());
-                $requestData = $this->request->data;
+                $requestData = $this->request->getData();
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -232,94 +234,6 @@ class TimeperiodsController extends AppController {
         }
     }
 
-    /**
-     * @param $timeperiod
-     * @return bool
-     * @todo refactor me and move me to TimeperiodsTable
-     * @deprecated
-     */
-    protected function __allowDelete($timeperiod) {
-        if (is_numeric($timeperiod)) {
-            $timeperiodId = $timeperiod;
-        } else {
-            $timeperiodId = $timeperiod['Timeperiod']['id'];
-        }
-
-        //Check contacts
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-        if ($ContactsTable->isTimeperiodUsedByContacts($timeperiodId)) {
-            return false;
-        }
-
-        //Check service templates
-        $this->loadModel('Servicetemplate');
-        $servicetemplateCount = $this->Servicetemplate->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'or' => [
-                    'check_period_id'  => $timeperiodId,
-                    'notify_period_id' => $timeperiodId,
-                ],
-            ],
-        ]);
-        if ($servicetemplateCount > 0) {
-            return false;
-        }
-
-        //Check services
-        $this->loadModel('Service');
-        $serviceCount = $this->Service->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'or' => [
-                    'check_period_id'  => $timeperiodId,
-                    'notify_period_id' => $timeperiodId,
-                ],
-            ],
-        ]);
-        if ($serviceCount > 0) {
-            return false;
-        }
-
-        //Check host templates
-        /** @var $HosttemplatesTable HosttemplatesTable */
-        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-        if ($HosttemplatesTable->isTimeperiodUsedByHosttemplate($timeperiodId)) {
-            return false;
-        }
-
-        //Check hosts
-        $this->loadModel('Host');
-        $hostCount = $this->Host->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'or' => [
-                    'check_period_id'  => $timeperiodId,
-                    'notify_period_id' => $timeperiodId,
-                ],
-            ],
-        ]);
-        if ($hostCount > 0) {
-            return false;
-        }
-
-        //Check autoreports
-        if (in_array('AutoreportModule', CakePlugin::loaded())) {
-            $this->loadModel('AutoreportModule.Autoreport');
-            $autoreportCount = $this->Autoreport->find('count', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'timeperiod_id' => $timeperiodId,
-                ],
-            ]);
-            if ($autoreportCount > 0) {
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     /**
      * @param null $id
@@ -343,7 +257,7 @@ class TimeperiodsController extends AppController {
             return;
         }
 
-        if (!$this->__allowDelete($timeperiod)) {
+        if (!$TimeperiodsTable->allowDelete($timeperiod)) {
             $usedBy = [
                 [
                     'baseUrl' => '#',
@@ -420,7 +334,7 @@ class TimeperiodsController extends AppController {
             $Cache = new KeyValueStore();
 
             $postData = $this->request->getData('data');
-            $userId = $this->Auth->user('id');
+            $User = new User($this->getUser());
 
             foreach ($postData as $index => $timeperiodData) {
                 if (!isset($timeperiodData['Timeperiod']['id'])) {
@@ -484,7 +398,7 @@ class TimeperiodsController extends AppController {
                         $postData[$index]['Timeperiod']['id'],
                         OBJECT_TIMEPERIOD,
                         [ROOT_CONTAINER],
-                        $userId,
+                        $User->getId(),
                         $newTimeperiodEntity->get('name'),
                         ['Timeperiod' => $newTimeperiodData]
                     );
