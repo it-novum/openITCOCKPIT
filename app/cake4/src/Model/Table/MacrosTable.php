@@ -125,4 +125,12 @@ class MacrosTable extends Table {
         return $availableMacroNames;
     }
 
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Macros.id' => $id]);
+    }
+
 }
