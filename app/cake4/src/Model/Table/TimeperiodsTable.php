@@ -504,4 +504,68 @@ class TimeperiodsTable extends Table {
         return $fallbackTimeperiodId;
     }
 
+    /**
+     * @param $timeperiod
+     * @return bool
+     * @todo V4 Module Check
+     * @deprecated
+     */
+    public function allowDelete($timeperiod) {
+        if (is_numeric($timeperiod)) {
+            $timeperiodId = $timeperiod;
+        } else {
+            $timeperiodId = $timeperiod['Timeperiod']['id'];
+        }
+        //Check contacts
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        if ($ContactsTable->isTimeperiodUsedByContacts($timeperiodId)) {
+            return false;
+        }
+
+        //Check host templates
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        if ($HosttemplatesTable->isTimeperiodUsedByHosttemplate($timeperiodId)) {
+            return false;
+        }
+
+        //Check hosts
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        if ($HostsTable->isTimeperiodUsedByHost($timeperiodId)) {
+            return false;
+        }
+
+
+        //Check service templates
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+        if ($ServicetemplatesTable->isTimeperiodUsedByServicetemplate($timeperiodId)) {
+            return false;
+        }
+
+        //Check services
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        if ($ServicesTable->isTimeperiodUsedByService($timeperiodId)) {
+            return false;
+        }
+
+        //Check autoreports
+        if (in_array('AutoreportModule', Plugin::loaded())) {
+            $this->loadModel('AutoreportModule.Autoreport');
+            $autoreportCount = $this->Autoreport->find('count', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'timeperiod_id' => $timeperiodId,
+                ],
+            ]);
+            if ($autoreportCount > 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
