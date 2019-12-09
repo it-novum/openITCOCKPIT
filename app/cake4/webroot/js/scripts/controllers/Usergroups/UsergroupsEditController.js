@@ -1,83 +1,62 @@
 angular.module('openITCOCKPIT')
     .controller('UsergroupsEditController', function($scope, $http, $state, $stateParams, NotyService, RedirectService){
+
         $scope.id = $stateParams.id;
-        $scope.post = {
-            'Usergroup': {
-                'name': '',
-                'description': ''
-            },
-            'Aco': {}
-        };
+        $scope.ctrlFilter = '';
         $scope.init = true;
 
         $scope.load = function(){
-            $http.get("/usergroups/edit/" + $scope.id + ".json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                console.log(result.data);
-                $scope.post.Usergroup = result.data.usergroup;
+            $http.get("/usergroups/edit/" + $scope.id + ".json",
+                {}
+            ).then(function(result){
+                $scope.post = {
+                    Usergroup: result.data.usergroup,
+                    Acos: {}
+                };
                 $scope.acos = result.data.acos;
-                $scope.aros = result.data.aros;
-                $scope.alwaysAllowedAcos = result.data.alwaysAllowedAcos;
-                $scope.acoDependencies = result.data.acoDependencies;
-                $scope.dependentAcoIds = result.data.dependentAcoIds;
-                $scope.selectChosen();
-                //$scope.post.User = result.data.user;
+
+                //Put all existing acos to $scope.post.Acos
+                for(var aco in $scope.acos){
+                    for(var controller in $scope.acos[aco].children){
+                        for(var action in $scope.acos[aco].children[controller].children){
+                            var acoId = $scope.acos[aco].children[controller].children[action].id;
+                            $scope.post.Acos[acoId] = 0;
+                        }
+                    }
+                }
+
+                //Set permissions of current user group to $scope.post.Acos;
+                for(var usergroupAco in result.data.usergroup.aro.acos){
+                    var usergroupAcoId = result.data.usergroup.aro.acos[usergroupAco].id;
+
+                    //Deny all by default
+                    $scope.post.Acos[usergroupAcoId] = 0;
+
+                    if(result.data.usergroup.aro.acos[usergroupAco]._joinData._create === "1"){
+                        //Only enable what is enabled in the database
+                        $scope.post.Acos[usergroupAcoId] = 1;
+                    }
+                }
             });
-        };
-
-        $scope.selectChosen = function(){
-            $scope.aros.forEach(function(v){
-                $scope.post.Aco[v] = true;
-            });
-        };
-
-        $scope.coreFilter = function(coreAco){
-            if($scope.hasChildren(coreAco)){
-                return true;
-            }
-            return false;
-        };
-
-        $scope.acoFilter = function(aco){
-            if(!$scope.isAllowedAco(aco) && !$scope.isDependendAco(aco)){
-                return true;
-            }
-            return false;
-        };
-
-        $scope.isAllowedAco = function(aco){
-            //console.log(aco.Aco.id);
-            if($scope.alwaysAllowedAcos.hasOwnProperty(aco.Aco.id)){
-                return true;
-            }
-            return false;
-        };
-
-        $scope.isDependendAco = function(aco){
-            if($scope.dependentAcoIds.hasOwnProperty(aco.Aco.id)){
-                return true;
-            }
-            return false;
-        };
-
-        $scope.hasChildren = function(aco){
-            if(aco.children.length > 0){
-                return true;
-            }
-            return false;
         };
 
 
         $scope.submit = function(){
-            $http.post("/usergroups/edit/" + $scope.id + ".json?angular=true",
+            $http.post("/usergroups/edit/" + $scope.id + ".json",
                 $scope.post
             ).then(function(result){
-                NotyService.genericSuccess();
-                RedirectService.redirectWithFallback('UsergroupsIndex');
+                var url = $state.href('UsergroupsEdit', {id: $scope.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+
+                RedirectService.redirectWithFallback('UsergroupsEdit');
+
+                console.log('Data saved successfully');
             }, function errorCallback(result){
+
                 NotyService.genericError();
 
                 if(result.data.hasOwnProperty('error')){
@@ -86,11 +65,115 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.tickAll = function(actionToTick){
+            if(actionToTick === 'all'){
+                for(var aco in $scope.acos){
+                    for(var controller in $scope.acos[aco].children){
+                        var isModule = $scope.acos[aco].children[controller].alias.substr(-6) === 'Module';
+
+                        if(!isModule){
+                            for(var action in $scope.acos[aco].children[controller].children){
+                                var acoId = $scope.acos[aco].children[controller].children[action].id;
+                                $scope.post.Acos[acoId] = 1;
+                            }
+                        }else{
+                            for(var pluginController in $scope.acos[aco].children[controller].children){
+                                for(var action in $scope.acos[aco].children[controller].children[pluginController].children){
+                                    var acoId = $scope.acos[aco].children[controller].children[pluginController].children[action].id;
+                                    $scope.post.Acos[acoId] = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }else{
+
+                for(var aco in $scope.acos){
+                    for(var controller in $scope.acos[aco].children){
+                        var isModule = $scope.acos[aco].children[controller].alias.substr(-6) === 'Module';
+
+                        if(!isModule){
+                            for(var action in $scope.acos[aco].children[controller].children){
+                                var acoId = $scope.acos[aco].children[controller].children[action].id;
+                                var actionName = $scope.acos[aco].children[controller].children[action].alias;
+
+                                if(actionName === actionToTick){
+                                    $scope.post.Acos[acoId] = 1;
+                                }
+                            }
+                        }else{
+                            for(var pluginController in $scope.acos[aco].children[controller].children){
+                                for(var action in $scope.acos[aco].children[controller].children[pluginController].children){
+                                    var actionName = $scope.acos[aco].children[controller].children[pluginController].children[action].alias;
+                                    var acoId = $scope.acos[aco].children[controller].children[pluginController].children[action].id;
+                                    if(actionName === actionToTick){
+                                        $scope.post.Acos[acoId] = 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+        };
+
+        $scope.untickAll = function(actionToUntick){
+            if(actionToUntick === 'all'){
+                for(var aco in $scope.acos){
+                    for(var controller in $scope.acos[aco].children){
+                        var isModule = $scope.acos[aco].children[controller].alias.substr(-6) === 'Module';
+
+                        if(!isModule){
+                            for(var action in $scope.acos[aco].children[controller].children){
+                                var acoId = $scope.acos[aco].children[controller].children[action].id;
+                                $scope.post.Acos[acoId] = 0;
+                            }
+                        }else{
+                            for(var pluginController in $scope.acos[aco].children[controller].children){
+                                for(var action in $scope.acos[aco].children[controller].children[pluginController].children){
+                                    var acoId = $scope.acos[aco].children[controller].children[pluginController].children[action].id;
+                                    $scope.post.Acos[acoId] = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }else{
+
+                for(var aco in $scope.acos){
+                    for(var controller in $scope.acos[aco].children){
+                        var isModule = $scope.acos[aco].children[controller].alias.substr(-6) === 'Module';
+
+                        if(!isModule){
+                            for(var action in $scope.acos[aco].children[controller].children){
+                                var acoId = $scope.acos[aco].children[controller].children[action].id;
+                                var actionName = $scope.acos[aco].children[controller].children[action].alias;
+
+                                if(actionName === actionToUntick){
+                                    $scope.post.Acos[acoId] = 0;
+                                }
+                            }
+                        }else{
+                            for(var pluginController in $scope.acos[aco].children[controller].children){
+                                for(var action in $scope.acos[aco].children[controller].children[pluginController].children){
+                                    var actionName = $scope.acos[aco].children[controller].children[pluginController].children[action].alias;
+                                    var acoId = $scope.acos[aco].children[controller].children[pluginController].children[action].id;
+                                    if(actionName === actionToUntick){
+                                        $scope.post.Acos[acoId] = 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        };
+
+        //Reset form on page load
         $scope.load();
 
-
-        $scope.$watch('post', function(){
-            console.log($scope.post)
-        }, true)
     });
 
