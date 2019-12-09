@@ -123,9 +123,9 @@ class AngularAssets implements AngularAssetsInterface {
         '/smartadmin4/dist/css/themes/cust-theme-10.css',
         '/node_modules/font-awesome/css/font-awesome.css',
         '/node_modules/@fortawesome/fontawesome-free/css/all.min.css',
-        'openitcockpit-colors.css',
-        'openitcockpit-utils.css',
-        'openitcockpit.css',
+        '/css/openitcockpit-colors.css',
+        '/css/openitcockpit-utils.css',
+        '/css/openitcockpit.css',
         /*'/vendor/node_modules/@fullcalendar/core/main.css',
         '/vendor/node_modules/@fullcalendar/daygrid/main.css',
         '/vendor/node_modules/@fullcalendar/timegrid/main.css',
@@ -145,7 +145,7 @@ class AngularAssets implements AngularAssetsInterface {
         'vendor/gridstack/gridstack.min.css',*/
         //'vendor/vis-4.21.0/dist/vis.css',
         //'my_vis.css',
-        '/vendor/node_modules/noty/lib/noty.css',
+        '/node_modules/noty/lib/noty.css',
         /*'flippy.css',
         'vendor/image-picker.css',*/
         //  '/vendor/node_modules/angular-gridster/dist/angular-gridster.css',
