@@ -106,7 +106,7 @@ $interval = [
         <input
                 class="form-control"
                 type="number"
-                min="<?php echo Cake\Core\Configure\::read('NagiosModule.SLIDER_MIN'); ?>"
+                min="<?php echo \Cake\Core\Configure::read('NagiosModule.SLIDER_MIN'); ?>"
                 max="<?php echo \Cake\Core\Configure::read('NagiosModule.SLIDER_MAX'); ?>"
                 placeholder="<?php echo __('Interval in seconds'); ?>"
                 ng-model="interval">
