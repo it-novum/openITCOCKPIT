@@ -91,13 +91,14 @@ div.custom-control-right .custom-control-label::after {
     top: 3px;
 }
 
-.chosen-container{
+.chosen-container {
     font-size: 0.8125rem;
 }
 
-.tagsinputFilter{
+.tagsinputFilter {
     margin: 0 -12px 0 -12px;
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
     border-color: #E5E5E5 !important;
 }
+

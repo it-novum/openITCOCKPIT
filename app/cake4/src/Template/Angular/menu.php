@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<ul>
+<!--<ul>
     <li>
         <div class="clearfix padding-10">
             <input type="text"
@@ -51,48 +51,38 @@
             <span class="menu-item-parent" ng-bind-html="menuMatche.title | highlight:menuFilter"></span>
         </a>
     </li>
+-->
 
-
-    <li ng-repeat="headline in menu" style="color:red;">
+<span ng-repeat="headline in menu">
+    <li class="nav-title">
         {{headline.alias}}
+    </li>
+    <li class="" ng-repeat="item in headline.items">
+        <a ng-if="!item.items" ui-sref="{{item.state}}" class=" waves-effect waves-themed"
+           title="{{item.name}}" data-filter-tags="{{item.tags}}">
+            <i class="{{item.icon}}"></i>
+            <span class="menu-item-parent nav-link-text" >
+                {{item.name}}
+            </span>
+        </a>
 
-        <ul class="open" style="color:white;display: block;">
-            <li class="open" ng-repeat="item in headline.items" style="color:white;">
-                <a ng-if="!item.items" ui-sref="{{item.state}}">
-                    <i class="{{item.icon}}"></i>
-                    <span class="menu-item-parent">
-                        {{item.name}}
+        <a ng-if="item.items.length > 0" href="javascript:void(0);" class=" waves-effect waves-themed"
+           title="{{item.alias}}" data-filter-tags="{{item.tags}}">
+            <i class="{{item.icon}}"></i>
+            <span class="menu-item-parent nav-link-text">
+                {{item.alias}}
+            </span>
+        </a>
+        <ul ng-if="item.items.length > 0">
+            <li ng-repeat="subItem in item.items">
+                <a ui-sref="{{subItem.state}}" class="waves-effect waves-themed"
+                   title="{{subItem.name}}" data-filter-tags="{{subItem.tags}}">
+                    <i class="{{subItem.icon}}"></i>
+                    <span class="nav-link-text">
+                        {{subItem.name}}
                     </span>
                 </a>
-
-                <ul ng-if="item.items.length > 0" style="color:white;display: block;">
-
-                    <li class="open">
-                        <a  href="#" style="color:cyan!important;">
-                            <i class="{{item.icon}}"></i>
-                            <span class="menu-item-parent">
-                                {{item.alias}}
-                            </span>
-                        </a>
-                    </li>
-
-                    <li class="open" ng-repeat="subItem in item.items" style="color:white;">
-                        <a ui-sref="{{subItem.state}}">
-                            <i class="{{subItem.icon}}"></i>
-                            <span class="menu-item-parent">
-                                {{subItem.name}}
-                            </span>
-                        </a>
-                    </li>
-
-                </ul>
-
             </li>
-
         </ul>
-
     </li>
-
-
-</ul>
-
+</span>

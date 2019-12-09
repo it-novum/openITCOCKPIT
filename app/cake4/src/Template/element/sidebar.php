@@ -75,7 +75,22 @@
                 <i class="fa fa-angle-down"></i>
             </a>
         </div>
-        <ul menu id="js-nav-menu" class="nav-menu"></ul>
+        <!--
+        <nav
+            menu
+            phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
+            phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
+            phpaction="<?= $this->getRequest()->getParam('action', '') ?>">
+        </nav>
+         -->
+
+        <ul menu
+            id="js-nav-menu"
+            class="nav-menu"
+            phpplugin="<?= $this->getRequest()->getParam('plugin', '') ?>"
+            phpcontroller="<?= $this->getRequest()->getParam('controller', '') ?>"
+            phpaction="<?= $this->getRequest()->getParam('action', '') ?>">>
+        </ul>
         <div class="filter-message js-filter-message bg-success-600"></div>
     </nav>
     <!-- END PRIMARY NAVIGATION -->
