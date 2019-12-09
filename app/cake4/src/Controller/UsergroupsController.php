@@ -306,6 +306,10 @@ class UsergroupsController extends AppController {
     }
 
     public function loadUsergroups() {
+        if(!$this->isApiRequest()){
+            throw new MethodNotAllowedException();
+        }
+
         /** @var UsergroupsTable $UsergroupsTable */
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
         $usergroups = $UsergroupsTable->getUsergroupsList();
