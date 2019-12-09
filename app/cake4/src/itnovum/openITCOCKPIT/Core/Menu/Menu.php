@@ -59,7 +59,7 @@ class Menu {
                 'dashboards',
                 'index',
                 '',
-                'fa fa-dashboard',
+                'fas fa-tachometer-alt',
                 ['dashboard'],
                 1
             ))
@@ -106,7 +106,7 @@ class Menu {
                     'reports_category',
                     __('Reports'),
                     4,
-                    'fa fa-file-text-o'
+                    'fa fa-file-text'
                 ))
                     ->addLink(new MenuLink(
                         __('Instant reports'),
@@ -162,7 +162,7 @@ class Menu {
                         'logentries',
                         'index',
                         '',
-                        'fa fa-file-text-o',
+                        'fa fa-file-text',
                         [],
                         2
                     ))
@@ -537,7 +537,7 @@ class Menu {
                     'packetmanager',
                     'index',
                     '',
-                    'fa fa-cloud-download',
+                    'fa fa-cloud-download-alt',
                     [],
                     2
                 ))
@@ -606,7 +606,7 @@ class Menu {
                     'ConfigurationFiles',
                     'index',
                     '',
-                    'fa fa-file-text-o',
+                    'fa fa-file-text',
                     [],
                     1
                 ))
@@ -626,7 +626,7 @@ class Menu {
                     'registers',
                     'index',
                     '',
-                    'fa fa-check-square-o',
+                    'fa fa-check-square',
                     [],
                     3
                 ))
