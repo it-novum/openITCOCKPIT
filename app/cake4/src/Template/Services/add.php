@@ -25,7 +25,7 @@
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
-        <a href="<?php echo $this->webroot; ?>">
+        <a ui-sref="DashboardsIndex">
             <i class="fa fa-home"></i> <?php echo __('Home'); ?>
         </a>
     </li>
