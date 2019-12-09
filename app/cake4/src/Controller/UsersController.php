@@ -39,10 +39,12 @@ use Cake\Event\EventInterface;
 use Cake\Http\Exception\ConflictException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
+use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
@@ -361,7 +363,7 @@ class UsersController extends AppController {
      ****************************/
 
     /**
-     * @param null $id
+     * @param int|null $id
      */
     public function resetPassword($id = null) {
         if (!$this->request->is('post')) {
@@ -391,41 +393,42 @@ class UsersController extends AppController {
 
         $user->set('password', $newPassword);
 
-        /** @var $SystemsettingsTable App\Model\Table\SystemsettingsTable */
+        /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsettings = $SystemsettingsTable->findAsArray();
 
-        App::uses('CakeEmail', 'Network/Email');
-        $Email = new CakeEmail();
-        $Email->config('default');
-        $Email->from([$systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
-        $Email->to($user->email);
-        $Email->subject(__('Password reset'));
-
-        $Email->emailFormat('both');
-        $Email->template('template-resetpassword', 'template-resetpassword')->viewVars(['newPassword' => $newPassword]);
-
         $Logo = new Logo();
-        $Email->attachments([
-            'logo.png' => [
-                'file'      => $Logo->getSmallLogoDiskPath(),
-                'mimetype'  => 'image/png',
-                'contentId' => '100',
-            ],
-        ]);
 
-        $user->password = $newPassword;
+        $Mailer = new Mailer();
+        $Mailer->setFrom($systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'], $systemsettings['MONITORING']['MONITORING.FROM_NAME']);
+        $Mailer->addTo($user->get('email'));
+        $Mailer->setSubject(__('Your ') . $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']. __(' got reset!'));
+        $Mailer->setEmailFormat('text');
+        $Mailer->setAttachments([
+            'logo.png' => [
+                'file' => $Logo->getSmallLogoDiskPath(),
+                'mimetype' => 'image/png',
+                'contentId' => '100'
+            ]
+        ]);
+        $Mailer->viewBuilder()
+            ->setTemplate('reset_password')
+            ->setVar('systemname', $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])
+            ->setVar('newPassword', $newPassword);
+
+        $user->set('password', $newPassword);
 
         $UsersTable->save($user);
         if ($user->hasErrors()) {
-            $this->response->statusCode(400);
+            $this->response = $this->response->withStatus(400);
             $this->set('error', $user->getErrors());
-            $this->set('_serialize', ['error']);
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
-        $Email->send();
-        $this->set('message', __('Password reset successfully. The new password was send to %s', $user->email));
-        $this->set('_serialize', ['message']);
+        $Mailer->deliver();
+        $this->set('message', __('Password reset successfully. The new password was send to {0}', $user->email));
+        $this->viewBuilder()->setOption('serialize', ['message']);
+
     }
 
     /**
@@ -514,7 +517,7 @@ class UsersController extends AppController {
             $options[$dateformat] = $UserTime->format(time());
         }
         $dateformats = Api::makeItJavaScriptAble($options);
-        $defaultDateFormat = '%H:%M:%S - %d.%m.%Y'; // key 10
+        $defaultDateFormat = 'H:i:s - d.m.Y'; // key 10
 
         $this->set('dateformats', $dateformats);
         $this->set('defaultDateFormat', $defaultDateFormat);
