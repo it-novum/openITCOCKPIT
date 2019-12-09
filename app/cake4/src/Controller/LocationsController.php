@@ -36,7 +36,6 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -45,13 +44,9 @@ use itnovum\openITCOCKPIT\Filter\LocationFilter;
 
 /**
  * Class LocationsController
- * @property AppPaginatorComponent $Paginator
- * @property DbBackend $DbBackend
- * @property Changelog $Changelog
+ * @package App\Controller
  */
 class LocationsController extends AppController {
-
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -59,7 +54,7 @@ class LocationsController extends AppController {
             return;
         }
 
-        /** @var $LocationsTable LocationsTable */
+        /** @var LocationsTable $LocationsTable */
         $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
         $LocationFilter = new LocationFilter($this->request);
 
@@ -92,7 +87,7 @@ class LocationsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $LocationsTable LocationsTable */
+        /** @var LocationsTable $LocationsTable */
         $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
 
         if (!$LocationsTable->existsById($id)) {
@@ -111,19 +106,18 @@ class LocationsController extends AppController {
     }
 
     public function add() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
 
-        /** @var $LocationsTable LocationsTable */
+        /** @var LocationsTable $LocationsTable */
         $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $this->request->data['uuid'] = UUID::v4();
             $location = $LocationsTable->newEmptyEntity();
-            $location = $LocationsTable->patchEntity($location, $this->request->data);
+            $location = $LocationsTable->patchEntity($location, $this->request->getData());
+            $location->set('uuid', UUID::v4());
             $location->container->containertype_id = CT_LOCATION;
 
             $LocationsTable->save($location);
@@ -135,7 +129,7 @@ class LocationsController extends AppController {
             } else {
                 $User = new User($this->getUser());
 
-                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -156,7 +150,6 @@ class LocationsController extends AppController {
                     $ChangelogsTable->save($changelogEntry);
                 }
 
-                //@todo refactor with cake4
                 Cache::clear('permissions');
 
                 if ($this->isJsonRequest()) {
@@ -173,14 +166,12 @@ class LocationsController extends AppController {
      * @param null $id
      */
     public function edit($id = null) {
-        $this->layout = 'blank';
-
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
 
-        /** @var $LocationsTable LocationsTable */
+        /** @var LocationsTable $LocationsTable */
         $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
 
         if (!$LocationsTable->existsById($id)) {
@@ -210,7 +201,7 @@ class LocationsController extends AppController {
                 return;
             }
 
-            $location = $LocationsTable->patchEntity($oldLocation, $this->request->data);
+            $location = $LocationsTable->patchEntity($oldLocation, $this->request->getData());
 
             $location->container_id = $oldLocation->get('container_id');
             $location->container->id = $oldLocation->get('container_id');
@@ -224,7 +215,7 @@ class LocationsController extends AppController {
                 return;
             } else {
                 $User = new User($this->getUser());
-                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -248,7 +239,6 @@ class LocationsController extends AppController {
                     $ChangelogsTable->save($changelogEntry);
                 }
 
-                //@todo refactor with cake4
                 Cache::clear('permissions');
 
                 if ($this->isJsonRequest()) {
@@ -269,9 +259,9 @@ class LocationsController extends AppController {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        /** @var $LocationsTable LocationsTable */
+        /** @var LocationsTable $LocationsTable */
         $LocationsTable = TableRegistry::getTableLocator()->get('Locations');
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if (!$LocationsTable->existsById($id)) {
@@ -303,11 +293,11 @@ class LocationsController extends AppController {
                     'location' => $location->toArray()
                 ]
             );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
 
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
@@ -324,14 +314,14 @@ class LocationsController extends AppController {
      ****************************/
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === true) {
@@ -340,7 +330,6 @@ class LocationsController extends AppController {
             $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_LOCATION, [], $this->hasRootPrivileges);
         }
         $containers = Api::makeItJavaScriptAble($containers);
-
 
         $this->set('containers', $containers);
         $this->viewBuilder()->setOption('serialize', ['containers']);
