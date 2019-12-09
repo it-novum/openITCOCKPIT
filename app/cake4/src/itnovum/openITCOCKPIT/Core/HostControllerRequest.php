@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use Cake\Http\ServerRequest;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 class HostControllerRequest {
@@ -39,7 +40,7 @@ class HostControllerRequest {
      */
     private $HostFilter;
 
-    public function __construct(\CakeRequest $request, HostFilter $HostFilter) {
+    public function __construct(ServerRequest $request, HostFilter $HostFilter) {
         $this->request = $request;
         $this->HostFilter = $HostFilter;
     }
