@@ -31,7 +31,7 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
 class AngularRequest {
 
     /**
-     * @var \CakeRequest
+     * @var \Cake\Http\ServerRequest
      */
     private $Request;
 
@@ -69,9 +69,9 @@ class AngularRequest {
 
     /**
      * AngularRequest constructor.
-     * @param \CakeRequest $Request
+     * @param \CakeRequest || \Cake\Http\ServerRequest $Request
      */
-    public function __construct(\CakeRequest $Request) {
+    public function __construct(\Cake\Http\ServerRequest $Request) {
         $this->Request = $Request;
     }
 
@@ -175,7 +175,7 @@ class AngularRequest {
 
 
     /**
-     * @return \CakeRequest
+     * @return \Cake\Http\ServerRequest
      */
     public function getRequest() {
         return $this->Request;

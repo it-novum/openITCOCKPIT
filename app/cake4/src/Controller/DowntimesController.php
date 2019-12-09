@@ -36,7 +36,6 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\HostDowntimesControllerRequest;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\ServiceDowntimesControllerRequest;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
@@ -49,14 +48,9 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
  * Class DowntimesController
- * @property AppPaginatorComponent $Paginator
- * @property AppAuthComponent $Auth
- * @property DbBackend $DbBackend
+ * @package App\Controller
  */
 class DowntimesController extends AppController {
-
-
-    public $layout = 'blank';
 
     public function host() {
         if (!$this->isAngularJsRequest()) {
@@ -99,7 +93,6 @@ class DowntimesController extends AppController {
                 $hostContainers[$host->get('id')] = $host->getContainerIds();
             }
         }
-
 
         //Prepare data for API
         $all_host_downtimes = [];
@@ -186,7 +179,7 @@ class DowntimesController extends AppController {
         $UserTime = $User->getUserTime();
 
         foreach ($serviceDowntimes as $serviceDowntime) {
-            if ($this->hasRootPrivileges === 'asdasdsd') { //Remove!!
+            if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
                 $containerIds = [];
@@ -223,7 +216,7 @@ class DowntimesController extends AppController {
         }
 
         $error = ['Downtime' => []];
-        $data = $this->request->data;
+        $data = $this->request->getData();
         if (!isset($data['comment']) || strlen($data['comment']) === 0) {
             $error['Downtime']['comment'][] = __('Comment can not be empty');
         }
@@ -277,26 +270,26 @@ class DowntimesController extends AppController {
         }
 
         if ($internalDowntimeId === null || !is_numeric($internalDowntimeId)) {
-            throw new InvalidArgumentException('$internalDowntimeId needs to be an integer!');
+            throw new \InvalidArgumentException('$internalDowntimeId needs to be an integer!');
         }
 
         if (!isset($this->request->data['type'])) {
-            throw new InvalidArgumentException('Parameter type is missing');
+            throw new \InvalidArgumentException('Parameter type is missing');
         }
 
         $GearmanClient = new Gearman();
 
         $DowntimeHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
         $DowntimeServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
-        /** @var $HostsTable HostsTable */
 
-        switch ($this->request->data['type']) {
+        switch ($this->request->getData('type')) {
             case 'host':
+                /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
                 $includeServices = true;
-                if (isset($this->request->data['includeServices'])) {
-                    $includeServices = (bool)$this->request->data['includeServices'];
+                if (!empty($this->request->getData('includeServices'))) {
+                    $includeServices = (bool)$this->request->getData('includeServices');
                 }
 
                 if ($includeServices) {
