@@ -72,9 +72,9 @@
                                 </div>
                             </div>
                             <div class="panel-footer text-align-center">
-                                <a href="mailto:openitcockpit@support.it-novum.com" class="btn btn-primary btn-block"
+                                <a href="mailto:support@itsm.it-novum.com" class="btn btn-primary btn-block"
                                    role="button">
-                                    Create a Ticket
+                                    <i class="fa fa-envelope"></i> Create a Ticket
                                 </a>
                             </div>
                         </div>
@@ -82,11 +82,11 @@
                 <?php endif; ?>
 
                 <div class="col-xs-12 col-sm-6 col-md-3">
-                    <div class="panel panel-primary pricing-big">
+                    <div class="panel panel-purple pricing-big">
 
                         <div class="panel-heading">
                             <h3 class="panel-title text-transform-none">
-                                IRC #openITCOCKPIT
+                                GitHub
                             </h3>
                         </div>
                         <div class="panel-body no-padding text-align-center">
@@ -95,38 +95,8 @@
                             </div>
                             <div class="price-features">
                                 <ul class="list-unstyled text-left">
-                                    <li><i class="fa fa-minus text-muted"></i> General questions about openITCOCKPIT
-                                    </li>
                                     <li><i class="fa fa-minus text-muted"></i> System issues</li>
                                     <li><i class="fa fa-minus text-muted"></i> System crashes</li>
-                                    <li><i class="fa fa-minus text-muted"></i> Unwanted behavior or bugs</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="panel-footer text-align-center">
-                            <a href="http://webchat.freenode.net/?channels=openitcockpit"
-                               class="btn btn-primary btn-block" target="_blank"
-                               role="button">
-                                Join channel
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-xs-12 col-sm-6 col-md-3">
-                    <div class="panel panel-purple pricing-big">
-
-                        <div class="panel-heading">
-                            <h3 class="panel-title text-transform-none">
-                                JIRA or GitHub
-                            </h3>
-                        </div>
-                        <div class="panel-body no-padding text-align-center">
-                            <div class="the-price">
-                                <span class="subscript">Developers</span>
-                            </div>
-                            <div class="price-features">
-                                <ul class="list-unstyled text-left">
                                     <li><i class="fa fa-minus text-muted"></i> Unwanted behavior or bugs</li>
                                     <li><i class="fa fa-minus text-muted"></i> Errors with packages for your
                                         distribution
@@ -136,14 +106,7 @@
                         </div>
                         <div class="panel-footer text-align-center">
                             <div class="row no-padding">
-                                <div class="col-xs-12 col-md-6">
-                                    <button
-                                            class="btn btn-primary btn-block" id="JIRAIssue" role="button"
-                                            type="button">
-                                        Create a Ticket
-                                    </button>
-                                </div>
-                                <div class="col-xs-12 col-md-6">
+                                <div class="col-xs-12">
                                     <a href="https://github.com/it-novum/openITCOCKPIT/issues" target="_blank"
                                        class="btn btn-default btn-block" role="button">
                                         <i class="fa fa-github"></i> Create an issue
@@ -153,6 +116,13 @@
                         </div>
                     </div>
                 </div>
+
+            <div class="col-xs-12">
+                <h3> Want to chat?</h3>
+                <a href="http://webchat.freenode.net/?channels=openitcockpit" target="_blank">
+                    Join #openITCOCKPIT on freenode.
+                </a>
+            </div>
 
             </div>
         </div>
