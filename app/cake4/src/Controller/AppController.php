@@ -191,7 +191,7 @@ class AppController extends Controller {
     protected function hasPermission($action = null, $controller = null, $plugin = null) {
         //return false;
         if ($plugin === null) {
-            $plugin = Inflector::classify($this->getRequest()->getParam('plugin'));
+            $plugin = Inflector::classify($this->getRequest()->getParam('plugin', ''));
         }
 
         if ($plugin === null || $plugin === '') {

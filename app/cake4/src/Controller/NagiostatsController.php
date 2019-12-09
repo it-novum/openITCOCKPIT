@@ -29,9 +29,11 @@ namespace App\Controller;
 
 use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
 
+/**
+ * Class NagiostatsController
+ * @package App\Controller
+ */
 class NagiostatsController extends AppController {
-
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isApiRequest()) {
