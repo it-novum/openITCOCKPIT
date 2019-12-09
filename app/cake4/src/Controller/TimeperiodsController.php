@@ -29,10 +29,9 @@ namespace App\Controller;
 
 use App\Model\Entity\Changelog;
 use App\Model\Table\ChangelogsTable;
-use App\Model\Table\ContactsTable;
-use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
-use Cake\Core\Plugin;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -54,7 +53,7 @@ class TimeperiodsController extends AppController {
             return;
         }
 
-        /** @var $TimeperiodsTable TimeperiodsTable */
+        /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
@@ -87,19 +86,20 @@ class TimeperiodsController extends AppController {
             $this->viewBuilder()->setOption('serialize', $toJson);
             return;
         }
-
     }
 
+    /**
+     * @param $id
+     */
     public function view($id) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $TimeperiodsTable TimeperiodsTable */
+        /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
-
-        if (!$TimeperiodsTable->exists($id)) {
+        if (!$TimeperiodsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid timeperiod'));
         }
         $timeperiod = $TimeperiodsTable->get($id);
@@ -115,8 +115,59 @@ class TimeperiodsController extends AppController {
     }
 
     /**
+     * @throws \Exception
+     */
+    public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var TimeperiodsTable $TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $timeperiod = $TimeperiodsTable->newEmptyEntity();
+            $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->getData('Timeperiod'));
+            $timeperiod->set('uuid', UUID::v4());
+            $TimeperiodsTable->checkRules($timeperiod);
+            $TimeperiodsTable->save($timeperiod);
+
+            if ($timeperiod->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->serializeCake4ErrorMessage($timeperiod);
+                return;
+            } else {
+                //No errors
+                $User = new User($this->getUser());
+                $requestData = $this->request->getData();
+                /** @var ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    'add',
+                    $this->request->getParam('controller'),
+                    $timeperiod->get('id'),
+                    OBJECT_TIMEPERIOD,
+                    [ROOT_CONTAINER],
+                    $User->getId(),
+                    $requestData['Timeperiod']['name'],
+                    $requestData
+                );
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
+                $this->serializeCake4Id($timeperiod);
+            }
+            $this->set('timeperiod', $timeperiod);
+            $this->viewBuilder()->setOption('serialize', ['timeperiod']);
+        }
+    }
+
+    /**
      * @param null $id
-     * @throws Exception
+     * @throws \Exception
      * @todo refactor me
      */
     public function edit($id = null) {
@@ -125,7 +176,7 @@ class TimeperiodsController extends AppController {
             return;
         }
 
-        /** @var $TimeperiodsTable TimeperiodsTable */
+        /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         if (!$TimeperiodsTable->existsById($id)) {
             throw new NotFoundException('Time period not found');
@@ -144,6 +195,7 @@ class TimeperiodsController extends AppController {
             $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->getData('Timeperiod'));
             $TimeperiodsTable->checkRules($timeperiod);
             $TimeperiodsTable->save($timeperiod);
+
             if ($timeperiod->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $timeperiod->getErrors());
@@ -154,7 +206,7 @@ class TimeperiodsController extends AppController {
                 $User = new User($this->getUser());
                 $requestData = $this->request->getData();
 
-                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -185,57 +237,6 @@ class TimeperiodsController extends AppController {
     }
 
     /**
-     * @throws Exception
-     */
-    public function add() {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-
-        /** @var $TimeperiodsTable TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        if ($this->request->is('post') && $this->isAngularJsRequest()) {
-            $timeperiod = $TimeperiodsTable->newEmptyEntity();
-            $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->getData('Timeperiod'));
-            $timeperiod->set('uuid', UUID::v4());
-            $TimeperiodsTable->checkRules($timeperiod);
-            $TimeperiodsTable->save($timeperiod);
-            if ($timeperiod->hasErrors()) {
-                $this->response = $this->response->withStatus(400);
-                $this->serializeCake4ErrorMessage($timeperiod);
-                return;
-            } else {
-                //No errors
-                $User = new User($this->getUser());
-                $requestData = $this->request->getData();
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    $this->request->getParam('controller'),
-                    $timeperiod->get('id'),
-                    OBJECT_TIMEPERIOD,
-                    [ROOT_CONTAINER],
-                    $User->getId(),
-                    $requestData['Timeperiod']['name'],
-                    $requestData
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
-                $this->serializeCake4Id($timeperiod);
-            }
-            $this->set('timeperiod', $timeperiod);
-            $this->viewBuilder()->setOption('serialize', ['timeperiod']);
-        }
-    }
-
-
-    /**
      * @param null $id
      */
     public function delete($id = null) {
@@ -243,10 +244,10 @@ class TimeperiodsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $TimeperiodsTable TimeperiodsTable */
+        /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
-        if (!$TimeperiodsTable->exists($id)) {
+        if (!$TimeperiodsTable->existsById($id)) {
             throw new NotFoundException(__('Timeperiod not found'));
         }
 
@@ -279,7 +280,7 @@ class TimeperiodsController extends AppController {
         $timeperiodEntity = $TimeperiodsTable->get($id);
         if ($TimeperiodsTable->delete($timeperiodEntity)) {
             $User = new User($this->getUser());
-            /** @var  ChangelogsTable $ChangelogsTable */
+            /** @var ChangelogsTable $ChangelogsTable */
             $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
             $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -292,11 +293,11 @@ class TimeperiodsController extends AppController {
                 $timeperiod['Timeperiod']['name'],
                 $timeperiod
             );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
 
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
@@ -318,7 +319,7 @@ class TimeperiodsController extends AppController {
             return;
         }
 
-        /** @var $TimeperiodsTable TimeperiodsTable */
+        /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         if ($this->request->is('get')) {
@@ -389,7 +390,7 @@ class TimeperiodsController extends AppController {
                     //No errors
                     $postData[$index]['Timeperiod']['id'] = $newTimeperiodEntity->get('id');
 
-                    /** @var  ChangelogsTable $ChangelogsTable */
+                    /** @var ChangelogsTable $ChangelogsTable */
                     $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                     $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -425,7 +426,7 @@ class TimeperiodsController extends AppController {
 
         $containerId = $this->request->getQuery('containerId');
 
-        /** @var $TimeperiodsTable TimeperiodsTable */
+        /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         $timeperiods = $TimeperiodsTable->getTimeperiodByContainerIdsAsList([
             ROOT_CONTAINER, $containerId
