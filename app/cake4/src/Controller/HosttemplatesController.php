@@ -338,9 +338,11 @@ class HosttemplatesController extends AppController {
                     'Hosttemplate' => $hosttemplate->toArray()
                 ]
             );
-            if ($changelog_data) {
-                CakeLog::write('log', serialize($changelog_data));
-            }
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
 
             //Delete Documentation record if exists
             /** @var $DocumentationsTable DocumentationsTable */

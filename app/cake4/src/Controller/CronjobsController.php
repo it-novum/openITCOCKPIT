@@ -27,31 +27,31 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\CronjobsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 class CronjobsController extends AppController {
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isApiRequest()) {
             return;
         }
 
-        /** @var $Cronjobs App\Model\Table\CronjobsTable */
-        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
-        $cronjobs = $Cronjobs->getCronjobs();
+        /** @var CronjobsTable $CronjobsTable */
+        $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
+        $cronjobs = $CronjobsTable->getCronjobs();
 
         //add start_time as last_scheduled_usertime in usertime format
         foreach ($cronjobs as $key => $cronjob) {
             if (isset($cronjob['Cronschedule'])) {
                 $cronjobs[$key]['Cronschedule']['last_scheduled_usertime'] = null;
                 if (!empty($cronjob['Cronschedule']['start_time'])) {
-                    $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-                    $UserTime = $UserTime->format($cronjob['Cronschedule']['start_time']);
-                    $cronjobs[$key]['Cronschedule']['last_scheduled_usertime'] = $UserTime;
+                    $User = new User($this->getUser());
+                    $UserTime = $User->getUserTime();
+                    $cronjobs[$key]['Cronschedule']['last_scheduled_usertime'] = $UserTime->format($cronjob['Cronschedule']['start_time']);
                 }
             }
         }
@@ -63,10 +63,10 @@ class CronjobsController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        /** @var $Cronjobs App\Model\Table\CronjobsTable */
-        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
+        /** @var CronjobsTable $CronjobsTable */
+        $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
         $include = $this->request->getQuery('include');
-        $plugins = array_values($Cronjobs->fetchPlugins());
+        $plugins = array_values($CronjobsTable->fetchPlugins());
         if ($include !== '') {
             $plugins[] = $include;
         }
@@ -79,15 +79,15 @@ class CronjobsController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        /** @var $Cronjobs App\Model\Table\CronjobsTable */
-        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
+        /** @var CronjobsTable $CronjobsTable */
+        $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
         $include = $this->request->getQuery('include');
         $pluginName = 'Core';
         if ($this->request->getQuery('pluginName') != null || $this->request->getQuery('pluginName') != '') {
             $pluginName = $this->request->getQuery('pluginName');
         }
 
-        $coreTasks = $Cronjobs->fetchTasks($pluginName);
+        $coreTasks = $CronjobsTable->fetchTasks($pluginName);
         if ($include !== '') {
             $coreTasks[] = $include;
         }
@@ -100,12 +100,13 @@ class CronjobsController extends AppController {
         if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        /** @var $Cronjobs App\Model\Table\CronjobsTable */
-        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
-        $data = $this->request->data['Cronjob'];
-        $cronjob = $Cronjobs->newEmptyEntity();
-        $cronjob = $Cronjobs->patchEntity($cronjob, $data);
-        $Cronjobs->save($cronjob);
+        /** @var CronjobsTable $CronjobsTable */
+        $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
+
+        $data = $this->request->getData('Cronjob', []);
+        $cronjob = $CronjobsTable->newEmptyEntity();
+        $cronjob = $CronjobsTable->patchEntity($cronjob, $data);
+        $CronjobsTable->save($cronjob);
 
         if ($cronjob->hasErrors()) {
             $this->response = $this->response->withStatus(400);
@@ -122,12 +123,13 @@ class CronjobsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $Cronjobs App\Model\Table\CronjobsTable */
-        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
-        $data = $this->request->data['Cronjob'];
-        $cronjob = $Cronjobs->get($id);
-        $cronjob = $Cronjobs->patchEntity($cronjob, $data);
-        $Cronjobs->save($cronjob);
+        /** @var CronjobsTable $CronjobsTable */
+        $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
+
+        $data = $this->request->getData('Cronjob', []);
+        $cronjob = $CronjobsTable->get($id);
+        $cronjob = $CronjobsTable->patchEntity($cronjob, $data);
+        $CronjobsTable->save($cronjob);
 
         if ($cronjob->hasErrors()) {
             $this->response = $this->response->withStatus(400);
@@ -144,14 +146,15 @@ class CronjobsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
-        $cronjob = $Cronjobs->get($id);
+        /** @var CronjobsTable $CronjobsTable */
+        $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
+        $cronjob = $CronjobsTable->get($id);
 
-        if (empty($cronjob)) {
+        if ($cronjob === null) {
             throw new NotFoundException(__('Invalid cronjob'));
         }
 
-        $Cronjobs->delete($cronjob);
+        $CronjobsTable->delete($cronjob);
         if ($cronjob->hasErrors()) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', $cronjob->getErrors());

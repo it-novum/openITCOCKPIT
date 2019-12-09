@@ -12,7 +12,6 @@ use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Utility\Security;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
 
@@ -50,7 +49,7 @@ class UsersTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('users');
@@ -92,7 +91,7 @@ class UsersTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -275,7 +274,7 @@ class UsersTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['email']));
         $rules->add($rules->existsIn(['usergroup_id'], 'Usergroups'));
 
@@ -607,22 +606,22 @@ class UsersTable extends Table {
      * @return array
      */
     public function getDateformats() {
-        //Format: https://secure.php.net/manual/en/function.strftime.php
+        //Format: https://www.php.net/manual/de/function.date.php
         return [
-            1 => '%B %e, %Y %H:%M:%S',
-            2 => '%m-%d-%Y  %H:%M:%S',
-            3 => '%m-%d-%Y  %H:%M',
-            4 => '%m-%d-%Y  %l:%M:%S %p',
-            5 => '%H:%M:%S  %m-%d-%Y',
+            1 => 'F j, Y H:i:s',        //'%B %e, %Y %H:%M:%S',
+            2 => 'm-d-Y H:i:s',         //'%m-%d-%Y  %H:%M:%S',
+            3 => 'm-d-Y H:i',           //'%m-%d-%Y  %H:%M',
+            4 => 'm-d-Y h:i:s A',       //'%m-%d-%Y  %l:%M:%S %p',
+            5 => 'H:i:s m-d-Y',         //'%H:%M:%S  %m-%d-%Y',
 
-            6  => '%e %B %Y, %H:%M:%S',
-            7  => '%d.%m.%Y - %H:%M:%S',
-            9  => '%d.%m.%Y - %l:%M:%S %p',
-            10 => '%H:%M:%S - %d.%m.%Y', //Default date format
-            11 => '%H:%M - %d.%m.%Y',
+            6  => 'j F Y, H:i:s',       // '%e %B %Y, %H:%M:%S',
+            7  => 'd.m.Y - H:i:s',      // '%d.%m.%Y - %H:%M:%S',
+            9  => 'd.m.Y - h:i:s A',    // '%d.%m.%Y - %l:%M:%S %p',
+            10 => 'H:i:s - d.m.Y',      // '%H:%M:%S - %d.%m.%Y', //Default date format
+            11 => 'H:i - d.m.Y',        // '%H:%M - %d.%m.%Y',
 
-            12 => '%Y-%m-%d %H:%M',
-            13 => '%Y-%m-%d %H:%M:%S'
+            12 => 'Y-m-d H:i',          // '%Y-%m-%d %H:%M',
+            13 => 'Y-m-d H:i:s',        // '%Y-%m-%d %H:%M:%S'
         ];
     }
 
@@ -794,7 +793,7 @@ class UsersTable extends Table {
             ])
             ->disableHydration()
             ->where([
-                'Users.id'     => $id,
+                'Users.id'        => $id,
                 'Users.is_active' => 1
             ]);
         $rawResult = $query->firstOrFail();

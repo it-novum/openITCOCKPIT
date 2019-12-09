@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core\System\Health;
 
 
+use App\Lib\PluginManager;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 
@@ -50,8 +51,7 @@ class StatisticsCollector {
     }
 
     public function getData() {
-        \Configure::load('version');
-        $openITCOCKPITVersion = \Configure::read('version');
+        $openITCOCKPITVersion = OPENITCOCKPIT_VERSION;
 
         $numberOfHosts = $this->HostsTable->getHostsCountForStats();
         $numberOfServices = $this->ServicesTable->getServicesCountForStats();
@@ -65,9 +65,7 @@ class StatisticsCollector {
 
         $memory = $Memory->getMemoryUsage();
 
-        $modulePlugins = array_filter(\CakePlugin::loaded(), function ($value) {
-            return strpos($value, 'Module') !== false;
-        });
+        $modulePlugins = PluginManager::getAvailablePlugins();
 
         $MysqlHealth = new MySQLHealth($this->HostsTable);
 

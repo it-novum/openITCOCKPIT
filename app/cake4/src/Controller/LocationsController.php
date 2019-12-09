@@ -31,6 +31,7 @@ use App\Model\Entity\Changelog;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\LocationsTable;
+use Cake\Cache\Cache;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -156,7 +157,7 @@ class LocationsController extends AppController {
                 }
 
                 //@todo refactor with cake4
-                Cache::clear(false, 'permissions');
+                Cache::clear('permissions');
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($location); // REST API ID serialization
@@ -248,7 +249,7 @@ class LocationsController extends AppController {
                 }
 
                 //@todo refactor with cake4
-                Cache::clear(false, 'permissions');
+                Cache::clear('permissions');
 
                 if ($this->isJsonRequest()) {
                     $this->serializeCake4Id($location); // REST API ID serialization
@@ -302,9 +303,11 @@ class LocationsController extends AppController {
                     'location' => $location->toArray()
                 ]
             );
-            if ($changelog_data) {
-                CakeLog::write('log', serialize($changelog_data));
-            }
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
+                }
 
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);

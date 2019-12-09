@@ -37,11 +37,7 @@ class MacrosController extends AppController {
 
     use LocatorAwareTrait;
 
-    public $layout = 'angularjs';
-
     public function index() {
-        $this->layout = 'blank';
-
         $TableLocator = $this->getTableLocator();
         /** @var $Macros MacrosTable */
         $Macros = $TableLocator->get('Macros');
@@ -88,6 +84,9 @@ class MacrosController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['macro']);
     }
 
+    /**
+     * @param null $id
+     */
     public function edit($id = null) {
         if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -117,6 +116,9 @@ class MacrosController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['macro']);
     }
 
+    /**
+     * @param null $id
+     */
     public function delete($id = null) {
         if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -126,7 +128,7 @@ class MacrosController extends AppController {
         /** @var $Macros MacrosTable */
         $Macros = $TableLocator->get('Macros');
 
-        if (!$Macros->exists($id)) {
+        if (!$Macros->existsById($id)) {
             throw new NotFoundException('Macro not found');
         }
 
@@ -157,7 +159,6 @@ class MacrosController extends AppController {
         if ($include !== '') {
             $availableMacroNames[] = $include;
         }
-
 
         $this->set('availableMacroNames', $availableMacroNames);
         $this->viewBuilder()->setOption('serialize', ['availableMacroNames']);

@@ -84,32 +84,30 @@
             <div class="row" ng-show="valid">
                 <div class="col-xs-12 col-md-12 col-lg-12">
 
-                    <div class="well" style="margin-bottom: 20px; padding: 10px;">
-                        <h1>
-                            <i class="fa fa-check-circle ok"></i>
-                            <span class="semi-bold"><?php echo __('Valid openITCOCKPIT Enterprise license'); ?></span>
-                        </h1>
+                    <div class="row" ng-show="hasLicense">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6" style="background-image: url('/img/certs/{{certImage}}'); min-height: 667px; background-repeat: no-repeat; background-size: 100%;">
 
-                        <dl class="dl-horizontal">
-                            <dt><?php echo __('First name'); ?>:</dt>
-                            <dd class="code-font text-info">{{license.firstname}}</dd>
+                            <dl class="dl-horizontal" style="padding-top: 30%;">
+                                <dt><?php echo __('First name'); ?>:</dt>
+                                <dd class="code-font text-info">{{license.firstname}}</dd>
 
-                            <dt><?php echo __('Last name'); ?>:</dt>
-                            <dd class="code-font text-info">{{license.lastname}}</dd>
+                                <dt><?php echo __('Last name'); ?>:</dt>
+                                <dd class="code-font text-info">{{license.lastname}}</dd>
 
-                            <dt><?php echo __('Email'); ?>:</dt>
-                            <dd class="code-font text-info">{{license.email}}</dd>
+                                <dt><?php echo __('Email'); ?>:</dt>
+                                <dd class="code-font text-info">{{license.email}}</dd>
 
-                            <dt><?php echo __('Company'); ?>:</dt>
-                            <dd class="code-font text-info">{{license.company}}</dd>
+                                <dt><?php echo __('Company'); ?>:</dt>
+                                <dd class="code-font text-info">{{license.company}}</dd>
 
-                            <dt><?php echo __('Expires'); ?>:</dt>
-                            <dd class="code-font text-info">{{license.expire}}</dd>
+                                <dt><?php echo __('Expires'); ?>:</dt>
+                                <dd class="code-font text-info">{{license.expire}}</dd>
 
-                            <dt><?php echo __('License key'); ?>:</dt>
-                            <dd class="code-font text-info">{{license.licence}}</dd>
-                        </dl>
+                                <dt><?php echo __('License key'); ?>:</dt>
+                                <dd class="code-font text-info">{{license.licence}}</dd>
+                            </dl>
 
+                        </div>
                     </div>
 
                 </div>
@@ -154,27 +152,27 @@
 
         <h2 class="credits-h2">Powered by</h2>
         <p>
-            <img src="/img/logos/php.png">
+            <img src="/img/logos/3rd/php.png">
         </p>
 
         <p>
-            <img src="/img/logos/We-bake-with-CakePHP.png" style="width: 300px;">
+            <img src="/img/logos/3rd/We-bake-with-CakePHP.png" style="width: 300px;">
         </p>
 
         <p>
-            <img src="/img/logos/jquery.png">
+            <img src="/img/logos/3rd/jquery.png">
         </p>
 
         <p>
-            <img src="/img/logos/jquery_ui.png" >
+            <img src="/img/logos/3rd/jquery_ui.png" >
         </p>
 
         <p>
-            <img src="/img/logos/AngularJS-medium.png">
+            <img src="/img/logos/3rd/AngularJS-medium.png">
         </p>
 
         <p class="padding-top-80">
-            <img src="/img/logos/Statusengine_dark.png">
+            <img src="/img/logos/3rd/Statusengine_dark.png">
         </p>
 
         <div class="credits-fineprint">All trademarks are the property of the trademark owners.</div>

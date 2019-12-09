@@ -18,11 +18,15 @@
         "bootstrap4-tagsinput": "^4.1.3",
         "popper.js": "^1.15.0",
         "font-awesome": "^4.7.0",
-        "noty": "^3.1.4",
         "jquery": "^3.4.1",
+<<<<<<< HEAD
         "jquery-ui-dist": "^1.12.1",
         "jquery-nestable": "^0.8.0",
         "jquery.cookie": "^1.4.1",
+=======
+        "jquery-sparkline": "^2.4.0",
+        "noty": "^3.1.4",
+>>>>>>> 4ab108fc3a1a54848d89cd7953fe98efdc1138df
         "particles.js": "^2.0.0",
         "particlesjs": "^2.2.3",
         "javascript-detect-element-resize": "^0.5.3",

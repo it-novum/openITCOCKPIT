@@ -2383,4 +2383,52 @@ class ServicesTable extends Table {
 
         return $result['count'];
     }
+
+    /**
+     * @param int $timeperiodId
+     * @return bool
+     */
+    public function isTimeperiodUsedByService($timeperiodId) {
+        $count = $this->find()
+            ->where([
+                'OR' => [
+                    'Services.check_period_id'  => $timeperiodId,
+                    'Services.notify_period_id' => $timeperiodId
+                ]
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param array $hostIds
+     * @return array
+     */
+    public function getServicesByHostIdForDelete($hostIds = []){
+        if (!is_array($hostIds)) {
+            $hostIds = [$hostIds];
+        }
+        if(empty($hostIds)){
+            return [];
+        }
+        $hostIds = array_unique($hostIds);
+
+        $query = $this->find()
+            ->select([
+                'Services.id',
+                'Services.name'
+            ])->where([
+                'Services.host_id IN' => $hostIds
+            ])->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        return $result;
+    }
 }

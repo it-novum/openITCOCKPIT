@@ -4,9 +4,13 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Core\Plugin;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use EventcorrelationModule\Model\Table\EventcorrelationsTable;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
 
@@ -37,7 +41,7 @@ class TenantsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('tenants');
@@ -58,7 +62,7 @@ class TenantsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -104,7 +108,7 @@ class TenantsTable extends Table {
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
 
         return $rules;
@@ -134,5 +138,47 @@ class TenantsTable extends Table {
      */
     public function existsById($id) {
         return $this->exists(['Tenants.id' => $id]);
+    }
+
+    /**
+     * @param $containerId
+     * @return bool
+     */
+    public function allowDelete($containerId) {
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var ServicesTable $ServiceTable */
+        $ServiceTable = TableRegistry::getTableLocator()->get('Services');
+
+        $children = $ContainersTable->getChildren($containerId);
+
+        $newContainerIds = Hash::extract($children, '{n}.id');
+        //append the containerID itself
+        $newContainerIds[] = $containerId;
+        //get the hosts of these containers
+        $hostIds = Hash::extract($HostsTable->getHostsByContainerIdForDelete($newContainerIds), '{n}.id');
+        $serviceIds = Hash::extract($ServiceTable->getServicesByHostIdForDelete($hostIds), '{n}.id');
+
+        //check if the host is used somwhere
+        if (Plugin::loaded('EventcorrelationModule') && !empty($hostIds)) {
+            /** @var EventcorrelationsTable $EventcorrelationTable */
+            $EventcorrelationTable = TableRegistry::getTableLocator()->get('EventcorrelationModule.Eventcorrelations');
+            $query = $EventcorrelationTable->find()
+                ->where([
+                    'OR' => [
+                        'Eventcorrelations.host_id IN'    => $hostIds,
+                        'Eventcorrelations.service_id IN' => $serviceIds,
+                    ]
+                ])
+                ->count();
+
+            if (!empty($query) && $query > 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

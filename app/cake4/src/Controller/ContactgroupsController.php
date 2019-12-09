@@ -33,6 +33,7 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContactsToContactgroupsTable;
 use App\Model\Table\ContainersTable;
+use Cake\Cache\Cache;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -47,25 +48,10 @@ use itnovum\openITCOCKPIT\Filter\ContactgroupsFilter;
 
 
 /**
- * @property Contactgroup $Contactgroup
- * @property Container $Container
- * @property Contact $Contact
- * @property User $User
- * @property Changelog $Changelog
- *
- * @property AppPaginatorComponent $Paginator
+ * Class ContactgroupsController
+ * @package App\Controller
  */
 class ContactgroupsController extends AppController {
-
-    public $uses = [
-        'Contactgroup',
-        'Container',
-        'Contact',
-        'User',
-    ];
-
-    public $layout = 'blank';
-
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -132,10 +118,13 @@ class ContactgroupsController extends AppController {
         if ($this->request->is('post')) {
             /** @var $ContactgroupsTable ContactgroupsTable */
             $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-            $this->request->data['Contactgroup']['uuid'] = UUID::v4();
-            $this->request->data['Contactgroup']['container']['containertype_id'] = CT_CONTACTGROUP;
+
+            $requestData = $this->request->getData();
+
             $contactgroup = $ContactgroupsTable->newEmptyEntity();
             $contactgroup = $ContactgroupsTable->patchEntity($contactgroup, $this->request->getData('Contactgroup'));
+            $contactgroup->set('uuid', UUID::v4());
+            $contactgroup->get('container')->set('containertype_id', CT_CONTACTGROUP);
 
             $ContactgroupsTable->save($contactgroup);
             if ($contactgroup->hasErrors()) {
@@ -146,8 +135,8 @@ class ContactgroupsController extends AppController {
             } else {
                 //No errors
                 $User = new User($this->getUser());
-                $extDataForChangelog = $ContactgroupsTable->resolveDataForChangelog($this->request->data);
-                Cache::clear(false, 'permissions');
+                $extDataForChangelog = $ContactgroupsTable->resolveDataForChangelog($requestData);
+                Cache::clear('permissions');
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -159,7 +148,7 @@ class ContactgroupsController extends AppController {
                     $contactgroup->get('container')->get('parent_id'),
                     $User->getId(),
                     $contactgroup->get('container')->get('name'),
-                    array_merge($this->request->data, $extDataForChangelog)
+                    array_merge($requestData, $extDataForChangelog)
                 );
                 if ($changelog_data) {
                     /** @var Changelog $changelogEntry */
@@ -230,6 +219,7 @@ class ContactgroupsController extends AppController {
 
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                $requestData = $this->request->getData();
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
@@ -239,7 +229,7 @@ class ContactgroupsController extends AppController {
                     $contactgroupEntity->get('container')->get('parent_id'),
                     $User->getId(),
                     $contactgroupEntity->get('container')->get('name'),
-                    array_merge($ContactgroupsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ContactgroupsTable->resolveDataForChangelog($requestData), $requestData),
                     array_merge($ContactgroupsTable->resolveDataForChangelog($contactgroupForChangeLog), $contactgroupForChangeLog)
                 );
                 if ($changelog_data) {
@@ -310,7 +300,7 @@ class ContactgroupsController extends AppController {
 
         if ($ContainersTable->delete($container)) {
             $User = new User($this->getUser());
-            Cache::clear(false, 'permissions');
+            Cache::clear('permissions');
             /** @var  ChangelogsTable $ChangelogsTable */
             $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -325,7 +315,9 @@ class ContactgroupsController extends AppController {
                 $contactgroupEntity->toArray()
             );
             if ($changelog_data) {
-                CakeLog::write('log', serialize($changelog_data));
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
             }
 
             $this->set('success', true);
@@ -458,114 +450,139 @@ class ContactgroupsController extends AppController {
             return;
         }
 
-        if (!$this->Contactgroup->exists($id)) {
-            throw new NotFoundException(__('Invalid contact group'));
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+
+        if (!$ContactgroupsTable->existsById($id)) {
+            throw new NotFoundException(__('Contact group not found'));
         }
 
-        $this->Contactgroup->bindModel([
-            'hasAndBelongsToMany' => [
-                'Hosttemplate'      => [
-                    'className' => 'Hosttemplate',
-                    'joinTable' => 'contactgroups_to_hosttemplates',
-                    'type'      => 'INNER'
-                ],
-                'Host'              => [
-                    'className' => 'Host',
-                    'joinTable' => 'contactgroups_to_hosts',
-                    'type'      => 'INNER'
-                ],
-                'Servicetemplate'   => [
-                    'className' => 'Servicetemplate',
-                    'joinTable' => 'contactgroups_to_servicetemplates',
-                    'type'      => 'INNER'
-                ],
-                'Service'           => [
-                    'className' => 'Service',
-                    'joinTable' => 'contactgroups_to_services',
-                    'type'      => 'INNER'
-                ],
-                'Hostescalation'    => [
-                    'className' => 'Hostescalation',
-                    'joinTable' => 'contactgroups_to_hostescalations',
-                    'type'      => 'INNER'
-                ],
-                'Serviceescalation' => [
-                    'className' => 'Serviceescalation',
-                    'joinTable' => 'contactgroups_to_serviceescalations',
-                    'type'      => 'INNER'
-                ],
-            ]
-        ]);
+        $ContactgroupsTable->addAssociations([
+                'belongsToMany' => [
+                    'Hosttemplates'      => [
+                        'className' => 'Hosttemplates',
+                        'joinTable' => 'contactgroups_to_hosttemplates',
+                        'type'      => 'INNER'
+                    ],
+                    'Hosts'              => [
+                        'className' => 'Hosts',
+                        'joinTable' => 'contactgroups_to_hosts',
+                        'type'      => 'INNER'
+                    ],
+                    'Servicetemplates'   => [
+                        'className' => 'Servicetemplates',
+                        'joinTable' => 'contactgroups_to_servicetemplates',
+                        'type'      => 'INNER'
+                    ],
+                    'Services'           => [
+                        'className' => 'Services',
+                        'joinTable' => 'contactgroups_to_services',
+                        'type'      => 'INNER'
+                    ],
+                    'Hostescalations'    => [
+                        'className' => 'Hostescalations',
+                        'joinTable' => 'contactgroups_to_hostescalations',
+                        'type'      => 'INNER'
+                    ],
+                    'Serviceescalations' => [
+                        'className' => 'Serviceescalations',
+                        'joinTable' => 'contactgroups_to_serviceescalations',
+                        'type'      => 'INNER'
+                    ]
 
-        $contactgroupWithRelations = $this->Contactgroup->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container',
-                'Hosttemplate'    => [
-                    'fields' => [
-                        'Hosttemplate.id',
-                        'Hosttemplate.name'
-                    ]
-                ],
-                'Host'            => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name',
-                        'Host.address'
-                    ]
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name'
-                    ]
-                ],
-                'Service'         => [
-                    'fields'          => [
-                        'Service.id',
-                        'Service.name'
-                    ],
-                    'Host'            => [
-                        'fields' => [
-                            'Host.name'
-                        ]
-                    ],
-                    'Servicetemplate' => [
-                        'fields' => [
-                            'Servicetemplate.name'
-                        ]
-                    ]
-                ],
-                'Hostescalation.id',
-                'Serviceescalation.id'
-            ],
-            'conditions' => [
-                'Contactgroup.id' => $id
+                ]
             ]
-        ]);
+        );
+
+        $contactgroupWithRelations = $ContactgroupsTable->find()
+            ->where([
+                'Contactgroups.id' => $id
+            ])
+            ->contain([
+                'Containers' => [
+                    'fields' => [
+                        'Containers.name'
+                    ]
+                ],
+                'Hosttemplates'    => [
+                    'fields' => [
+                        'ContactgroupsToHosttemplates.contactgroup_id',
+                        'Hosttemplates.id',
+                        'Hosttemplates.name'
+                    ]
+                ],
+                'Hosts'            => [
+                    'fields' => [
+                        'ContactgroupsToHosts.contactgroup_id',
+                        'Hosts.id',
+                        'Hosts.name',
+                        'Hosts.address'
+                    ]
+                ],
+                'Servicetemplates' => [
+                    'fields' => [
+                        'ContactgroupsToServicetemplates.contactgroup_id',
+                        'Servicetemplates.id',
+                        'Servicetemplates.name'
+                    ]
+                ],
+                'Services'         => [
+                    'Hosts' => [
+                        'fields' => [
+                            'Hosts.name'
+                        ]
+                    ],
+                    'Servicetemplates' => [
+                        'fields' => [
+                            'Servicetemplates.name'
+                        ]
+                    ],
+                    'fields' => [
+                        'ContactgroupsToServices.contactgroup_id',
+                        'Services.id',
+                        'Services.name'
+                    ]
+                ],
+                'Hostescalations'    => [
+                    'fields' => [
+                        'ContactgroupsToHostescalations.contactgroup_id',
+                        'Hostescalations.id'
+                    ]
+                ],
+                'Serviceescalations'    => [
+                    'fields' => [
+                        'ContactgroupsToServiceescalations.contactgroup_id',
+                        'Serviceescalations.id'
+                    ]
+                ],
+            ])
+            ->disableHydration()
+            ->first();
 
         /* Format service name for api "hostname|Service oder Service template name" */
-        array_walk($contactgroupWithRelations['Service'], function (&$service) {
+        array_walk($contactgroupWithRelations['services'], function (&$service) {
             $serviceName = $service['name'];
             if (empty($service['name'])) {
-                $serviceName = $service['Servicetemplate']['name'];
+                $serviceName = $service['servicetemplate']['name'];
             }
-            $service['name'] = sprintf('%s|%s', $service['Host']['name'], $serviceName);
+            $service['name'] = sprintf('%s|%s', $service['host']['name'], $serviceName);
         });
 
         //Sort host template, host, service template and service by name
-        foreach (['Hosttemplate', 'Host', 'Servicetemplate', 'Service'] as $modelName) {
+        foreach (['hosttemplates', 'hosts', 'servicetemplates', 'services'] as $modelName) {
             $contactgroupWithRelations[$modelName] = Hash::sort($contactgroupWithRelations[$modelName], '{n}.name', 'asc', [
                     'type'       => 'natural',
                     'ignoreCase' => true
                 ]
             );
         }
-        if (!$this->allowedByContainerId(Hash::extract($contactgroupWithRelations, 'Contactgroup.container_id'), false)) {
+
+        if (!$this->allowedByContainerId(Hash::extract($contactgroupWithRelations, 'container_id'), false)) {
             $this->render403();
             return;
         }
-        $this->set(compact(['contactgroupWithRelations']));
+
+        $this->set('contactgroupWithRelations', $contactgroupWithRelations);
         $this->viewBuilder()->setOption('serialize', ['contactgroupWithRelations']);
         $this->set('back_url', $this->referer());
     }

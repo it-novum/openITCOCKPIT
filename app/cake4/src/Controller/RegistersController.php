@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\Environments;
 use App\Model\Table\RegistersTable;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
@@ -36,7 +37,6 @@ class RegistersController extends AppController {
     use LocatorAwareTrait;
 
     public function index() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //get also the state env for License input autocompletion
             $disableAutocomplete = ENVIRONMENT === Environments::PRODUCTION;
@@ -63,10 +63,18 @@ class RegistersController extends AppController {
                 $licenseResponse = $RegistersTable->checkLicenseKey($license['license']);
             }
 
+            $isCommunityLicense = false;
+            if ($hasLicense && isset($licenseResponse['license']->licence)) {
+                if ($licenseResponse['license']->licence == $RegistersTable->getCommunityLicenseKey()) {
+                    $isCommunityLicense = true;
+                }
+            }
+
             $this->set('hasLicense', $hasLicense);
             $this->set('license', $license);
             $this->set('licenseResponse', $licenseResponse);
-            $this->viewBuilder()->setOption('serialize', ['hasLicense', 'license', 'licenseResponse']);
+            $this->set('isCommunityLicense', $isCommunityLicense);
+            $this->viewBuilder()->setOption('serialize', ['hasLicense', 'license', 'licenseResponse', 'isCommunityLicense']);
             return;
         }
 
@@ -101,8 +109,15 @@ class RegistersController extends AppController {
                         return;
                     }
 
+                    $isCommunityLicense = false;
+                    if ($licenseResponse['license']->licence == $RegistersTable->getCommunityLicenseKey()) {
+                        $isCommunityLicense = true;
+                    }
+
+
                     $this->set('licenseResponse', $licenseResponse);
-                    $this->viewBuilder()->setOption('serialize', ['licenseResponse']);
+                    $this->set('isCommunityLicense', $isCommunityLicense);
+                    $this->viewBuilder()->setOption('serialize', ['licenseResponse', 'isCommunityLicense']);
                     return;
                 }
             }

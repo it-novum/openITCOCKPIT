@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core\System\Health;
 
 
+use Cake\Core\Configure;
+
 class MonitoringEngine {
 
     private $monitoringEngine = null;
@@ -137,8 +139,8 @@ class MonitoringEngine {
 
     public function __construct() {
 
-        \Configure::load('nagios');
-        exec(\Configure::read('nagios.basepath') . \Configure::read('nagios.bin') . \Configure::read('nagios.nagios_bin') . ' --version | head -n 2', $output);
+        Configure::load('nagios');
+        exec(Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin') . ' --version | head -n 2', $output);
         $this->monitoringEngine = $output[1];
     }
 
@@ -173,10 +175,10 @@ class MonitoringEngine {
     public function getNagiostatsCommand() {
         return sprintf(
             '%s%s%s -c %s -D "%s" -m -d %s',
-            \Configure::read('nagios.basepath'),
-            \Configure::read('nagios.bin'),
-            \Configure::read('nagios.nagiostats'),
-            \Configure::read('nagios.nagios_cfg'),
+            Configure::read('nagios.basepath'),
+            Configure::read('nagios.bin'),
+            Configure::read('nagios.nagiostats'),
+            Configure::read('nagios.nagios_cfg'),
             $this->delimiter,
             implode(',', $this->MRTG)
         );

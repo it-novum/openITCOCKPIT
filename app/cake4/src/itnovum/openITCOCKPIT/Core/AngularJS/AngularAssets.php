@@ -81,7 +81,7 @@ class AngularAssets implements AngularAssetsInterface {
         'legacy/js/lib/GraphDefaults.js',
         /*'js/lib/jqconsole.min.js',
         'js/vendor/jquery.blockUI.js', */
-        'node_modules/jquery-blockui/jquery.blockUI.js'
+        'node_modules/jquery-blockui/jquery.blockUI.js',
         /*'js/lib/jquery-jvectormap-1.2.2.min.js',
         'js/lib/maps/jquery-jvectormap-world-mill-en.js',
         'vendor/node_modules/@fullcalendar/core/main.js',
@@ -92,6 +92,7 @@ class AngularAssets implements AngularAssetsInterface {
         'js/vendor/Chart.min.js',
         'js/vendor/chartjs-plugin-piechart-center-element.min.js',
         'js/lib/highlight-within-textarea/jquery.highlight-within-textarea.js' */
+        'node_modules/jquery-sparkline/jquery.sparkline.min.js'
     ];
 
     private $cssFiles = [

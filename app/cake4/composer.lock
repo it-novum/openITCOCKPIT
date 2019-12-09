@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b9271b9fa6482e9446413c40aed4851f",
+    "content-hash": "6a3519000d811d5dc9a721246ec8ba76",
     "packages": [
         {
             "name": "aura/intl",
@@ -198,12 +198,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/cakephp.git",
-                "reference": "7751403267ba4c8196cc444d70ac3877eac0911b"
+                "reference": "10fced8882792bd9e6b7e6314e8b781fe6333fce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cakephp/cakephp/zipball/7751403267ba4c8196cc444d70ac3877eac0911b",
-                "reference": "7751403267ba4c8196cc444d70ac3877eac0911b",
+                "url": "https://api.github.com/repos/cakephp/cakephp/zipball/10fced8882792bd9e6b7e6314e8b781fe6333fce",
+                "reference": "10fced8882792bd9e6b7e6314e8b781fe6333fce",
                 "shasum": ""
             },
             "require": {
@@ -285,7 +285,7 @@
                 "rapid-development",
                 "validation"
             ],
-            "time": "2019-12-04T05:53:08+00:00"
+            "time": "2019-12-06T07:16:03+00:00"
         },
         {
             "name": "cakephp/chronos",
@@ -581,6 +581,157 @@
                 "parser"
             ],
             "time": "2015-11-01T10:19:22+00:00"
+        },
+        {
+            "name": "freedsx/asn1",
+            "version": "0.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FreeDSx/ASN1.git",
+                "reference": "d1f7c9dc0bbe047a95a527cd134e3d7dece97ac3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FreeDSx/ASN1/zipball/d1f7c9dc0bbe047a95a527cd134e3d7dece97ac3",
+                "reference": "d1f7c9dc0bbe047a95a527cd134e3d7dece97ac3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpspec/phpspec": "^5.0"
+            },
+            "suggest": {
+                "ext-gmp": "For big integer support in Integer/Enumerated/OID types and tag numbers."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FreeDSx\\Asn1\\": "src/FreeDSx/Asn1"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chad Sikorra",
+                    "email": "Chad.Sikorra@gmail.com"
+                }
+            ],
+            "description": "An ASN.1 library for PHP.",
+            "homepage": "https://github.com/FreeDSx/ASN1",
+            "keywords": [
+                "DER",
+                "asn.1",
+                "asn1",
+                "ber",
+                "x.690"
+            ],
+            "time": "2019-03-10T22:33:37+00:00"
+        },
+        {
+            "name": "freedsx/ldap",
+            "version": "0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FreeDSx/LDAP.git",
+                "reference": "0cffaaeb6495d1e1c032fbae0027fe9526834df5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FreeDSx/LDAP/zipball/0cffaaeb6495d1e1c032fbae0027fe9526834df5",
+                "reference": "0cffaaeb6495d1e1c032fbae0027fe9526834df5",
+                "shasum": ""
+            },
+            "require": {
+                "freedsx/asn1": "^0.4.0",
+                "freedsx/socket": "^0.3.0",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpspec/phpspec": "^5.0",
+                "phpunit/phpunit": "^7.0"
+            },
+            "suggest": {
+                "ext-openssl": "For SSL/TLS support."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FreeDSx\\Ldap\\": "src/FreeDSx/Ldap"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chad Sikorra",
+                    "email": "Chad.Sikorra@gmail.com"
+                }
+            ],
+            "description": "A Pure PHP LDAP library",
+            "homepage": "https://github.com/FreeDSx/LDAP",
+            "keywords": [
+                "ldap"
+            ],
+            "time": "2019-03-11T19:19:01+00:00"
+        },
+        {
+            "name": "freedsx/socket",
+            "version": "0.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/FreeDSx/Socket.git",
+                "reference": "51441af8bff810b3a46af3cf65e1e4edbd83e939"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/FreeDSx/Socket/zipball/51441af8bff810b3a46af3cf65e1e4edbd83e939",
+                "reference": "51441af8bff810b3a46af3cf65e1e4edbd83e939",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "freedsx/asn1": "^0.4.0",
+                "phpspec/phpspec": "^5.0",
+                "phpstan/phpstan": "^0.11.15",
+                "phpstan/phpstan-strict-rules": "^0.11.1"
+            },
+            "suggest": {
+                "ext-openssl": "For SSL/TLS support.",
+                "freedsx/asn1": "For ASN.1 based message queues."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "FreeDSx\\Socket\\": "src/FreeDSx/Socket"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chad Sikorra",
+                    "email": "Chad.Sikorra@gmail.com"
+                }
+            ],
+            "description": "A simple socket library for FreeDSx",
+            "homepage": "https://github.com/FreeDSx/Socket",
+            "keywords": [
+                "Socket",
+                "tcp",
+                "udp"
+            ],
+            "time": "2019-09-01T23:07:27+00:00"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -1881,12 +2032,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/bake.git",
-                "reference": "08152c76074776328edb105ed67137489f4cf3ce"
+                "reference": "91b6cb3ded8c4e53e8d90d21d351285ec6a71e10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cakephp/bake/zipball/08152c76074776328edb105ed67137489f4cf3ce",
-                "reference": "08152c76074776328edb105ed67137489f4cf3ce",
+                "url": "https://api.github.com/repos/cakephp/bake/zipball/91b6cb3ded8c4e53e8d90d21d351285ec6a71e10",
+                "reference": "91b6cb3ded8c4e53e8d90d21d351285ec6a71e10",
                 "shasum": ""
             },
             "require": {
@@ -1921,7 +2072,7 @@
                 "bake",
                 "cakephp"
             ],
-            "time": "2019-11-30T03:34:20+00:00"
+            "time": "2019-12-06T03:05:10+00:00"
         },
         {
             "name": "cakephp/cakephp-codesniffer",
@@ -3405,16 +3556,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "8.4.3",
+            "version": "8.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "67f9e35bffc0dd52d55d565ddbe4230454fd6a4e"
+                "reference": "3ee1c1fd6fc264480c25b6fb8285edefe1702dab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/67f9e35bffc0dd52d55d565ddbe4230454fd6a4e",
-                "reference": "67f9e35bffc0dd52d55d565ddbe4230454fd6a4e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3ee1c1fd6fc264480c25b6fb8285edefe1702dab",
+                "reference": "3ee1c1fd6fc264480c25b6fb8285edefe1702dab",
                 "shasum": ""
             },
             "require": {
@@ -3458,7 +3609,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "8.4-dev"
+                    "dev-master": "8.5-dev"
                 }
             },
             "autoload": {
@@ -3484,7 +3635,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-11-06T09:42:23+00:00"
+            "time": "2019-12-06T05:41:38+00:00"
         },
         {
             "name": "psy/psysh",

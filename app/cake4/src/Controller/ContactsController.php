@@ -41,6 +41,10 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
+use App\Model\Table\UsersTable;
+use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use FreeDSx\Ldap\Exception\BindException;
@@ -48,6 +52,7 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Permissions\ContactContainersPermissions;
 use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactsFilter;
 use itnovum\openITCOCKPIT\Ldap\LdapClient;
@@ -144,9 +149,12 @@ class ContactsController extends AppController {
 
             /** @var $ContactsTable ContactsTable */
             $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-            $this->request->data['Contact']['uuid'] = UUID::v4();
+
+            $requestData = $this->request->getData();
+            $requestData['Contact']['uuid'] = UUID::v4();
+
             $contact = $ContactsTable->newEmptyEntity();
-            $contact = $ContactsTable->patchEntity($contact, $this->request->getData('Contact'));
+            $contact = $ContactsTable->patchEntity($contact, $requestData['Contact']);
 
             $ContactsTable->save($contact);
             if ($contact->hasErrors()) {
@@ -157,7 +165,7 @@ class ContactsController extends AppController {
             } else {
                 //No errors
 
-                $extDataForChangelog = $ContactsTable->resolveDataForChangelog($this->request->data);
+                $extDataForChangelog = $ContactsTable->resolveDataForChangelog($requestData);
 
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
@@ -167,10 +175,10 @@ class ContactsController extends AppController {
                     'contacts',
                     $contact->id,
                     OBJECT_CONTACT,
-                    $this->request->getData('Contact.containers._ids'),
+                    $requestData['Contact']['containers']['_ids'],
                     $User->getId(),
                     $contact->name,
-                    array_merge($extDataForChangelog, $this->request->data)
+                    array_merge($extDataForChangelog, $requestData)
                 );
                 if ($changelog_data) {
                     /** @var Changelog $changelogEntry */
@@ -234,14 +242,15 @@ class ContactsController extends AppController {
             $User = new User($this->getUser());
             $contactEntity = $ContactsTable->get($id);
 
+            $requestData = $this->request->getData();
             if ($ContactContainersPermissions->areContainersChangeable() === false) {
                 $contactBeforeEdit = $ContactsTable->getContactForEdit($id);
                 //Overwrite post data. User is not permitted to change container ids!
-                $this->request->data['Contact']['containers']['_ids'] = $contact['Contact']['containers']['_ids'];
+                $requestData['Contact']['containers']['_ids'] = $contact['Contact']['containers']['_ids'];
             }
 
             $contactEntity->setAccess('uuid', false);
-            $contactEntity = $ContactsTable->patchEntity($contactEntity, $this->request->getData('Contact'));
+            $contactEntity = $ContactsTable->patchEntity($contactEntity, $requestData['Contact']);
             $contactEntity->id = $id;
             $ContactsTable->save($contactEntity);
             if ($contactEntity->hasErrors()) {
@@ -260,10 +269,10 @@ class ContactsController extends AppController {
                     'contacts',
                     $contactEntity->id,
                     OBJECT_CONTACT,
-                    $this->request->getData('Contact.containers._ids'),
+                    $requestData['Contact']['containers']['_ids'],
                     $User->getId(),
                     $contactEntity->name,
-                    array_merge($ContactsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ContactsTable->resolveDataForChangelog($requestData), $requestData),
                     array_merge($ContactsTable->resolveDataForChangelog($contactForChangeLog), $contactForChangeLog)
                 );
                 if ($changelog_data) {
@@ -356,7 +365,9 @@ class ContactsController extends AppController {
                 $contact
             );
             if ($changelog_data) {
-                CakeLog::write('log', serialize($changelog_data));
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
             }
 
             $this->set('success', true);
@@ -603,8 +614,8 @@ class ContactsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         $timePeriods = [];
-        if (isset($this->request->data['container_ids'])) {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
+        if (!empty($this->request->getData('container_ids', []))) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->getData('container_ids'));
             $timePeriods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
             $timePeriods = Api::makeItJavaScriptAble($timePeriods);
         }
@@ -620,7 +631,7 @@ class ContactsController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        /** @var $UsersTable App\Model\Table\UsersTable */
+        /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
@@ -672,12 +683,12 @@ class ContactsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $Commands CommandsTable */
-        $Commands = TableRegistry::getTableLocator()->get('Commands');
-        $hostPushComamndId = $Commands->getCommandIdByCommandUuid('cd13d22e-acd4-4a67-997b-6e120e0d3153');
-        $servicePushComamndId = $Commands->getCommandIdByCommandUuid('c23255b7-5b1a-40b4-b614-17837dc376af');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $hostPushComamndId = $CommandsTable->getCommandIdByCommandUuid('cd13d22e-acd4-4a67-997b-6e120e0d3153');
+        $servicePushComamndId = $CommandsTable->getCommandIdByCommandUuid('c23255b7-5b1a-40b4-b614-17837dc376af');
 
-        $notificationCommands = $Commands->getCommandByTypeAsList(NOTIFICATION_COMMAND);
+        $notificationCommands = $CommandsTable->getCommandByTypeAsList(NOTIFICATION_COMMAND);
 
         $this->set('hostPushComamndId', $hostPushComamndId);
         $this->set('servicePushComamndId', $servicePushComamndId);
@@ -693,9 +704,9 @@ class ContactsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $Ldap = LdapClient::fromSystemsettings($Systemsettings->findAsArraySection('FRONTEND'));
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $Ldap = LdapClient::fromSystemsettings($SystemsettingsTable->findAsArraySection('FRONTEND'));
 
         $samaccountname = (string)$this->request->getQuery('samaccountname');
         $ldapUsers = $Ldap->getUsers($samaccountname);

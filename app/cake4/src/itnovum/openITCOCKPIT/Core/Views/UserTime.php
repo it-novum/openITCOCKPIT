@@ -25,7 +25,6 @@
 namespace itnovum\openITCOCKPIT\Core\Views;
 
 
-use Cake\I18n\FrozenTime;
 use Cake\I18n\Time;
 use CakeTime;
 use DateTime;
@@ -57,7 +56,7 @@ class UserTime {
      * @param User $User
      * @return UserTime
      */
-    public static function fromUser(User $User){
+    public static function fromUser(User $User) {
         return new self(
             $User->getTimezone(),
             $User->getDateformat()
@@ -65,11 +64,18 @@ class UserTime {
     }
 
     /**
-     * @param int $t_time
+     * @param int|string $t_time
      * @return string
      */
     public function format($t_time) {
-        return CakeTime::format($t_time, $this->format, false, $this->timezone);
+        if (!is_numeric($t_time)) {
+            $t_time = strtotime($t_time);
+        }
+
+        $Time = new Time($t_time);
+        $Time->setTimezone(new \DateTimeZone($this->timezone));
+
+        return $Time->format($this->format);
     }
 
     /**
@@ -78,7 +84,14 @@ class UserTime {
      * @return string
      */
     public function customFormat($format, $t_time) {
-        return CakeTime::format($t_time, $format, false, $this->timezone);
+        if (!is_numeric($t_time)) {
+            $t_time = strtotime($t_time);
+        }
+
+        $Time = new Time($t_time);
+        $Time->setTimezone(new \DateTimeZone($this->timezone));
+
+        return $Time->format($format);
     }
 
     /**

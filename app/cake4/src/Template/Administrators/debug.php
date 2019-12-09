@@ -592,7 +592,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
                 <dt><?php echo __('Mail server port'); ?>:</dt>
                 <dd>{{emailInformation.port}}</dd>
 
-                <dt><?php echo __('Transport protocol'); ?>:</dt>
+                <dt><?php echo __('Transport method'); ?>:</dt>
                 <dd>{{emailInformation.transport}}</dd>
 
                 <dt><?php echo __('Username'); ?>:</dt>
@@ -600,7 +600,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
                 <dt><?php echo __('Password'); ?>:</dt>
                 <dd>
-                    <i><?php echo __('Password hidden due to security please see the file /etc/openitcockpit/app/Config/email.php for detailed configuration information.'); ?></i>
+                    <i><?php echo __('Password hidden due to security please see the file /etc/openitcockpit/app/config/email.php for detailed configuration information.'); ?></i>
                 </dd>
 
                 <dt>&nbsp;</dt>

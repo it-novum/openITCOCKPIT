@@ -63,7 +63,7 @@ class SystemsettingsController extends AppController {
             }
             $systemsettingsPatchedEntities = $Systemsettings->patchEntities($systemsettingsEntity, $normalizedData);
             $result = $Systemsettings->saveMany($systemsettingsPatchedEntities);
-            Cache::clear(false, 'permissions');
+            Cache::clear('permissions');
             //debug($result);
             if (!$result) {
                 $this->response = $this->response->withStatus(400);

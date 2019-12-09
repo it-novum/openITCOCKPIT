@@ -30,7 +30,13 @@ angular.module('openITCOCKPIT')
         });
 
         var handleLicenseResponse = function(licenseResponse, showNotyMsg){
+            if(licenseResponse === null){
+                return;
+            }
+
+            $scope.hasLicense = false;
             if(licenseResponse.success === true){
+                $scope.hasLicense = true;
                 if(showNotyMsg){
                     NotyService.genericSuccess({
                         message: 'Valid openITCOCKPIT Enterprise license.',
@@ -65,11 +71,18 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.hasLicense = result.data.hasLicense;
+                var isCommunityLicense = result.data.isCommunityLicense;
                 if($scope.hasLicense){
                     $scope.post.Registers = result.data.license;
                 }
                 var licenseResponse = result.data.licenseResponse;
                 handleLicenseResponse(licenseResponse, false);
+
+                $scope.certImage = 'license-certificate-enterprise.svg';
+                if(isCommunityLicense === true){
+                    $scope.certImage = 'license-certificate-community.svg';
+                }
+
             });
         };
 
@@ -80,6 +93,13 @@ angular.module('openITCOCKPIT')
             ).then(function(result){
                 var licenseResponse = result.data.licenseResponse;
                 handleLicenseResponse(licenseResponse, true);
+
+                var isCommunityLicense = result.data.isCommunityLicense;
+                $scope.certImage = 'license-certificate-enterprise.svg';
+                if(isCommunityLicense === true){
+                    $scope.certImage = 'license-certificate-community.svg';
+                }
+
             }, function errorCallback(result){
                 console.log(result);
                 if(result.data.hasOwnProperty('error')){

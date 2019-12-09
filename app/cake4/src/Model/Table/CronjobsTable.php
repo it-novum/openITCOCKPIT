@@ -2,6 +2,7 @@
 
 namespace App\Model\Table;
 
+use App\Lib\PluginManager;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -126,10 +127,8 @@ class CronjobsTable extends Table {
     public function fetchPlugins() {
         $plugins = [];
         $plugins['Core'] = 'Core';
-        $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
-            return strpos($value, 'Module') !== false;
-        });
-        foreach ($modulePlugins as $pluginName) {
+
+        foreach ( PluginManager::getAvailablePlugins() as $pluginName) {
             $plugins[$pluginName] = $pluginName;
         }
 
@@ -143,8 +142,8 @@ class CronjobsTable extends Table {
     public function fetchTasks($pluginName) {
         $return = [];
         if ($pluginName == 'Core') {
-            if (is_dir(OLD_APP . 'Console/Command/Task/')) {
-                $result = scandir(OLD_APP . 'Console/Command/Task/');
+            if (is_dir(APP . 'Shell/Task')) {
+                $result = scandir(APP . 'Shell/Task/');
                 if (!empty($result) && is_array($result)) {
                     foreach ($result as $file) {
                         if ($file != '.' && $file != '..' && $file != 'empty') {
@@ -155,8 +154,8 @@ class CronjobsTable extends Table {
                 }
             }
         } else {
-            if (is_dir(OLD_APP . 'Plugin/' . $pluginName . '/Console/Command/Task/')) {
-                $result = scandir(OLD_APP . 'Plugin/' . $pluginName . '/Console/Command/Task/');
+            if (is_dir(APP . 'plugins/' . $pluginName . '/src/Shell/Task')) {
+                $result = scandir(OLD_APP . 'Plugin/' . $pluginName . '/src/Shell/Task/');
                 if (!empty($result) && is_array($result)) {
                     foreach ($result as $file) {
                         if ($file != '.' && $file != '..' && $file != 'empty') {

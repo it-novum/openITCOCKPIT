@@ -7,6 +7,8 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Configure;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
 /**
  * Usergroups Model
@@ -25,7 +27,6 @@ use Configure;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class UsergroupsTable extends Table {
-    use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
 
     /**
@@ -97,27 +98,31 @@ class UsergroupsTable extends Table {
     }
 
     /**
-     * @param null $PaginateOMat
+     * @param PaginateOMat|null $PaginateOMat
+     * @param GenericFilter $GenericFilter
      * @return array
      */
-    public function getUsergroups($PaginateOMat = null) {
+    public function getUsergroups($PaginateOMat, GenericFilter $GenericFilter) {
         $query = $this->find()
-            ->disableHydration()
-            ->order([
-                'name' => 'asc'
-            ]);
+            ->order($GenericFilter->getOrderForPaginator('Usergroups.name', 'asc'))
+            ->disableHydration();
+
+
+        if (!empty($GenericFilter->genericFilters())) {
+            $query->where($GenericFilter->genericFilters());
+        }
 
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->formatResultAsCake2($query->toArray(), false);
         } else {
             if ($PaginateOMat->useScroll()) {
-                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler(), false);
             } else {
-                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler(), false);
             }
         }
-        $result = $query->toArray();
+
         return $result;
     }
 

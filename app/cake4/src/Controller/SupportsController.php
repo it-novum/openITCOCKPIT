@@ -31,8 +31,6 @@ use Cake\ORM\TableRegistry;
 
 class SupportsController extends AppController {
 
-    public $layout = 'blank';
-
     public function index() {
 
     }
