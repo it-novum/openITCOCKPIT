@@ -93,7 +93,7 @@ class UsergroupsController extends AppController {
         $this->set('usergroup', $usergroup);
         $this->viewBuilder()->setOption('serialize', ['usergroup']);
     }
-    
+
     public function add() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
@@ -140,7 +140,7 @@ class UsergroupsController extends AppController {
 
 
         $AclDependencies = new AclDependencies();
-        $selectedAcos = $this->request->getData('Acos');
+        $selectedAcos = $this->request->getData('Acos', []);
         $selectedAcos = $AclDependencies->getDependentAcos($AcosTable, $selectedAcos);
 
         // This is the CakePHP way, but it is super slow for many ACOs...
@@ -165,10 +165,10 @@ class UsergroupsController extends AppController {
             $arosToAcos[] = $ArosAcosTable->newEntity([
                 'aro_id'  => $aro->get('id'),
                 'aco_id'  => $acoId,
-                '_create' => $state,
-                '_read'   => $state,
-                '_update' => $state,
-                '_delete' => $state,
+                '_create' => (int)($state === 1),
+                '_read'   => (int)($state === 1),
+                '_update' => (int)($state === 1),
+                '_delete' => (int)($state === 1),
             ]);
         }
         $ArosAcosTable->saveMany($arosToAcos);
@@ -178,11 +178,70 @@ class UsergroupsController extends AppController {
     }
 
     /**
-     * @param null $id
+     * @param int|null $id
      * @deprecated
      */
     public function edit($id = null) {
-        $this->layout = 'blank';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship html template
+            return;
+        }
+
+        /** @var UsergroupsTable $UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+        if (!$UsergroupsTable->existsById($id)) {
+            throw new NotFoundException(__('User group not found'));
+        }
+        $usergroup = $UsergroupsTable->find()
+            ->contain([
+                'Aros' => [
+                    'Acos'
+                ]
+            ])
+            ->where([
+                'Usergroups.id' => $id
+            ])
+            ->firstOrFail();
+        /** @var AcosTable $AcosTable */
+        $AcosTable = TableRegistry::getTableLocator()->get('Acl.Acos');
+        if ($this->request->is('get')) {
+            $acos = $AcosTable->find('threaded')->all();
+            $this->set('usergroup', $usergroup);
+            $this->set('acos', $acos);
+            $this->viewBuilder()->setOption('serialize', ['usergroup', 'acos']);
+            return;
+        }
+        if ($this->request->is('post')) {
+            $usergroup->setAccess('id', false);
+            $usergroup = $UsergroupsTable->patchEntity($usergroup, $this->request->getData());
+            $UsergroupsTable->save($usergroup);
+            if ($usergroup->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $usergroup->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+            //Save Acos
+            $AclDependencies = new AclDependencies();
+            $selectedAcos = $this->request->getData('Acos');
+            $selectedAcos = $AclDependencies->getDependentAcos($AcosTable, $selectedAcos);
+            $registry = new ComponentRegistry();
+            $Acl = new AclComponent($registry);
+            foreach ($selectedAcos as $acoId => $state) {
+                if ($state === 1) {
+                    $Acl->allow($usergroup->get('id'), $acoId, '*');
+                } else {
+                    $Acl->deny($usergroup->get('id'), $acoId, '*');
+                }
+            }
+            $this->set('usergroup', $usergroup);
+            $this->viewBuilder()->setOption('serialize', ['usergroup']);
+        }
+
+        /**** OLD CODE ***/
+        return;
+
+
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
