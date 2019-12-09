@@ -285,6 +285,36 @@ class ContainersController extends AppController {
             return strpos($value, 'Module') !== false;
         });
 
+        /*
+         * cake4 query
+         *
+            $rootContainer = $ContainersTable->find()
+                ->where([
+                    'Containers.id' => $id,
+                ])
+                ->first();
+
+            $childElements = $ContainersTable->find()
+                ->where([
+                    'AND' => [
+                        ['(Containers.lft BETWEEN :lft1 AND :rght1)'],
+                        ['(Containers.rght BETWEEN :lft1 AND :rght1)'],
+                        'Containers.containertype_id IN' => [
+                            CT_LOCATION,
+                            CT_NODE,
+                            CT_HOSTGROUP,
+                            CT_SERVICEGROUP,
+                            CT_CONTACTGROUP,
+                        ]
+                    ]
+                ])
+                ->bind(':lft1', $rootContainer->get('lft'), 'integer')
+                ->bind(':rght1', $rootContainer->get('rght'), 'integer')
+                ->disableHydration()
+                ->all();
+            debug($childElements->toArray());
+         */
+
         $rootContainer = $this->Container->find('first', [
             'recursive'  => -1,
             'conditions' => [

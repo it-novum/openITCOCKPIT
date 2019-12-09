@@ -29,6 +29,8 @@ namespace App\Controller;
 
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostdependenciesTable;
+use App\Model\Table\HostgroupsTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -41,19 +43,10 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostdependenciesFilter;
 
 /**
- * @property Hostdependency $Hostdependency
- * @property Timeperiod $Timeperiod
- * @property Host $Host
- * @property Hostgroup $Hostgroup
- * @property Contact $Contact
- * @property Contactgroup $Contactgroup
- * @property HostdependencyHostMembership $HostdependencyHostMembership
- * @property HostdependencyHostgroupMembership $HostdependencyHostgroupMembership
- * @property Container $Container
+ * Class HostdependenciesController
+ * @package App\Controller
  */
 class HostdependenciesController extends AppController {
-
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -111,69 +104,6 @@ class HostdependenciesController extends AppController {
 
     }
 
-    /**
-     * @param null $id
-     */
-    public function edit($id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-
-        /** @var $HostdependenciesTable HostdependenciesTable */
-        $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
-        if (!$HostdependenciesTable->existsById($id)) {
-            throw new NotFoundException('Host dependency not found');
-        }
-        $hostdependency = $HostdependenciesTable->get($id, [
-            'contain' => [
-                'hosts'      => function (Query $q) {
-                    return $q->enableAutoFields(false)
-                        ->select(['id', 'name']);
-                },
-                'hostgroups' => function (Query $q) {
-                    return $q->enableAutoFields(false)
-                        ->select(['id']);
-                },
-            ]
-        ]);
-
-        if (!$this->allowedByContainerId($hostdependency->get('container_id'))) {
-            $this->render403();
-            return;
-        }
-        if ($this->request->is('post')) {
-            /** @var $HostdependenciesTable HostdependenciesTable */
-            $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
-            $data['hosts'] = $HostdependenciesTable->parseHostMembershipData(
-                $this->request->getData('Hostdependency.hosts._ids'),
-                $this->request->getData('Hostdependency.hosts_dependent._ids')
-            );
-            $data['hostgroups'] = $HostdependenciesTable->parseHostgroupMembershipData(
-                $this->request->getData('Hostdependency.hostgroups._ids'),
-                $this->request->getData('Hostdependency.hostgroups_dependent._ids')
-            );
-
-            $data = array_merge($this->request->getData('Hostdependency'), $data);
-            $hostdependency = $HostdependenciesTable->patchEntity($hostdependency, $data);
-            $HostdependenciesTable->save($hostdependency);
-
-            if ($hostdependency->hasErrors()) {
-                $this->response = $this->response->withStatus(400);
-                $this->set('error', $hostdependency->getErrors());
-                $this->viewBuilder()->setOption('serialize', ['error']);
-                return;
-            } else {
-                if ($this->isJsonRequest()) {
-                    $this->serializeCake4Id($hostdependency); // REST API ID serialization
-                    return;
-                }
-            }
-        }
-        $this->set('hostdependency', $hostdependency);
-        $this->viewBuilder()->setOption('serialize', ['hostdependency']);
-    }
-
     public function add() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
@@ -181,9 +111,9 @@ class HostdependenciesController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            /** @var $HostdependenciesTable HostdependenciesTable */
-            $data = [];
+            /** @var HostdependenciesTable $HostdependenciesTable */
             $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+            $data = [];
             $data['hosts'] = $HostdependenciesTable->parseHostMembershipData(
                 $this->request->getData('Hostdependency.hosts._ids'),
                 $this->request->getData('Hostdependency.hosts_dependent._ids')
@@ -214,15 +144,78 @@ class HostdependenciesController extends AppController {
         }
     }
 
+    /**
+     * @param null $id
+     */
+    public function edit($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var HostdependenciesTable $HostdependenciesTable */
+        $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+        if (!$HostdependenciesTable->existsById($id)) {
+            throw new NotFoundException('Host dependency not found');
+        }
+        $hostdependency = $HostdependenciesTable->get($id, [
+            'contain' => [
+                'hosts'      => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select(['id', 'name']);
+                },
+                'hostgroups' => function (Query $q) {
+                    return $q->enableAutoFields(false)
+                        ->select(['id']);
+                },
+            ]
+        ]);
+
+        if (!$this->allowedByContainerId($hostdependency->get('container_id'))) {
+            $this->render403();
+            return;
+        }
+        if ($this->request->is('post')) {
+            /** @var HostdependenciesTable $HostdependenciesTable */
+            $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+            $data['hosts'] = $HostdependenciesTable->parseHostMembershipData(
+                $this->request->getData('Hostdependency.hosts._ids'),
+                $this->request->getData('Hostdependency.hosts_dependent._ids')
+            );
+            $data['hostgroups'] = $HostdependenciesTable->parseHostgroupMembershipData(
+                $this->request->getData('Hostdependency.hostgroups._ids'),
+                $this->request->getData('Hostdependency.hostgroups_dependent._ids')
+            );
+
+            $data = array_merge($this->request->getData('Hostdependency'), $data);
+            $hostdependency = $HostdependenciesTable->patchEntity($hostdependency, $data);
+            $HostdependenciesTable->save($hostdependency);
+
+            if ($hostdependency->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $hostdependency->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            } else {
+                if ($this->isJsonRequest()) {
+                    $this->serializeCake4Id($hostdependency); // REST API ID serialization
+                    return;
+                }
+            }
+        }
+        $this->set('hostdependency', $hostdependency);
+        $this->viewBuilder()->setOption('serialize', ['hostdependency']);
+    }
+
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $HostdependenciesTable HostdependenciesTable */
+        /** @var HostdependenciesTable $HostdependenciesTable */
         $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
 
-        if (!$HostdependenciesTable->exists($id)) {
+        if (!$HostdependenciesTable->existsById($id)) {
             throw new NotFoundException(__('Host dependency not found'));
         }
 
@@ -250,13 +243,13 @@ class HostdependenciesController extends AppController {
             return;
         }
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $TimeperiodsTable TimeperiodsTable */
+        /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        /** @var $HostgroupsTable HostgroupsTable */
+        /** @var HostgroupsTable $HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-        /** @var $HostsTable HostsTable */
+        /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         if (!$ContainersTable->existsById($containerId)) {
@@ -265,7 +258,7 @@ class HostdependenciesController extends AppController {
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
-        $hostgroups = $HostgroupsTable->hostgroupsByContainerId($containerIds, 'list', 'id');
+        $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);
         $hostgroupsDependent = $hostgroups;
 
@@ -291,14 +284,14 @@ class HostdependenciesController extends AppController {
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === true) {
