@@ -562,12 +562,12 @@
                                                      * @fixme
                                                      * as the additional links helper is deprecated fix this with the replacement !
                                                      */
-                                                    echo $this->AdditionalLinks->renderAsListItems(
+                                                  /*  echo $this->AdditionalLinks->renderAsListItems(
                                                         $additionalLinksList,
                                                         '{{service.Service.id}}',
                                                         [],
                                                         true
-                                                    ); ?>
+                                                    ); */ ?>
                                                 </a>
 
 
