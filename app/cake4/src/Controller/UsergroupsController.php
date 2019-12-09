@@ -27,11 +27,17 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Acl\Controller\Component\AclComponent;
 use Acl\Model\Table\AcosTable;
+use Acl\Model\Table\ArosTable;
+use App\Lib\AclDependencies;
+use App\Model\Table\ArosAcosTable;
 use App\Model\Table\UsergroupsTable;
 use Cake\Cache\Cache;
+use Cake\Controller\ComponentRegistry;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -87,10 +93,7 @@ class UsergroupsController extends AppController {
         $this->set('usergroup', $usergroup);
         $this->viewBuilder()->setOption('serialize', ['usergroup']);
     }
-
-    /**
-     * @deprecated
-     */
+    
     public function add() {
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
@@ -100,7 +103,11 @@ class UsergroupsController extends AppController {
         /** @var AcosTable $AcosTable */
         $AcosTable = TableRegistry::getTableLocator()->get('Acl.Acos');
         if ($this->request->is('get') && $this->isJsonRequest()) {
-            $acos = $AcosTable->find('threaded')->all();
+            $acos = $AcosTable->find('threaded')
+                ->disableHydration()
+                ->all();
+            $AclDependencies = new AclDependencies();
+            $acos = $AclDependencies->filterAcosForFrontend($acos->toArray());
             $this->set('acos', $acos);
             $this->viewBuilder()->setOption('serialize', ['acos']);
             return;
@@ -111,6 +118,7 @@ class UsergroupsController extends AppController {
         $usergroup = $UsergroupsTable->newEmptyEntity();
         $usergroup = $UsergroupsTable->patchEntity($usergroup, $this->request->getData('Usergroup'));
         $UsergroupsTable->save($usergroup);
+
         if ($usergroup->hasErrors()) {
             //This throws the body content away :(
             $this->response = $this->response->withStatus(400);
@@ -118,117 +126,55 @@ class UsergroupsController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
+
         //Save Acos
+        /** @var ArosTable $ArosTable */
+        $ArosTable = TableRegistry::getTableLocator()->get('Acl.Aros');
+        /** @var Table $ArosAcos */
+        $ArosAcos = TableRegistry::getTableLocator()->get('ArosAcos');
+        $aro = $ArosTable->find()
+            ->where([
+                'Aros.foreign_key' => $usergroup->get('id')
+            ])
+            ->first();
+
+
         $AclDependencies = new AclDependencies();
         $selectedAcos = $this->request->getData('Acos');
         $selectedAcos = $AclDependencies->getDependentAcos($AcosTable, $selectedAcos);
-        $registry = new ComponentRegistry();
-        $Acl = new AclComponent($registry);
+
+        // This is the CakePHP way, but it is super slow for many ACOs...
+        //
+        //$registry = new ComponentRegistry();
+        //$Acl = new AclComponent($registry);
+        //foreach ($selectedAcos as $acoId => $state) {
+        //    if ($state === 1) {
+        //        $Acl->allow($aro->get('id'), $acoId, '*');
+        //    } else {
+        //        $Acl->deny($aro->get('id'), $acoId, '*');
+        //    }
+        //}
+
+        // Lightning fast workaround (we also done this in cake 2)
+        // https://github.com/it-novum/openITCOCKPIT/blob/openITCOCKPIT-3.7.2/app/Controller/UsergroupsController.php#L213-L221
+        /** @var ArosAcosTable $ArosAcosTable */
+        $ArosAcosTable = TableRegistry::getTableLocator()->get('ArosAcos');
+
+        $arosToAcos = [];
         foreach ($selectedAcos as $acoId => $state) {
-            if ($state === 1) {
-                $Acl->allow($usergroup->get('id'), $acoId, '*');
-            } else {
-                $Acl->deny($usergroup->get('id'), $acoId, '*');
-            }
+            $arosToAcos[] = $ArosAcosTable->newEntity([
+                'aro_id'  => $aro->get('id'),
+                'aco_id'  => $acoId,
+                '_create' => $state,
+                '_read'   => $state,
+                '_update' => $state,
+                '_delete' => $state,
+            ]);
         }
+        $ArosAcosTable->saveMany($arosToAcos);
+
         $this->set('usergroup', $usergroup);
         $this->viewBuilder()->setOption('serialize', ['usergroup']);
-
-        /**** OLD CODE **/
-        return;
-
-        $acos = $this->Acl->Aco->find('threaded');
-
-        /** @var UsergroupsTable $UsergroupsTable */
-        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
-
-        $alwaysAllowedAcos = $UsergroupsTable->getAlwaysAllowedAcos($acos);
-        $acoDependencies = $UsergroupsTable->getAcoDependencies($acos);
-        $dependenAcoIds = $UsergroupsTable->getAcoDependencyIds($acoDependencies);
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->Usergroup->saveAll($this->request->data)) {
-                $this->Aro->save([
-                    'foreign_key' => $this->Usergroup->id,
-                    'model'       => 'Usergroup',
-                    'parent_id'   => $this->Usergroup->parentNode(),
-                ]);
-
-                //Save permissions
-                $aro = $this->Acl->Aro->find('first', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'Aro.foreign_key' => $this->Usergroup->id,
-                    ],
-                    'fields'     => [
-                        'Aro.id',
-                    ],
-                ]);
-
-                $aclData = [];
-                $avoidMysqlDuplicate = [];
-                foreach ($this->request->getData('Usergroup.Aco') as $acoId => $value) {
-                    if ($value == 1) {
-                        $aclData[] = [
-                            'Permission' => [
-                                'aro_id'  => $aro['Aro']['id'],
-                                'aco_id'  => $acoId,
-                                '_create' => 1,
-                                '_read'   => 1,
-                                '_update' => 1,
-                                '_delete' => 1,
-                            ],
-                        ];
-                        //Has dependend ACOs?
-                        if (isset($acoDependencies[$acoId])) {
-                            foreach (array_keys($acoDependencies[$acoId]) as $dependendAcoId) {
-                                if (!isset($avoidMysqlDuplicate[$dependendAcoId])) {
-                                    $aclData[] = [
-                                        'Permission' => [
-                                            'aro_id'  => $aro['Aro']['id'],
-                                            'aco_id'  => $dependendAcoId,
-                                            '_create' => 1,
-                                            '_read'   => 1,
-                                            '_update' => 1,
-                                            '_delete' => 1,
-                                        ],
-                                    ];
-                                    $avoidMysqlDuplicate[$dependendAcoId] = true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                //Add always allowd ACOs to request data
-                foreach ($alwaysAllowedAcos as $acoId => $description) {
-                    $aclData[] = [
-                        'Permission' => [
-                            'aro_id'  => $aro['Aro']['id'],
-                            'aco_id'  => $acoId,
-                            '_create' => 1,
-                            '_read'   => 1,
-                            '_update' => 1,
-                            '_delete' => 1,
-                        ],
-                    ];
-                }
-
-                unset($this->request->data['Aco']);
-                //Save new permissions
-                $this->Acl->Aro->Permission->saveAll($aclData);
-                $this->setFlash(__('User role successfully saved.'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Could not save data'), false);
-            }
-        }
-        $this->set(compact([
-            'acos',
-            'alwaysAllowedAcos',
-            'acoDependencies',
-            'dependenAcoIds',
-        ]));
     }
 
     /**
@@ -379,7 +325,7 @@ class UsergroupsController extends AppController {
         }
 
         $user = $this->getUser();
-        if((int)$user->get('usergroup_id') === (int)$id){
+        if ((int)$user->get('usergroup_id') === (int)$id) {
             throw new \RuntimeException('You cannot delete your own user group!');
         }
 
