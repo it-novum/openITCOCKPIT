@@ -3,6 +3,7 @@ angular.module('openITCOCKPIT')
         SortService.setSort(QueryStringService.getValue('sort', 'Hosts.name'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
         $scope.currentPage = 1;
+        $scope.useScroll = true;
 
 
         /*** Filter Settings ***/
@@ -30,6 +31,7 @@ angular.module('openITCOCKPIT')
         $scope.load = function(){
             var params = {
                 'angular': true,
+                'scroll': $scope.useScroll,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
@@ -44,6 +46,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.hosts = result.data.all_hosts;
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -106,6 +109,11 @@ angular.module('openITCOCKPIT')
                 $scope.currentPage = page;
                 $scope.load();
             }
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
         };
 
 

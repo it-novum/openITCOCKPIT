@@ -22,7 +22,7 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace App;
+namespace App\Lib;
 
 use Acl\Model\Table\AcosTable;
 
@@ -744,7 +744,7 @@ class AclDependencies {
             $this->allow[$controller] = [];
         }
 
-        $this->allow[$controller][] = $action;
+        $this->allow[$controller][$action] = $action;
         return $this;
     }
 
@@ -847,6 +847,47 @@ class AclDependencies {
         }
 
         return $selectedAcos;
+    }
+
+    public function filterAcosForFrontend($acosResultThreaded) {
+        $allDependenciesSimplified = [];
+        foreach ($this->dependencies as $controllerName => $actions) {
+            foreach ($actions as $actionName => $dependentController) {
+                foreach($dependentController as $dependentControllerName => $dependentActions){
+                    foreach($dependentActions as $dependentAction){
+                        if (!isset($allDependenciesSimplified[$dependentControllerName])) {
+                            $allDependenciesSimplified[$dependentControllerName] = [];
+                        }
+
+                        $allDependenciesSimplified[$dependentControllerName][$dependentAction] = $dependentAction;
+                    }
+                }
+            }
+        }
+
+
+        foreach ($acosResultThreaded[0]['children'] as $controllerIndex => $controller) {
+            $controllerName = $controller['alias'];
+            foreach ($controller['children'] as $actionIndex => $action) {
+                $actionName = $action['alias'];
+
+                // Remove ACOs that are always allow (the user cannot untick them!)
+                if (isset($this->allow[$controllerName][$actionName])) {
+                    unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$actionIndex]);
+                }
+
+                // Remove ACOs if they are dependencies of other ACOs (the user cannot untick them!)
+                if (isset($allDependenciesSimplified[$controllerName][$actionName])) {
+                    unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$actionIndex]);
+                }
+            }
+
+            //Make sure we have arrays [] not hasmaps {} !!!
+            $acosResultThreaded[0]['children'][$controllerIndex]['children'] = array_values($acosResultThreaded[0]['children'][$controllerIndex]['children']);
+
+        }
+
+        return $acosResultThreaded;
     }
 
 }
