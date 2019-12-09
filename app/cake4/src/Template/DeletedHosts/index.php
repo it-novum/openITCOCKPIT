@@ -59,7 +59,13 @@
                             <i class="fa fa-filter"></i>
                             <?php echo __('Filter'); ?>
                         </button>
-                        <?php echo $this->AdditionalLinks->renderAsLinks($additionalLinksTop); ?>
+                        <?php
+                        /**
+                         * @todo AdditionalLinks
+                         */
+                        /*
+                        echo $this->AdditionalLinks->renderAsLinks($additionalLinksTop);
+                        */?>
                     </div>
 
                     <div class="jarviswidget-ctrls" role="menu">

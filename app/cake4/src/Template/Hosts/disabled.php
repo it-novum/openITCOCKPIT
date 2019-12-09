@@ -299,12 +299,17 @@
 
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_edit">
-                                                        <?php echo $this->AdditionalLinks->renderAsListItems(
+                                                        <?php
+                                                        /**
+                                                         * @todo AdditionalLinks
+                                                         */
+                                                        /*
+                                                        echo $this->AdditionalLinks->renderAsListItems(
                                                             $additionalLinksList,
                                                             '{{host.Host.id}}',
                                                             [],
                                                             true
-                                                        ); ?>
+                                                        );*/ ?>
                                                     </li>
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>

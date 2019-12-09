@@ -22,7 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-$timezones = CakeTime::listTimezones();
+$timezones = \Cake\I18n\FrozenTime::listTimezones();
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -32,7 +32,7 @@ $timezones = CakeTime::listTimezones();
             <span>>
                 <?php echo __('Containers'); ?>
             </span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+            <div class="third_level"> <?php echo __('Overview') ?></div>
         </h1>
     </div>
 </div>

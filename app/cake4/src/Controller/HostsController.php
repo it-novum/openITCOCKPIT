@@ -43,6 +43,7 @@ use App\Model\Table\HostcommandargumentvaluesTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
+use App\Model\Table\ServicesTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -77,6 +78,7 @@ use itnovum\openITCOCKPIT\Core\Timeline\NotificationSerializer;
 use itnovum\openITCOCKPIT\Core\Timeline\StatehistorySerializer;
 use itnovum\openITCOCKPIT\Core\Timeline\TimeRangeSerializer;
 use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\Downtime;
@@ -117,49 +119,6 @@ class HostsController extends AppController {
 
     use PluginManagerTableTrait;
 
-    public $layout = 'blank';
-
-    public $components = [
-        'RequestHandler',
-        'CustomValidationErrors',
-        'Bbcode',
-        'AdditionalLinks',
-        'Flash'
-    ];
-
-    public $helpers = [
-        'Status',
-        'Monitoring',
-        'CustomValidationErrors',
-        'CustomVariables',
-        'Bbcode',
-        'Flash',
-    ];
-
-    public $uses = [
-        'Host',
-        MONITORING_HOSTSTATUS, //MysqlModule.Hoststatus || CrateModule.Hoststatus
-        MONITORING_SERVICESTATUS,
-        MONITORING_OBJECTS,
-        'Hosttemplatecommandargumentvalue',
-        'Hostcommandargumentvalue',
-        'Contact',
-        'Contactgroup',
-        MONITORING_ACKNOWLEDGED_HOST,
-        'DeletedHost',
-        'DeletedService',
-        'Container',
-        'Parenthost',
-        'Hosttemplate',
-        'Hostgroup',
-        'Timeperiod',
-        'Servicetemplategroup',
-        'Service',
-        MONITORING_DOWNTIME_HOST,
-        MONITORING_STATEHISTORY_HOST,
-        'DateRange',
-        MONITORING_NOTIFICATION_HOST
-    ];
 
     /**
      * @deprecated
@@ -258,19 +217,22 @@ class HostsController extends AppController {
 
 
         $all_hosts = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $UserTime = new UserTime($User->getTimezone(), $User->getDateformat());
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
         $ServicestatusFields->currentState();
 
+        /** @var ServicesTable $ServiceTable */
+        $ServiceTable = TableRegistry::getTableLocator()->get('Services');
+
         foreach ($hosts as $host) {
-            $serviceUuids = $this->Service->find('list', [
-                'fields'     => [
-                    'Service.uuid'
-                ],
-                'conditions' => [
-                    'Service.host_id' => $host['Host']['id']
-                ]
-            ]);
+            $serviceUuids = $ServiceTable->find('list', [
+                'valueField' => 'uuid'
+            ])
+                ->where([
+                    'Services.host_id' => $host['Host']['id']
+                ])
+            ->toList();
+
             $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
             $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatus);
             $serviceStateSummary = ServiceStateSummary::getServiceStateSummary($ServicestatusObjects, false);
@@ -421,8 +383,13 @@ class HostsController extends AppController {
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
-            $Satellite = $ModuleManager->loadModel('Satellite');
-            $SatelliteNames = $Satellite->find('list');
+            $MY_RIGHTS = [];
+            if ($this->hasRootPrivileges === false) {
+                $MY_RIGHTS = $this->MY_RIGHTS;
+            }
+            /** @var $SatellitesTable \DistributeModule\Model\Table\SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+            $SatelliteNames = $SatellitesTable->getSatellitesAsList($MY_RIGHTS);
             $SatelliteNames[0] = $masterInstanceName;
         }
 
@@ -1059,8 +1026,13 @@ class HostsController extends AppController {
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
-            $Satellite = $ModuleManager->loadModel('Satellite');
-            $SatelliteNames = $Satellite->find('list');
+            $MY_RIGHTS = [];
+            if ($this->hasRootPrivileges === false) {
+                $MY_RIGHTS = $this->MY_RIGHTS;
+            }
+            /** @var $SatellitesTable \DistributeModule\Model\Table\SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+            $SatelliteNames = $SatellitesTable->getSatellitesAsList($MY_RIGHTS);
             $SatelliteNames[0] = $masterInstanceName;
         }
 
