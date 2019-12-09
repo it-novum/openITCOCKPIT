@@ -366,6 +366,12 @@ class AppController extends Controller {
             if ($paging !== null) {
                 $serialize[] = 'paging';
             }
+
+            //Add Scroll Paginator info to json response
+            $scroll = $this->viewBuilder()->getVar('scroll');
+            if ($scroll !== null) {
+                $serialize[] = 'scroll';
+            }
             $this->viewBuilder()->setOption('serialize', $serialize);
         }
     }

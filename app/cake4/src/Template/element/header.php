@@ -38,7 +38,7 @@
     <div class="pull-right">
         <div class="btn-header pull-right">
             <span>
-                <a href="/login/logout" data-original-title="<?php echo __('Sign out'); ?>" data-placement="left"
+                <a href="/users/logout" data-original-title="<?php echo __('Sign out'); ?>" data-placement="left"
                    rel="tooltip" data-container="body">
                     <i class="fa fa-sign-out"></i>
                 </a>

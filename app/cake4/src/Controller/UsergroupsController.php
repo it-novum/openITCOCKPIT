@@ -304,20 +304,4 @@ class UsergroupsController extends AppController {
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
-
-    public function loadUsergroups() {
-        if(!$this->isApiRequest()){
-            throw new MethodNotAllowedException();
-        }
-
-        /** @var UsergroupsTable $UsergroupsTable */
-        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
-        $usergroups = $UsergroupsTable->getUsergroupsList();
-
-        $usergroups = Api::makeItJavaScriptAble($usergroups);
-
-        $this->set('usergroups', $usergroups);
-        $this->viewBuilder()->setOption('serialize', ['usergroups']);
-    }
-
 }

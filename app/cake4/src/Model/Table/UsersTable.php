@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\User;
+use Authentication\PasswordHasher\DefaultPasswordHasher;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
@@ -226,7 +227,6 @@ class UsersTable extends Table {
 
         $validator
             ->scalar('password')
-            ->maxLength('password', 45)
             ->requirePresence('password', 'create')
             ->allowEmptyString('password', null, false)
             ->regex('password', self::PASSWORD_REGEX, 'The password must consist of 6 alphanumeric characters and must contain at least one digit.');
@@ -299,7 +299,8 @@ class UsersTable extends Table {
      * @return string
      */
     public function getPasswordHash($str) {
-        return Security::hash($str, null, true);
+        $Hasher = new DefaultPasswordHasher();
+        return $Hasher->hash($str);
     }
 
 
