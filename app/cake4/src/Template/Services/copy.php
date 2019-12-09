@@ -66,13 +66,13 @@
                             </label>
                             <div class="col col-xs-10 required">
                                 <select
-                                        id="ServiceHosts"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="hosts"
-                                        callback="loadHosts"
-                                        ng-options="host.key as host.value for host in hosts"
-                                        ng-model="hostId">
+                                    id="ServiceHosts"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="hosts"
+                                    callback="loadHosts"
+                                    ng-options="host.key as host.value for host in hosts"
+                                    ng-model="hostId">
                                 </select>
                                 <div ng-show="hostId < 1" class="warning-glow">
                                     <?php echo __('Please select a host.'); ?>
@@ -113,10 +113,10 @@
                             </label>
                             <div class="col col-xs-10 required">
                                 <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="sourceService.Service.name"
-                                        id="Service{{$index}}Name">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="sourceService.Service.name"
+                                    id="Service{{$index}}Name">
                                 <div ng-repeat="error in sourceService.Error.name">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
@@ -129,10 +129,10 @@
                             </label>
                             <div class="col col-xs-10">
                                 <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="sourceService.Service.description"
-                                        id="Service{{$index}}Description">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="sourceService.Service.description"
+                                    id="Service{{$index}}Description">
                                 <div ng-repeat="error in sourceService.Error.description">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
@@ -146,13 +146,13 @@
                             </label>
                             <div class="col-xs-12 col-lg-10">
                                 <select
-                                        id="Service{{$index}}CommandId"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="commands"
-                                        ng-options="command.key as command.value for command in commands"
-                                        ng-change="loadCommandArguments(sourceService.Source.id, sourceService.Service.command_id, $index)"
-                                        ng-model="sourceService.Service.command_id">
+                                    id="Service{{$index}}CommandId"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="commands"
+                                    ng-options="command.key as command.value for command in commands"
+                                    ng-change="loadCommandArguments(sourceService.Source.id, sourceService.Service.command_id, $index)"
+                                    ng-model="sourceService.Service.command_id">
                                 </select>
                                 <div class="help-block"
                                      ng-hide="sourceService.Service.active_checks_enabled">
@@ -172,9 +172,9 @@
                             </label>
                             <div class="col-xs-12 col-lg-8">
                                 <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="servicecommandargumentvalue.value">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="servicecommandargumentvalue.value">
                                 <div ng-repeat="error in sourceService.Error.servicecommandargumentvalues">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
