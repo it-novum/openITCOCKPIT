@@ -32,12 +32,14 @@ use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\HostsTable;
-use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\UUID;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
@@ -104,11 +106,9 @@ class CommandsController extends AppController {
 
         /** @var CommandsTable $CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
-        /** @var ChangelogsTable $ChangelogsTable */
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $command = $CommandsTable->newEmptyEntity();
-
             $command = $CommandsTable->patchEntity($command, $this->request->getData('Command'));
             $command->set('uuid', UUID::v4());
 
@@ -122,7 +122,7 @@ class CommandsController extends AppController {
                 //No errors
                 $User = new User($this->getUser());
                 $requestData = $this->request->getData();
-                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -159,7 +159,7 @@ class CommandsController extends AppController {
             return;
         }
 
-        /** @var $CommandsTable CommandsTable */
+        /** @var CommandsTable $CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
         if (!$CommandsTable->existsById($id)) {
             throw new NotFoundException('Command not found');
@@ -182,7 +182,7 @@ class CommandsController extends AppController {
                 $User = new User($this->getUser());
                 $requestData = $this->request->getData();
 
-                /** @var  ChangelogsTable $ChangelogsTable */
+                /** @var ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
@@ -252,7 +252,7 @@ class CommandsController extends AppController {
 
         if ($CommandsTable->delete($CommandsTable->get($id))) {
             $User = new User($this->getUser());
-            /** @var  ChangelogsTable $ChangelogsTable */
+            /** @var ChangelogsTable $ChangelogsTable */
             $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
             $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -271,7 +271,6 @@ class CommandsController extends AppController {
                 $ChangelogsTable->save($changelogEntry);
             }
 
-
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
             return;
@@ -282,7 +281,6 @@ class CommandsController extends AppController {
         $this->set('success', false);
         $this->viewBuilder()->setOption('serialize', ['success']);
         return;
-
     }
 
     public function getConsoleWelcome() {
@@ -337,20 +335,20 @@ class CommandsController extends AppController {
 
 
         //Check if the command is used by host or service templates
-        /** @var $HosttemplatesTable HosttemplatesTable */
+        /** @var #HosttemplatesTable $HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
         $objects['Hosttemplates'] = $HosttemplatesTable->getHosttemplatesByCommandId($id, $MY_RIGHTS, false);
 
-        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        /** @var ServicetemplatesTable $ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
         $objects['Servicetemplates'] = $ServicetemplatesTable->getServicetemplatesByCommandId($id, $MY_RIGHTS, false);
 
         //Checking host and services
-        /** @var $HostsTable HostsTable */
+        /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
         $objects['Hosts'] = $HostsTable->getHostsByCommandId($id, $MY_RIGHTS, false);
 
-        /** @var $ServicesTable ServicesTable */
+        /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
         $objects['Services'] = $ServicesTable->getServicesByCommandId($id, $MY_RIGHTS, false);
 
@@ -377,7 +375,7 @@ class CommandsController extends AppController {
             return;
         }
 
-        /** @var $CommandsTable CommandsTable */
+        /** @var CommandsTable $CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
 
         if ($this->request->is('get')) {
@@ -441,7 +439,7 @@ class CommandsController extends AppController {
                 } else {
                     //No errors
                     $postData[$index]['Command']['id'] = $newCommandEntity->get('id');
-                    /** @var  ChangelogsTable $ChangelogsTable */
+                    /** @var ChangelogsTable $ChangelogsTable */
                     $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
                     $changelog_data = $ChangelogsTable->parseDataForChangelog(
@@ -470,4 +468,3 @@ class CommandsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['result']);
     }
 }
-

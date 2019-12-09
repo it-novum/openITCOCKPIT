@@ -34,21 +34,21 @@ use App\Model\Table\ServicesTable;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsOverviewControllerRequest;
-use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\Command;
+use itnovum\openITCOCKPIT\Core\Views\Contact;
+use itnovum\openITCOCKPIT\Core\Views\NotificationHost;
+use itnovum\openITCOCKPIT\Core\Views\NotificationService;
+use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 /**
  * Class NotificationsController
- * @property AppPaginatorComponent $Paginator
- * @property AppAuthComponent $Auth
- * @property DbBackend $DbBackend
+ * @package App\Controller
  */
 class NotificationsController extends AppController {
-
-    public $layout = 'blank';
 
     public function index() {
         if (!$this->isApiRequest()) {
@@ -78,10 +78,10 @@ class NotificationsController extends AppController {
 
         $all_notifications = [];
         foreach ($NotificationHostsTable->getNotifications($Conditions, $PaginateOMat) as $notification) {
-            $NotificationHost = new itnovum\openITCOCKPIT\Core\Views\NotificationHost($notification, $UserTime);
-            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification['Hosts']);
-            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Commands']);
-            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contacts']);
+            $NotificationHost = new NotificationHost($notification, $UserTime);
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($notification['Hosts']);
+            $Command = new Command($notification['Commands']);
+            $Contact = new Contact($notification['Contacts']);
             $all_notifications[] = [
                 'NotificationHost' => $NotificationHost->toArray(),
                 'Host'             => $Host->toArray(),
@@ -127,11 +127,11 @@ class NotificationsController extends AppController {
 
         $all_notifications = [];
         foreach ($NotificationServicesTable->getNotifications($Conditions, $PaginateOMat) as $notification) {
-            $NotificationService = new itnovum\openITCOCKPIT\Core\Views\NotificationService($notification, $UserTime);
-            $Service = new itnovum\openITCOCKPIT\Core\Views\Service($notification['Services'], $notification['servicename']);
-            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification['Hosts']);
-            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Commands']);
-            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contacts']);
+            $NotificationService = new NotificationService($notification, $UserTime);
+            $Service = new Service($notification['Services'], $notification['servicename']);
+            $Host = new Host($notification['Hosts']);
+            $Command = new Command($notification['Commands']);
+            $Contact = new Contact($notification['Contacts']);
             $all_notifications[] = [
                 'NotificationService' => $NotificationService->toArray(),
                 'Service'             => $Service->toArray(),
@@ -160,7 +160,7 @@ class NotificationsController extends AppController {
             return;
         }
 
-        /** @var $HostsTable HostsTable */
+        /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         if (!$HostsTable->existsById($id)) {
@@ -197,10 +197,10 @@ class NotificationsController extends AppController {
 
         $all_notifications = [];
         foreach ($NotificationHostsTable->getNotifications($Conditions, $PaginateOMat) as $notification) {
-            $NotificationHost = new itnovum\openITCOCKPIT\Core\Views\NotificationHost($notification, $UserTime);
-            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification['Hosts']);
-            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Commands']);
-            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contacts']);
+            $NotificationHost = new NotificationHost($notification, $UserTime);
+            $Host = new Host($notification['Hosts']);
+            $Command = new Command($notification['Commands']);
+            $Contact = new Contact($notification['Contacts']);
             $all_notifications[] = [
                 'NotificationHost' => $NotificationHost->toArray(),
                 'Host'             => $Host->toArray(),
@@ -230,7 +230,7 @@ class NotificationsController extends AppController {
 
         session_write_close();
 
-        /** @var $ServicesTable ServicesTable */
+        /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         if (!$ServicesTable->existsById($id)) {
@@ -265,11 +265,11 @@ class NotificationsController extends AppController {
 
         $all_notifications = [];
         foreach ($NotificationServicesTable->getNotifications($Conditions, $PaginateOMat) as $notification) {
-            $NotificationService = new itnovum\openITCOCKPIT\Core\Views\NotificationService($notification, $UserTime);
-            $Service = new itnovum\openITCOCKPIT\Core\Views\Service($notification['Services'], $notification['servicename']);
-            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification['Hosts']);
-            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Commands']);
-            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contacts']);
+            $NotificationService = new NotificationService($notification, $UserTime);
+            $Service = new Service($notification['Services'], $notification['servicename']);
+            $Host = new Host($notification['Hosts']);
+            $Command = new Command($notification['Commands']);
+            $Contact = new Contact($notification['Contacts']);
             $all_notifications[] = [
                 'NotificationService' => $NotificationService->toArray(),
                 'Service'             => $Service->toArray(),

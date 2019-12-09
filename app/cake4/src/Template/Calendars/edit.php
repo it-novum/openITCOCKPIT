@@ -52,7 +52,7 @@
     <div>
         <div class="widget-body">
             <form ng-submit="submit();" class="form-horizontal"
-                  ng-init="message=
+                  ng-init="successMessage=
             {objectName : '<?php echo __('Calendar'); ?>' , message: '<?php echo __('created successfully'); ?>',
             'addHoliday': '<?php echo __('Add holiday '); ?>', 'deleteAllHolidays': '<?php echo __('Delete ALL holidays'); ?>',
             'deleteMonthEvents': '<?php echo __('Delete MONTH events'); ?>', 'deleteAllEvents': '<?php echo __('Delete ALL events'); ?>'}">
