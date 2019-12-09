@@ -228,7 +228,7 @@ class UsersController extends AppController {
             //Return user information
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
-            $this->set('_serialize', ['user', 'isLdapUser']);
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser']);
             return;
         }
 
