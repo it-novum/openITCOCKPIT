@@ -21,13 +21,13 @@ angular.module('openITCOCKPIT')
                 plugins: ['interaction', 'dayGrid', 'timeGrid', 'list'],
                 customButtons: {
                     holidays: {
-                        text: $scope.message.addHoliday,
+                        text: $scope.successMessage.addHoliday,
                         click: function(event){
                             event.stopPropagation();
                         }
                     },
                     deleteallholidays: {
-                        text: $scope.message.deleteAllHolidays,
+                        text: $scope.successMessage.deleteAllHolidays,
                         click: function(){
                             var index = $scope.events.length;
                             while (index--) {
@@ -39,7 +39,7 @@ angular.module('openITCOCKPIT')
                         }
                     },
                     deletemonthevents: {
-                        text: $scope.message.deleteMonthEvents,
+                        text: $scope.successMessage.deleteMonthEvents,
                         click: function(){
                             var index = $scope.events.length;
                             while (index--) {
@@ -53,7 +53,7 @@ angular.module('openITCOCKPIT')
                         }
                     },
                     deleteallevents: {
-                        text: $scope.message.deleteAllEvents,
+                        text: $scope.successMessage.deleteAllEvents,
                         click: function(){
                             $scope.events = [];
                             $scope.$apply();
