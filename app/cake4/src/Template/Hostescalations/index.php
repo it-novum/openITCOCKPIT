@@ -46,7 +46,7 @@
                             <i class="fa fa-refresh"></i>
                             <?php echo __('Refresh'); ?>
                         </button>
-                        <?php if ($this->Acl->hasPermission('add')): ?>
+                        <?php if ($this->Acl->hasPermission('add', 'hostescalations')): ?>
                             <a ui-sref="HostescalationsAdd" class="btn btn-xs btn-success" icon="fa fa-plus">
                                 <i class="fa fa-plus"></i> <?php echo __('New'); ?>
                             </a>

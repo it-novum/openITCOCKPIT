@@ -31,6 +31,8 @@ use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostescalationsTable;
+use App\Model\Table\HostgroupsTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -44,20 +46,10 @@ use itnovum\openITCOCKPIT\Filter\HostescalationsFilter;
 
 
 /**
- * @property Hostescalation $Hostescalation
- * @property Timeperiod $Timeperiod
- * @property Host $Host
- * @property Hostgroup $Hostgroup
- * @property Contact $Contact
- * @property Contactgroup $Contactgroup
- * @property HostescalationHostMembership $HostescalationHostMembership
- * @property HostescalationHostgroupMembership $HostescalationHostgroupMembership
- * @property Container $Container
+ * Class HostescalationsController
+ * @package App\Controller
  */
 class HostescalationsController extends AppController {
-
-    public $layout = 'blank';
-
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -65,7 +57,7 @@ class HostescalationsController extends AppController {
             return;
         }
 
-        /** @var $HostescalationsTable HostescalationsTable */
+        /** @var HostescalationsTable $HostescalationsTable */
         $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
 
         $HostescalationsFilter = new HostescalationsFilter($this->request);
@@ -80,7 +72,6 @@ class HostescalationsController extends AppController {
         foreach ($hostescalations as $index => $hostescalation) {
             $hostescalations[$index]['allowEdit'] = $this->isWritableContainer($hostescalation['container_id']);
         }
-
 
         $this->set('all_hostescalations', $hostescalations);
         $toJson = ['all_hostescalations', 'paging'];
@@ -98,10 +89,10 @@ class HostescalationsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $HostescalationsTable HostescalationsTable */
+        /** @var HostescalationsTable $HostescalationsTable */
         $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
 
-        if (!$HostescalationsTable->exists($id)) {
+        if (!$HostescalationsTable->existsById($id)) {
             throw new NotFoundException(__('Host escalation not found'));
         }
 
@@ -115,17 +106,60 @@ class HostescalationsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hostescalation']);
     }
 
+    public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            /** @var HostescalationsTable $HostescalationsTable */
+            $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
+
+            $hostescalationRequest = $this->request->getData();
+            $hostescalationRequest['Hostescalation']['uuid'] = UUID::v4();
+
+            $data['hosts'] = $HostescalationsTable->parseHostMembershipData(
+                $this->request->getData('Hostescalation.hosts._ids', []),
+                $this->request->getData('Hostescalation.hosts_excluded._ids', [])
+            );
+            $data['hostgroups'] = $HostescalationsTable->parseHostgroupMembershipData(
+                $this->request->getData('Hostescalation.hostgroups._ids', []),
+                $this->request->getData('Hostescalation.hostgroups_excluded._ids', [])
+            );
+
+            $data = array_merge($hostescalationRequest['Hostescalation'], $data);
+            $hostescalation = $HostescalationsTable->newEntity($data);
+            $HostescalationsTable->save($hostescalation);
+
+            if ($hostescalation->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $hostescalation->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            } else {
+                if ($this->isJsonRequest()) {
+                    $this->serializeCake4Id($hostescalation); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('hostescalation', $hostescalation);
+            $this->viewBuilder()->setOption('serialize', ['hostescalation']);
+        }
+    }
+
     public function edit($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
 
-        /** @var $HostescalationsTable HostescalationsTable */
+        /** @var HostescalationsTable $HostescalationsTable */
         $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
         if (!$HostescalationsTable->existsById($id)) {
             throw new NotFoundException('Host escalation not found');
         }
+
         $hostescalation = $HostescalationsTable->get($id, [
             'contain' => [
                 'hosts'         => function (Query $q) {
@@ -153,7 +187,7 @@ class HostescalationsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            /** @var $HostescalationsTable HostescalationsTable */
+            /** @var HostescalationsTable $HostescalationsTable */
             $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
             $data['hosts'] = $HostescalationsTable->parseHostMembershipData(
                 $this->request->getData('Hostescalation.hosts._ids'),
@@ -184,51 +218,12 @@ class HostescalationsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hostescalation']);
     }
 
-    public function add() {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-
-        if ($this->request->is('post')) {
-            /** @var $HostescalationsTable HostescalationsTable */
-            $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
-            $this->request->data['Hostescalation']['uuid'] = UUID::v4();
-            $data['hosts'] = $HostescalationsTable->parseHostMembershipData(
-                $this->request->getData('Hostescalation.hosts._ids'),
-                $this->request->getData('Hostescalation.hosts_excluded._ids')
-            );
-            $data['hostgroups'] = $HostescalationsTable->parseHostgroupMembershipData(
-                $this->request->getData('Hostescalation.hostgroups._ids'),
-                $this->request->getData('Hostescalation.hostgroups_excluded._ids')
-            );
-
-            $data = array_merge($this->request->getData('Hostescalation'), $data);
-            $hostescalation = $HostescalationsTable->newEntity($data);
-            $HostescalationsTable->save($hostescalation);
-
-            if ($hostescalation->hasErrors()) {
-                $this->response = $this->response->withStatus(400);
-                $this->set('error', $hostescalation->getErrors());
-                $this->viewBuilder()->setOption('serialize', ['error']);
-                return;
-            } else {
-                if ($this->isJsonRequest()) {
-                    $this->serializeCake4Id($hostescalation); // REST API ID serialization
-                    return;
-                }
-            }
-            $this->set('hostescalation', $hostescalation);
-            $this->viewBuilder()->setOption('serialize', ['hostescalation']);
-        }
-    }
-
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $HostescalationsTable HostescalationsTable */
+        /** @var HostescalationsTable $HostescalationsTable */
         $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
 
         if (!$HostescalationsTable->exists($id)) {
@@ -259,17 +254,17 @@ class HostescalationsController extends AppController {
             return;
         }
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $TimeperiodsTable TimeperiodsTable */
+        /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        /** @var $ContactsTable ContactsTable */
+        /** @var ContactsTable $ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-        /** @var $ContactgroupsTable ContactgroupsTable */
+        /** @var ContactgroupsTable $ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-        /** @var $HostgroupsTable HostgroupsTable */
+        /** @var HostgroupsTable $HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-        /** @var $HostsTable HostsTable */
+        /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         if (!$ContainersTable->existsById($containerId)) {
@@ -278,7 +273,7 @@ class HostescalationsController extends AppController {
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
-        $hostgroups = $HostgroupsTable->hostgroupsByContainerId($containerIds, 'list', 'id');
+        $hostgroups = $HostgroupsTable->getHostgroupsByContainerId($containerIds, 'list', 'id');
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);
         $hostgroupsExcluded = $hostgroups;
 
@@ -304,7 +299,7 @@ class HostescalationsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === true) {
