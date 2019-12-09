@@ -27,13 +27,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Model\Entity\Contact;
-use App\Model\Entity\Contactgroup;
-use App\Model\Entity\Container;
-use App\Model\Entity\Service;
-use App\Model\Entity\Serviceescalation;
-use App\Model\Entity\Servicegroup;
-use App\Model\Entity\Timeperiod;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
@@ -51,20 +44,10 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceescalationsFilter;
 
 /**
- * @property Serviceescalation $Serviceescalation
- * @property Timeperiod $Timeperiod
- * @property Service Service
- * @property Servicegroup $Servicegroup
- * @property Contact $Contact
- * @property Contactgroup $Contactgroup
- * @property ServiceescalationServiceMembership $ServiceescalationServiceMembership
- * @property ServiceescalationServicegroupMembership $ServiceescalationServicegroupMembership
- * @property Container $Container
+ * Class ServiceescalationsController
+ * @package App\Controller
  */
 class ServiceescalationsController extends AppController {
-
-    public $layout = 'blank';
-
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -72,7 +55,7 @@ class ServiceescalationsController extends AppController {
             return;
         }
 
-        /** @var $ServiceescalationsTable ServiceescalationsTable */
+        /** @var ServiceescalationsTable $ServiceescalationsTable */
         $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
 
         $ServiceescalationsFilter = new ServiceescalationsFilter($this->request);
@@ -87,7 +70,6 @@ class ServiceescalationsController extends AppController {
             $serviceescalations[$index]['allowEdit'] = $this->isWritableContainer($serviceescalation['container_id']);
         }
 
-
         $this->set('all_serviceescalations', $serviceescalations);
         $toJson = ['all_serviceescalations', 'paging'];
         if ($this->isScrollRequest()) {
@@ -101,10 +83,10 @@ class ServiceescalationsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $ServiceescalationsTable ServiceescalationsTable */
+        /** @var ServiceescalationsTable $ServiceescalationsTable */
         $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
 
-        if (!$ServiceescalationsTable->exists($id)) {
+        if (!$ServiceescalationsTable->existsById($id)) {
             throw new NotFoundException(__('Service escalation not found'));
         }
 
@@ -118,13 +100,55 @@ class ServiceescalationsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['serviceescalation']);
     }
 
+    public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            /** @var ServiceescalationsTable $ServiceescalationsTable */
+            $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+
+            $serviceescalationRequest = $this->request->getData();
+            $serviceescalationRequest['Serviceescalation']['uuid'] = UUID::v4();
+
+            $data['services'] = $ServiceescalationsTable->parseServiceMembershipData(
+                $this->request->getData('Serviceescalation.services._ids'),
+                $this->request->getData('Serviceescalation.services_excluded._ids')
+            );
+            $data['servicegroups'] = $ServiceescalationsTable->parseServicegroupMembershipData(
+                $this->request->getData('Serviceescalation.servicegroups._ids'),
+                $this->request->getData('Serviceescalation.servicegroups_excluded._ids')
+            );
+
+            $data = array_merge($serviceescalationRequest['Serviceescalation'], $data);
+            $serviceescalation = $ServiceescalationsTable->newEntity($data);
+            $ServiceescalationsTable->save($serviceescalation);
+
+            if ($serviceescalation->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $serviceescalation->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            } else {
+                if ($this->isJsonRequest()) {
+                    $this->serializeCake4Id($serviceescalation); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('serviceescalation', $serviceescalation);
+            $this->viewBuilder()->setOption('serialize', ['serviceescalation']);
+        }
+    }
+
     public function edit($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
 
-        /** @var $ServiceescalationsTable ServiceescalationsTable */
+        /** @var ServiceescalationsTable $ServiceescalationsTable */
         $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
         if (!$ServiceescalationsTable->existsById($id)) {
             throw new NotFoundException('Service escalation not found');
@@ -156,7 +180,7 @@ class ServiceescalationsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            /** @var $ServiceescalationsTable ServiceescalationsTable */
+            /** @var ServiceescalationsTable $ServiceescalationsTable */
             $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
             $data['services'] = $ServiceescalationsTable->parseServiceMembershipData(
                 $this->request->getData('Serviceescalation.services._ids'),
@@ -185,45 +209,6 @@ class ServiceescalationsController extends AppController {
         }
         $this->set('serviceescalation', $serviceescalation);
         $this->viewBuilder()->setOption('serialize', ['serviceescalation']);
-    }
-
-    public function add() {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-
-        if ($this->request->is('post')) {
-            /** @var $ServiceescalationsTable ServiceescalationsTable */
-            $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
-            $this->request->data['Serviceescalation']['uuid'] = UUID::v4();
-            $data['services'] = $ServiceescalationsTable->parseServiceMembershipData(
-                $this->request->getData('Serviceescalation.services._ids'),
-                $this->request->getData('Serviceescalation.services_excluded._ids')
-            );
-            $data['servicegroups'] = $ServiceescalationsTable->parseServicegroupMembershipData(
-                $this->request->getData('Serviceescalation.servicegroups._ids'),
-                $this->request->getData('Serviceescalation.servicegroups_excluded._ids')
-            );
-
-            $data = array_merge($this->request->getData('Serviceescalation'), $data);
-            $serviceescalation = $ServiceescalationsTable->newEntity($data);
-            $ServiceescalationsTable->save($serviceescalation);
-
-            if ($serviceescalation->hasErrors()) {
-                $this->response = $this->response->withStatus(400);
-                $this->set('error', $serviceescalation->getErrors());
-                $this->viewBuilder()->setOption('serialize', ['error']);
-                return;
-            } else {
-                if ($this->isJsonRequest()) {
-                    $this->serializeCake4Id($serviceescalation); // REST API ID serialization
-                    return;
-                }
-            }
-            $this->set('serviceescalation', $serviceescalation);
-            $this->viewBuilder()->setOption('serialize', ['serviceescalation']);
-        }
     }
 
     public function delete($id = null) {
@@ -262,15 +247,15 @@ class ServiceescalationsController extends AppController {
             return;
         }
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $TimeperiodsTable TimeperiodsTable */
+        /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        /** @var $ContactsTable ContactsTable */
+        /** @var ContactsTable $ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-        /** @var $ContactgroupsTable ContactgroupsTable */
+        /** @var ContactgroupsTable $ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
-        /** @var $ServicegroupsTable ServicegroupsTable */
+        /** @var ServicegroupsTable $ServicegroupsTable */
         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
         if (!$ContainersTable->existsById($containerId)) {
@@ -279,7 +264,7 @@ class ServiceescalationsController extends AppController {
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
-        $servicegroups = $ServicegroupsTable->servicegroupsByContainerId($containerIds, 'list', 'id');
+        $servicegroups = $ServicegroupsTable->getServicegroupsByContainerId($containerIds, 'list', 'id');
         $servicegroups = Api::makeItJavaScriptAble($servicegroups);
         $servicegroupsExcluded = $servicegroups;
 
@@ -312,7 +297,7 @@ class ServiceescalationsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === true) {
@@ -325,4 +310,3 @@ class ServiceescalationsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 }
-

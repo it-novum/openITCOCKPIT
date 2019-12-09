@@ -27,10 +27,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Model\Entity\Service;
-use App\Model\Entity\Servicedependency;
-use App\Model\Entity\Servicegroup;
-use App\Model\Entity\Timeperiod;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\ServicedependenciesTable;
 use App\Model\Table\ServicegroupsTable;
@@ -46,20 +42,10 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicedependenciesFilter;
 
 /**
- * @property Servicedependency $Servicedependency
- * @property Timeperiod $Timeperiod
- * @property Service $Service
- * @property Servicegroup $Servicegroup
- * @property Contact $Contact
- * @property Contactgroup $Contactgroup
- * @property ServicedependencyServiceMembership $ServicedependencyServiceMembership
- * @property ServicedependencyServicegroupMembership $ServicedependencyServicegroupMembership
- * @property Container $Container
+ * Class ServicedependenciesController
+ * @package App\Controller
  */
 class ServicedependenciesController extends AppController {
-
-    public $layout = 'blank';
-
 
     public function index() {
         if (!$this->isAngularJsRequest()) {
@@ -67,7 +53,7 @@ class ServicedependenciesController extends AppController {
             return;
         }
 
-        /** @var $ServicedependenciesTable ServicedependenciesTable */
+        /** @var ServicedependenciesTable $ServicedependenciesTable */
         $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
 
         $ServicedependenciesFilter = new ServicedependenciesFilter($this->request);
@@ -82,7 +68,6 @@ class ServicedependenciesController extends AppController {
         foreach ($servicedependencies as $index => $servicedependency) {
             $servicedependencies[$index]['allowEdit'] = $this->isWritableContainer($servicedependency['container_id']);
         }
-
 
         $this->set('all_servicedependencies', $servicedependencies);
         $toJson = ['all_servicedependencies', 'paging'];
@@ -100,10 +85,10 @@ class ServicedependenciesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $ServicedependenciesTable ServicedependenciesTable */
+        /** @var ServicedependenciesTable $ServicedependenciesTable */
         $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
 
-        if (!$ServicedependenciesTable->exists($id)) {
+        if (!$ServicedependenciesTable->existsById($id)) {
             throw new NotFoundException(__('Service dependency not found'));
         }
 
@@ -124,9 +109,9 @@ class ServicedependenciesController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            /** @var $ServicedependenciesTable ServicedependenciesTable */
-            $data = [];
+            /** @var ServicedependenciesTable $ServicedependenciesTable */
             $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+            $data = [];
             $data['services'] = $ServicedependenciesTable->parseServiceMembershipData(
                 $this->request->getData('Servicedependency.services._ids'),
                 $this->request->getData('Servicedependency.services_dependent._ids')
@@ -163,7 +148,7 @@ class ServicedependenciesController extends AppController {
             return;
         }
 
-        /** @var $ServicedependenciesTable ServicedependenciesTable */
+        /** @var ServicedependenciesTable $ServicedependenciesTable */
         $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
         if (!$ServicedependenciesTable->existsById($id)) {
             throw new NotFoundException('Service dependency not found');
@@ -223,10 +208,10 @@ class ServicedependenciesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $ServicedependenciesTable ServicedependenciesTable */
+        /** @var ServicedependenciesTable $ServicedependenciesTable */
         $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
 
-        if (!$ServicedependenciesTable->exists($id)) {
+        if (!$ServicedependenciesTable->existsById($id)) {
             throw new NotFoundException(__('Service dependency not found'));
         }
 
@@ -254,11 +239,11 @@ class ServicedependenciesController extends AppController {
             return;
         }
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $TimeperiodsTable TimeperiodsTable */
+        /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        /** @var $ServicegroupsTable ServicegroupsTable */
+        /** @var ServicegroupsTable $ServicegroupsTable */
         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
         if (!$ContainersTable->existsById($containerId)) {
@@ -289,7 +274,7 @@ class ServicedependenciesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        /** @var $ContainersTable ContainersTable */
+        /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === true) {
