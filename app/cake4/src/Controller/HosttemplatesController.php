@@ -131,6 +131,7 @@ class HosttemplatesController extends AppController {
 
     /**
      * @param null|int $hosttemplatetype_id
+     * @todo $hosttemplatetype_id as request parameter ???
      */
     public function add($hosttemplatetype_id = null) {
         if (!$this->isApiRequest()) {
@@ -141,16 +142,17 @@ class HosttemplatesController extends AppController {
         if ($this->request->is('post')) {
             /** @var $HosttemplatesTable HosttemplatesTable */
             $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-            $this->request->data['Hosttemplate']['uuid'] = UUID::v4();
-            $this->request->data['Hosttemplate']['hosttemplatetype_id'] = GENERIC_HOSTTEMPLATE;
 
+            $hosttemplateTypeIdToSave = GENERIC_HOSTTEMPLATE;
             if ($hosttemplatetype_id !== null && is_numeric($hosttemplatetype_id)) {
-                //Legacy???
-                $this->request->data['Hosttemplate']['hosttemplatetype_id'] = $hosttemplatetype_id;
+                $hosttemplateTypeIdToSave = $hosttemplatetype_id;
             }
 
             $hosttemplate = $HosttemplatesTable->newEmptyEntity();
             $hosttemplate = $HosttemplatesTable->patchEntity($hosttemplate, $this->request->getData('Hosttemplate'));
+            $hosttemplate->set('uuid', UUID::v4());
+            $hosttemplate->set('hosttemplatetype_id', $hosttemplateTypeIdToSave);
+
 
             $HosttemplatesTable->save($hosttemplate);
             if ($hosttemplate->hasErrors()) {
@@ -162,8 +164,9 @@ class HosttemplatesController extends AppController {
                 //No errors
 
                 $User = new User($this->getUser());
+                $requestData = $this->request->getData();
 
-                $extDataForChangelog = $HosttemplatesTable->resolveDataForChangelog($this->request->data);
+                $extDataForChangelog = $HosttemplatesTable->resolveDataForChangelog($requestData);
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -175,7 +178,7 @@ class HosttemplatesController extends AppController {
                     $hosttemplate->get('container_id'),
                     $User->getId(),
                     $hosttemplate->get('name'),
-                    array_merge($this->request->data, $extDataForChangelog)
+                    array_merge($requestData, $extDataForChangelog)
                 );
 
                 if ($changelog_data) {
