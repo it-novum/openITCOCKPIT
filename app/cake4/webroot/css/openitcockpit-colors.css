@@ -112,7 +112,7 @@ $color-danger:						#CC0000;
     background: #CC0000;
 }
 
-.bg-color-warning{
+.bg-color-warning {
     background: #ffbb33;
 }
 
@@ -140,3 +140,4 @@ $color-danger:						#CC0000;
     height: 20px;
     padding: 0px;
 }
+

@@ -13,7 +13,6 @@ a:not([href]):not([tabindex]) {
     text-decoration: none;
 }
 
-
 .label-forced {
     display: inline !important;
     padding: .2em .6em .3em !important;
