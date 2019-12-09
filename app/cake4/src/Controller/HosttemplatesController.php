@@ -254,6 +254,7 @@ class HosttemplatesController extends AppController {
 
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                $requestData = $this->request->getData();
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'edit',
@@ -263,7 +264,7 @@ class HosttemplatesController extends AppController {
                     $hosttemplateEntity->get('container_id'),
                     $User->getId(),
                     $hosttemplateEntity->name,
-                    array_merge($HosttemplatesTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($HosttemplatesTable->resolveDataForChangelog($requestData), $requestData),
                     array_merge($HosttemplatesTable->resolveDataForChangelog($hosttemplateForChangeLog), $hosttemplateForChangeLog)
                 );
                 if ($changelog_data) {
