@@ -172,12 +172,19 @@
 
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
                                                     <li ng-if="hosttemplate.Hosttemplate.allow_edit">
-                                                        <?php echo $this->AdditionalLinks->renderAsListItems(
+                                                        <?php
+
+                                                        /**
+                                                         * @todo AdditionalLinks
+                                                         */
+
+                                                        /*
+                                                        echo $this->AdditionalLinks->renderAsListItems(
                                                             $additionalLinksList,
                                                             '{{hosttemplate.Hosttemplate.id}}',
                                                             [],
                                                             true
-                                                        ); ?>
+                                                        );*/ ?>
                                                     </li>
                                                 <?php endif; ?>
 

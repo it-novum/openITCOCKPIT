@@ -29,6 +29,7 @@ namespace App\Controller;
 
 use App\Model\Table\DeletedHostsTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\DeletedHost;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -50,11 +51,12 @@ class DeletedHostsController extends AppController {
         /** @var $DeletedHostsTable DeletedHostsTable */
         $DeletedHostsTable = TableRegistry::getTableLocator()->get('DeletedHosts');
         $HostFilter = new HostFilter($this->request);
+        $User = new User($this->getUser());
 
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostFilter->getPage());
         $result = $DeletedHostsTable->getDeletedHostsIndex($HostFilter, $PaginateOMat);
 
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $UserTime = new UserTime($User->getTimezone(), $User->getDateformat());
         $deletedHosts = [];
         foreach ($result as $host) {
             $DeletedHost = new DeletedHost($host, $UserTime);

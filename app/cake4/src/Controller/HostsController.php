@@ -1026,8 +1026,13 @@ class HostsController extends AppController {
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
-            $Satellite = $ModuleManager->loadModel('Satellite');
-            $SatelliteNames = $Satellite->find('list');
+            $MY_RIGHTS = [];
+            if ($this->hasRootPrivileges === false) {
+                $MY_RIGHTS = $this->MY_RIGHTS;
+            }
+            /** @var $SatellitesTable \DistributeModule\Model\Table\SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+            $SatelliteNames = $SatellitesTable->getSatellitesAsList($MY_RIGHTS);
             $SatelliteNames[0] = $masterInstanceName;
         }
 

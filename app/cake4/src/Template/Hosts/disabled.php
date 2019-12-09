@@ -299,12 +299,17 @@
 
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_edit">
-                                                        <?php echo $this->AdditionalLinks->renderAsListItems(
+                                                        <?php
+                                                        /**
+                                                         * @todo AdditionalLinks
+                                                         */
+                                                        /*
+                                                        echo $this->AdditionalLinks->renderAsListItems(
                                                             $additionalLinksList,
                                                             '{{host.Host.id}}',
                                                             [],
                                                             true
-                                                        ); ?>
+                                                        );*/ ?>
                                                     </li>
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
@@ -364,7 +369,9 @@
                             </div>
                         </div>
 
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>
