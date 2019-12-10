@@ -3,7 +3,7 @@ angular.module('openITCOCKPIT')
 
         return {
             redirectWithFallback: function(fallbackState){
-                if($state.previous.name !== "" && $state.previous.url !== "^"){
+                if($state.previous != null && $state.previous.name !== "" && $state.previous.url !== "^"){
                     $state.go($state.previous.name, $state.previous.params).then(function(){
                         NotyService.scrollTop();
                     });

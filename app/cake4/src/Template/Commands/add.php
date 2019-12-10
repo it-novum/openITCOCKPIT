@@ -230,6 +230,16 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                                 <div id="console"></div>
                             <?php endif; ?>
                         </div>
+                        <div class="card margin-top-10">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <button class="btn btn-primary"
+                                            type="submit"><?php echo __('Create command'); ?></button>
+                                    <a back-button fallback-state='CommandsIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
