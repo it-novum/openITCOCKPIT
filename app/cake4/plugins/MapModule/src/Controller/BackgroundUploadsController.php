@@ -23,18 +23,18 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+namespace MapModule\Controller;
+
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
-App::uses('Folder', 'Utility');
-App::uses('File', 'Utility');
 
 /**
  * Class BackgroundUploadsController
  * @property MapUpload $MapUpload
  * @property Mapicon $Mapicon
  */
-class BackgroundUploadsController extends MapModuleAppController {
+class BackgroundUploadsController extends AppController {
 
     public $layout = 'Admin.default';
     public $uses = [
@@ -50,7 +50,7 @@ class BackgroundUploadsController extends MapModuleAppController {
                 'message' => __('There is no file to store')
             ];
             $this->set('response', $response);
-            $this->set('_serialize', ['response']);
+            $this->viewBuilder()->setOption('serialize', ['response']);
             return;
         }
 
@@ -72,7 +72,7 @@ class BackgroundUploadsController extends MapModuleAppController {
                     'message' => __('File extension ".%s" not supported!', $fileExtension)
                 ];
                 $this->set('response', $response);
-                $this->set('_serialize', ['response']);
+                $this->viewBuilder()->setOption('serialize', ['response']);
                 return;
             }
 
@@ -117,7 +117,7 @@ class BackgroundUploadsController extends MapModuleAppController {
             $this->response->statusCode(500);
         }
         $this->set('response', $response);
-        $this->set('_serialize', ['response']);
+        $this->viewBuilder()->setOption('serialize', ['response']);
     }
 
     public function delete() {
@@ -125,7 +125,7 @@ class BackgroundUploadsController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $filename = $this->request->data('filename');
+        $filename = $this->request->getData('filename');
 
         $background = $this->MapUpload->find('first', [
             'recursive'  => -1,
@@ -154,7 +154,7 @@ class BackgroundUploadsController extends MapModuleAppController {
                 'message' => __('Background deleted successfully.')
             ];
             $this->set('response', $response);
-            $this->set('_serialize', ['response']);
+            $this->viewBuilder()->setOption('serialize', ['response']);
             return;
         }
 
@@ -164,7 +164,7 @@ class BackgroundUploadsController extends MapModuleAppController {
             'message' => __('Error while deleting background.')
         ];
         $this->set('response', $response);
-        $this->set('_serialize', ['response']);
+        $this->viewBuilder()->setOption('serialize', ['response']);
     }
 
     public function icon() {
@@ -174,7 +174,7 @@ class BackgroundUploadsController extends MapModuleAppController {
                 'message' => __('There is no file to store')
             ];
             $this->set('response', $response);
-            $this->set('_serialize', ['response']);
+            $this->viewBuilder()->setOption('serialize', ['response']);
             return;
         }
 
@@ -191,7 +191,7 @@ class BackgroundUploadsController extends MapModuleAppController {
                     'message' => __('File extension ".%s" not supported!', $fileExtension)
                 ];
                 $this->set('response', $response);
-                $this->set('_serialize', ['response']);
+                $this->viewBuilder()->setOption('serialize', ['response']);
                 return;
             }
 
@@ -225,7 +225,7 @@ class BackgroundUploadsController extends MapModuleAppController {
             $this->response->statusCode(500);
         }
         $this->set('response', $response);
-        $this->set('_serialize', ['response']);
+        $this->viewBuilder()->setOption('serialize', ['response']);
     }
 
     public function deleteIcon() {
@@ -234,7 +234,7 @@ class BackgroundUploadsController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $filename = $this->request->data('filename');
+        $filename = $this->request->getData('filename');
         $fullFilePath = $iconImgDirectory . DS . $filename;
 
         if (!file_exists($fullFilePath) || is_dir($fullFilePath)) {
@@ -248,7 +248,7 @@ class BackgroundUploadsController extends MapModuleAppController {
                 'message' => __('Icon deleted successfully.')
             ];
             $this->set('response', $response);
-            $this->set('_serialize', ['response']);
+            $this->viewBuilder()->setOption('serialize', ['response']);
             return;
         }
 
@@ -258,7 +258,7 @@ class BackgroundUploadsController extends MapModuleAppController {
             'message' => __('Error while deleting icon.')
         ];
         $this->set('response', $response);
-        $this->set('_serialize', ['response']);
+        $this->viewBuilder()->setOption('serialize', ['response']);
     }
 
     public function iconset() {
@@ -268,7 +268,7 @@ class BackgroundUploadsController extends MapModuleAppController {
                 'message' => __('There is no file to store')
             ];
             $this->set('response', $response);
-            $this->set('_serialize', ['response']);
+            $this->viewBuilder()->setOption('serialize', ['response']);
             return;
         }
 
@@ -290,7 +290,7 @@ class BackgroundUploadsController extends MapModuleAppController {
                     'message' => __('Iconsets needs to be packed as an .zip file.', $fileExtension)
                 ];
                 $this->set('response', $response);
-                $this->set('_serialize', ['response']);
+                $this->viewBuilder()->setOption('serialize', ['response']);
                 return;
             }
 
@@ -453,6 +453,6 @@ class BackgroundUploadsController extends MapModuleAppController {
             $this->response->statusCode(500);
         }
         $this->set('response', $response);
-        $this->set('_serialize', ['response']);
+        $this->viewBuilder()->setOption('serialize', ['response']);
     }
 }

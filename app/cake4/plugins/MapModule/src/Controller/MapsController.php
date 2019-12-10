@@ -23,31 +23,44 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+namespace MapModule\Controller;
+
 use App\Model\Table\ContainersTable;
+use Cake\Http\Exception\MethodNotAllowedException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
+use MapModule\Model\Table\MapsTable;
 
 /**
  * Class MapsController
- * @property Map $Map
+ * @package MapModule\Controller
  */
-class MapsController extends MapModuleAppController {
-
-    public $layout = 'angularjs';
-
-    public $uses = [
-        'MapModule.Map'
-    ];
+class MapsController extends AppController {
 
     public function index() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
         }
 
         $MapFilter = new MapFilter($this->request);
+
+        /** @var MapsTable $MapsTable */
+        $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $MapFilter->getPage());
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
+        $all_maps = $MapsTable->getMapsIndex($MapFilter, $PaginateOMat, $MY_RIGHTS);
+
+        /* OLD CODE
 
         $query = [
             'conditions' => $MapFilter->indexFilter(),
@@ -87,6 +100,7 @@ class MapsController extends MapModuleAppController {
             $this->Paginator->settings['page'] = $MapFilter->getPage();
             $all_maps = $this->Paginator->paginate();
         }
+        */
 
         foreach ($all_maps as $key => $all_map) {
             $all_maps[$key]['Map']['allowEdit'] = false;
@@ -106,41 +120,51 @@ class MapsController extends MapModuleAppController {
         }
         $this->set('all_maps', $all_maps);
         //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_maps', 'paging']);
+        $this->viewBuilder()->setOption('serialize', ['all_maps', 'paging']);
     }
 
 
     public function add() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
         }
 
-        if (($this->request->is('post') || $this->request->is('put')) && isset($this->request->data['Map'])) {
-            $this->request->data['Container'] = $this->request->data['Map']['container_id'];
+        $data = $this->request->getData();
+        if (($this->request->is('post') || $this->request->is('put')) && isset($data['Map'])) {
+            $data['Container'] = $data['Map']['container_id'];
 
-            if (empty($this->request->data['Map']['refresh_interval'])) {
-                $this->request->data['Map']['refresh_interval'] = 90000;
+            if (empty($data['Map']['refresh_interval'])) {
+                $data['Map']['refresh_interval'] = 90000;
             } else {
-                if ($this->request->data['Map']['refresh_interval'] < 5) {
-                    $this->request->data['Map']['refresh_interval'] = 5;
+                if ($data['Map']['refresh_interval'] < 5) {
+                    $data['Map']['refresh_interval'] = 5;
                 }
 
-                $this->request->data['Map']['refresh_interval'] = ((int)$this->request->data['Map']['refresh_interval'] * 1000);
+                $data['Map']['refresh_interval'] = ((int)$data['Map']['refresh_interval'] * 1000);
             }
 
-            if ($this->Map->saveAll($this->request->data)) {
-                if ($this->request->ext === 'json') {
-                    $this->serializeId();
-                    return;
-                }
+            /** @var MapsTable $MapsTable */
+            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+
+            $map = $MapsTable->newEmptyEntity();
+            $map = $MapsTable->patchEntity($map, $data);
+
+            /** old code: $this->Map->saveAll($data) */
+            $MapsTable->save($map);
+            if ($map->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $map->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
             } else {
-                if ($this->request->ext === 'json') {
-                    $this->serializeErrorMessage();
+                if ($this->isJsonRequest()) {
+                    $this->serializeCake4Id($map); // REST API ID serialization
                     return;
                 }
             }
+            $this->set('map', $map);
+            $this->viewBuilder()->setOption('serialize', ['map']);
         }
     }
 
@@ -160,7 +184,7 @@ class MapsController extends MapModuleAppController {
 
 
         $this->set('containers', $containers);
-        $this->set('_serialize', ['containers']);
+        $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
     public function edit($id = null) {
@@ -192,7 +216,7 @@ class MapsController extends MapModuleAppController {
             return;
         }
 
-        $this->set('_serialize', ['map']);
+        $this->viewBuilder()->setOption('serialize', ['map']);
         $this->set(compact('map'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -240,13 +264,13 @@ class MapsController extends MapModuleAppController {
 
         if ($this->Map->delete($id, true)) {
             $this->set('message', __('Map deleted successfully'));
-            $this->set('_serialize', ['message']);
+            $this->viewBuilder()->setOption('serialize', ['message']);
             return;
         }
 
         $this->response->statusCode(400);
         $this->set('message', __('Could not delete Map'));
-        $this->set('_serialize', ['message']);
+        $this->viewBuilder()->setOption('serialize', ['message']);
     }
 
 
@@ -267,7 +291,7 @@ class MapsController extends MapModuleAppController {
                 throw new NotFoundException();
             }
             $this->set('map', $map);
-            $this->set('_serialize', ['map']);
+            $this->viewBuilder()->setOption('serialize', ['map']);
             return;
         }
 
@@ -315,7 +339,7 @@ class MapsController extends MapModuleAppController {
                 }
                 if ($this->Map->saveAll($newMap)) {
                     $this->set('success', true);
-                    $this->set('_serialize', ['success']);
+                    $this->viewBuilder()->setOption('serialize', ['success']);
                     return;
                 }
             }
