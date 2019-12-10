@@ -87,7 +87,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group" ng-class="{'has-error': errors.container_id}">
+                                        <div class="form-group">
                                             <label class="col-xs-12 col-lg-2 control-label">
                                                 <?php echo __('Shared containers'); ?>
                                             </label>
@@ -101,9 +101,6 @@
                                                         ng-options="container.key as container.value for container in sharingContainers"
                                                         ng-model="post.Host.hosts_to_containers_sharing._ids">
                                                 </select>
-                                                <div ng-repeat="error in errors.container_id">
-                                                    <div class="help-block text-danger">{{ error }}</div>
-                                                </div>
                                             </div>
                                         </div>
 
@@ -235,7 +232,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group" ng-class="{'has-error': errors.container_id}">
+                                            <div class="form-group">
                                                 <label class="col-xs-12 col-lg-2 control-label">
                                                     <?php echo __('Parent hosts'); ?>
                                                 </label>
@@ -250,9 +247,6 @@
                                                             ng-options="parenthost.key as parenthost.value for parenthost in parenthosts"
                                                             ng-model="post.Host.parenthosts._ids">
                                                     </select>
-                                                    <div ng-repeat="error in errors.container_id">
-                                                        <div class="help-block text-danger">{{ error }}</div>
-                                                    </div>
                                                 </div>
                                             </div>
 

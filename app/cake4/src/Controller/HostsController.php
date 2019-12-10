@@ -231,7 +231,7 @@ class HostsController extends AppController {
                 ->where([
                     'Services.host_id' => $host['Host']['id']
                 ])
-            ->toList();
+                ->toList();
 
             $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
             $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatus);
@@ -489,22 +489,37 @@ class HostsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $hosttemplateId = $this->request->getData('Host.hosttemplate_id');
-            if ($hosttemplateId === null) {
-                throw new Exception('Host.hosttemplate_id needs to set.');
+            if (!$this->request->getData('Host.container_id') || !$this->request->getData('Host.hosttemplate_id')) {
+                $errors = [];
+                $this->response = $this->response->withStatus(400);
+                if(!$this->request->getData('Host.container_id')){
+
+                    $errors['container_id'] = [
+                        'empty' => __('This field cannot be left empty')
+                    ];
+                }
+                if (!$this->request->getData('Host.hosttemplate_id')) {
+                    $errors['hosttemplate_id'] = [
+                        'empty' => __('This field cannot be left empty')
+                    ];
+                }
+                $this->set('error', $errors);
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
             }
+
 
             /** @var $HosttemplatesTable HosttemplatesTable */
             $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
             /** @var $HostsTable HostsTable */
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
+            $hosttemplateId = $this->request->getData('Host.hosttemplate_id');
             if (!$HosttemplatesTable->existsById($hosttemplateId)) {
                 throw new NotFoundException(__('Invalid host template'));
             }
 
             $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hosttemplateId);
-            $HostComparisonForSave = new HostComparisonForSave($this->request->data, $hosttemplate);
+            $HostComparisonForSave = new HostComparisonForSave($this->request->getData(), $hosttemplate);
             $hostData = $HostComparisonForSave->getDataForSaveForAllFields();
             $hostData['uuid'] = UUID::v4();
 
@@ -526,8 +541,9 @@ class HostsController extends AppController {
                 //No errors
 
                 $User = new User($this->getUser());
+                $requestData = $this->request->getData();
 
-                $extDataForChangelog = $HostsTable->resolveDataForChangelog($this->request->data);
+                $extDataForChangelog = $HostsTable->resolveDataForChangelog($requestData);
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
@@ -539,7 +555,7 @@ class HostsController extends AppController {
                     $host->get('container_id'),
                     $User->getId(),
                     $host->get('name'),
-                    array_merge($this->request->data, $extDataForChangelog)
+                    array_merge($requestData, $extDataForChangelog)
                 );
 
                 if ($changelog_data) {
@@ -2730,13 +2746,17 @@ class HostsController extends AppController {
 
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $masterInstanceName = $Systemsettings->getMasterInstanceName();
 
         $satellites = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
-            $Satellite = $ModuleManager->loadModel('Satellite');
-            $satellites = $Satellite->find('list');
+            /** @var $SatellitesTable SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            $satellites = $SatellitesTable->getSatellitesAsList($this->MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
         }
 
