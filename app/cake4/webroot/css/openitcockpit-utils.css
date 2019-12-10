@@ -319,3 +319,12 @@ openITCOCKPIT v4 Utilities
     font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
 }
 
+.macroPassword {
+    filter: blur(2px);
+    -webkit-filter: blur(2px);
+    -moz-filter: blur(2px);
+    -o-filter: blur(2px);
+    -ms-filter: blur(2px);
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius='2');
+    -ms-filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius='2');
+}
