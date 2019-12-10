@@ -23,67 +23,67 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="CommandsIndex">
+            <i class="fa fa-user"></i> <?php echo __('Commands'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-copy"></i> <?php echo __('Copy'); ?>
+    </li>
+</ol>
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-pencil-square-o fa-fw "></i>
-            <?php echo __('Commands'); ?>
-            <span>>
-                <?php echo __('Copy'); ?>
-            </span>
-        </h1>
-    </div>
-</div>
-
-
-<div class="jarviswidget" id="wid-id-0">
-    <header>
-        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-copy"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet">
-            <?php echo __('Copy command/s'); ?>
-        </h2>
-        <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-            <?php if ($this->Acl->hasPermission('index', 'commands')): ?>
-                <a class="btn btn-default" ui-sref="CommandsIndex">
-                    <i class="fa fa-arrow-left"></i>
-                    <?php echo __('Back to list'); ?>
-                </a>
-            <?php endif; ?>
-        </div>
-    </header>
-    <div>
-        <div class="widget-body">
-            <div class="row form-horizontal" ng-repeat="sourceCommand in sourceCommands">
-                <div class="col-xs-12 col-md-9 col-lg-7">
-                    <fieldset>
-                        <legend>
-                            <span class="text-info"><?php echo __('Source command:'); ?></span>
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Commands'); ?>
+                    <span class="fw-300"><i><?php echo __('Copy command/s'); ?></i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <?php if ($this->Acl->hasPermission('index', 'commands')): ?>
+                        <a back-button fallback-state='CommandsIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <div class="card margin-bottom-10" ng-repeat="sourceCommand in sourceCommands">
+                        <div class="card-header">
+                            <i class="fa fa-cog"></i>
+                            <?php echo __('Source command:'); ?>
                             {{sourceCommand.Source.name}}
-                        </legend>
 
-                        <div class="form-group required" ng-class="{'has-error': sourceCommand.Error.name}">
-                            <label for="Command{{$index}}Name" class="col col-md-2 control-label">
-                                <?php echo('Command name'); ?>
-                            </label>
-                            <div class="col col-xs-10 required">
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group required" ng-class="{'has-error': sourceCommand.Error.name}">
+                                <label for="Command{{$index}}Name" class="control-label required">
+                                    <?php echo('Command name'); ?>
+                                </label>
                                 <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="sourceCommand.Command.name"
-                                        id="Command{{$index}}Name">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="sourceCommand.Command.name"
+                                    id="Command{{$index}}Name">
                                 <span class="help-block">
-                                    <?php echo __('Name of the new command'); ?>
+                                <?php echo __('Name of the new command'); ?>
                                 </span>
                                 <div ng-repeat="error in sourceCommand.Error.name">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group required" ng-class="{'has-error': sourceCommand.Error.command_line}">
-                            <label for="Command{{$index}}CommandLine" class="col col-md-2 control-label">
-                                <?php echo __('Command line'); ?>
-                            </label>
-                            <div class="col col-xs-10 required">
+                            <div class="form-group required" ng-class="{'has-error': sourceCommand.Error.command_line}">
+                                <label for="Command{{$index}}CommandLine" class="control-label request">
+                                    <?php echo __('Command line'); ?>
+                                </label>
                                 <textarea ng-model="sourceCommand.Command.command_line"
                                           class="form-control" cols="30" rows="6"
                                           id="Command{{$index}}CommandLine"></textarea>
@@ -91,32 +91,32 @@
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="Command{{$index}}Description" class="col col-md-2 control-label">
-                                <?php echo __('Description'); ?>
-                            </label>
-                            <div class="col col-xs-10">
+                            <div class="form-group">
+                                <label for="Command{{$index}}Description" class="control-label">
+                                    <?php echo __('Description'); ?>
+                                </label>
                                 <textarea ng-model="sourceCommand.Command.description"
                                           class="form-control" cols="30" rows="6"
                                           id="Command{{$index}}Description"></textarea>
                             </div>
                         </div>
-                    </fieldset>
+                    </div>
+
+                    <div class="card margin-top-10">
+                        <div class="card-body">
+                            <div class="float-right">
+                                <button class="btn btn-primary" ng-click="copy()">
+                                    <?php echo __('Copy'); ?>
+                                </button>
+                                <?php if ($this->Acl->hasPermission('index', 'Commands')): ?>
+                                    <a back-button fallback-state='CommandsIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="well formactions ">
-                <div class="pull-right">
-                    <button class="btn btn-primary" ng-click="copy()">
-                        <?php echo __('Copy'); ?>
-                    </button>
-                    <?php if ($this->Acl->hasPermission('index', 'commands')): ?>
-                        <a ui-sref="CommandsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
-                    <?php endif; ?>
-                </div>
-            </div>
-
         </div>
     </div>
 </div>
